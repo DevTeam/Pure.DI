@@ -23,9 +23,10 @@ internal class BuildTools(
         var variableCode = variable.VariableCode;
         if (variableCode == variable.VariableName)
         {
-            var skipNotNullCheck = (variable.HasCycle || variable.Info.HasCode)
-                && variable.InstanceType.IsReferenceType
-                && ctx.DependencyGraph.Source.SemanticModel.Compilation.Options.NullableContextOptions != NullableContextOptions.Disable;
+            var skipNotNullCheck =
+                variable.InstanceType.IsReferenceType
+                && ctx.DependencyGraph.Source.SemanticModel.Compilation.Options.NullableContextOptions != NullableContextOptions.Disable
+                && (variable.HasCycle || variable.Node.Lifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve);
 
             if (skipNotNullCheck)
             {

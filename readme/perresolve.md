@@ -88,10 +88,6 @@ partial class Composition
               }
           }
       }
-      if (perResolve36_Dependency == null)
-      {
-          perResolve36_Dependency = new Dependency();
-      }
       return new Service(perResolve36_Dependency!, perResolve36_Dependency!, _root._singleton37_ValueTuple);
     }
   }

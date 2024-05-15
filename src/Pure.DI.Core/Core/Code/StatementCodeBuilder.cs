@@ -18,16 +18,22 @@ internal class StatementCodeBuilder(
         switch (statement)
         {
             case Variable variable:
-                if (variable.Info.IsCreated)
+                if (variable.GetPath().OfType<Block>().Any(block => variable.Info.IsCreated(block)))
                 {
                     break;
                 }
 
+                variable.Info.MarkAsCreated(variable.ParentBlock);
                 variableBuilder.Build(ctx, variable);
-                variable.Info.IsCreated = true;
                 break;
 
             case Block block:
+                var blockVariable = block.Current;
+                if (blockVariable.GetPath().OfType<Block>().Any(b => blockVariable.Info.IsCreated(b)))
+                {
+                    break;
+                }
+                
                 blockBuilder.Build(ctx, block);
                 break;
         }

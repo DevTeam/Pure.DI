@@ -4,9 +4,8 @@ internal class VariableInfo
 {
     private readonly HashSet<int> _perBlockRefCounts = [];
     public readonly HashSet<Block> Owners = [];
-    public bool IsCreated;
-    public bool HasCode;
-    public LinesBuilder Code = new();
+    public readonly HashSet<Block> Created = [];
+    public bool HasLocalMethod;
     
     public int RefCount { get; private set; } = 1;
 
@@ -17,14 +16,23 @@ internal class VariableInfo
         RefCount++;
         _perBlockRefCounts.Add(parentBlock.Id);
     }
+    
+    public bool MarkAsCreated(Block block)
+    {
+        return Created.Add(block);
+    }
+
+    public bool IsCreated(Block block)
+    {
+        return Created.Contains(block);
+    }
 
     public void Reset()
     {
         _perBlockRefCounts.Clear();
         Owners.Clear();
+        Created.Clear();
         RefCount = 1;
-        IsCreated = false;
-        HasCode = false;
-        Code = new LinesBuilder();
+        HasLocalMethod = false;
     }
 }

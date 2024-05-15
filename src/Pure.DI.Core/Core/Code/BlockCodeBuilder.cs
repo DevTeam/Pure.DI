@@ -13,16 +13,17 @@ internal class BlockCodeBuilder(
             return;
         }
         
+        var localMethodName = $"{Names.EnsureExistsMethodNamePrefix}_{variable.VariableDeclarationName}".Replace("__", "_");
         var info = block.Current.Info;
-        if (info.HasCode)
+        if (info.HasLocalMethod)
         {
-            ctx.Code.AppendLines(info.Code.Lines);
+            ctx.Code.AppendLine($"{localMethodName}();");
             return;
         }
-
+        
+        var code = new LinesBuilder();
         try
         {
-            var code = info.Code;
             var level = ctx.Level;
             var isThreadSafe = ctx.DependencyGraph.Source.Hints.IsThreadSafeEnabled;
             var lockIsRequired = ctx.LockIsRequired ?? isThreadSafe;
@@ -74,14 +75,7 @@ internal class BlockCodeBuilder(
             
             foreach (var statement in block.Statements)
             {
-                if (block.Current != statement.Current)
-                {
-                    ctx.StatementBuilder.Build(ctx with { Variable = statement.Current, Code = code }, statement);
-                }
-                else
-                {
-                    ctx.StatementBuilder.Build(ctx with { Variable = statement.Current, Code = code }, statement);
-                }
+                ctx.StatementBuilder.Build(ctx with { Variable = statement.Current, Code = code }, statement);
             }
             
             if (!toCheckExistence)
@@ -114,6 +108,7 @@ internal class BlockCodeBuilder(
             code.AppendLine("}");
             if (!lockIsRequired)
             {
+                code.AppendLine();
                 return;
             }
 
@@ -125,30 +120,30 @@ internal class BlockCodeBuilder(
         }
         finally
         {
-            info.HasCode = true;
             if (block.Parent is not null
-                && info is { PerBlockRefCount: > 1, Code.Lines.Count: > 11 }) 
+                && info is { PerBlockRefCount: > 1 }
+                && code.Count > 11) 
             {
-                var localFunctionsCode = ctx.LocalFunctionsCode;
-                var localMethodName = $"{Names.EnsureExistsMethodNamePrefix}_{variable.VariableDeclarationName}".Replace("__", "_");
+                var localMethodCode = ctx.LocalFunctionsCode;
                 if (variable.Node.Binding.SemanticModel.Compilation.GetLanguageVersion() >= LanguageVersion.CSharp9)
                 {
-                    localFunctionsCode.AppendLine($"[{Names.MethodImplAttribute}(({Names.MethodImplOptions})0x100)]");
+                    localMethodCode.AppendLine($"[{Names.MethodImplAttribute}(({Names.MethodImplOptions})0x100)]");
                 }
                 
-                localFunctionsCode.AppendLine($"void {localMethodName}()");
-                localFunctionsCode.AppendLine("{");
-                using (localFunctionsCode.Indent())
+                localMethodCode.AppendLine($"void {localMethodName}()");
+                localMethodCode.AppendLine("{");
+                using (localMethodCode.Indent())
                 {
-                    localFunctionsCode.AppendLines(info.Code.Lines);
+                    localMethodCode.AppendLines(code.Lines);
                 }
                 
-                localFunctionsCode.AppendLine("}");
-                info.Code = new LinesBuilder();
-                info.Code.AppendLine($"{localMethodName}();");
+                localMethodCode.AppendLine("}");
+                code = new LinesBuilder();
+                code.AppendLine($"{localMethodName}();");
+                info.HasLocalMethod = true;
             }
             
-            ctx.Code.AppendLines(info.Code.Lines);
+            ctx.Code.AppendLines(code.Lines);
         }
     }
     

@@ -6,6 +6,7 @@ Creating an object graph of 27 transient objects, including 4 transient array ob
 ```mermaid
 classDiagram
 	class Array {
+		<<partial>>
 		+CompositionRoot TestPureDIByCR()
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
@@ -15,15 +16,15 @@ classDiagram
 	class CompositionRoot {
 		+CompositionRoot(IService1 service1, IService2 service21, IService2 service22, IService2 service23, IService3 service3, IService4 service41, IService4 service42)
 	}
-	Service1 --|> IService1 : 
+	Service1 --|> IService1
 	class Service1 {
 		+Service1(IService2 service2)
 	}
-	Service2Array --|> IService2 : 
+	Service2Array --|> IService2
 	class Service2Array {
 		+Service2Array(ArrayᐸIService3ᐳ services)
 	}
-	Service3 --|> IService3 : 
+	Service3 --|> IService3
 	class Service3 {
 		+Service3(IService4 service41, IService4 service42)
 	}
@@ -39,40 +40,33 @@ classDiagram
 	class Service3v4 {
 		+Service3v4(IService4 service41, IService4 service42)
 	}
-	Service4 --|> IService4 : 
+	Service4 --|> IService4
 	class Service4 {
 		+Service4()
 	}
 	class ArrayᐸIService3ᐳ
 	class IService1 {
-		<<abstract>>
+		<<interface>>
 	}
 	class IService2 {
-		<<abstract>>
+		<<interface>>
 	}
 	class IService3 {
-		<<abstract>>
+		<<interface>>
 	}
 	class IService4 {
-		<<abstract>>
+		<<interface>>
 	}
 	CompositionRoot *--  Service1 : IService1
-	CompositionRoot *--  Service2Array : IService2
-	CompositionRoot *--  Service2Array : IService2
-	CompositionRoot *--  Service2Array : IService2
+	CompositionRoot *-- "3 " Service2Array : IService2
 	CompositionRoot *--  Service3 : IService3
-	CompositionRoot *--  Service4 : IService4
-	CompositionRoot *--  Service4 : IService4
+	CompositionRoot *-- "2 " Service4 : IService4
 	Service1 *--  Service2Array : IService2
 	Service2Array *--  ArrayᐸIService3ᐳ : ArrayᐸIService3ᐳ
-	Service3 *--  Service4 : IService4
-	Service3 *--  Service4 : IService4
-	Service3v2 *--  Service4 : IService4
-	Service3v2 *--  Service4 : IService4
-	Service3v3 *--  Service4 : IService4
-	Service3v3 *--  Service4 : IService4
-	Service3v4 *--  Service4 : IService4
-	Service3v4 *--  Service4 : IService4
+	Service3 *-- "2 " Service4 : IService4
+	Service3v2 *-- "2 " Service4 : IService4
+	Service3v3 *-- "2 " Service4 : IService4
+	Service3v4 *-- "2 " Service4 : IService4
 	Array ..> CompositionRoot : CompositionRoot TestPureDIByCR()
 	ArrayᐸIService3ᐳ *--  Service3 : IService3
 	ArrayᐸIService3ᐳ *--  Service3v2 : 2  IService3
