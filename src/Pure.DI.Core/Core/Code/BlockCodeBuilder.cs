@@ -14,15 +14,9 @@ internal class BlockCodeBuilder(
         }
         
         var info = block.Current.Info;
-        if (info.HasCode)
-        {
-            ctx.Code.AppendLines(info.Code.Lines);
-            return;
-        }
-
+        var code = new LinesBuilder();
         try
         {
-            var code = info.Code;
             var level = ctx.Level;
             var isThreadSafe = ctx.DependencyGraph.Source.Hints.IsThreadSafeEnabled;
             var lockIsRequired = ctx.LockIsRequired ?? isThreadSafe;
@@ -118,9 +112,9 @@ internal class BlockCodeBuilder(
         }
         finally
         {
-            info.HasCode = true;
             if (block.Parent is not null
-                && info is { PerBlockRefCount: > 1, Code.Lines.Count: > 11 }) 
+                && info is { PerBlockRefCount: > 1 }
+                && code.Count > 11) 
             {
                 var localFunctionsCode = ctx.LocalFunctionsCode;
                 var localMethodName = $"{Names.EnsureExistsMethodNamePrefix}_{variable.VariableDeclarationName}".Replace("__", "_");
@@ -133,15 +127,15 @@ internal class BlockCodeBuilder(
                 localFunctionsCode.AppendLine("{");
                 using (localFunctionsCode.Indent())
                 {
-                    localFunctionsCode.AppendLines(info.Code.Lines);
+                    localFunctionsCode.AppendLines(code.Lines);
                 }
                 
                 localFunctionsCode.AppendLine("}");
-                info.Code = new LinesBuilder();
-                info.Code.AppendLine($"{localMethodName}();");
+                code = new LinesBuilder();
+                code.AppendLine($"{localMethodName}();");
             }
             
-            ctx.Code.AppendLines(info.Code.Lines);
+            ctx.Code.AppendLines(code.Lines);
         }
     }
     

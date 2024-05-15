@@ -23,7 +23,7 @@ internal class BuildTools(
         var variableCode = variable.VariableCode;
         if (variableCode == variable.VariableName)
         {
-            var skipNotNullCheck = (variable.HasCycle || variable.Info.HasCode)
+            var skipNotNullCheck = (variable.HasCycle || variable.IsDeclared)
                 && variable.InstanceType.IsReferenceType
                 && ctx.DependencyGraph.Source.SemanticModel.Compilation.Options.NullableContextOptions != NullableContextOptions.Disable;
 

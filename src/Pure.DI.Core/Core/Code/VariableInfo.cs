@@ -5,8 +5,6 @@ internal class VariableInfo
     private readonly HashSet<int> _perBlockRefCounts = [];
     public readonly HashSet<Block> Owners = [];
     public bool IsCreated;
-    public bool HasCode;
-    public LinesBuilder Code = new();
     
     public int RefCount { get; private set; } = 1;
 
@@ -24,7 +22,5 @@ internal class VariableInfo
         Owners.Clear();
         RefCount = 1;
         IsCreated = false;
-        HasCode = false;
-        Code = new LinesBuilder();
     }
 }
