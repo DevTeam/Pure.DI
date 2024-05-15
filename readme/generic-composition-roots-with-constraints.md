@@ -83,12 +83,13 @@ partial class Composition
   public IService<T, bool> GetOtherService<T>()
     where T: IDisposable
   {
-    OtherService<T> transient0_OtherService;
+    OtherService<T> transientOtherService0;
     {
-        var dependency_0 = new Dependency<T>();
-        transient0_OtherService = new OtherService<T>(dependency_0);
+        var localDependency0 = new Dependency<T>();
+        transientOtherService0 = new OtherService<T>(localDependency0);
     }
-    return transient0_OtherService;
+
+    return transientOtherService0;
   }
 }
 ```

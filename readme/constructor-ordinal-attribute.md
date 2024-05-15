@@ -52,18 +52,18 @@ partial class Composition
 {
   private readonly Composition _root;
 
-  private readonly string _arg_serviceName;
+  private readonly string _argServiceName;
 
   public Composition(string serviceName)
   {
-    _arg_serviceName = serviceName ?? throw new ArgumentNullException(nameof(serviceName));
+    _argServiceName = serviceName ?? throw new ArgumentNullException(nameof(serviceName));
     _root = this;
   }
 
   internal Composition(Composition parentScope)
   {
     _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _arg_serviceName = _root._arg_serviceName;
+    _argServiceName = _root._argServiceName;
   }
 
   public IService Root
@@ -71,7 +71,7 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new Service(_arg_serviceName);
+      return new Service(_argServiceName);
     }
   }
 }

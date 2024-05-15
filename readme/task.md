@@ -81,32 +81,34 @@ partial class Composition
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public IService GetRoot(CancellationToken cancellationToken)
   {
-    var perResolve42_Func = default(Func<IDependency>);
-    TaskScheduler transient5_TaskScheduler = TaskScheduler.Current;
-    TaskContinuationOptions transient4_TaskContinuationOptions = TaskContinuationOptions.None;
-    TaskCreationOptions transient3_TaskCreationOptions = TaskCreationOptions.None;
-    TaskFactory<IDependency> perBlock2_TaskFactory;
+    var perResolveFunc42 = default(Func<IDependency>);
+    TaskScheduler transientTaskScheduler5 = TaskScheduler.Current;
+    TaskContinuationOptions transientTaskContinuationOptions4 = TaskContinuationOptions.None;
+    TaskCreationOptions transientTaskCreationOptions3 = TaskCreationOptions.None;
+    TaskFactory<IDependency> perBlockTaskFactory2;
     {
-        var cancellationToken_0 = cancellationToken;
-        var taskCreationOptions_1 = transient3_TaskCreationOptions;
-        var taskContinuationOptions_2 = transient4_TaskContinuationOptions;
-        var taskScheduler_3 = transient5_TaskScheduler;
-        perBlock2_TaskFactory = new TaskFactory<IDependency>(cancellationToken_0, taskCreationOptions_1, taskContinuationOptions_2, taskScheduler_3);
+        var localCancellationToken0 = cancellationToken;
+        var localTaskCreationOptions1 = transientTaskCreationOptions3;
+        var localTaskContinuationOptions2 = transientTaskContinuationOptions4;
+        var localTaskScheduler3 = transientTaskScheduler5;
+        perBlockTaskFactory2 = new TaskFactory<IDependency>(localCancellationToken0, localTaskCreationOptions1, localTaskContinuationOptions2, localTaskScheduler3);
     }
-    perResolve42_Func = new Func<IDependency>(
+
+    perResolveFunc42 = new Func<IDependency>(
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     () =>
     {
-        var value_4 = new Dependency();
-        return value_4;
+        var localValue4 = new Dependency();
+        return localValue4;
     });
-    Task<IDependency> transient1_Task;
+    Task<IDependency> transientTask1;
     {
-        var factory_5 = perResolve42_Func!;
-        var taskFactory_6 = perBlock2_TaskFactory;
-        transient1_Task = taskFactory_6.StartNew(factory_5);
+        var localFactory5 = perResolveFunc42!;
+        var localTaskFactory6 = perBlockTaskFactory2;
+        transientTask1 = localTaskFactory6.StartNew(localFactory5);
     }
-    return new Service(transient1_Task);
+
+    return new Service(transientTask1);
   }
 }
 ```

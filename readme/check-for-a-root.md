@@ -88,7 +88,7 @@ partial class Composition
     }
   }
 
-  private IDependency Root0001
+  private IDependency Root1
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
@@ -168,7 +168,7 @@ partial class Composition
     OnNewRoot<IService, Service>(valResolver_0000, "Root", null, Lifetime.Transient);
     Resolver<IService>.Value = valResolver_0000;
     var valResolver_0001 = new Resolver_0001();
-    OnNewRoot<IDependency, Dependency>(valResolver_0001, "Root0001", "MyDep", Lifetime.Transient);
+    OnNewRoot<IDependency, Dependency>(valResolver_0001, "Root1", "MyDep", Lifetime.Transient);
     Resolver<IDependency>.Value = valResolver_0001;
     _buckets = Buckets<Type, IResolver<Composition, object>>.Create(
       4,
@@ -230,7 +230,7 @@ partial class Composition
       switch (tag)
       {
         case "MyDep":
-          return composition.Root0001;
+          return composition.Root1;
 
         default:
           return base.ResolveByTag(composition, tag);

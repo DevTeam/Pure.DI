@@ -67,41 +67,50 @@ internal static class Names
     private const string SingletonVariablePrefix = "_singleton";
     private const string ScopedVariablePrefix = "_scoped";
     private const string ArgVariablePrefix = "_arg";
+    public const string LocalVariablePrefix = "local";
     
     public static string GetVariableName(this DependencyNode Node, int PerLifetimeId)
     {
-        var baseName = Node.Type.Name;
+        var baseName = Node.Type.Name.ToTitleCase();
         switch (Node)
         {
             case { Lifetime: Lifetime.Singleton }:
             {
                 var binding = Node.Binding;
-                return $"{SingletonVariablePrefix}{Salt}{binding.Id}_{baseName}";
+                return $"{SingletonVariablePrefix}{baseName}{Salt}{binding.Id}";
             }
             
             case { Lifetime: Lifetime.Scoped }:
             {
                 var binding = Node.Binding;
-                return $"{ScopedVariablePrefix}{Salt}{binding.Id}_{baseName}";
+                return $"{ScopedVariablePrefix}{baseName}{Salt}{binding.Id}";
             }
 
             case { Lifetime: Lifetime.PerResolve }:
-                return $"{PerResolveVariablePrefix}{Salt}{PerLifetimeId}_{baseName}";
+                return $"{PerResolveVariablePrefix}{baseName}{Salt}{PerLifetimeId}";
 
             case { Arg: { Source.Kind: ArgKind.Class } arg }:
-                return $"{ArgVariablePrefix}{Salt}_{arg.Source.ArgName}";
+                return $"{ArgVariablePrefix}{ToTitleCase(arg.Source.ArgName)}{Salt}";
 
             case { Arg: { Source.Kind: ArgKind.Root } arg }:
                 return arg.Source.ArgName;
             
             case { Lifetime: Lifetime.PerBlock }:
-                return $"{PerBlockVariablePrefix}{Salt}{PerLifetimeId}_{baseName}";
+                return $"{PerBlockVariablePrefix}{baseName}{Salt}{PerLifetimeId}";
 
             default:
-                return $"{TransientVariablePrefix}{Salt}{PerLifetimeId}_{baseName}";
+                return $"{TransientVariablePrefix}{baseName}{Salt}{PerLifetimeId}";
         }
     }
     
     public static string GetPropertyName(this Root root) =>
-        root.IsPublic ? root.Name : $"Root{Salt}{root.Index:0000}";
+        root.IsPublic ? root.Name : $"Root{Salt}{root.Index}";
+
+    public static string ToTitleCase(this string title)
+    {
+        return new string(title
+            .Where(i => i != '@')
+            .Select((ch, index) => index == 0 ? char.ToUpper(ch) : ch)
+            .ToArray());
+    }
 }

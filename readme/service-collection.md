@@ -49,7 +49,8 @@ partial class Composition
 {
   private readonly Composition _root;
   private readonly object _lock;
-  private Dependency? _singleton36_Dependency;
+
+  private Dependency? _singletonDependency36;
 
   public Composition()
   {
@@ -63,41 +64,43 @@ partial class Composition
     _lock = _root._lock;
   }
 
-  private IDependency Root0001
+  private IDependency Root1
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singleton36_Dependency == null)
+      if (_root._singletonDependency36 == null)
       {
           lock (_lock)
           {
-              if (_root._singleton36_Dependency == null)
+              if (_root._singletonDependency36 == null)
               {
-                  _root._singleton36_Dependency = new Dependency();
+                  _root._singletonDependency36 = new Dependency();
               }
           }
       }
-      return _root._singleton36_Dependency!;
+
+      return _root._singletonDependency36!;
     }
   }
 
-  private IService Root0002
+  private IService Root2
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singleton36_Dependency == null)
+      if (_root._singletonDependency36 == null)
       {
           lock (_lock)
           {
-              if (_root._singleton36_Dependency == null)
+              if (_root._singletonDependency36 == null)
               {
-                  _root._singleton36_Dependency = new Dependency();
+                  _root._singletonDependency36 = new Dependency();
               }
           }
       }
-      return new Service(_root._singleton36_Dependency!);
+
+      return new Service(_root._singletonDependency36!);
     }
   }
 
@@ -167,10 +170,10 @@ partial class Composition
   static Composition()
   {
     var valResolver_0000 = new Resolver_0000();
-    OnNewRoot<IDependency, Dependency>(valResolver_0000, "Root0001", "Dependency Key", Lifetime.Singleton);
+    OnNewRoot<IDependency, Dependency>(valResolver_0000, "Root1", "Dependency Key", Lifetime.Singleton);
     Resolver<IDependency>.Value = valResolver_0000;
     var valResolver_0001 = new Resolver_0001();
-    OnNewRoot<IService, Service>(valResolver_0001, "Root0002", null, Lifetime.Transient);
+    OnNewRoot<IService, Service>(valResolver_0001, "Root2", null, Lifetime.Transient);
     Resolver<IService>.Value = valResolver_0001;
     _buckets = Buckets<Type, IResolver<Composition, object>>.Create(
       4,
@@ -212,7 +215,7 @@ partial class Composition
       switch (tag)
       {
         case "Dependency Key":
-          return composition.Root0001;
+          return composition.Root1;
 
         default:
           return base.ResolveByTag(composition, tag);
@@ -224,7 +227,7 @@ partial class Composition
   {
     public override IService Resolve(Composition composition)
     {
-      return composition.Root0002;
+      return composition.Root2;
     }
 
     public override IService ResolveByTag(Composition composition, object tag)
@@ -232,7 +235,7 @@ partial class Composition
       switch (tag)
       {
         case null:
-          return composition.Root0002;
+          return composition.Root2;
 
         default:
           return base.ResolveByTag(composition, tag);

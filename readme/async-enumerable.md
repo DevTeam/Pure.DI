@@ -69,14 +69,15 @@ partial class Composition
     get
     {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      async IAsyncEnumerable<IDependency> EnumerationOf_transient1_IAsyncEnumerable()
+      async IAsyncEnumerable<IDependency> EnumerationOf_transientIAsyncEnumerable1()
       {
           yield return new AbcDependency();
           yield return new XyzDependency();
           await Task.CompletedTask;
       }
-      IAsyncEnumerable<IDependency> transient1_IAsyncEnumerable = EnumerationOf_transient1_IAsyncEnumerable();
-      return new Service(transient1_IAsyncEnumerable);
+
+      IAsyncEnumerable<IDependency> transientIAsyncEnumerable1 = EnumerationOf_transientIAsyncEnumerable1();
+      return new Service(transientIAsyncEnumerable1);
     }
   }
 

@@ -29,7 +29,8 @@ partial class Composition
 {
   private readonly Composition _root;
   private readonly object _lock;
-  private Dependency? _singleton36_Dependency;
+
+  private Dependency? _singletonDependency36;
 
   public Composition()
   {
@@ -48,17 +49,18 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singleton36_Dependency == null)
+      if (_root._singletonDependency36 == null)
       {
           lock (_lock)
           {
-              if (_root._singleton36_Dependency == null)
+              if (_root._singletonDependency36 == null)
               {
-                  _root._singleton36_Dependency = new Dependency();
+                  _root._singletonDependency36 = new Dependency();
               }
           }
       }
-      return new Service(_root._singleton36_Dependency!);
+
+      return new Service(_root._singletonDependency36!);
     }
   }
 }

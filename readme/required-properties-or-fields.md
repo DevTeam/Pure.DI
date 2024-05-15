@@ -49,18 +49,18 @@ partial class Composition
 {
   private readonly Composition _root;
 
-  private readonly string _arg_name;
+  private readonly string _argName;
 
   public Composition(string name)
   {
-    _arg_name = name ?? throw new ArgumentNullException(nameof(name));
+    _argName = name ?? throw new ArgumentNullException(nameof(name));
     _root = this;
   }
 
   internal Composition(Composition parentScope)
   {
     _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _arg_name = _root._arg_name;
+    _argName = _root._argName;
   }
 
   public IService Root
@@ -70,7 +70,7 @@ partial class Composition
     {
       return new Service()
       {
-          ServiceNameField = _arg_name,
+          ServiceNameField = _argName,
           Dependency = new Dependency()
       };
     }

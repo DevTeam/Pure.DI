@@ -48,7 +48,8 @@ partial class Composition
 {
   private readonly Composition _root;
   private readonly object _lock;
-  private XyzDependency? _singleton38_XyzDependency;
+
+  private XyzDependency? _singletonXyzDependency38;
 
   public Composition()
   {
@@ -68,32 +69,35 @@ partial class Composition
     get
     {
       var accumulator42 = new MyAccumulator();
-      AbcDependency perBlock4_AbcDependency = new AbcDependency();
-      if (_root._singleton38_XyzDependency == null)
+      AbcDependency perBlockAbcDependency4 = new AbcDependency();
+      if (_root._singletonXyzDependency38 == null)
       {
           lock (_lock)
           {
-              if (_root._singleton38_XyzDependency == null)
+              if (_root._singletonXyzDependency38 == null)
               {
-                  XyzDependency _singleton38_XyzDependencyTemp;
-                  _singleton38_XyzDependencyTemp = new XyzDependency();
-                  accumulator42.Add(_singleton38_XyzDependencyTemp);
+                  XyzDependency _singletonXyzDependency38Temp;
+                  _singletonXyzDependency38Temp = new XyzDependency();
+                  accumulator42.Add(_singletonXyzDependency38Temp);
                   Thread.MemoryBarrier();
-                  _root._singleton38_XyzDependency = _singleton38_XyzDependencyTemp;
+                  _root._singletonXyzDependency38 = _singletonXyzDependency38Temp;
               }
           }
       }
-      AbcDependency transient3_AbcDependency = new AbcDependency();
+
+      AbcDependency transientAbcDependency3 = new AbcDependency();
       lock (_lock)
       {
-          accumulator42.Add(transient3_AbcDependency);
+          accumulator42.Add(transientAbcDependency3);
       }
-      Service transient1_Service = new Service(transient3_AbcDependency, _root._singleton38_XyzDependency!, perBlock4_AbcDependency);
+
+      Service transientService1 = new Service(transientAbcDependency3, _root._singletonXyzDependency38!, perBlockAbcDependency4);
       lock (_lock)
       {
-          accumulator42.Add(transient1_Service);
+          accumulator42.Add(transientService1);
       }
-      return (transient1_Service, accumulator42);
+
+      return (transientService1, accumulator42);
     }
   }
 

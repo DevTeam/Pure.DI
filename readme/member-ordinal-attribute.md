@@ -72,24 +72,24 @@ partial class PersonComposition
 {
   private readonly PersonComposition _root;
 
-  private readonly int _arg_personId;
-  private readonly string _arg_personName;
-  private readonly DateTime _arg_personBirthday;
+  private readonly int _argPersonId;
+  private readonly string _argPersonName;
+  private readonly DateTime _argPersonBirthday;
 
   public PersonComposition(int personId, string personName, DateTime personBirthday)
   {
-    _arg_personId = personId;
-    _arg_personName = personName ?? throw new ArgumentNullException(nameof(personName));
-    _arg_personBirthday = personBirthday;
+    _argPersonId = personId;
+    _argPersonName = personName ?? throw new ArgumentNullException(nameof(personName));
+    _argPersonBirthday = personBirthday;
     _root = this;
   }
 
   internal PersonComposition(PersonComposition parentScope)
   {
     _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _arg_personId = _root._arg_personId;
-    _arg_personName = _root._arg_personName;
-    _arg_personBirthday = _root._arg_personBirthday;
+    _argPersonId = _root._argPersonId;
+    _argPersonName = _root._argPersonName;
+    _argPersonBirthday = _root._argPersonBirthday;
   }
 
   public IPerson Person
@@ -97,11 +97,11 @@ partial class PersonComposition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Person transient0_Person = new Person();
-      transient0_Person.Id = _arg_personId;
-      transient0_Person.FirstName = _arg_personName;
-      transient0_Person.Birthday = _arg_personBirthday;
-      return transient0_Person;
+      Person transientPerson0 = new Person();
+      transientPerson0.Id = _argPersonId;
+      transientPerson0.FirstName = _argPersonName;
+      transientPerson0.Birthday = _argPersonBirthday;
+      return transientPerson0;
     }
   }
 }

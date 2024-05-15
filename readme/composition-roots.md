@@ -101,7 +101,7 @@ partial class Composition
     }
   }
 
-  private IDependency Root0002
+  private IDependency Root2
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
@@ -234,7 +234,7 @@ partial class Composition
   {
     public override IDependency Resolve(Composition composition)
     {
-      return composition.Root0002;
+      return composition.Root2;
     }
 
     public override IDependency ResolveByTag(Composition composition, object tag)
@@ -242,7 +242,7 @@ partial class Composition
       switch (tag)
       {
         case null:
-          return composition.Root0002;
+          return composition.Root2;
 
         default:
           return base.ResolveByTag(composition, tag);

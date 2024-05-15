@@ -57,7 +57,8 @@ partial class Composition: IDisposable, IAsyncDisposable
   private readonly object _lock;
   private object[] _disposables;
   private int _disposeIndex;
-  private Dependency? _singleton36_Dependency;
+
+  private Dependency? _singletonDependency36;
 
   public Composition()
   {
@@ -78,18 +79,19 @@ partial class Composition: IDisposable, IAsyncDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singleton36_Dependency == null)
+      if (_root._singletonDependency36 == null)
       {
           lock (_lock)
           {
-              if (_root._singleton36_Dependency == null)
+              if (_root._singletonDependency36 == null)
               {
-                  _root._singleton36_Dependency = new Dependency();
-                  _root._disposables[_root._disposeIndex++] = _root._singleton36_Dependency;
+                  _root._singletonDependency36 = new Dependency();
+                  _root._disposables[_root._disposeIndex++] = _root._singletonDependency36;
               }
           }
       }
-      return new Service(_root._singleton36_Dependency!);
+
+      return new Service(_root._singletonDependency36!);
     }
   }
 
@@ -103,7 +105,7 @@ partial class Composition: IDisposable, IAsyncDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _singleton36_Dependency = null;
+      _singletonDependency36 = null;
     }
 
     while (disposeIndex-- > 0)
@@ -140,7 +142,7 @@ partial class Composition: IDisposable, IAsyncDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _singleton36_Dependency = null;
+      _singletonDependency36 = null;
     }
 
     while (disposeIndex-- > 0)

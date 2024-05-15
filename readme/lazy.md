@@ -55,20 +55,21 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var perResolve40_Func = default(Func<IDependency>);
-      perResolve40_Func = new Func<IDependency>(
+      var perResolveFunc40 = default(Func<IDependency>);
+      perResolveFunc40 = new Func<IDependency>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-          var value_0 = new Dependency();
-          return value_0;
+          var localValue0 = new Dependency();
+          return localValue0;
       });
-      Lazy<IDependency> transient1_Lazy;
+      Lazy<IDependency> transientLazy1;
       {
-          var factory_1 = perResolve40_Func!;
-          transient1_Lazy = new Lazy<IDependency>(factory_1, true);
+          var localFactory1 = perResolveFunc40!;
+          transientLazy1 = new Lazy<IDependency>(localFactory1, true);
       }
-      return new Service(transient1_Lazy);
+
+      return new Service(transientLazy1);
     }
   }
 

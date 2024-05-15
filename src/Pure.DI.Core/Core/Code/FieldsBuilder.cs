@@ -1,4 +1,5 @@
 // ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable InvertIf
 namespace Pure.DI.Core.Code;
 
 internal sealed class FieldsBuilder(ITypeResolver typeResolver)
@@ -33,20 +34,24 @@ internal sealed class FieldsBuilder(ITypeResolver typeResolver)
         }
         
         // Singleton fields
-        foreach (var singletonField in composition.Singletons)
+        if (composition.Singletons.Length > 0)
         {
-            if (singletonField.InstanceType.IsValueType)
+            code.AppendLine();
+            foreach (var singletonField in composition.Singletons)
             {
-                code.AppendLine($"private {typeResolver.Resolve(singletonField.InstanceType)} {singletonField.VariableDeclarationName};");
-                membersCounter++;
+                if (singletonField.InstanceType.IsValueType)
+                {
+                    code.AppendLine($"private {typeResolver.Resolve(singletonField.InstanceType)} {singletonField.VariableDeclarationName};");
+                    membersCounter++;
 
-                code.AppendLine($"private bool {singletonField.VariableDeclarationName}Created;");
-                membersCounter++;
-            }
-            else
-            {
-                code.AppendLine($"private {typeResolver.Resolve(singletonField.InstanceType)}{nullable} {singletonField.VariableDeclarationName};");
-                membersCounter++;
+                    code.AppendLine($"private bool {singletonField.VariableDeclarationName}Created;");
+                    membersCounter++;
+                }
+                else
+                {
+                    code.AppendLine($"private {typeResolver.Resolve(singletonField.InstanceType)}{nullable} {singletonField.VariableDeclarationName};");
+                    membersCounter++;
+                }
             }
         }
         

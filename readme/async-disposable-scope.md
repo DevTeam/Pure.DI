@@ -91,7 +91,8 @@ partial class Composition: IDisposable, IAsyncDisposable
   private readonly object _lock;
   private object[] _disposables;
   private int _disposeIndex;
-  private Dependency? _scoped36_Dependency;
+
+  private Dependency? _scopedDependency36;
 
   public Composition()
   {
@@ -112,18 +113,19 @@ partial class Composition: IDisposable, IAsyncDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_scoped36_Dependency == null)
+      if (_scopedDependency36 == null)
       {
           lock (_lock)
           {
-              if (_scoped36_Dependency == null)
+              if (_scopedDependency36 == null)
               {
-                  _scoped36_Dependency = new Dependency();
-                  _disposables[_disposeIndex++] = _scoped36_Dependency;
+                  _scopedDependency36 = new Dependency();
+                  _disposables[_disposeIndex++] = _scopedDependency36;
               }
           }
       }
-      return new Service(_scoped36_Dependency!);
+
+      return new Service(_scopedDependency36!);
     }
   }
 
@@ -132,16 +134,16 @@ partial class Composition: IDisposable, IAsyncDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var perResolve43_Func = default(Func<Session>);
-      perResolve43_Func = new Func<Session>(
+      var perResolveFunc43 = default(Func<Session>);
+      perResolveFunc43 = new Func<Session>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-          Composition transient2_Composition = this;
-          var value_0 = new Session(transient2_Composition);
-          return value_0;
+          Composition transientComposition2 = this;
+          var localValue0 = new Session(transientComposition2);
+          return localValue0;
       });
-      return new Program(perResolve43_Func!);
+      return new Program(perResolveFunc43!);
     }
   }
 
@@ -155,7 +157,7 @@ partial class Composition: IDisposable, IAsyncDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _scoped36_Dependency = null;
+      _scopedDependency36 = null;
     }
 
     while (disposeIndex-- > 0)
@@ -192,7 +194,7 @@ partial class Composition: IDisposable, IAsyncDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _scoped36_Dependency = null;
+      _scopedDependency36 = null;
     }
 
     while (disposeIndex-- > 0)

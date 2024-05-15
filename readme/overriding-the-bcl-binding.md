@@ -64,13 +64,13 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      IDependency[] transient1_ = new IDependency[]
+      IDependency[] transient1 = new IDependency[]
       {
           new AbcDependency(),
           new XyzDependency(),
           new AbcDependency()
       };
-      return new Service(transient1_);
+      return new Service(transient1);
     }
   }
 

@@ -127,7 +127,7 @@ internal class BlockCodeBuilder(
                 var localMethodCode = ctx.LocalFunctionsCode;
                 if (variable.Node.Binding.SemanticModel.Compilation.GetLanguageVersion() >= LanguageVersion.CSharp9)
                 {
-                    localMethodCode.AppendLine($"[{Names.MethodImplAttribute}(({Names.MethodImplOptions})0x100)]");
+                    localMethodCode.AppendLine($"[{Names.MethodImplAttribute}(({Names.MethodImplOptions})256)]");
                 }
                 
                 localMethodCode.AppendLine($"void {localMethodName}()");

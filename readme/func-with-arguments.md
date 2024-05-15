@@ -73,7 +73,8 @@ partial class Composition
 {
   private readonly Composition _root;
   private readonly object _lock;
-  private Clock? _singleton36_Clock;
+
+  private Clock? _singletonClock36;
 
   public Composition()
   {
@@ -92,23 +93,24 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<int, IDependency> transient1_Func = dependencyId =>
+      Func<int, IDependency> transientFunc1 = dependencyId =>
       {
-          int transient3_Int32 = dependencyId;
-          if (_root._singleton36_Clock == null)
+          int transientInt323 = dependencyId;
+          if (_root._singletonClock36 == null)
           {
               lock (_lock)
               {
-                  if (_root._singleton36_Clock == null)
+                  if (_root._singletonClock36 == null)
                   {
-                      _root._singleton36_Clock = new Clock();
+                      _root._singletonClock36 = new Clock();
                   }
               }
           }
-          var dependency_0 = new Dependency(_root._singleton36_Clock!, transient3_Int32);
-          return dependency_0;
+
+          var localDependency0 = new Dependency(_root._singletonClock36!, transientInt323);
+          return localDependency0;
       };
-      return new Service(transient1_Func);
+      return new Service(transientFunc1);
     }
   }
 

@@ -63,18 +63,18 @@ partial class PersonComposition
 {
   private readonly PersonComposition _root;
 
-  private readonly int _arg_personId;
+  private readonly int _argPersonId;
 
   public PersonComposition(int personId)
   {
-    _arg_personId = personId;
+    _argPersonId = personId;
     _root = this;
   }
 
   internal PersonComposition(PersonComposition parentScope)
   {
     _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _arg_personId = _root._arg_personId;
+    _argPersonId = _root._argPersonId;
   }
 
   public IPerson Person
@@ -82,10 +82,10 @@ partial class PersonComposition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      string transient1_String = "Nik";
-      Person transient0_Person = new Person(transient1_String);
-      transient0_Person.Id = _arg_personId;
-      return transient0_Person;
+      string transientString1 = "Nik";
+      Person transientPerson0 = new Person(transientString1);
+      transientPerson0.Id = _argPersonId;
+      return transientPerson0;
     }
   }
 }

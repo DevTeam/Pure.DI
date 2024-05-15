@@ -71,24 +71,24 @@ partial class Composition
 {
   private readonly Composition _root;
 
-  private readonly int _arg_id;
-  private readonly string _arg_serviceName;
-  private readonly string _arg_dependencyName;
+  private readonly int _argId;
+  private readonly string _argServiceName;
+  private readonly string _argDependencyName;
 
   public Composition(int id, string serviceName, string dependencyName)
   {
-    _arg_id = id;
-    _arg_serviceName = serviceName ?? throw new ArgumentNullException(nameof(serviceName));
-    _arg_dependencyName = dependencyName ?? throw new ArgumentNullException(nameof(dependencyName));
+    _argId = id;
+    _argServiceName = serviceName ?? throw new ArgumentNullException(nameof(serviceName));
+    _argDependencyName = dependencyName ?? throw new ArgumentNullException(nameof(dependencyName));
     _root = this;
   }
 
   internal Composition(Composition parentScope)
   {
     _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _arg_id = _root._arg_id;
-    _arg_serviceName = _root._arg_serviceName;
-    _arg_dependencyName = _root._arg_dependencyName;
+    _argId = _root._argId;
+    _argServiceName = _root._argServiceName;
+    _argDependencyName = _root._argDependencyName;
   }
 
   public IService Root
@@ -96,7 +96,7 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new Service(_arg_serviceName, new Dependency(_arg_id, _arg_dependencyName));
+      return new Service(_argServiceName, new Dependency(_argId, _argDependencyName));
     }
   }
 }

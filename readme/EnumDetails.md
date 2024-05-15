@@ -97,15 +97,16 @@ partial class Enum
   public partialCompositionRoot TestPureDIByCR()
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    IEnumerable<Benchmarks.Model.IService3> EnumerationOf_perBlock10_IEnumerable()
+    IEnumerable<Benchmarks.Model.IService3> EnumerationOf_perBlockIEnumerable10()
     {
         yield return newService3(newService4(), newService4());
         yield return newService3v2(newService4(), newService4());
         yield return newService3v3(newService4(), newService4());
         yield return newService3v4(newService4(), newService4());
     }
-    IEnumerable<Benchmarks.Model.IService3> perBlock10_IEnumerable = EnumerationOf_perBlock10_IEnumerable();
-    return newCompositionRoot(newService1(newService2Enum(perBlock10_IEnumerable)), newService2Enum(perBlock10_IEnumerable), newService2Enum(perBlock10_IEnumerable), newService2Enum(perBlock10_IEnumerable), newService3(newService4(), newService4()), newService4(), newService4());
+
+    IEnumerable<Benchmarks.Model.IService3> perBlockIEnumerable10 = EnumerationOf_perBlockIEnumerable10();
+    return newCompositionRoot(newService1(newService2Enum(perBlockIEnumerable10)), newService2Enum(perBlockIEnumerable10), newService2Enum(perBlockIEnumerable10), newService2Enum(perBlockIEnumerable10), newService3(newService4(), newService4()), newService4(), newService4());
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]

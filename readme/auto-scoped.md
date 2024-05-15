@@ -71,7 +71,8 @@ partial class Composition
 {
   private readonly Composition _root;
   private readonly object _lock;
-  private Dependency? _scoped36_Dependency;
+
+  private Dependency? _scopedDependency36;
 
   public Composition()
   {
@@ -90,17 +91,18 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_scoped36_Dependency == null)
+      if (_scopedDependency36 == null)
       {
           lock (_lock)
           {
-              if (_scoped36_Dependency == null)
+              if (_scopedDependency36 == null)
               {
-                  _scoped36_Dependency = new Dependency();
+                  _scopedDependency36 = new Dependency();
               }
           }
       }
-      return new Service(_scoped36_Dependency!);
+
+      return new Service(_scopedDependency36!);
     }
   }
 
@@ -109,23 +111,24 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var perResolve43_Func = default(Func<IService>);
-      perResolve43_Func = new Func<IService>(
+      var perResolveFunc43 = default(Func<IService>);
+      perResolveFunc43 = new Func<IService>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-          Composition transient2_Composition = this;
-          IService transient1_IService;
+          Composition transientComposition2 = this;
+          IService transientIService1;
           {
-              var baseComposition_1 = transient2_Composition;
+              var localBaseComposition1 = transientComposition2;
               // Creates a session
-              var session_2 = new Composition(baseComposition_1);
-              transient1_IService = session_2.SessionRoot;
+              var localSession2 = new Composition(localBaseComposition1);
+              transientIService1 = localSession2.SessionRoot;
           }
-          var value_0 = transient1_IService;
-          return value_0;
+
+          var localValue0 = transientIService1;
+          return localValue0;
       });
-      return new Program(perResolve43_Func!);
+      return new Program(perResolveFunc43!);
     }
   }
 }

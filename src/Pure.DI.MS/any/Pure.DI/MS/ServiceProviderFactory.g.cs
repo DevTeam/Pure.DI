@@ -75,14 +75,14 @@ internal class ServiceProviderFactory<TComposition>: IServiceProviderFactory<ISe
 #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
     [global::System.Diagnostics.Contracts.Pure]
 #endif
-    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
     protected static IServiceCollection CreateServiceCollection(TComposition composition)
     {
         return ServiceCollectionFactory.CreateServiceCollection(composition);
     }
 
     /// <inheritdoc />
-    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
     public IServiceCollection CreateBuilder(IServiceCollection services)
     {
         // Registers composition roots as services in the service collection.
@@ -110,7 +110,7 @@ internal class ServiceProviderFactory<TComposition>: IServiceProviderFactory<ISe
     /// <param name="lifetime">Dependency resolution lifetime.</param>
     /// <typeparam name="T">Dependency resolution type.</typeparam>
     /// <returns>Resolved dependency instance.</returns>
-    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
     protected T OnCannotResolve<T>(object? tag, Lifetime lifetime)
     {
         return (T)(_serviceProvider ?? throw new InvalidOperationException("Not ready yet."))(typeof(T), tag)
@@ -126,7 +126,7 @@ internal class ServiceProviderFactory<TComposition>: IServiceProviderFactory<ISe
     /// <param name="lifetime">The lifetime of the composition root.</param>
     /// <typeparam name="TContract">The contract type of the composition root.</typeparam>
     /// <typeparam name="T">The implementation type of the composition root.</typeparam>
-    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
     protected static void OnNewRoot<TContract, T>(
         IResolver<TComposition, TContract> resolver,
         string name, object tag, Lifetime lifetime)

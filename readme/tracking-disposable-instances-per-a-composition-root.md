@@ -85,22 +85,25 @@ partial class Composition
     get
     {
       var accumulator38 = new Owned();
-      Dependency transient3_Dependency = new Dependency();
+      Dependency transientDependency3 = new Dependency();
       lock (_lock)
       {
-          accumulator38.Add(transient3_Dependency);
+          accumulator38.Add(transientDependency3);
       }
-      Owned<IService> perBlock0_Owned;
+
+      Owned<IService> perBlockOwned0;
       {
-          var owned_0 = accumulator38;
-          var value_1 = new Service(transient3_Dependency);
-          perBlock0_Owned = new Owned<IService>(value_1, owned_0);
+          var localOwned0 = accumulator38;
+          var localValue1 = new Service(transientDependency3);
+          perBlockOwned0 = new Owned<IService>(localValue1, localOwned0);
       }
+
       lock (_lock)
       {
-          accumulator38.Add(perBlock0_Owned);
+          accumulator38.Add(perBlockOwned0);
       }
-      return perBlock0_Owned;
+
+      return perBlockOwned0;
     }
   }
 

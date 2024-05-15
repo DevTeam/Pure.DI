@@ -62,12 +62,13 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      ValueTask<IDependency> transient1_ValueTask;
+      ValueTask<IDependency> transientValueTask1;
       {
-          var value_0 = new Dependency();
-          transient1_ValueTask = new ValueTask<IDependency>(value_0);
+          var localValue0 = new Dependency();
+          transientValueTask1 = new ValueTask<IDependency>(localValue0);
       }
-      return new Service(transient1_ValueTask);
+
+      return new Service(transientValueTask1);
     }
   }
 

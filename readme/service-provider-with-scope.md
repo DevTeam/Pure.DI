@@ -79,8 +79,9 @@ partial class Composition: IDisposable
   private readonly object _lock;
   private object[] _disposables;
   private int _disposeIndex;
-  private Dependency? _singleton36_Dependency;
-  private Service? _scoped37_Service;
+
+  private Dependency? _singletonDependency36;
+  private Service? _scopedService37;
 
   public Composition()
   {
@@ -96,46 +97,49 @@ partial class Composition: IDisposable
     _disposables = new object[1];
   }
 
-  private IDependency Root0001
+  private IDependency Root1
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singleton36_Dependency == null)
+      if (_root._singletonDependency36 == null)
       {
           lock (_lock)
           {
-              if (_root._singleton36_Dependency == null)
+              if (_root._singletonDependency36 == null)
               {
-                  _root._singleton36_Dependency = new Dependency();
+                  _root._singletonDependency36 = new Dependency();
               }
           }
       }
-      return _root._singleton36_Dependency!;
+
+      return _root._singletonDependency36!;
     }
   }
 
-  private IService Root0002
+  private IService Root2
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_scoped37_Service == null)
+      if (_scopedService37 == null)
       {
           lock (_lock)
           {
-              if (_scoped37_Service == null)
+              if (_scopedService37 == null)
               {
-                  if (_root._singleton36_Dependency == null)
+                  if (_root._singletonDependency36 == null)
                   {
-                      _root._singleton36_Dependency = new Dependency();
+                      _root._singletonDependency36 = new Dependency();
                   }
-                  _scoped37_Service = new Service(_root._singleton36_Dependency!);
-                  _disposables[_disposeIndex++] = _scoped37_Service;
+
+                  _scopedService37 = new Service(_root._singletonDependency36!);
+                  _disposables[_disposeIndex++] = _scopedService37;
               }
           }
       }
-      return _scoped37_Service!;
+
+      return _scopedService37!;
     }
   }
 
@@ -209,8 +213,8 @@ partial class Composition: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _singleton36_Dependency = null;
-      _scoped37_Service = null;
+      _singletonDependency36 = null;
+      _scopedService37 = null;
     }
 
     while (disposeIndex-- > 0)
@@ -274,7 +278,7 @@ partial class Composition: IDisposable
   {
     public override IDependency Resolve(Composition composition)
     {
-      return composition.Root0001;
+      return composition.Root1;
     }
 
     public override IDependency ResolveByTag(Composition composition, object tag)
@@ -282,7 +286,7 @@ partial class Composition: IDisposable
       switch (tag)
       {
         case null:
-          return composition.Root0001;
+          return composition.Root1;
 
         default:
           return base.ResolveByTag(composition, tag);
@@ -294,7 +298,7 @@ partial class Composition: IDisposable
   {
     public override IService Resolve(Composition composition)
     {
-      return composition.Root0002;
+      return composition.Root2;
     }
 
     public override IService ResolveByTag(Composition composition, object tag)
@@ -302,7 +306,7 @@ partial class Composition: IDisposable
       switch (tag)
       {
         case null:
-          return composition.Root0002;
+          return composition.Root2;
 
         default:
           return base.ResolveByTag(composition, tag);

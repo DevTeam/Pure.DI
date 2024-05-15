@@ -77,12 +77,13 @@ partial class Composition
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public IService<T2> GetOtherService<T2>()
   {
-    OtherService<T2> transient0_OtherService;
+    OtherService<T2> transientOtherService0;
     {
-        var dependency_0 = new Dependency<T2>();
-        transient0_OtherService = new OtherService<T2>(dependency_0);
+        var localDependency0 = new Dependency<T2>();
+        transientOtherService0 = new OtherService<T2>(localDependency0);
     }
-    return transient0_OtherService;
+
+    return transientOtherService0;
   }
 }
 ```

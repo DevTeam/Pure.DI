@@ -86,7 +86,7 @@ internal sealed class RootMethodsBuilder(
         name.Append(rootArgsStr);
         if (root.IsMethod)
         {
-            code.AppendLine($"[{Names.MethodImplAttribute}(({Names.MethodImplOptions})0x100)]");
+            code.AppendLine($"[{Names.MethodImplAttribute}(({Names.MethodImplOptions})256)]");
         }
 
         code.AppendLine(name.ToString());
@@ -145,7 +145,7 @@ internal sealed class RootMethodsBuilder(
             if (!root.IsMethod)
             {
                 buildTools.AddPureHeader(code);
-                code.AppendLine($"[{Names.MethodImplAttribute}(({Names.MethodImplOptions})0x100)]");
+                code.AppendLine($"[{Names.MethodImplAttribute}(({Names.MethodImplOptions})256)]");
                 code.AppendLine("get");
                 code.AppendLine("{");
                 indentToken = code.Indent();
@@ -158,7 +158,7 @@ internal sealed class RootMethodsBuilder(
                     var codeText = string.Join(Environment.NewLine, root.Lines);
                     var syntaxTree = CSharpSyntaxTree.ParseText(codeText);
                     codeText = syntaxTree.GetRoot().NormalizeWhitespace().ToString();
-                    var lines = codeText.Split(NewLineSeparators, StringSplitOptions.RemoveEmptyEntries);
+                    var lines = codeText.Split(NewLineSeparators, StringSplitOptions.None);
                     foreach (var line in lines)
                     {
                         code.AppendLine(line);
