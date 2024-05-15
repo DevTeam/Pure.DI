@@ -74,14 +74,7 @@ internal class BlockCodeBuilder(
             
             foreach (var statement in block.Statements)
             {
-                if (block.Current != statement.Current)
-                {
-                    ctx.StatementBuilder.Build(ctx with { Variable = statement.Current, Code = code }, statement);
-                }
-                else
-                {
-                    ctx.StatementBuilder.Build(ctx with { Variable = statement.Current, Code = code }, statement);
-                }
+                ctx.StatementBuilder.Build(ctx with { Variable = statement.Current, Code = code }, statement);
             }
             
             if (!toCheckExistence)

@@ -28,6 +28,11 @@ internal class StatementCodeBuilder(
                 break;
 
             case Block block:
+                if (block.Current.Info.IsCreated)
+                {
+                    break;
+                }
+
                 blockBuilder.Build(ctx, block);
                 break;
         }

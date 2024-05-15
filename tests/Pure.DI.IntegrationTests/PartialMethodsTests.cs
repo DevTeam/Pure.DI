@@ -749,7 +749,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["String created", "Int32 created", "Dependency 99 created", "Int32 created", "String created", "Service 'MyService' created"], result);
+        result.StdOut.ShouldBe(["Int32 created", "String created", "String created", "Int32 created", "Dependency 99 created", "Service 'MyService' created"], result);
     }
     
     [Fact]
