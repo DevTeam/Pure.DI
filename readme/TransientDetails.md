@@ -6,6 +6,7 @@ Creating an object graph of 22 transient objects.
 ```mermaid
 classDiagram
 	class Transient {
+		<<partial>>
 		+CompositionRoot TestPureDIByCR()
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
@@ -15,49 +16,41 @@ classDiagram
 	class CompositionRoot {
 		+CompositionRoot(IService1 service1, IService2 service21, IService2 service22, IService2 service23, IService3 service3, IService4 service41, IService4 service42)
 	}
-	Service1 --|> IService1 : 
+	Service1 --|> IService1
 	class Service1 {
 		+Service1(IService2 service2)
 	}
-	Service2 --|> IService2 : 
+	Service2 --|> IService2
 	class Service2 {
 		+Service2(IService3 service31, IService3 service32, IService3 service33, IService3 service34, IService3 service35)
 	}
-	Service3 --|> IService3 : 
+	Service3 --|> IService3
 	class Service3 {
 		+Service3(IService4 service41, IService4 service42)
 	}
-	Service4 --|> IService4 : 
+	Service4 --|> IService4
 	class Service4 {
 		+Service4()
 	}
 	class IService1 {
-		<<abstract>>
+		<<interface>>
 	}
 	class IService2 {
-		<<abstract>>
+		<<interface>>
 	}
 	class IService3 {
-		<<abstract>>
+		<<interface>>
 	}
 	class IService4 {
-		<<abstract>>
+		<<interface>>
 	}
 	CompositionRoot *--  Service1 : IService1
-	CompositionRoot *--  Service2 : IService2
-	CompositionRoot *--  Service2 : IService2
-	CompositionRoot *--  Service2 : IService2
+	CompositionRoot *-- "3 " Service2 : IService2
 	CompositionRoot *--  Service3 : IService3
-	CompositionRoot *--  Service4 : IService4
-	CompositionRoot *--  Service4 : IService4
+	CompositionRoot *-- "2 " Service4 : IService4
 	Service1 *--  Service2 : IService2
-	Service2 *--  Service3 : IService3
-	Service2 *--  Service3 : IService3
-	Service2 *--  Service3 : IService3
-	Service2 *--  Service3 : IService3
-	Service2 *--  Service3 : IService3
-	Service3 *--  Service4 : IService4
-	Service3 *--  Service4 : IService4
+	Service2 *-- "5 " Service3 : IService3
+	Service3 *-- "2 " Service4 : IService4
 	Transient ..> CompositionRoot : CompositionRoot TestPureDIByCR()
 ```
 
