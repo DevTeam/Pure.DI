@@ -49,7 +49,8 @@ var service = composition.GetMyRoot<int>();
 var someOtherService = composition.GetOtherService<string>();
 ```
 
-:warning: `Resolve' methods cannot be used to resolve generic composition roots.
+> [!IMPORTANT]
+> `Resolve' methods cannot be used to resolve generic composition roots.
 
 The following partial class will be generated:
 

@@ -79,7 +79,8 @@ class ShroedingersCat(Lazy<State> superposition) : ICat
 
 ```
 
-It is important to note that our abstraction and implementation knows nothing about the magic of DI or any frameworks.
+> [!IMPORTANT]
+> Our abstraction and implementation knows nothing about the magic of DI or any frameworks.
 
 ### Let's glue it all together
 
@@ -165,9 +166,8 @@ class Program(IBox<ICat> box)
 
 The full analog of this application with top-level statements can be found [here](samples/ShroedingersCatTopLevelStatements).
 
-## To summarize
-
-_Pure.DI_ creates efficient code in a pure DI paradigm, using only basic language constructs as if you were writing code by hand. This allows you to take full advantage of Dependency Injection everywhere and always, without any compromise!
+> [!TIP]
+> _Pure.DI_ creates efficient code in a pure DI paradigm, using only basic language constructs as if you were writing code by hand. This allows you to take full advantage of Dependency Injection everywhere and always, without any compromise!
 
 <details>
 <summary>Just try!</summary>
@@ -407,7 +407,10 @@ In this case, the constructor with arguments is as follows:
 public Composition(string name, int id) { ... }
 ```
 
-and there is no default constructor. It is important to remember that only those arguments that are used in the object graph will appear in the constructor. Arguments that are not involved cannot be defined, as they are omitted from the constructor parameters to save resources.
+and there is no default constructor. 
+
+> [!IMPORTANT]
+> It is important to remember that only those arguments that are used in the object graph will appear in the constructor. Arguments that are not involved cannot be defined, as they are omitted from the constructor parameters to save resources.
 
 ### Scope constructor
 
