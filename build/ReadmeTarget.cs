@@ -362,10 +362,8 @@ internal class ReadmeTarget(
                         .Replace("System.Collections.Generic.", "")
                         .Replace("System.", "")
                         .Replace("Pure.DI.", "")
-                        .Replace(" Benchmarks.Model.", "")
-                        .Replace(salt, "")
-                        .Replace("(MethodImplOptions)256", "MethodImplOptions.AggressiveInlining")
-                        .Replace("(MethodImplOptions)8", "MethodImplOptions.NoInlining")));
+                        .Replace("Benchmarks.Model.", "")
+                        .Replace(salt, "")));
             await examplesWriter.WriteLineAsync(generatedCode);
             await examplesWriter.WriteLineAsync("```");
         }

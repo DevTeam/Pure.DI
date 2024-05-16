@@ -1,6 +1,8 @@
 // ReSharper disable InconsistentNaming
 namespace Pure.DI.Core;
 
+using System.Runtime.CompilerServices;
+
 internal static class Names
 {
     public static readonly string Salt = $"M{DateTime.Now.Month:00}D{DateTime.Now.Day:00}di";
@@ -12,8 +14,11 @@ internal static class Names
     public const string SystemNamespace = $"global::{nameof(System)}.";
     
     // Attributes
-    public const string MethodImplAttribute = $"{SystemNamespace}Runtime.CompilerServices.MethodImpl";
-    public const string MethodImplOptions = $"{SystemNamespace}Runtime.CompilerServices.MethodImplOptions";
+    public const string MethodImplAttributeName = $"{SystemNamespace}Runtime.CompilerServices.MethodImpl";
+    public const string MethodImplOptionsName = $"{SystemNamespace}Runtime.CompilerServices.{nameof(MethodImplOptions)}";
+    public const string MethodImplAggressiveInliningOptionsName = nameof(MethodImplOptions.AggressiveInlining);
+    public const string MethodImplAggressiveInlining = $"{MethodImplOptionsName}.{MethodImplAggressiveInliningOptionsName}";
+    public const string MethodImplNoInlining = $"{MethodImplOptionsName}.{nameof(MethodImplOptions.NoInlining)}";
     
     // Messages
     public const string CannotResolveMessage = "Cannot resolve composition root";

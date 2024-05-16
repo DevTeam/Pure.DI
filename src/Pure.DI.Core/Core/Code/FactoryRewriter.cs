@@ -2,6 +2,8 @@
 // ReSharper disable InvertIf
 namespace Pure.DI.Core.Code;
 
+using System.Runtime.CompilerServices;
+
 internal sealed class FactoryRewriter(
     IArguments arguments,
     DpFactory factory,
@@ -12,12 +14,10 @@ internal sealed class FactoryRewriter(
 {
     private static readonly AttributeListSyntax MethodImplAttribute = SyntaxFactory.AttributeList().AddAttributes(
             SyntaxFactory.Attribute(
-                SyntaxFactory.IdentifierName(Names.MethodImplAttribute),
+                SyntaxFactory.IdentifierName(Names.MethodImplAttributeName),
                 SyntaxFactory.AttributeArgumentList().AddArguments(
                     SyntaxFactory.AttributeArgument(
-                        SyntaxFactory.CastExpression(
-                            SyntaxFactory.ParseTypeName(Names.MethodImplOptions),
-                            SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(256)))))))
+                        SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.ParseTypeName(Names.MethodImplOptionsName), SyntaxFactory.IdentifierName(Names.MethodImplAggressiveInliningOptionsName))))))
         .WithTrailingTrivia(SyntaxTriviaList.Create(SyntaxFactory.SyntaxTrivia(SyntaxKind.WhitespaceTrivia, " ")));
     
     private static readonly IdentifierNameSyntax InjectionMarkerExpression = SyntaxFactory.IdentifierName(Names.InjectionMarker);

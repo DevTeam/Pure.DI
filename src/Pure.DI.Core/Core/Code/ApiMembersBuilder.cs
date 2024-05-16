@@ -26,7 +26,7 @@ internal sealed class ApiMembersBuilder(
             }
 
             buildTools.AddPureHeader(apiCode);
-            apiCode.AppendLine($"[{Names.MethodImplAttribute}(({Names.MethodImplOptions})256)]");
+            apiCode.AppendLine($"[{Names.MethodImplAttributeName}({Names.MethodImplAggressiveInlining})]");
             apiCode.AppendLine($"{hints.ResolveMethodModifiers} T {hints.ResolveMethodName}<T>()");
             apiCode.AppendLine("{");
             using (apiCode.Indent())
@@ -49,7 +49,7 @@ internal sealed class ApiMembersBuilder(
             }
 
             buildTools.AddPureHeader(apiCode);
-            apiCode.AppendLine($"[{Names.MethodImplAttribute}(({Names.MethodImplOptions})256)]");
+            apiCode.AppendLine($"[{Names.MethodImplAttributeName}({Names.MethodImplAggressiveInlining})]");
             apiCode.AppendLine($"{hints.ResolveByTagMethodModifiers} T {hints.ResolveByTagMethodName}<T>(object{nullable} tag)");
             apiCode.AppendLine("{");
             using (apiCode.Indent())
@@ -174,7 +174,7 @@ internal sealed class ApiMembersBuilder(
         LinesBuilder code)
     {
         buildTools.AddPureHeader(code);
-        code.AppendLine($"[{Names.MethodImplAttribute}(({Names.MethodImplOptions})256)]");
+        code.AppendLine($"[{Names.MethodImplAttributeName}({Names.MethodImplAggressiveInlining})]");
         code.AppendLine($"{methodModifiers} object {methodName}({methodArgs})");
         code.AppendLine("{");
         using (code.Indent())
@@ -202,7 +202,7 @@ internal sealed class ApiMembersBuilder(
         bool byTag,
         LinesBuilder code)
     {
-        code.AppendLine($"[{Names.MethodImplAttribute}(({Names.MethodImplOptions})8)]");
+        code.AppendLine($"[{Names.MethodImplAttributeName}({Names.MethodImplNoInlining})]");
         code.AppendLine($"private object Resolve{Names.Salt}({methodArgs}, int index)");
         code.AppendLine("{");
         using (code.Indent())

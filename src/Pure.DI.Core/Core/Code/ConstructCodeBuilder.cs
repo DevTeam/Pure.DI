@@ -53,7 +53,7 @@ internal class ConstructCodeBuilder(ITypeResolver typeResolver)
         var localMethodName = $"{Names.EnumerateMethodNamePrefix}_{variable.VariableDeclarationName}".Replace("__", "_");
         if (enumerable.Source.SemanticModel.Compilation.GetLanguageVersion() >= LanguageVersion.CSharp9)
         {
-            code.AppendLine($"[{Names.MethodImplAttribute}(({Names.MethodImplOptions})256)]");
+            code.AppendLine($"[{Names.MethodImplAttributeName}({Names.MethodImplAggressiveInlining})]");
         }
 
         code.AppendLine($"{methodPrefix}{typeResolver.Resolve(variable.InstanceType)} {localMethodName}()");
