@@ -27,13 +27,7 @@ internal class BlockCodeBuilder(
             var level = ctx.Level;
             var isThreadSafe = ctx.DependencyGraph.Source.Hints.IsThreadSafeEnabled;
             var lockIsRequired = ctx.LockIsRequired ?? isThreadSafe;
-            var toCheckExistence =
-                // The "singleton" or "scoped" instance must be created with a check each time
-                variable.Node.Lifetime is Lifetime.Singleton or Lifetime.Scoped
-                || variable.Node.Lifetime == Lifetime.Scoped
-                // The "per resolve" instance should be created without checks if it is the only one in the composition
-                || (variable.Node.Lifetime == Lifetime.PerResolve && variable.Info.RefCount > 1);
-
+            var toCheckExistence = variable.Node.Lifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve;
             var uniqueAccumulators = ctx.Accumulators
                 .Where(accumulator => !accumulator.IsDeclared)
                 .GroupBy(i => i.Name)

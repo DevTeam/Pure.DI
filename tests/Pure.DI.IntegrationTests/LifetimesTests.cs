@@ -1897,4 +1897,73 @@ namespace Sample
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["True", "True", "True", "True", "True", "True", "False", "True", "True"], result);
     }
+    
+    [Theory]
+    [InlineData("Singleton")]
+    [InlineData("Scoped")]
+    [InlineData("PerResolve")]
+    public async Task ShouldSupportSingletonScopedPerResolveInEnumerable(string lifetime)
+    {
+        // Given
+
+        // When
+        var result = await $$"""
+    using System;
+    using Pure.DI;
+    using System.Collections.Generic;
+
+    namespace Sample
+    {
+    interface IService {};
+
+    class StagingService : IService
+    {
+        public StagingService() => Console.WriteLine(GetType());
+    }
+
+    class RegistrationService : IService
+    {
+        public RegistrationService() => Console.WriteLine(GetType());
+    }
+
+    class ServiceHost
+    {
+        public ServiceHost(IEnumerable<IService> services)
+        {
+            foreach (var service in services)
+            {
+            }
+            
+            foreach (var service in services)
+            {
+            }
+        }
+    }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup(nameof(Composition))
+                .Bind(1).As(Lifetime.#Lifetime).To<StagingService>()
+                .Bind(2).As(Lifetime.PerResolve).To<RegistrationService>()
+                .Root<ServiceHost>("Host");
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();
+            var Host = composition.Host;
+        }
+    }                
+}
+""".Replace("#Lifetime", lifetime).RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Sample.StagingService", "Sample.RegistrationService"], result);
+    }
 }
