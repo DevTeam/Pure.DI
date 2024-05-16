@@ -74,9 +74,9 @@ partial class Transient
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public partialCompositionRoot TestPureDIByCR()
+  public partial CompositionRoot TestPureDIByCR()
   {
-    return newCompositionRoot(newService1(newService2(newService3(newService4(), newService4()), newService3(newService4(), newService4()), newService3(newService4(), newService4()), newService3(newService4(), newService4()), newService3(newService4(), newService4()))), newService2(newService3(newService4(), newService4()), newService3(newService4(), newService4()), newService3(newService4(), newService4()), newService3(newService4(), newService4()), newService3(newService4(), newService4())), newService2(newService3(newService4(), newService4()), newService3(newService4(), newService4()), newService3(newService4(), newService4()), newService3(newService4(), newService4()), newService3(newService4(), newService4())), newService2(newService3(newService4(), newService4()), newService3(newService4(), newService4()), newService3(newService4(), newService4()), newService3(newService4(), newService4()), newService3(newService4(), newService4())), newService3(newService4(), newService4()), newService4(), newService4());
+    return new CompositionRoot(new Service1(new Service2(new Service3(new Service4(), new Service4()), new Service3(new Service4(), new Service4()), new Service3(new Service4(), new Service4()), new Service3(new Service4(), new Service4()), new Service3(new Service4(), new Service4()))), new Service2(new Service3(new Service4(), new Service4()), new Service3(new Service4(), new Service4()), new Service3(new Service4(), new Service4()), new Service3(new Service4(), new Service4()), new Service3(new Service4(), new Service4())), new Service2(new Service3(new Service4(), new Service4()), new Service3(new Service4(), new Service4()), new Service3(new Service4(), new Service4()), new Service3(new Service4(), new Service4()), new Service3(new Service4(), new Service4())), new Service2(new Service3(new Service4(), new Service4()), new Service3(new Service4(), new Service4()), new Service3(new Service4(), new Service4()), new Service3(new Service4(), new Service4()), new Service3(new Service4(), new Service4())), new Service3(new Service4(), new Service4()), new Service4(), new Service4());
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -145,13 +145,13 @@ partial class Transient
   static Transient()
   {
     var valResolver_0000 = new Resolver_0000();
-    Resolver<Benchmarks.Model.CompositionRoot>.Value = valResolver_0000;
+    Resolver<CompositionRoot>.Value = valResolver_0000;
     _buckets = Buckets<Type, IResolver<Transient, object>>.Create(
       1,
       out _bucketSize,
       new Pair<Type, IResolver<Transient, object>>[1]
       {
-         new Pair<Type, IResolver<Transient, object>>(typeof(Benchmarks.Model.CompositionRoot), valResolver_0000)
+         new Pair<Type, IResolver<Transient, object>>(typeof(CompositionRoot), valResolver_0000)
       });
   }
 
@@ -173,14 +173,14 @@ partial class Transient
     }
   }
 
-  private sealed class Resolver_0000: Resolver<Benchmarks.Model.CompositionRoot>
+  private sealed class Resolver_0000: Resolver<CompositionRoot>
   {
-    public overrideCompositionRoot Resolve(Transient composition)
+    public override CompositionRoot Resolve(Transient composition)
     {
       return composition.TestPureDIByCR();
     }
 
-    public overrideCompositionRoot ResolveByTag(Transient composition, object tag)
+    public override CompositionRoot ResolveByTag(Transient composition, object tag)
     {
       switch (tag)
       {

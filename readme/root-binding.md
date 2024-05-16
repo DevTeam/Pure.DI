@@ -16,10 +16,13 @@ class Service(IDependency dependency) : IService;
 
 DI.Setup(nameof(Composition))
     .Bind().As(Lifetime.Singleton).To<Dependency>()
-    .RootBind<IService>("Root").To<Service>();
+    .RootBind<IService>("MyRoot").To<Service>();
+    // It's the same as:
+    //   .Bind<IService>().To<Service>()
+    //   .Root<IService>("MyRoot")
 
 var composition = new Composition();
-composition.Root.ShouldBeOfType<Service>();
+composition.MyRoot.ShouldBeOfType<Service>();
 ```
 
 The following partial class will be generated:
@@ -44,7 +47,7 @@ partial class Composition
     _lock = _root._lock;
   }
 
-  public IService Root
+  public IService MyRoot
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
@@ -72,7 +75,7 @@ Class diagram:
 classDiagram
 	class Composition {
 		<<partial>>
-		+IService Root
+		+IService MyRoot
 	}
 	Dependency --|> IDependency
 	class Dependency {
@@ -89,6 +92,6 @@ classDiagram
 		<<interface>>
 	}
 	Service o-- "Singleton" Dependency : IDependency
-	Composition ..> Service : IService Root
+	Composition ..> Service : IService MyRoot
 ```
 

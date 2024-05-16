@@ -6,11 +6,27 @@ You can use the `Bind(...)` method without type parameters. In this case binding
 
 
 ```c#
+interface IDependencyBase;
+
+class DependencyBase: IDependencyBase;
+
 interface IDependency;
 
 interface IOtherDependency;
 
-class Dependency: IDependency, IOtherDependency;
+class Dependency:
+    DependencyBase,
+    IDependency,
+    IOtherDependency,
+    IDisposable,
+    IEnumerable<string>
+{
+    public void Dispose() => throw new NotImplementedException();
+
+    public IEnumerator<string> GetEnumerator() => throw new NotImplementedException();
+
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+}
 
 interface IService;
 
@@ -39,7 +55,14 @@ var composition = new Composition();
 var service = composition.MyService;
 ```
 
-Special types from the list above will not be added to bindings:
+As practice has shown, in most cases it is possible to define abstraction types in bindings automatically. That's why we added API `Bind()` method without type parameters to define abstractions in bindings. It is the `Bind()` method that performs the binding:
+
+- with the implementation type itself
+- and if it is NOT an abstract type or structure
+  - with all abstract types that it directly implements
+  - exceptions are special types
+
+Special types will not be added to bindings:
 
 - `System.Object`
 - `System.Enum`
@@ -56,6 +79,18 @@ Special types from the list above will not be added to bindings:
 - `System.IDisposable`
 - `System.IAsyncResult`
 - `System.AsyncCallback`
+
+For class `Dependency`, the `Bind().To<Dependency>()` binding will be equivalent to the `Bind<IDependency, IOtherDependency, Dependency>().To<Dependency>()` binding. The types `IDisposable`, `IEnumerable<string>` did not get into the binding because they are special from the list above. `DependencyBase` did not get into the binding because it is not abstract. `IDependencyBase` is not included because it is not implemented directly by class `Dependency`.
+
+|   |                       |                                                 |
+|---|-----------------------|-------------------------------------------------|
+| ✅ | `Dependency`          | implementation type itself                      |
+| ✅ | `IDependency`         | directly implements                             |
+| ✅ | `IOtherDependency`    | directly implements                             |
+| ❌ | `IDisposable`         | special type                                    |
+| ❌ | `IEnumerable<string>` | special type                                    |
+| ❌ | `DependencyBase`      | non-abstract                                    |
+| ❌ | `IDependencyBase`     | is not directly implemented by class Dependency |
 
 The following partial class will be generated:
 
@@ -96,6 +131,8 @@ classDiagram
 	}
 	Dependency --|> IDependency
 	Dependency --|> IOtherDependency
+	Dependency --|> IEnumerableᐸStringᐳ
+	Dependency --|> IDependencyBase
 	class Dependency {
 		+Dependency()
 	}
@@ -107,6 +144,12 @@ classDiagram
 		<<interface>>
 	}
 	class IOtherDependency {
+		<<interface>>
+	}
+	class IEnumerableᐸStringᐳ {
+		<<interface>>
+	}
+	class IDependencyBase {
 		<<interface>>
 	}
 	class IService {

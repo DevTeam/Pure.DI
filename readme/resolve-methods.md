@@ -19,28 +19,28 @@ class OtherService : IService;
 DI.Setup(nameof(Composition))
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().To<Service>()
-    .Bind<IService>("Other").To<OtherService>()
-
-    // Specifies to create a private composition root
-    // of type "IDependency" with the name "Dependency"
-    .Root<IDependency>()
+    .Bind<IService>("My Tag").To<OtherService>()
 
     // Specifies to create a private root
     // that is only accessible from _Resolve_ methods
     .Root<IService>()
 
     // Specifies to create a public root named _OtherService_
-    // using the _Other_ tag
-    .Root<IService>("OtherService", "Other");
+    // using the "My Tag" tag
+    .Root<IService>("OtherService", "My Tag");
 
 var composition = new Composition();
-var dependency = composition.Resolve<IDependency>();
+
+// The next 3 lines of code do the same thing:
 var service1 = composition.Resolve<IService>();
 var service2 = composition.Resolve(typeof(IService));
+var service3 = composition.Resolve(typeof(IService), null);
         
 // Resolve by tag
+// The next 3 lines of code do the same thing too:
 var otherService1 = composition.Resolve<IService>("Other");
 var otherService2 = composition.Resolve(typeof(IService),"Other");
+var otherService3 = composition.OtherService; // Gets the composition through the public root
 ```
 
 The following partial class will be generated:
@@ -69,16 +69,7 @@ partial class Composition
     }
   }
 
-  private IDependency Root1
-  {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    get
-    {
-      return new Dependency();
-    }
-  }
-
-  private IService Root2
+  private IService Root1
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
@@ -102,7 +93,7 @@ partial class Composition
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public object Resolve(Type type)
   {
-    var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 4));
+    var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
     ref var pair = ref _buckets[index];
     return pair.Key == type ? pair.Value.Resolve(this) : Resolve(type, index);
   }
@@ -126,7 +117,7 @@ partial class Composition
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public object Resolve(Type type, object? tag)
   {
-    var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 4));
+    var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
     ref var pair = ref _buckets[index];
     return pair.Key == type ? pair.Value.ResolveByTag(this, tag) : Resolve(type, tag, index);
   }
@@ -154,15 +145,12 @@ partial class Composition
   {
     var valResolver_0000 = new Resolver_0000();
     Resolver<IService>.Value = valResolver_0000;
-    var valResolver_0001 = new Resolver_0001();
-    Resolver<IDependency>.Value = valResolver_0001;
     _buckets = Buckets<Type, IResolver<Composition, object>>.Create(
-      4,
+      1,
       out _bucketSize,
-      new Pair<Type, IResolver<Composition, object>>[2]
+      new Pair<Type, IResolver<Composition, object>>[1]
       {
          new Pair<Type, IResolver<Composition, object>>(typeof(IService), valResolver_0000)
-        ,new Pair<Type, IResolver<Composition, object>>(typeof(IDependency), valResolver_0001)
       });
   }
 
@@ -188,36 +176,16 @@ partial class Composition
   {
     public override IService Resolve(Composition composition)
     {
-      return composition.Root2;
+      return composition.Root1;
     }
 
     public override IService ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
-        case "Other":
+        case "My Tag":
           return composition.OtherService;
 
-        case null:
-          return composition.Root2;
-
-        default:
-          return base.ResolveByTag(composition, tag);
-      }
-    }
-  }
-
-  private sealed class Resolver_0001: Resolver<IDependency>
-  {
-    public override IDependency Resolve(Composition composition)
-    {
-      return composition.Root1;
-    }
-
-    public override IDependency ResolveByTag(Composition composition, object tag)
-    {
-      switch (tag)
-      {
         case null:
           return composition.Root1;
 
@@ -236,7 +204,6 @@ classDiagram
 	class Composition {
 		<<partial>>
 		+IService OtherService
-		-IDependency _
 		-IService _
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
@@ -262,7 +229,6 @@ classDiagram
 		<<interface>>
 	}
 	Service *--  Dependency : IDependency
-	Composition ..> Dependency : IDependency _
 	Composition ..> Service : IService _
 	Composition ..> OtherService : IService OtherService
 ```

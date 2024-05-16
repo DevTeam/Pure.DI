@@ -63,8 +63,8 @@ partial class Singleton
 {
   private readonly Singleton _root;
 
-  privateService1? _scopedService137;
-  privateService4? _scopedService440;
+  private Service1? _scopedService137;
+  private Service4? _scopedService440;
 
   public Singleton()
   {
@@ -77,19 +77,19 @@ partial class Singleton
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public partialCompositionRoot TestPureDIByCR()
+  public partial CompositionRoot TestPureDIByCR()
   {
     if (_scopedService440 == null)
     {
-        _scopedService440 = newService4();
+        _scopedService440 = new Service4();
     }
 
     if (_scopedService137 == null)
     {
-        _scopedService137 = newService1(newService2(newService3(_scopedService440!, _scopedService440!), newService3(_scopedService440!, _scopedService440!), newService3(_scopedService440!, _scopedService440!), newService3(_scopedService440!, _scopedService440!), newService3(_scopedService440!, _scopedService440!)));
+        _scopedService137 = new Service1(new Service2(new Service3(_scopedService440!, _scopedService440!), new Service3(_scopedService440!, _scopedService440!), new Service3(_scopedService440!, _scopedService440!), new Service3(_scopedService440!, _scopedService440!), new Service3(_scopedService440!, _scopedService440!)));
     }
 
-    return newCompositionRoot(_scopedService137!, newService2(newService3(_scopedService440!, _scopedService440!), newService3(_scopedService440!, _scopedService440!), newService3(_scopedService440!, _scopedService440!), newService3(_scopedService440!, _scopedService440!), newService3(_scopedService440!, _scopedService440!)), newService2(newService3(_scopedService440!, _scopedService440!), newService3(_scopedService440!, _scopedService440!), newService3(_scopedService440!, _scopedService440!), newService3(_scopedService440!, _scopedService440!), newService3(_scopedService440!, _scopedService440!)), newService2(newService3(_scopedService440!, _scopedService440!), newService3(_scopedService440!, _scopedService440!), newService3(_scopedService440!, _scopedService440!), newService3(_scopedService440!, _scopedService440!), newService3(_scopedService440!, _scopedService440!)), newService3(_scopedService440!, _scopedService440!), _scopedService440!, _scopedService440!);
+    return new CompositionRoot(_scopedService137!, new Service2(new Service3(_scopedService440!, _scopedService440!), new Service3(_scopedService440!, _scopedService440!), new Service3(_scopedService440!, _scopedService440!), new Service3(_scopedService440!, _scopedService440!), new Service3(_scopedService440!, _scopedService440!)), new Service2(new Service3(_scopedService440!, _scopedService440!), new Service3(_scopedService440!, _scopedService440!), new Service3(_scopedService440!, _scopedService440!), new Service3(_scopedService440!, _scopedService440!), new Service3(_scopedService440!, _scopedService440!)), new Service2(new Service3(_scopedService440!, _scopedService440!), new Service3(_scopedService440!, _scopedService440!), new Service3(_scopedService440!, _scopedService440!), new Service3(_scopedService440!, _scopedService440!), new Service3(_scopedService440!, _scopedService440!)), new Service3(_scopedService440!, _scopedService440!), _scopedService440!, _scopedService440!);
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -158,13 +158,13 @@ partial class Singleton
   static Singleton()
   {
     var valResolver_0000 = new Resolver_0000();
-    Resolver<Benchmarks.Model.CompositionRoot>.Value = valResolver_0000;
+    Resolver<CompositionRoot>.Value = valResolver_0000;
     _buckets = Buckets<Type, IResolver<Singleton, object>>.Create(
       1,
       out _bucketSize,
       new Pair<Type, IResolver<Singleton, object>>[1]
       {
-         new Pair<Type, IResolver<Singleton, object>>(typeof(Benchmarks.Model.CompositionRoot), valResolver_0000)
+         new Pair<Type, IResolver<Singleton, object>>(typeof(CompositionRoot), valResolver_0000)
       });
   }
 
@@ -186,14 +186,14 @@ partial class Singleton
     }
   }
 
-  private sealed class Resolver_0000: Resolver<Benchmarks.Model.CompositionRoot>
+  private sealed class Resolver_0000: Resolver<CompositionRoot>
   {
-    public overrideCompositionRoot Resolve(Singleton composition)
+    public override CompositionRoot Resolve(Singleton composition)
     {
       return composition.TestPureDIByCR();
     }
 
-    public overrideCompositionRoot ResolveByTag(Singleton composition, object tag)
+    public override CompositionRoot ResolveByTag(Singleton composition, object tag)
     {
       switch (tag)
       {

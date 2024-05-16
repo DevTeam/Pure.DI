@@ -59,25 +59,25 @@ public class Scenario
             .Bind<IDependency>().To<Dependency>()
             
             // Specifies to create a regular public composition root
-            // of type "IService" with the name "MyRoot"
-            .Root<IService>("MyRoot")
+            // of type "IService" with the name "MyService"
+            .Root<IService>("MyService")
             
             // Specifies to create a private composition root
             // that is only accessible from "Resolve()" methods
             .Root<IDependency>()
             
             // Specifies to create a regular public composition root
-            // of type "IService" with the name "SomeOtherService"
+            // of type "IService" with the name "MyOtherService"
             // using the "Other" tag
-            .Root<IService>("SomeOtherService", "Other");
+            .Root<IService>("MyOtherService", "Other");
 
         var composition = new Composition();
         
         // service = new Service(new Dependency());
-        var service = composition.MyRoot;
+        var service = composition.MyService;
         
         // someOtherService = new OtherService();
-        var someOtherService = composition.SomeOtherService;
+        var someOtherService = composition.MyOtherService;
         
         // All and only the roots of the composition
         // can be obtained by Resolve method

@@ -48,10 +48,10 @@ public class Scenario
             .Bind<IService>().To<Service>()
             
             // Composition root
-            .Root<IService>("Root");
+            .Root<IService>("MyService");
 
         var composition = new Composition();
-        var service = composition.Root;
+        var service = composition.MyService;
         service.Dependency.ShouldBeOfType<Dependency>();
 // }            
         composition.SaveClassDiagram();

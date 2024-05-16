@@ -52,12 +52,12 @@ DI.Setup(nameof(Composition))
     .RootArg<string>("serviceName", "forService")
 
     // Composition root
-    .Root<IService>("CreateService");
+    .Root<IService>("CreateServiceWithArgs");
 
 var composition = new Composition();
         
 // service = new Service("Abc", new Dependency(123, "dependency 123"));
-var service = composition.CreateService(serviceName: "Abc", id: 123, dependencyName: "dependency 123");
+var service = composition.CreateServiceWithArgs(serviceName: "Abc", id: 123, dependencyName: "dependency 123");
         
 service.Name.ShouldBe("Abc");
 service.Dependency.Id.ShouldBe(123);
@@ -84,7 +84,7 @@ partial class Composition
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public IService CreateService(int id, string dependencyName, string serviceName)
+  public IService CreateServiceWithArgs(int id, string dependencyName, string serviceName)
   {
     return new Service(serviceName, new Dependency(id, dependencyName));
   }
@@ -97,7 +97,7 @@ Class diagram:
 classDiagram
 	class Composition {
 		<<partial>>
-		+IService CreateService(int id, string dependencyName, string serviceName)
+		+IService CreateServiceWithArgs(int id, string dependencyName, string serviceName)
 	}
 	class Int32
 	class String
@@ -119,6 +119,6 @@ classDiagram
 	Dependency o-- String : Argument "dependencyName"
 	Service o-- String : "forService"  Argument "serviceName"
 	Service *--  Dependency : IDependency
-	Composition ..> Service : IService CreateService(int id, string dependencyName, string serviceName)
+	Composition ..> Service : IService CreateServiceWithArgs(int id, string dependencyName, string serviceName)
 ```
 

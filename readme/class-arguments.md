@@ -42,8 +42,8 @@ DI.Setup(nameof(Composition))
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().To<Service>()
 
-    // Composition root
-    .Root<IService>("Root")
+    // Composition root "MyRoot"
+    .Root<IService>("MyRoot")
 
     // Some kind of identifier
     .Arg<int>("id")
@@ -57,7 +57,7 @@ DI.Setup(nameof(Composition))
 var composition = new Composition(id: 123, serviceName: "Abc", dependencyName: "Xyz");
         
 // service = new Service("Abc", new Dependency(123, "Xyz"));
-var service = composition.Root;
+var service = composition.MyRoot;
         
 service.Name.ShouldBe("Abc");
 service.Dependency.Id.ShouldBe(123);
@@ -91,7 +91,7 @@ partial class Composition
     _argDependencyName = _root._argDependencyName;
   }
 
-  public IService Root
+  public IService MyRoot
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
@@ -108,7 +108,7 @@ Class diagram:
 classDiagram
 	class Composition {
 		<<partial>>
-		+IService Root
+		+IService MyRoot
 	}
 	class Int32
 	class String
@@ -130,6 +130,6 @@ classDiagram
 	Dependency o-- String : Argument "dependencyName"
 	Service o-- String : "my service name"  Argument "serviceName"
 	Service *--  Dependency : IDependency
-	Composition ..> Service : IService Root
+	Composition ..> Service : IService MyRoot
 ```
 

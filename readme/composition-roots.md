@@ -22,25 +22,25 @@ DI.Setup(nameof(Composition))
     .Bind<IDependency>().To<Dependency>()
 
     // Specifies to create a regular public composition root
-    // of type "IService" with the name "MyRoot"
-    .Root<IService>("MyRoot")
+    // of type "IService" with the name "MyService"
+    .Root<IService>("MyService")
 
     // Specifies to create a private composition root
     // that is only accessible from "Resolve()" methods
     .Root<IDependency>()
 
     // Specifies to create a regular public composition root
-    // of type "IService" with the name "SomeOtherService"
+    // of type "IService" with the name "MyOtherService"
     // using the "Other" tag
-    .Root<IService>("SomeOtherService", "Other");
+    .Root<IService>("MyOtherService", "Other");
 
 var composition = new Composition();
         
 // service = new Service(new Dependency());
-var service = composition.MyRoot;
+var service = composition.MyService;
         
 // someOtherService = new OtherService();
-var someOtherService = composition.SomeOtherService;
+var someOtherService = composition.MyOtherService;
         
 // All and only the roots of the composition
 // can be obtained by Resolve method
@@ -83,7 +83,7 @@ partial class Composition
     _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
   }
 
-  public IService MyRoot
+  public IService MyService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
@@ -92,7 +92,7 @@ partial class Composition
     }
   }
 
-  public IService SomeOtherService
+  public IService MyOtherService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
@@ -211,7 +211,7 @@ partial class Composition
   {
     public override IService Resolve(Composition composition)
     {
-      return composition.MyRoot;
+      return composition.MyService;
     }
 
     public override IService ResolveByTag(Composition composition, object tag)
@@ -219,10 +219,10 @@ partial class Composition
       switch (tag)
       {
         case "Other":
-          return composition.SomeOtherService;
+          return composition.MyOtherService;
 
         case null:
-          return composition.MyRoot;
+          return composition.MyService;
 
         default:
           return base.ResolveByTag(composition, tag);
@@ -258,8 +258,8 @@ Class diagram:
 classDiagram
 	class Composition {
 		<<partial>>
-		+IService MyRoot
-		+IService SomeOtherService
+		+IService MyOtherService
+		+IService MyService
 		-IDependency _
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
@@ -285,8 +285,8 @@ classDiagram
 		<<interface>>
 	}
 	Service *--  Dependency : IDependency
-	Composition ..> Service : IService MyRoot
+	Composition ..> Service : IService MyService
 	Composition ..> Dependency : IDependency _
-	Composition ..> OtherService : IService SomeOtherService
+	Composition ..> OtherService : IService MyOtherService
 ```
 

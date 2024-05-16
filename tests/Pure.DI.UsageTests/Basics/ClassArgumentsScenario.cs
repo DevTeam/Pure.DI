@@ -59,8 +59,8 @@ public class Scenario
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>()
             
-            // Composition root
-            .Root<IService>("Root")
+            // Composition root "MyRoot"
+            .Root<IService>("MyRoot")
             
             // Some kind of identifier
             .Arg<int>("id")
@@ -74,7 +74,7 @@ public class Scenario
         var composition = new Composition(id: 123, serviceName: "Abc", dependencyName: "Xyz");
         
         // service = new Service("Abc", new Dependency(123, "Xyz"));
-        var service = composition.Root;
+        var service = composition.MyRoot;
         
         service.Name.ShouldBe("Abc");
         service.Dependency.Id.ShouldBe(123);

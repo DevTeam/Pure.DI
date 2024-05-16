@@ -3,7 +3,14 @@ $v=true
 $p=1
 $d=Simplified binding
 $h=You can use the `Bind(...)` method without type parameters. In this case binding will be performed for the implementation type itself, and if the implementation is not an abstract type or structure, for all abstract but NOT special types that are directly implemented.
-$f=Special types from the list above will not be added to bindings:
+$f=As practice has shown, in most cases it is possible to define abstraction types in bindings automatically. That's why we added API `Bind()` method without type parameters to define abstractions in bindings. It is the `Bind()` method that performs the binding:
+$f=
+$f=- with the implementation type itself
+$f=- and if it is NOT an abstract type or structure
+$f=  - with all abstract types that it directly implements
+$f=  - exceptions are special types
+$f=
+$f=Special types will not be added to bindings:
 $f=
 $f=- `System.Object`
 $f=- `System.Enum`
@@ -19,7 +26,19 @@ $f=- `System.Collections.Generic.IIReadOnlyList<T>`
 $f=- `System.Collections.Generic.IReadOnlyCollection<T>`
 $f=- `System.IDisposable`
 $f=- `System.IAsyncResult`
-$f=- `System.AsyncCallback` 
+$f=- `System.AsyncCallback`
+$f=
+$f=For class `Dependency`, the `Bind().To<Dependency>()` binding will be equivalent to the `Bind<IDependency, IOtherDependency, Dependency>().To<Dependency>()` binding. The types `IDisposable`, `IEnumerable<string>` did not get into the binding because they are special from the list above. `DependencyBase` did not get into the binding because it is not abstract. `IDependencyBase` is not included because it is not implemented directly by class `Dependency`.
+$f=
+$f=|   |                       |                                                 |
+$f=|---|-----------------------|-------------------------------------------------|
+$f=| ✅ | `Dependency`          | implementation type itself                      |
+$f=| ✅ | `IDependency`         | directly implements                             |
+$f=| ✅ | `IOtherDependency`    | directly implements                             |
+$f=| ❌ | `IDisposable`         | special type                                    |
+$f=| ❌ | `IEnumerable<string>` | special type                                    |
+$f=| ❌ | `DependencyBase`      | non-abstract                                    |
+$f=| ❌ | `IDependencyBase`     | is not directly implemented by class Dependency |
 */
 
 // ReSharper disable CheckNamespace
@@ -30,14 +49,31 @@ $f=- `System.AsyncCallback`
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Basics.SimplifiedBindingScenario;
 
+using System.Collections;
 using Xunit;
 
 // {
+interface IDependencyBase;
+
+class DependencyBase: IDependencyBase;
+
 interface IDependency;
 
 interface IOtherDependency;
 
-class Dependency: IDependency, IOtherDependency;
+class Dependency:
+    DependencyBase,
+    IDependency,
+    IOtherDependency,
+    IDisposable,
+    IEnumerable<string>
+{
+    public void Dispose() => throw new NotImplementedException();
+
+    public IEnumerator<string> GetEnumerator() => throw new NotImplementedException();
+
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+}
 
 interface IService;
 

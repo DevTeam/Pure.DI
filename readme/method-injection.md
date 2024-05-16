@@ -32,10 +32,10 @@ DI.Setup(nameof(Composition))
     .Bind<IService>().To<Service>()
 
     // Composition root
-    .Root<IService>("Root");
+    .Root<IService>("MyService");
 
 var composition = new Composition();
-var service = composition.Root;
+var service = composition.MyService;
 service.Dependency.ShouldBeOfType<Dependency>();
 ```
 
@@ -56,7 +56,7 @@ partial class Composition
     _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
   }
 
-  public IService Root
+  public IService MyService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
@@ -75,7 +75,7 @@ Class diagram:
 classDiagram
 	class Composition {
 		<<partial>>
-		+IService Root
+		+IService MyService
 	}
 	Dependency --|> IDependency
 	class Dependency {
@@ -93,6 +93,6 @@ classDiagram
 		<<interface>>
 	}
 	Service *--  Dependency : IDependency
-	Composition ..> Service : IService Root
+	Composition ..> Service : IService MyService
 ```
 

@@ -94,19 +94,19 @@ partial class Enum
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public partialCompositionRoot TestPureDIByCR()
+  public partial CompositionRoot TestPureDIByCR()
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    IEnumerable<Benchmarks.Model.IService3> EnumerationOf_perBlockIEnumerable10()
+    IEnumerable<IService3> EnumerationOf_perBlockIEnumerable10()
     {
-        yield return newService3(newService4(), newService4());
-        yield return newService3v2(newService4(), newService4());
-        yield return newService3v3(newService4(), newService4());
-        yield return newService3v4(newService4(), newService4());
+        yield return new Service3(new Service4(), new Service4());
+        yield return new Service3v2(new Service4(), new Service4());
+        yield return new Service3v3(new Service4(), new Service4());
+        yield return new Service3v4(new Service4(), new Service4());
     }
 
-    IEnumerable<Benchmarks.Model.IService3> perBlockIEnumerable10 = EnumerationOf_perBlockIEnumerable10();
-    return newCompositionRoot(newService1(newService2Enum(perBlockIEnumerable10)), newService2Enum(perBlockIEnumerable10), newService2Enum(perBlockIEnumerable10), newService2Enum(perBlockIEnumerable10), newService3(newService4(), newService4()), newService4(), newService4());
+    IEnumerable<IService3> perBlockIEnumerable10 = EnumerationOf_perBlockIEnumerable10();
+    return new CompositionRoot(new Service1(new Service2Enum(perBlockIEnumerable10)), new Service2Enum(perBlockIEnumerable10), new Service2Enum(perBlockIEnumerable10), new Service2Enum(perBlockIEnumerable10), new Service3(new Service4(), new Service4()), new Service4(), new Service4());
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -175,13 +175,13 @@ partial class Enum
   static Enum()
   {
     var valResolver_0000 = new Resolver_0000();
-    Resolver<Benchmarks.Model.CompositionRoot>.Value = valResolver_0000;
+    Resolver<CompositionRoot>.Value = valResolver_0000;
     _buckets = Buckets<Type, IResolver<Enum, object>>.Create(
       1,
       out _bucketSize,
       new Pair<Type, IResolver<Enum, object>>[1]
       {
-         new Pair<Type, IResolver<Enum, object>>(typeof(Benchmarks.Model.CompositionRoot), valResolver_0000)
+         new Pair<Type, IResolver<Enum, object>>(typeof(CompositionRoot), valResolver_0000)
       });
   }
 
@@ -203,14 +203,14 @@ partial class Enum
     }
   }
 
-  private sealed class Resolver_0000: Resolver<Benchmarks.Model.CompositionRoot>
+  private sealed class Resolver_0000: Resolver<CompositionRoot>
   {
-    public overrideCompositionRoot Resolve(Enum composition)
+    public override CompositionRoot Resolve(Enum composition)
     {
       return composition.TestPureDIByCR();
     }
 
-    public overrideCompositionRoot ResolveByTag(Enum composition, object tag)
+    public override CompositionRoot ResolveByTag(Enum composition, object tag)
     {
       switch (tag)
       {

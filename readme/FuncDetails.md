@@ -76,16 +76,16 @@ partial class Func
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public partialCompositionRoot TestPureDIByCR()
+  public partial CompositionRoot TestPureDIByCR()
   {
-    Func<Benchmarks.Model.IService3> perBlockFunc10 = new Func<Benchmarks.Model.IService3>(
+    Func<IService3> perBlockFunc10 = new Func<IService3>(
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     () =>
     {
-        var localValue0 = newService3(newService4(), newService4());
+        var localValue0 = new Service3(new Service4(), new Service4());
         return localValue0;
     });
-    return newCompositionRoot(newService1(newService2Func(perBlockFunc10)), newService2Func(perBlockFunc10), newService2Func(perBlockFunc10), newService2Func(perBlockFunc10), newService3(newService4(), newService4()), newService4(), newService4());
+    return new CompositionRoot(new Service1(new Service2Func(perBlockFunc10)), new Service2Func(perBlockFunc10), new Service2Func(perBlockFunc10), new Service2Func(perBlockFunc10), new Service3(new Service4(), new Service4()), new Service4(), new Service4());
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -154,13 +154,13 @@ partial class Func
   static Func()
   {
     var valResolver_0000 = new Resolver_0000();
-    Resolver<Benchmarks.Model.CompositionRoot>.Value = valResolver_0000;
+    Resolver<CompositionRoot>.Value = valResolver_0000;
     _buckets = Buckets<Type, IResolver<Func, object>>.Create(
       1,
       out _bucketSize,
       new Pair<Type, IResolver<Func, object>>[1]
       {
-         new Pair<Type, IResolver<Func, object>>(typeof(Benchmarks.Model.CompositionRoot), valResolver_0000)
+         new Pair<Type, IResolver<Func, object>>(typeof(CompositionRoot), valResolver_0000)
       });
   }
 
@@ -182,14 +182,14 @@ partial class Func
     }
   }
 
-  private sealed class Resolver_0000: Resolver<Benchmarks.Model.CompositionRoot>
+  private sealed class Resolver_0000: Resolver<CompositionRoot>
   {
-    public overrideCompositionRoot Resolve(Func composition)
+    public override CompositionRoot Resolve(Func composition)
     {
       return composition.TestPureDIByCR();
     }
 
-    public overrideCompositionRoot ResolveByTag(Func composition, object tag)
+    public override CompositionRoot ResolveByTag(Func composition, object tag)
     {
       switch (tag)
       {

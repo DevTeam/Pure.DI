@@ -34,10 +34,13 @@ public class Scenario
 // {            
         DI.Setup(nameof(Composition))
             .Bind().As(Lifetime.Singleton).To<Dependency>()
-            .RootBind<IService>("Root").To<Service>();
+            .RootBind<IService>("MyRoot").To<Service>();
+            // It's the same as:
+            //   .Bind<IService>().To<Service>()
+            //   .Root<IService>("MyRoot")
 
         var composition = new Composition();
-        composition.Root.ShouldBeOfType<Service>();
+        composition.MyRoot.ShouldBeOfType<Service>();
 // }
         composition.SaveClassDiagram();
     }

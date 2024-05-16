@@ -37,33 +37,35 @@ public class Scenario
         DI.Setup(nameof(Composition))
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>()
-            .Bind<IService>("Other").To<OtherService>()
-            
-            // Specifies to create a private composition root
-            // of type "IDependency" with the name "Dependency"
-            .Root<IDependency>()
+            .Bind<IService>("My Tag").To<OtherService>()
             
             // Specifies to create a private root
             // that is only accessible from _Resolve_ methods
             .Root<IService>()
             
             // Specifies to create a public root named _OtherService_
-            // using the _Other_ tag
-            .Root<IService>("OtherService", "Other");
+            // using the "My Tag" tag
+            .Root<IService>("OtherService", "My Tag");
 
         var composition = new Composition();
-        var dependency = composition.Resolve<IDependency>();
+
+        // The next 3 lines of code do the same thing:
         var service1 = composition.Resolve<IService>();
         var service2 = composition.Resolve(typeof(IService));
+        var service3 = composition.Resolve(typeof(IService), null);
         
         // Resolve by tag
+        // The next 3 lines of code do the same thing too:
         var otherService1 = composition.Resolve<IService>("Other");
         var otherService2 = composition.Resolve(typeof(IService),"Other");
+        var otherService3 = composition.OtherService; // Gets the composition through the public root
 // }            
         service1.ShouldBeOfType<Service>();
         service2.ShouldBeOfType<Service>();
+        service3.ShouldBeOfType<Service>();
         otherService1.ShouldBeOfType<OtherService>();
         otherService2.ShouldBeOfType<OtherService>();
+        otherService3.ShouldBeOfType<OtherService>();
         composition.SaveClassDiagram();
     }
 }
