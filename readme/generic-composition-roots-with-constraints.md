@@ -54,6 +54,8 @@ var service = composition.GetMyRoot<Stream, double>();
 var someOtherService = composition.GetOtherService<BinaryReader>();
 ```
 
+:warning: `Resolve' methods cannot be used to resolve generic composition roots.
+
 The following partial class will be generated:
 
 ```c#

@@ -86,8 +86,17 @@ internal class BindingBuilder(
                         if (type is { SpecialType: SpecialType.None, TypeKind: TypeKind.Class, IsAbstract: false })
                         {
                             baseSymbols = baseSymbolsProvider
-                                .GetBaseSymbols(type, 1)
-                                .Where(i => i.IsAbstract && i.SpecialType == SpecialType.None);
+                                .GetBaseSymbols(type, (i, deepness) => deepness switch
+                                {
+                                    0 => true,
+                                    1 when 
+                                        type.TypeKind != TypeKind.Interface
+                                        && !type.IsAbstract
+                                        && (i.TypeKind == TypeKind.Interface || i.IsAbstract)
+                                        && i.SpecialType == SpecialType.None 
+                                        => true,
+                                    _ => false
+                                }, 1);
                         }
                         
                         var contracts = new HashSet<ITypeSymbol>(baseSymbols, SymbolEqualityComparer.Default)

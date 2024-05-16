@@ -46,6 +46,7 @@ $f=| ❌ | `IDependencyBase`     | is not directly implemented by class Dependen
 // ReSharper disable UnusedVariable
 // ReSharper disable UnusedMember.Local
 // ReSharper disable ArrangeTypeMemberModifiers
+// ReSharper disable ClassNeverInstantiated.Global
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Basics.SimplifiedBindingScenario;
 
@@ -92,7 +93,7 @@ public class Scenario
         // Resolve = Off
 // {        
         // Specifies to create a partial class "Composition"
-        DI.Setup("Composition")
+        DI.Setup(nameof(Composition))
             // Begins the binding definition for the implementation type itself,
             // and if the implementation is not an abstract class or structure,
             // for all abstract but NOT special types that are directly implemented.

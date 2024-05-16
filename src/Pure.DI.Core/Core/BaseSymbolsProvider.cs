@@ -3,18 +3,32 @@ namespace Pure.DI.Core;
 
 internal class BaseSymbolsProvider : IBaseSymbolsProvider
 {
-    public IEnumerable<ITypeSymbol> GetBaseSymbols(ITypeSymbol symbol, int deep = int.MaxValue)
+    public IEnumerable<ITypeSymbol> GetBaseSymbols(
+        ITypeSymbol symbol,
+        Func<ITypeSymbol, int, bool> predicate,
+        int maxDeepness = int.MaxValue) =>
+        GetBaseSymbols(symbol, predicate, maxDeepness, 0);
+
+    private static IEnumerable<ITypeSymbol> GetBaseSymbols(
+        ITypeSymbol symbol,
+        Func<ITypeSymbol, int, bool> predicate,
+        int maxDeepness,
+        int deepness)
     {
-        if (deep < 0)
+        if (deepness > maxDeepness)
         {
             yield break;
         }
 
-        deep--;
         while (true)
         {
-            yield return symbol;
-            foreach (var type in symbol.Interfaces.SelectMany(i => GetBaseSymbols(i, deep)))
+            if (predicate(symbol, deepness))
+            {
+                yield return symbol;
+            }
+
+            deepness++;
+            foreach (var type in symbol.Interfaces.SelectMany(i => GetBaseSymbols(i, predicate, maxDeepness, deepness)))
             {
                 yield return type;
             }

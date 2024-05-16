@@ -2,8 +2,8 @@
 $v=true
 $p=2
 $d=Generic composition roots
-$h=A generic composition root is represented by a method.
-$f=When a generic composition root is used, `Resolve` methods cannot be used to resolve them.
+$h=Sometimes you want to be able to create composition roots with type parameters. In this case, the composition root can only be represented by a method.
+$f=:warning: `Resolve' methods cannot be used to resolve generic composition roots.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

@@ -54,10 +54,10 @@ public class Scenario
         var service2 = composition.Resolve(typeof(IService));
         var service3 = composition.Resolve(typeof(IService), null);
         
-        // Resolve by tag
+        // Resolve by "My Tag" tag
         // The next 3 lines of code do the same thing too:
-        var otherService1 = composition.Resolve<IService>("Other");
-        var otherService2 = composition.Resolve(typeof(IService),"Other");
+        var otherService1 = composition.Resolve<IService>("My Tag");
+        var otherService2 = composition.Resolve(typeof(IService),"My Tag");
         var otherService3 = composition.OtherService; // Gets the composition through the public root
 // }            
         service1.ShouldBeOfType<Service>();

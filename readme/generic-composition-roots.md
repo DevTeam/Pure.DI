@@ -2,7 +2,7 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Generics/GenericsCompositionRootsScenario.cs)
 
-A generic composition root is represented by a method.
+Sometimes you want to be able to create composition roots with type parameters. In this case, the composition root can only be represented by a method.
 
 
 ```c#
@@ -49,7 +49,7 @@ var service = composition.GetMyRoot<int>();
 var someOtherService = composition.GetOtherService<string>();
 ```
 
-When a generic composition root is used, `Resolve` methods cannot be used to resolve them.
+:warning: `Resolve' methods cannot be used to resolve generic composition roots.
 
 The following partial class will be generated:
 

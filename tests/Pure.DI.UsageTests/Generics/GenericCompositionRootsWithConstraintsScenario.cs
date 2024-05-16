@@ -2,6 +2,7 @@
 $v=true
 $p=4
 $d=Generic composition roots with constraints
+$f=:warning: `Resolve' methods cannot be used to resolve generic composition roots.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
