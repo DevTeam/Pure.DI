@@ -37,7 +37,7 @@ class Service(
     : IService;
 
 // Specifies to create a partial class "Composition"
-DI.Setup("Composition")
+DI.Setup(nameof(Composition))
     // Begins the binding definition for the implementation type itself,
     // and if the implementation is not an abstract class or structure,
     // for all abstract but NOT special types that are directly implemented.
@@ -132,7 +132,6 @@ classDiagram
 	Dependency --|> IDependency
 	Dependency --|> IOtherDependency
 	Dependency --|> IEnumerableᐸStringᐳ
-	Dependency --|> IDependencyBase
 	class Dependency {
 		+Dependency()
 	}
@@ -147,9 +146,6 @@ classDiagram
 		<<interface>>
 	}
 	class IEnumerableᐸStringᐳ {
-		<<interface>>
-	}
-	class IDependencyBase {
 		<<interface>>
 	}
 	class IService {

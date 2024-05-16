@@ -65,8 +65,7 @@ internal class BuildTools(
         }
 
         var baseTypes = 
-            baseSymbolsProvider.GetBaseSymbols(variable.InstanceType)
-                .Concat(Enumerable.Repeat(variable.InstanceType, 1))
+            baseSymbolsProvider.GetBaseSymbols(variable.InstanceType, (_, _) => true)
                 .ToImmutableHashSet(SymbolEqualityComparer.Default);
 
         var code = new LinesBuilder();
