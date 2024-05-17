@@ -96,32 +96,42 @@ partial class Composition
     get
     {
       var perResolveFunc39 = default(Func<Owned<IDependency>>);
-      perResolveFunc39 = new Func<Owned<IDependency>>(
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      () =>
+      if (perResolveFunc39 == null)
       {
-          var accumulator38 = new Owned();
-          Dependency transientDependency3 = new Dependency();
           lock (_lock)
           {
-              accumulator38.Add(transientDependency3);
-          }
+              if (perResolveFunc39 == null)
+              {
+                  perResolveFunc39 = new Func<Owned<IDependency>>(
+                  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                  () =>
+                  {
+                      var accumulator38 = new Owned();
+                      Dependency transientDependency3 = new Dependency();
+                      lock (_lock)
+                      {
+                          accumulator38.Add(transientDependency3);
+                      }
 
-          Owned<IDependency> perBlockOwned1;
-          {
-              var localOwned1 = accumulator38;
-              var localValue2 = transientDependency3;
-              perBlockOwned1 = new Owned<IDependency>(localValue2, localOwned1);
-          }
+                      Owned<IDependency> perBlockOwned1;
+                      {
+                          var localOwned1 = accumulator38;
+                          var localValue2 = transientDependency3;
+                          perBlockOwned1 = new Owned<IDependency>(localValue2, localOwned1);
+                      }
 
-          lock (_lock)
-          {
-              accumulator38.Add(perBlockOwned1);
-          }
+                      lock (_lock)
+                      {
+                          accumulator38.Add(perBlockOwned1);
+                      }
 
-          var localValue0 = perBlockOwned1;
-          return localValue0;
-      });
+                      var localValue0 = perBlockOwned1;
+                      return localValue0;
+                  });
+              }
+          }
+      }
+
       return new Service(perResolveFunc39!);
     }
   }

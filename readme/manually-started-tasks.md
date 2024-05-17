@@ -91,13 +91,23 @@ partial class Composition
   public IService GetRoot(CancellationToken cancellationToken)
   {
     var perResolveFunc42 = default(Func<IDependency>);
-    perResolveFunc42 = new Func<IDependency>(
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    () =>
+    if (perResolveFunc42 == null)
     {
-        var localValue0 = new Dependency();
-        return localValue0;
-    });
+        lock (_lock)
+        {
+            if (perResolveFunc42 == null)
+            {
+                perResolveFunc42 = new Func<IDependency>(
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                () =>
+                {
+                    var localValue0 = new Dependency();
+                    return localValue0;
+                });
+            }
+        }
+    }
+
     Task<IDependency> transientTask1;
     {
         var localFactory1 = perResolveFunc42!;

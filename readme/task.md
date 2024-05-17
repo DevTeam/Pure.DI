@@ -94,13 +94,23 @@ partial class Composition
         perBlockTaskFactory2 = new TaskFactory<IDependency>(localCancellationToken0, localTaskCreationOptions1, localTaskContinuationOptions2, localTaskScheduler3);
     }
 
-    perResolveFunc42 = new Func<IDependency>(
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    () =>
+    if (perResolveFunc42 == null)
     {
-        var localValue4 = new Dependency();
-        return localValue4;
-    });
+        lock (_lock)
+        {
+            if (perResolveFunc42 == null)
+            {
+                perResolveFunc42 = new Func<IDependency>(
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                () =>
+                {
+                    var localValue4 = new Dependency();
+                    return localValue4;
+                });
+            }
+        }
+    }
+
     Task<IDependency> transientTask1;
     {
         var localFactory5 = perResolveFunc42!;
