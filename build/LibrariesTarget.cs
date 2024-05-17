@@ -29,7 +29,7 @@ internal class LibrariesTarget(
         [
             new Library(
                 "Pure.DI.MS",
-                new Package(GetPackagePath("Pure.DI.MS", settings.Version), false),
+                new Package(GetPackagePath("Pure.DI.MS", settings.NextVersion), false),
                 sdk.Versions
                     .Where(i => i.Version.Major >= 7)
                     .Select(v => $"net{v.Version.Major}.{v.Version.Minor}")
@@ -42,7 +42,7 @@ internal class LibrariesTarget(
             var props = new[]
             {
                 ("configuration", settings.Configuration),
-                ("version", settings.Version.ToString())
+                ("version", settings.NextVersion.ToString())
             };
 
             new DotNetPack()

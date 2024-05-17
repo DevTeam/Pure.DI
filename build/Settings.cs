@@ -13,13 +13,22 @@ internal class Settings(
 {
     public static readonly VersionRange VersionRange = VersionRange.Parse("2.1.*");
 
-    private readonly Lazy<NuGetVersion> _version = new(() => GetVersion(properties, versions));
+    private readonly Lazy<NuGetVersion> _currentVersion = new(() => GetVersion(properties, versions));
 
     public bool BuildServer { get; } = Environment.GetEnvironmentVariable("TEAMCITY_VERSION") is not null;
 
     public string Configuration => "Release";
 
-    public NuGetVersion Version => _version.Value;
+    public NuGetVersion CurrentVersion => _currentVersion.Value;
+    
+    public NuGetVersion NextVersion
+    {
+        get
+        {
+            var currentVersion =  _currentVersion.Value;
+            return new NuGetVersion(currentVersion.Major, currentVersion.Minor, currentVersion.Patch + 1);
+        }
+    }
 
     public string NuGetKey { get; } = properties["NuGetKey"];
 
@@ -33,7 +42,7 @@ internal class Settings(
     {
         if (!NuGetVersion.TryParse(properties["version"], out var version))
         {
-            return versions.GetNext(new NuGetRestoreSettings("Pure.DI"), VersionRange);
+            return versions.GetNext(new NuGetRestoreSettings("Pure.DI"), VersionRange, 0);
         }
 
         WriteLine($"The version has been overridden by {version}.", Color.Details);

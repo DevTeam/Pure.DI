@@ -16,15 +16,15 @@ internal class UpdateTarget(
 
     public Task InitializeAsync() => commands.Register(
         this,
-        "Updates internal DI version",
-        "update",
+        "Upgrading the internal version of DI to the latest public version",
+        "upgrade",
         "u");
     
     [SuppressMessage("Performance", "CA1861:Avoid constant arrays as arguments")]
     public Task<NuGetVersion> RunAsync(CancellationToken cancellationToken)
     {
         var solutionDirectory = env.GetPath(PathType.SolutionDirectory);
-        var currentVersion = settings.Version;
+        var currentVersion = settings.CurrentVersion;
         var propsFile = Path.Combine(solutionDirectory, "Directory.Build.props");
         var props = File.ReadAllLines(propsFile);
         var contents = new List<string>();

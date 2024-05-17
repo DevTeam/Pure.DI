@@ -16,7 +16,7 @@ internal class GeneratorTarget(
 {
     private const string PackagesDir = ".packages";
     
-    private string PackageName => $"Pure.DI.{settings.Version}.nupkg";
+    private string PackageName => $"Pure.DI.{settings.NextVersion}.nupkg";
 
     public Task InitializeAsync() => commands.Register(
         this,
@@ -54,7 +54,7 @@ internal class GeneratorTarget(
         List<(string, string)> props =
         [
             ("configuration", settings.Configuration),
-            ("version", settings.Version.ToString()),
+            ("version", settings.NextVersion.ToString()),
             ("AnalyzerRoslynVersion", analyzerRoslynVersion.ToString()),
             ("AnalyzerRoslynPackageVersion", analyzerRoslynPackageVersion.ToString()),
             ("RolsynVersions", $"\"{rolsynVersions}\"")

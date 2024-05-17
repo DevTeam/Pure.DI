@@ -30,7 +30,7 @@ internal class CompatibilityCheckTarget(
         var generatorPackage = await generatorTarget.RunAsync(cancellationToken);
         var libraries = await librariesTarget.RunAsync(cancellationToken);
 
-        DeleteNuGetPackageFromCache("Pure.DI", settings.Version, Path.GetDirectoryName(generatorPackage.Path)!);
+        DeleteNuGetPackageFromCache("Pure.DI", settings.NextVersion, Path.GetDirectoryName(generatorPackage.Path)!);
 
         var exitCode = await new DotNetCustom("new", "-i", "Pure.DI.Templates").RunAsync(cancellationToken: cancellationToken);
         if (exitCode != 0)
@@ -132,7 +132,7 @@ internal class CompatibilityCheckTarget(
                     "package",
                     "Pure.DI",
                     "-v",
-                    settings.Version.ToString(),
+                    settings.NextVersion.ToString(),
                     "-s",
                     Path.GetDirectoryName(generatorPackage)!)
                 .RunAsync(cancellationToken: cancellationToken);
@@ -190,7 +190,7 @@ internal class CompatibilityCheckTarget(
                         "Pure.DI",
                         "-n",
                         "-v",
-                        settings.Version.ToString(),
+                        settings.NextVersion.ToString(),
                         "-f",
                         framework,
                         "-s",
@@ -203,7 +203,7 @@ internal class CompatibilityCheckTarget(
                 }
 
                 var libraryPackageDir = Path.GetDirectoryName(library.Package.Path)!;
-                DeleteNuGetPackageFromCache(library.Name, settings.Version, libraryPackageDir);
+                DeleteNuGetPackageFromCache(library.Name, settings.NextVersion, libraryPackageDir);
 
                 exitCode = await new DotNetCustom(
                         "add",
@@ -212,7 +212,7 @@ internal class CompatibilityCheckTarget(
                         library.Name,
                         "-n",
                         "-v",
-                        settings.Version.ToString(),
+                        settings.NextVersion.ToString(),
                         "-s",
                         libraryPackageDir,
                         "-f",
