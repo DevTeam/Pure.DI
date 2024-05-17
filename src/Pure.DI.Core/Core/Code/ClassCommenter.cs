@@ -26,13 +26,10 @@ internal class ClassCommenter(
         code.AppendLine("/// <summary>");
         if (classComments.Count > 0)
         {
-            code.AppendLine("/// <para>");
             foreach (var comment in comments.Format(classComments, true))
             {
                 code.AppendLine(comment);
             }
-
-            code.AppendLine("/// </para>");
         }
                 
         var orderedRoots = composition.Roots
@@ -44,7 +41,7 @@ internal class ClassCommenter(
         if (orderedRoots.Length > 0)
         {
             var rootComments = comments.FormatList(
-                "<b>Composition roots</b>",
+                "<b>Composition roots:</b>",
                 orderedRoots.Select(root => (CreateRootTerms(root), CreateRootDescriptions(root))),
                 false);
 
@@ -112,29 +109,30 @@ internal class ClassCommenter(
                     : [ $"Provides a composition root of type {formatter.FormatRef(root.Node.Type)}." ];
         }
         
-        code.AppendLine("/// </summary>");
-
         var root = orderedRoots.FirstOrDefault(i => i.IsPublic);
         if (root is not null)
         {
             code.AppendLine("/// <example>");
-            code.AppendLine($"/// This shows how to get an instance of type {formatter.FormatRef(root.Node.Type)} using the composition root {formatter.FormatRef(root)}:");
+            code.AppendLine($"/// This example shows how to get an instance of type {formatter.FormatRef(root.Node.Type)} using the composition root {formatter.FormatRef(root)}:");
             code.AppendLine("/// <code>");
             code.AppendLine($"/// {(composition.TotalDisposablesCount == 0 ? "" : "using ")}var composition = new {composition.Source.Source.Name.ClassName}({string.Join(", ", composition.Args.Where(i => i.Node.Arg?.Source.Kind == ArgKind.Class).Select(arg => arg.VariableDeclarationName))});");
             code.AppendLine($"/// var instance = composition.{formatter.Format(root)};");
             code.AppendLine("/// </code>");
+            code.AppendLine("/// See also:");
+            code.AppendLine("/// <br/><see cref=\"Pure.DI.DI.Setup\"/>");
+            code.AppendLine("/// <br/><see cref=\"Pure.DI.IConfiguration.Bind(object[])\"/>");
+            code.AppendLine("/// <br/><see cref=\"Pure.DI.IConfiguration.Bind{T}(object[])\"/>");
             code.AppendLine("/// </example>");
         }
 
+        code.AppendLine("/// <br/>");
         if (!composition.Diagram.IsEmpty)
         {
             var diagramUrl = mermaidUrlBuilder.Build(composition.Diagram.Select(i => i.Text));
-            code.AppendLine($"/// <a href=\"{diagramUrl}\">Class diagram</a><br/>");
+            code.AppendLine($"/// <br/><a href=\"{diagramUrl}\">Class diagram</a><br/>");
         }
         
-        code.AppendLine("/// This class was created by <a href=\"https://github.com/DevTeam/Pure.DI\">Pure.DI</a> source code generator.");
-        code.AppendLine("/// <seealso cref=\"Pure.DI.DI.Setup\"/>");
-        code.AppendLine("/// <seealso cref=\"Pure.DI.IConfiguration.Bind(object[])\"/>");
-        code.AppendLine("/// <seealso cref=\"Pure.DI.IConfiguration.Bind{T}(object[])\"/>");
+        code.AppendLine("/// <br/>This class was created by <a href=\"https://github.com/DevTeam/Pure.DI\">Pure.DI</a> source code generator.");
+        code.AppendLine("/// </summary>");
     }
 }

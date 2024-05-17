@@ -78,11 +78,7 @@ internal class Comments : IComments
     {
         yield return "/// <para>";
         yield return $"/// {title}<br/>";
-        yield return "/// <list type=\"table\">";
-        yield return "/// <listheader>";
-        yield return "/// <term>Root</term>";
-        yield return "/// <description>Description</description>";
-        yield return "/// </listheader>";
+        yield return "/// <list type=\"bullet\">";
         foreach (var (terms, descriptions) in items)
         {
             yield return "/// <item>";
