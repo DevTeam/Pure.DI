@@ -97,9 +97,9 @@ partial class Composition
 
       Owned<IService> perBlockOwned0;
       {
-          var localOwned0 = accumulator38;
-          var localValue1 = new Service(transientDependency3);
-          perBlockOwned0 = new Owned<IService>(localValue1, localOwned0);
+          var localOwned3 = accumulator38;
+          var localValue4 = new Service(transientDependency3);
+          perBlockOwned0 = new Owned<IService>(localValue4, localOwned3);
       }
 
       lock (_lock)

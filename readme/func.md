@@ -75,8 +75,8 @@ partial class Composition
                   [MethodImpl(MethodImplOptions.AggressiveInlining)]
                   () =>
                   {
-                      var localValue0 = new Dependency();
-                      return localValue0;
+                      var localValue11 = new Dependency();
+                      return localValue11;
                   });
               }
           }

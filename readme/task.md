@@ -87,11 +87,11 @@ partial class Composition
     TaskCreationOptions transientTaskCreationOptions3 = TaskCreationOptions.None;
     TaskFactory<IDependency> perBlockTaskFactory2;
     {
-        var localCancellationToken0 = cancellationToken;
-        var localTaskCreationOptions1 = transientTaskCreationOptions3;
-        var localTaskContinuationOptions2 = transientTaskContinuationOptions4;
-        var localTaskScheduler3 = transientTaskScheduler5;
-        perBlockTaskFactory2 = new TaskFactory<IDependency>(localCancellationToken0, localTaskCreationOptions1, localTaskContinuationOptions2, localTaskScheduler3);
+        var localCancellationToken19 = cancellationToken;
+        var localTaskCreationOptions20 = transientTaskCreationOptions3;
+        var localTaskContinuationOptions21 = transientTaskContinuationOptions4;
+        var localTaskScheduler22 = transientTaskScheduler5;
+        perBlockTaskFactory2 = new TaskFactory<IDependency>(localCancellationToken19, localTaskCreationOptions20, localTaskContinuationOptions21, localTaskScheduler22);
     }
 
     if (perResolveFunc42 == null)
@@ -104,8 +104,8 @@ partial class Composition
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 () =>
                 {
-                    var localValue4 = new Dependency();
-                    return localValue4;
+                    var localValue23 = new Dependency();
+                    return localValue23;
                 });
             }
         }
@@ -113,9 +113,9 @@ partial class Composition
 
     Task<IDependency> transientTask1;
     {
-        var localFactory5 = perResolveFunc42!;
-        var localTaskFactory6 = perBlockTaskFactory2;
-        transientTask1 = localTaskFactory6.StartNew(localFactory5);
+        var localFactory24 = perResolveFunc42!;
+        var localTaskFactory25 = perBlockTaskFactory2;
+        transientTask1 = localTaskFactory25.StartNew(localFactory24);
     }
 
     return new Service(transientTask1);

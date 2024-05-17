@@ -108,9 +108,9 @@ partial class Composition
 
                       Owned<IDependency> perBlockOwned1;
                       {
-                          var localOwned1 = accumulator38;
-                          var localValue2 = transientDependency3;
-                          perBlockOwned1 = new Owned<IDependency>(localValue2, localOwned1);
+                          var localOwned6 = accumulator38;
+                          var localValue7 = transientDependency3;
+                          perBlockOwned1 = new Owned<IDependency>(localValue7, localOwned6);
                       }
 
                       lock (_lock)
@@ -118,8 +118,8 @@ partial class Composition
                           accumulator38.Add(perBlockOwned1);
                       }
 
-                      var localValue0 = perBlockOwned1;
-                      return localValue0;
+                      var localValue5 = perBlockOwned1;
+                      return localValue5;
                   });
               }
           }

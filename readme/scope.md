@@ -144,8 +144,8 @@ partial class Composition: IDisposable
                   () =>
                   {
                       Composition transientComposition2 = this;
-                      var localValue0 = new Session(transientComposition2);
-                      return localValue0;
+                      var localValue33 = new Session(transientComposition2);
+                      return localValue33;
                   });
               }
           }
