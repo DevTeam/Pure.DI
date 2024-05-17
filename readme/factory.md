@@ -85,9 +85,9 @@ partial class Composition
       DateTimeOffset transientDateTimeOffset3 = DateTimeOffset.Now;
       Dependency transientDependency1;
       {
-          var localDependency10 = new Dependency(transientDateTimeOffset3);
-          localDependency10.Initialize();
-          transientDependency1 = localDependency10;
+          var localDependency17 = new Dependency(transientDateTimeOffset3);
+          localDependency17.Initialize();
+          transientDependency1 = localDependency17;
       }
 
       return new Service(transientDependency1);

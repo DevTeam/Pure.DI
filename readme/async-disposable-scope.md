@@ -146,8 +146,8 @@ partial class Composition: IDisposable, IAsyncDisposable
                   () =>
                   {
                       Composition transientComposition2 = this;
-                      var localValue29 = new Session(transientComposition2);
-                      return localValue29;
+                      var localValue51 = new Session(transientComposition2);
+                      return localValue51;
                   });
               }
           }

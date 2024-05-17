@@ -208,6 +208,7 @@ dotnet run
 - [Default values](readme/default-values.md)
 - [Required properties or fields](readme/required-properties-or-fields.md)
 - [Root binding](readme/root-binding.md)
+- [Async Root](readme/async-root.md)
 ### Lifetimes
 - [Transient](readme/transient.md)
 - [Singleton](readme/singleton.md)
@@ -244,6 +245,7 @@ dotnet run
 - [Generic composition roots](readme/generic-composition-roots.md)
 - [Complex generics](readme/complex-generics.md)
 - [Generic composition roots with constraints](readme/generic-composition-roots-with-constraints.md)
+- [Generic async composition roots with constraints](readme/generic-async-composition-roots-with-constraints.md)
 ### Attributes
 - [Constructor ordinal attribute](readme/constructor-ordinal-attribute.md)
 - [Member ordinal attribute](readme/member-ordinal-attribute.md)
