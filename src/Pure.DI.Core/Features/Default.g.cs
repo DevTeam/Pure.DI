@@ -287,7 +287,20 @@ namespace Pure.DI
 #if NET6_0_OR_GREATER
                 .Bind<global::System.Random>().To(_ => global::System.Random.Shared)
 #endif
-                    ;
+#if NETCOREAPP2_0 || NET || NETSTANDARD2_0_OR_GREATER                
+                .Bind<global::System.Text.Encoding>().To(_ => global::System.Text.Encoding.Default)
+#endif
+                .Bind<global::System.Text.Decoder>().To(ctx =>
+                {
+                    ctx.Inject(out global::System.Text.Encoding encoding);
+                    return encoding.GetDecoder();
+                })
+                .Bind<global::System.Text.Encoder>().To(ctx =>
+                {
+                    ctx.Inject(out global::System.Text.Encoding encoding);
+                    return encoding.GetEncoder();
+                })
+;
         }
     }
 }
