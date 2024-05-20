@@ -352,7 +352,7 @@ namespace Sample
     }
     
     [Fact]
-    public async Task ShouldSupportUseParameterLessCtor()
+    public async Task ShouldSupportUseParameterlessCtor()
     {
         // Given
 

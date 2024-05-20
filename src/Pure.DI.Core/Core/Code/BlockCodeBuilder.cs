@@ -15,13 +15,8 @@ internal class BlockCodeBuilder(
         
         var localMethodName = $"{Names.EnsureExistsMethodNamePrefix}_{variable.VariableDeclarationName}".Replace("__", "_");
         var info = block.Current.Info;
-        if (info.HasLocalMethod)
-        {
-            ctx.Code.AppendLine($"{localMethodName}();");
-            return;
-        }
-        
         var code = new LinesBuilder();
+        var isEmpty = false;
         try
         {
             var level = ctx.Level;
@@ -66,11 +61,27 @@ internal class BlockCodeBuilder(
                 code.IncIndent();
                 ctx = ctx with { Level = level + 1 };
             }
-            
+
+            var content = new LinesBuilder();
             foreach (var statement in block.Statements)
             {
-                ctx.StatementBuilder.Build(ctx with { Variable = statement.Current, Code = code }, statement);
+                ctx.StatementBuilder.Build(ctx with { Variable = statement.Current, Code = content }, statement);
             }
+
+            if (content.Count == 0)
+            {
+                isEmpty = true;
+                return;
+            }
+            
+            if (info.HasLocalMethod)
+            {
+                ctx.Code.AppendLine($"{localMethodName}();");
+                isEmpty = true;
+                return;
+            }
+            
+            code.AppendLines(content.Lines);
             
             if (!toCheckExistence)
             {
@@ -114,58 +125,37 @@ internal class BlockCodeBuilder(
         }
         finally
         {
-            if (block.Parent is not null
-                && info is { PerBlockRefCount: > 1 }
-                && code.Count > 11) 
+            if (!isEmpty)
             {
-                var localMethodCode = ctx.LocalFunctionsCode;
-                if (variable.Node.Binding.SemanticModel.Compilation.GetLanguageVersion() >= LanguageVersion.CSharp9)
+                if (block.Parent is not null
+                    && info is { PerBlockRefCount: > 1 }
+                    && code.Count > 11)
                 {
-                    localMethodCode.AppendLine($"[{Names.MethodImplAttributeName}({Names.MethodImplAggressiveInlining})]");
+                    var localMethodCode = ctx.LocalFunctionsCode;
+                    if (variable.Node.Binding.SemanticModel.Compilation.GetLanguageVersion() >= LanguageVersion.CSharp9)
+                    {
+                        localMethodCode.AppendLine($"[{Names.MethodImplAttributeName}({Names.MethodImplAggressiveInlining})]");
+                    }
+
+                    localMethodCode.AppendLine($"void {localMethodName}()");
+                    localMethodCode.AppendLine("{");
+                    using (localMethodCode.Indent())
+                    {
+                        localMethodCode.AppendLines(code.Lines);
+                    }
+
+                    localMethodCode.AppendLine("}");
+                    code = new LinesBuilder();
+                    code.AppendLine($"{localMethodName}();");
+                    info.HasLocalMethod = true;
                 }
-                
-                localMethodCode.AppendLine($"void {localMethodName}()");
-                localMethodCode.AppendLine("{");
-                using (localMethodCode.Indent())
-                {
-                    localMethodCode.AppendLines(code.Lines);
-                }
-                
-                localMethodCode.AppendLine("}");
-                code = new LinesBuilder();
-                code.AppendLine($"{localMethodName}();");
-                info.HasLocalMethod = true;
+
+                ctx.Code.AppendLines(code.Lines);
             }
-            
-            ctx.Code.AppendLines(code.Lines);
         }
     }
     
-    private static bool IsNewInstanceRequired(Variable variable)
-    {
-        if (variable.Node.Lifetime == Lifetime.Transient)
-        {
-            return true;
-        }
-
-        if (variable.Current.HasCycle)
-        {
-            return false;
-        }
-        
-        var owners = variable
-            .GetPath()
-            .Skip(1)
-            .TakeWhile(i => !i.Current.IsLazy)
-            .OfType<Block>()
-            .ToArray();
-
-        if (variable.Info.Owners.Intersect(owners).Any())
-        {
-            return false;
-        }
-
-        variable.Info.Owners.Add(owners.FirstOrDefault());
-        return true;
-    }
+    private static bool IsNewInstanceRequired(Variable variable) => 
+        variable.Node.Lifetime == Lifetime.Transient
+        || !variable.Current.HasCycle;
 }

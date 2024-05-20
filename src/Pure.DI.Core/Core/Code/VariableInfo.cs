@@ -3,8 +3,7 @@
 internal class VariableInfo
 {
     private readonly HashSet<int> _perBlockRefCounts = [];
-    public readonly HashSet<Block> Owners = [];
-    public readonly HashSet<Block> Created = [];
+    private readonly HashSet<Block> _parentBlocks = [];
     public bool HasLocalMethod;
     
     public int RefCount { get; private set; } = 1;
@@ -16,22 +15,14 @@ internal class VariableInfo
         RefCount++;
         _perBlockRefCounts.Add(parentBlock.Id);
     }
-    
-    public bool MarkAsCreated(Block block)
-    {
-        return Created.Add(block);
-    }
 
-    public bool IsCreated(Block block)
-    {
-        return Created.Contains(block);
-    }
+    public bool Create(Block parentBlock) =>
+        _parentBlocks.Add(parentBlock);
 
     public void Reset()
     {
         _perBlockRefCounts.Clear();
-        Owners.Clear();
-        Created.Clear();
+        _parentBlocks.Clear();
         RefCount = 1;
         HasLocalMethod = false;
     }

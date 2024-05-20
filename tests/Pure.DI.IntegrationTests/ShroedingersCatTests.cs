@@ -106,7 +106,7 @@ namespace Sample
         result.Success.ShouldBeTrue(result);
         (result.StdOut.Contains("[Dead cat]") || result.StdOut.Contains("[Alive cat]")).ShouldBeTrue(result);
         var lines = result.GeneratedCode.Split(Environment.NewLine);
-        lines.Count(i => i.Contains(" = new Random();")).ShouldBe(1);
-        lines.Count(i => i.Contains("EnsureExistenceOf_")).ShouldBe(3);
+        lines.Count(i => i.Contains(" = new Random();")).ShouldBe(1, result);
+        lines.Count(i => i.Contains("EnsureExistenceOf_")).ShouldBe(3, result);
     }
 }

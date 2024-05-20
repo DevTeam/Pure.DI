@@ -736,4 +736,223 @@ namespace Sample
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["AbcXyz"], result);
     }
+    
+    [Fact]
+    public async Task ShouldSupportComplexFuncOfEnumerable()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+using System.Collections.Generic;
+
+namespace Sample
+{
+    class ServiceApplication
+    {
+        public ServiceApplication(System.Func<bool, ServiceHostEnvironment> factory)
+        {
+            factory(true);
+        }
+    }
+
+    interface IProcessRegistry
+    {
+    }
+
+    class ProcessRegistry: IProcessRegistry
+    {
+    }
+
+    class ServiceHostEnvironment
+    {
+        public ServiceHostEnvironment(
+            Func<ILogger2> loggerFactory,
+            Func<IServiceHost> serviceHostFactory,
+            bool registerForRestart)
+        {
+            serviceHostFactory();
+        }
+    }
+
+    interface ILogger2: IDisposable
+    {
+    }
+
+    class Logger2: ILogger2
+    {
+        public void Dispose()
+        {
+        }
+    }
+
+    class LoggerConfiguration
+    {
+        public ILogger2 CreateLogger()
+        {
+            return new Logger2();
+        }
+    }
+
+    interface IServiceHost
+    {
+    }
+
+    interface IConfiguration
+    {
+        string this[string key] { get; }
+        
+        void Init();
+    }
+
+    class AppConfiguration : IConfiguration
+    {
+        public string this[string key] => "";
+
+        void IConfiguration.Init()
+        {
+        }
+    }
+
+    interface ITelemetry
+    {
+    }
+
+    class SentryIOTelemetry : ITelemetry
+    {
+        public SentryIOTelemetry()
+        {
+        }
+    }
+
+    class TelemetryRuntime: IDisposable
+    {
+        public TelemetryRuntime(TelemetryRuntimeParameters parameters)
+        {
+        }
+
+        public void Dispose()
+        {
+        }
+    }
+
+    interface IDeploymentContext
+    {
+        object GetDeploymentTypeName();
+    }
+
+    class DeploymentContext: IDeploymentContext
+    {
+        public object GetDeploymentTypeName()
+        {
+            return new object();
+        }
+    }
+
+    class TelemetryRuntimeParameters
+    {
+        public TelemetryRuntimeParameters(
+            string mobisystemsServicehost,
+            string s,
+            string s1,
+            object getDeploymentTypeName,
+            Func<object, bool> func)
+        {
+        }
+    }
+
+    interface IService
+    {
+    }
+
+    class PackageUpdaterService: IService
+    {
+        public PackageUpdaterService(ITelemetry telemetry, ILogger2 logger2, IConfiguration configuration)
+        {
+        }
+    }
+
+    class ServiceHost: IServiceHost
+    {
+        public ServiceHost(
+            ITelemetry telemetry, System.Func<System.Collections.Generic.IEnumerable<IService>> services, IProcessRegistry processRegistry, ILogger2 logger2)
+        {
+            foreach (var service in services())
+            {
+            }
+        }
+    }
+
+    partial class Composition
+    {
+        private void Setup() =>
+            DI.Setup(nameof(Composition))
+                .Root<ServiceApplication>("Root")
+                .Bind<IEnumerable<TT>>().To(ctx =>
+                {
+                    ctx.Inject(out IReadOnlyCollection<TT> items);
+                    return items;
+                })
+                .Bind<IProcessRegistry>().As(Lifetime.Singleton).To(ctx => new ProcessRegistry())
+                .Bind<Func<bool, ServiceHostEnvironment>>().To<Func<bool, ServiceHostEnvironment>>(ctx => (bool registerForRestart) =>
+                {
+                    ctx.Inject(out Func<ILogger2> loggerFactory);
+                    ctx.Inject(out Func<IServiceHost> serviceHostFactory);
+                    return new ServiceHostEnvironment(loggerFactory, serviceHostFactory, registerForRestart);
+                })
+                .Bind<IConfiguration>().As(Lifetime.Singleton).To(ctx => 
+                {
+                    var configuration = new AppConfiguration();
+                    ((IConfiguration)configuration).Init();
+                    return configuration;
+                })
+                .Bind<ITelemetry>().As(Lifetime.Singleton).To(ctx => 
+                {
+                    //SentryIOTelemetry requires TelemetryRuntime to be initialized first
+                    ctx.Inject(out TelemetryRuntime telemetryRuntime);
+                    return new SentryIOTelemetry();
+                })
+                .Bind().As(Lifetime.Singleton).To<TelemetryRuntime>(ctx => 
+                {
+                    ctx.Inject(out IDeploymentContext deploymentContext);
+                    ctx.Inject(out IConfiguration configuration);
+
+                    var parameters = new TelemetryRuntimeParameters(
+                        "MobiSystems.ServiceHost",
+                        configuration["TelemetryHost"],
+                        configuration["BuildType"],
+                        deploymentContext.GetDeploymentTypeName(),
+                        (_) => true);
+
+                    return new TelemetryRuntime(parameters);
+                })
+                .Bind<IDeploymentContext>().As(Lifetime.Singleton).To<DeploymentContext>()
+                .Bind<IService>(1).To<PackageUpdaterService>()
+                .Bind<ILogger2>().As(Lifetime.Singleton).To(ctx =>
+                {
+                    var logger = new LoggerConfiguration()
+                        .CreateLogger();
+                    
+                    return logger;
+                })
+                .Bind().As(Lifetime.Singleton).To<ServiceHost>();
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var app = new Composition().Root;
+            Console.WriteLine(app);                               
+        }
+    }
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Sample.ServiceApplication"], result);
+    }
 }
