@@ -6,7 +6,8 @@ namespace Pure.DI.Core.Code;
 internal class FactoryCodeBuilder(
     IIdGenerator idGenerator,
     INodeInfo nodeInfo,
-    IArguments arguments)
+    IArguments arguments,
+    ITypeResolver typeResolver)
     : ICodeBuilder<DpFactory>
 {
     private static readonly string InjectionStatement = $"{Names.InjectionMarker};";
@@ -80,7 +81,7 @@ internal class FactoryCodeBuilder(
                 using (code.Indent(indent.Value))
                 {
                     ctx.StatementBuilder.Build(injectionsCtx with { Level = level, Variable = argument.Current, LockIsRequired = lockIsRequired }, argument);
-                    code.AppendLine($"{(injection.DeclarationRequired ? "var " : "")}{injection.VariableName} = {ctx.BuildTools.OnInjected(ctx, argument.Current)};");
+                    code.AppendLine($"{(injection.DeclarationRequired ? $"{typeResolver.Resolve(argument.Current.Injection.Type)} " : "")}{injection.VariableName} = {ctx.BuildTools.OnInjected(ctx, argument.Current)};");
                 }
             }
             else

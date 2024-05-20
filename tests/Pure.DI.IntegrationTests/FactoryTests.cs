@@ -1159,4 +1159,81 @@ namespace Sample
         result.Success.ShouldBeTrue(result);
         result.GeneratedCode.Split(Environment.NewLine).Count(i => i.Contains(" = new Sample.Dependency2();")).ShouldBe(1);
     }
+    
+    [Fact]
+    public async Task ShouldSupportFactoryWhenExplicitImplementation()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    interface IDependency
+{
+    void Init();
+}
+
+class Dependency : IDependency
+{
+    void IDependency.Init()
+    {
+    }
+}
+
+interface IService
+{
+}
+
+class Service : IService
+{
+    public Service(IDependency dependency)
+    {
+    }
+}
+
+partial class Composition
+{
+    private void Setup() =>
+        DI.Setup(nameof(Composition))
+            .Hint(Hint.OnNewInstance, "On")
+            .Hint(Hint.OnDependencyInjection, "On")
+            .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
+            .Bind<IService>().To(ctx =>
+            {
+                ctx.Inject(out IDependency dependency);
+                dependency.Init();
+                return new Service(dependency);
+            })
+            .Root<IService>("MyService");
+
+    partial void OnNewInstance<T>(ref T value, object? tag, Lifetime lifetime)
+    {
+        System.Console.WriteLine(typeof(T));
+    }
+
+    private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime)
+    {
+        System.Console.WriteLine(typeof(T));
+        return value;
+    }
+}
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var service = new Composition().MyService;                                            
+        }
+    }                
+}
+""".RunAsync(new Options(LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Sample.Dependency", "Sample.IDependency", "Sample.Service", "Sample.IService"], result);
+    }
 }
