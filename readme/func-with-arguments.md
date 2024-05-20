@@ -74,7 +74,7 @@ partial class Composition
   private readonly Composition _root;
   private readonly object _lock;
 
-  private Clock? _singletonClock36;
+  private Clock? _singletonClock39;
 
   public Composition()
   {
@@ -96,18 +96,18 @@ partial class Composition
       Func<int, IDependency> transientFunc1 = dependencyId =>
       {
           int transientInt323 = dependencyId;
-          if (_root._singletonClock36 == null)
+          if (_root._singletonClock39 == null)
           {
               lock (_lock)
               {
-                  if (_root._singletonClock36 == null)
+                  if (_root._singletonClock39 == null)
                   {
-                      _root._singletonClock36 = new Clock();
+                      _root._singletonClock39 = new Clock();
                   }
               }
           }
 
-          var localDependency19 = new Dependency(_root._singletonClock36!, transientInt323);
+          Dependency localDependency19 = new Dependency(_root._singletonClock39!, transientInt323);
           return localDependency19;
       };
       return new Service(transientFunc1);

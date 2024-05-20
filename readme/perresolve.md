@@ -52,8 +52,8 @@ partial class Composition
   private readonly Composition _root;
   private readonly object _lock;
 
-  private (IDependency dep3, IDependency dep4) _singletonValueTuple37;
-  private bool _singletonValueTuple37Created;
+  private (IDependency dep3, IDependency dep4) _singletonValueTuple40;
+  private bool _singletonValueTuple40Created;
 
   public Composition()
   {
@@ -72,37 +72,37 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var perResolveDependency36 = default(Dependency);
-      if (!_root._singletonValueTuple37Created)
+      var perResolveDependency39 = default(Dependency);
+      if (!_root._singletonValueTuple40Created)
       {
           lock (_lock)
           {
-              if (!_root._singletonValueTuple37Created)
+              if (!_root._singletonValueTuple40Created)
               {
-                  if (perResolveDependency36 == null)
+                  if (perResolveDependency39 == null)
                   {
-                      perResolveDependency36 = new Dependency();
+                      perResolveDependency39 = new Dependency();
                   }
 
-                  _root._singletonValueTuple37 = (perResolveDependency36!, perResolveDependency36!);
+                  _root._singletonValueTuple40 = (perResolveDependency39!, perResolveDependency39!);
                   Thread.MemoryBarrier();
-                  _root._singletonValueTuple37Created = true;
+                  _root._singletonValueTuple40Created = true;
               }
           }
       }
 
-      if (perResolveDependency36 == null)
+      if (perResolveDependency39 == null)
       {
           lock (_lock)
           {
-              if (perResolveDependency36 == null)
+              if (perResolveDependency39 == null)
               {
-                  perResolveDependency36 = new Dependency();
+                  perResolveDependency39 = new Dependency();
               }
           }
       }
 
-      return new Service(perResolveDependency36!, perResolveDependency36!, _root._singletonValueTuple37);
+      return new Service(perResolveDependency39!, perResolveDependency39!, _root._singletonValueTuple40);
     }
   }
 }

@@ -90,18 +90,18 @@ partial class Composition
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public IService GetRoot(CancellationToken cancellationToken)
   {
-    var perResolveFunc42 = default(Func<IDependency>);
-    if (perResolveFunc42 == null)
+    var perResolveFunc45 = default(Func<IDependency>);
+    if (perResolveFunc45 == null)
     {
         lock (_lock)
         {
-            if (perResolveFunc42 == null)
+            if (perResolveFunc45 == null)
             {
-                perResolveFunc42 = new Func<IDependency>(
+                perResolveFunc45 = new Func<IDependency>(
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 () =>
                 {
-                    var localValue23 = new Dependency();
+                    IDependency localValue23 = new Dependency();
                     return localValue23;
                 });
             }
@@ -110,8 +110,8 @@ partial class Composition
 
     Task<IDependency> transientTask1;
     {
-        var localFactory24 = perResolveFunc42!;
-        var localCancellationToken25 = cancellationToken;
+        Func<IDependency> localFactory24 = perResolveFunc45!;
+        CancellationToken localCancellationToken25 = cancellationToken;
         transientTask1 = new Task<IDependency>(localFactory24, localCancellationToken25);
     }
 

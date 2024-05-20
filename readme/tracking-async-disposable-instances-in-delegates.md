@@ -95,44 +95,44 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var perResolveFunc39 = default(Func<Owned<IDependency>>);
-      if (perResolveFunc39 == null)
+      var perResolveFunc42 = default(Func<Owned<IDependency>>);
+      if (perResolveFunc42 == null)
       {
           lock (_lock)
           {
-              if (perResolveFunc39 == null)
+              if (perResolveFunc42 == null)
               {
-                  perResolveFunc39 = new Func<Owned<IDependency>>(
+                  perResolveFunc42 = new Func<Owned<IDependency>>(
                   [MethodImpl(MethodImplOptions.AggressiveInlining)]
                   () =>
                   {
-                      var accumulator38 = new Owned();
+                      var accumulator41 = new Owned();
                       Dependency transientDependency3 = new Dependency();
                       lock (_lock)
                       {
-                          accumulator38.Add(transientDependency3);
+                          accumulator41.Add(transientDependency3);
                       }
 
                       Owned<IDependency> perBlockOwned1;
                       {
-                          var localOwned1 = accumulator38;
-                          var localValue2 = transientDependency3;
+                          Owned localOwned1 = accumulator41;
+                          IDependency localValue2 = transientDependency3;
                           perBlockOwned1 = new Owned<IDependency>(localValue2, localOwned1);
                       }
 
                       lock (_lock)
                       {
-                          accumulator38.Add(perBlockOwned1);
+                          accumulator41.Add(perBlockOwned1);
                       }
 
-                      var localValue0 = perBlockOwned1;
+                      Owned<IDependency> localValue0 = perBlockOwned1;
                       return localValue0;
                   });
               }
           }
       }
 
-      return new Service(perResolveFunc39!);
+      return new Service(perResolveFunc42!);
     }
   }
 

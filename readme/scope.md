@@ -90,7 +90,7 @@ partial class Composition: IDisposable
   private object[] _disposables;
   private int _disposeIndex;
 
-  private Dependency? _scopedDependency36;
+  private Dependency? _scopedDependency39;
 
   public Composition()
   {
@@ -111,19 +111,19 @@ partial class Composition: IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_scopedDependency36 == null)
+      if (_scopedDependency39 == null)
       {
           lock (_lock)
           {
-              if (_scopedDependency36 == null)
+              if (_scopedDependency39 == null)
               {
-                  _scopedDependency36 = new Dependency();
-                  _disposables[_disposeIndex++] = _scopedDependency36;
+                  _scopedDependency39 = new Dependency();
+                  _disposables[_disposeIndex++] = _scopedDependency39;
               }
           }
       }
 
-      return new Service(_scopedDependency36!);
+      return new Service(_scopedDependency39!);
     }
   }
 
@@ -132,26 +132,26 @@ partial class Composition: IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var perResolveFunc43 = default(Func<Session>);
-      if (perResolveFunc43 == null)
+      var perResolveFunc46 = default(Func<Session>);
+      if (perResolveFunc46 == null)
       {
           lock (_lock)
           {
-              if (perResolveFunc43 == null)
+              if (perResolveFunc46 == null)
               {
-                  perResolveFunc43 = new Func<Session>(
+                  perResolveFunc46 = new Func<Session>(
                   [MethodImpl(MethodImplOptions.AggressiveInlining)]
                   () =>
                   {
                       Composition transientComposition2 = this;
-                      var localValue55 = new Session(transientComposition2);
+                      Session localValue55 = new Session(transientComposition2);
                       return localValue55;
                   });
               }
           }
       }
 
-      return new Program(perResolveFunc43!);
+      return new Program(perResolveFunc46!);
     }
   }
 
@@ -165,7 +165,7 @@ partial class Composition: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _scopedDependency36 = null;
+      _scopedDependency39 = null;
     }
 
     while (disposeIndex-- > 0)

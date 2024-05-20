@@ -80,8 +80,8 @@ partial class Composition: IDisposable
   private object[] _disposables;
   private int _disposeIndex;
 
-  private Dependency? _singletonDependency36;
-  private Service? _scopedService37;
+  private Dependency? _singletonDependency39;
+  private Service? _scopedService40;
 
   public Composition()
   {
@@ -102,18 +102,18 @@ partial class Composition: IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonDependency36 == null)
+      if (_root._singletonDependency39 == null)
       {
           lock (_lock)
           {
-              if (_root._singletonDependency36 == null)
+              if (_root._singletonDependency39 == null)
               {
-                  _root._singletonDependency36 = new Dependency();
+                  _root._singletonDependency39 = new Dependency();
               }
           }
       }
 
-      return _root._singletonDependency36!;
+      return _root._singletonDependency39!;
     }
   }
 
@@ -122,24 +122,24 @@ partial class Composition: IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_scopedService37 == null)
+      if (_scopedService40 == null)
       {
           lock (_lock)
           {
-              if (_scopedService37 == null)
+              if (_scopedService40 == null)
               {
-                  if (_root._singletonDependency36 == null)
+                  if (_root._singletonDependency39 == null)
                   {
-                      _root._singletonDependency36 = new Dependency();
+                      _root._singletonDependency39 = new Dependency();
                   }
 
-                  _scopedService37 = new Service(_root._singletonDependency36!);
-                  _disposables[_disposeIndex++] = _scopedService37;
+                  _scopedService40 = new Service(_root._singletonDependency39!);
+                  _disposables[_disposeIndex++] = _scopedService40;
               }
           }
       }
 
-      return _scopedService37!;
+      return _scopedService40!;
     }
   }
 
@@ -213,8 +213,8 @@ partial class Composition: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _singletonDependency36 = null;
-      _scopedService37 = null;
+      _singletonDependency39 = null;
+      _scopedService40 = null;
     }
 
     while (disposeIndex-- > 0)

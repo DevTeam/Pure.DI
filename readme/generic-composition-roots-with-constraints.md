@@ -88,7 +88,7 @@ partial class Composition
   {
     OtherService<T> transientOtherService0;
     {
-        var localDependency49 = new Dependency<T>();
+        IDependency<T> localDependency49 = new Dependency<T>();
         transientOtherService0 = new OtherService<T>(localDependency49);
     }
 

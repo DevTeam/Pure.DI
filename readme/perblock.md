@@ -52,8 +52,8 @@ partial class Composition
   private readonly Composition _root;
   private readonly object _lock;
 
-  private (IDependency dep3, IDependency dep4) _singletonValueTuple37;
-  private bool _singletonValueTuple37Created;
+  private (IDependency dep3, IDependency dep4) _singletonValueTuple40;
+  private bool _singletonValueTuple40Created;
 
   public Composition()
   {
@@ -72,22 +72,22 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (!_root._singletonValueTuple37Created)
+      if (!_root._singletonValueTuple40Created)
       {
           lock (_lock)
           {
-              if (!_root._singletonValueTuple37Created)
+              if (!_root._singletonValueTuple40Created)
               {
                   Dependency perBlockDependency2 = new Dependency();
-                  _root._singletonValueTuple37 = (perBlockDependency2, perBlockDependency2);
+                  _root._singletonValueTuple40 = (perBlockDependency2, perBlockDependency2);
                   Thread.MemoryBarrier();
-                  _root._singletonValueTuple37Created = true;
+                  _root._singletonValueTuple40Created = true;
               }
           }
       }
 
       Dependency perBlockDependency1 = new Dependency();
-      return new Service(perBlockDependency1, perBlockDependency1, _root._singletonValueTuple37);
+      return new Service(perBlockDependency1, perBlockDependency1, _root._singletonValueTuple40);
     }
   }
 }

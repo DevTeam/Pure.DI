@@ -82,7 +82,7 @@ partial class Func
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     () =>
     {
-        var localValue0 = new Service3(new Service4(), new Service4());
+        IService3 localValue0 = new Service3(new Service4(), new Service4());
         return localValue0;
     });
     return new CompositionRoot(new Service1(new Service2Func(perBlockFunc10)), new Service2Func(perBlockFunc10), new Service2Func(perBlockFunc10), new Service2Func(perBlockFunc10), new Service3(new Service4(), new Service4()), new Service4(), new Service4());

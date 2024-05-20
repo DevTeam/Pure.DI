@@ -72,7 +72,7 @@ partial class Composition
   private readonly Composition _root;
   private readonly object _lock;
 
-  private Dependency? _scopedDependency36;
+  private Dependency? _scopedDependency39;
 
   public Composition()
   {
@@ -91,18 +91,18 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_scopedDependency36 == null)
+      if (_scopedDependency39 == null)
       {
           lock (_lock)
           {
-              if (_scopedDependency36 == null)
+              if (_scopedDependency39 == null)
               {
-                  _scopedDependency36 = new Dependency();
+                  _scopedDependency39 = new Dependency();
               }
           }
       }
 
-      return new Service(_scopedDependency36!);
+      return new Service(_scopedDependency39!);
     }
   }
 
@@ -111,34 +111,34 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var perResolveFunc43 = default(Func<IService>);
-      if (perResolveFunc43 == null)
+      var perResolveFunc46 = default(Func<IService>);
+      if (perResolveFunc46 == null)
       {
           lock (_lock)
           {
-              if (perResolveFunc43 == null)
+              if (perResolveFunc46 == null)
               {
-                  perResolveFunc43 = new Func<IService>(
+                  perResolveFunc46 = new Func<IService>(
                   [MethodImpl(MethodImplOptions.AggressiveInlining)]
                   () =>
                   {
                       Composition transientComposition2 = this;
                       IService transientIService1;
                       {
-                          var localBaseComposition53 = transientComposition2;
+                          Composition localBaseComposition53 = transientComposition2;
                           // Creates a session
                           var localSession54 = new Composition(localBaseComposition53);
                           transientIService1 = localSession54.SessionRoot;
                       }
 
-                      var localValue52 = transientIService1;
+                      IService localValue52 = transientIService1;
                       return localValue52;
                   });
               }
           }
       }
 
-      return new Program(perResolveFunc43!);
+      return new Program(perResolveFunc46!);
     }
   }
 }
