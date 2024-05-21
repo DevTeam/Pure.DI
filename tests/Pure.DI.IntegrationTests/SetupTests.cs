@@ -1759,4 +1759,76 @@ namespace Sample
         result.StdOut.ShouldBe(["(1, 2)"], result);
     }
 #endif
+    
+    [Fact]
+    public async Task ShouldOverrideBindingWithSeveralInterfaces()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    interface IDependency
+    {
+        void Do();
+    }
+    
+    interface IAbc
+    {
+    }
+    
+    interface IXyz
+    {
+    }
+    
+    class Dependency : IDependency, IAbc
+    {
+        public void Do()
+        {
+        }
+    }
+    
+    class MyDependency : IDependency, IXyz
+    {
+        public void Do()
+        {
+        }
+    }
+    
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup("Composition")
+                .Bind().To<Dependency>()
+                .Bind().To(_ => new MyDependency())
+                .Root<IDependency>("Dep")
+                .Root<IAbc>("Abc")
+                .Root<IXyz>("Xyz");
+        }
+    }          
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();
+            Console.WriteLine(composition.Dep);                                           
+            Console.WriteLine(composition.Abc);
+            Console.WriteLine(composition.Xyz);
+        }
+    }
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.StdOut.ShouldBe(["Sample.MyDependency", "Sample.Dependency", "Sample.MyDependency"], result);
+        result.Warnings.Count.ShouldBe(1);
+        result.Warnings.Count(i => i.Id == LogId.WarningOverriddenBinding).ShouldBe(1);
+    }
 }
