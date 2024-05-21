@@ -192,11 +192,11 @@ classDiagram
 	class ValueTupleᐸPointˏIDependencyᐳ {
 		+ValueTuple(Point item1, IDependency item2)
 	}
-	class Point
 	Dependency --|> IDependency
 	class Dependency {
 		+Dependency()
 	}
+	class Point
 	Service --|> IService
 	class Service {
 		+Service(ValueTupleᐸPointˏIDependencyᐳ tuple)
@@ -209,7 +209,7 @@ classDiagram
 	}
 	ValueTupleᐸPointˏIDependencyᐳ *--  Point : Point
 	ValueTupleᐸPointˏIDependencyᐳ *--  Dependency : IDependency
-	Service *--  ValueTupleᐸPointˏIDependencyᐳ : ValueTupleᐸPointˏIDependencyᐳ
 	Composition ..> Service : IService Root
+	Service *--  ValueTupleᐸPointˏIDependencyᐳ : ValueTupleᐸPointˏIDependencyᐳ
 ```
 

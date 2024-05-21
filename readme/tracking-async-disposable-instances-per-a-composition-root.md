@@ -88,23 +88,23 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var accumulator41 = new Owned();
+      var accumulator42 = new Owned();
       Dependency transientDependency3 = new Dependency();
       lock (_lock)
       {
-          accumulator41.Add(transientDependency3);
+          accumulator42.Add(transientDependency3);
       }
 
       Owned<IService> perBlockOwned0;
       {
-          Owned localOwned3 = accumulator41;
+          Owned localOwned3 = accumulator42;
           IService localValue4 = new Service(transientDependency3);
           perBlockOwned0 = new Owned<IService>(localValue4, localOwned3);
       }
 
       lock (_lock)
       {
-          accumulator41.Add(perBlockOwned0);
+          accumulator42.Add(perBlockOwned0);
       }
 
       return perBlockOwned0;
@@ -186,8 +186,8 @@ classDiagram
 	class IService {
 		<<interface>>
 	}
-	Service *--  Dependency : IDependency
 	Composition ..> OwnedᐸIServiceᐳ : OwnedᐸIServiceᐳ Root
+	Service *--  Dependency : IDependency
 	OwnedᐸIServiceᐳ *--  Owned : Owned
 	OwnedᐸIServiceᐳ *--  Service : IService
 ```

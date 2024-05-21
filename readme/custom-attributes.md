@@ -99,8 +99,8 @@ classDiagram
 		<<partial>>
 		+IPerson Person
 	}
-	class String
 	class Int32
+	class String
 	Person --|> IPerson
 	class Person {
 		+Person(String name)
@@ -109,8 +109,8 @@ classDiagram
 	class IPerson {
 		<<interface>>
 	}
+	PersonComposition ..> Person : IPerson Person
 	Person *--  String : "NikName"  String
 	Person o-- Int32 : Argument "personId"
-	PersonComposition ..> Person : IPerson Person
 ```
 

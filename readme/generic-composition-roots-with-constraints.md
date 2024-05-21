@@ -75,14 +75,6 @@ partial class Composition
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public IService<T, T1> GetMyRoot<T, T1>()
-    where T: IDisposable
-    where T1: struct
-  {
-    return new Service<T, T1>(new Dependency<T>());
-  }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public IService<T, bool> GetOtherService<T>()
     where T: IDisposable
   {
@@ -93,6 +85,14 @@ partial class Composition
     }
 
     return transientOtherService0;
+  }
+
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public IService<T, T1> GetMyRoot<T, T1>()
+    where T: IDisposable
+    where T1: struct
+  {
+    return new Service<T, T1>(new Dependency<T>());
   }
 }
 ```
@@ -106,28 +106,28 @@ classDiagram
 		+IServiceᐸTˏT1ᐳ GetMyRootᐸTˏT1ᐳ()
 		+IServiceᐸTˏBooleanᐳ GetOtherServiceᐸTᐳ()
 	}
+	OtherServiceᐸTᐳ --|> IServiceᐸTˏBooleanᐳ : "Other" 
+	class OtherServiceᐸTᐳ
 	ServiceᐸTˏT1ᐳ --|> IServiceᐸTˏT1ᐳ
 	class ServiceᐸTˏT1ᐳ {
 		+Service(IDependencyᐸTᐳ dependency)
 	}
-	OtherServiceᐸTᐳ --|> IServiceᐸTˏBooleanᐳ : "Other" 
-	class OtherServiceᐸTᐳ
 	DependencyᐸTᐳ --|> IDependencyᐸTᐳ
 	class DependencyᐸTᐳ {
 		+Dependency()
 	}
-	class IServiceᐸTˏT1ᐳ {
+	class IServiceᐸTˏBooleanᐳ {
 		<<interface>>
 	}
-	class IServiceᐸTˏBooleanᐳ {
+	class IServiceᐸTˏT1ᐳ {
 		<<interface>>
 	}
 	class IDependencyᐸTᐳ {
 		<<interface>>
 	}
-	Composition ..> ServiceᐸTˏT1ᐳ : IServiceᐸTˏT1ᐳ GetMyRootᐸTˏT1ᐳ()
 	Composition ..> OtherServiceᐸTᐳ : IServiceᐸTˏBooleanᐳ GetOtherServiceᐸTᐳ()
-	ServiceᐸTˏT1ᐳ *--  DependencyᐸTᐳ : IDependencyᐸTᐳ
+	Composition ..> ServiceᐸTˏT1ᐳ : IServiceᐸTˏT1ᐳ GetMyRootᐸTˏT1ᐳ()
 	OtherServiceᐸTᐳ *--  DependencyᐸTᐳ : IDependencyᐸTᐳ
+	ServiceᐸTˏT1ᐳ *--  DependencyᐸTᐳ : IDependencyᐸTᐳ
 ```
 

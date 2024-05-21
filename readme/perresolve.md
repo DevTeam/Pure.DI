@@ -131,7 +131,7 @@ classDiagram
 	}
 	Service o-- "2 PerResolve" Dependency : IDependency
 	Service o-- "Singleton" ValueTupleᐸIDependencyˏIDependencyᐳ : ValueTupleᐸIDependencyˏIDependencyᐳ
-	ValueTupleᐸIDependencyˏIDependencyᐳ o-- "2 PerResolve" Dependency : IDependency
 	Composition ..> Service : Service Root
+	ValueTupleᐸIDependencyˏIDependencyᐳ o-- "2 PerResolve" Dependency : IDependency
 ```
 

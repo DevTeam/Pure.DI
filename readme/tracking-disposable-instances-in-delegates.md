@@ -262,20 +262,13 @@ classDiagram
 	class Dependency {
 		+Dependency()
 	}
-	Service --|> IService
-	class Service {
-		+Service(FuncᐸOwnedᐸIDependencyᐳᐳ dependencyFactory)
-	}
 	class FuncᐸOwnedᐸIDependencyᐳᐳ
 	class OwnedᐸIDependencyᐳ
 	class IDependency {
 		<<interface>>
 	}
-	class IService {
-		<<interface>>
-	}
-	Service o-- "PerResolve" FuncᐸOwnedᐸIDependencyᐳᐳ : FuncᐸOwnedᐸIDependencyᐳᐳ
 	Composition ..> Service : Service Root
+	Service o-- "PerResolve" FuncᐸOwnedᐸIDependencyᐳᐳ : FuncᐸOwnedᐸIDependencyᐳᐳ
 	FuncᐸOwnedᐸIDependencyᐳᐳ o-- "PerBlock" OwnedᐸIDependencyᐳ : OwnedᐸIDependencyᐳ
 	OwnedᐸIDependencyᐳ *--  Owned : Owned
 	OwnedᐸIDependencyᐳ *--  Dependency : IDependency

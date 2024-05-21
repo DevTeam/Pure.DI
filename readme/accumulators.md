@@ -68,7 +68,7 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var accumulator45 = new MyAccumulator();
+      var accumulator44 = new MyAccumulator();
       AbcDependency perBlockAbcDependency4 = new AbcDependency();
       if (_root._singletonXyzDependency41 == null)
       {
@@ -78,7 +78,7 @@ partial class Composition
               {
                   XyzDependency _singletonXyzDependency41Temp;
                   _singletonXyzDependency41Temp = new XyzDependency();
-                  accumulator45.Add(_singletonXyzDependency41Temp);
+                  accumulator44.Add(_singletonXyzDependency41Temp);
                   Thread.MemoryBarrier();
                   _root._singletonXyzDependency41 = _singletonXyzDependency41Temp;
               }
@@ -88,16 +88,16 @@ partial class Composition
       AbcDependency transientAbcDependency3 = new AbcDependency();
       lock (_lock)
       {
-          accumulator45.Add(transientAbcDependency3);
+          accumulator44.Add(transientAbcDependency3);
       }
 
       Service transientService1 = new Service(transientAbcDependency3, _root._singletonXyzDependency41!, perBlockAbcDependency4);
       lock (_lock)
       {
-          accumulator45.Add(transientService1);
+          accumulator44.Add(transientService1);
       }
 
-      return (transientService1, accumulator45);
+      return (transientService1, accumulator44);
     }
   }
 
@@ -262,9 +262,9 @@ classDiagram
 	}
 	ValueTupleᐸIServiceˏMyAccumulatorᐳ *--  Service : IService
 	ValueTupleᐸIServiceˏMyAccumulatorᐳ *--  MyAccumulator : MyAccumulator
+	Composition ..> ValueTupleᐸIServiceˏMyAccumulatorᐳ : ValueTupleᐸIServiceˏMyAccumulatorᐳ Root
 	Service *--  AbcDependency : typeof(Pure.DI.UsageTests.Advanced.AccumulatorScenario.AbcDependency)  IDependency
 	Service o-- "Singleton" XyzDependency : typeof(Pure.DI.UsageTests.Advanced.AccumulatorScenario.XyzDependency)  IDependency
 	Service o-- "PerBlock" AbcDependency : IDependency
-	Composition ..> ValueTupleᐸIServiceˏMyAccumulatorᐳ : ValueTupleᐸIServiceˏMyAccumulatorᐳ Root
 ```
 

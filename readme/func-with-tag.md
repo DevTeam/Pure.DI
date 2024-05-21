@@ -226,8 +226,8 @@ classDiagram
 	class IService {
 		<<interface>>
 	}
-	Service o-- "PerResolve" FuncᐸIDependencyᐳ : "my tag"  FuncᐸIDependencyᐳ
 	Composition ..> Service : IService Root
+	Service o-- "PerResolve" FuncᐸIDependencyᐳ : "my tag"  FuncᐸIDependencyᐳ
 	FuncᐸIDependencyᐳ *--  Dependency : "my tag"  IDependency
 ```
 

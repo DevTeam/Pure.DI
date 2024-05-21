@@ -93,7 +93,7 @@ classDiagram
 	class IService {
 		<<interface>>
 	}
-	Service o-- String : Argument "serviceName"
 	Composition ..> Service : IService Root
+	Service o-- String : Argument "serviceName"
 ```
 

@@ -245,12 +245,12 @@ classDiagram
 	class Dependency {
 		+Dependency(IClock clock, Int32 id)
 	}
-	class Int32
-	class FuncᐸInt32ˏIDependencyᐳ
 	Clock --|> IClock
 	class Clock {
 		+Clock()
 	}
+	class Int32
+	class FuncᐸInt32ˏIDependencyᐳ
 	Service --|> IService
 	class Service {
 		+Service(FuncᐸInt32ˏIDependencyᐳ dependencyFactory)
@@ -263,8 +263,8 @@ classDiagram
 	}
 	Dependency o-- "Singleton" Clock : IClock
 	Dependency *--  Int32 : Int32
+	Composition ..> Service : IService Root
 	FuncᐸInt32ˏIDependencyᐳ *--  Dependency : Dependency
 	Service *--  FuncᐸInt32ˏIDependencyᐳ : FuncᐸInt32ˏIDependencyᐳ
-	Composition ..> Service : IService Root
 ```
 

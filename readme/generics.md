@@ -110,8 +110,8 @@ classDiagram
 	class IDependencyᐸStringᐳ {
 		<<interface>>
 	}
+	Composition ..> Service : IService Root
 	Service *--  DependencyᐸInt32ᐳ : IDependencyᐸInt32ᐳ
 	Service *--  DependencyᐸStringᐳ : IDependencyᐸStringᐳ
-	Composition ..> Service : IService Root
 ```
 

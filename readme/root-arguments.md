@@ -99,8 +99,6 @@ classDiagram
 		<<partial>>
 		+IService CreateServiceWithArgs(int id, string dependencyName, string serviceName)
 	}
-	class Int32
-	class String
 	Dependency --|> IDependency
 	class Dependency {
 		+Dependency(Int32 id, String dependencyName)
@@ -109,16 +107,18 @@ classDiagram
 	class Service {
 		+Service(String name, IDependency dependency)
 	}
+	class Int32
+	class String
 	class IDependency {
 		<<interface>>
 	}
 	class IService {
 		<<interface>>
 	}
+	Composition ..> Service : IService CreateServiceWithArgs(int id, string dependencyName, string serviceName)
 	Dependency o-- Int32 : Argument "id"
 	Dependency o-- String : Argument "dependencyName"
 	Service o-- String : "forService"  Argument "serviceName"
 	Service *--  Dependency : IDependency
-	Composition ..> Service : IService CreateServiceWithArgs(int id, string dependencyName, string serviceName)
 ```
 

@@ -61,13 +61,13 @@ classDiagram
 	CompositionRoot *-- "3 " Service2Array : IService2
 	CompositionRoot *--  Service3 : IService3
 	CompositionRoot *-- "2 " Service4 : IService4
+	Array ..> CompositionRoot : CompositionRoot TestPureDIByCR()
 	Service1 *--  Service2Array : IService2
 	Service2Array *--  ArrayᐸIService3ᐳ : ArrayᐸIService3ᐳ
 	Service3 *-- "2 " Service4 : IService4
 	Service3v2 *-- "2 " Service4 : IService4
 	Service3v3 *-- "2 " Service4 : IService4
 	Service3v4 *-- "2 " Service4 : IService4
-	Array ..> CompositionRoot : CompositionRoot TestPureDIByCR()
 	ArrayᐸIService3ᐳ *--  Service3 : IService3
 	ArrayᐸIService3ᐳ *--  Service3v2 : 2  IService3
 	ArrayᐸIService3ᐳ *--  Service3v3 : 3  IService3

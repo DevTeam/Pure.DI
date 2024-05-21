@@ -287,10 +287,10 @@ classDiagram
 	class IService {
 		<<interface>>
 	}
+	Composition ..> XyzDependency : IDependency XyzRoot
+	Composition ..> Service : IService Root
 	Service *--  AbcDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.AbcDependency)  IDependency
 	Service o-- "Singleton" XyzDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.XyzDependency)  IDependency
 	Service *--  AbcDependency : IDependency
-	Composition ..> Service : IService Root
-	Composition ..> XyzDependency : IDependency XyzRoot
 ```
 

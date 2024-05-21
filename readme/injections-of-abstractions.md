@@ -96,7 +96,7 @@ classDiagram
 		<<interface>>
 	}
 	Program *--  Service : IService
-	Service *--  Dependency : IDependency
 	Composition ..> Program : Program Root
+	Service *--  Dependency : IDependency
 ```
 

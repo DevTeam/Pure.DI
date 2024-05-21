@@ -60,23 +60,6 @@ partial class Composition
     _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
   }
 
-  public IService<int> IntRoot
-  {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    get
-    {
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      IEnumerable<IDependency<int>> EnumerationOf_perBlockIEnumerable1()
-      {
-          yield return new AbcDependency<int>();
-          yield return new XyzDependency<int>();
-      }
-
-      IEnumerable<IDependency<int>> perBlockIEnumerable1 = EnumerationOf_perBlockIEnumerable1();
-      return new Service<int>(perBlockIEnumerable1);
-    }
-  }
-
   public IService<string> StringRoot
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -91,6 +74,23 @@ partial class Composition
 
       IEnumerable<IDependency<string>> perBlockIEnumerable1 = EnumerationOf_perBlockIEnumerable1();
       return new Service<string>(perBlockIEnumerable1);
+    }
+  }
+
+  public IService<int> IntRoot
+  {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get
+    {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      IEnumerable<IDependency<int>> EnumerationOf_perBlockIEnumerable1()
+      {
+          yield return new AbcDependency<int>();
+          yield return new XyzDependency<int>();
+      }
+
+      IEnumerable<IDependency<int>> perBlockIEnumerable1 = EnumerationOf_perBlockIEnumerable1();
+      return new Service<int>(perBlockIEnumerable1);
     }
   }
 
@@ -160,16 +160,16 @@ partial class Composition
   static Composition()
   {
     var valResolver_0000 = new Resolver_0000();
-    Resolver<IService<int>>.Value = valResolver_0000;
+    Resolver<IService<string>>.Value = valResolver_0000;
     var valResolver_0001 = new Resolver_0001();
-    Resolver<IService<string>>.Value = valResolver_0001;
+    Resolver<IService<int>>.Value = valResolver_0001;
     _buckets = Buckets<Type, IResolver<Composition, object>>.Create(
       4,
       out _bucketSize,
       new Pair<Type, IResolver<Composition, object>>[2]
       {
-         new Pair<Type, IResolver<Composition, object>>(typeof(IService<int>), valResolver_0000)
-        ,new Pair<Type, IResolver<Composition, object>>(typeof(IService<string>), valResolver_0001)
+         new Pair<Type, IResolver<Composition, object>>(typeof(IService<string>), valResolver_0000)
+        ,new Pair<Type, IResolver<Composition, object>>(typeof(IService<int>), valResolver_0001)
       });
   }
 
@@ -191,27 +191,7 @@ partial class Composition
     }
   }
 
-  private sealed class Resolver_0000: Resolver<IService<int>>
-  {
-    public override IService<int> Resolve(Composition composition)
-    {
-      return composition.IntRoot;
-    }
-
-    public override IService<int> ResolveByTag(Composition composition, object tag)
-    {
-      switch (tag)
-      {
-        case null:
-          return composition.IntRoot;
-
-        default:
-          return base.ResolveByTag(composition, tag);
-      }
-    }
-  }
-
-  private sealed class Resolver_0001: Resolver<IService<string>>
+  private sealed class Resolver_0000: Resolver<IService<string>>
   {
     public override IService<string> Resolve(Composition composition)
     {
@@ -224,6 +204,26 @@ partial class Composition
       {
         case null:
           return composition.StringRoot;
+
+        default:
+          return base.ResolveByTag(composition, tag);
+      }
+    }
+  }
+
+  private sealed class Resolver_0001: Resolver<IService<int>>
+  {
+    public override IService<int> Resolve(Composition composition)
+    {
+      return composition.IntRoot;
+    }
+
+    public override IService<int> ResolveByTag(Composition composition, object tag)
+    {
+      switch (tag)
+      {
+        case null:
+          return composition.IntRoot;
 
         default:
           return base.ResolveByTag(composition, tag);
@@ -246,24 +246,16 @@ classDiagram
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
 	}
-	ServiceᐸInt32ᐳ --|> IServiceᐸInt32ᐳ
-	class ServiceᐸInt32ᐳ {
-		+Service(IEnumerableᐸIDependencyᐸInt32ᐳᐳ dependencies)
-	}
 	ServiceᐸStringᐳ --|> IServiceᐸStringᐳ
 	class ServiceᐸStringᐳ {
 		+Service(IEnumerableᐸIDependencyᐸStringᐳᐳ dependencies)
 	}
-	class IEnumerableᐸIDependencyᐸInt32ᐳᐳ
+	ServiceᐸInt32ᐳ --|> IServiceᐸInt32ᐳ
+	class ServiceᐸInt32ᐳ {
+		+Service(IEnumerableᐸIDependencyᐸInt32ᐳᐳ dependencies)
+	}
 	class IEnumerableᐸIDependencyᐸStringᐳᐳ
-	AbcDependencyᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ
-	class AbcDependencyᐸInt32ᐳ {
-		+AbcDependency()
-	}
-	XyzDependencyᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ : "Xyz" 
-	class XyzDependencyᐸInt32ᐳ {
-		+XyzDependency()
-	}
+	class IEnumerableᐸIDependencyᐸInt32ᐳᐳ
 	AbcDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ
 	class AbcDependencyᐸStringᐳ {
 		+AbcDependency()
@@ -272,25 +264,33 @@ classDiagram
 	class XyzDependencyᐸStringᐳ {
 		+XyzDependency()
 	}
-	class IServiceᐸInt32ᐳ {
-		<<interface>>
+	AbcDependencyᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ
+	class AbcDependencyᐸInt32ᐳ {
+		+AbcDependency()
+	}
+	XyzDependencyᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ : "Xyz" 
+	class XyzDependencyᐸInt32ᐳ {
+		+XyzDependency()
 	}
 	class IServiceᐸStringᐳ {
 		<<interface>>
 	}
-	class IDependencyᐸInt32ᐳ {
+	class IServiceᐸInt32ᐳ {
 		<<interface>>
 	}
 	class IDependencyᐸStringᐳ {
 		<<interface>>
 	}
-	Composition ..> ServiceᐸInt32ᐳ : IServiceᐸInt32ᐳ IntRoot
+	class IDependencyᐸInt32ᐳ {
+		<<interface>>
+	}
 	Composition ..> ServiceᐸStringᐳ : IServiceᐸStringᐳ StringRoot
-	ServiceᐸInt32ᐳ o-- "PerBlock" IEnumerableᐸIDependencyᐸInt32ᐳᐳ : IEnumerableᐸIDependencyᐸInt32ᐳᐳ
+	Composition ..> ServiceᐸInt32ᐳ : IServiceᐸInt32ᐳ IntRoot
 	ServiceᐸStringᐳ o-- "PerBlock" IEnumerableᐸIDependencyᐸStringᐳᐳ : IEnumerableᐸIDependencyᐸStringᐳᐳ
-	IEnumerableᐸIDependencyᐸInt32ᐳᐳ *--  AbcDependencyᐸInt32ᐳ : IDependencyᐸInt32ᐳ
-	IEnumerableᐸIDependencyᐸInt32ᐳᐳ *--  XyzDependencyᐸInt32ᐳ : "Xyz"  IDependencyᐸInt32ᐳ
+	ServiceᐸInt32ᐳ o-- "PerBlock" IEnumerableᐸIDependencyᐸInt32ᐳᐳ : IEnumerableᐸIDependencyᐸInt32ᐳᐳ
 	IEnumerableᐸIDependencyᐸStringᐳᐳ *--  AbcDependencyᐸStringᐳ : IDependencyᐸStringᐳ
 	IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : "Xyz"  IDependencyᐸStringᐳ
+	IEnumerableᐸIDependencyᐸInt32ᐳᐳ *--  AbcDependencyᐸInt32ᐳ : IDependencyᐸInt32ᐳ
+	IEnumerableᐸIDependencyᐸInt32ᐳᐳ *--  XyzDependencyᐸInt32ᐳ : "Xyz"  IDependencyᐸInt32ᐳ
 ```
 

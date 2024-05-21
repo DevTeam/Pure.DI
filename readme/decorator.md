@@ -77,7 +77,7 @@ classDiagram
 	class IService {
 		<<interface>>
 	}
-	GreetingService *--  Service : "base"  IService
 	Composition ..> GreetingService : IService Root
+	GreetingService *--  Service : "base"  IService
 ```
 

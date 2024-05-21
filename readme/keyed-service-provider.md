@@ -67,7 +67,7 @@ partial class Composition
     _lock = _root._lock;
   }
 
-  private IDependency Root1
+  private IDependency Root2
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
@@ -87,7 +87,7 @@ partial class Composition
     }
   }
 
-  private IService Root2
+  private IService Root1
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
@@ -216,7 +216,7 @@ partial class Composition
       switch (tag)
       {
         case "Dependency Key":
-          return composition.Root1;
+          return composition.Root2;
 
         default:
           return base.ResolveByTag(composition, tag);
@@ -236,7 +236,7 @@ partial class Composition
       switch (tag)
       {
         case "Service Key":
-          return composition.Root2;
+          return composition.Root1;
 
         default:
           return base.ResolveByTag(composition, tag);
@@ -273,8 +273,8 @@ classDiagram
 	class IService {
 		<<interface>>
 	}
-	Service o-- "Singleton" Dependency : "Dependency Key"  IDependency
-	Composition ..> Dependency : IDependency _
 	Composition ..> Service : IService _
+	Composition ..> Dependency : IDependency _
+	Service o-- "Singleton" Dependency : "Dependency Key"  IDependency
 ```
 

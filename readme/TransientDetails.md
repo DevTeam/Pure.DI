@@ -48,10 +48,10 @@ classDiagram
 	CompositionRoot *-- "3 " Service2 : IService2
 	CompositionRoot *--  Service3 : IService3
 	CompositionRoot *-- "2 " Service4 : IService4
+	Transient ..> CompositionRoot : CompositionRoot TestPureDIByCR()
 	Service1 *--  Service2 : IService2
 	Service2 *-- "5 " Service3 : IService3
 	Service3 *-- "2 " Service4 : IService4
-	Transient ..> CompositionRoot : CompositionRoot TestPureDIByCR()
 ```
 
 ### Generated code

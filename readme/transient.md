@@ -90,7 +90,7 @@ classDiagram
 	class IService {
 		<<interface>>
 	}
-	Service *-- "2 " Dependency : IDependency
 	Composition ..> Service : IService Root
+	Service *-- "2 " Dependency : IDependency
 ```
 

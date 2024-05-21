@@ -228,8 +228,8 @@ classDiagram
 	class IService {
 		<<interface>>
 	}
-	Service *--  IAsyncEnumerableᐸIDependencyᐳ : IAsyncEnumerableᐸIDependencyᐳ
 	Composition ..> Service : IService Root
+	Service *--  IAsyncEnumerableᐸIDependencyᐳ : IAsyncEnumerableᐸIDependencyᐳ
 	IAsyncEnumerableᐸIDependencyᐳ *--  AbcDependency : IDependency
 	IAsyncEnumerableᐸIDependencyᐳ *--  XyzDependency : 2  IDependency
 ```

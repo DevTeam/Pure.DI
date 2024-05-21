@@ -116,7 +116,7 @@ classDiagram
 	}
 	Service o-- "2 PerBlock" Dependency : IDependency
 	Service o-- "Singleton" ValueTupleᐸIDependencyˏIDependencyᐳ : ValueTupleᐸIDependencyˏIDependencyᐳ
-	ValueTupleᐸIDependencyˏIDependencyᐳ o-- "2 PerBlock" Dependency : IDependency
 	Composition ..> Service : Service Root
+	ValueTupleᐸIDependencyˏIDependencyᐳ o-- "2 PerBlock" Dependency : IDependency
 ```
 

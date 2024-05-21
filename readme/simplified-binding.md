@@ -151,9 +151,9 @@ classDiagram
 	class IService {
 		<<interface>>
 	}
+	Composition ..> Service : IService MyService
 	Service o-- "PerBlock" Dependency : Dependency
 	Service o-- "PerBlock" Dependency : IDependency
 	Service o-- "PerBlock" Dependency : IOtherDependency
-	Composition ..> Service : IService MyService
 ```
 

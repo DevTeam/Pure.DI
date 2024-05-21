@@ -226,18 +226,18 @@ classDiagram
 	class Service {
 		+Service(String name, IDependency dependency1, IDependency dependency2)
 	}
-	class Int64
-	class String
 	Dependency --|> IDependency
 	class Dependency {
 		+Dependency(Int64 id)
 	}
+	class Int64
+	class String
 	class IDependency {
 		<<interface>>
 	}
 	Service *--  String : "name with id"  String
 	Service *-- "2 " Dependency : IDependency
-	Dependency *--  Int64 : Int64
 	Composition ..> Service : Service Root
+	Dependency *--  Int64 : Int64
 ```
 

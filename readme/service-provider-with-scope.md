@@ -80,8 +80,8 @@ partial class Composition: IDisposable
   private object[] _disposables;
   private int _disposeIndex;
 
-  private Dependency? _singletonDependency39;
   private Service? _scopedService40;
+  private Dependency? _singletonDependency39;
 
   public Composition()
   {
@@ -97,7 +97,7 @@ partial class Composition: IDisposable
     _disposables = new object[1];
   }
 
-  private IDependency Root1
+  private IDependency Root2
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
@@ -117,7 +117,7 @@ partial class Composition: IDisposable
     }
   }
 
-  private IService Root2
+  private IService Root1
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
@@ -213,8 +213,8 @@ partial class Composition: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _singletonDependency39 = null;
       _scopedService40 = null;
+      _singletonDependency39 = null;
     }
 
     while (disposeIndex-- > 0)
@@ -278,7 +278,7 @@ partial class Composition: IDisposable
   {
     public override IDependency Resolve(Composition composition)
     {
-      return composition.Root1;
+      return composition.Root2;
     }
 
     public override IDependency ResolveByTag(Composition composition, object tag)
@@ -286,7 +286,7 @@ partial class Composition: IDisposable
       switch (tag)
       {
         case null:
-          return composition.Root1;
+          return composition.Root2;
 
         default:
           return base.ResolveByTag(composition, tag);
@@ -298,7 +298,7 @@ partial class Composition: IDisposable
   {
     public override IService Resolve(Composition composition)
     {
-      return composition.Root2;
+      return composition.Root1;
     }
 
     public override IService ResolveByTag(Composition composition, object tag)
@@ -306,7 +306,7 @@ partial class Composition: IDisposable
       switch (tag)
       {
         case null:
-          return composition.Root2;
+          return composition.Root1;
 
         default:
           return base.ResolveByTag(composition, tag);
@@ -344,8 +344,8 @@ classDiagram
 	class IService {
 		<<interface>>
 	}
-	Service o-- "Singleton" Dependency : IDependency
-	Composition ..> Dependency : IDependency _
 	Composition ..> Service : IService _
+	Composition ..> Dependency : IDependency _
+	Service o-- "Singleton" Dependency : IDependency
 ```
 

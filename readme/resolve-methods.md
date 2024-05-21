@@ -69,7 +69,7 @@ partial class Composition
     }
   }
 
-  private IService Root1
+  private IService Root2
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
@@ -176,7 +176,7 @@ partial class Composition
   {
     public override IService Resolve(Composition composition)
     {
-      return composition.Root1;
+      return composition.Root2;
     }
 
     public override IService ResolveByTag(Composition composition, object tag)
@@ -187,7 +187,7 @@ partial class Composition
           return composition.OtherService;
 
         case null:
-          return composition.Root1;
+          return composition.Root2;
 
         default:
           return base.ResolveByTag(composition, tag);
@@ -228,8 +228,8 @@ classDiagram
 	class IService {
 		<<interface>>
 	}
-	Service *--  Dependency : IDependency
-	Composition ..> Service : IService _
 	Composition ..> OtherService : IService OtherService
+	Composition ..> Service : IService _
+	Service *--  Dependency : IDependency
 ```
 

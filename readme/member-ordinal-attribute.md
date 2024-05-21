@@ -128,9 +128,9 @@ classDiagram
 	class IPerson {
 		<<interface>>
 	}
+	PersonComposition ..> Person : IPerson Person
 	Person o-- Int32 : Argument "personId"
 	Person o-- String : Argument "personName"
 	Person o-- DateTime : Argument "personBirthday"
-	PersonComposition ..> Person : IPerson Person
 ```
 

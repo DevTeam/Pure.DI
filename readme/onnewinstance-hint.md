@@ -133,7 +133,7 @@ classDiagram
 	class IService {
 		<<interface>>
 	}
-	Service o-- "Singleton" Dependency : IDependency
 	Composition ..> Service : IService Root
+	Service o-- "Singleton" Dependency : IDependency
 ```
 

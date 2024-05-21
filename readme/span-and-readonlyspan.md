@@ -215,8 +215,8 @@ classDiagram
 	class IService {
 		<<interface>>
 	}
-	Service *--  ReadOnlySpanᐸDependencyᐳ : ReadOnlySpanᐸDependencyᐳ
 	Composition ..> Service : IService Root
+	Service *--  ReadOnlySpanᐸDependencyᐳ : ReadOnlySpanᐸDependencyᐳ
 	ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'a'  Dependency
 	ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'b'  Dependency
 	ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'c'  Dependency

@@ -116,7 +116,7 @@ classDiagram
 		<<interface>>
 	}
 	Dependency *--  DateTimeOffset : DateTimeOffset
-	Service *--  Dependency : IDependency
 	Composition ..> Service : IService MyService
+	Service *--  Dependency : IDependency
 ```
 

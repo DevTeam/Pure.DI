@@ -201,7 +201,7 @@ classDiagram
 		<<interface>>
 	}
 	WeakReferenceᐸIDependencyᐳ *--  Dependency : IDependency
-	Service *--  WeakReferenceᐸIDependencyᐳ : WeakReferenceᐸIDependencyᐳ
 	Composition ..> Service : IService Root
+	Service *--  WeakReferenceᐸIDependencyᐳ : WeakReferenceᐸIDependencyᐳ
 ```
 

@@ -86,26 +86,6 @@ partial class Composition
     _lock = _root._lock;
   }
 
-  private Service SessionRoot
-  {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    get
-    {
-      if (_scopedDependency39 == null)
-      {
-          lock (_lock)
-          {
-              if (_scopedDependency39 == null)
-              {
-                  _scopedDependency39 = new Dependency();
-              }
-          }
-      }
-
-      return new Service(_scopedDependency39!);
-    }
-  }
-
   public Program ProgramRoot
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -141,6 +121,26 @@ partial class Composition
       return new Program(perResolveFunc46!);
     }
   }
+
+  private Service SessionRoot
+  {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get
+    {
+      if (_scopedDependency39 == null)
+      {
+          lock (_lock)
+          {
+              if (_scopedDependency39 == null)
+              {
+                  _scopedDependency39 = new Dependency();
+              }
+          }
+      }
+
+      return new Service(_scopedDependency39!);
+    }
+  }
 }
 ```
 
@@ -153,27 +153,27 @@ classDiagram
 		+Program ProgramRoot
 		+Service SessionRoot
 	}
-	class Program {
-		+Program(FuncᐸIServiceᐳ serviceFactory)
-	}
 	class Service {
 		+Service(IDependency dependency)
 	}
-	class IService
+	class Program {
+		+Program(FuncᐸIServiceᐳ serviceFactory)
+	}
 	Dependency --|> IDependency
 	class Dependency {
 		+Dependency()
 	}
+	class IService
 	class FuncᐸIServiceᐳ
 	class Composition
 	class IDependency {
 		<<interface>>
 	}
-	Program o-- "PerResolve" FuncᐸIServiceᐳ : FuncᐸIServiceᐳ
 	Service o-- "Scoped" Dependency : IDependency
-	IService *--  Composition : Composition
-	Composition ..> Service : Service SessionRoot
+	Program o-- "PerResolve" FuncᐸIServiceᐳ : FuncᐸIServiceᐳ
 	Composition ..> Program : Program ProgramRoot
+	Composition ..> Service : Service SessionRoot
+	IService *--  Composition : Composition
 	FuncᐸIServiceᐳ *--  IService : IService
 ```
 

@@ -146,12 +146,12 @@ classDiagram
 	class IService {
 		<<interface>>
 	}
+	Composition ..> Service : IService GetRoot(System.Threading.CancellationToken cancellationToken)
 	TaskFactory o-- CancellationToken : Argument "cancellationToken"
 	TaskFactory *--  TaskCreationOptions : TaskCreationOptions
 	TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions
 	TaskFactory *--  TaskScheduler : TaskScheduler
 	Service *--  TaskᐸIDependencyᐳ : TaskᐸIDependencyᐳ
-	Composition ..> Service : IService GetRoot(System.Threading.CancellationToken cancellationToken)
 	TaskᐸIDependencyᐳ o-- "PerResolve" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
 	TaskᐸIDependencyᐳ o-- CancellationToken : Argument "cancellationToken"
 	FuncᐸIDependencyᐳ *--  Dependency : IDependency

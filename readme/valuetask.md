@@ -215,8 +215,8 @@ classDiagram
 	class IService {
 		<<interface>>
 	}
-	Service *--  ValueTaskᐸIDependencyᐳ : ValueTaskᐸIDependencyᐳ
 	Composition ..> Service : IService Root
+	Service *--  ValueTaskᐸIDependencyᐳ : ValueTaskᐸIDependencyᐳ
 	ValueTaskᐸIDependencyᐳ *--  Dependency : IDependency
 ```
 

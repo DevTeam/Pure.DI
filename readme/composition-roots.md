@@ -284,9 +284,9 @@ classDiagram
 	class IDependency {
 		<<interface>>
 	}
-	Service *--  Dependency : IDependency
-	Composition ..> Service : IService MyService
-	Composition ..> Dependency : IDependency _
 	Composition ..> OtherService : IService MyOtherService
+	Composition ..> Dependency : IDependency _
+	Composition ..> Service : IService MyService
+	Service *--  Dependency : IDependency
 ```
 

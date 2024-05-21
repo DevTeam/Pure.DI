@@ -210,7 +210,7 @@ classDiagram
 	class IService {
 		<<interface>>
 	}
-	Service *--  ArrayᐸIDependencyᐳ : ArrayᐸIDependencyᐳ
 	Composition ..> Service : IService Root
+	Service *--  ArrayᐸIDependencyᐳ : ArrayᐸIDependencyᐳ
 ```
 

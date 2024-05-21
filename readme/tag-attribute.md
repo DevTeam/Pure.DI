@@ -101,8 +101,8 @@ classDiagram
 	class IService {
 		<<interface>>
 	}
+	Composition ..> Service : IService Root
 	Service *--  AbcDependency : "Abc"  IDependency
 	Service *--  XyzDependency : "Xyz"  IDependency
-	Composition ..> Service : IService Root
 ```
 

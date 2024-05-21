@@ -134,14 +134,14 @@ partial class Composition: IDisposable, IAsyncDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var perResolveFunc46 = default(Func<Session>);
-      if (perResolveFunc46 == null)
+      var perResolveFunc47 = default(Func<Session>);
+      if (perResolveFunc47 == null)
       {
           lock (_lock)
           {
-              if (perResolveFunc46 == null)
+              if (perResolveFunc47 == null)
               {
-                  perResolveFunc46 = new Func<Session>(
+                  perResolveFunc47 = new Func<Session>(
                   [MethodImpl(MethodImplOptions.AggressiveInlining)]
                   () =>
                   {
@@ -153,7 +153,7 @@ partial class Composition: IDisposable, IAsyncDisposable
           }
       }
 
-      return new Program(perResolveFunc46!);
+      return new Program(perResolveFunc47!);
     }
   }
 
@@ -268,9 +268,9 @@ classDiagram
 	}
 	Session *--  Composition : Composition
 	Program o-- "PerResolve" FuncᐸSessionᐳ : FuncᐸSessionᐳ
-	Service o-- "Scoped" Dependency : IDependency
-	Composition ..> Service : IService SessionRoot
 	Composition ..> Program : Program ProgramRoot
+	Composition ..> Service : IService SessionRoot
+	Service o-- "Scoped" Dependency : IDependency
 	FuncᐸSessionᐳ *--  Session : Session
 ```
 

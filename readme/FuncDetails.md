@@ -49,10 +49,10 @@ classDiagram
 	CompositionRoot *-- "3 " Service2Func : IService2
 	CompositionRoot *--  Service3 : IService3
 	CompositionRoot *-- "2 " Service4 : IService4
+	Func ..> CompositionRoot : CompositionRoot TestPureDIByCR()
 	Service1 *--  Service2Func : IService2
 	Service2Func o-- "PerBlock" FuncᐸIService3ᐳ : FuncᐸIService3ᐳ
 	Service3 *-- "2 " Service4 : IService4
-	Func ..> CompositionRoot : CompositionRoot TestPureDIByCR()
 	FuncᐸIService3ᐳ *--  Service3 : IService3
 ```
 

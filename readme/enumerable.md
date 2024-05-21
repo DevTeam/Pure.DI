@@ -219,8 +219,8 @@ classDiagram
 	class IService {
 		<<interface>>
 	}
-	Service o-- "PerBlock" IEnumerableᐸIDependencyᐳ : IEnumerableᐸIDependencyᐳ
 	Composition ..> Service : IService Root
+	Service o-- "PerBlock" IEnumerableᐸIDependencyᐳ : IEnumerableᐸIDependencyᐳ
 	IEnumerableᐸIDependencyᐳ *--  AbcDependency : IDependency
 	IEnumerableᐸIDependencyᐳ *--  XyzDependency : 2  IDependency
 ```

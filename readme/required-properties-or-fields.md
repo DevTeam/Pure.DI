@@ -103,8 +103,8 @@ classDiagram
 	class IService {
 		<<interface>>
 	}
+	Composition ..> Service : IService Root
 	Service o-- String : Argument "name"
 	Service *--  Dependency : IDependency
-	Composition ..> Service : IService Root
 ```
 

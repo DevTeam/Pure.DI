@@ -52,7 +52,7 @@ partial class Composition
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Task<IService> GetMyServiceAsync(CancellationToken cancellationToken)
   {
-    var perResolveFunc44 = default(Func<IService>);
+    var perResolveFunc45 = default(Func<IService>);
     TaskScheduler transientTaskScheduler4 = TaskScheduler.Default;
     TaskContinuationOptions transientTaskContinuationOptions3 = TaskContinuationOptions.None;
     TaskCreationOptions transientTaskCreationOptions2 = TaskCreationOptions.None;
@@ -65,13 +65,13 @@ partial class Composition
         perBlockTaskFactory1 = new TaskFactory<IService>(localCancellationToken10, localTaskCreationOptions11, localTaskContinuationOptions12, localTaskScheduler13);
     }
 
-    if (perResolveFunc44 == null)
+    if (perResolveFunc45 == null)
     {
         lock (_lock)
         {
-            if (perResolveFunc44 == null)
+            if (perResolveFunc45 == null)
             {
-                perResolveFunc44 = new Func<IService>(
+                perResolveFunc45 = new Func<IService>(
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 () =>
                 {
@@ -84,7 +84,7 @@ partial class Composition
 
     Task<IService> transientTask0;
     {
-        Func<IService> localFactory15 = perResolveFunc44!;
+        Func<IService> localFactory15 = perResolveFunc45!;
         TaskFactory<IService> localTaskFactory16 = perBlockTaskFactory1;
         transientTask0 = localTaskFactory16.StartNew(localFactory15);
     }
@@ -106,7 +106,6 @@ classDiagram
 	class TaskCreationOptions
 	class TaskContinuationOptions
 	class TaskFactory
-	class CancellationToken
 	Dependency --|> IDependency
 	class Dependency {
 		+Dependency()
@@ -115,6 +114,7 @@ classDiagram
 	class Service {
 		+Service(IDependency dependency)
 	}
+	class CancellationToken
 	class FuncᐸIServiceᐳ
 	class TaskFactoryᐸIServiceᐳ
 	class IDependency {
@@ -123,12 +123,12 @@ classDiagram
 	class IService {
 		<<interface>>
 	}
+	Composition ..> TaskᐸIServiceᐳ : TaskᐸIServiceᐳ GetMyServiceAsync(System.Threading.CancellationToken cancellationToken)
 	TaskFactory o-- CancellationToken : Argument "cancellationToken"
 	TaskFactory *--  TaskCreationOptions : TaskCreationOptions
 	TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions
 	TaskFactory *--  TaskScheduler : TaskScheduler
 	Service *--  Dependency : IDependency
-	Composition ..> TaskᐸIServiceᐳ : TaskᐸIServiceᐳ GetMyServiceAsync(System.Threading.CancellationToken cancellationToken)
 	TaskᐸIServiceᐳ o-- "PerResolve" FuncᐸIServiceᐳ : FuncᐸIServiceᐳ
 	TaskᐸIServiceᐳ o-- "PerBlock" TaskFactoryᐸIServiceᐳ : TaskFactoryᐸIServiceᐳ
 	FuncᐸIServiceᐳ *--  Service : IService

@@ -257,9 +257,9 @@ classDiagram
 	class IDependency {
 		<<interface>>
 	}
-	Service *--  Dependency : IDependency
-	Composition ..> OtherService : IService GetOtherService()
-	Composition ..> Service : IService GetRoot()
 	Composition ..> Dependency : IDependency Dependency
+	Composition ..> Service : IService GetRoot()
+	Composition ..> OtherService : IService GetOtherService()
+	Service *--  Dependency : IDependency
 ```
 

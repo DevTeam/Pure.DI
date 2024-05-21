@@ -269,24 +269,13 @@ classDiagram
 	class Dependency {
 		+Dependency()
 	}
-	Service --|> IService
-	Service --|> IAsyncDisposable
-	class Service {
-		+Service(FuncᐸOwnedᐸIDependencyᐳᐳ dependencyFactory)
-	}
 	class FuncᐸOwnedᐸIDependencyᐳᐳ
 	class OwnedᐸIDependencyᐳ
 	class IDependency {
 		<<interface>>
 	}
-	class IService {
-		<<interface>>
-	}
-	class IAsyncDisposable {
-		<<interface>>
-	}
-	Service o-- "PerResolve" FuncᐸOwnedᐸIDependencyᐳᐳ : FuncᐸOwnedᐸIDependencyᐳᐳ
 	Composition ..> Service : Service Root
+	Service o-- "PerResolve" FuncᐸOwnedᐸIDependencyᐳᐳ : FuncᐸOwnedᐸIDependencyᐳᐳ
 	FuncᐸOwnedᐸIDependencyᐳᐳ o-- "PerBlock" OwnedᐸIDependencyᐳ : OwnedᐸIDependencyᐳ
 	OwnedᐸIDependencyᐳ *--  Owned : Owned
 	OwnedᐸIDependencyᐳ *--  Dependency : IDependency

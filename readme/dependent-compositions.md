@@ -393,8 +393,8 @@ classDiagram
 		<<interface>>
 	}
 	Program *--  Service : IService
-	Service *--  Dependency : IDependency
-	OtherComposition ..> Service : IService Root
 	OtherComposition ..> Program : Program Program
+	OtherComposition ..> Service : IService Root
+	Service *--  Dependency : IDependency
 ```
 
