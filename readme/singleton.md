@@ -40,6 +40,20 @@ service1.Dependency1.ShouldBe(service1.Dependency2);
 service2.Dependency1.ShouldBe(service1.Dependency1);
 ```
 
+Some articles advise using objects with a _Singleton_ lifetime as often as possible, but the following details must be considered:
+
+- For .NET the default behavior is to create a new instance of the type each time it is needed, other behavior requires, additional logic that is not free and requires additional resources.
+
+- The use of _Singleton_, adds a requirement for thread-safety controls on their use, since singletons are more likely to share their state between different threads without even realizing it.
+
+- The thread-safety control should be automatically extended to all dependencies that _Singleton_ uses, since their state is also now shared.
+
+- Logic for thread-safety control can be resource-costly, error-prone, interlocking, and difficult to test.
+
+- _Singleton_ can retain dependency references longer than their expected lifetime, this is especially significant for objects that hold "non-renewable" resources, such as the operating system Handler.
+
+- Sometimes additional logic is required to dispose of _Singleton_.
+
 The following partial class will be generated:
 
 ```c#

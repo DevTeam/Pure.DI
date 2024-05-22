@@ -43,6 +43,14 @@ var otherService2 = composition.Resolve(typeof(IService),"My Tag");
 var otherService3 = composition.OtherService; // Gets the composition through the public root
 ```
 
+_Resolve_ methods are similar to calls to the roots of a composition. Composition roots are common properties. Their use is efficient and does not cause exceptions. And that is why it is recommended to use them. In contrast, _Resolve_ methods have a number of disadvantages:
+
+- They provide access to an unlimited set of dependencies.
+
+- Their use can potentially lead to runtime exceptions, for example, when the corresponding root has not been defined.
+
+- Lead to performance degradation because they search for the root of a composition based on its type.
+
 The following partial class will be generated:
 
 ```c#

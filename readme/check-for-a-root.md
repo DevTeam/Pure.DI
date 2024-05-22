@@ -59,6 +59,8 @@ Composition.HasRoot(typeof(IComparable)).ShouldBeFalse();
         
 ```
 
+For more hints, see [this](README.md#setup-hints) page.
+
 The following partial class will be generated:
 
 ```c#

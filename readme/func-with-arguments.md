@@ -17,11 +17,19 @@ class Clock : IClock
 interface IDependency
 {
     int Id { get; }
+
+    int SubId { get; }
 }
 
-class Dependency(IClock clock, int id) : IDependency
+class Dependency(
+    IClock clock,
+    int id,
+    [Tag("sub")] int subId)
+    : IDependency
 {
     public int Id => id;
+
+    public int SubId => subId;
 }
 
 interface IService
@@ -31,11 +39,11 @@ interface IService
 
 class Service : IService
 {
-    public Service(Func<int, IDependency> dependencyFactory) =>
+    public Service(Func<int, int, IDependency> dependencyFactory) =>
         Dependencies = [
             ..Enumerable
                 .Range(0, 10)
-                .Select((_, index) => dependencyFactory(index))
+                .Select((_, index) => dependencyFactory(index, 99))
         ];
 
     public ImmutableArray<IDependency> Dependencies { get; }
@@ -46,12 +54,16 @@ DI.Setup(nameof(Composition))
     // Binds a dependency of type int
     // to the source code statement "dependencyId"
     .Bind<int>().To<int>("dependencyId")
-    .Bind<Func<int, IDependency>>()
-        .To<Func<int, IDependency>>(ctx =>
-            dependencyId =>
+    // Binds a dependency of type int with tag "sub"
+    // to the source code statement "subId"
+    .Bind<int>("sub").To<int>("subId")
+    .Bind<Func<int, int, IDependency>>()
+        .To<Func<int, int, IDependency>>(ctx =>
+            (dependencyId, subId) =>
             {
                 // Builds up an instance of type Dependency
-                // referring the source code statement "dependencyId"
+                // referring source code statements "dependencyId"
+                // and source code statements "subId"
                 ctx.Inject<Dependency>(out var dependency);
                 return dependency;
             })
@@ -64,7 +76,10 @@ var composition = new Composition();
 var service = composition.Root;
 service.Dependencies.Length.ShouldBe(10);
 service.Dependencies[3].Id.ShouldBe(3);
+service.Dependencies[3].SubId.ShouldBe(99);
 ```
+
+Using a binding of the form `.Bind<T>().To<T>("some statement")` is a kind of hack that allows you to replace an injection with just its own string.
 
 The following partial class will be generated:
 
@@ -93,8 +108,11 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<int, IDependency> transientFunc1 = dependencyId =>
+      Func<int, int, IDependency> transientFunc1 =
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      (dependencyId, subId) =>
       {
+          int transientInt324 = subId;
           int transientInt323 = dependencyId;
           if (_root._singletonClock39 == null)
           {
@@ -107,7 +125,7 @@ partial class Composition
               }
           }
 
-          Dependency localDependency19 = new Dependency(_root._singletonClock39!, transientInt323);
+          Dependency localDependency19 = new Dependency(_root._singletonClock39!, transientInt323, transientInt324);
           return localDependency19;
       };
       return new Service(transientFunc1);
@@ -243,17 +261,17 @@ classDiagram
 		+ object Resolve(Type type, object? tag)
 	}
 	class Dependency {
-		+Dependency(IClock clock, Int32 id)
+		+Dependency(IClock clock, Int32 id, Int32 subId)
 	}
 	Clock --|> IClock
 	class Clock {
 		+Clock()
 	}
 	class Int32
-	class FuncᐸInt32ˏIDependencyᐳ
+	class FuncᐸInt32ˏInt32ˏIDependencyᐳ
 	Service --|> IService
 	class Service {
-		+Service(FuncᐸInt32ˏIDependencyᐳ dependencyFactory)
+		+Service(FuncᐸInt32ˏInt32ˏIDependencyᐳ dependencyFactory)
 	}
 	class IClock {
 		<<interface>>
@@ -263,8 +281,9 @@ classDiagram
 	}
 	Dependency o-- "Singleton" Clock : IClock
 	Dependency *--  Int32 : Int32
+	Dependency *--  Int32 : "sub"  Int32
 	Composition ..> Service : IService Root
-	FuncᐸInt32ˏIDependencyᐳ *--  Dependency : Dependency
-	Service *--  FuncᐸInt32ˏIDependencyᐳ : FuncᐸInt32ˏIDependencyᐳ
+	FuncᐸInt32ˏInt32ˏIDependencyᐳ *--  Dependency : Dependency
+	Service *--  FuncᐸInt32ˏInt32ˏIDependencyᐳ : FuncᐸInt32ˏInt32ˏIDependencyᐳ
 ```
 

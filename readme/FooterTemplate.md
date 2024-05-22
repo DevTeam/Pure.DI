@@ -19,8 +19,7 @@
     - [https://devteam.github.io/Pure.DI/](https://devteam.github.io/Pure.DI/)
 - Git repo with examples
   - [Schrödinger's cat](https://github.com/DevTeam/Pure.DI.Example) 
-  - [How to use Pure.DI to create libraries](https://github.com/DevTeam/Pure.DI.Solution)
-
+  - [How to use Pure.DI to create and test libraries](https://github.com/DevTeam/Pure.DI.Solution) 
 ## Generated Code
 
 Each generated class, hereafter called a _composition_, must be customized. Setup starts with a call to the `Setup(string compositionTypeName)` method:

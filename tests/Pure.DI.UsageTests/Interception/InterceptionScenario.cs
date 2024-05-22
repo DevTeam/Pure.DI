@@ -3,6 +3,21 @@ $v=true
 $p=1
 $d=Interception
 $h=Interception allows you to enrich or change the behavior of a certain set of objects from the object graph being created without changing the code of the corresponding types.
+$f=Using an intercept gives you the ability to add end-to-end functionality such as:
+$f=
+$f=- Logging
+$f=
+$f=- Action logging
+$f=
+$f=- Performance monitoring
+$f=
+$f=- Security
+$f=
+$f=- Caching
+$f=
+$f=- Error handling
+$f=
+$f=- Providing resistance to failures, etc.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

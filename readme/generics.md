@@ -2,7 +2,11 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Generics/GenericsScenario.cs)
 
-Generic types are also supported, this is easy to do by binding generic types and specifying generic markers like `TT`, `TT1` etc. as generic type parameters:
+Generic types are also supported.
+> [!IMPORTANT]
+> Instead of open generic types, as in classical DI container libraries, "marker" types are used as parameters of generalized types. Such "marker" types allow to define dependency graph more precisely.
+
+This is easy to do by binding generic types and specifying generic markers like `TT`, `TT1` etc. as generic type parameters:
 
 
 ```c#
@@ -51,6 +55,38 @@ public IService Root
     return new Service(new Dependency<int>(), new Dependency<string>());
   }
 }
+```
+Even in this simple scenario, it is not possible to precisely define the binding of an abstraction to its implementation using open generic types:
+```c#
+.Bind(typeof(IMap<,>)).To(typeof(Map<,>))
+```
+You can try to match them by order or by name derived from the .NET type reflection. But this is not reliable, since order and name matching is not guaranteed. For example, there is some interface with two arguments of type _key and _value_. But in its implementation the sequence of type arguments is mixed up: first comes the _value_ and then the _key_ and the names do not match:
+```c#
+class Map<TV, TK>: IMap<TKey, TValue> { }
+```
+At the same time, the marker types `TT1` and `TT2` handle this easily. They determine the exact correspondence between the type arguments in the interface and its implementation:
+```c#
+.Bind<IMap<TT1, TT2>>().To<Map<TT2, TT1>>()
+```
+The first argument of the type in the interface, corresponds to the second argument of the type in the implementation and is a _key_. The second argument of the type in the interface, corresponds to the first argument of the type in the implementation and is a _value_. This is a simple example. Obviously, there are plenty of more complex scenarios where tokenized types will be useful.
+Marker types are regular .NET types marked with a special attribute, such as:
+```c#
+[GenericTypeArgument]
+internal abstract class TT1 { }
+
+[GenericTypeArgument]
+internal abstract class TT2 { }
+```
+This way you can easily create your own, including making them fit the constraints on the type parameter, for example:
+```c#
+[GenericTypeArgument]
+internal struct TTS { }
+
+[GenericTypeArgument]
+internal interface TTDisposable: IDisposable { }
+
+[GenericTypeArgument]
+internal interface TTEnumerator<out T>: IEnumerator<T> { }
 ```
 
 The following partial class will be generated:

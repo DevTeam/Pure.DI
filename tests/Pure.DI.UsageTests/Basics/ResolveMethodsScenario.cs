@@ -3,6 +3,13 @@ $v=true
 $p=1
 $d=Resolve methods
 $h=This example shows how to resolve the composition roots using the _Resolve_ methods by _Service Locator_ approach. `Resolve` methods are generated automatically for each registered root.
+$f=_Resolve_ methods are similar to calls to the roots of a composition. Composition roots are common properties. Their use is efficient and does not cause exceptions. And that is why it is recommended to use them. In contrast, _Resolve_ methods have a number of disadvantages:
+$f=
+$f=- They provide access to an unlimited set of dependencies.
+$f=
+$f=- Their use can potentially lead to runtime exceptions, for example, when the corresponding root has not been defined.
+$f=
+$f=- Lead to performance degradation because they search for the root of a composition based on its type.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

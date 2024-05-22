@@ -2,7 +2,11 @@
 $v=true
 $p=1
 $d=Composition roots
-$h=This example demonstrates several ways to create a composition root. There is no limit to the number of roots, but you should consider limiting the number of roots. Ideally, an application should have a single composition root.
+$h=This example demonstrates several ways to create a composition root.
+$h=> [!TIP]
+$h=> There is no limit to the number of roots, but you should consider limiting the number of roots. Ideally, an application should have a single composition root.
+$h=
+$h=If you use classic DI containers, the composition is created dynamically every time you call a method similar to `T Resolve<T>()` or `object GetService(Type type)`. The root of the composition there is simply the root type of the composition of objects in memory T or Type type. There can be as many of these as you like. In the case of Pure.DI, the number of composition roots is limited because for each composition root a separate property or method is created at compile time. Therefore, each root is defined explicitly by calling the `Root(string rootName)` method.
 $f=The name of the root of a composition is arbitrarily chosen depending on its purpose, but should be restricted by the property naming conventions in C# since it is the same name as a property in the composition class. In reality, the _Root_ property has the form:
 $f=```c#
 $f=public IService Root

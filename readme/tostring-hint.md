@@ -24,7 +24,8 @@ var composition = new Composition();
 string classDiagram = composition.ToString();
 ```
 
-For more hints, see [this](https://github.com/DevTeam/Pure.DI/blob/master/README.md#setup-hints) page.
+Developers who start using DI technology often complain that they stop seeing the structure of the application because it is difficult to understand how it is built. To make life easier, you can add the _ToString_ hint by telling the generator to create a `ToString()` method.
+For more hints, see [this](README.md#setup-hints) page.
 
 The following partial class will be generated:
 

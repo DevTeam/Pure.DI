@@ -54,6 +54,22 @@ var service = composition.Root;
 service.GetMessage().ShouldBe("Hello World !!!");
 ```
 
+Using an intercept gives you the ability to add end-to-end functionality such as:
+
+- Logging
+
+- Action logging
+
+- Performance monitoring
+
+- Security
+
+- Caching
+
+- Error handling
+
+- Providing resistance to failures, etc.
+
 The following partial class will be generated:
 
 ```c#

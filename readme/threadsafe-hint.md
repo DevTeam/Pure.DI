@@ -26,7 +26,7 @@ var composition = new Composition();
 var service = composition.Root;
 ```
 
-For more hints, see [this](https://github.com/DevTeam/Pure.DI/blob/master/README.md#setup-hints) page.
+For more hints, see [this](README.md#setup-hints) page.
 
 The following partial class will be generated:
 

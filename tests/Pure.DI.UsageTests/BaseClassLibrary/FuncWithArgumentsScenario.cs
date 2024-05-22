@@ -2,6 +2,7 @@
 $v=true
 $p=99
 $d=Func with arguments
+$f=Using a binding of the form `.Bind<T>().To<T>("some statement")` is a kind of hack that allows you to replace an injection with just its own string.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -32,11 +33,19 @@ class Clock : IClock
 interface IDependency
 {
     int Id { get; }
+    
+    int SubId { get; }
 }
 
-class Dependency(IClock clock, int id) : IDependency
+class Dependency(
+    IClock clock,
+    int id,
+    [Tag("sub")] int subId)
+    : IDependency
 {
     public int Id => id;
+    
+    public int SubId => subId;
 }
 
 interface IService
@@ -46,11 +55,11 @@ interface IService
 
 class Service : IService
 {
-    public Service(Func<int, IDependency> dependencyFactory) =>
+    public Service(Func<int, int, IDependency> dependencyFactory) =>
         Dependencies = [
             ..Enumerable
                 .Range(0, 10)
-                .Select((_, index) => dependencyFactory(index))
+                .Select((_, index) => dependencyFactory(index, 99))
         ];
 
     public ImmutableArray<IDependency> Dependencies { get; }
@@ -68,12 +77,16 @@ public class Scenario
             // Binds a dependency of type int
             // to the source code statement "dependencyId"
             .Bind<int>().To<int>("dependencyId")
-            .Bind<Func<int, IDependency>>()
-                .To<Func<int, IDependency>>(ctx =>
-                    dependencyId =>
+            // Binds a dependency of type int with tag "sub"
+            // to the source code statement "subId"
+            .Bind<int>("sub").To<int>("subId")
+            .Bind<Func<int, int, IDependency>>()
+                .To<Func<int, int, IDependency>>(ctx =>
+                    (dependencyId, subId) =>
                     {
                         // Builds up an instance of type Dependency
-                        // referring the source code statement "dependencyId"
+                        // referring source code statements "dependencyId"
+                        // and source code statements "subId"
                         ctx.Inject<Dependency>(out var dependency);
                         return dependency;
                     })
@@ -86,6 +99,7 @@ public class Scenario
         var service = composition.Root;
         service.Dependencies.Length.ShouldBe(10);
         service.Dependencies[3].Id.ShouldBe(3);
+        service.Dependencies[3].SubId.ShouldBe(99);
 // }            
         composition.SaveClassDiagram();
     }

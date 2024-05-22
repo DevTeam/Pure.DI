@@ -2,7 +2,11 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/CompositionRootsScenario.cs)
 
-This example demonstrates several ways to create a composition root. There is no limit to the number of roots, but you should consider limiting the number of roots. Ideally, an application should have a single composition root.
+This example demonstrates several ways to create a composition root.
+> [!TIP]
+> There is no limit to the number of roots, but you should consider limiting the number of roots. Ideally, an application should have a single composition root.
+
+If you use classic DI containers, the composition is created dynamically every time you call a method similar to `T Resolve<T>()` or `object GetService(Type type)`. The root of the composition there is simply the root type of the composition of objects in memory T or Type type. There can be as many of these as you like. In the case of Pure.DI, the number of composition roots is limited because for each composition root a separate property or method is created at compile time. Therefore, each root is defined explicitly by calling the `Root(string rootName)` method.
 
 
 ```c#

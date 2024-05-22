@@ -4,6 +4,9 @@
 
 This example demonstrates the creation of a [Avalonia](https://avaloniaui.net/) application in the pure DI paradigm using the _Pure.DI_ code generator.
 
+> [!NOTE]
+> [Another example](samples/SingleRootAvaloniaApp) with Avalonia shows how to create an application with a single composition root.
+
 The definition of the composition is in [Composition.cs](/samples/AvaloniaApp/Composition.cs). You must not forget to define any necessary composition roots, for example, these can be view models such as _ClockViewModel_:
 
 ```csharp

@@ -3,6 +3,9 @@
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/ClassArgumentsScenario.cs)
 
 Sometimes you need to pass some state to a composition class to use it when resolving dependencies. To do this, just use the `Arg<T>(string argName)` method, specify the type of argument and its name. You can also specify a tag for each argument. You can then use them as dependencies when building the object graph. If you have multiple arguments of the same type, just use tags to distinguish them. The values of the arguments are manipulated when you create a composition class by calling its constructor. It is important to remember that only those arguments that are used in the object graph will appear in the constructor. Arguments that are not involved will not be added to the constructor arguments.
+> [!NOTE]
+> Actually, class arguments work like normal bindings. The difference is that they bind to the values of the arguments. These values will be implemented as dependencies wherever they are required.
+
 
 
 ```c#
@@ -43,7 +46,7 @@ DI.Setup(nameof(Composition))
     .Bind<IService>().To<Service>()
 
     // Composition root "MyRoot"
-    .Root<IService>("MyRoot")
+    .Root<IService>("MyService")
 
     // Some kind of identifier
     .Arg<int>("id")
@@ -57,7 +60,7 @@ DI.Setup(nameof(Composition))
 var composition = new Composition(id: 123, serviceName: "Abc", dependencyName: "Xyz");
         
 // service = new Service("Abc", new Dependency(123, "Xyz"));
-var service = composition.MyRoot;
+var service = composition.MyService;
         
 service.Name.ShouldBe("Abc");
 service.Dependency.Id.ShouldBe(123);
@@ -91,7 +94,7 @@ partial class Composition
     _argDependencyName = _root._argDependencyName;
   }
 
-  public IService MyRoot
+  public IService MyService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
@@ -108,7 +111,7 @@ Class diagram:
 classDiagram
 	class Composition {
 		<<partial>>
-		+IService MyRoot
+		+IService MyService
 	}
 	Dependency --|> IDependency
 	class Dependency {
@@ -126,7 +129,7 @@ classDiagram
 	class IService {
 		<<interface>>
 	}
-	Composition ..> Service : IService MyRoot
+	Composition ..> Service : IService MyService
 	Dependency o-- Int32 : Argument "id"
 	Dependency o-- String : Argument "dependencyName"
 	Service o-- String : "my service name"  Argument "serviceName"
