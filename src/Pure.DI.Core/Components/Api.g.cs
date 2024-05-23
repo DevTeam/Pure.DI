@@ -1152,7 +1152,7 @@ namespace Pure.DI
     /// <summary>
     /// Gives the ability to manage disposable objects.
     /// </summary>
-    public interface IOwned
+    internal interface IOwned
         : global::System.IDisposable
 #if NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
         , global::System.IAsyncDisposable
@@ -1270,7 +1270,7 @@ namespace Pure.DI
     /// </summary>
     [global::System.Diagnostics.DebuggerDisplay("{Value}")]
     [global::System.Diagnostics.DebuggerTypeProxy(typeof(global::Pure.DI.Owned<>.DebugView))]
-    public readonly struct Owned<T> : global::Pure.DI.IOwned
+    internal readonly struct Owned<T> : global::Pure.DI.IOwned
     {
         /// <summary>
         /// The value.

@@ -32,7 +32,7 @@ public class AddDisposableBenchmark
     }
     
     [Benchmark]
-    public IOwned AddDisposable()
+    public IDisposable AddDisposable()
     {
         var owned = new Owned();
         for (var i = 0; i < Count; i++)
