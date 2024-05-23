@@ -1831,4 +1831,59 @@ namespace Sample
         result.Warnings.Count.ShouldBe(1);
         result.Warnings.Count(i => i.Id == LogId.WarningOverriddenBinding).ShouldBe(1);
     }
+    
+    [Fact]
+    public async Task ShouldSupportDefaultCompositionName()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    internal interface IDependency { }
+
+    internal class Dependency : IDependency { }
+
+    internal interface IService { }
+
+    internal class Service : IService
+    {
+        public Service(IDependency dependency)
+        {
+        }
+    }
+
+    partial class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup()
+                .Bind<IDependency>().To<Dependency>();
+        }
+    }          
+
+    public class Program
+    {
+        public static void Main()
+        {
+            DI.Setup("Composition")
+                .DependsOn("Sample.Setup")
+                .Bind<IService>().To<Service>()
+                .Root<IService>("Root");
+
+            var composition = new Composition();
+            System.Console.WriteLine(composition.Root);                                                       
+        }
+    }
+}
+""".RunAsync();
+
+        // Then
+        result.Errors.ShouldBeEmpty();
+        result.StdOut.ShouldBe(["Sample.Service"], result);
+    }
 }

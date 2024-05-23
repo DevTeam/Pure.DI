@@ -43,7 +43,7 @@ partial class Composition
         Roots.Contains((type, key));
         
     void Setup() =>
-        DI.Setup(nameof(Composition))
+        DI.Setup()
             // Specifies to use the partial OnNewRoot method
             // to register each root
             .Hint(Hint.OnNewRoot, "On")

@@ -2072,10 +2072,10 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <param name="compositionTypeName">This argument specifying the partial class name to generate.</param>
+        /// <param name="compositionTypeName">An optional argument specifying the partial class name to generate.</param>
         /// <param name="kind">An optional argument specifying the kind of setup. Please <see cref="Pure.DI.CompositionKind"/> for details. It defaults to <c>Public</c>.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
-        internal static IConfiguration Setup(string compositionTypeName, CompositionKind kind = CompositionKind.Public)
+        internal static IConfiguration Setup(string compositionTypeName = "", CompositionKind kind = CompositionKind.Public)
         {
             return Configuration.Shared;
         }

@@ -109,6 +109,13 @@ internal class ApiInvocationProcessor(
                         var setupArgs = arguments.GetArgs(invocation.ArgumentList, "compositionTypeName", "kind");
                         var setupCompositionTypeName = setupArgs[0] is {} compositionTypeNameArg ? semanticModel.GetRequiredConstantValue<string>(compositionTypeNameArg.Expression) : "";
                         var setupKind = setupArgs[1] is {} setupKindArg ? semanticModel.GetRequiredConstantValue<CompositionKind>(setupKindArg.Expression) : CompositionKind.Public;
+                        if (setupKind != CompositionKind.Global
+                            && string.IsNullOrWhiteSpace(setupCompositionTypeName)
+                            && invocation.Ancestors().OfType<BaseTypeDeclarationSyntax>().FirstOrDefault() is {} baseType)
+                        {
+                            setupCompositionTypeName = baseType.Identifier.Text;
+                        }
+                        
                         metadataVisitor.VisitSetup(
                             new MdSetup(
                                 semanticModel,

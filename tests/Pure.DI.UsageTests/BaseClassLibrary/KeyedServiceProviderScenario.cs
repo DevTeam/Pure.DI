@@ -34,7 +34,7 @@ class Service([Tag("Dependency Key")] IDependency dependency) : IService
 partial class Composition: IKeyedServiceProvider
 {
     void Setup() =>
-        DI.Setup(nameof(Composition))
+        DI.Setup()
             // The following hint overrides the name of the
             // "object Resolve(Type type)" method in "GetService",
             // which implements the "IServiceProvider" interface
