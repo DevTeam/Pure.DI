@@ -28,7 +28,7 @@ partial class Composition
         // "object Resolve(Type type)" method in "GetService",
         // which implements the "IServiceProvider" interface:
 
-        DI.Setup(nameof(Composition))
+        DI.Setup()
             // The following hint overrides the name of the
             // "object Resolve(Type type)" method in "GetService",
             // which implements the "IServiceProvider" interface

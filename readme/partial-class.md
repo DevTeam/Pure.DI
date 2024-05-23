@@ -46,7 +46,7 @@ public partial class Composition
     // In fact, this method will not be called at runtime
     [Conditional("DI")]
     void Setup() =>
-        DI.Setup(nameof(Composition))
+        DI.Setup()
             .Bind<IDependency>().To<Dependency>()
             .Bind<long>().To(_ => GenerateId())
             .Bind<string>("name with id").To(

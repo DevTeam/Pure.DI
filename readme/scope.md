@@ -39,7 +39,7 @@ class Program(Func<Session> sessionFactory)
 partial class Composition
 {
     void Setup() =>
-        DI.Setup(nameof(Composition))
+        DI.Setup()
             // This hint indicates to not generate methods such as Resolve
             .Hint(Hint.Resolve, "Off")
             .Bind().As(Scoped).To<Dependency>()

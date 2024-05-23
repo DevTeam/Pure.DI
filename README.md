@@ -343,6 +343,11 @@ partial class Composition
 
 </details>
 
+The _compositionTypeName_ parameter can be omitted
+
+- if the setup is performed inside a partial class, then the composition will be created for this partial class
+- for the case of a class with composition kind `CompositionKind.Global`, see [this example](readme/global-compositions.md)
+
 <details>
 <summary>Setup arguments</summary>
 
