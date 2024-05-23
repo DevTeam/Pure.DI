@@ -10,7 +10,7 @@ using Timer = Clock.Models.Timer;
 
 internal partial class Composition: ServiceProviderFactory<Composition>
 {
-    private static void Setup() => DI.Setup(nameof(Composition))
+    private static void Setup() => DI.Setup()
         .DependsOn(Base)
         // Specifies not to attempt to resolve types whose fully qualified name
         // begins with Microsoft.Extensions., Microsoft.Maui.

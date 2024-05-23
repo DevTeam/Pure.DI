@@ -9,38 +9,37 @@ Composition setup file is [Composition.cs](/samples/BlazorServerApp/Composition.
 ```c#
 internal partial class Composition: ServiceProviderFactory<Composition>
 {
-    void Setup() =>
-        DI.Setup(nameof(Composition))
-            .DependsOn(Base)
-            // Specifies not to attempt to resolve types whose fully qualified name
-            // begins with Microsoft.Extensions., Microsoft.AspNetCore.
-            // since ServiceProvider will be used to retrieve them.
-            .Hint(
-                Hint.OnCannotResolveContractTypeNameRegularExpression,
-                @"^Microsoft\.(Extensions|AspNetCore)\..+$")
-            
-            // View Models
-            .Bind().To<ClockViewModel>()
-                // Provides the composition root for Clock view model
-                .Root<IClockViewModel>("ClockViewModel")
-            .Bind().To<ErrorViewModel>()
-                // Provides the composition root for Error view model
-                .Root<IErrorViewModel>()
+    void Setup() => DI.Setup()
+        .DependsOn(Base)
+        // Specifies not to attempt to resolve types whose fully qualified name
+        // begins with Microsoft.Extensions., Microsoft.AspNetCore.
+        // since ServiceProvider will be used to retrieve them.
+        .Hint(
+            Hint.OnCannotResolveContractTypeNameRegularExpression,
+            @"^Microsoft\.(Extensions|AspNetCore)\..+$")
+        
+        // View Models
+        .Bind().To<ClockViewModel>()
+            // Provides the composition root for Clock view model
+            .Root<IClockViewModel>("ClockViewModel")
+        .Bind().To<ErrorViewModel>()
+            // Provides the composition root for Error view model
+            .Root<IErrorViewModel>()
 
-            // Services
-            .Bind().To<Log<TT>>()
-            .Bind().To(_ => TimeSpan.FromSeconds(1))
-            .Bind().As(Singleton).To<Timer>()
-            .Bind().As(PerBlock).To<SystemClock>()
-            .Bind().As(Singleton).To<WeatherForecastService>()
-                // Provides the composition root for Weather Forecast service
-                .Root<IWeatherForecastService>()
-            .Bind().As(Singleton).To<CounterService>()
-                // Provides the composition root for Counter service
-                .Root<ICounterService>()
-            
-            // Infrastructure
-            .Bind().To<Dispatcher>();
+        // Services
+        .Bind().To<Log<TT>>()
+        .Bind().To(_ => TimeSpan.FromSeconds(1))
+        .Bind().As(Singleton).To<Timer>()
+        .Bind().As(PerBlock).To<SystemClock>()
+        .Bind().As(Singleton).To<WeatherForecastService>()
+            // Provides the composition root for Weather Forecast service
+            .Root<IWeatherForecastService>()
+        .Bind().As(Singleton).To<CounterService>()
+            // Provides the composition root for Counter service
+            .Root<ICounterService>()
+        
+        // Infrastructure
+        .Bind().To<Dispatcher>();
 }
 ```
 

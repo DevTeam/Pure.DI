@@ -49,22 +49,21 @@ internal partial class Composition
     // In fact, this code is never run, and the method can have any name or be a constructor, for example,
     // and can be in any part of the compiled code because this is just a hint to set up an object graph.
     // Here the setup is part of the generated class, just as an example.
-    void Setup() =>
-        DI.Setup(nameof(Composition))
-            // Models a random subatomic event that may or may not occur
-            .Bind().As(Singleton).To<Random>()
-            // Represents a quantum superposition of 2 states: Alive or Dead
-            .Bind().To(ctx =>
-            {
-                ctx.Inject<Random>(out var random);
-                return (State)random.Next(2);
-            })
-            // Represents schrodinger's cat
-            .Bind().To<ShroedingersCat>()
-            // Represents a cardboard box with any content
-            .Bind().To<CardboardBox<TT>>()
-            // Composition Root
-            .Root<Program>("Root");
+    void Setup() => DI.Setup()
+        // Models a random subatomic event that may or may not occur
+        .Bind().As(Singleton).To<Random>()
+        // Represents a quantum superposition of 2 states: Alive or Dead
+        .Bind().To(ctx =>
+        {
+            ctx.Inject<Random>(out var random);
+            return (State)random.Next(2);
+        })
+        // Represents schrodinger's cat
+        .Bind().To<ShroedingersCat>()
+        // Represents a cardboard box with any content
+        .Bind().To<CardboardBox<TT>>()
+        // Composition Root
+        .Root<Program>("Root");
 }
 
 // Time to open boxes!

@@ -9,19 +9,18 @@ Composition setup file is [Composition.cs](/samples/WebAPI/Composition.cs):
 ```c#
 internal partial class Composition: ServiceProviderFactory<Composition>
 {
-    void Setup() =>
-        DI.Setup(nameof(Composition))
-            .DependsOn(Base)
-            // Specifies not to attempt to resolve types whose fully qualified name
-            // begins with Microsoft.Extensions., Microsoft.AspNetCore.
-            // since ServiceProvider will be used to retrieve them.
-            .Hint(
-                Hint.OnCannotResolveContractTypeNameRegularExpression,
-                @"^Microsoft\.(Extensions|AspNetCore)\..+$")
+    void Setup() => DI.Setup()
+        .DependsOn(Base)
+        // Specifies not to attempt to resolve types whose fully qualified name
+        // begins with Microsoft.Extensions., Microsoft.AspNetCore.
+        // since ServiceProvider will be used to retrieve them.
+        .Hint(
+            Hint.OnCannotResolveContractTypeNameRegularExpression,
+            @"^Microsoft\.(Extensions|AspNetCore)\..+$")
 
-            .Bind().As(Singleton).To<WeatherForecastService>()
-            // Provides the composition root for Weather Forecast controller
-            .Root<WeatherForecastController>();
+        .Bind().As(Singleton).To<WeatherForecastService>()
+        // Provides the composition root for Weather Forecast controller
+        .Root<WeatherForecastController>();
 }
 ```
 

@@ -12,7 +12,7 @@ The definition of the composition is in [Composition.cs](/samples/AvaloniaApp/Co
 ```csharp
 internal partial class Composition
 {
-    void Setup() => DI.Setup(nameof(Composition))
+    void Setup() => DI.Setup()
         // Provides the composition root for main window
         .Root<MainWindow>("MainWindow")
         // Provides the composition root for Clock view model

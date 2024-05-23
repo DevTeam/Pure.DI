@@ -12,7 +12,7 @@ using static Pure.DI.Lifetime;
 
 internal partial class Composition
 {
-    void Setup() => DI.Setup(nameof(Composition))
+    void Setup() => DI.Setup()
         // Provides the composition root for main form
         .Root<FormMain>("FormMain")
 

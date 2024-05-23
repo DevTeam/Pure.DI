@@ -9,7 +9,7 @@ The definition of the composition is in [Composition.cs](/samples/MAUIApp/Compos
 ```csharp
 internal partial class Composition: ServiceProviderFactory<Composition>
 {
-    void Setup() => DI.Setup(nameof(Composition))
+    void Setup() => DI.Setup()
         .DependsOn(Base)
         // Specifies not to attempt to resolve types whose fully qualified name
         // begins with Microsoft.Extensions., Microsoft.Maui.

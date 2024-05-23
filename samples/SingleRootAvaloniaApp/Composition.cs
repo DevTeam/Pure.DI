@@ -11,7 +11,7 @@ using static Pure.DI.Lifetime;
 
 internal partial class Composition
 {
-    void Setup() => DI.Setup(nameof(Composition))
+    void Setup() => DI.Setup()
         // A single compositional root for the application
         .Root<AppDataContext>("App")
         

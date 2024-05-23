@@ -3,6 +3,6 @@
 internal class $(CompositionName)
 {
     private void Setup() => 
-        DI.Setup(nameof($(CompositionName)), CompositionKind.Global)
+        DI.Setup(kind: CompositionKind.Global)
             .Bind().As(Singleton).To<ConsoleAdapter>();
 }

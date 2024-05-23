@@ -3,7 +3,7 @@
 internal partial class $(CompositionName)
 {
     private void Setup() => 
-        DI.Setup(nameof($(CompositionName)))
+        DI.Setup()
             .Bind().As(Singleton).To<ConsoleAdapter>()
             .Root<Program>("Root");
 }

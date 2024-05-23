@@ -1,5 +1,6 @@
 ﻿using Pure.DI;
 using static Pure.DI.Lifetime;
+
 // ReSharper disable ArrangeTypeMemberModifiers
 
 // ReSharper disable InconsistentNaming
@@ -57,21 +58,20 @@ internal partial class Composition
     // [Conditional("DI")] attribute avoids generating IL code for the method that follows it.
     // Since this method is needed only at the compile time.
     [Conditional("DI")]
-    void Setup() =>
-        DI.Setup(nameof(Composition))
-            // Models a random subatomic event that may or may not occur
-            .Bind().As(Singleton).To<Random>()
-            // Quantum superposition of two states: Alive or Dead
-            .Bind().To(ctx =>
-            {
-                ctx.Inject<Random>(out var random);
-                return (State)random.Next(2);
-            })
-            .Bind().To<ShroedingersCat>()
-            // Cardboard box with any contents
-            .Bind().To<CardboardBox<TT>>()
-            // Provides the composition root
-            .Root<Program>("Root");
+    void Setup() => DI.Setup()
+        // Models a random subatomic event that may or may not occur
+        .Bind().As(Singleton).To<Random>()
+        // Quantum superposition of two states: Alive or Dead
+        .Bind().To(ctx =>
+        {
+            ctx.Inject<Random>(out var random);
+            return (State)random.Next(2);
+        })
+        .Bind().To<ShroedingersCat>()
+        // Cardboard box with any contents
+        .Bind().To<CardboardBox<TT>>()
+        // Provides the composition root
+        .Root<Program>("Root");
 }
 
 // Time to open boxes!
