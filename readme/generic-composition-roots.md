@@ -3,6 +3,8 @@
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Generics/GenericsCompositionRootsScenario.cs)
 
 Sometimes you want to be able to create composition roots with type parameters. In this case, the composition root can only be represented by a method.
+>[!IMPORTANT]
+>`Resolve()' methods cannot be used to resolve generic composition roots.
 
 
 ```c#
@@ -49,8 +51,8 @@ var service = composition.GetMyRoot<int>();
 var someOtherService = composition.GetOtherService<string>();
 ```
 
-> [!IMPORTANT]
-> `Resolve' methods cannot be used to resolve generic composition roots.
+>[!IMPORTANT]
+>The method `Inject()`cannot be used outside of the binding setup.
 
 The following partial class will be generated:
 

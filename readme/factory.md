@@ -61,7 +61,9 @@ var service = composition.MyService;
 service.Dependency.IsInitialized.ShouldBeTrue();
 ```
 
-This approach is more expensive to maintain, but allows you to create objects more flexibly by passing them some state and introducing dependencies. As in the case of automatic dependency embedding, objects give up control on embedding, and the whole process takes place when the object graph is created.
+This approach is more expensive to maintain, but allows you to create objects more flexibly by passing them some state and introducing dependencies. As in the case of automatic dependency injecting, objects give up control on embedding, and the whole process takes place when the object graph is created.
+>[!IMPORTANT]
+>The method `Inject()`cannot be used outside of the binding setup.
 
 The following partial class will be generated:
 

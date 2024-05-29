@@ -1962,12 +1962,12 @@ namespace Pure.DI
     }
 
     /// <summary>
-    /// Abstract injection context./>.
+    /// Injection context. Cannot be used outside of the binding setup.
     /// </summary>
     internal interface IContext
     {
         /// <summary>
-        /// The tag that was used to inject the current object in the object graph. See also <see cref="IBinding.Tags"/>
+        /// The tag that was used to inject the current object in the object graph. Cannot be used outside of the binding setup. See also <see cref="IBinding.Tags"/>
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
@@ -1985,7 +1985,7 @@ namespace Pure.DI
         object Tag { get; }
             
         /// <summary>
-        /// Injects an instance of type <c>T</c>.
+        /// Injects an instance of type <c>T</c>. Cannot be used outside of the binding setup.
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
@@ -2020,7 +2020,7 @@ namespace Pure.DI
         void Inject<T>(out T value);
 
         /// <summary>
-        /// Injects an instance of type <c>T</c> marked with a tag.
+        /// Injects an instance of type <c>T</c> marked with a tag. Cannot be used outside of the binding setup.
         /// <example>
         /// <code>
         /// DI.Setup("Composition")

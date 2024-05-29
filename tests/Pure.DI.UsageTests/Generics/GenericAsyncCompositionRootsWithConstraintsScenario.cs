@@ -2,8 +2,10 @@
 $v=true
 $p=5
 $d=Generic async composition roots with constraints
-$f=> [!IMPORTANT]
-$f=> `Resolve' methods cannot be used to resolve generic composition roots.
+$h=>[!IMPORTANT]
+$h=>`Resolve' methods cannot be used to resolve generic composition roots.
+$f=>[!IMPORTANT]
+$f=>The method `Inject()`cannot be used outside of the binding setup.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

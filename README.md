@@ -172,7 +172,7 @@ The full analog of this application with top-level statements can be found [here
 <details>
 <summary>Just try!</summary>
 
-Download a sample project
+Clone a [sample project](https://github.com/DevTeam/Pure.DI.Example):
 
 ```shell
 git clone https://github.com/DevTeam/Pure.DI.Example.git

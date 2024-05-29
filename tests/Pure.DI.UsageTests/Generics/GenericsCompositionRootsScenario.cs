@@ -3,8 +3,10 @@ $v=true
 $p=2
 $d=Generic composition roots
 $h=Sometimes you want to be able to create composition roots with type parameters. In this case, the composition root can only be represented by a method.
-$f=> [!IMPORTANT]
-$f=> `Resolve' methods cannot be used to resolve generic composition roots.
+$h=>[!IMPORTANT]
+$h=>`Resolve()' methods cannot be used to resolve generic composition roots.
+$f=>[!IMPORTANT]
+$f=>The method `Inject()`cannot be used outside of the binding setup.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
