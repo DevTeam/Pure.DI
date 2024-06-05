@@ -18,6 +18,7 @@ internal sealed class SetupsBuilder(
     private readonly List<MdAccumulator> _accumulators = [];
     private IBindingBuilder _bindingBuilder = bindingBuilderFactory();
     private MdSetup? _setup;
+    private Hints _hints = new();
 
     public IEnumerable<MdSetup> Build(SyntaxUpdate update)
     {
@@ -69,7 +70,7 @@ internal sealed class SetupsBuilder(
         FinishBinding();
     }
 
-    public void VisitResolve(MdResolver resolver)
+    public void VisitResolve(in MdResolver resolver)
     {
     }
 
@@ -98,6 +99,9 @@ internal sealed class SetupsBuilder(
     public void VisitAccumulator(in MdAccumulator accumulator) => 
         _accumulators.Add(accumulator);
 
+    public void VisitHint(in MdHint hint) =>
+        _hints[hint.Key] = hint.Value;
+
     public void VisitFinish() => FinishSetup();
 
     private void FinishBinding() => 
@@ -113,6 +117,7 @@ internal sealed class SetupsBuilder(
         _setups.Add(
             setup with
             {
+                Hints = _hints,
                 Bindings = _bindings.Select(i => i with { SourceSetup = setup }).ToImmutableArray(),
                 Roots = _roots.ToImmutableArray(),
                 DependsOn = _dependsOn.ToImmutableArray(),
@@ -122,7 +127,8 @@ internal sealed class SetupsBuilder(
                 UsingDirectives = _usingDirectives.ToImmutableArray(),
                 Accumulators = _accumulators.Distinct().ToImmutableArray()
         });
-            
+
+        _hints = new Hints();
         _bindings.Clear();
         _roots.Clear();
         _dependsOn.Clear();

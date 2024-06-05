@@ -106,7 +106,7 @@ internal class MetadataWalkerBase: IMetadataVisitor
         }
     }
 
-    public virtual void VisitResolve(MdResolver resolver)
+    public virtual void VisitResolve(in MdResolver resolver)
     {
         if (resolver.Tag is {} tag)
         {
@@ -151,6 +151,10 @@ internal class MetadataWalkerBase: IMetadataVisitor
     }
     
     public virtual void VisitAccumulator(in MdAccumulator accumulator)
+    {
+    }
+
+    public virtual void VisitHint(in MdHint hint)
     {
     }
 

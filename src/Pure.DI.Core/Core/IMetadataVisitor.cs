@@ -15,7 +15,7 @@ internal interface IMetadataVisitor
 
     void VisitFactory(in MdFactory factory);
 
-    void VisitResolve(MdResolver resolver);
+    void VisitResolve(in MdResolver resolver);
     
     void VisitDefaultLifetime(in MdDefaultLifetime defaultLifetime);
     
@@ -36,6 +36,8 @@ internal interface IMetadataVisitor
     void VisitTag(in MdTag tag);
 
     void VisitAccumulator(in MdAccumulator accumulator);
+    
+    void VisitHint(in MdHint hint);
 
     void VisitFinish();
 }

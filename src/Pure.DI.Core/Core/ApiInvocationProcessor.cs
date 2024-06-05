@@ -10,7 +10,6 @@ internal class ApiInvocationProcessor(
     : IApiInvocationProcessor
 {
     private static readonly char[] TypeNamePartsSeparators = ['.'];
-    private readonly Hints _hints = new();
 
     public void ProcessInvocation(
         IMetadataVisitor metadataVisitor,
@@ -92,7 +91,7 @@ internal class ApiInvocationProcessor(
                         var hintArgs = arguments.GetArgs(invocation.ArgumentList, "hint", "value");
                         if (hintArgs is [{ Expression: { } hintNameExpression }, { Expression: { } hintValueExpression }])
                         {
-                            _hints[semanticModel.GetConstantValue<Hint>(hintNameExpression)] = semanticModel.GetRequiredConstantValue<string>(hintValueExpression);
+                            metadataVisitor.VisitHint(new MdHint(semanticModel.GetConstantValue<Hint>(hintNameExpression), semanticModel.GetRequiredConstantValue<string>(hintValueExpression)));
                         }
 
                         break;
@@ -116,6 +115,11 @@ internal class ApiInvocationProcessor(
                             setupCompositionTypeName = baseType.Identifier.Text;
                         }
                         
+                        foreach (var hint in comments.GetHints(invocationComments))
+                        {
+                            metadataVisitor.VisitHint(new MdHint(hint.Key, hint.Value));
+                        }
+                        
                         metadataVisitor.VisitSetup(
                             new MdSetup(
                                 semanticModel,
@@ -123,7 +127,7 @@ internal class ApiInvocationProcessor(
                                 CreateCompositionName(setupCompositionTypeName, @namespace, invocation.ArgumentList),
                                 ImmutableArray<MdUsingDirectives>.Empty,
                                 setupKind,
-                                ApplyHints(invocationComments),
+                                new Hints(),
                                 ImmutableArray<MdBinding>.Empty,
                                 ImmutableArray<MdRoot>.Empty,
                                 ImmutableArray<MdDependsOn>.Empty,
@@ -507,16 +511,6 @@ internal class ApiInvocationProcessor(
         }
     }
     
-    private IHints ApplyHints(IEnumerable<string> invocationComments)
-    {
-        foreach (var hint in comments.GetHints(invocationComments))
-        {
-            _hints[hint.Key] = hint.Value;
-        }
-
-        return _hints;
-    }
-    
     // ReSharper disable once SuggestBaseTypeForParameter
     private static void NotSupported(InvocationExpressionSyntax invocation)
     {
@@ -539,7 +533,7 @@ internal class ApiInvocationProcessor(
             .Select((tag, i) => new MdTag(i, tag))
             .ToImmutableArray();
     }
-
+    
     private static CompositionName CreateCompositionName(string name, string ns, SyntaxNode source)
     {
         string className;

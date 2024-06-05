@@ -23,10 +23,10 @@ internal sealed class MetadataSyntaxWalker(
     public void Visit(IMetadataVisitor metadataVisitor, in SyntaxUpdate update)
     {
         Visit(update.Node);
-        var invocations = new Stack<InvocationExpressionSyntax>();
+        var visitors = new List<InvocationVisitor>();
         while (_invocations.TryPop(out var invocation))
         {
-            invocations.Push(invocation);
+            visitors.Add(new InvocationVisitor(update.SemanticModel, invocation, metadataVisitor, cancellationToken));
             _isMetadata = true;
             try
             {
@@ -38,14 +38,28 @@ internal sealed class MetadataSyntaxWalker(
             }
         }
 
-        while (invocations.TryPop(out var invocation))
+        if (visitors.Count == 0)
         {
-            invocationProcessor.ProcessInvocation(metadataVisitor, update.SemanticModel, invocation, _namespace);
+            return;
         }
-
+        
+        visitors.Reverse();
+#if DEBUG
+        visitors.ForEach(i => ProcessInvocation(i));
+#else 
+        Parallel.ForEach(visitors, i => ProcessInvocation(i));
+#endif
+        foreach (var visitor in visitors)
+        {
+            visitor.Apply();
+        }
+        
         metadataVisitor.VisitFinish();
     }
-    
+
+    private void ProcessInvocation(in InvocationVisitor visitor) => 
+        invocationProcessor.ProcessInvocation(visitor, visitor.SemanticModel, visitor.Invocation, _namespace);
+
     // ReSharper disable once CognitiveComplexity
     public override void VisitInvocationExpression(InvocationExpressionSyntax invocation)
     {
@@ -67,7 +81,7 @@ internal sealed class MetadataSyntaxWalker(
         _namespace = namespaceDeclaration.Name.ToString().Trim();
         base.VisitNamespaceDeclaration(namespaceDeclaration);
     }
-    
+
     private static string GetInvocationName(InvocationExpressionSyntax invocation) => GetName(invocation.Expression, 2);
 
     private static string GetName(ExpressionSyntax expression, int deepness = int.MaxValue)
@@ -76,7 +90,7 @@ internal sealed class MetadataSyntaxWalker(
         {
             case IdentifierNameSyntax identifierNameSyntax:
                 return identifierNameSyntax.Identifier.Text;
-            
+
             case MemberAccessExpressionSyntax memberAccess when memberAccess.IsKind(SyntaxKind.SimpleMemberAccessExpression):
             {
                 var name = memberAccess.Name.Identifier.Text;
@@ -88,12 +102,12 @@ internal sealed class MetadataSyntaxWalker(
 
                 return name;
             }
-            
+
             default:
                 return string.Empty;
         }
     }
-    
+
     [SuppressMessage("ReSharper", "SuggestBaseTypeForParameter")]
     private static bool IsMetadata(InvocationExpressionSyntax invocation) =>
         invocation
