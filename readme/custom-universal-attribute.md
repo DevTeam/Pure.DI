@@ -1,62 +1,38 @@
-#### Custom attributes
+#### Custom universal attribute
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Attributes/CustomAttributesScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Attributes/CustomUniversalAttributeScenario.cs)
 
-It's very easy to use your attributes. To do this, you need to create a descendant of the `System.Attribute` class and register it using one of the appropriate methods:
-- `TagAttribute`
-- `OrdinalAttribute`
-- `TagAttribute`
-You can also use combined attributes, and each method in the list above has an optional parameter that defines the argument number (the default is 0) from where to get the appropriate metadata for _tag_, _ordinal_, or _type_.
+You can use a combined attribute, and each method in the list above has an optional parameter that defines the argument number (the default is 0) from where to get the appropriate metadata for _tag_, _ordinal_, or _type_.
 
 
 ```c#
 [AttributeUsage(
     AttributeTargets.Constructor
-    | AttributeTargets.Method |
-    AttributeTargets.Property |
-    AttributeTargets.Field)]
-class MyOrdinalAttribute(int ordinal) : Attribute;
-
-[AttributeUsage(
-    AttributeTargets.Parameter
+    | AttributeTargets.Method
+    | AttributeTargets.Parameter
     | AttributeTargets.Property
     | AttributeTargets.Field)]
-class MyTagAttribute(object tag) : Attribute;
-
-[AttributeUsage(
-    AttributeTargets.Parameter
-    | AttributeTargets.Property
-    | AttributeTargets.Field)]
-class MyTypeAttribute(Type type) : Attribute;
-
-[AttributeUsage(
-    AttributeTargets.Parameter
-    | AttributeTargets.Property
-    | AttributeTargets.Field)]
-class MyGenericTypeAttribute<T> : Attribute;
+class InjectAttribute<T>(object? tag = null, int ordinal = 0) : Attribute;
 
 interface IPerson;
 
-class Person([MyTag("NikName")] string name) : IPerson
+class Person([Inject<string>("NikName")] string name) : IPerson
 {
     private object? _state;
 
-    [MyOrdinal(1)]
-    [MyType(typeof(int))]
+    [Inject<int>(ordinal: 1)]
     internal object Id = "";
 
-    [MyOrdinal(2)]
-    public void Initialize([MyGenericType<Uri>] object state) =>
+    public void Initialize([Inject<Uri>] object state) =>
         _state = state;
 
     public override string ToString() => $"{Id} {name} {_state}";
 }
 
 DI.Setup(nameof(PersonComposition))
-    .TagAttribute<MyTagAttribute>()
-    .OrdinalAttribute<MyOrdinalAttribute>()
-    .TypeAttribute<MyTypeAttribute>()
-    .TypeAttribute<MyGenericTypeAttribute<TT>>()
+    .TagAttribute<InjectAttribute<TT>>()
+    .OrdinalAttribute<InjectAttribute<TT>>(1)
+    .TypeAttribute<InjectAttribute<TT>>()
     .Arg<int>("personId")
     .Bind().To(_ => new Uri("https://github.com/DevTeam/Pure.DI"))
     .Bind("NikName").To(_ => "Nik")
@@ -99,8 +75,8 @@ partial class PersonComposition
       Uri transientUri2 = new Uri("https://github.com/DevTeam/Pure.DI");
       string transientString1 = "Nik";
       Person transientPerson0 = new Person(transientString1);
-      transientPerson0.Id = _argPersonId;
       transientPerson0.Initialize(transientUri2);
+      transientPerson0.Id = _argPersonId;
       return transientPerson0;
     }
   }

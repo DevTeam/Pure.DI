@@ -4,6 +4,8 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
+using ITypeSymbol = Microsoft.CodeAnalysis.ITypeSymbol;
+
 internal sealed class ImplementationDependencyNodeBuilder(
     ILogger<ImplementationDependencyNodeBuilder> logger,
     IBuilder<DpImplementation, IEnumerable<DpImplementation>> implementationVariantsBuilder)
@@ -59,6 +61,16 @@ internal sealed class ImplementationDependencyNodeBuilder(
             var methods = new List<DpMethod>();
             var fields = new List<DpField>();
             var properties = new List<DpProperty>();
+
+            var allAttributesBuilder = ImmutableArray.CreateBuilder<IMdAttribute>(
+                setup.OrdinalAttributes.Length
+                + setup.TagAttributes.Length
+                + setup.TypeAttributes.Length);
+            allAttributesBuilder.AddRange(setup.OrdinalAttributes);
+            allAttributesBuilder.AddRange(setup.TagAttributes);
+            allAttributesBuilder.AddRange(setup.TypeAttributes);
+            var allAttributes = allAttributesBuilder.MoveToImmutable();
+
             foreach (var member in GetMembers(implementationType))
             {
                 if (member.IsStatic || member.DeclaredAccessibility is not (Accessibility.Internal or Accessibility.Public or Accessibility.Friend))
@@ -71,10 +83,14 @@ internal sealed class ImplementationDependencyNodeBuilder(
                     case IMethodSymbol method:
                         if (method.MethodKind == MethodKind.Ordinary)
                         {
-                            var ordinal = GetAttribute(setup.OrdinalAttributes, member, default(int?));
+                            var ordinal = GetAttribute(allAttributes, member, default(int?))
+                                          ?? method.Parameters
+                                              .Select(param => GetAttribute(allAttributes, param, default(int?)))
+                                              .FirstOrDefault(i => i.HasValue);
+                            
                             if (ordinal.HasValue)
                             {
-                                methods.Add(new DpMethod(method, ordinal.Value, GetParameters(setup, method.Parameters, compilation, setup.TypeConstructor)));
+                                methods.Add(new DpMethod(method, ordinal, GetParameters(setup, method.Parameters, compilation, setup.TypeConstructor)));
                             }
                         }
 
@@ -83,10 +99,10 @@ internal sealed class ImplementationDependencyNodeBuilder(
                     case IFieldSymbol field:
                         if (field is { IsReadOnly: false, IsStatic: false, IsConst: false })
                         {
-                            var type = field.Type.WithNullableAnnotation(NullableAnnotation.NotAnnotated);
-                            var ordinal = GetAttribute(setup.OrdinalAttributes, member, default(int?));
-                            if (ordinal.HasValue || field.IsRequired)
+                            var ordinal = GetAttribute(allAttributes, member, default(int?));
+                            if (field.IsRequired || ordinal.HasValue)
                             {
+                                var type = field.Type.WithNullableAnnotation(NullableAnnotation.NotAnnotated);
                                 fields.Add(
                                     new DpField(
                                         field,
@@ -102,10 +118,10 @@ internal sealed class ImplementationDependencyNodeBuilder(
                     case IPropertySymbol property:
                         if (property is { IsReadOnly: false, IsStatic: false, IsIndexer: false })
                         {
-                            var type = property.Type.WithNullableAnnotation(NullableAnnotation.NotAnnotated);
-                            var ordinal = GetAttribute(setup.OrdinalAttributes, member, default(int?));
+                            var ordinal = GetAttribute(allAttributes, member, default(int?));
                             if (ordinal.HasValue || property.IsRequired)
                             {
+                                var type = property.Type.WithNullableAnnotation(NullableAnnotation.NotAnnotated);
                                 properties.Add(
                                     new DpProperty(
                                         property,
@@ -154,7 +170,7 @@ internal sealed class ImplementationDependencyNodeBuilder(
             }
         }
     }
-
+    
     private IEnumerable<DependencyNode> CreateNodes(DependenciesToInjectionsCountWalker walker, IEnumerable<DpImplementation> implementations) =>
         implementations
             .OrderByDescending(i => GetInjectionsCount(walker, i.Constructor))
@@ -224,8 +240,18 @@ internal sealed class ImplementationDependencyNodeBuilder(
             switch (attributeData.Count)
             {
                 case 1:
-                    var args = attributeData[0].ConstructorArguments;
-                    if (attribute.ArgumentPosition > args.Length)
+                    var attr = attributeData[0];
+                    if (typeof(ITypeSymbol).IsAssignableFrom(typeof(T)) && attr.AttributeClass is { IsGenericType: true, TypeArguments.Length: > 0 } attributeClass)
+                    {
+                        if (attribute.ArgumentPosition < attributeClass.TypeArguments.Length
+                            && attributeClass.TypeArguments[attribute.ArgumentPosition] is { } typeSymbol)
+                        {
+                            return (T)typeSymbol;
+                        }
+                    }
+                    
+                    var args = attr.ConstructorArguments;
+                    if (attribute.ArgumentPosition >= args.Length)
                     {
                         logger.CompileError($"The argument position {attribute.ArgumentPosition.ToString()} of attribute {attribute.Source} is out of range [0..{args.Length.ToString()}].", attribute.Source.GetLocation(), LogId.ErrorInvalidMetadata);
                     }

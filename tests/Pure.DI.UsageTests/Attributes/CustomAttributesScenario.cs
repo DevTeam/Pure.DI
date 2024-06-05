@@ -14,6 +14,7 @@ $h=You can also use combined attributes, and each method in the list above has a
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable ArrangeTypeModifiers
+// ReSharper disable MemberCanBePrivate.Global
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Attributes.CustomAttributesScenario;
 
@@ -39,15 +40,27 @@ class MyTagAttribute(object tag) : Attribute;
     | AttributeTargets.Field)]
 class MyTypeAttribute(Type type) : Attribute;
 
+[AttributeUsage(
+    AttributeTargets.Parameter
+    | AttributeTargets.Property
+    | AttributeTargets.Field)]
+class MyGenericTypeAttribute<T> : Attribute;
+
 interface IPerson;
 
 class Person([MyTag("NikName")] string name) : IPerson
 {
+    private object? _state;
+    
     [MyOrdinal(1)]
     [MyType(typeof(int))]
     internal object Id = "";
 
-    public override string ToString() => $"{Id} {name}";
+    [MyOrdinal(2)]
+    public void Initialize([MyGenericType<Uri>] object state) => 
+        _state = state;
+
+    public override string ToString() => $"{Id} {name} {_state}";
 }
 // }
 
@@ -62,16 +75,18 @@ public class Scenario
             .TagAttribute<MyTagAttribute>()
             .OrdinalAttribute<MyOrdinalAttribute>()
             .TypeAttribute<MyTypeAttribute>()
+            .TypeAttribute<MyGenericTypeAttribute<TT>>()
             .Arg<int>("personId")
-            .Bind<string>("NikName").To(_ => "Nik")
-            .Bind<IPerson>().To<Person>()
+            .Bind().To(_ => new Uri("https://github.com/DevTeam/Pure.DI"))
+            .Bind("NikName").To(_ => "Nik")
+            .Bind().To<Person>()
             
             // Composition root
             .Root<IPerson>("Person");
 
         var composition = new PersonComposition(personId: 123);
         var person = composition.Person;
-        person.ToString().ShouldBe("123 Nik");
+        person.ToString().ShouldBe("123 Nik https://github.com/DevTeam/Pure.DI");
 // }            
         composition.SaveClassDiagram();
     }

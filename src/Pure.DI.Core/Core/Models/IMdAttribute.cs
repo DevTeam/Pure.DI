@@ -7,7 +7,7 @@ internal interface IMdAttribute
     
     SyntaxNode Source { get; }
 
-    ITypeSymbol AttributeType { get; }
+    INamedTypeSymbol AttributeType { get; }
     
     int ArgumentPosition { get; }
 }

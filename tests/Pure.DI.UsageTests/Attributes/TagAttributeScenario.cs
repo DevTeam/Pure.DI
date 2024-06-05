@@ -50,9 +50,9 @@ public class Scenario
         // Resolve = Off
 // {            
         DI.Setup(nameof(Composition))
-            .Bind<IDependency>("Abc").To<AbcDependency>()
-            .Bind<IDependency>("Xyz").To<XyzDependency>()
-            .Bind<IService>().To<Service>()
+            .Bind("Abc").To<AbcDependency>()
+            .Bind("Xyz").To<XyzDependency>()
+            .Bind().To<Service>()
             
             // Composition root
             .Root<IService>("Root");

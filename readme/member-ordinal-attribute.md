@@ -49,7 +49,7 @@ DI.Setup(nameof(PersonComposition))
     .Arg<int>("personId")
     .Arg<string>("personName")
     .Arg<DateTime>("personBirthday")
-    .Bind<IPerson>().To<Person>()
+    .Bind().To<Person>()
 
     // Composition root
     .Root<IPerson>("Person");

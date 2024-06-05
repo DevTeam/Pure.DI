@@ -252,6 +252,7 @@ dotnet run
 - [Tag attribute](readme/tag-attribute.md)
 - [Type attribute](readme/type-attribute.md)
 - [Custom attributes](readme/custom-attributes.md)
+- [Custom universal attribute](readme/custom-universal-attribute.md)
 ### Interception
 - [Decorator](readme/decorator.md)
 - [Interception](readme/interception.md)

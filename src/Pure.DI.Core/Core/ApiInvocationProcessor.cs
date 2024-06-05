@@ -220,25 +220,40 @@ internal class ApiInvocationProcessor(
                         break;
 
                     case nameof(IConfiguration.TypeAttribute):
-                        if (genericName.TypeArgumentList.Arguments is [{ } typeAttributeType])
+                        if (TryGetAttributeType(genericName, semanticModel, out var typeAttributeType))
                         {
-                            metadataVisitor.VisitTypeAttribute(new MdTypeAttribute(semanticModel, invocation.ArgumentList, semanticModel.GetTypeSymbol<ITypeSymbol>(typeAttributeType, cancellationToken), BuildConstantArgs<object>(semanticModel, invocation.ArgumentList.Arguments) is [int positionVal] ? positionVal : 0));
+                            var attr = new MdTypeAttribute(
+                                semanticModel, 
+                                invocation.ArgumentList,
+                                typeAttributeType,
+                                BuildConstantArgs<object>(semanticModel, invocation.ArgumentList.Arguments) is [int positionVal] ? positionVal : 0);
+                            metadataVisitor.VisitTypeAttribute(attr);
                         }
-
+                        
                         break;
 
                     case nameof(IConfiguration.TagAttribute):
-                        if (genericName.TypeArgumentList.Arguments is [{ } tagAttributeType])
+                        if (TryGetAttributeType(genericName, semanticModel, out var tagAttributeType))
                         {
-                            metadataVisitor.VisitTagAttribute(new MdTagAttribute(semanticModel, invocation.ArgumentList, semanticModel.GetTypeSymbol<ITypeSymbol>(tagAttributeType, cancellationToken), BuildConstantArgs<object>(semanticModel, invocation.ArgumentList.Arguments) is [int positionVal] ? positionVal : 0));
+                            var attr = new MdTagAttribute(
+                                semanticModel,
+                                invocation.ArgumentList,
+                                tagAttributeType,
+                                BuildConstantArgs<object>(semanticModel, invocation.ArgumentList.Arguments) is [int positionVal] ? positionVal : 0);
+                            metadataVisitor.VisitTagAttribute(attr);
                         }
-
+                        
                         break;
 
                     case nameof(IConfiguration.OrdinalAttribute):
-                        if (genericName.TypeArgumentList.Arguments is [{ } ordinalAttributeType])
+                        if (TryGetAttributeType(genericName, semanticModel, out var ordinalAttributeType))
                         {
-                            metadataVisitor.VisitOrdinalAttribute(new MdOrdinalAttribute(semanticModel, invocation.ArgumentList, semanticModel.GetTypeSymbol<ITypeSymbol>(ordinalAttributeType, cancellationToken), BuildConstantArgs<object>(semanticModel, invocation.ArgumentList.Arguments) is [int positionVal] ? positionVal : 0));
+                            var attr = new MdOrdinalAttribute(
+                                semanticModel,
+                                invocation.ArgumentList,
+                                ordinalAttributeType,
+                                BuildConstantArgs<object>(semanticModel, invocation.ArgumentList.Arguments) is [int positionVal] ? positionVal : 0);
+                            metadataVisitor.VisitOrdinalAttribute(attr);
                         }
 
                         break;
@@ -270,6 +285,26 @@ internal class ApiInvocationProcessor(
 
                 break;
         }
+    }
+
+    private bool TryGetAttributeType(
+        GenericNameSyntax genericName,
+        SemanticModel semanticModel,
+        [NotNullWhen(true)] out INamedTypeSymbol? type)
+    {
+        if (genericName.TypeArgumentList.Arguments is not [{ } attributeTypeSyntax])
+        {
+            type = default;
+            return false;
+        }
+
+        type = semanticModel.GetTypeSymbol<INamedTypeSymbol>(attributeTypeSyntax, cancellationToken);
+        if (type.IsGenericType)
+        {
+            type = type.ConstructUnboundGenericType();
+        }
+
+        return true;
     }
 
     private static void VisitRoot(
