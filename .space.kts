@@ -1,5 +1,5 @@
 job("Build and check") {
-    container(displayName = "Build and check", image = "mcr.microsoft.com/dotnet/sdk") {
+    container(displayName = "Build and check", image = "nikolayp/dotnetsdk") {
         shellScript {
             content = "dotnet run --project ./build -- check"
         }
