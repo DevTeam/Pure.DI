@@ -60,6 +60,7 @@ public partial class Generator
             .Bind().To<Formatter>()
             .Bind().To<NodeInfo>()
             .Bind<IEqualityComparer<INamedTypeSymbol>>().To<NamedTypeSymbolEqualityComparer>()
+            .Bind().To<ExceptionHandler>()
         
             // Validators
             .Bind(Tag.Type).To<MetadataValidator>()

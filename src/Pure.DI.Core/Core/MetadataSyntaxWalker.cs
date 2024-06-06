@@ -46,8 +46,8 @@ internal sealed class MetadataSyntaxWalker(
         visitors.Reverse();
 #if DEBUG
         visitors.ForEach(i => ProcessInvocation(i));
-#else 
-        Parallel.ForEach(visitors, i => ProcessInvocation(i));
+#else
+        Parallel.ForEach(visitors, new ParallelOptions() { CancellationToken = cancellationToken }, i => ProcessInvocation(i));
 #endif
         foreach (var visitor in visitors)
         {

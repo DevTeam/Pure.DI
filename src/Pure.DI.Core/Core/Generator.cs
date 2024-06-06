@@ -4,11 +4,12 @@ namespace Pure.DI.Core;
 internal sealed class Generator(
     IGlobalOptions globalOptions,
     IProfiler profiler,
-    ILogger<Generator> logger,
+    IExceptionHandler exceptionHandler,
     IObserversRegistry observersRegistry,
     IObserver<LogEntry> logObserver,
     IBuilder<IEnumerable<SyntaxUpdate>, IEnumerable<MdSetup>> metadataBuilder,
-    Func<IBuilder<MdSetup, Unit>> codeBuilderFactory)
+    Func<IBuilder<MdSetup, Unit>> codeBuilderFactory,
+    CancellationToken cancellationToken)
     : IBuilder<IEnumerable<SyntaxUpdate>, Unit>
 {
     public Unit Build(IEnumerable<SyntaxUpdate> updates)
@@ -21,67 +22,29 @@ internal sealed class Generator(
         using var logObserverToken= observersRegistry.Register(logObserver);
         try
         {
-            foreach (var setup in metadataBuilder.Build(updates))
-            {
-                try
-                {
-                    codeBuilderFactory().Build(setup);
-                }
-                catch (CompileErrorException compileException)
-                {
-                    OnCompileException(compileException);
-                }
-                catch (HandledException handledException)
-                {
-                    OnHandledException(handledException);
-                }
-            }
-        }
-        catch (OperationCanceledException)
-        {
-        }
-        catch (CompileErrorException compileException)
-        {
-            OnCompileException(compileException);
-        }
-        catch (HandledException handledException)
-        {
-            OnHandledException(handledException);
-        }
-        catch (Exception exception)
-        {
-            OnException(exception);
+            exceptionHandler.SafeRun(updates, ProcessUpdates);
         }
         finally
         {
             logObserver.OnCompleted();
         }
-        
+
         return Unit.Shared;
     }
+    
+    private void ProcessUpdates(IEnumerable<SyntaxUpdate> updates)
+    {
+        foreach (var setup in metadataBuilder.Build(updates))
+        {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                break;
+            }
 
-    private void OnCompileException(CompileErrorException exception) => 
-        logger.CompileError(exception.ErrorMessage, exception.Location, exception.Id);
-
-    private void OnHandledException(Exception handledException) =>
-        logger.Log(
-            new LogEntry(
-#if DEBUG
-                DiagnosticSeverity.Info,
-#else
-                DiagnosticSeverity.Hidden,
-#endif
-                "Code generation aborted.",
-                default,
-                LogId.InfoGenerationInterrupted,
-                handledException));
-
-    private void OnException(Exception exception) =>
-        logger.Log(
-            new LogEntry(
-                DiagnosticSeverity.Error,
-                "An unhandled error has occurred.",
-                default,
-                LogId.ErrorUnhandled,
-                exception));
+            exceptionHandler.SafeRun(setup, BuildCode);
+        }
+    }
+    
+    private void BuildCode(MdSetup setup) =>
+        codeBuilderFactory().Build(setup);
 }
