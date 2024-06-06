@@ -3,10 +3,10 @@
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Generics/GenericsScenario.cs)
 
 Generic types are also supported.
-> [!IMPORTANT]
-> Instead of open generic types, as in classical DI container libraries, "marker" types are used as parameters of generalized types. Such "marker" types allow to define dependency graph more precisely.
+>[!IMPORTANT]
+>Instead of open generic types, as in classical DI container libraries, regular generic types with _marker_ types as type parameters are used here. Such "marker" types allow to define dependency graph more precisely.
 
-This is easy to do by binding generic types and specifying generic markers like `TT`, `TT1` etc. as generic type parameters:
+For the case of `IDependency<TT>`, `TT` is a _marker_ type, which allows the usual `IDependency<TT>` to be used instead of an open generic type like `IDependency<>`. This makes it easy to bind generic types by specifying _marker_ types such as `TT`, `TT1`, etc. as parameters of generic types:
 
 
 ```c#
