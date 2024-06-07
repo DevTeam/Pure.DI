@@ -66,12 +66,17 @@ internal class ClassCommenter(
                     term.Append('.');
                 }
                 
+                if (!hints.IsResolveEnabled)
+                {
+                    return [term.ToString()];
+                }
+                
                 var resolvers = resolversBuilder.Build(ImmutableArray.Create(root));
                 if (!resolvers.Any())
                 {
                     return [term.ToString()];
                 }
-
+                
                 if (root.IsPublic)
                 {
                     term.Append("<br/>or using ");
@@ -95,7 +100,7 @@ internal class ClassCommenter(
                     term.Append(hints.ResolveByTagMethodName);
                     term.Append("&lt;");
                 }
-                
+
                 term.Append(comments.Escape(root.TypeDescription.Name));
                 term.Append("&gt;(");
                 term.Append(root.Injection.Tag != null ? root.Injection.Tag.ValueToString() : "");
