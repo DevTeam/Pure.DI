@@ -4,12 +4,11 @@ using System.Text;
 
 public static class TestTools
 {
-    public static void SaveClassDiagram(this object composition)
+    public static void SaveClassDiagram(this object composition, string? name = default)
     {
-        var name = composition.GetType().FullName!.Split('.').Reverse().Skip(1).First();
         var logDirName = Path.Combine(GetSolutionDirectory(), ".logs");
         Directory.CreateDirectory(logDirName);
-        var fileName = Path.Combine(logDirName, $"{name}.Mermaid");
+        var fileName = Path.Combine(logDirName, $"{name ?? composition.GetType().FullName!.Split('.').Reverse().Skip(1).First()}.Mermaid");
         if (File.Exists(fileName))
         {
             File.Delete(fileName);

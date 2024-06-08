@@ -161,13 +161,14 @@ internal class BindingBuilder(
         if (tag.Value is Tag tagVal)
         {
             // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
-            switch (tagVal)
+            if (tagVal == Tag.Type)
             {
-                case Tag.Type:
-                    return tag with { Value = type };
-                
-                case Tag.Unique:
-                    return tag with { Value = new UniqueTag(id.Value) };
+                return MdTag.CreateTypeTag(tag, type);
+            }
+            
+            if (tagVal == Tag.Unique)
+            {
+                return MdTag.CreateUniqueTag(tag, id.Value);
             }
         }
 

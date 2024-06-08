@@ -21,7 +21,7 @@ internal sealed class ResolverClassesBuilder(IBuilder<ImmutableArray<Root>, IEnu
         membersCount++;
         code.AppendLine($"private const string {Names.OfTypeFieldName} = \"{Names.OfTypeMessage} \";");
         membersCount++;
-        code.AppendLine("");
+        code.AppendLine();
 
         code.AppendLine($"private class {Names.ResolverClassName}<T>: {Names.ResolverInterfaceName}<{composition.Source.Source.Name.ClassName}, T>");
         code.AppendLine("{");

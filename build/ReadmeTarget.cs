@@ -323,7 +323,6 @@ internal class ReadmeTarget(
         foreach (var generatedCodeFile in Directory.GetFiles(Path.Combine(logsDirectory, "Pure.DI", "Pure.DI.SourceGenerator"), exampleSearchPattern).OrderBy(i => i))
         {
             var ns = string.Join('.', Path.GetFileName(generatedCodeFile).Split('.').Reverse().Skip(3).Reverse()) + ".";
-            var name = Path.GetFileName(generatedCodeFile).Split('.').Reverse().Skip(2).FirstOrDefault() ?? "Generated";
             await examplesWriter.WriteLineAsync("The following partial class will be generated:");
             await examplesWriter.WriteLineAsync("");
             await examplesWriter.WriteLineAsync("```c#");

@@ -1120,8 +1120,10 @@ namespace Pure.DI
     /// <summary>
     /// Represents well known tags.
     /// </summary>
-    internal enum Tag
+    internal class Tag
     {
+        private static readonly Tag Shared = new Tag();
+
         /// <summary>
         /// Unique tag.
         /// Begins the definition of the binding.
@@ -1134,8 +1136,8 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        Unique,
-        
+        public static readonly Tag Unique = Shared;
+
         /// <summary>
         /// Tag of target implementation type.
         /// <example>
@@ -1146,7 +1148,7 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        Type
+        public static readonly Tag Type = Shared;
     }
 
     /// <summary>

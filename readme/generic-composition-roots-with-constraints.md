@@ -2,8 +2,8 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Generics/GenericCompositionRootsWithConstraintsScenario.cs)
 
->[!IMPORTANT]
->`Resolve' methods cannot be used to resolve generic composition roots.
+> [!IMPORTANT]
+> `Resolve' methods cannot be used to resolve generic composition roots.
 
 
 ```c#
@@ -57,8 +57,8 @@ var service = composition.GetMyRoot<Stream, double>();
 var someOtherService = composition.GetOtherService<BinaryReader>();
 ```
 
->[!IMPORTANT]
->The method `Inject()`cannot be used outside of the binding setup.
+> [!IMPORTANT]
+> The method `Inject()`cannot be used outside of the binding setup.
 
 The following partial class will be generated:
 

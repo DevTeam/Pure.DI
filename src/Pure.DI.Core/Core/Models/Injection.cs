@@ -1,5 +1,6 @@
 ﻿namespace Pure.DI.Core.Models;
 
+using System.Runtime.CompilerServices;
 using Code;
 
 internal readonly record struct Injection(
@@ -8,19 +9,17 @@ internal readonly record struct Injection(
 {
     public override string ToString() => $"{Type}{(Tag != default ? $"({Tag.ValueToString()})" : "")}";
 
-    public bool Equals(Injection other) => 
-        SymbolEqualityComparer.Default.Equals(Type, other.Type) && EqualTags(Tag, other.Tag);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool Equals(Injection other) =>
+        (ReferenceEquals(Type, other.Type) || SymbolEqualityComparer.Default.Equals(Type, other.Type))
+        && EqualTags(Tag, other.Tag);
 
     public override int GetHashCode() => 
         SymbolEqualityComparer.Default.GetHashCode(Type);
 
-    public static bool EqualTags(object? tag, object? otherTag)
-    {
-        if (ReferenceEquals(tag, MdTag.ContextTag))
-        {
-            return true;
-        }
-        
-        return ReferenceEquals(otherTag, MdTag.ContextTag) || Equals(tag, otherTag);
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool EqualTags(object? tag, object? otherTag) =>
+        ReferenceEquals(tag, MdTag.ContextTag)
+        || ReferenceEquals(otherTag, MdTag.ContextTag)
+        || Equals(tag, otherTag);
 }

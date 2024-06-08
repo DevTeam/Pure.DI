@@ -1,3 +1,4 @@
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
 internal class NodeInfo(IAsyncDisposableSettings asyncDisposableSettings) : INodeInfo

@@ -1,10 +1,14 @@
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
 using Microsoft.CodeAnalysis.Operations;
 
-internal static class SemanticModelExtensions
+internal class Semantic(CancellationToken cancellationToken): ISemantic
 {
-    public static T? TryGetTypeSymbol<T>(this SemanticModel semanticModel, SyntaxNode node, CancellationToken cancellationToken)
+    public bool IsAccessible(ISymbol symbol) => 
+        symbol is { IsStatic: false, DeclaredAccessibility: Accessibility.Internal or Accessibility.Public or Accessibility.Friend };
+
+    public T? TryGetTypeSymbol<T>(SemanticModel semanticModel, SyntaxNode node)
         where T : ITypeSymbol
     {
         var typeInfo = semanticModel.GetTypeInfo(node, cancellationToken);
@@ -17,10 +21,10 @@ internal static class SemanticModelExtensions
         return default;
     }
     
-    public static T GetTypeSymbol<T>(this SemanticModel semanticModel, SyntaxNode node, CancellationToken cancellationToken)
+    public T GetTypeSymbol<T>(SemanticModel semanticModel, SyntaxNode node)
         where T : ITypeSymbol
     {
-        var result = TryGetTypeSymbol<T>(semanticModel, node, cancellationToken);
+        var result = TryGetTypeSymbol<T>(semanticModel, node);
         if (result is not null)
         {
             return result;
@@ -29,7 +33,7 @@ internal static class SemanticModelExtensions
         throw new CompileErrorException($"The type {node} is not supported.", node.GetLocation(), LogId.ErrorInvalidMetadata);
     }
     
-    public static T GetRequiredConstantValue<T>(this SemanticModel semanticModel, SyntaxNode node)
+    public T GetRequiredConstantValue<T>(SemanticModel semanticModel, SyntaxNode node)
     {
         var value = GetConstantValue<T>(semanticModel, node);
         if (value is not null)
@@ -40,7 +44,7 @@ internal static class SemanticModelExtensions
         throw new CompileErrorException($"{node} must be a non-null value of type {typeof(T)}.", node.GetLocation(), LogId.ErrorInvalidMetadata);
     }
 
-    public static T?[] GetConstantValues<T>(this SemanticModel semanticModel, SyntaxNode node)
+    public T?[] GetConstantValues<T>(SemanticModel semanticModel, SyntaxNode node)
     {
 #if ROSLYN4_8_OR_GREATER
         if (node is CollectionExpressionSyntax collectionExpression)
@@ -55,7 +59,7 @@ internal static class SemanticModelExtensions
         return [GetConstantValue<T>(semanticModel, node)];
     }
 
-    public static T? GetConstantValue<T>(this SemanticModel semanticModel, SyntaxNode node)
+    public T? GetConstantValue<T>(SemanticModel semanticModel, SyntaxNode node)
     {
         switch (node)
         {
@@ -75,11 +79,11 @@ internal static class SemanticModelExtensions
             {
                 if (memberAccessExpressionSyntax.Expression is IdentifierNameSyntax classIdentifierName)
                 {
-                    var enumValueStr = memberAccessExpressionSyntax.Name.Identifier.Text;
+                    var valueStr = memberAccessExpressionSyntax.Name.Identifier.Text;
                     switch (classIdentifierName.Identifier.Text)
                     {
                         case nameof(CompositionKind):
-                            if (Enum.TryParse<CompositionKind>(enumValueStr, out var compositionKindValue))
+                            if (Enum.TryParse<CompositionKind>(valueStr, out var compositionKindValue))
                             {
                                 return (T)(object)compositionKindValue;
                             }
@@ -87,7 +91,7 @@ internal static class SemanticModelExtensions
                             break;
 
                         case nameof(Lifetime):
-                            if (Enum.TryParse<Lifetime>(enumValueStr, out var lifetimeValue))
+                            if (Enum.TryParse<Lifetime>(valueStr, out var lifetimeValue))
                             {
                                 return (T)(object)lifetimeValue;
                             }
@@ -95,11 +99,15 @@ internal static class SemanticModelExtensions
                             break;
 
                         case nameof(Tag):
-                            if (Enum.TryParse<Tag>(enumValueStr, out var tagValue))
+                            switch (valueStr)
                             {
-                                return (T)(object)tagValue;
+                                case nameof(Tag.Type):
+                                    return (T)(object)Tag.Type; 
+                                
+                                case nameof(Tag.Unique):
+                                    return (T)(object)Tag.Unique;
                             }
-
+                            
                             break;
                     }
                 }
@@ -125,6 +133,6 @@ internal static class SemanticModelExtensions
             return (T)typeOfOperation.TypeOperand;
         }
 
-        throw new CompileErrorException($"{node} must be a constant value of type {typeof(T)}.", node.GetLocation(), LogId.ErrorInvalidMetadata);
+        throw new CompileErrorException($"{node} must be a constant value of type {typeof(T)} or a special API call.", node.GetLocation(), LogId.ErrorInvalidMetadata);
     }
 }

@@ -203,11 +203,11 @@ classDiagram
 		+Service(IEnumerableᐸIDependencyᐸStringᐳᐳ dependencies)
 	}
 	class IEnumerableᐸIDependencyᐸStringᐳᐳ
-	AbcDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : Unique tag 0 
+	AbcDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : typeof(Pure.DI.UsageTests.Advanced.TagUniqueScenario.AbcDependency<Pure.DI.TT>) 
 	class AbcDependencyᐸStringᐳ {
 		+AbcDependency()
 	}
-	XyzDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : Unique tag 1 
+	XyzDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : typeof(Pure.DI.UsageTests.Advanced.TagUniqueScenario.XyzDependency<Pure.DI.TT>) 
 	class XyzDependencyᐸStringᐳ {
 		+XyzDependency()
 	}
@@ -219,7 +219,7 @@ classDiagram
 	}
 	Composition ..> ServiceᐸStringᐳ : IServiceᐸStringᐳ Root
 	ServiceᐸStringᐳ o-- "PerBlock" IEnumerableᐸIDependencyᐸStringᐳᐳ : IEnumerableᐸIDependencyᐸStringᐳᐳ
-	IEnumerableᐸIDependencyᐸStringᐳᐳ *--  AbcDependencyᐸStringᐳ : Unique tag 0  IDependencyᐸStringᐳ
-	IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : Unique tag 1  IDependencyᐸStringᐳ
+	IEnumerableᐸIDependencyᐸStringᐳᐳ *--  AbcDependencyᐸStringᐳ : typeof(Pure.DI.UsageTests.Advanced.TagUniqueScenario.AbcDependency<Pure.DI.TT>)  IDependencyᐸStringᐳ
+	IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : typeof(Pure.DI.UsageTests.Advanced.TagUniqueScenario.XyzDependency<Pure.DI.TT>)  IDependencyᐸStringᐳ
 ```
 

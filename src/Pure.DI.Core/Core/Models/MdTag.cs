@@ -7,6 +7,15 @@ internal readonly record struct MdTag(
 {
     public static readonly object ContextTag = new ContextTagObject();
     
+    public static MdTag CreateTypeTag(MdTag baseTag, ITypeSymbol? type) =>
+        baseTag with { Value = type };
+
+    public static MdTag CreateUniqueTag(MdTag baseTag, int id) =>
+        baseTag with { Value = CreateUniqueTagValue(id) };
+
+    private static object CreateUniqueTagValue(int id) => 
+        new UniqueTag(id);
+
     public override string ToString() =>
         Value switch
         {

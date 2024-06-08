@@ -3,7 +3,6 @@ namespace Pure.DI.Core;
 
 internal static class Formatting
 {
-    public const int IndentSize = 1;
     private const int IndentsCount = 256;
     private static readonly string[] Indents;
 
@@ -27,5 +26,5 @@ internal static class Formatting
         };
 
     private static string IndentInternal(int count = 1) =>
-        string.Intern(new string('\t', count * IndentSize));
+        string.Intern(new string('\t', count));
 }

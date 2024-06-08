@@ -22,6 +22,10 @@
             <DependentUpon>GenericTypeArguments.g.tt</DependentUpon>
         </Compile>
         <Compile Remove="Components\Api.CSharp11.g.cs" />
+        <Compile Remove="Core\IInjectionSiteFactory.cs" />
+        <Compile Remove="Core\InjectionSiteFactory.cs" />
+        <Compile Remove="Core\IWildcardMatcher.cs" />
+        <Compile Remove="Core\WildcardMatcher.cs" />
     </ItemGroup>
 
 </Project>

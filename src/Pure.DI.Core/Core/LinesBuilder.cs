@@ -55,20 +55,19 @@ internal sealed class LinesBuilder: IEnumerable<string>
         }
     }
 
-    public IDisposable Indent(int value = 1)
+    public IDisposable Indent()
     {
-        
-        IncIndent(value);
-        return Disposables.Create(() => DecIndent(value));
+        IncIndent();
+        return Disposables.Create(DecIndent);
     }
 
-    public void IncIndent(int value = 1)
+    public void IncIndent()
     {
         FlushLines();
         _indent = new Indent(_indent.Value + 1);
     }
 
-    public void DecIndent(int value = 1)
+    public void DecIndent()
     {
         FlushLines();
         _indent = new Indent(_indent.Value - 1);

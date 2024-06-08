@@ -387,4 +387,110 @@ namespace Sample
         result.StdOut.ShouldBe(["1", "2", "2"], result);
     }
 #endif
+    
+    [Fact]
+    public async Task ShouldSupportTagUnique()
+    {
+        // Given
+
+        // When
+        var result = await """
+namespace Sample
+{
+    using System;
+    using System.Linq;
+    using System.Collections.Generic;
+    using Pure.DI;
+    using Sample;
+    
+    internal interface IDep { }
+    
+    internal class Dep1: IDep { }
+    
+    internal class Dep2: IDep { }
+
+    internal interface IService { }
+
+    internal class Service: IService
+    {
+        public Service(IEnumerable<IDep> deps)
+        {
+            Console.WriteLine(deps.Count());
+        }
+    }
+    
+    internal partial class Composition
+    {                   
+        void Setup() => 
+            DI.Setup("Composition")
+                .Bind<IDep>(Tag.Unique).To<Dep1>()
+                .Bind(Tag.Unique).To<Dep2>()
+                .Bind<IService>().To<Service>()
+                .Root<Service>("Root"); 
+    }
+
+    public class Program
+    {
+       public static void Main()
+       {
+           var composition = new Composition();
+           Console.WriteLine(composition.Root);
+       }
+    }
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["2", "Sample.Service"], result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportTagType()
+    {
+        // Given
+
+        // When
+        var result = await """
+namespace Sample
+{
+    using System;
+    using Pure.DI;
+    using Sample;
+    
+    internal class Dep { }
+
+    internal interface IService { }
+
+    internal class Service: IService
+    {
+        public Service([Tag(typeof(Dep))] Dep dep) { }
+    }
+    
+    internal partial class Composition
+    {                   
+        void Setup() => 
+            DI.Setup("Composition")
+                .Bind<Dep>(Tag.Type).To<Dep>()
+                .Bind<IService>(Tag.Type).To<Service>()
+                .Root<IService>("Root1", typeof(Service))
+                .Root<Service>("Root2", typeof(Service)); 
+    }
+
+    public class Program
+    {
+       public static void Main()
+       {
+           var composition = new Composition();
+           Console.WriteLine(composition.Root1);
+           Console.WriteLine(composition.Root2);
+       }
+    }
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Sample.Service", "Sample.Service"], result);
+    }
 }

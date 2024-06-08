@@ -67,8 +67,8 @@ var service = composition.GetRoot(cancellationTokenSource.Token);
 await service.RunAsync(cancellationTokenSource.Token);
 ```
 
->[!IMPORTANT]
->The method `Inject()`cannot be used outside of the binding setup.
+> [!IMPORTANT]
+> The method `Inject()`cannot be used outside of the binding setup.
 
 The following partial class will be generated:
 

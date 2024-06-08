@@ -111,12 +111,12 @@ internal sealed class DependencyGraphBuilder(
                         var isGenericOk = false;
                         foreach (var item in map)
                         {
-                            if (!Injection.EqualTags(injection.Tag, item.Key.Tag))
+                            if (item.Key.Type is not INamedTypeSymbol { IsGenericType: true })
                             {
                                 continue;
                             }
-
-                            if (item.Key.Type is not INamedTypeSymbol { IsGenericType: true })
+                            
+                            if (!Injection.EqualTags(injection.Tag, item.Key.Tag))
                             {
                                 continue;
                             }

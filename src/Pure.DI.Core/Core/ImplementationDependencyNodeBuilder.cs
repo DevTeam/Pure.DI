@@ -4,11 +4,10 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-using ITypeSymbol = Microsoft.CodeAnalysis.ITypeSymbol;
-
 internal sealed class ImplementationDependencyNodeBuilder(
     ILogger<ImplementationDependencyNodeBuilder> logger,
-    IBuilder<DpImplementation, IEnumerable<DpImplementation>> implementationVariantsBuilder)
+    IBuilder<DpImplementation, IEnumerable<DpImplementation>> implementationVariantsBuilder,
+    ISemantic semantic)
     : IBuilder<MdSetup, IEnumerable<DependencyNode>>
 {
     public IEnumerable<DependencyNode> Build(MdSetup setup)
@@ -73,7 +72,7 @@ internal sealed class ImplementationDependencyNodeBuilder(
 
             foreach (var member in GetMembers(implementationType))
             {
-                if (member.IsStatic || member.DeclaredAccessibility is not (Accessibility.Internal or Accessibility.Public or Accessibility.Friend))
+                if (!semantic.IsAccessible(member))
                 {
                     continue;
                 }

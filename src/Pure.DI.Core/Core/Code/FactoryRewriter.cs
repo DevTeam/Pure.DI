@@ -2,8 +2,6 @@
 // ReSharper disable InvertIf
 namespace Pure.DI.Core.Code;
 
-using System.Runtime.CompilerServices;
-
 internal sealed class FactoryRewriter(
     IArguments arguments,
     DpFactory factory,

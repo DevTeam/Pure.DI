@@ -26,7 +26,7 @@ internal sealed class ClassDiagramBuilder(
                 lines.AppendLine($"class {composition.Source.Source.Name.ClassName} {{");
                 using (lines.Indent())
                 {
-                    lines.AppendLine($"<<partial>>");
+                    lines.AppendLine("<<partial>>");
                     foreach (var root in composition.Roots.OrderByDescending(i => i.IsPublic).ThenBy(i => i.Name))
                     {
                         lines.AppendLine($"{(root.IsPublic ? "+" : "-")}{FormatRoot(root)}");
@@ -199,11 +199,18 @@ internal sealed class ClassDiagramBuilder(
     }
 
     private string FormatDependency(Dependency dependency, FormatOptions options) => 
-        $"{(dependency.Injection.Tag == default ? "" : FormatTag(dependency.Injection.Tag) + " ")}{FormatSymbol(dependency.Injection.Type, options)}";
+        $"{(dependency.Injection.Tag is null ? "" : FormatTag(dependency.Injection.Tag) + " ")}{FormatSymbol(dependency.Injection.Type, options)}";
 
     private static string FormatTag(object? tag) =>
-        tag != default ? $"{tag.ValueToString("").Replace("\"", "\\\"")} " : "";
-    
+        tag is null
+            ? ""
+            : EscapeTag(tag) + " ";
+
+    private static string EscapeTag(object tag) => 
+        tag.ValueToString("")
+            .Replace("\"", "\\\"")
+            .Replace(':', '﹕');
+
     private static string FormatTags(IEnumerable<object?> tags) =>
         string.Join(", ", tags.Distinct().Select(FormatTag).OrderBy(i => i));
 

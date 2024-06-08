@@ -18,6 +18,11 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <Compile Remove="Advanced\TagOnConstructorArgScenario.cs" />
+        <Compile Remove="Advanced\TagOnInjectionSiteScenario.cs" />
+        <Compile Remove="Advanced\TagOnInjectionSiteWithWildcardsScenario.cs" />
+        <Compile Remove="Advanced\TagOnMemberScenario.cs" />
+        <Compile Remove="Advanced\TagOnMethodArgScenario.cs" />
     </ItemGroup>
 
 </Project>

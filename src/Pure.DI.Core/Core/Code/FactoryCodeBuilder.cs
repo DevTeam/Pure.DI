@@ -69,7 +69,6 @@ internal class FactoryCodeBuilder(
             };
         }
         
-        var indent = new Indent(0);
         var text = syntaxNode.GetText();
         foreach (var textLine in text.Lines)
         {
@@ -78,7 +77,7 @@ internal class FactoryCodeBuilder(
             {
                 // When an injection marker
                 var (injection, argument) = resolvers.Current;
-                using (code.Indent(indent.Value))
+                using (code.Indent())
                 {
                     ctx.StatementBuilder.Build(injectionsCtx with { Level = level, Variable = argument.Current, LockIsRequired = lockIsRequired }, argument);
                     code.AppendLine($"{(injection.DeclarationRequired ? $"{typeResolver.Resolve(argument.Current.Injection.Type)} " : "")}{injection.VariableName} = {ctx.BuildTools.OnInjected(ctx, argument.Current)};");
@@ -92,7 +91,6 @@ internal class FactoryCodeBuilder(
                 {
                 }
 
-                indent = len / Formatting.IndentSize;
                 code.AppendLine(line);
             }
         }

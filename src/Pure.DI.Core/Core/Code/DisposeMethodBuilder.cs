@@ -50,7 +50,7 @@ internal sealed class DisposeMethodBuilder
                             code.AppendLine();
                         }
 
-                        AddDisposeAsyncPart(composition, code, false);
+                        AddDisposeAsyncPart(code, false);
                     }
                 }
                 
@@ -100,7 +100,7 @@ internal sealed class DisposeMethodBuilder
                     {
                         if (hasAsyncDisposable)
                         {
-                            AddDisposeAsyncPart(composition, code, true);
+                            AddDisposeAsyncPart(code, true);
                         }
 
                         if (hasDisposable)
@@ -136,7 +136,7 @@ internal sealed class DisposeMethodBuilder
         return composition with { MembersCount = membersCounter };
     }
 
-    private static void AddDisposeAsyncPart(CompositionCode composition, LinesBuilder code, bool makeAsyncCall)
+    private static void AddDisposeAsyncPart(LinesBuilder code, bool makeAsyncCall)
     {
         code.AppendLine($"case {Names.IAsyncDisposableInterfaceName} asyncDisposableInstance:");
         using (code.Indent())

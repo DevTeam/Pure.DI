@@ -15,6 +15,7 @@ $h=You can also use combined attributes, and each method in the list above has a
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable UnusedTypeParameter
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Attributes.CustomAttributesScenario;
 

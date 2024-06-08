@@ -61,6 +61,7 @@ public partial class Generator
             .Bind().To<NodeInfo>()
             .Bind<IEqualityComparer<INamedTypeSymbol>>().To<NamedTypeSymbolEqualityComparer>()
             .Bind().To<ExceptionHandler>()
+            .Bind().To<Semantic>()
         
             // Validators
             .Bind(Tag.Type).To<MetadataValidator>()

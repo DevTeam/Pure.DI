@@ -32,7 +32,7 @@ class Service(IDependency dependency) : IService
 
 internal partial class Composition: IInterceptor
 {
-    private readonly List<string> _log = new();
+    private readonly List<string> _log = [];
     private static readonly IProxyBuilder ProxyBuilder = new DefaultProxyBuilder();
     private readonly IInterceptor[] _interceptors = [];
 
