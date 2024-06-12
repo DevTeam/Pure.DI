@@ -493,4 +493,869 @@ namespace Sample
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Sample.Service", "Sample.Service"], result);
     }
+    
+    [Fact]
+    public async Task ShouldSupportTagOnWhenCtor()
+    {
+        // Given
+
+        // When
+        var result = await """
+namespace Sample
+{
+    using System;
+    using Pure.DI;
+    using Sample;
+    
+    internal class Dep { }
+
+    internal interface IService { }
+
+    internal class Service: IService
+    {
+        public Service(Dep dep) { }
+    }
+    
+    internal partial class Composition
+    {                   
+        void Setup() => 
+            DI.Setup("Composition")
+                .Bind(Tag.On("Sample.Service.Service:dep")).To<Dep>()
+                .Bind().To<Service>()
+                .Root<IService>("Root"); 
+    }
+
+    public class Program
+    {
+       public static void Main()
+       {
+           var composition = new Composition();
+           Console.WriteLine(composition.Root);
+       }
+    }
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Sample.Service"], result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportOnConstructorArg()
+    {
+        // Given
+
+        // When
+        var result = await """
+namespace Sample
+{
+    using System;
+    using Pure.DI;
+    using Sample;
+    
+    internal class Dep { }
+
+    internal interface IService { }
+
+    internal class Service: IService
+    {
+        public Service(Dep dep) { }
+    }
+    
+    internal partial class Composition
+    {                   
+        void Setup() => 
+            DI.Setup("Composition")
+                .Bind(Tag.OnConstructorArg<Service>("dep")).To<Dep>()
+                .Bind().To<Service>()
+                .Root<IService>("Root"); 
+    }
+
+    public class Program
+    {
+       public static void Main()
+       {
+           var composition = new Composition();
+           Console.WriteLine(composition.Root);
+       }
+    }
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Sample.Service"], result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportTagOnWhenInterfaceInCtor()
+    {
+        // Given
+
+        // When
+        var result = await """
+namespace Sample
+{
+    using System;
+    using Pure.DI;
+    using Sample;
+    
+    internal interface IDep { }
+    
+    internal class Dep: IDep { }
+
+    internal interface IService { }
+
+    internal class Service: IService
+    {
+        public Service(IDep dep) { }
+    }
+    
+    internal partial class Composition
+    {                   
+        void Setup() => 
+            DI.Setup("Composition")
+                .Bind(Tag.On("Sample.Service.Service:dep")).To<Dep>()
+                .Bind().To<Service>()
+                .Root<IService>("Root"); 
+    }
+
+    public class Program
+    {
+       public static void Main()
+       {
+           var composition = new Composition();
+           Console.WriteLine(composition.Root);
+       }
+    }
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Sample.Service"], result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportTagOnWhenDecorator()
+    {
+        // Given
+
+        // When
+        var result = await """
+namespace Sample
+{
+    using System;
+    using Pure.DI;
+    using Sample;
+    
+    internal interface IService { }
+    
+    internal class BaseService: IService
+    {
+    }
+
+    internal class Service: IService
+    {
+        public Service(IService baseService) { }
+    }
+    
+    internal partial class Composition
+    {
+        void Setup() => 
+            DI.Setup("Composition")
+                .Bind(Tag.On("*.Service:baseService")).To<BaseService>()
+                .Bind().To<Service>()
+                .Root<IService>("Root"); 
+    }
+
+    public class Program
+    {
+       public static void Main()
+       {
+           var composition = new Composition();
+           Console.WriteLine(composition.Root);
+       }
+    }
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Sample.Service"], result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportTagOnWhenGenericInCtor()
+    {
+        // Given
+
+        // When
+        var result = await """
+namespace Sample
+{
+    using System;
+    using Pure.DI;
+    using Sample;
+    
+    internal interface IAbc { }
+    
+    internal interface IDep { }
+    
+    internal class Dep: IDep { }
+
+    internal interface IService<T> { }
+
+    internal class Service<T>: IService<T>
+    {
+        public Service(IDep dep) { }
+    }
+    
+    internal partial class Composition
+    {                   
+        void Setup() => 
+            DI.Setup("Composition")
+                .Hint(Hint.Resolve, "Off")
+                .Bind(Tag.On("Sample.Service`1.Service:dep")).To<Dep>()
+                .Bind().To<Service<TT>>()
+                .Root<IService<TT4>>("Root"); 
+    }
+
+    public class Program
+    {
+       public static void Main()
+       {
+           var composition = new Composition();
+           Console.WriteLine(composition.Root<int>());
+       }
+    }
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Sample.Service`1[System.Int32]"], result);
+    }
+
+#if ROSLYN4_8_OR_GREATER
+    [Fact]
+    public async Task ShouldSupportSeveralTagOn()
+    {
+        // Given
+
+        // When
+        var result = await """
+namespace Sample
+{
+    using System;
+    using Pure.DI;
+    using Sample;
+    
+    internal interface IDep { }
+    
+    internal class Dep: IDep { }
+
+    internal interface IService { }
+
+    internal class Service: IService
+    {
+        public Service(Dep dep, IDep abc) { }
+        private IDep? _myProp;
+        
+        public required IDep MyProp
+        {
+            init 
+            {
+                _myProp = value;
+                Console.WriteLine(value);
+            }
+            
+            get
+            {
+                return _myProp!;
+            }
+        }
+    }
+    
+    internal partial class Composition
+    {                   
+        void Setup() => 
+            DI.Setup("Composition")
+                .Bind(Tag.On("Sample.Service.Service:dep"), Tag.On("Sample.Service.Service:abc"), Tag.On("Sample.Service:MyProp")).To<Dep>()
+                .Bind().To<Service>()
+                .Root<IService>("Root"); 
+    }
+
+    public class Program
+    {
+       public static void Main()
+       {
+           var composition = new Composition();
+           Console.WriteLine(composition.Root);
+       }
+    }
+}
+""".RunAsync(new Options(LanguageVersion.CSharp11));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Sample.Dep", "Sample.Service"], result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportCombinedTagOn()
+    {
+        // Given
+
+        // When
+        var result = await """
+namespace Sample
+{
+    using System;
+    using Pure.DI;
+    using Sample;
+    
+    internal interface IDep { }
+    
+    internal class Dep: IDep { }
+
+    internal interface IService { }
+
+    internal class Service: IService
+    {
+        public Service(Dep dep, IDep abc) { }
+        private IDep? _myProp;
+        
+        public required IDep MyProp
+        {
+            init 
+            {
+                _myProp = value;
+                Console.WriteLine(value);
+            }
+            
+            get
+            {
+                return _myProp!;
+            }
+        }
+    }
+    
+    internal partial class Composition
+    {                   
+        void Setup() => 
+            DI.Setup("Composition")
+                .Bind(Tag.On("Sample.Service.Service:dep", "Sample.Service.Service:abc", "Sample.Service:MyProp")).To<Dep>()
+                .Bind().To<Service>()
+                .Root<IService>("Root"); 
+    }
+
+    public class Program
+    {
+       public static void Main()
+       {
+           var composition = new Composition();
+           Console.WriteLine(composition.Root);
+       }
+    }
+}
+""".RunAsync(new Options(LanguageVersion.CSharp11));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Sample.Dep", "Sample.Service"], result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportOnMember()
+    {
+        // Given
+
+        // When
+        var result = await """
+namespace Sample
+{
+    using System;
+    using Pure.DI;
+    using Sample;
+    
+    internal interface IDep { }
+    
+    internal class Dep: IDep { }
+
+    internal interface IService { }
+
+    internal class Service: IService
+    {
+        public Service(Dep dep, IDep abc) { }
+        private IDep? _myProp;
+        
+        public required IDep MyProp
+        {
+            init 
+            {
+                _myProp = value;
+                Console.WriteLine(value);
+            }
+            
+            get
+            {
+                return _myProp!;
+            }
+        }
+    }
+    
+    internal partial class Composition
+    {                   
+        void Setup() => 
+            DI.Setup("Composition")
+                .Bind(Tag.On("Sample.Service.Service:dep", "Sample.Service.Service:abc"), Tag.OnMember<Service>(nameof(Service.MyProp))).To<Dep>()
+                .Bind().To<Service>()
+                .Root<IService>("Root"); 
+    }
+
+    public class Program
+    {
+       public static void Main()
+       {
+           var composition = new Composition();
+           Console.WriteLine(composition.Root);
+       }
+    }
+}
+""".RunAsync(new Options(LanguageVersion.CSharp11));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Sample.Dep", "Sample.Service"], result);
+    }
+    
+    
+    [Fact]
+    public async Task ShouldSupportOnMethodArg()
+    {
+        // Given
+
+        // When
+        var result = await """
+namespace Sample
+{
+    using System;
+    using Pure.DI;
+    using Sample;
+    
+    internal interface IDep { }
+    
+    internal class Dep: IDep { }
+
+    internal interface IService { }
+
+    internal class Service: IService
+    {
+        public Service(Dep dep, IDep abc) { }
+        private IDep? _myProp;
+        
+        [Ordinal(1)]
+        public void Init(IDep dep)
+        {
+            _myProp = dep;
+            Console.WriteLine(dep);
+        }
+    }
+    
+    internal partial class Composition
+    {                   
+        void Setup() => 
+            DI.Setup("Composition")
+                .Bind(Tag.On("Sample.Service.Service:dep", "Sample.Service.Service:abc"), Tag.OnMethodArg<Service>(nameof(Service.Init), "dep")).To<Dep>()
+                .Bind().To<Service>()
+                .Root<IService>("Root"); 
+    }
+
+    public class Program
+    {
+       public static void Main()
+       {
+           var composition = new Composition();
+           Console.WriteLine(composition.Root);
+       }
+    }
+}
+""".RunAsync(new Options(LanguageVersion.CSharp11));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Sample.Dep", "Sample.Service"], result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportTagOnWithWildcard()
+    {
+        // Given
+
+        // When
+        var result = await """
+namespace Sample
+{
+    using System;
+    using Pure.DI;
+    using Sample;
+    
+    internal interface IDep { }
+    
+    internal class Dep: IDep { }
+
+    internal interface IService { }
+
+    internal class Service: IService
+    {
+        public Service(Dep dep, IDep abc) { }
+        private IDep? _myProp;
+        
+        public required IDep MyProp
+        {
+            init 
+            {
+                _myProp = value;
+                Console.WriteLine(value);
+            }
+            
+            get
+            {
+                return _myProp!;
+            }
+        }
+    }
+    
+    internal partial class Composition
+    {                   
+        void Setup() => 
+            DI.Setup("Composition")
+                .Bind(Tag.On("Sample.Service.Service:*"), Tag.On("Sample.Service:MyProp")).To<Dep>()
+                .Bind().To<Service>()
+                .Root<IService>("Root"); 
+    }
+
+    public class Program
+    {
+       public static void Main()
+       {
+           var composition = new Composition();
+           Console.WriteLine(composition.Root);
+       }
+    }
+}
+""".RunAsync(new Options(LanguageVersion.CSharp11));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Sample.Dep", "Sample.Service"], result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportTagOnWhenRequiredProperty()
+    {
+        // Given
+
+        // When
+        var result = await """
+namespace Sample
+{
+    using System;
+    using Pure.DI;
+    using Sample;
+    
+    internal interface IDep { }
+    
+    internal class Dep: IDep { }
+
+    internal interface IService { }
+
+    internal class Service: IService
+    {
+        private IDep? _myProp;
+
+        public required IDep MyProp
+        {
+            init 
+            {
+                _myProp = value;
+            }
+            
+            get
+            {
+                return _myProp!;
+            }
+        }
+    }
+    
+    internal partial class Composition
+    {                   
+        void Setup() => 
+            DI.Setup("Composition")
+                .Bind(Tag.On("Sample.Service:MyProp")).To<Dep>()
+                .Bind().To<Service>()
+                .Root<Service>("Root"); 
+    }
+
+    public class Program
+    {
+       public static void Main()
+       {
+           var composition = new Composition();
+           Console.WriteLine(composition.Root);
+           Console.WriteLine(composition.Root.MyProp);
+       }
+    }
+}
+""".RunAsync(new Options(LanguageVersion.CSharp11));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Sample.Service", "Sample.Dep"], result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportTagOnWhenRequiredField()
+    {
+        // Given
+
+        // When
+        var result = await """
+namespace Sample
+{
+    using System;
+    using Pure.DI;
+    using Sample;
+    
+    internal class Dep { }
+
+    internal interface IService { }
+
+    internal class Service: IService
+    {
+        public required Dep? MyField;
+    }
+    
+    internal partial class Composition
+    {                   
+        void Setup() => 
+            DI.Setup("Composition")
+                .Bind("Sample.Service:MyField").To<Dep>()
+                .Bind().To<Service>()
+                .Root<Service>("Root"); 
+    }
+
+    public class Program
+    {
+       public static void Main()
+       {
+           var composition = new Composition();
+           Console.WriteLine(composition.Root);
+           Console.WriteLine(composition.Root.MyField);
+       }
+    }
+}
+""".RunAsync(new Options(LanguageVersion.CSharp11));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Sample.Service", "Sample.Dep"], result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportTagOnForComplex()
+    {
+        // Given
+
+        // When
+        var result = await """
+namespace Sample
+{
+    using System;
+    using Pure.DI;
+    using Sample;
+    
+    interface IDependency { };
+
+    class AbcDependency : IDependency { };
+
+    class XyzDependency : IDependency { };
+
+    class Consumer<T>
+    {
+        public Consumer(IDependency myDep)
+        {
+            Dependency = myDep;
+        }
+
+        public IDependency Dependency { get; }
+    }
+            
+    interface IService
+    {
+        IDependency Dependency1 { get; }
+
+        IDependency Dependency2 { get; }
+        
+        IDependency Dependency3 { get; }
+        
+        IDependency Dependency4 { get; }
+    }
+
+    class Service : IService
+    {
+        private readonly Consumer<string> _consumer;
+
+        public Service(IDependency dependency1,
+            IDependency dependency2,
+            Consumer<string> consumer)
+        {
+            _consumer = consumer;
+            Dependency1 = dependency1;
+            Dependency2 = dependency2;
+        }
+
+        public IDependency Dependency1 { get; }
+
+        public IDependency Dependency2 { get; }
+
+        public required IDependency Dependency3 { init; get; }
+
+        public IDependency Dependency4 => _consumer.Dependency;
+    }
+    
+    internal partial class Composition
+    {                   
+        void Setup() => 
+            DI.Setup("Composition")
+                .Bind(Tag.On("*Service:Dependency3", "*Consumer:myDep"))
+                    .To<AbcDependency>()
+                .Bind(Tag.On("*Service:dependency?"))
+                    .To<XyzDependency>()
+                .Bind().To<Consumer<TT>>()
+                .Bind<IService>().To<Service>()
+                .Root<IService>("Root"); 
+    }
+
+    public class Program
+    {
+       public static void Main()
+       {
+            var composition = new Composition();
+            var service = composition.Root;
+            Console.WriteLine(service.Dependency1);
+            Console.WriteLine(service.Dependency2);
+            Console.WriteLine(service.Dependency3);
+            Console.WriteLine(service.Dependency4);
+       }
+    }
+}
+""".RunAsync(new Options(LanguageVersion.CSharp11));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Sample.XyzDependency", "Sample.XyzDependency", "Sample.AbcDependency", "Sample.AbcDependency"], result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportTagOnOrderForComplex()
+    {
+        // Given
+
+        // When
+        var result = await """
+namespace Sample
+{
+    using System;
+    using Pure.DI;
+    using Sample;
+    
+    interface IDependency { };
+
+    class AbcDependency : IDependency { };
+
+    class XyzDependency : IDependency { };
+
+    class Consumer<T>
+    {
+        public Consumer(IDependency myDep)
+        {
+            Dependency = myDep;
+        }
+
+        public IDependency Dependency { get; }
+    }
+            
+    interface IService
+    {
+        IDependency Dependency1 { get; }
+
+        IDependency Dependency2 { get; }
+        
+        IDependency Dependency3 { get; }
+        
+        IDependency Dependency4 { get; }
+    }
+
+    class Service : IService
+    {
+        private readonly Consumer<string> _consumer;
+
+        public Service(IDependency dependency1,
+            IDependency dependency2,
+            Consumer<string> consumer)
+        {
+            _consumer = consumer;
+            Dependency1 = dependency1;
+            Dependency2 = dependency2;
+        }
+
+        public IDependency Dependency1 { get; }
+
+        public IDependency Dependency2 { get; }
+
+        public required IDependency Dependency3 { init; get; }
+
+        public IDependency Dependency4 => _consumer.Dependency;
+    }
+    
+    internal partial class Composition
+    {                   
+        void Setup() => 
+            DI.Setup("Composition")
+                .Bind(Tag.On("*Service:Dependency3", "*Consumer:myDep"))
+                    .To<AbcDependency>()
+                .Bind(Tag.On("*Service:dependency?"))
+                    .To<XyzDependency>()
+                .Bind(Tag.On("*Service:Dependency3"))
+                    .To<XyzDependency>()
+                .Bind(Tag.On("*Service:dependency1"))
+                    .To<AbcDependency>()
+                .Bind().To<Consumer<TT>>()
+                .Bind<IService>().To<Service>()
+                .Root<IService>("Root"); 
+    }
+
+    public class Program
+    {
+       public static void Main()
+       {
+            var composition = new Composition();
+            var service = composition.Root;
+            Console.WriteLine(service.Dependency1);
+            Console.WriteLine(service.Dependency2);
+            Console.WriteLine(service.Dependency3);
+            Console.WriteLine(service.Dependency4);
+       }
+    }
+}
+""".RunAsync(new Options(LanguageVersion.CSharp11));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Sample.AbcDependency", "Sample.XyzDependency", "Sample.XyzDependency", "Sample.AbcDependency"], result);
+    }
+#endif
 }

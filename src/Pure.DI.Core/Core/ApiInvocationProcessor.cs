@@ -134,6 +134,7 @@ internal class ApiInvocationProcessor(
                                 ImmutableArray<MdTagAttribute>.Empty,
                                 ImmutableArray<MdOrdinalAttribute>.Empty,
                                 ImmutableArray<MdAccumulator>.Empty,
+                                Array.Empty<TagOnSites>(),
                                 comments.FilterHints(invocationComments).ToList()));
                         break;
                         

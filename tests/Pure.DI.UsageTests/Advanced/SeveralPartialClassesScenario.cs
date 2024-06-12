@@ -1,6 +1,6 @@
 ﻿/*
 $v=true
-$p=5
+$p=11
 $d=A few partial classes
 $h=The setting code for one Composition can be located in several methods and/or in several partial classes.
 */

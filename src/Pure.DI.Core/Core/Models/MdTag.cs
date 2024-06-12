@@ -16,11 +16,15 @@ internal readonly record struct MdTag(
     private static object CreateUniqueTagValue(int id) => 
         new UniqueTag(id);
 
+    public static object CreateTagOnValue(SyntaxNode source, params string[] sites) => 
+        new TagOnSites(source, sites);
+
     public override string ToString() =>
         Value switch
         {
             null => "null",
             string => $"\"{Value}\"",
+            TagOnSites => "",
             _ => Value.ToString()
         };
     

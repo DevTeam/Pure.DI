@@ -1,6 +1,6 @@
 ﻿/*
 $v=true
-$p=16
+$p=100
 $d=Tracking disposable instances per a composition root
 */
 

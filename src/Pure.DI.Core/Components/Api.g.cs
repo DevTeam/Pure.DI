@@ -1146,6 +1146,67 @@ namespace Pure.DI
         /// </example>
         /// </summary>
         public static readonly Tag Type = Shared;
+        
+        /// <summary>
+        /// This tag allows you to determine which binding will be used for explicit injection for a particular injection site.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind(Tag.On("MyNamespace.Service.Service:dep"))
+        ///         .To&lt;Dependency&gt;()
+        ///     .Bind().To&lt;Service&gt;()
+        ///     .Root&lt;IService&gt;("Root");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <param name="injectionSites">Set of labels for inection each, must be specified in a special format: &lt;namespace&gt;.&lt;type&gt;.&lt;member&gt;[:argument]. The argument is specified only for the constructor and methods. The wildcards &apos;*&apos; and &apos;?&apos; are supported. All names are case-sensitive. The global namespace prefix &apos;global::&apos; must be omitted.</param>
+        public static Tag On(params string[] injectionSites) => Shared;
+        
+        /// <summary>
+        /// This tag allows you to determine which binding will be used for explicit injection for a particular constructor argument.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind(Tag.OnConstructorArg&lt;Service&gt;("dep"))
+        ///         .To&lt;Dependency&gt;()
+        ///     .Bind().To&lt;Service&gt;()
+        ///     .Root&lt;IService&gt;("Root");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <param name="argName">The name of the constructor argument.</param>
+        public static Tag OnConstructorArg<T>(string argName) => Shared;
+        
+        /// <summary>
+        /// This tag allows you to define which binding will be used for explicit injection for property or field of the type.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind(Tag.OnMember&lt;Service&gt;("DepProperty"))
+        ///         .To&lt;Dependency&gt;()
+        ///     .Bind().To&lt;Service&gt;()
+        ///     .Root&lt;IService&gt;("Root");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <param name="memberName">The name of the type member.</param>
+        public static Tag OnMember<T>(string memberName) => Shared;
+        
+        /// <summary>
+        /// This tag allows you to determine which binding will be used for explicit injection for a particular method argument.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind(Tag.OnMethodArg&lt;Service&gt;("DoSomething", "state"))
+        ///         .To&lt;Dependency&gt;()
+        ///     .Bind().To&lt;Service&gt;()
+        ///     .Root&lt;IService&gt;("Root");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <param name="methodName">The name of the type method.</param>
+        /// <param name="argName">The name of the method argument.</param>
+        public static Tag OnMethodArg<T>(string methodName, string argName) => Shared;
     }
 
     /// <summary>

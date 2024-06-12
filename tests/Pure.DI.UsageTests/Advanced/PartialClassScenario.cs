@@ -1,6 +1,6 @@
 ﻿/*
 $v=true
-$p=6
+$p=10
 $d=Partial class
 $h=A partial class can contain setup code.
 $f=The partial class is also useful for specifying access modifiers to the generated class.

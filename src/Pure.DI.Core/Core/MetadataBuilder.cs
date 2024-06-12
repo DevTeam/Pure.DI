@@ -148,6 +148,17 @@ internal sealed class MetadataBuilder(
             cancellationToken.ThrowIfCancellationRequested();
         }
 
+        var bindings = bindingsBuilder.ToImmutable();
+        
+        var tagOn = bindings
+            .OrderBy(i => i.Id)
+            .SelectMany(i => i.Contracts)
+            .SelectMany(binding => binding.Tags.Select(i => i.Value).OfType<TagOnSites>())
+            .Where(i => i.InjectionSites.Length > 0)
+            .Distinct()
+            .Reverse()
+            .ToList();
+
         mergedSetup = new MdSetup(
             lastSetup?.SemanticModel!,
             lastSetup?.Source!,
@@ -155,13 +166,14 @@ internal sealed class MetadataBuilder(
             usingDirectives.ToImmutableArray(),
             kind,
             settings,
-            bindingsBuilder.ToImmutable(),
+            bindings,
             rootsBuilder.ToImmutable(),
             resolveDependsOn ? ImmutableArray<MdDependsOn>.Empty : dependsOnBuilder.ToImmutable(),
             typeAttributesBuilder.ToImmutable(),
             tagAttributesBuilder.ToImmutable(),
             ordinalAttributesBuilder.ToImmutable(),
             accumulators.ToImmutable(),
+            tagOn,
             comments);
     }
 }

@@ -7,6 +7,8 @@ namespace Pure.DI.Core;
 internal sealed class ImplementationDependencyNodeBuilder(
     ILogger<ImplementationDependencyNodeBuilder> logger,
     IBuilder<DpImplementation, IEnumerable<DpImplementation>> implementationVariantsBuilder,
+    IWildcardMatcher wildcardMatcher,
+    IInjectionSiteFactory injectionSiteFactory,
     ISemantic semantic)
     : IBuilder<MdSetup, IEnumerable<DependencyNode>>
 {
@@ -108,7 +110,7 @@ internal sealed class ImplementationDependencyNodeBuilder(
                                         ordinal,
                                         new Injection(
                                             GetAttribute(setup.TypeAttributes, field, setup.TypeConstructor?.Construct(compilation, type) ?? type),
-                                            GetAttribute(setup.TagAttributes, field, default(object?)))));
+                                            GetAttribute(setup.TagAttributes, field, default(object?)) ?? TryCreateTagOnSite(setup.TagOn, field))));
                             }
                         }
 
@@ -127,7 +129,7 @@ internal sealed class ImplementationDependencyNodeBuilder(
                                         ordinal,
                                         new Injection(
                                             GetAttribute(setup.TypeAttributes, property, setup.TypeConstructor?.Construct(compilation, type) ?? type),
-                                            GetAttribute(setup.TagAttributes, property, default(object?)))));
+                                            GetAttribute(setup.TagAttributes, property, default(object?)) ?? TryCreateTagOnSite(setup.TagOn, property))));
                             }
                         }
 
@@ -221,10 +223,30 @@ internal sealed class ImplementationDependencyNodeBuilder(
                     parameter,
                     new Injection(
                         GetAttribute(setup.TypeAttributes, parameter, typeConstructor?.Construct(compilation, type) ?? type),
-                        GetAttribute(setup.TagAttributes, parameter, default(object?)))));
+                        GetAttribute(setup.TagAttributes, parameter, default(object?)) ?? TryCreateTagOnSite(setup.TagOn, parameter))));
         }
 
         return dependenciesBuilder.MoveToImmutable();
+    }
+
+    private object? TryCreateTagOnSite(
+        IReadOnlyCollection<TagOnSites> tagOn,
+        ISymbol symbol)
+    {
+        var injectionSite = injectionSiteFactory.Create(symbol.ContainingSymbol, symbol.Name);
+        var injectionSiteSpan = injectionSite.AsSpan();
+        foreach (var tagOnSite in tagOn)
+        {
+            foreach (var expression in tagOnSite.InjectionSites)
+            {
+                if (wildcardMatcher.Match(expression.AsSpan(), injectionSiteSpan))
+                {
+                    return tagOnSite;
+                }   
+            }
+        }
+
+        return default;
     }
     
     private T GetAttribute<TMdAttribute, T>(

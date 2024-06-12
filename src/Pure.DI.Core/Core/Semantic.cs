@@ -3,7 +3,11 @@ namespace Pure.DI.Core;
 
 using Microsoft.CodeAnalysis.Operations;
 
-internal class Semantic(CancellationToken cancellationToken): ISemantic
+internal class Semantic(
+    IInjectionSiteFactory injectionSiteFactory,
+    IWildcardMatcher wildcardMatcher,
+    CancellationToken cancellationToken)
+    : ISemantic
 {
     public bool IsAccessible(ISymbol symbol) => 
         symbol is { IsStatic: false, DeclaredAccessibility: Accessibility.Internal or Accessibility.Public or Accessibility.Friend };
@@ -112,6 +116,99 @@ internal class Semantic(CancellationToken cancellationToken): ISemantic
                     }
                 }
                 
+                break;
+            }
+
+            case InvocationExpressionSyntax invocationExpressionSyntax:
+            {
+                switch (invocationExpressionSyntax.Expression)
+                {
+                    case MemberAccessExpressionSyntax { Name.Identifier.Text: nameof(Tag.On), Expression: IdentifierNameSyntax { Identifier.Text: nameof(Tag) } }:
+                        if (invocationExpressionSyntax.ArgumentList.Arguments is var injectionSitesArgs)
+                        {
+                            var names = injectionSitesArgs
+                                .Select(injectionSiteArg => GetConstantValue<string>(semanticModel, injectionSiteArg.Expression))
+                                .Where(i => !string.IsNullOrWhiteSpace(i)).OfType<string>()
+                                .ToArray();
+                            
+                            return (T)MdTag.CreateTagOnValue(invocationExpressionSyntax, names);
+                        }
+                        
+                        // ReSharper disable once HeuristicUnreachableCode
+                        break;
+                    
+                    case MemberAccessExpressionSyntax { Name: GenericNameSyntax { TypeArgumentList.Arguments: [{} typeArg]}, Name.Identifier.Text: nameof(Tag.OnConstructorArg), Expression: IdentifierNameSyntax { Identifier.Text: nameof(Tag) } }:
+                        if (invocationExpressionSyntax.ArgumentList.Arguments is [{} ctorArgName] )
+                        {
+                            var name = GetRequiredConstantValue<string>(semanticModel, ctorArgName.Expression);
+                            var ctor = GetTypeSymbol<ITypeSymbol>(semanticModel, typeArg)
+                                .GetMembers()
+                                .OfType<IMethodSymbol>()
+                                .FirstOrDefault(i => 
+                                    IsAccessible(i)
+                                    && !i.IsStatic
+                                    && i.Parameters.Any(p => wildcardMatcher.Match(name.AsSpan(), p.Name.AsSpan())));
+
+                            if (ctor is null)
+                            {
+                                throw new CompileErrorException($"There is no accessible non-static constructor of type {typeArg} with an argument matching \"{name}\".", invocationExpressionSyntax.GetLocation(), LogId.ErrorInvalidMetadata);
+                            }
+                            
+                            var injectionSite = injectionSiteFactory.Create(ctor, name);
+                            return (T)MdTag.CreateTagOnValue(invocationExpressionSyntax, injectionSite);
+                        }
+                        
+                        break;
+                        
+                    case MemberAccessExpressionSyntax { Name: GenericNameSyntax { TypeArgumentList.Arguments: [{} typeArg]}, Name.Identifier.Text: nameof(Tag.OnMethodArg), Expression: IdentifierNameSyntax { Identifier.Text: nameof(Tag) } }:
+                        if (invocationExpressionSyntax.ArgumentList.Arguments is [{} methodNameArg, {} methodArgName] )
+                        {
+                            var methodName = GetRequiredConstantValue<string>(semanticModel, methodNameArg.Expression);
+                            var methodArg = GetRequiredConstantValue<string>(semanticModel, methodArgName.Expression);
+                            var method = GetTypeSymbol<ITypeSymbol>(semanticModel, typeArg)
+                                .GetMembers()
+                                .OfType<IMethodSymbol>()
+                                .FirstOrDefault(i => 
+                                    i.MethodKind == MethodKind.Ordinary
+                                    && IsAccessible(i)
+                                    && wildcardMatcher.Match(methodName.AsSpan(), i.Name.AsSpan())
+                                    && i.Parameters.Any(p => wildcardMatcher.Match(methodArg.AsSpan(), p.Name.AsSpan())));
+
+                            if (method is null)
+                            {
+                                throw new CompileErrorException($"There is no accessible non-static method of type {typeArg} with a name matching \"{methodName}\" an argument matching \"{methodArg}\".", invocationExpressionSyntax.GetLocation(), LogId.ErrorInvalidMetadata);
+                            }
+                            
+                            var injectionSite = injectionSiteFactory.Create(method, methodArg);
+                            return (T)MdTag.CreateTagOnValue(invocationExpressionSyntax, injectionSite);
+                        }
+                        
+                        break;
+                    
+                    case MemberAccessExpressionSyntax { Name: GenericNameSyntax { TypeArgumentList.Arguments: [{} typeArg]}, Name.Identifier.Text: nameof(Tag.OnMember), Expression: IdentifierNameSyntax { Identifier.Text: nameof(Tag) } }:
+                        if (invocationExpressionSyntax.ArgumentList.Arguments is [{} memberNameArg] )
+                        {
+                            var name = GetRequiredConstantValue<string>(semanticModel, memberNameArg.Expression);
+                            var type = GetTypeSymbol<ITypeSymbol>(semanticModel, typeArg);
+                            var member = type
+                                .GetMembers()
+                                .FirstOrDefault(i => 
+                                    IsAccessible(i)
+                                    && i is IFieldSymbol { IsReadOnly: false, IsConst: false } or IPropertySymbol { IsReadOnly: false, SetMethod: not null }
+                                    && wildcardMatcher.Match(name.AsSpan(), i.Name.AsSpan()));
+                            
+                            if (member is null)
+                            {
+                                throw new CompileErrorException($"There is no accessible non-static writable field or property matched with \"{name}\" of {typeArg}.", invocationExpressionSyntax.GetLocation(), LogId.ErrorInvalidMetadata);
+                            }
+                            
+                            var injectionSite = injectionSiteFactory.Create(type, name);
+                            return (T)MdTag.CreateTagOnValue(invocationExpressionSyntax, injectionSite);
+                        }
+                        
+                        break;
+                }
+
                 break;
             }
         }
