@@ -61,11 +61,11 @@ internal class ServiceProviderFactory<TComposition>: IServiceProviderFactory<ISe
     /// </summary>
     [global::System.Diagnostics.Conditional("A2768DE22DE3E430C9653990D516CC9B")]
     private static void HintsSetup() =>
-        DI.Setup(Base, CompositionKind.Internal)
-            .Hint(Hint.OnCannotResolve, "On")
-            .Hint(Hint.OnCannotResolvePartial, "Off")
-            .Hint(Hint.OnNewRoot, "On")
-            .Hint(Hint.OnNewRootPartial, "Off");
+        global::Pure.DI.DI.Setup(Base, global::Pure.DI.CompositionKind.Internal)
+            .Hint(global::Pure.DI.Hint.OnCannotResolve, "On")
+            .Hint(global::Pure.DI.Hint.OnCannotResolvePartial, "Off")
+            .Hint(global::Pure.DI.Hint.OnNewRoot, "On")
+            .Hint(global::Pure.DI.Hint.OnNewRootPartial, "Off");
 
     /// <summary>
     /// Creates a service collection <see cref="Microsoft.Extensions.DependencyInjection.ServiceCollection"/> based on the registered composition.

@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
         <Library>MS</Library>
         <Description>Tools for working with Microsoft DI using $(BasePackageId). $(Description)</Description>
         <DefineConstants>$(DefineConstants);PUREDI_NET_ANY</DefineConstants>
@@ -9,20 +10,16 @@
     <Import Project="..\Library.props"/>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\Pure.DI.Core\Pure.DI.Core.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
-        <ProjectReference Include="..\..\src\Pure.DI\Pure.DI.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+        <Compile Include="..\Pure.DI.Core\Components\*.g.cs"/>
+        <Compile Update="any\Pure.DI\MS\ServiceCollectionFactory.g.cs">
+            <Pack>true</Pack>
+            <PackagePath>contentFiles/cs</PackagePath>
+        </Compile>
+        <Compile Update="any\Pure.DI\MS\ServiceProviderFactory.g.cs">
+            <Pack>true</Pack>
+            <PackagePath>contentFiles/cs</PackagePath>
+        </Compile>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0"/>
     </ItemGroup>
 
-    <ItemGroup>
-      <Compile Update="any\Pure.DI\MS\ServiceCollectionFactory.g.cs">
-        <Pack>true</Pack>
-        <PackagePath>contentFiles/cs</PackagePath>
-      </Compile>
-      <Compile Update="any\Pure.DI\MS\ServiceProviderFactory.g.cs">
-        <Pack>true</Pack>
-        <PackagePath>contentFiles/cs</PackagePath>
-      </Compile>
-    </ItemGroup>
-    
 </Project>

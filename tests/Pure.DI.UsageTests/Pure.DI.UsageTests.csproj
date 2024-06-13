@@ -8,21 +8,18 @@
     <ItemGroup>
         <ProjectReference Include="..\..\src\Pure.DI.Core\Pure.DI.Core.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
         <ProjectReference Include="..\..\src\Pure.DI\Pure.DI.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
+        <ProjectReference Include="..\..\src\Pure.DI.Abstractions\Pure.DI.Abstractions.csproj" OutputItemType="Analyzer" />
+        <Compile Include="..\..\src\Pure.DI.Abstractions\any\Pure.DI\Abstractions\*.g.cs"/>
         <Compile Include="..\..\src\Pure.DI.MS\any\Pure.DI\MS\*.cs" Link=""/>
         <PackageReference Include="Castle.Core" Version="5.1.1"/>
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0"/>
         <PackageReference Include="Shouldly" Version="4.2.1"/>
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
-        <PackageReference Include="xunit" Version="2.8.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0"/>
+        <PackageReference Include="xunit" Version="2.8.0"/>
         <PackageReference Include="xunit.runner.visualstudio" Version="2.8.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <Compile Remove="Advanced\TagOnConstructorArgScenario.cs" />
-        <Compile Remove="Advanced\TagOnInjectionSiteScenario.cs" />
-        <Compile Remove="Advanced\TagOnInjectionSiteWithWildcardsScenario.cs" />
-        <Compile Remove="Advanced\TagOnMemberScenario.cs" />
-        <Compile Remove="Advanced\TagOnMethodArgScenario.cs" />
     </ItemGroup>
 
 </Project>

@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
         <PackageType>Template</PackageType>
         <PackageId>Pure.DI.Templates</PackageId>
         <Title>Pure DI project templates</Title>

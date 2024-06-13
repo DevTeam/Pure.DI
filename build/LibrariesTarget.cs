@@ -34,7 +34,16 @@ internal class LibrariesTarget(
                     .Where(i => i.Version.Major >= 7)
                     .Select(v => $"net{v.Version.Major}.{v.Version.Minor}")
                     .ToArray(),
-                ["webapi"])
+                ["webapi"]),
+            
+            new Library(
+                "Pure.DI.Abstractions",
+                new Package(GetPackagePath("Pure.DI.Abstractions", settings.NextVersion), false),
+                sdk.Versions
+                    .Where(i => i.Version.Major >= 7)
+                    .Select(v => $"net{v.Version.Major}.{v.Version.Minor}")
+                    .ToArray(),
+                ["classlib"])
         ];
 
         foreach (var library in libraries)

@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>net20;net35;net40;net45;net48;netstandard1.0;netstandard1.1;netstandard1.2;netstandard1.3;netstandard1.4;netstandard1.5;netstandard1.6;netstandard2.0;netstandard2.1;netcoreapp1.0;netcoreapp1.1;netcoreapp2.0;netcoreapp2.1;netcoreapp2.2;netcoreapp3.0;netcoreapp3.1;net5.0;net6.0;net7.0;net8.0</TargetFrameworks>
+        <IsPackable>true</IsPackable>
+        <ImplicitUsings>false</ImplicitUsings>
+        <PackageId>$(BasePackageId).Abstractions</PackageId>
+        <Description>Abstractions of $(BasePackageId). $(Description)</Description>
+        <DefineConstants>$(DefineConstants);PUREDI_NET_ANY</DefineConstants>
+        <NoWarn>NU1902;NU1903;NU3005</NoWarn>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Remove="any\Pure.DI\Abstractions\Composition.g.cs"/>
+        <Content Include="any\Pure.DI\Abstractions\Composition.g.cs" buildAction="Compile" >
+            <Pack>true</Pack>
+            <PackagePath>contentFiles/cs/any/Pure.DI/Abstractions</PackagePath>
+        </Content>
+        <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net20" Version="1.0.3" Condition="'$(TargetFramework)' == 'net20' ">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net35" Version="1.0.3" Condition="'$(TargetFramework)' == 'net35' ">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net40" Version="1.0.3" Condition="'$(TargetFramework)' == 'net40' ">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net45" Version="1.0.3" Condition="'$(TargetFramework)' == 'net45' ">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net48" Version="1.0.3" Condition="'$(TargetFramework)' == 'net48' ">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+
+</Project>

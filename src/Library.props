@@ -11,11 +11,4 @@
         <BaseOutputPath>bin</BaseOutputPath>
     </PropertyGroup>
 
-    <ItemGroup>
-        <Compile Update="@(Compile)">
-            <Pack>true</Pack>
-            <PackagePath>contentFiles/cs</PackagePath>
-        </Compile>
-    </ItemGroup>
-
 </Project>

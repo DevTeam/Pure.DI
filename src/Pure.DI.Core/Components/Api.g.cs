@@ -23,9 +23,6 @@ namespace System
 
 namespace Pure.DI
 {
-    using global::System;
-    using global::System.Diagnostics;
-
     /// <summary>
     /// Binding lifetimes.
     /// <example>
@@ -1073,7 +1070,7 @@ namespace Pure.DI
     /// <br/>See also:
     /// <br/><see cref="IConfiguration.Root{T}"/>
     /// </summary>
-    [Flags]
+    [global::System.Flags]
     internal enum RootKinds
     {
         /// <summary>
@@ -1252,7 +1249,7 @@ namespace Pure.DI
         /// <param name="disposableInstance">The disposable instance.</param>
         /// <param name="exception">Exception occurring during disposal.</param>
         /// <typeparam name="T">The actual type of instance being disposed of.</typeparam>
-        partial void OnDisposeException<T>(T disposableInstance, Exception exception)
+        partial void OnDisposeException<T>(T disposableInstance, global::System.Exception exception)
             where T : global::System.IDisposable;
         
 #if NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER        
@@ -1262,7 +1259,7 @@ namespace Pure.DI
         /// <param name="asynDisposableInstance">The disposable instance.</param>
         /// <param name="exception">Exception occurring during disposal.</param>
         /// <typeparam name="T">The actual type of instance being disposed of.</typeparam>
-        partial void OnDisposeAsyncException<T>(T asynDisposableInstance, Exception exception)
+        partial void OnDisposeAsyncException<T>(T asynDisposableInstance, global::System.Exception exception)
             where T : global::System.IAsyncDisposable;
 #endif
     }
@@ -1314,7 +1311,7 @@ namespace Pure.DI
                 get { return _owned.Value; }
             }
                 
-            [global::System.Diagnostics.DebuggerBrowsable(DebuggerBrowsableState.Collapsed)]
+            [global::System.Diagnostics.DebuggerBrowsable(global::System.Diagnostics.DebuggerBrowsableState.Collapsed)]
             public global::Pure.DI.IOwned Owned
             {
                 get { return _owned._owned; }

@@ -543,11 +543,12 @@ Then documentation for the composition root:
 
 ## NuGet packages
 
-|                   |                                                                                                               |                                                            |
-|-------------------|---------------------------------------------------------------------------------------------------------------|:-----------------------------------------------------------|
-| Pure.DI           | [![NuGet](https://buildstats.info/nuget/Pure.DI)](https://www.nuget.org/packages/Pure.DI)                     | DI Source code generator                                   |
-| Pure.DI.Templates | [![NuGet](https://buildstats.info/nuget/Pure.DI.Templates)](https://www.nuget.org/packages/Pure.DI.Templates) | Template Package you can call from the shell/command line. |
-| Pure.DI.MS        | [![NuGet](https://buildstats.info/nuget/Pure.DI.MS)](https://www.nuget.org/packages/Pure.DI.MS)               | Tools for working with Microsoft DI                        |
+|                      |                                                                                                                     |                                                            |
+|----------------------|---------------------------------------------------------------------------------------------------------------------|:-----------------------------------------------------------|
+| Pure.DI              | [![NuGet](https://buildstats.info/nuget/Pure.DI)](https://www.nuget.org/packages/Pure.DI)                           | DI Source code generator                                   |
+| Pure.DI.Abstractions | [![NuGet](https://buildstats.info/nuget/Pure.DI.Abstractions)](https://www.nuget.org/packages/Pure.DI.Abstractions) | Abstractions for Pure.DI                                   |
+| Pure.DI.Templates    | [![NuGet](https://buildstats.info/nuget/Pure.DI.Templates)](https://www.nuget.org/packages/Pure.DI.Templates)       | Template Package you can call from the shell/command line. |
+| Pure.DI.MS           | [![NuGet](https://buildstats.info/nuget/Pure.DI.MS)](https://www.nuget.org/packages/Pure.DI.MS)                     | Tools for working with Microsoft DI                        |
 
 ## Project template
 
