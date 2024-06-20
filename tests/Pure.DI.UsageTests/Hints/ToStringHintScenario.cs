@@ -40,7 +40,8 @@ public class Scenario
         DI.Setup(nameof(Composition))
             .Hint(Hint.ToString, "On")
             .Bind().To<Dependency>()
-            .RootBind<IService>("MyService").To<Service>();
+            .Bind().To<Service>()
+            .Root<IService>("MyService");
 
         var composition = new Composition();
         string classDiagram = composition.ToString();

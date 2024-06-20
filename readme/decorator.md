@@ -22,7 +22,8 @@ class GreetingService([Tag("base")] IService baseService): IService
 
 DI.Setup(nameof(Composition))
     .Bind("base").To<Service>()
-    .RootBind<IService>("Root").To<GreetingService>();
+    .Bind().To<GreetingService>()
+    .Root<IService>("Root");
 
 var composition = new Composition();
 var service = composition.Root;

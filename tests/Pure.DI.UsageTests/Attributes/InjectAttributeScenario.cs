@@ -55,7 +55,7 @@ public class Scenario
 // {            
         DI.Setup(nameof(PersonComposition))
             .Arg<int>("personId")
-            .Bind("Person Uri").To(_ => new Uri("https://github.com/DevTeam/Pure.DI"))
+            .Bind<Uri>("Person Uri").To(_ => new Uri("https://github.com/DevTeam/Pure.DI"))
             .Bind("NikName").To(_ => "Nik")
             .Bind().To<Person>()
             

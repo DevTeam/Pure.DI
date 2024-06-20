@@ -45,9 +45,10 @@ partial class Composition
             // This hint indicates to not generate methods such as Resolve
             .Hint(Hint.Resolve, "Off")
             .Bind().As(Scoped).To<Dependency>()
+            .Bind().To<Service>()
 
             // Session composition root
-            .RootBind<IService>("SessionRoot").To<Service>()
+            .Root<IService>("SessionRoot")
 
             // Program composition root
             .Root<Program>("ProgramRoot");

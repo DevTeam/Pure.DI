@@ -36,7 +36,8 @@ DI.Setup(nameof(Composition))
     .DefaultLifetime(Lifetime.Singleton)
 
     .Bind().To<Dependency>()
-    .RootBind<IService>("Root").To<Service>();
+    .Bind().To<Service>()
+    .Root<IService>("Root");
 
 var composition = new Composition();
 var service1 = composition.Root;

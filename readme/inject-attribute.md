@@ -29,7 +29,7 @@ class Person([Inject("NikName")] string name) : IPerson
 
 DI.Setup(nameof(PersonComposition))
     .Arg<int>("personId")
-    .Bind("Person Uri").To(_ => new Uri("https://github.com/DevTeam/Pure.DI"))
+    .Bind<Uri>("Person Uri").To(_ => new Uri("https://github.com/DevTeam/Pure.DI"))
     .Bind("NikName").To(_ => "Nik")
     .Bind().To<Person>()
 
@@ -91,9 +91,6 @@ classDiagram
 		+IPerson Person
 	}
 	class Int32
-	Uri --|> ISpanFormattable : "Person Uri" 
-	Uri --|> IFormattable : "Person Uri" 
-	Uri --|> ISerializable : "Person Uri" 
 	class Uri
 	class String
 	Person --|> IPerson
@@ -101,15 +98,6 @@ classDiagram
 		+Person(String name)
 		~Object Id
 		+Initialize(Object state) : Void
-	}
-	class ISpanFormattable {
-		<<interface>>
-	}
-	class IFormattable {
-		<<interface>>
-	}
-	class ISerializable {
-		<<interface>>
 	}
 	class IPerson {
 		<<interface>>

@@ -55,7 +55,8 @@ public class Scenario
             // This hint indicates to not generate methods such as Resolve
             .Hint(Hint.Resolve, "Off")
             .Bind().As(Lifetime.Transient).To<Dependency>()
-            .RootBind<IService>("Root").To<Service>();
+            .Bind().To<Service>()
+            .Root<IService>("Root");
 
         var composition = new Composition();
         var service1 = composition.Root;
