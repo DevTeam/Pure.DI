@@ -1780,4 +1780,87 @@ namespace Sample
         result.Errors.ShouldBeEmpty();
         result.StdOut.ShouldBe(["Sample.Service"], result);
     }
+    
+    [Fact]
+    public async Task ShouldCreateCompositionRootWhenSomeOtherCompositionHasInvalidGraph()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup("InvalidComposition")
+                .Bind<string>().To(_ => "Abc")
+                .Root<string>("Root1")
+                .Root<string>("Root2");
+                
+            DI.Setup("Composition")
+                .Bind<string>().To(_ => "Abc")
+                .Root<string>("Root");
+        }
+    }          
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();                                                       
+        }
+    }
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count.ShouldBe(1);
+    }
+    
+    [Fact]
+    public async Task ShouldCreateCompositionRootWhenSomeOtherCompositionHasInvalidMetadata()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup("InvalidComposition")
+                .Bind<string>().To(_ => 33)
+                .Root<string>("Root");
+                
+            DI.Setup("Composition")
+                .Bind<string>().To(_ => "Abc")
+                .Root<string>("Root");
+        }
+    }          
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();                                                       
+        }
+    }
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count.ShouldBe(1);
+    }
 }
