@@ -13,6 +13,7 @@ internal sealed class DependencyGraphBuilder(
     Func<IBuilder<RewriterContext<MdFactory>, MdFactory>> factoryRewriterFactory,
     IFilter filter,
     ICache<INamedTypeSymbol, MdConstructKind> constructKinds,
+    IRegistryManager<MdBinding> registryManager,
     CancellationToken cancellationToken)
     : IDependencyGraphBuilder
 {
@@ -86,6 +87,7 @@ internal sealed class DependencyGraphBuilder(
                 {
                     if (!marker.IsMarkerBased(sourceNode.Type))
                     {
+                        registryManager.Register(sourceNode.Binding);
                         continue;
                     }
                 }
@@ -128,6 +130,7 @@ internal sealed class DependencyGraphBuilder(
                             }
 
                             sourceNode = item.Value;
+                            registryManager.Register(sourceNode.Binding);
                             var genericBinding = CreateGenericBinding(
                                 targetNode,
                                 injection,
@@ -567,6 +570,7 @@ internal sealed class DependencyGraphBuilder(
                 continue;
             }
 
+            registryManager.Register(nestedBinding);
             dependencyContracts.Add(new MdContract(targetNode.Binding.SemanticModel, targetNode.Binding.Source, elementType, tags));
         }
 

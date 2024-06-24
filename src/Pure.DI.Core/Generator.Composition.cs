@@ -70,6 +70,7 @@ public partial class Generator
             .Bind(Tag.Type).To<DependencyGraphValidator>()
             .Bind(Tag.Type).To<RootValidator>()
             .Bind(Tag.Type).To<TagOnSitesValidator>()
+            .Bind(Tag.Type).To<BindingsValidator>()
         
             // Comments
             .Bind(Tag.Type).To<ClassCommenter>()
@@ -129,5 +130,6 @@ public partial class Generator
             .Bind().To<Filter>()
             .Bind("UniqueTags").To<IdGenerator>()
             .Bind("GenericType").To<IdGenerator>()
-            .Bind().To<IdGenerator>();
+            .Bind().To<IdGenerator>()
+            .Bind().To<Registry<TT>>();
 }

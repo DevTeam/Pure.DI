@@ -1863,4 +1863,52 @@ namespace Sample
         result.Success.ShouldBeFalse(result);
         result.Errors.Count.ShouldBe(1);
     }
+    
+    [Fact]
+    public async Task ShouldShowWarningWhenBindingWasNotUsed()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    internal interface IDependency { }
+
+    internal class Dependency : IDependency { }
+
+    internal interface IService { }
+
+    internal class Service : IService { }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup(nameof(Composition))
+                .Bind<IDependency>().To<Dependency>()
+                .Bind<IService>().To<Service>()
+                .Root<IService>("Root");
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();
+        }
+    }                
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count.ShouldBe(0);
+        result.Warnings.Count.ShouldBe(1);
+        result.Warnings.Count(i => i.Id == LogId.WarningMetadataDefect).ShouldBe(1);
+    }
 }

@@ -9,7 +9,8 @@ internal sealed class ImplementationDependencyNodeBuilder(
     IBuilder<DpImplementation, IEnumerable<DpImplementation>> implementationVariantsBuilder,
     IWildcardMatcher wildcardMatcher,
     IInjectionSiteFactory injectionSiteFactory,
-    ISemantic semantic)
+    ISemantic semantic,
+    IRegistryManager<MdInjectionSite> registryManager)
     : IBuilder<MdSetup, IEnumerable<DependencyNode>>
 {
     public IEnumerable<DependencyNode> Build(MdSetup setup)
@@ -250,7 +251,7 @@ internal sealed class ImplementationDependencyNodeBuilder(
                     continue;
                 }
 
-                tagOnSite.Use(site);
+                registryManager.Register(site);
                 return tagOnSite;
             }
         }
