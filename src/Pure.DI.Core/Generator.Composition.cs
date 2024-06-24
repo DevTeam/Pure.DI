@@ -69,6 +69,7 @@ public partial class Generator
             .Bind(Tag.Type).To<MetadataValidator>()
             .Bind(Tag.Type).To<DependencyGraphValidator>()
             .Bind(Tag.Type).To<RootValidator>()
+            .Bind(Tag.Type).To<TagOnSitesValidator>()
         
             // Comments
             .Bind(Tag.Type).To<ClassCommenter>()

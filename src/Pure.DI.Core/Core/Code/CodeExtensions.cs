@@ -22,7 +22,7 @@ internal static class CodeExtensions
             char ch => $"'{ch.ToString()}'",
             Enum en => $"{en.GetType()}.{en}",
             ITypeSymbol => $"typeof({tag})",
-            TagOnSites => defaultValue,
+            MdTagOnSites => defaultValue,
             not null => tag.ToString(),
             _ => defaultValue
         };

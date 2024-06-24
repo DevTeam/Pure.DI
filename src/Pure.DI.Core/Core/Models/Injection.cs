@@ -7,7 +7,7 @@ internal readonly record struct Injection(
     ITypeSymbol Type,
     object? Tag)
 {
-    public override string ToString() => $"{Type}{(Tag != default && Tag is not TagOnSites ? $"({Tag.ValueToString()})" : "")}";
+    public override string ToString() => $"{Type}{(Tag != default && Tag is not MdTagOnSites ? $"({Tag.ValueToString()})" : "")}";
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool Equals(Injection other) =>
@@ -24,5 +24,5 @@ internal readonly record struct Injection(
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool SpecialEqualTags(object? tag, object? otherTag) => 
-        ReferenceEquals(tag, MdTag.ContextTag) || (tag is TagOnSites tagOn && tagOn.Equals(otherTag));
+        ReferenceEquals(tag, MdTag.ContextTag) || (tag is MdTagOnSites tagOn && tagOn.Equals(otherTag));
 }

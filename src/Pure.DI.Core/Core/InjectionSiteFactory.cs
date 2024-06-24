@@ -33,9 +33,11 @@ internal class InjectionSiteFactory : IInjectionSiteFactory
                 .WithMiscellaneousOptions(SymbolDisplayMiscellaneousOptions.UseSpecialTypes | SymbolDisplayMiscellaneousOptions.CollapseTupleTypes);
     }
     
-    public string Create(ISymbol containingSymbol, string name)
+    public string CreateInjectionSite(ISymbol containingSymbol, string name)
     {
         var memberName = containingSymbol.ToDisplayString(NameTagQualifiedFormat);
         return $"{memberName}:{name}";
     }
+    
+    public MdInjectionSite CreateInjectionSite(SyntaxNode source, ISymbol containingSymbol, string name) => new(source, CreateInjectionSite(containingSymbol, name));
 }

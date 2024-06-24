@@ -1,5 +1,7 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
+using Core;
+
 public class TagsTests
 {
     [Fact]
@@ -1325,7 +1327,7 @@ namespace Sample
     {                   
         void Setup() => 
             DI.Setup("Composition")
-                .Bind(Tag.On("*Service:Dependency3", "*Consumer:myDep"))
+                .Bind(Tag.On("*Consumer:myDep"))
                     .To<AbcDependency>()
                 .Bind(Tag.On("*Service:dependency?"))
                     .To<XyzDependency>()
@@ -1358,4 +1360,55 @@ namespace Sample
         result.StdOut.ShouldBe(["Sample.AbcDependency", "Sample.XyzDependency", "Sample.XyzDependency", "Sample.AbcDependency"], result);
     }
 #endif
+    
+    [Fact]
+    public async Task ShouldShowWarningWhenTagOnWasNotUsed()
+    {
+        // Given
+
+        // When
+        var result = await """
+namespace Sample
+{
+    using System;
+    using Pure.DI;
+    using Sample;
+    
+    internal class Dep { }
+
+    internal interface IService { }
+
+    internal class Service: IService
+    {
+        public Service(Dep dep) { }
+    }
+    
+    internal partial class Composition
+    {                   
+        void Setup() => 
+            DI.Setup("Composition")
+                .Bind().To<Dep>()
+                .Bind(Tag.On("Sample.Service.Service:abc")).To<Dep>()
+                .Bind().To<Service>()
+                .Root<IService>("Root"); 
+    }
+
+    public class Program
+    {
+       public static void Main()
+       {
+           var composition = new Composition();
+           Console.WriteLine(composition.Root);
+       }
+    }
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count.ShouldBe(0);
+        result.Warnings.Count.ShouldBe(1);
+        result.Warnings.Count(i => i.Id == LogId.WarningMetadataDefect).ShouldBe(1);
+        result.StdOut.ShouldBe(["Sample.Service"], result);
+    }
 }

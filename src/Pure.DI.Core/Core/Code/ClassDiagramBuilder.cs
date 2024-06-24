@@ -199,10 +199,10 @@ internal sealed class ClassDiagramBuilder(
     }
 
     private string FormatDependency(Dependency dependency, FormatOptions options) => 
-        $"{(dependency.Injection.Tag is null or TagOnSites ? "" : FormatTag(dependency.Injection.Tag) + " ")}{FormatSymbol(dependency.Injection.Type, options)}";
+        $"{(dependency.Injection.Tag is null or MdTagOnSites ? "" : FormatTag(dependency.Injection.Tag) + " ")}{FormatSymbol(dependency.Injection.Type, options)}";
 
     private static string FormatTag(object? tag) =>
-        tag is null or TagOnSites
+        tag is null or MdTagOnSites
             ? ""
             : EscapeTag(tag) + " ";
 

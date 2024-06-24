@@ -153,7 +153,7 @@ internal sealed class MetadataBuilder(
         var tagOn = bindings
             .OrderBy(i => i.Id)
             .SelectMany(i => i.Contracts)
-            .SelectMany(binding => binding.Tags.Select(i => i.Value).OfType<TagOnSites>())
+            .SelectMany(binding => binding.Tags.Select(i => i.Value).OfType<MdTagOnSites>())
             .Where(i => i.InjectionSites.Length > 0)
             .Distinct()
             .Reverse()

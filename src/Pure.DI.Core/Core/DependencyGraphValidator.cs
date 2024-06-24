@@ -42,7 +42,7 @@ internal sealed class DependencyGraphValidator(
                 isErrorReported = true;
             }
         }
-
+        
         if (!isResolved && !isErrorReported)
         {
             logger.CompileError("Cannot build a dependency graph.", dependencyGraph.Source.Source.GetLocation(), LogId.ErrorUnableToResolve);

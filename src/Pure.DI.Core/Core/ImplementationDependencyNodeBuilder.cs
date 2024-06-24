@@ -110,7 +110,7 @@ internal sealed class ImplementationDependencyNodeBuilder(
                                         ordinal,
                                         new Injection(
                                             GetAttribute(setup.TypeAttributes, field, setup.TypeConstructor?.Construct(compilation, type) ?? type),
-                                            GetAttribute(setup.TagAttributes, field, default(object?)) ?? TryCreateTagOnSite(setup.TagOn, field))));
+                                            GetTagAttribute(setup, field))));
                             }
                         }
 
@@ -129,7 +129,7 @@ internal sealed class ImplementationDependencyNodeBuilder(
                                         ordinal,
                                         new Injection(
                                             GetAttribute(setup.TypeAttributes, property, setup.TypeConstructor?.Construct(compilation, type) ?? type),
-                                            GetAttribute(setup.TagAttributes, property, default(object?)) ?? TryCreateTagOnSite(setup.TagOn, property))));
+                                            GetTagAttribute(setup, property))));
                             }
                         }
 
@@ -223,26 +223,35 @@ internal sealed class ImplementationDependencyNodeBuilder(
                     parameter,
                     new Injection(
                         GetAttribute(setup.TypeAttributes, parameter, typeConstructor?.Construct(compilation, type) ?? type),
-                        GetAttribute(setup.TagAttributes, parameter, default(object?)) ?? TryCreateTagOnSite(setup.TagOn, parameter))));
+                        GetTagAttribute(setup, parameter))));
         }
 
         return dependenciesBuilder.MoveToImmutable();
     }
+    
+    private object? GetTagAttribute(
+        MdSetup setup,
+        ISymbol member) =>
+        GetAttribute(setup.TagAttributes, member, default(object?))
+        ?? TryCreateTagOnSite(setup.TagOn, member);
 
     private object? TryCreateTagOnSite(
-        IReadOnlyCollection<TagOnSites> tagOn,
+        IReadOnlyCollection<MdTagOnSites> tagOn,
         ISymbol symbol)
     {
-        var injectionSite = injectionSiteFactory.Create(symbol.ContainingSymbol, symbol.Name);
+        var injectionSite = injectionSiteFactory.CreateInjectionSite(symbol.ContainingSymbol, symbol.Name);
         var injectionSiteSpan = injectionSite.AsSpan();
         foreach (var tagOnSite in tagOn)
         {
-            foreach (var expression in tagOnSite.InjectionSites)
+            foreach (var site in tagOnSite.InjectionSites)
             {
-                if (wildcardMatcher.Match(expression.AsSpan(), injectionSiteSpan))
+                if (!wildcardMatcher.Match(site.Site.AsSpan(), injectionSiteSpan))
                 {
-                    return tagOnSite;
-                }   
+                    continue;
+                }
+
+                tagOnSite.Use(site);
+                return tagOnSite;
             }
         }
 

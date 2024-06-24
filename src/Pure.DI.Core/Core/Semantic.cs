@@ -126,12 +126,13 @@ internal class Semantic(
                     case MemberAccessExpressionSyntax { Name.Identifier.Text: nameof(Tag.On), Expression: IdentifierNameSyntax { Identifier.Text: nameof(Tag) } }:
                         if (invocationExpressionSyntax.ArgumentList.Arguments is var injectionSitesArgs)
                         {
-                            var names = injectionSitesArgs
-                                .Select(injectionSiteArg => GetConstantValue<string>(semanticModel, injectionSiteArg.Expression))
-                                .Where(i => !string.IsNullOrWhiteSpace(i)).OfType<string>()
-                                .ToArray();
+                            var injectionSites = injectionSitesArgs
+                                .Select(injectionSiteArg => (Source: injectionSiteArg.Expression, Value: GetConstantValue<string>(semanticModel, injectionSiteArg.Expression)))
+                                .Where(i => !string.IsNullOrWhiteSpace(i.Value))
+                                .Select(i => new MdInjectionSite(i.Source, i.Value!))
+                                .ToImmutableArray();
                             
-                            return (T)MdTag.CreateTagOnValue(invocationExpressionSyntax, names);
+                            return (T)MdTag.CreateTagOnValue(invocationExpressionSyntax, injectionSites);
                         }
                         
                         // ReSharper disable once HeuristicUnreachableCode
@@ -154,8 +155,8 @@ internal class Semantic(
                                 throw new CompileErrorException($"There is no accessible non-static constructor of type {typeArg} with an argument matching \"{name}\".", invocationExpressionSyntax.GetLocation(), LogId.ErrorInvalidMetadata);
                             }
                             
-                            var injectionSite = injectionSiteFactory.Create(ctor, name);
-                            return (T)MdTag.CreateTagOnValue(invocationExpressionSyntax, injectionSite);
+                            var injectionSite = injectionSiteFactory.CreateInjectionSite(ctorArgName.Expression, ctor, name);
+                            return (T)MdTag.CreateTagOnValue(invocationExpressionSyntax, ImmutableArray.Create(injectionSite));
                         }
                         
                         break;
@@ -179,8 +180,8 @@ internal class Semantic(
                                 throw new CompileErrorException($"There is no accessible non-static method of type {typeArg} with a name matching \"{methodName}\" an argument matching \"{methodArg}\".", invocationExpressionSyntax.GetLocation(), LogId.ErrorInvalidMetadata);
                             }
                             
-                            var injectionSite = injectionSiteFactory.Create(method, methodArg);
-                            return (T)MdTag.CreateTagOnValue(invocationExpressionSyntax, injectionSite);
+                            var injectionSite = injectionSiteFactory.CreateInjectionSite(methodArgName.Expression, method, methodArg);
+                            return (T)MdTag.CreateTagOnValue(invocationExpressionSyntax, ImmutableArray.Create(injectionSite));
                         }
                         
                         break;
@@ -202,8 +203,8 @@ internal class Semantic(
                                 throw new CompileErrorException($"There is no accessible non-static writable field or property matched with \"{name}\" of {typeArg}.", invocationExpressionSyntax.GetLocation(), LogId.ErrorInvalidMetadata);
                             }
                             
-                            var injectionSite = injectionSiteFactory.Create(type, name);
-                            return (T)MdTag.CreateTagOnValue(invocationExpressionSyntax, injectionSite);
+                            var injectionSite = injectionSiteFactory.CreateInjectionSite(memberNameArg, type, name);
+                            return (T)MdTag.CreateTagOnValue(invocationExpressionSyntax, ImmutableArray.Create(injectionSite));
                         }
                         
                         break;
