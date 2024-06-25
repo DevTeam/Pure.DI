@@ -1065,6 +1065,77 @@ namespace Sample
     }
     
     [Fact]
+    public async Task ShouldSupportPerResolveWhenComplex()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    class Abc {}
+    
+    interface IDependency {}
+
+    class Dependency: IDependency
+    {
+        public Dependency(Abc abc) { }
+    }
+
+    interface IService
+    {
+        IDependency Dep1 { get; }
+
+        IDependency Dep2 { get; }
+    }
+
+    class Service: IService 
+    {
+        public Service(IDependency dep1, IDependency dep2)
+        {
+            Dep1 = dep1;
+            Dep2 = dep2;
+        }
+
+        public IDependency Dep1 { get; }
+
+        public IDependency Dep2 { get; }
+    }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup(nameof(Composition))
+                .Bind().As(Lifetime.Singleton).To<Abc>()
+                .Bind<IDependency>().As(Lifetime.PerResolve).To<Dependency>()
+                .Bind<IService>().To<Service>()               
+                .Root<IService>("Service");
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();
+            var service = composition.Service;
+            Console.WriteLine(service.Dep1 == service.Dep2);
+        }
+    }                
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+        result.GeneratedCode.Split().Count(i => i.TrimStart().StartsWith("EnsureExistenceOf_perResolveDependencyM")).ShouldBe(2);
+    }
+    
+    [Fact]
     public async Task ShouldSupportPerResolveWhenStruct()
     {
         // Given

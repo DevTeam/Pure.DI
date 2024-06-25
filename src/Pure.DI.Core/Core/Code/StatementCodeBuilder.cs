@@ -18,7 +18,7 @@ internal class StatementCodeBuilder(
         switch (statement)
         {
             case Variable variable:
-                if (!variable.Info.Create(variable.ParentBlock))
+                if (!variable.Info.CreateVariable(variable.ParentBlock))
                 {
                     break;
                 }
@@ -27,6 +27,11 @@ internal class StatementCodeBuilder(
                 break;
 
             case Block block:
+                if (!block.Current.Info.CreateBlock(block.Current.ParentBlock))
+                {
+                    break;
+                }
+                
                 blockBuilder.Build(ctx, block);
                 break;
         }
