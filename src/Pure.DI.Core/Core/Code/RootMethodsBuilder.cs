@@ -144,7 +144,6 @@ internal sealed class RootMethodsBuilder(
             var indentToken = Disposables.Empty;
             if (!root.IsMethod)
             {
-                buildTools.AddPureHeader(code);
                 code.AppendLine($"[{Names.MethodImplAttributeName}({Names.MethodImplAggressiveInlining})]");
                 code.AppendLine("get");
                 code.AppendLine("{");
