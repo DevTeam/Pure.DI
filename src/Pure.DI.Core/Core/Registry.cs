@@ -1,7 +1,7 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal class Registry<T>: IRegistryManager<T>
+internal class Registry<T>: IRegistryManager<T>, IRegistry<T>
 {
     private readonly HashSet<T> _registered = [];
 
