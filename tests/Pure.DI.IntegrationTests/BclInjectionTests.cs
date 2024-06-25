@@ -283,30 +283,7 @@ using Pure.DI;
 
 namespace Sample
 {
-    struct Point
-    {
-        int X, Y;        
-        
-        public Point(int x, int y)
-        {
-            X = x;
-            Y = y;
-        }
-    } 
-
     interface IDependency {}
-
-    class Dependency: IDependency, IComparable<Dependency>, IComparable
-    {        
-        public Dependency(ReadOnlySpan<Point> points1, Span<Point> points2)
-        {
-            Console.WriteLine("Dependency created");
-        }
-
-        public int CompareTo(Dependency other) => GetHashCode() - other.GetHashCode();
-        
-        public int CompareTo(object obj) => GetHashCode() - obj.GetHashCode();
-    }
 
     interface IService
     {                    
@@ -325,8 +302,6 @@ namespace Sample
         private static void SetupComposition()
         {
             DI.Setup("Composition")
-                .Bind<Point>(1).To(_ => new Point(1, 2))
-                .Bind<Point>(2).To(_ => new Point(2, 3))
                 .Bind<IService>().To<Service>()
                 .Root<IService>("Service");
         }

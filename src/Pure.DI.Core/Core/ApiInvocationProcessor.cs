@@ -48,6 +48,7 @@ internal class ApiInvocationProcessor(
                                 semanticModel,
                                 invocation.ArgumentList,
                                 default,
+                                ContractKind.Implicit,
                                 BuildTags(semanticModel, invocation.ArgumentList.Arguments)));
                         break;
                     
@@ -365,6 +366,7 @@ internal class ApiInvocationProcessor(
                     semanticModel,
                     invocation.ArgumentList,
                     semantic.GetTypeSymbol<ITypeSymbol>(semanticModel, contractType),
+                    ContractKind.Explicit,
                     tags));
         }
     }
@@ -384,7 +386,7 @@ internal class ApiInvocationProcessor(
             var name = semantic.GetRequiredConstantValue<string>(semanticModel, nameArgExpression).Trim();
             var tags = BuildTags(semanticModel, args.Skip(1));
             var argType = semantic.GetTypeSymbol<ITypeSymbol>(semanticModel, argTypeSyntax);
-            metadataVisitor.VisitContract(new MdContract(semanticModel, invocation, argType, tags.ToImmutableArray()));
+            metadataVisitor.VisitContract(new MdContract(semanticModel, invocation, argType, ContractKind.Explicit, tags.ToImmutableArray()));
             metadataVisitor.VisitArg(new MdArg(semanticModel, argTypeSyntax, argType, name, kind, argComments));
         }
     }

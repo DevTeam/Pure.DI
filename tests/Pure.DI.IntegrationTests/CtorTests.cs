@@ -347,7 +347,9 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result);
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(1, result);
         result.StdOut.ShouldBe(["99"], result);
     }
     

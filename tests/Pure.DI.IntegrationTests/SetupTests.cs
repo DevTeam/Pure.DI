@@ -37,7 +37,9 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeFalse(result);
-        result.Warnings.Count.ShouldBe(1);
+        result.Errors.Count.ShouldBe(0);
+        result.Warnings.Count.ShouldBe(2);
+        result.Warnings.Count(i => i.Id == LogId.WarningMetadataDefect).ShouldBe(2);
     }
     
     [Fact]
@@ -163,8 +165,9 @@ namespace Sample
         // Then
         result.Success.ShouldBeFalse(result);
         result.StdOut.ShouldBe(["Xyz"], result);
-        result.Warnings.Count.ShouldBe(1);
+        result.Warnings.Count.ShouldBe(2);
         result.Warnings.Count(i => i.Id == LogId.WarningOverriddenBinding).ShouldBe(1);
+        result.Warnings.Count(i => i.Id == LogId.WarningMetadataDefect).ShouldBe(1);
     }
     
     [Fact]
@@ -255,7 +258,10 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result);
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(1, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningMetadataDefect).ShouldBe(1);
     }
     
     [Fact]
@@ -507,9 +513,9 @@ namespace Sample
         private static void SetupComposition() =>
             DI.Setup("Composition")
                 .Bind<IDependency>().To<Dependency>()
-                .Bind<IService>("Other").To<OtherService>()
+                .Bind("Other").To<OtherService>()
                 .Bind<IService>().To<Service>()
-                .Root<Service>("Service")
+                .Root<IService>("Service")
                 .Root<OtherService>("OtherRoot", "Other");
     }          
 
@@ -585,7 +591,10 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result);
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(7, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningMetadataDefect).ShouldBe(7, result);
     }
     
     [Fact]
@@ -888,7 +897,7 @@ internal interface IDependency { }
        
             public class Service : IService
             {
-                public Service(IDependency dependency)
+                public Service(IDependency dependency, Func<string, IDependency2> factory)
                 {
                 }
             }
@@ -912,7 +921,8 @@ internal interface IDependency { }
                             ctx.Inject<IDependency>(out var dep2);
                             return new Dependency2(dep2, p);
                         }))
-                        .Bind<IService>().To<Service>().Root<IService>("Service");
+                        .Bind<IService>().To<Service>()
+                        .Root<IService>("Service");
             }
        
            public class Program
@@ -1356,16 +1366,13 @@ namespace Sample
        """.Replace("#severity#", severity.ToString()).RunAsync();
 
         // Then
-        result.Success.ShouldBe(severity <= DiagnosticSeverity.Info , result);
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count.ShouldBe(severity == DiagnosticSeverity.Error ? 1 : 0, result);
         if (severity != DiagnosticSeverity.Hidden)
         {
             result.Logs
                 .Count(i => i.Severity == severity && i.Id == logId && i.Message.Contains("Sample.Service does not implement Sample.IService."))
-                .ShouldBe(1);
-        }
-        else
-        {
-            result.Logs.ShouldBeEmpty();
+                .ShouldBe(1, result);
         }
     }
     

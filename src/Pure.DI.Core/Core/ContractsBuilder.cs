@@ -14,7 +14,7 @@ internal sealed class ContractsBuilder: IBuilder<ContractsBuildContext, ISet<Inj
         var hasContextTag = binding.Factory is { HasContextTag: true };
         var contracts = new HashSet<Injection>();
         var bindingTags = new HashSet<object?>(binding.Tags.Select(i => i.Value));
-        foreach (var (_, _, contractType, immutableArray) in binding.Contracts)
+        foreach (var (_, _, contractType, _, immutableArray) in binding.Contracts)
         {
             if (contractType is null)
             {

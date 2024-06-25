@@ -117,6 +117,7 @@ internal class BindingBuilder(
                                     semanticModel,
                                     contractsSource,
                                     contract,
+                                    ContractKind.Implicit,
                                     tags));
                         }
                     }

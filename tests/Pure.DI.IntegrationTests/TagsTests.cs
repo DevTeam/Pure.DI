@@ -427,8 +427,8 @@ namespace Sample
             DI.Setup("Composition")
                 .Bind<IDep>(Tag.Unique).To<Dep1>()
                 .Bind(Tag.Unique).To<Dep2>()
-                .Bind<IService>().To<Service>()
-                .Root<Service>("Root"); 
+                .Bind().To<Service>()
+                .Root<Service>("Root");
     }
 
     public class Program

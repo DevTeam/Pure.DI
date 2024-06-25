@@ -188,8 +188,9 @@ namespace Sample
                 .Bind<IEnumerable<IDependency>>().To(ctx => 
                 {
                     ctx.Inject<IDependency>(1, out var dep1);
-                    ctx.Inject<IDependency>(3, out var dep2);
-                    return new List<IDependency> { dep1, dep2 };
+                    ctx.Inject<IDependency>(2, out var dep2);
+                    ctx.Inject<IDependency>(3, out var dep3);
+                    return new List<IDependency> { dep1, dep3 };
                 })
                 .Root<IService>("Service");
         }
@@ -208,7 +209,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["Dependency created", "Dependency created", "Service creating"], result);
+        result.StdOut.ShouldBe(["Dependency created", "Dependency created", "Dependency created", "Service creating"], result);
     }
     
     [Fact]

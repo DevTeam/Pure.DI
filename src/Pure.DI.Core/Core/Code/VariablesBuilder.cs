@@ -116,7 +116,9 @@ internal class VariablesBuilder(
                             }
 
                             var depVariable = GetVariable(currentBlock, map, blockMap, depNode, depInjection, ref transientId, hasCycle);
-                            var isBlock = depNode.Lifetime is not Lifetime.Transient and not Lifetime.PerBlock || nodeInfo.IsDelegate(variable.Node);
+                            var isBlock = depNode.Lifetime is not Lifetime.Transient and not Lifetime.PerBlock
+                                          || nodeInfo.IsDelegate(variable.Node)
+                                          || nodeInfo.IsDelegate(depNode);
                             if (isBlock)
                             {
                                 var depBlock = new Block(blockId++, currentStatement, []);

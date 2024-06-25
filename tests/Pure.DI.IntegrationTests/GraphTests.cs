@@ -1619,7 +1619,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeFalse(result);
-        result.Warnings.Count.ShouldBe(1);
+        result.Warnings.Count.ShouldBe(3);
         result.Errors.Count.ShouldBe(0);
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(1, result);

@@ -186,7 +186,8 @@ internal sealed class DependencyGraphBuilder(
                                     foreach (var newNode in CreateNodes(setup, constructBinding))
                                     {
                                         map[injection] = newNode;
-                                        queue.Enqueue(CreateNewProcessingNode(injection, newNode));
+                                        var processingNode = CreateNewProcessingNode(injection, newNode);
+                                        queue.Enqueue(processingNode);
                                     }
                                     
                                     continue;
@@ -488,7 +489,7 @@ internal sealed class DependencyGraphBuilder(
             targetNode.Binding.Source,
             setup,
             targetNode.Binding.SemanticModel,
-            ImmutableArray.Create(new MdContract(targetNode.Binding.SemanticModel, accumulator.Source, accumulator.AccumulatorType, ImmutableArray<MdTag>.Empty)),
+            ImmutableArray.Create(new MdContract(targetNode.Binding.SemanticModel, accumulator.Source, accumulator.AccumulatorType, ContractKind.Implicit, ImmutableArray<MdTag>.Empty)),
             ImmutableArray<MdTag>.Empty,
             new MdLifetime(targetNode.Binding.SemanticModel, accumulator.Source, Lifetime.Transient),
             default,
@@ -526,7 +527,7 @@ internal sealed class DependencyGraphBuilder(
             ? ImmutableArray.Create(new MdTag(0, injection.Tag))
             : ImmutableArray<MdTag>.Empty;
 
-        var newContracts = ImmutableArray.Create(new MdContract(semanticModel, setup.Source, sourceType, ImmutableArray<MdTag>.Empty));
+        var newContracts = ImmutableArray.Create(new MdContract(semanticModel, setup.Source, sourceType, ContractKind.Implicit, ImmutableArray<MdTag>.Empty));
         var newBinding = new MdBinding(
             newId,
             targetNode.Binding.Source,
@@ -583,15 +584,14 @@ internal sealed class DependencyGraphBuilder(
                 continue;
             }
 
-            registryManager.Register(nestedBinding);
-            dependencyContracts.Add(new MdContract(targetNode.Binding.SemanticModel, targetNode.Binding.Source, elementType, tags));
+            dependencyContracts.Add(new MdContract(targetNode.Binding.SemanticModel, targetNode.Binding.Source, elementType, ContractKind.Implicit, tags));
         }
 
         var newTags = tag is not null
             ? ImmutableArray.Create(new MdTag(0, tag))
             : ImmutableArray<MdTag>.Empty;
-        var newContracts = ImmutableArray.Create(new MdContract(targetNode.Binding.SemanticModel, targetNode.Binding.Source, injection.Type, newTags));
-        return new MdBinding(
+        var newContracts = ImmutableArray.Create(new MdContract(targetNode.Binding.SemanticModel, targetNode.Binding.Source, injection.Type, ContractKind.Implicit, newTags));
+        var newBinding = new MdBinding(
             newId,
             targetNode.Binding.Source,
             setup,
@@ -611,6 +611,9 @@ internal sealed class DependencyGraphBuilder(
                 dependencyContracts.ToImmutableArray(),
                 hasExplicitDefaultValue,
                 explicitDefaultValue));
+        
+        registryManager.Register(newBinding);
+        return newBinding;
     }
 
     private IEnumerable<MdContract> GetMatchedMdContracts(Compilation compilation, ITypeSymbol elementType, MdBinding nestedBinding)
@@ -636,6 +639,7 @@ internal sealed class DependencyGraphBuilder(
 
     private ProcessingNode CreateNewProcessingNode(in Injection injection, DependencyNode dependencyNode)
     {
+        registryManager.Register(dependencyNode.Binding);
         var contracts = contractsBuilder.Build(new ContractsBuildContext(dependencyNode.Binding, injection.Tag));
         return new ProcessingNode(dependencyNode, contracts, marker);
     }

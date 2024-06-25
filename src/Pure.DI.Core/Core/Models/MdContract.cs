@@ -6,6 +6,7 @@ internal readonly record struct MdContract(
     SemanticModel SemanticModel,
     SyntaxNode Source,
     ITypeSymbol? ContractType,
+    ContractKind Kind,
     in ImmutableArray<MdTag> Tags)
 {
     public override string ToString()

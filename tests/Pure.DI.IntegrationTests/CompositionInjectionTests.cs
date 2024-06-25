@@ -29,7 +29,7 @@ namespace Sample
 
     class Service: IService 
     {
-        public Service(Composition composition)
+        public Service(Composition composition, IDependency dep)
         { 
             Console.WriteLine("Service creating");            
         }                            
@@ -43,7 +43,8 @@ namespace Sample
         {
             DI.Setup("Composition")
                 .Bind<IDependency>().To<Dependency>()
-                .Bind<IService>().To<Service>().Root<IService>("Service");
+                .Bind<IService>().To<Service>()
+                .Root<IService>("Service");
         }
     }
 
