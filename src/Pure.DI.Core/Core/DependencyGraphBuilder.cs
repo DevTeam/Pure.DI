@@ -140,6 +140,18 @@ internal sealed class DependencyGraphBuilder(
                             
                             var genericNode = CreateNodes(setup, genericBinding).Single(i => i.Variation == sourceNode.Variation);
                             map[injection] = genericNode;
+                            foreach (var contract in genericBinding.Contracts.Where(i => i.ContractType is not null))
+                            {
+                                foreach (var tag in contract.Tags.Select(i => i.Value).DefaultIfEmpty(default))
+                                {
+                                    var newInjection = new Injection(contract.ContractType!, tag);
+                                    if (!map.ContainsKey(newInjection))
+                                    {
+                                        map[newInjection] = genericNode;
+                                    }
+                                }
+                            }
+
                             queue.Enqueue(CreateNewProcessingNode(injection, genericNode));
                             isGenericOk = true;
                             break;
@@ -432,9 +444,10 @@ internal sealed class DependencyGraphBuilder(
         var semanticModel = targetNode.Binding.SemanticModel;
         var compilation = semanticModel.Compilation;
         var newContracts = sourceNode.Binding.Contracts
+            .Where(contract => contract.ContractType is not null)
             .Select(contract => contract with
             {
-                ContractType = injection.Type,
+                ContractType = typeConstructor.Construct(compilation, contract.ContractType!),
                 Tags = contract.Tags.Select( tag => CreateTag(injection, tag)).Where(tag => tag.HasValue).Select(tag => tag!.Value).ToImmutableArray()
             })
             .ToImmutableArray();

@@ -191,6 +191,74 @@ namespace Sample
     }
     
     [Fact]
+    public async Task ShouldSupportSingletonWhenTypeImplementsSeveralGenericInterfaces()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    internal interface IDependency1<T> { }
+    
+    internal interface IDependency2<T> { }
+
+    internal class Dependency<T> : IDependency1<T>, IDependency2<T> { }
+
+    internal interface IService
+    {
+        IDependency1<int> Dependency1 { get; }
+                
+        IDependency2<int> Dependency2 { get; }
+    }
+
+    internal class Service : IService
+    {
+        public Service(IDependency1<int> dependency1, IDependency2<int> dependency2)
+        {
+            Dependency1 = dependency1;
+            Dependency2 = dependency2;
+        }
+
+        public IDependency1<int> Dependency1 { get; }
+                
+        public IDependency2<int> Dependency2 { get; }
+    }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup(nameof(Composition))
+                .Bind().As(Lifetime.Singleton).To<Dependency<TT>>()
+                .Bind().To<Service>()
+                .Root<IService>("Root");
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();
+            var service1 = composition.Root;
+            var service2 = composition.Root;
+            Console.WriteLine(service1.Dependency1 == service1.Dependency2);                    
+            Console.WriteLine(service2.Dependency1 == service1.Dependency1);
+        }
+    }                
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True"], result);
+    }
+    
+    [Fact]
     public async Task ShouldSupportValueTypeSingleton()
     {
         // Given
@@ -1965,5 +2033,71 @@ namespace Sample
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Sample.StagingService", "Sample.RegistrationService"], result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportPerResolveWhenTypeImplementsSeveralGenericInterfaces()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    internal interface IDependency1<T> { }
+    
+    internal interface IDependency2<T> { }
+
+    internal class Dependency<T> : IDependency1<T>, IDependency2<T> { }
+
+    internal interface IService
+    {
+        IDependency1<int> Dependency1 { get; }
+                
+        IDependency2<int> Dependency2 { get; }
+    }
+
+    internal class Service : IService
+    {
+        public Service(IDependency1<int> dependency1, IDependency2<int> dependency2)
+        {
+            Dependency1 = dependency1;
+            Dependency2 = dependency2;
+        }
+
+        public IDependency1<int> Dependency1 { get; }
+                
+        public IDependency2<int> Dependency2 { get; }
+    }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup(nameof(Composition))
+                .Bind().As(Lifetime.PerResolve).To<Dependency<TT>>()
+                .Bind().To<Service>()
+                .Root<IService>("Root");
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();
+            var service = composition.Root;
+            Console.WriteLine(service.Dependency1 == service.Dependency2);
+        }
+    }                
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
     }
 }
