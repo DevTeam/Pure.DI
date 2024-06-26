@@ -1,7 +1,7 @@
 ﻿<component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Build generator" type="DotNetProject" factoryName=".NET Project">
     <option name="EXE_PATH" value="$PROJECT_DIR$/build/bin/Debug/net8.0/build.exe" />
-    <option name="PROGRAM_PARAMETERS" value="-p:version=2.1.24-beta2 generator" />
+    <option name="PROGRAM_PARAMETERS" value="-p:version=2.1.0-beta generator" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
     <option name="PASS_PARENT_ENVS" value="1" />
     <option name="USE_EXTERNAL_CONSOLE" value="0" />

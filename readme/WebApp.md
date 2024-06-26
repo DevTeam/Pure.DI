@@ -50,11 +50,11 @@ The [project file](/samples/WebApp/WebApp.csproj) looks like this:
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.1.23">
+        <PackageReference Include="Pure.DI" Version="2.1.24">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.1.18" />
+        <PackageReference Include="Pure.DI.MS" Version="2.1.24" />
     </ItemGroup>
 
 </Project>
