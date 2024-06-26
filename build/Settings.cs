@@ -25,6 +25,12 @@ internal class Settings(
     {
         get
         {
+            if (NuGetVersion.TryParse(properties["version"], out var version))
+            {
+                WriteLine($"The next version has been overridden by {version}.", Color.Details);
+                return version;
+            }
+
             var currentVersion =  _currentVersion.Value;
             return new NuGetVersion(currentVersion.Major, currentVersion.Minor, currentVersion.Patch + 1);
         }
@@ -38,14 +44,6 @@ internal class Settings(
         new CodeAnalysis(new Version(4, 3, 1))
     ];
 
-    private static NuGetVersion GetVersion(Properties properties, Versions versions)
-    {
-        if (!NuGetVersion.TryParse(properties["version"], out var version))
-        {
-            return versions.GetNext(new NuGetRestoreSettings("Pure.DI"), VersionRange, 0);
-        }
-
-        WriteLine($"The version has been overridden by {version}.", Color.Details);
-        return version;
-    }
+    private static NuGetVersion GetVersion(Properties properties, Versions versions) => 
+        versions.GetNext(new NuGetRestoreSettings("Pure.DI"), VersionRange, 0);
 }
