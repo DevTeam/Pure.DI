@@ -8,7 +8,7 @@ internal class TagOnSitesValidator(ILogger<TagOnSitesValidator> logger, IRegistr
     {
         foreach (var tagOn in data.Source.TagOn)
         {
-            foreach (var injectionSite in tagOn.InjectionSites.Where(injectionSite => !registry.IsRegistered(injectionSite)))
+            foreach (var injectionSite in tagOn.InjectionSites.Where(injectionSite => !registry.IsRegistered(data.Source, injectionSite)))
             {
                 logger.CompileWarning($"\"{injectionSite.Site}\" of the tag on the injection site was not used.", injectionSite.Source.GetLocation(), LogId.WarningMetadataDefect);
             }

@@ -2,5 +2,5 @@
 
 internal interface IRegistryManager<in T>
 {
-    void Register(T value);
+    void Register(MdSetup setup, T value);
 }

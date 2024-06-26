@@ -87,7 +87,7 @@ internal sealed class DependencyGraphBuilder(
                 {
                     if (!marker.IsMarkerBased(sourceNode.Type))
                     {
-                        registryManager.Register(sourceNode.Binding);
+                        registryManager.Register(setup, sourceNode.Binding);
                         continue;
                     }
                 }
@@ -130,7 +130,7 @@ internal sealed class DependencyGraphBuilder(
                             }
 
                             sourceNode = item.Value;
-                            registryManager.Register(sourceNode.Binding);
+                            registryManager.Register(setup, sourceNode.Binding);
                             var genericBinding = CreateGenericBinding(
                                 targetNode,
                                 injection,
@@ -152,7 +152,7 @@ internal sealed class DependencyGraphBuilder(
                                 }
                             }
 
-                            queue.Enqueue(CreateNewProcessingNode(injection, genericNode));
+                            queue.Enqueue(CreateNewProcessingNode(setup, injection, genericNode));
                             isGenericOk = true;
                             break;
                         }
@@ -186,7 +186,7 @@ internal sealed class DependencyGraphBuilder(
                                     foreach (var newNode in CreateNodes(setup, constructBinding))
                                     {
                                         map[injection] = newNode;
-                                        var processingNode = CreateNewProcessingNode(injection, newNode);
+                                        var processingNode = CreateNewProcessingNode(setup, injection, newNode);
                                         queue.Enqueue(processingNode);
                                     }
                                     
@@ -218,7 +218,7 @@ internal sealed class DependencyGraphBuilder(
                         foreach (var newNode in CreateNodes(setup, arrayBinding))
                         {
                             map[injection] = newNode;
-                            queue.Enqueue(CreateNewProcessingNode(injection, newNode));
+                            queue.Enqueue(CreateNewProcessingNode(setup, injection, newNode));
                         }
                         
                         continue;
@@ -269,7 +269,7 @@ internal sealed class DependencyGraphBuilder(
                     foreach (var newNode in CreateNodes(setup, compositionBinding))
                     {
                         map[injection] = newNode;
-                        queue.Enqueue(CreateNewProcessingNode(injection, newNode));
+                        queue.Enqueue(CreateNewProcessingNode(setup, injection, newNode));
                     }
 
                     continue;
@@ -389,22 +389,22 @@ internal sealed class DependencyGraphBuilder(
     }
 
     private bool TryCreateOnCannotResolve(
-        MdSetup mdSetup,
+        MdSetup setup,
         DependencyNode ownerNode,
         Injection unresolvedInjection,
         ref int maxId,
         IDictionary<Injection, DependencyNode> map,
         ISet<ProcessingNode> processed)
     {
-        if (mdSetup.Hints.IsOnCannotResolveEnabled
+        if (setup.Hints.IsOnCannotResolveEnabled
             && filter.IsMeetRegularExpression(
-                mdSetup,
+                setup,
                 (Hint.OnCannotResolveContractTypeNameRegularExpression, unresolvedInjection.Type.ToString()),
                 (Hint.OnCannotResolveTagRegularExpression, unresolvedInjection.Tag.ValueToString()),
                 (Hint.OnCannotResolveLifetimeRegularExpression, ownerNode.Lifetime.ValueToString())))
         {
             var onCannotResolveBinding = CreateConstructBinding(
-                mdSetup,
+                setup,
                 ownerNode,
                 unresolvedInjection,
                 unresolvedInjection.Type,
@@ -413,11 +413,11 @@ internal sealed class DependencyGraphBuilder(
                 MdConstructKind.OnCannotResolve,
                 unresolvedInjection.Tag);
 
-            var onCannotResolveNodes = CreateNodes(mdSetup, onCannotResolveBinding);
+            var onCannotResolveNodes = CreateNodes(setup, onCannotResolveBinding);
             foreach (var onCannotResolveNode in onCannotResolveNodes)
             {
                 map[unresolvedInjection] = onCannotResolveNode;
-                processed.Add(CreateNewProcessingNode(unresolvedInjection, onCannotResolveNode));
+                processed.Add(CreateNewProcessingNode(setup, unresolvedInjection, onCannotResolveNode));
                 return true;
             }
         }
@@ -612,7 +612,7 @@ internal sealed class DependencyGraphBuilder(
                 hasExplicitDefaultValue,
                 explicitDefaultValue));
         
-        registryManager.Register(newBinding);
+        registryManager.Register(setup, newBinding);
         return newBinding;
     }
 
@@ -637,9 +637,9 @@ internal sealed class DependencyGraphBuilder(
         }
     }
 
-    private ProcessingNode CreateNewProcessingNode(in Injection injection, DependencyNode dependencyNode)
+    private ProcessingNode CreateNewProcessingNode(MdSetup setup, in Injection injection, DependencyNode dependencyNode)
     {
-        registryManager.Register(dependencyNode.Binding);
+        registryManager.Register(setup, dependencyNode.Binding);
         var contracts = contractsBuilder.Build(new ContractsBuildContext(dependencyNode.Binding, injection.Tag));
         return new ProcessingNode(dependencyNode, contracts, marker);
     }

@@ -306,8 +306,8 @@ namespace Sample
         // Then
         result.Success.ShouldBeFalse(result);
         result.StdOut.ShouldBe(["Xyz"], result);
-        result.Warnings.Count.ShouldBe(1);
-        result.Warnings.Count(i => i.Id == LogId.WarningOverriddenBinding).ShouldBe(1);
+        result.Warnings.Count.ShouldBe(2, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningOverriddenBinding).ShouldBe(1, result);
     }
     
     [Fact]

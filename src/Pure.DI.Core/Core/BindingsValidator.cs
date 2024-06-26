@@ -8,7 +8,7 @@ internal class BindingsValidator(ILogger<TagOnSitesValidator> logger, IRegistry<
     {
         foreach (var binding in data.Source.Bindings.Where(i => i.SourceSetup.Kind == CompositionKind.Public && i.Contracts.Any(c => c.Kind == ContractKind.Explicit)))
         {
-            if (!registry.IsRegistered(binding))
+            if (!registry.IsRegistered(data.Source, binding))
             {
                 logger.CompileWarning("The binding was not used.", binding.Source.GetLocation(), LogId.WarningMetadataDefect);   
             }

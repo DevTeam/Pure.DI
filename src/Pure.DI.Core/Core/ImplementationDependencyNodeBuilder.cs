@@ -234,15 +234,15 @@ internal sealed class ImplementationDependencyNodeBuilder(
         MdSetup setup,
         ISymbol member) =>
         GetAttribute(setup.TagAttributes, member, default(object?))
-        ?? TryCreateTagOnSite(setup.TagOn, member);
+        ?? TryCreateTagOnSite(setup, member);
 
     private object? TryCreateTagOnSite(
-        IReadOnlyCollection<MdTagOnSites> tagOn,
+        MdSetup setup,
         ISymbol symbol)
     {
         var injectionSite = injectionSiteFactory.CreateInjectionSite(symbol.ContainingSymbol, symbol.Name);
         var injectionSiteSpan = injectionSite.AsSpan();
-        foreach (var tagOnSite in tagOn)
+        foreach (var tagOnSite in setup.TagOn)
         {
             foreach (var site in tagOnSite.InjectionSites)
             {
@@ -251,7 +251,7 @@ internal sealed class ImplementationDependencyNodeBuilder(
                     continue;
                 }
 
-                registryManager.Register(site);
+                registryManager.Register(setup, site);
                 return tagOnSite;
             }
         }

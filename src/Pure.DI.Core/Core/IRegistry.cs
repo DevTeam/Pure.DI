@@ -2,5 +2,5 @@
 
 internal interface IRegistry<in T>
 {
-    bool IsRegistered(T value);
+    bool IsRegistered(MdSetup setup, T value);
 }
