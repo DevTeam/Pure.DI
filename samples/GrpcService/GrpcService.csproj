@@ -9,7 +9,7 @@
         <ProjectReference Include="..\..\src\Pure.DI\Pure.DI.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
         <Compile Include="..\..\src\Pure.DI.MS\any\Pure.DI\MS\*.cs" Link=""/>
         <Protobuf Include="Protos\greet.proto" GrpcServices="Server"/>
-        <PackageReference Include="Grpc.AspNetCore" Version="2.62.0" />
+        <PackageReference Include="Grpc.AspNetCore" Version="2.63.0" />
     </ItemGroup>
 
 </Project>
