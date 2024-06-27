@@ -31,6 +31,6 @@ internal static class Assertions
         }
 
         Error($"{result.StartInfo.ShortName} failed");
-        Environment.Exit(1);
+        throw new OperationCanceledException();
     }
 }
