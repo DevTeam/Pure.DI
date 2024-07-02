@@ -2,7 +2,7 @@ namespace Pure.DI.Core;
 
 internal interface ITypeConstructor
 {
-    bool TryBind(ITypeSymbol source, ITypeSymbol target);
+    bool TryBind(MdSetup setup, ITypeSymbol source, ITypeSymbol target);
 
-    ITypeSymbol Construct(Compilation compilation, ITypeSymbol type);
+    ITypeSymbol Construct(MdSetup setup, Compilation compilation, ITypeSymbol type);
 }

@@ -106,6 +106,10 @@ internal class MetadataWalkerBase: IMetadataVisitor
         }
     }
 
+    public virtual void VisitGenericTypeArgumentAttribute(in MdGenericTypeArgumentAttribute genericTypeArgumentAttribute)
+    {
+    }
+
     public virtual void VisitResolve(in MdResolver resolver)
     {
         if (resolver.Tag is {} tag)

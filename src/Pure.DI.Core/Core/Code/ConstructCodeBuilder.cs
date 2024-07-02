@@ -56,7 +56,7 @@ internal class ConstructCodeBuilder(ITypeResolver typeResolver)
             code.AppendLine($"[{Names.MethodImplAttributeName}({Names.MethodImplAggressiveInlining})]");
         }
 
-        code.AppendLine($"{methodPrefix}{typeResolver.Resolve(variable.InstanceType)} {localMethodName}()");
+        code.AppendLine($"{methodPrefix}{typeResolver.Resolve(ctx.DependencyGraph.Source, variable.InstanceType)} {localMethodName}()");
         code.AppendLine("{");
         using (code.Indent())
         {
@@ -90,7 +90,7 @@ internal class ConstructCodeBuilder(ITypeResolver typeResolver)
     private void BuildArray(BuildContext ctx, in DpConstruct array)
     {
         var variable = ctx.Variable;
-        var instantiation = $"new {typeResolver.Resolve(array.Source.ElementType)}[{variable.Args.Count.ToString()}] {{ {string.Join(", ", variable.Args.Select(i => ctx.BuildTools.OnInjected(ctx, i.Current)))} }}";
+        var instantiation = $"new {typeResolver.Resolve(ctx.DependencyGraph.Source, array.Source.ElementType)}[{variable.Args.Count.ToString()}] {{ {string.Join(", ", variable.Args.Select(i => ctx.BuildTools.OnInjected(ctx, i.Current)))} }}";
         var onCreated = ctx.BuildTools.OnCreated(ctx, variable).ToArray();
         if (onCreated.Any())
         {
@@ -106,13 +106,13 @@ internal class ConstructCodeBuilder(ITypeResolver typeResolver)
     private void BuildSpan(BuildContext ctx, in DpConstruct span)
     {
         var variable = ctx.Variable;
-        var createArray = $"{typeResolver.Resolve(span.Source.ElementType)}[{variable.Args.Count.ToString()}] {{ {string.Join(", ", variable.Args.Select(i => ctx.BuildTools.OnInjected(ctx, i.Current)))} }}";
+        var createArray = $"{typeResolver.Resolve(ctx.DependencyGraph.Source, span.Source.ElementType)}[{variable.Args.Count.ToString()}] {{ {string.Join(", ", variable.Args.Select(i => ctx.BuildTools.OnInjected(ctx, i.Current)))} }}";
 
         var isStackalloc = 
             span.Source.ElementType.IsValueType
             && span.Binding.SemanticModel.Compilation.GetLanguageVersion() >= LanguageVersion.CSharp7_3;
         
-        var createInstance = isStackalloc ? $"stackalloc {createArray}" : $"new {Names.SystemNamespace}Span<{typeResolver.Resolve(span.Source.ElementType)}>(new {createArray})";
+        var createInstance = isStackalloc ? $"stackalloc {createArray}" : $"new {Names.SystemNamespace}Span<{typeResolver.Resolve(ctx.DependencyGraph.Source, span.Source.ElementType)}>(new {createArray})";
         ctx.Code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VariableName} = {createInstance};");
         ctx.Code.AppendLines(ctx.BuildTools.OnCreated(ctx, variable));
     }

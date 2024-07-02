@@ -3,7 +3,7 @@ namespace Pure.DI.Core.Code;
 internal interface IVariablesBuilder
 {
     Block Build(
-        IGraph<DependencyNode, Dependency> graph,
+        DependencyGraph dependencyGraph,
         IDictionary<MdBinding, Variable> map,
         DependencyNode rootNode,
         Injection rootInjection);

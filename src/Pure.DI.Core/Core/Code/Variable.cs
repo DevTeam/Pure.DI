@@ -1,6 +1,7 @@
 namespace Pure.DI.Core.Code;
 
 internal record Variable(
+        MdSetup Setup,
         IStatement? Parent,
         int PerLifetimeId,
         in DependencyNode Node,

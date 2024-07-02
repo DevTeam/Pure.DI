@@ -41,7 +41,7 @@ internal sealed class FieldsBuilder(ITypeResolver typeResolver)
             {
                 if (singletonField.InstanceType.IsValueType)
                 {
-                    code.AppendLine($"private {typeResolver.Resolve(singletonField.InstanceType)} {singletonField.VariableDeclarationName};");
+                    code.AppendLine($"private {typeResolver.Resolve(composition.Source.Source, singletonField.InstanceType)} {singletonField.VariableDeclarationName};");
                     membersCounter++;
 
                     code.AppendLine($"private bool {singletonField.VariableDeclarationName}Created;");
@@ -49,7 +49,7 @@ internal sealed class FieldsBuilder(ITypeResolver typeResolver)
                 }
                 else
                 {
-                    code.AppendLine($"private {typeResolver.Resolve(singletonField.InstanceType)}{nullable} {singletonField.VariableDeclarationName};");
+                    code.AppendLine($"private {typeResolver.Resolve(composition.Source.Source, singletonField.InstanceType)}{nullable} {singletonField.VariableDeclarationName};");
                     membersCounter++;
                 }
             }

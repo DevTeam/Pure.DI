@@ -55,10 +55,10 @@ internal class Formatter(
     public string FormatRef(string text) =>
         $"<see cref=\"{text}\"/>";
 
-    public string FormatRef(ITypeSymbol type) =>
+    public string FormatRef(MdSetup setup, ITypeSymbol type) =>
         FormatRef(
             comments.Escape(
-                typeResolver.Resolve(type).Name
+                typeResolver.Resolve(setup, type).Name
                     .Replace('<', '{')
                     .Replace('>', '}')));
 }

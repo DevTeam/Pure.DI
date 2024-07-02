@@ -21,11 +21,11 @@ internal sealed class DependencyGraphValidator(
         foreach (var (_, dependencyNode, unresolvedInjection, target) in graph.Edges.Where(i => !i.IsResolved))
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var mdSetup = dependencyGraph.Source;
-            if (mdSetup.Hints.IsOnCannotResolveEnabled
+            var setup = dependencyGraph.Source;
+            if (setup.Hints.IsOnCannotResolveEnabled
                 && filter.IsMeetRegularExpression(
-                    mdSetup,
-                    (Hint.OnCannotResolveContractTypeNameRegularExpression, typeResolver.Resolve(unresolvedInjection.Type).Name),
+                    setup,
+                    (Hint.OnCannotResolveContractTypeNameRegularExpression, typeResolver.Resolve(setup, unresolvedInjection.Type).Name),
                     (Hint.OnCannotResolveTagRegularExpression, unresolvedInjection.Tag.ValueToString()),
                     (Hint.OnCannotResolveLifetimeRegularExpression, dependencyNode.Lifetime.ValueToString())))
             {

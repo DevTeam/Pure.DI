@@ -69,7 +69,7 @@ internal class ImplementationCodeBuilder(
         if (tempVariableInit)
         {
             ctx = ctx with { Variable = variable with { NameOverride = variable.VariableDeclarationName + "Temp" } };
-            ctx.Code.AppendLine($"{typeResolver.Resolve(ctx.Variable.InstanceType)} {ctx.Variable.VariableDeclarationName};");
+            ctx.Code.AppendLine($"{typeResolver.Resolve(ctx.Variable.Setup, ctx.Variable.InstanceType)} {ctx.Variable.VariableDeclarationName};");
             if (onCreatedStatements.Any())
             {
                 onCreatedStatements = ctx.BuildTools.OnCreated(ctx, ctx.Variable).ToArray();
@@ -118,7 +118,7 @@ internal class ImplementationCodeBuilder(
             .ToArray();
 
         var args = string.Join(", ", constructorArgs.Select(i => ctx.BuildTools.OnInjected(ctx, i)));
-        code.Append(variable.InstanceType.IsTupleType ? $"({args})" : $"new {typeResolver.Resolve(variable.InstanceType)}({args})");
+        code.Append(variable.InstanceType.IsTupleType ? $"({args})" : $"new {typeResolver.Resolve(variable.Setup, variable.InstanceType)}({args})");
         if (required.Any())
         {
             code.Append(" { ");

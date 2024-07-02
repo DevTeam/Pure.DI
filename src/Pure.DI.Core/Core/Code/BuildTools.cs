@@ -16,7 +16,7 @@ internal class BuildTools(
     }
 
     public string GetDeclaration(Variable variable) =>
-        variable.IsDeclared ? "" : $"{typeResolver.Resolve(variable.InstanceType)} ";
+        variable.IsDeclared ? "" : $"{typeResolver.Resolve(variable.Setup, variable.InstanceType)} ";
     
     public string OnInjected(BuildContext ctx, Variable variable)
     {
@@ -45,7 +45,7 @@ internal class BuildTools(
 
         if (!filter.IsMeetRegularExpression(
                 ctx.DependencyGraph.Source,
-                (Hint.OnDependencyInjectionImplementationTypeNameRegularExpression, typeResolver.Resolve(variable.InstanceType).Name),
+                (Hint.OnDependencyInjectionImplementationTypeNameRegularExpression, typeResolver.Resolve(variable.Setup, variable.InstanceType).Name),
                 (Hint.OnDependencyInjectionContractTypeNameRegularExpression, variable.ContractType.ToString()),
                 (Hint.OnDependencyInjectionTagRegularExpression, variable.Injection.Tag.ValueToString()),
                 (Hint.OnDependencyInjectionLifetimeRegularExpression, variable.Node.Lifetime.ValueToString())))
@@ -111,7 +111,7 @@ internal class BuildTools(
         var tag = GetTag(ctx, variable);
         var lines = new List<Line>
         {
-            new(0, $"{Names.OnNewInstanceMethodName}<{typeResolver.Resolve(variable.InstanceType)}>(ref {variable.VariableName}, {tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()});")
+            new(0, $"{Names.OnNewInstanceMethodName}<{typeResolver.Resolve(variable.Setup, variable.InstanceType)}>(ref {variable.VariableName}, {tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()});")
         };
         
         lines.AddRange(code.Lines);

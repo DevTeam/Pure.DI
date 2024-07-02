@@ -85,7 +85,7 @@ internal sealed class DependencyGraphBuilder(
             {
                 if (map.TryGetValue(injection, out var sourceNode))
                 {
-                    if (!marker.IsMarkerBased(sourceNode.Type))
+                    if (!marker.IsMarkerBased(setup, sourceNode.Type))
                     {
                         registryManager.Register(setup, sourceNode.Binding);
                         continue;
@@ -124,7 +124,7 @@ internal sealed class DependencyGraphBuilder(
                             }
                             
                             var typeConstructor = typeConstructorFactory();
-                            if (!typeConstructor.TryBind(item.Key.Type, injection.Type))
+                            if (!typeConstructor.TryBind(setup, item.Key.Type, injection.Type))
                             {
                                 continue;
                             }
@@ -132,6 +132,7 @@ internal sealed class DependencyGraphBuilder(
                             sourceNode = item.Value;
                             registryManager.Register(setup, sourceNode.Binding);
                             var genericBinding = CreateGenericBinding(
+                                setup,
                                 targetNode,
                                 injection,
                                 sourceNode,
@@ -436,6 +437,7 @@ internal sealed class DependencyGraphBuilder(
     }
 
     private MdBinding CreateGenericBinding(
+        MdSetup setup,
         DependencyNode targetNode,
         Injection injection,
         DependencyNode sourceNode,
@@ -448,7 +450,7 @@ internal sealed class DependencyGraphBuilder(
             .Where(contract => contract.ContractType is not null)
             .Select(contract => contract with
             {
-                ContractType = typeConstructor.Construct(compilation, contract.ContractType!),
+                ContractType = typeConstructor.Construct(setup, compilation, contract.ContractType!),
                 Tags = contract.Tags.Select( tag => CreateTag(injection, tag)).Where(tag => tag.HasValue).Select(tag => tag!.Value).ToImmutableArray()
             })
             .ToImmutableArray();
@@ -460,17 +462,17 @@ internal sealed class DependencyGraphBuilder(
             Implementation = sourceNode.Binding.Implementation.HasValue
                 ? sourceNode.Binding.Implementation.Value with
                 {
-                    Type = typeConstructor.Construct(compilation, sourceNode.Binding.Implementation.Value.Type)
+                    Type = typeConstructor.Construct(setup, compilation, sourceNode.Binding.Implementation.Value.Type)
                 }
                 : default(MdImplementation?),
             Factory = sourceNode.Binding.Factory.HasValue
                 ? factoryRewriterFactory().Build(
-                    new RewriterContext<MdFactory>(typeConstructor, injection, sourceNode.Binding.Factory.Value))
+                    new RewriterContext<MdFactory>(setup, typeConstructor, injection, sourceNode.Binding.Factory.Value))
                 : default(MdFactory?),
             Arg = sourceNode.Binding.Arg.HasValue
                 ? sourceNode.Binding.Arg.Value with
                 {
-                    Type = typeConstructor.Construct(compilation, sourceNode.Binding.Arg.Value.Type)
+                    Type = typeConstructor.Construct(setup, compilation, sourceNode.Binding.Arg.Value.Type)
                 }
                 : default(MdArg?)
         };
@@ -516,11 +518,11 @@ internal sealed class DependencyGraphBuilder(
         var semanticModel = targetNode.Binding.SemanticModel;
         var compilation = semanticModel.Compilation;
         var sourceType = injection.Type;
-        if (marker.IsMarkerBased(injection.Type))
+        if (marker.IsMarkerBased(setup, injection.Type))
         {
             var typeConstructor = typeConstructorFactory();
-            typeConstructor.TryBind(injection.Type, injection.Type);
-            sourceType = typeConstructor.Construct(compilation, injection.Type);
+            typeConstructor.TryBind(setup, injection.Type, injection.Type);
+            sourceType = typeConstructor.Construct(setup, compilation, injection.Type);
         }
         
         var newTags = injection.Tag is not null
@@ -540,7 +542,8 @@ internal sealed class DependencyGraphBuilder(
         return newBinding;
     }
 
-    private MdBinding CreateConstructBinding(MdSetup setup,
+    private MdBinding CreateConstructBinding(
+        MdSetup setup,
         DependencyNode targetNode,
         Injection injection,
         ITypeSymbol elementType,
@@ -556,7 +559,7 @@ internal sealed class DependencyGraphBuilder(
         var contracts = new HashSet<Injection>();
         foreach (var nestedBinding in setup.Bindings.Where(i => i != targetNode.Binding))
         {
-            var matchedContracts = GetMatchedMdContracts(targetNode.Binding.SemanticModel.Compilation, elementType, nestedBinding).ToArray();
+            var matchedContracts = GetMatchedMdContracts(setup, targetNode.Binding.SemanticModel.Compilation, elementType, nestedBinding).ToArray();
             if (matchedContracts.Length == 0)
             {
                 continue;
@@ -616,17 +619,17 @@ internal sealed class DependencyGraphBuilder(
         return newBinding;
     }
 
-    private IEnumerable<MdContract> GetMatchedMdContracts(Compilation compilation, ITypeSymbol elementType, MdBinding nestedBinding)
+    private IEnumerable<MdContract> GetMatchedMdContracts(MdSetup setup, Compilation compilation, ITypeSymbol elementType, MdBinding nestedBinding)
     {
         foreach (var contract in nestedBinding.Contracts)
         {
             var contractType = contract.ContractType;
-            if (contractType is not null && marker.IsMarkerBased(contractType))
+            if (contractType is not null && marker.IsMarkerBased(setup, contractType))
             {
                 var typeConstructor = typeConstructorFactory();
-                if (typeConstructor.TryBind(contractType, elementType))
+                if (typeConstructor.TryBind(setup, contractType, elementType))
                 {
-                    contractType = typeConstructor.Construct(compilation, contractType);
+                    contractType = typeConstructor.Construct(setup, compilation, contractType);
                 }
             }
             
@@ -641,7 +644,7 @@ internal sealed class DependencyGraphBuilder(
     {
         registryManager.Register(setup, dependencyNode.Binding);
         var contracts = contractsBuilder.Build(new ContractsBuildContext(dependencyNode.Binding, injection.Tag));
-        return new ProcessingNode(dependencyNode, contracts, marker);
+        return new ProcessingNode(setup, dependencyNode, contracts, marker);
     }
 
     private IEnumerable<DependencyNode> CreateNodes(MdSetup setup, MdBinding binding)

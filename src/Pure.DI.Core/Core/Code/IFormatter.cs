@@ -8,5 +8,5 @@ internal interface IFormatter
     
     string FormatRef(string text);
     
-    string FormatRef(ITypeSymbol type);
+    string FormatRef(MdSetup setup, ITypeSymbol type);
 }

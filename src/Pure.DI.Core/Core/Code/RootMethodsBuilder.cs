@@ -47,7 +47,7 @@ internal sealed class RootMethodsBuilder(
         var rootArgsStr = "";
         if (root.IsMethod)
         {
-            rootArgsStr = $"({string.Join(", ", root.Args.Select(arg => $"{typeResolver.Resolve(arg.InstanceType)} {arg.VariableDeclarationName}"))})";
+            rootArgsStr = $"({string.Join(", ", root.Args.Select(arg => $"{typeResolver.Resolve(composition.Source.Source, arg.InstanceType)} {arg.VariableDeclarationName}"))})";
             buildTools.AddPureHeader(code);
         }
         
@@ -102,7 +102,7 @@ internal sealed class RootMethodsBuilder(
                         continue;
                     }
 
-                    var constrains = typeParam.ConstraintTypes.Select(i => typeResolver.Resolve(i).Name).ToList();
+                    var constrains = typeParam.ConstraintTypes.Select(i => typeResolver.Resolve(composition.Source.Source, i).Name).ToList();
                     if (typeParam.HasReferenceTypeConstraint)
                     {
                         constrains.Add("class");

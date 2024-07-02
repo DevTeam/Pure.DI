@@ -14,6 +14,7 @@ internal sealed class ClassDiagramBuilder(
 
     public LinesBuilder Build(CompositionCode composition)
     {
+        var setup = composition.Source.Source; 
         var nullable = composition.Source.Source.SemanticModel.Compilation.Options.NullableContextOptions == NullableContextOptions.Disable ? "" : "?";
         var lines = new LinesBuilder();
         lines.AppendLine("classDiagram");
@@ -29,7 +30,7 @@ internal sealed class ClassDiagramBuilder(
                     lines.AppendLine("<<partial>>");
                     foreach (var root in composition.Roots.OrderByDescending(i => i.IsPublic).ThenBy(i => i.Name))
                     {
-                        lines.AppendLine($"{(root.IsPublic ? "+" : "-")}{FormatRoot(root)}");
+                        lines.AppendLine($"{(root.IsPublic ? "+" : "-")}{FormatRoot(setup, root)}");
                     }
                     
                     if (hasResolveMethods)
@@ -80,10 +81,10 @@ internal sealed class ClassDiagramBuilder(
 
                     types.Add(contract.Type);
                     var tag = FormatTag(contract.Tag);
-                    lines.AppendLine($"{FormatType(node.Type, DefaultFormatOptions)} --|> {FormatType(contract.Type, DefaultFormatOptions)}{(string.IsNullOrWhiteSpace(tag) ? "" : $" : {tag}")}");
+                    lines.AppendLine($"{FormatType(setup, node.Type, DefaultFormatOptions)} --|> {FormatType(setup, contract.Type, DefaultFormatOptions)}{(string.IsNullOrWhiteSpace(tag) ? "" : $" : {tag}")}");
                 }
 
-                var classDiagramWalker = new ClassDiagramWalker(this, lines, DefaultFormatOptions);
+                var classDiagramWalker = new ClassDiagramWalker(setup, this, lines, DefaultFormatOptions);
                 classDiagramWalker.VisitDependencyNode(Unit.Shared, node);
             }
 
@@ -116,7 +117,7 @@ internal sealed class ClassDiagramBuilder(
                     continue;
                 }
 
-                lines.AppendLine($"class {FormatType(type, DefaultFormatOptions)} {{");
+                lines.AppendLine($"class {FormatType(setup, type, DefaultFormatOptions)} {{");
                 using (lines.Indent())
                 {
                     lines.AppendLine($"<<{typeKind}>>");    
@@ -129,14 +130,14 @@ internal sealed class ClassDiagramBuilder(
                 cancellationToken.ThrowIfCancellationRequested();
                 if (dependency.Target.Root is not null && rootProperties.TryGetValue(dependency.Injection, out var root))
                 {
-                    lines.AppendLine($"{composition.Source.Source.Name.ClassName} ..> {FormatType(dependency.Source.Type, DefaultFormatOptions)} : {FormatRoot(root)}");
+                    lines.AppendLine($"{composition.Source.Source.Name.ClassName} ..> {FormatType(setup, dependency.Source.Type, DefaultFormatOptions)} : {FormatRoot(setup, root)}");
                 }
                 else
                 {
                     if (dependency.Source.Arg is { } arg)
                     {
                         var tags = arg.Binding.Contracts.SelectMany(i => i.Tags.Select(tag => tag.Value)).ToArray();
-                        lines.AppendLine($"{FormatType(dependency.Target.Type, DefaultFormatOptions)} o-- {FormatType(dependency.Source.Type, DefaultFormatOptions)} : {(tags.Any() ? FormatTags(tags) + " " : "")}Argument \\\"{arg.Source.ArgName}\\\"");
+                        lines.AppendLine($"{FormatType(setup, dependency.Target.Type, DefaultFormatOptions)} o-- {FormatType(setup, dependency.Source.Type, DefaultFormatOptions)} : {(tags.Any() ? FormatTags(tags) + " " : "")}Argument \\\"{arg.Source.ArgName}\\\"");
                     }
                     else
                     {
@@ -146,7 +147,7 @@ internal sealed class ClassDiagramBuilder(
                         }
 
                         var relationship = dependency.Source.Lifetime == Lifetime.Transient ? "*--" : "o--";
-                        lines.AppendLine($"{FormatType(dependency.Target.Type, DefaultFormatOptions)} {relationship} {FormatCardinality(count, dependency.Source.Lifetime)} {FormatType(dependency.Source.Type, DefaultFormatOptions)} : {FormatDependency(dependency, DefaultFormatOptions)}");   
+                        lines.AppendLine($"{FormatType(setup, dependency.Target.Type, DefaultFormatOptions)} {relationship} {FormatCardinality(count, dependency.Source.Lifetime)} {FormatType(setup, dependency.Source.Type, DefaultFormatOptions)} : {FormatDependency(setup, dependency, DefaultFormatOptions)}");   
                     }
                 }
             }
@@ -155,7 +156,7 @@ internal sealed class ClassDiagramBuilder(
         return lines;
     }
 
-    private string FormatRoot(Root root)
+    private string FormatRoot(MdSetup setup, Root root)
     {
         var typeArgsStr = "";
         var typeArgs = root.TypeDescription.TypeArgs;
@@ -167,11 +168,11 @@ internal sealed class ClassDiagramBuilder(
         var rootArgsStr = "";
         if (root.IsMethod)
         {
-            rootArgsStr = $"({string.Join(", ", root.Args.Select(arg => $"{typeResolver.Resolve(arg.InstanceType)} {arg.VariableDeclarationName}"))})";
+            rootArgsStr = $"({string.Join(", ", root.Args.Select(arg => $"{typeResolver.Resolve(setup, arg.InstanceType)} {arg.VariableDeclarationName}"))})";
         }
 
         var displayName = root.IsPublic ? root.DisplayName : "_";
-        return $"{FormatType(root.Injection.Type, DefaultFormatOptions)} {displayName}{typeArgsStr}{rootArgsStr}";
+        return $"{FormatType(setup, root.Injection.Type, DefaultFormatOptions)} {displayName}{typeArgsStr}{rootArgsStr}";
     }
 
     [SuppressMessage("ReSharper", "InvertIf")]
@@ -198,8 +199,8 @@ internal sealed class ClassDiagramBuilder(
         return cardinality.ToString();
     }
 
-    private string FormatDependency(Dependency dependency, FormatOptions options) => 
-        $"{(dependency.Injection.Tag is null or MdTagOnSites ? "" : FormatTag(dependency.Injection.Tag) + " ")}{FormatSymbol(dependency.Injection.Type, options)}";
+    private string FormatDependency(MdSetup setup, Dependency dependency, FormatOptions options) => 
+        $"{(dependency.Injection.Tag is null or MdTagOnSites ? "" : FormatTag(dependency.Injection.Tag) + " ")}{FormatSymbol(setup, dependency.Injection.Type, options)}";
 
     private static string FormatTag(object? tag) =>
         tag is null or MdTagOnSites
@@ -214,60 +215,60 @@ internal sealed class ClassDiagramBuilder(
     private static string FormatTags(IEnumerable<object?> tags) =>
         string.Join(", ", tags.Distinct().Select(FormatTag).OrderBy(i => i));
 
-    private string FormatSymbol(ISymbol? symbol, FormatOptions options) =>
+    private string FormatSymbol(MdSetup setup, ISymbol? symbol, FormatOptions options) =>
         symbol switch
         {
-            IParameterSymbol parameter => FormatParameter(parameter, options),
-            IPropertySymbol property => FormatProperty(property, options),
-            IFieldSymbol field => FormatField(field, options),
-            IMethodSymbol method => FormatMethod(method, options),
-            ITypeSymbol type => FormatType(type, options),
+            IParameterSymbol parameter => FormatParameter(setup, parameter, options),
+            IPropertySymbol property => FormatProperty(setup, property, options),
+            IFieldSymbol field => FormatField(setup, field, options),
+            IMethodSymbol method => FormatMethod(setup, method, options),
+            ITypeSymbol type => FormatType(setup, type, options),
             _ => symbol?.ToString() ?? ""
         };
 
-    private string FormatMethod(IMethodSymbol method, FormatOptions options)
+    private string FormatMethod(MdSetup setup, IMethodSymbol method, FormatOptions options)
     {
         if (method is { Kind: SymbolKind.Property, ContainingSymbol: IPropertySymbol property })
         {
-            return $"{Format(method.DeclaredAccessibility)}{property.Name} : {FormatType(method.ReturnType, options)}";
+            return $"{Format(method.DeclaredAccessibility)}{property.Name} : {FormatType(setup, method.ReturnType, options)}";
         }
 
         // ReSharper disable once InvertIf
         if (method.MethodKind == MethodKind.Constructor)
         {
             return $"{Format(method.DeclaredAccessibility)}{method.ContainingType.Name}({string.Join(", ", method.Parameters.Select(FormatPropertyLocal))})";
-            string FormatPropertyLocal(IParameterSymbol parameter) => $"{FormatType(parameter.Type, options)} {parameter.Name}";
+            string FormatPropertyLocal(IParameterSymbol parameter) => $"{FormatType(setup, parameter.Type, options)} {parameter.Name}";
         }
 
-        return $"{Format(method.DeclaredAccessibility)}{method.Name}({string.Join(", ", method.Parameters.Select(FormatParameterLocal))}) : {FormatType(method.ReturnType, options)}";
+        return $"{Format(method.DeclaredAccessibility)}{method.Name}({string.Join(", ", method.Parameters.Select(FormatParameterLocal))}) : {FormatType(setup, method.ReturnType, options)}";
 
-        string FormatParameterLocal(IParameterSymbol parameter) => $"{FormatType(parameter.Type, options)} {parameter.Name}";
+        string FormatParameterLocal(IParameterSymbol parameter) => $"{FormatType(setup, parameter.Type, options)} {parameter.Name}";
     }
 
-    private string FormatProperty(IPropertySymbol property, FormatOptions options) =>
-        $"{Format(property.GetMethod?.DeclaredAccessibility ?? property.DeclaredAccessibility)}{FormatType(property.Type, options)} {property.Name}";
+    private string FormatProperty(MdSetup setup, IPropertySymbol property, FormatOptions options) =>
+        $"{Format(property.GetMethod?.DeclaredAccessibility ?? property.DeclaredAccessibility)}{FormatType(setup, property.Type, options)} {property.Name}";
 
-    private string FormatField(IFieldSymbol field, FormatOptions options) =>
-        $"{Format(field.DeclaredAccessibility)}{FormatType(field.Type, options)} {field.Name}";
+    private string FormatField(MdSetup setup, IFieldSymbol field, FormatOptions options) =>
+        $"{Format(field.DeclaredAccessibility)}{FormatType(setup, field.Type, options)} {field.Name}";
     
-    private string FormatParameter(IParameterSymbol parameter, FormatOptions options) =>
-        $"{FormatType(parameter.Type, options)} {parameter.Name}";
+    private string FormatParameter(MdSetup setup, IParameterSymbol parameter, FormatOptions options) =>
+        $"{FormatType(setup, parameter.Type, options)} {parameter.Name}";
 
-    private string FormatType(ISymbol? symbol, FormatOptions options)
+    private string FormatType(MdSetup setup, ISymbol? symbol, FormatOptions options)
     {
-        if (symbol is ITypeSymbol typeSymbol && marker.IsMarker(typeSymbol))
+        if (symbol is ITypeSymbol typeSymbol && marker.IsMarker(setup, typeSymbol))
         {
-            return typeResolver.Resolve(typeSymbol).Name;
+            return typeResolver.Resolve(setup, typeSymbol).Name;
         }
         
         return symbol switch
         {
             INamedTypeSymbol { IsGenericType: true } namedTypeSymbol => $"{namedTypeSymbol.Name}{options.StartGenericArgsSymbol}{string.Join(options.TypeArgsSeparator, namedTypeSymbol.TypeArguments.Select(FormatSymbolLocal))}{options.FinishGenericArgsSymbol}",
-            IArrayTypeSymbol array => $"Array{options.StartGenericArgsSymbol}{FormatType(array.ElementType, options)}{options.FinishGenericArgsSymbol}",
+            IArrayTypeSymbol array => $"Array{options.StartGenericArgsSymbol}{FormatType(setup, array.ElementType, options)}{options.FinishGenericArgsSymbol}",
             _ => symbol?.Name ?? "Unresolved"
         };
         
-        string FormatSymbolLocal(ITypeSymbol i) => FormatSymbol(i, options);
+        string FormatSymbolLocal(ITypeSymbol i) => FormatSymbol(setup, i, options);
     }
 
     private static string Format(Accessibility accessibility) =>
@@ -288,21 +289,25 @@ internal sealed class ClassDiagramBuilder(
         string FinishGenericArgsSymbol = "ᐳ",
         string TypeArgsSeparator = "ˏ");
     
-    private class ClassDiagramWalker(ClassDiagramBuilder builder, LinesBuilder lines, FormatOptions options)
+    private class ClassDiagramWalker(
+        MdSetup setup,
+        ClassDiagramBuilder builder,
+        LinesBuilder lines,
+        FormatOptions options)
         : DependenciesWalker<Unit>
     {
         private readonly LinesBuilder _nodeLines = new();
-
+        
         public override void VisitDependencyNode(in Unit ctx, DependencyNode node)
         {
             base.VisitDependencyNode(ctx, node);
             if (!_nodeLines.Lines.Any())
             {
-                lines.AppendLine($"class {builder.FormatType(node.Type, options)}");
+                lines.AppendLine($"class {builder.FormatType(setup, node.Type, options)}");
                 return;
             }
 
-            lines.AppendLine($"class {builder.FormatType(node.Type, options)} {{");
+            lines.AppendLine($"class {builder.FormatType(setup, node.Type, options)} {{");
             using (lines.Indent())
             {
                 lines.AppendLines(_nodeLines.Lines);
@@ -313,25 +318,25 @@ internal sealed class ClassDiagramBuilder(
 
         public override void VisitConstructor(in Unit ctx, in DpMethod constructor)
         {
-            _nodeLines.AppendLine(builder.FormatMethod(constructor.Method, options));
+            _nodeLines.AppendLine(builder.FormatMethod(setup, constructor.Method, options));
             base.VisitConstructor(ctx, in constructor);
         }
 
         public override void VisitMethod(in Unit ctx, in DpMethod method)
         {
-            _nodeLines.AppendLine(builder.FormatMethod(method.Method, options));
+            _nodeLines.AppendLine(builder.FormatMethod(setup, method.Method, options));
             base.VisitMethod(ctx, in method);
         }
 
         public override void VisitProperty(in Unit ctx, in DpProperty property)
         {
-            _nodeLines.AppendLine(builder.FormatProperty(property.Property, options));
+            _nodeLines.AppendLine(builder.FormatProperty(setup, property.Property, options));
             base.VisitProperty(ctx, in property);
         }
 
         public override void VisitField(in Unit ctx, in DpField field)
         {
-            _nodeLines.AppendLine(builder.FormatField(field.Field, options));
+            _nodeLines.AppendLine(builder.FormatField(setup, field.Field, options));
             base.VisitField(ctx, in field);
         }
     }

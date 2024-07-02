@@ -10,6 +10,7 @@ namespace Pure.DI.Abstractions
         private static void Setup()
         {
             global::Pure.DI.DI.Setup(kind: global::Pure.DI.CompositionKind.Global)
+                .GenericTypeArgumentAttribute<global::Pure.DI.Abstractions.GenericTypeArgumentAttribute>()
                 .TagAttribute<global::Pure.DI.Abstractions.InjectAttribute<TT>>()
                 .OrdinalAttribute<global::Pure.DI.Abstractions.InjectAttribute<TT>>(1)
                 .TypeAttribute<global::Pure.DI.Abstractions.InjectAttribute<TT>>()

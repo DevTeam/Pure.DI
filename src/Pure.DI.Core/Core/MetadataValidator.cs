@@ -62,12 +62,12 @@ internal sealed class MetadataValidator(
 
         foreach (var accumulator in setup.Accumulators)
         {
-            if (marker.IsMarkerBased(accumulator.AccumulatorType))
+            if (marker.IsMarkerBased(setup, accumulator.AccumulatorType))
             {
                 logger.CompileError("Accumulator based on marker type is not supported.", accumulator.Source.GetLocation(), LogId.ErrorInvalidMetadata);
             }
             
-            if (marker.IsMarkerBased(accumulator.Type))
+            if (marker.IsMarkerBased(setup, accumulator.Type))
             {
                 logger.CompileError("The accumulator cannot accumulate instances based on marker type.", accumulator.Source.GetLocation(), LogId.ErrorInvalidMetadata);
             }

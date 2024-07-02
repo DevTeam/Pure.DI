@@ -3,8 +3,7 @@ namespace Pure.DI.Core.Code;
 
 internal sealed class StaticConstructorBuilder(
     ITypeResolver typeResolver,
-    IBuilder<ImmutableArray<Root>,
-    IEnumerable<ResolverInfo>> resolversBuilder)
+    IBuilder<RootContext, IEnumerable<ResolverInfo>> resolversBuilder)
     : IBuilder<CompositionCode, CompositionCode>
 {
     public CompositionCode Build(CompositionCode composition)
@@ -25,7 +24,7 @@ internal sealed class StaticConstructorBuilder(
             membersCounter++;
         }
 
-        var resolvers = resolversBuilder.Build(composition.Roots).ToArray();
+        var resolvers = resolversBuilder.Build(new RootContext(composition.Source.Source, composition.Roots)).ToArray();
         if (!resolvers.Any())
         {
             return composition;
@@ -43,11 +42,11 @@ internal sealed class StaticConstructorBuilder(
                 {
                     foreach (var root in resolver.Roots)
                     {
-                        code.AppendLine($"{Names.OnNewRootMethodName}<{typeResolver.Resolve(root.Injection.Type)}, {typeResolver.Resolve(root.Node.Type)}>(val{className}, \"{root.DisplayName}\", {root.Injection.Tag.ValueToString()}, {root.Node.Lifetime.ValueToString()});");
+                        code.AppendLine($"{Names.OnNewRootMethodName}<{typeResolver.Resolve(composition.Source.Source, root.Injection.Type)}, {typeResolver.Resolve(composition.Source.Source, root.Node.Type)}>(val{className}, \"{root.DisplayName}\", {root.Injection.Tag.ValueToString()}, {root.Node.Lifetime.ValueToString()});");
                     }
                 }
                 
-                code.AppendLine($"{Names.ResolverClassName}<{typeResolver.Resolve(resolver.Type)}>.{Names.ResolverPropertyName} = val{className};");
+                code.AppendLine($"{Names.ResolverClassName}<{typeResolver.Resolve(composition.Source.Source, resolver.Type)}>.{Names.ResolverPropertyName} = val{className};");
             }
             
             var divisor = Buckets<object, object>.GetDivisor((uint)resolvers.Length);

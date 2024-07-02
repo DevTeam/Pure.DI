@@ -9,9 +9,9 @@ internal sealed class TypeConstructor(IMarker marker) : ITypeConstructor
 {
     private readonly Dictionary<ITypeSymbol, ITypeSymbol> _map = new(SymbolEqualityComparer.Default);
 
-    public bool TryBind(ITypeSymbol source, ITypeSymbol target)
+    public bool TryBind(MdSetup setup, ITypeSymbol source, ITypeSymbol target)
     {
-        if (marker.IsMarker(source))
+        if (marker.IsMarker(setup, source))
         {
             _map[source] = target;
             return true;
@@ -37,7 +37,7 @@ internal sealed class TypeConstructor(IMarker marker) : ITypeConstructor
                     return true;
                 }
 
-                if (marker.IsMarker(source))
+                if (marker.IsMarker(setup, source))
                 {
                     _map[source] = target;
                     return true;
@@ -55,7 +55,7 @@ internal sealed class TypeConstructor(IMarker marker) : ITypeConstructor
                         {
                             for (var i = 0; i < sourceArgs.Length; i++)
                             {
-                                result &= TryBind(sourceArgs[i], targetArgs[i]);
+                                result &= TryBind(setup, sourceArgs[i], targetArgs[i]);
                                 if (!result)
                                 {
                                     break;
@@ -73,7 +73,7 @@ internal sealed class TypeConstructor(IMarker marker) : ITypeConstructor
             }
             
             case IArrayTypeSymbol sourceArrayType when target is IArrayTypeSymbol targetArrayType:
-                result &= result && TryBind(sourceArrayType.ElementType, targetArrayType.ElementType);
+                result &= result && TryBind(setup, sourceArrayType.ElementType, targetArrayType.ElementType);
                 break;
             
             default:
@@ -93,7 +93,7 @@ internal sealed class TypeConstructor(IMarker marker) : ITypeConstructor
                 continue;
             }
             
-            result &= TryBind(source, implementationInterfaceType);
+            result &= TryBind(setup, source, implementationInterfaceType);
             if (!result)
             {
                 break;
@@ -107,7 +107,7 @@ internal sealed class TypeConstructor(IMarker marker) : ITypeConstructor
                 continue;
             }
             
-            result &= TryBind(dependencyInterfaceType, target);
+            result &= TryBind(setup, dependencyInterfaceType, target);
             if (!result)
             {
                 break;
@@ -117,9 +117,9 @@ internal sealed class TypeConstructor(IMarker marker) : ITypeConstructor
         return result;
     }
 
-    public ITypeSymbol Construct(Compilation compilation, ITypeSymbol type)
+    public ITypeSymbol Construct(MdSetup setup, Compilation compilation, ITypeSymbol type)
     {
-        if (!marker.IsMarkerBased(type))
+        if (!marker.IsMarkerBased(setup, type))
         {
             return type;
         }
@@ -138,12 +138,12 @@ internal sealed class TypeConstructor(IMarker marker) : ITypeConstructor
             {
                 var args = namedType.TypeArguments.Select(CreateConstruct);
                 return namedType.OriginalDefinition.Construct(args.ToArray());
-                ITypeSymbol CreateConstruct(ITypeSymbol typeArgument) => Construct(compilation, typeArgument);
+                ITypeSymbol CreateConstruct(ITypeSymbol typeArgument) => Construct(setup, compilation, typeArgument);
             }
 
             case IArrayTypeSymbol arrayTypeSymbol:
             {
-                var originalElementType = Construct(compilation, arrayTypeSymbol.ElementType);
+                var originalElementType = Construct(setup, compilation, arrayTypeSymbol.ElementType);
                 if (!_map.TryGetValue(originalElementType, out var elementType))
                 {
                     elementType = originalElementType;

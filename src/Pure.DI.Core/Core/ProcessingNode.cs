@@ -9,6 +9,7 @@ internal readonly struct ProcessingNode
     private readonly Lazy<ImmutableArray<InjectionInfo>> _injections;
 
     public ProcessingNode(
+        MdSetup setup,
         DependencyNode node,
         ISet<Injection> contracts,
         IMarker marker)
@@ -29,7 +30,7 @@ internal readonly struct ProcessingNode
             return injectionsWalker.ToImmutableArray();
         }
 
-        bool IsMarkerBased() => marker.IsMarkerBased(node.Type);
+        bool IsMarkerBased() => marker.IsMarkerBased(setup, node.Type);
     }
 
     public bool IsMarkerBased => _isMarkerBased.Value;

@@ -110,7 +110,7 @@ internal sealed class ImplementationDependencyNodeBuilder(
                                         field,
                                         ordinal,
                                         new Injection(
-                                            GetAttribute(setup.TypeAttributes, field, setup.TypeConstructor?.Construct(compilation, type) ?? type),
+                                            GetAttribute(setup.TypeAttributes, field, setup.TypeConstructor?.Construct(setup, compilation, type) ?? type),
                                             GetTagAttribute(setup, field))));
                             }
                         }
@@ -129,7 +129,7 @@ internal sealed class ImplementationDependencyNodeBuilder(
                                         property,
                                         ordinal,
                                         new Injection(
-                                            GetAttribute(setup.TypeAttributes, property, setup.TypeConstructor?.Construct(compilation, type) ?? type),
+                                            GetAttribute(setup.TypeAttributes, property, setup.TypeConstructor?.Construct(setup, compilation, type) ?? type),
                                             GetTagAttribute(setup, property))));
                             }
                         }
@@ -223,7 +223,7 @@ internal sealed class ImplementationDependencyNodeBuilder(
                 new DpParameter(
                     parameter,
                     new Injection(
-                        GetAttribute(setup.TypeAttributes, parameter, typeConstructor?.Construct(compilation, type) ?? type),
+                        GetAttribute(setup.TypeAttributes, parameter, typeConstructor?.Construct(setup, compilation, type) ?? type),
                         GetTagAttribute(setup, parameter))));
         }
 

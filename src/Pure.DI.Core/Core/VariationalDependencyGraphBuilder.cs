@@ -61,7 +61,7 @@ internal sealed class VariationalDependencyGraphBuilder(
 
             if (isRoot || contracts.Any())
             {
-                allNodes.Add(new ProcessingNode(node, contracts, marker));
+                allNodes.Add(new ProcessingNode(setup, node, contracts, marker));
             }
         }
 
@@ -110,6 +110,7 @@ internal sealed class VariationalDependencyGraphBuilder(
                 continue;
 
                 ProcessingNode CreateProcessingNode(DependencyNode dependencyNode) => new(
+                    setup,
                     dependencyNode,
                     contractsBuilder.Build(new ContractsBuildContext(dependencyNode.Binding, MdTag.ContextTag)),
                     marker);

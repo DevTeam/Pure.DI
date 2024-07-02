@@ -7,16 +7,17 @@ internal class VariablesBuilder(
     : IVariablesBuilder
 {
     public Block Build(
-        IGraph<DependencyNode, Dependency> graph,
+        DependencyGraph dependencyGraph,
         IDictionary<MdBinding, Variable> map,
         DependencyNode rootNode,
         Injection rootInjection)
     {
+        var graph = dependencyGraph.Graph;
         var blockId = 0;
         var blockMap = new Dictionary<(MdBinding, int), Variable>();
         var rootBlock = new Block(blockId++,default, []);
         var transientId = 0;
-        var rootVar = GetVariable(rootBlock, map, blockMap, rootNode, rootInjection, ref transientId, false);
+        var rootVar = GetVariable(dependencyGraph.Source, rootBlock, map, blockMap, rootNode, rootInjection, ref transientId, false);
         rootBlock.Statements.AddFirst(rootVar);
         var blocks = new Stack<Block>();
         blocks.Push(rootBlock);
@@ -115,7 +116,7 @@ internal class VariablesBuilder(
                                 isAlreadyCreated = nodeInfo.IsLazy(depNode);
                             }
 
-                            var depVariable = GetVariable(currentBlock, map, blockMap, depNode, depInjection, ref transientId, hasCycle);
+                            var depVariable = GetVariable(dependencyGraph.Source, currentBlock, map, blockMap, depNode, depInjection, ref transientId, hasCycle);
                             var isBlock = depNode.Lifetime is not Lifetime.Transient and not Lifetime.PerBlock
                                           || nodeInfo.IsDelegate(variable.Node)
                                           || nodeInfo.IsDelegate(depNode);
@@ -178,6 +179,7 @@ internal class VariablesBuilder(
         $"accumulator{Names.Salt}{variable.Node.Binding.Id}";
 
     private Variable GetVariable(
+        MdSetup setup,
         Block parentBlock,
         IDictionary<MdBinding, Variable> map,
         IDictionary<(MdBinding, int), Variable> blockMap,
@@ -193,7 +195,7 @@ internal class VariablesBuilder(
             {
                 case Lifetime.Transient:
                 {
-                    var transientVariable = new Variable(parentBlock, transientId++, node, injection, new List<IStatement>(), new VariableInfo(), nodeInfo.IsLazy(node), hasCycle);
+                    var transientVariable = new Variable(setup, parentBlock, transientId++, node, injection, new List<IStatement>(), new VariableInfo(), nodeInfo.IsLazy(node), hasCycle);
                     if (node.Construct?.Source.Kind == MdConstructKind.Accumulator)
                     {
                         transientVariable.VariableCode = GetAccumulatorName(transientVariable);
@@ -216,7 +218,7 @@ internal class VariablesBuilder(
                         };
                     }
                 
-                    blockVariable = new Variable(parentBlock, transientId++, node, injection, new List<IStatement>(), new VariableInfo(), nodeInfo.IsLazy(node), hasCycle);
+                    blockVariable = new Variable(setup, parentBlock, transientId++, node, injection, new List<IStatement>(), new VariableInfo(), nodeInfo.IsLazy(node), hasCycle);
                     blockMap.Add(perBlockKey, blockVariable);
                     return blockVariable;
                 }
@@ -235,7 +237,7 @@ internal class VariablesBuilder(
             };
         }
 
-        variable = new Variable(parentBlock, node.Binding.Id, node, injection, new List<IStatement>(), new VariableInfo(), nodeInfo.IsLazy(node), hasCycle);
+        variable = new Variable(setup, parentBlock, node.Binding.Id, node, injection, new List<IStatement>(), new VariableInfo(), nodeInfo.IsLazy(node), hasCycle);
         map.Add(node.Binding, variable);
         return variable;
     }

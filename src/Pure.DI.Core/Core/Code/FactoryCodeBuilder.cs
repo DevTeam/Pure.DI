@@ -80,7 +80,7 @@ internal class FactoryCodeBuilder(
                 using (code.Indent())
                 {
                     ctx.StatementBuilder.Build(injectionsCtx with { Level = level, Variable = argument.Current, LockIsRequired = lockIsRequired }, argument);
-                    code.AppendLine($"{(injection.DeclarationRequired ? $"{typeResolver.Resolve(argument.Current.Injection.Type)} " : "")}{injection.VariableName} = {ctx.BuildTools.OnInjected(ctx, argument.Current)};");
+                    code.AppendLine($"{(injection.DeclarationRequired ? $"{typeResolver.Resolve(ctx.DependencyGraph.Source, argument.Current.Injection.Type)} " : "")}{injection.VariableName} = {ctx.BuildTools.OnInjected(ctx, argument.Current)};");
                 }
             }
             else

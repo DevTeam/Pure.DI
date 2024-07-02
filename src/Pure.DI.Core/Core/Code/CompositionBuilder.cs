@@ -23,7 +23,7 @@ internal class CompositionBuilder(
         foreach (var root in graph.Roots.Values)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var rootBlock = variablesBuilder.Build(graph.Graph, map, root.Node, root.Injection);
+            var rootBlock = variablesBuilder.Build(graph, map, root.Node, root.Injection);
             var ctx = new BuildContext(
                 0,
                 buildTools,
@@ -38,7 +38,7 @@ internal class CompositionBuilder(
 
             foreach (var perResolveVar in map.GetPerResolves())
             {
-                ctx.Code.AppendLine($"var {perResolveVar.VariableName} = default({typeResolver.Resolve(perResolveVar.InstanceType)});");
+                ctx.Code.AppendLine($"var {perResolveVar.VariableName} = default({typeResolver.Resolve(graph.Source, perResolveVar.InstanceType)});");
                 if (perResolveVar.Info.RefCount > 1 && perResolveVar.InstanceType.IsValueType)
                 {
                     ctx.Code.AppendLine($"var {perResolveVar.VariableName}Created = false;");
@@ -61,7 +61,7 @@ internal class CompositionBuilder(
                 allArgs.Add(rootArg);
             }
             
-            var typeDescription = typeResolver.Resolve(processedRoot.Injection.Type);
+            var typeDescription = typeResolver.Resolve(graph.Source, processedRoot.Injection.Type);
             var isMethod = (processedRoot.Kind & RootKinds.Method) == RootKinds.Method 
                            || processedRoot.Args.Length > 0
                            || typeDescription.TypeArgs.Count > 0;

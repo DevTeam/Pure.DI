@@ -836,7 +836,7 @@ namespace Pure.DI
     }
 
     /// <summary>
-    /// Represents a generic type argument marker. It allows you to create custom generic type argument marker such as <see cref="TTS"/>, <see cref="TTDictionary{TKey,TValue}"/>, etc. 
+    /// Represents a generic type argument attribute. It allows you to create custom generic type argument such as <see cref="TTS"/>, <see cref="TTDictionary{TKey,TValue}"/>, etc. 
     /// <example>
     /// <code>
     /// [GenericTypeArgument]
@@ -1555,6 +1555,19 @@ namespace Pure.DI
         /// <param name="setupNames">A set of names for the basic setups on which this one depends.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
         IConfiguration DependsOn(params string[] setupNames);
+        
+        /// <summary>
+        /// Specifies a custom generic type argument attribute.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .GenericTypeAttribute&lt;MyGenericTypeArgumentAttribute&gt;();
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">The attribute type.</typeparam>
+        /// <returns>Reference to the setup continuation chain.</returns>
+        IConfiguration GenericTypeArgumentAttribute<T>() where T : global::System.Attribute;
 
         /// <summary>
         /// Specifies a custom attribute that overrides the injection type.
@@ -1699,6 +1712,19 @@ namespace Pure.DI
         /// <returns>Reference to the setup continuation chain.</returns>
         IConfiguration Accumulate<T, TAccumulator>(params Lifetime[] lifetimes)
             where TAccumulator: new();
+        
+        /// <summary>
+        /// Specifies a custom generic type argument.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .GenericType&lt;TTMy&gt;();
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">The generic type marker.</typeparam>
+        /// <returns>Reference to the setup continuation chain.</returns>
+        IConfiguration GenericTypeArgument<T>();
     }
 
     /// <summary>
@@ -2213,6 +2239,12 @@ namespace Pure.DI
             }
 
             /// <inheritdoc />
+            public IConfiguration GenericTypeArgumentAttribute<T>() where T : global::System.Attribute
+            {
+                return Configuration.Shared;
+            }
+            
+            /// <inheritdoc />
             public IConfiguration TypeAttribute<T>(int typeArgumentPosition = 0) where T : global::System.Attribute
             {
                 return Configuration.Shared;
@@ -2263,6 +2295,12 @@ namespace Pure.DI
             /// <inheritdoc />
             public IConfiguration Accumulate<T, TAccumulator>(params Lifetime[] lifetimes)
                 where TAccumulator: new()
+            {
+                return Configuration.Shared;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration GenericTypeArgument<T>()
             {
                 return Configuration.Shared;
             }

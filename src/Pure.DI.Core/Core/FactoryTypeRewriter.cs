@@ -15,12 +15,12 @@ internal sealed class FactoryTypeRewriter(
         var newFactory = (LambdaExpressionSyntax)Visit(factory.Factory);
         return factory with
         {
-            Type = context.TypeConstructor.Construct(factory.SemanticModel.Compilation, factory.Type),
+            Type = context.TypeConstructor.Construct(context.Setup, factory.SemanticModel.Compilation, factory.Type),
             Factory = newFactory,
             Resolvers = factory.Resolvers
                 .Select(resolver => resolver with
                 {
-                    ContractType = context.TypeConstructor.Construct(factory.SemanticModel.Compilation, resolver.ContractType),
+                    ContractType = context.TypeConstructor.Construct(context.Setup, factory.SemanticModel.Compilation, resolver.ContractType),
                     Tag = CreateTag(context.Injection, resolver.Tag) 
                 })
                 .ToImmutableArray() 
@@ -52,13 +52,13 @@ internal sealed class FactoryTypeRewriter(
         
         var semanticModel = _context.State.SemanticModel;
         var symbol = semanticModel.GetSymbolInfo(identifier).Symbol;
-        if (symbol is not ITypeSymbol type || !marker.IsMarkerBased(type))
+        if (symbol is not ITypeSymbol type || !marker.IsMarkerBased(_context.Setup, type))
         {
             return identifier;
         }
         
-        var newType = _context.TypeConstructor.Construct(semanticModel.Compilation, type);
-        var newTypeName = typeResolver.Resolve(newType).Name;
+        var newType = _context.TypeConstructor.Construct(_context.Setup, semanticModel.Compilation, type);
+        var newTypeName = typeResolver.Resolve(_context.Setup, newType).Name;
         return node.WithIdentifier(
             SyntaxFactory.Identifier(newTypeName))
                 .WithLeadingTrivia(node.Identifier.LeadingTrivia)

@@ -8,15 +8,15 @@ internal class TypeResolver(
 {
     private readonly Dictionary<ITypeSymbol, string> _names = new(SymbolEqualityComparer.Default);
     
-    public TypeDescription Resolve(ITypeSymbol type) => Resolve(type, default);
+    public TypeDescription Resolve(MdSetup setup, ITypeSymbol type) => Resolve(setup, type, default);
 
-    private TypeDescription Resolve(ITypeSymbol type, ITypeParameterSymbol? typeParam)
+    private TypeDescription Resolve(MdSetup setup, ITypeSymbol type, ITypeParameterSymbol? typeParam)
     {
         TypeDescription description;
         switch (type)
         {
             case INamedTypeSymbol { IsGenericType: false }:
-                if (marker.IsMarker(type))
+                if (marker.IsMarker(setup, type))
                 {
                     if (!_names.TryGetValue(type, out var typeName))
                     {
@@ -38,7 +38,7 @@ internal class TypeResolver(
                 {
                     var elements = new List<string>();
                     var args = new List<TypeDescription>();
-                    foreach (var item in tupleTypeSymbol.TupleElements.Zip(tupleTypeSymbol.TypeParameters, (element, parameter) => (description: Resolve(element.Type, parameter), element)))
+                    foreach (var item in tupleTypeSymbol.TupleElements.Zip(tupleTypeSymbol.TypeParameters, (element, parameter) => (description: Resolve(setup, element.Type, parameter), element)))
                     {
                         elements.Add($"{item.description} {item.element.Name}");
                         args.AddRange(item.description.TypeArgs);
@@ -52,7 +52,7 @@ internal class TypeResolver(
                 {
                     var types = new List<string>();
                     var args = new List<TypeDescription>();
-                    foreach (var typeArgDescription in namedTypeSymbol.TypeArguments.Zip(namedTypeSymbol.TypeParameters, Resolve))
+                    foreach (var typeArgDescription in namedTypeSymbol.TypeArguments.Zip(namedTypeSymbol.TypeParameters, (symbol, parameterSymbol) => Resolve(setup, symbol, parameterSymbol)))
                     {
                         args.AddRange(typeArgDescription.TypeArgs);
                         types.Add(typeArgDescription.Name);
@@ -64,7 +64,7 @@ internal class TypeResolver(
                 break;
 
             case IArrayTypeSymbol arrayTypeSymbol:
-                var arrayDescription = Resolve(arrayTypeSymbol.ElementType);
+                var arrayDescription = Resolve(setup, arrayTypeSymbol.ElementType);
                 description = arrayDescription with { Name =  $"{arrayDescription.Name}[]" };
                 break;
             

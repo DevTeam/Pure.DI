@@ -4,7 +4,7 @@
 
 namespace Pure.DI.Core.Code;
 
-internal sealed class ResolverClassesBuilder(IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>> resolversBuilder)
+internal sealed class ResolverClassesBuilder(IBuilder<RootContext, IEnumerable<ResolverInfo>> resolversBuilder)
     : IBuilder<CompositionCode, CompositionCode>
 {
     public CompositionCode Build(CompositionCode composition)
@@ -52,7 +52,7 @@ internal sealed class ResolverClassesBuilder(IBuilder<ImmutableArray<Root>, IEnu
         code.AppendLine("}");
         membersCount++;
 
-        foreach (var resolver in resolversBuilder.Build(composition.Roots))
+        foreach (var resolver in resolversBuilder.Build(new RootContext(composition.Source.Source, composition.Roots)))
         {
             var resolverClassName = resolver.ClassName;
             var baseTypeName = $"{Names.ResolverClassName}<{resolver.Type}>";

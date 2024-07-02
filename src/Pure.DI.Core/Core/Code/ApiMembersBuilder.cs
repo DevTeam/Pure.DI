@@ -2,7 +2,7 @@
 namespace Pure.DI.Core.Code;
 
 internal sealed class ApiMembersBuilder(
-    IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>> resolversBuilder,
+    IBuilder<RootContext, IEnumerable<ResolverInfo>> resolversBuilder,
     IBuildTools buildTools)
     : IBuilder<CompositionCode, CompositionCode>
 {
@@ -61,7 +61,7 @@ internal sealed class ApiMembersBuilder(
             membersCounter++;
 
             apiCode.AppendLine();
-            var resolvers = resolversBuilder.Build(composition.Roots).ToArray();
+            var resolvers = resolversBuilder.Build(new RootContext(composition.Source.Source, composition.Roots)).ToArray();
             if (isCommentsEnabled)
             {
                 apiCode.AppendLine("/// <summary>");

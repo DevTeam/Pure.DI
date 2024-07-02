@@ -2,7 +2,7 @@
 
 internal interface IMarker
 {
-    bool IsMarkerBased(ITypeSymbol type);
+    bool IsMarkerBased(MdSetup setup, ITypeSymbol type);
 
-    bool IsMarker(ITypeSymbol type);
+    bool IsMarker(MdSetup setup, ITypeSymbol type);
 }

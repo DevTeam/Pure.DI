@@ -10,6 +10,7 @@ namespace Pure.DI
         private static void Setup()
         {
             DI.Setup("", CompositionKind.Global)
+                .GenericTypeArgumentAttribute<GenericTypeArgumentAttribute>()
                 .TypeAttribute<TypeAttribute>()
                 .TagAttribute<TagAttribute>()
                 .OrdinalAttribute<OrdinalAttribute>()

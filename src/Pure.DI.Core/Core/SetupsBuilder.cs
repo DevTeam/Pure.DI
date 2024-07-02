@@ -11,6 +11,7 @@ internal sealed class SetupsBuilder(
     private readonly List<MdBinding> _bindings = [];
     private readonly List<MdRoot> _roots = [];
     private readonly List<MdDependsOn> _dependsOn = [];
+    private readonly List<MdGenericTypeArgumentAttribute> _genericTypeArgumentAttributes = [];
     private readonly List<MdTypeAttribute> _typeAttributes = [];
     private readonly List<MdTagAttribute> _tagAttributes = [];
     private readonly List<MdOrdinalAttribute> _ordinalAttributes = [];
@@ -75,6 +76,9 @@ internal sealed class SetupsBuilder(
     }
 
     public void VisitRoot(in MdRoot root) => _roots.Add(root);
+    
+    public void VisitGenericTypeArgumentAttribute(in MdGenericTypeArgumentAttribute genericTypeArgumentAttribute) => 
+        _genericTypeArgumentAttributes.Add(genericTypeArgumentAttribute);
 
     public void VisitDefaultLifetime(in MdDefaultLifetime defaultLifetime) =>
         _bindingBuilder.DefaultLifetime = defaultLifetime;
@@ -122,6 +126,7 @@ internal sealed class SetupsBuilder(
                 Roots = _roots.ToImmutableArray(),
                 DependsOn = _dependsOn.ToImmutableArray(),
                 TypeAttributes = _typeAttributes.ToImmutableArray(),
+                GenericTypeArgumentAttributes = _genericTypeArgumentAttributes.ToImmutableArray(),
                 TagAttributes = _tagAttributes.ToImmutableArray(),
                 OrdinalAttributes = _ordinalAttributes.ToImmutableArray(),
                 UsingDirectives = _usingDirectives.ToImmutableArray(),
@@ -132,6 +137,7 @@ internal sealed class SetupsBuilder(
         _bindings.Clear();
         _roots.Clear();
         _dependsOn.Clear();
+        _genericTypeArgumentAttributes.Clear();
         _typeAttributes.Clear();
         _ordinalAttributes.Clear();
         _usingDirectives.Clear();

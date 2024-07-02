@@ -1,7 +1,7 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
-internal sealed class ResolversFieldsBuilder(IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>> resolversBuilder)
+internal sealed class ResolversFieldsBuilder(IBuilder<RootContext, IEnumerable<ResolverInfo>> resolversBuilder)
     : IBuilder<CompositionCode, CompositionCode>
 {
     public CompositionCode Build(CompositionCode composition)
@@ -11,7 +11,7 @@ internal sealed class ResolversFieldsBuilder(IBuilder<ImmutableArray<Root>, IEnu
             return composition;
         }
         
-        var resolvers = resolversBuilder.Build(composition.Roots).ToArray();
+        var resolvers = resolversBuilder.Build(new RootContext(composition.Source.Source, composition.Roots)).ToArray();
         if (!resolvers.Any())
         {
             return composition;
