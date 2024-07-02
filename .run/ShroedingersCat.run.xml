@@ -1,8 +1,8 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="ShroedingersCat" type="DotNetProject" factoryName=".NET Project">
-    <option name="EXE_PATH" value="$PROJECT_DIR$/samples/ShroedingersCat/bin/roslyn4.3/Debug/net8.0/ShroedingersCat.exe" />
+  <configuration default="false" name="ShroedingersCat" type="DotNetProject" factoryName=".NET Project" folderName="Examples">
+    <option name="EXE_PATH" value="$PROJECT_DIR$/samples/ShroedingersCat/bin/Debug/net8.0/ShroedingersCat.exe" />
     <option name="PROGRAM_PARAMETERS" value="" />
-    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/samples/ShroedingersCat/bin/roslyn4.3/Debug/net8.0" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/samples/ShroedingersCat/bin/Debug/net8.0" />
     <option name="PASS_PARENT_ENVS" value="1" />
     <option name="USE_EXTERNAL_CONSOLE" value="0" />
     <option name="USE_MONO" value="0" />

@@ -78,7 +78,7 @@ The [project file](/samples/ShroedingersCatTopLevelStatements/ShroedingersCatTop
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.1.24">
+        <PackageReference Include="Pure.DI" Version="2.1.25">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
