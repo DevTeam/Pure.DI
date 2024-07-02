@@ -1560,8 +1560,15 @@ namespace Pure.DI
         /// Specifies a custom generic type argument attribute.
         /// <example>
         /// <code>
+        /// [AttributeUsage(AttributeTargets.Interface | AttributeTargets.Class | AttributeTargets.Struct)]
+        /// class MyGenericTypeArgumentAttribute : Attribute;
+        ///  
+        /// [MyGenericTypeArgument]
+        /// interface TTMy; 
+        ///  
         /// DI.Setup("Composition")
-        ///     .GenericTypeAttribute&lt;MyGenericTypeArgumentAttribute&gt;();
+        ///     .GenericTypeAttribute&lt;MyGenericTypeArgumentAttribute&gt;()
+        ///     .Bind&lt;IDependency&lt;TTMy&gt;&gt;().To&lt;Dependency&lt;TTMy&gt;&gt;();
         /// </code>
         /// </example>
         /// </summary>
@@ -1717,8 +1724,11 @@ namespace Pure.DI
         /// Specifies a custom generic type argument.
         /// <example>
         /// <code>
+        /// interface TTMy;
+        ///  
         /// DI.Setup("Composition")
-        ///     .GenericType&lt;TTMy&gt;();
+        ///     .GenericTypeArgument&lt;TTMy&gt;()
+        ///     .Bind&lt;IDependency&lt;TTMy&gt;&gt;().To&lt;Dependency&lt;TTMy&gt;&gt;();
         /// </code>
         /// </example>
         /// </summary>
