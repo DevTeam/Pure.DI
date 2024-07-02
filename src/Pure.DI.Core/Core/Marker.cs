@@ -13,7 +13,8 @@ internal sealed class Marker : IMarker
         };
 
     public bool IsMarker(MdSetup setup, ITypeSymbol type) => 
-        type.GetAttributes()
+        setup.IsGenericTypeArgument(type)
+        || type.GetAttributes()
             .Where(i => i.AttributeClass is not null)
             .Any(i => setup.IsGenericTypeArgumentAttribute(i.AttributeClass!));
 }

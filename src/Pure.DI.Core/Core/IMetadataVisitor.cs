@@ -25,6 +25,8 @@ internal interface IMetadataVisitor
     
     void VisitRoot(in MdRoot root);
     
+    void VisitGenericTypeArgument(in MdGenericTypeArgument genericTypeArgument);
+    
     void VisitGenericTypeArgumentAttribute(in MdGenericTypeArgumentAttribute genericTypeArgumentAttribute);
 
     void VisitTypeAttribute(in MdTypeAttribute typeAttribute);

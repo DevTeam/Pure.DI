@@ -106,6 +106,10 @@ internal class MetadataWalkerBase: IMetadataVisitor
         }
     }
 
+    public virtual void VisitGenericTypeArgument(in MdGenericTypeArgument genericTypeArgument)
+    {
+    }
+
     public virtual void VisitGenericTypeArgumentAttribute(in MdGenericTypeArgumentAttribute genericTypeArgumentAttribute)
     {
     }

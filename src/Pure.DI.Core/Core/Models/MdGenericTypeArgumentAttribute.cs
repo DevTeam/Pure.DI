@@ -7,5 +7,5 @@ internal readonly record struct MdGenericTypeArgumentAttribute(
     INamedTypeSymbol AttributeType,
     int ArgumentPosition = 0) : IMdAttribute
 {
-    public override string ToString() => $".MdGenericTypeArgumentAttribute<{AttributeType}>()";
+    public override string ToString() => $".GenericTypeArgumentAttribute<{AttributeType}>()";
 }

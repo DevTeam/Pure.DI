@@ -11,6 +11,7 @@ internal sealed class SetupsBuilder(
     private readonly List<MdBinding> _bindings = [];
     private readonly List<MdRoot> _roots = [];
     private readonly List<MdDependsOn> _dependsOn = [];
+    private readonly List<MdGenericTypeArgument> _genericTypeArguments = [];
     private readonly List<MdGenericTypeArgumentAttribute> _genericTypeArgumentAttributes = [];
     private readonly List<MdTypeAttribute> _typeAttributes = [];
     private readonly List<MdTagAttribute> _tagAttributes = [];
@@ -77,6 +78,9 @@ internal sealed class SetupsBuilder(
 
     public void VisitRoot(in MdRoot root) => _roots.Add(root);
     
+    public void VisitGenericTypeArgument(in MdGenericTypeArgument genericTypeArgument) => 
+        _genericTypeArguments.Add(genericTypeArgument);
+
     public void VisitGenericTypeArgumentAttribute(in MdGenericTypeArgumentAttribute genericTypeArgumentAttribute) => 
         _genericTypeArgumentAttributes.Add(genericTypeArgumentAttribute);
 
@@ -125,8 +129,9 @@ internal sealed class SetupsBuilder(
                 Bindings = _bindings.Select(i => i with { SourceSetup = setup }).ToImmutableArray(),
                 Roots = _roots.ToImmutableArray(),
                 DependsOn = _dependsOn.ToImmutableArray(),
-                TypeAttributes = _typeAttributes.ToImmutableArray(),
+                GenericTypeArguments = _genericTypeArguments.ToImmutableArray(),
                 GenericTypeArgumentAttributes = _genericTypeArgumentAttributes.ToImmutableArray(),
+                TypeAttributes = _typeAttributes.ToImmutableArray(),
                 TagAttributes = _tagAttributes.ToImmutableArray(),
                 OrdinalAttributes = _ordinalAttributes.ToImmutableArray(),
                 UsingDirectives = _usingDirectives.ToImmutableArray(),
@@ -137,6 +142,7 @@ internal sealed class SetupsBuilder(
         _bindings.Clear();
         _roots.Clear();
         _dependsOn.Clear();
+        _genericTypeArguments.Clear();
         _genericTypeArgumentAttributes.Clear();
         _typeAttributes.Clear();
         _ordinalAttributes.Clear();

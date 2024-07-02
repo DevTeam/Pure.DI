@@ -131,6 +131,7 @@ internal class ApiInvocationProcessor(
                                 ImmutableArray<MdBinding>.Empty,
                                 ImmutableArray<MdRoot>.Empty,
                                 ImmutableArray<MdDependsOn>.Empty,
+                                ImmutableArray<MdGenericTypeArgument>.Empty,
                                 ImmutableArray<MdGenericTypeArgumentAttribute>.Empty,
                                 ImmutableArray<MdTypeAttribute>.Empty,
                                 ImmutableArray<MdTagAttribute>.Empty,
@@ -223,6 +224,18 @@ internal class ApiInvocationProcessor(
         
                         var rootSymbol = semantic.GetTypeSymbol<INamedTypeSymbol>(semanticModel, rootType);
                         VisitRoot(metadataVisitor, semanticModel, invocation, invocationComments, rootSymbol);
+                        break;
+                    
+                    case nameof(IConfiguration.GenericTypeArgument):
+                        if (TryGetAttributeType(genericName, semanticModel, out var genericTypeArgumentType))
+                        {
+                            var attr = new MdGenericTypeArgument(
+                                semanticModel, 
+                                invocation.ArgumentList,
+                                genericTypeArgumentType);
+                            metadataVisitor.VisitGenericTypeArgument(attr);
+                        }
+                        
                         break;
 
                     case nameof(IConfiguration.GenericTypeArgumentAttribute):

@@ -103,7 +103,8 @@ internal sealed class MetadataBuilder(
         var bindingsBuilder = ImmutableArray.CreateBuilder<MdBinding>(64);
         var rootsBuilder = ImmutableArray.CreateBuilder<MdRoot>(64);
         var dependsOnBuilder = ImmutableArray.CreateBuilder<MdDependsOn>(2);
-        var genericTypeArgumentAttributesBuilder = ImmutableArray.CreateBuilder<MdGenericTypeArgumentAttribute>(2);
+        var genericTypeArgumentBuilder = ImmutableArray.CreateBuilder<MdGenericTypeArgument>(0);
+        var genericTypeArgumentAttributesBuilder = ImmutableArray.CreateBuilder<MdGenericTypeArgumentAttribute>(1);
         var typeAttributesBuilder = ImmutableArray.CreateBuilder<MdTypeAttribute>(2);
         var tagAttributesBuilder = ImmutableArray.CreateBuilder<MdTagAttribute>(2);
         var ordinalAttributesBuilder = ImmutableArray.CreateBuilder<MdOrdinalAttribute>(2);
@@ -132,6 +133,7 @@ internal sealed class MetadataBuilder(
             
             rootsBuilder.AddRange(setup.Roots);
             dependsOnBuilder.AddRange(setup.DependsOn);
+            genericTypeArgumentBuilder.AddRange(setup.GenericTypeArguments);
             genericTypeArgumentAttributesBuilder.AddRange(setup.GenericTypeArgumentAttributes);
             typeAttributesBuilder.AddRange(setup.TypeAttributes);
             tagAttributesBuilder.AddRange(setup.TagAttributes);
@@ -171,6 +173,7 @@ internal sealed class MetadataBuilder(
             bindings,
             rootsBuilder.ToImmutable(),
             resolveDependsOn ? ImmutableArray<MdDependsOn>.Empty : dependsOnBuilder.ToImmutable(),
+            genericTypeArgumentBuilder.ToImmutableArray(),
             genericTypeArgumentAttributesBuilder.ToImmutableArray(),
             typeAttributesBuilder.ToImmutable(),
             tagAttributesBuilder.ToImmutable(),

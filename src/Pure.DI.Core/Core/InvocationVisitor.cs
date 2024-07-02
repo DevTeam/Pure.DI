@@ -53,6 +53,9 @@ internal readonly record struct InvocationVisitor(
     public void VisitRoot(in MdRoot root) =>
         AddAction((visitor, i) => visitor.VisitRoot(i), BaseVisitor, root);
 
+    public void VisitGenericTypeArgument(in MdGenericTypeArgument genericTypeArgument) => 
+        AddAction((visitor, i) => visitor.VisitGenericTypeArgument(i), BaseVisitor, genericTypeArgument);
+
     public void VisitGenericTypeArgumentAttribute(in MdGenericTypeArgumentAttribute genericTypeArgumentAttribute) => 
         AddAction((visitor, i) => visitor.VisitGenericTypeArgumentAttribute(i), BaseVisitor, genericTypeArgumentAttribute);
 
