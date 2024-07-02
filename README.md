@@ -246,6 +246,7 @@ dotnet run
 - [Complex generics](readme/complex-generics.md)
 - [Generic composition roots with constraints](readme/generic-composition-roots-with-constraints.md)
 - [Generic async composition roots with constraints](readme/generic-async-composition-roots-with-constraints.md)
+- [Custom generic argument](readme/custom-generic-argument.md)
 ### Attributes
 - [Constructor ordinal attribute](readme/constructor-ordinal-attribute.md)
 - [Member ordinal attribute](readme/member-ordinal-attribute.md)
@@ -254,6 +255,7 @@ dotnet run
 - [Inject attribute](readme/inject-attribute.md)
 - [Custom attributes](readme/custom-attributes.md)
 - [Custom universal attribute](readme/custom-universal-attribute.md)
+- [Custom generic argument attribute](readme/custom-generic-argument-attribute.md)
 ### Interception
 - [Decorator](readme/decorator.md)
 - [Interception](readme/interception.md)
