@@ -14,22 +14,22 @@ namespace Pure.DI
                 .TypeAttribute<TypeAttribute>()
                 .TagAttribute<TagAttribute>()
                 .OrdinalAttribute<OrdinalAttribute>()
-                .Accumulate<global::System.IDisposable, global::Pure.DI.Owned>(
+                .Accumulate<global::System.IDisposable, Owned>(
                     Lifetime.Transient,
                     Lifetime.PerResolve,
                     Lifetime.PerBlock)
 #if NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
-                .Accumulate<global::System.IAsyncDisposable, global::Pure.DI.Owned>(
+                .Accumulate<global::System.IAsyncDisposable, Owned>(
                     Lifetime.Transient,
                     Lifetime.PerResolve,
                     Lifetime.PerBlock)
 #endif
-                .Bind<global::Pure.DI.IOwned>().To(ctx =>
+                .Bind<IOwned>().To(ctx =>
                 {
                     ctx.Inject<Owned>(out var owned);
                     return owned;
                 })
-                .Bind<global::Pure.DI.Owned<TT>>()
+                .Bind<Owned<TT>>()
                     .As(Lifetime.PerBlock)
                     .To(ctx => {
                         ctx.Inject<Owned>(out var owned);
