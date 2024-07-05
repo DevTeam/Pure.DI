@@ -12,6 +12,7 @@ internal class RootTarget(
     public async Task<int> RunAsync(CancellationToken cancellationToken)
     {
         Directory.SetCurrentDirectory(env.GetPath(PathType.SolutionDirectory));
+        Environment.SetEnvironmentVariable("DOTNET_NUGET_SIGNATURE_VERIFICATION", "false");
         await new DotNetBuildServerShutdown().RunAsync(cancellationToken: cancellationToken);
         foreach (var initializable in initializables)
         {
