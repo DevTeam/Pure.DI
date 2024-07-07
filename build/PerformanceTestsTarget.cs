@@ -45,7 +45,7 @@ internal class PerformanceTestsTarget(
                     "--", "--filter")
                 .AddArgs(Filters.Select(filter => filter).ToArray())
                 .Run()
-                .Succeed("Benchmarking");
+                .EnsureSuccess();
             
             foreach (var reportName in fileSystem.EnumerateFiles(tempDirectory, "*.json", SearchOption.AllDirectories))
             {

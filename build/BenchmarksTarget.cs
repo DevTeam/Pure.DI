@@ -42,7 +42,7 @@ internal class BenchmarksTarget(
                     "--", "--filter")
                 .AddArgs(Filters.Select(filter => filter).ToArray())
                 .Run()
-                .Succeed("Benchmarking");
+                .EnsureSuccess();
         }
 
         var index = 0;

@@ -27,7 +27,8 @@ internal class PublishBlazorTarget(
             .WithProject(projectPath)
             .WithConfiguration("Release")
             .WithOutput(publishPath)
-            .RunAsync(cancellationToken: cancellationToken);
+            .RunAsync(cancellationToken: cancellationToken)
+            .EnsureSuccess();
         
         // Change the base-tag in index.html from '/' to 'BlazorWebAssemblyApp' to match GitHub Pages repository subdirectory
         var indexFile = Path.Combine(rootPath, "index.html");
@@ -41,6 +42,6 @@ internal class PublishBlazorTarget(
         // Add .nojekyll file to tell GitHub pages to not treat this as a Jekyll project. (Allow files and folders starting with an underscore)
         await File.AppendAllTextAsync(Path.Combine(rootPath, ".nojekyll"), "", cancellationToken);
 
-        return result ?? 1;
+        return result.ExitCode ?? 1;
     }
 }

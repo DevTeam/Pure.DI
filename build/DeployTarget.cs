@@ -30,7 +30,7 @@ internal class DeployTarget(
                 .WithSources("https://api.nuget.org/v3/index.json")
                 .WithApiKey(settings.NuGetKey)
                 .Build()
-                .Succeed();
+                .EnsureSuccess();
         }
 
         return 0;

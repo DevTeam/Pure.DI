@@ -31,13 +31,8 @@ internal class CompatibilityCheckTarget(
         var libraries = await librariesTarget.RunAsync(cancellationToken);
 
         DeleteNuGetPackageFromCache("Pure.DI", settings.NextVersion, Path.GetDirectoryName(generatorPackage.Path)!);
-
-        var exitCode = await new DotNetCustom("new", "-i", "Pure.DI.Templates").RunAsync(cancellationToken: cancellationToken);
-        if (exitCode != 0)
-        {
-            throw new InvalidOperationException("Cannot install the project template \"Pure.DI.Templates\".");
-        }
-
+        await new DotNetCustom("new", "-i", "Pure.DI.Templates").RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
+        
         string[] frameworks =
         [
             "net8.0",
@@ -90,7 +85,7 @@ internal class CompatibilityCheckTarget(
         try
         {
             tempDirectory = Path.Combine(tempDirectory, "src", framework);
-            var exitCode = await new DotNetNew(
+            await new DotNetNew(
                     "dilib",
                     "-n",
                     "MyApp",
@@ -98,35 +93,23 @@ internal class CompatibilityCheckTarget(
                     tempDirectory,
                     "--force",
                     "-f", framework)
-                .RunAsync(cancellationToken: cancellationToken);
+                .RunAsync(cancellationToken: cancellationToken)
+                .EnsureSuccess();
 
-            if (exitCode != 0)
-            {
-                throw new InvalidOperationException($"Cannot create app for \"{framework}\".");
-            }
-
-            exitCode = await new DotNetRestore().WithWorkingDirectory(tempDirectory).RunAsync(cancellationToken: cancellationToken);
-            if (exitCode != 0)
-            {
-                throw new InvalidOperationException($"Cannot restore for \"{framework}\".");
-            }
+            await new DotNetRestore().WithWorkingDirectory(tempDirectory).RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
             if (!framework.Contains('.'))
             {
-                exitCode = await new DotNetCustom(
+                await new DotNetCustom(
                         "add",
                         Path.Combine(tempDirectory),
                         "package",
                         "Microsoft.NETFramework.ReferenceAssemblies")
-                    .RunAsync(cancellationToken: cancellationToken);
-
-                if (exitCode != 0)
-                {
-                    throw new InvalidOperationException($"Cannot add \"Microsoft.NETFramework.ReferenceAssemblies\" package of \"{framework}\".");
-                }
+                    .RunAsync(cancellationToken: cancellationToken)
+                    .EnsureSuccess();
             }
 
-            exitCode = await new DotNetCustom(
+            await new DotNetCustom(
                     "add",
                     Path.Combine(tempDirectory),
                     "package",
@@ -135,18 +118,12 @@ internal class CompatibilityCheckTarget(
                     settings.NextVersion.ToString(),
                     "-s",
                     Path.GetDirectoryName(generatorPackage)!)
-                .RunAsync(cancellationToken: cancellationToken);
+                .RunAsync(cancellationToken: cancellationToken)
+                .EnsureSuccess();
 
-            if (exitCode != 0)
-            {
-                throw new InvalidOperationException($"Cannot add \"Pure.DI\" package of \"{framework}\".");
-            }
-
-            exitCode = await new DotNetBuild().WithWorkingDirectory(tempDirectory).RunAsync(cancellationToken: cancellationToken);
-            if (exitCode != 0)
-            {
-                throw new InvalidOperationException($"Cannot build app for \"{framework}\".");
-            }
+            await new DotNetBuild().WithWorkingDirectory(tempDirectory)
+                .RunAsync(cancellationToken: cancellationToken)
+                .EnsureSuccess();
         }
         finally
         {
@@ -168,7 +145,7 @@ internal class CompatibilityCheckTarget(
                 Info($"Testing {library.Name} library under {framework}.");
                 var tempDirForFramework = tempDirectory + "_" + framework;
                 Directory.CreateDirectory(tempDirForFramework);
-                var exitCode = await new DotNetNew(
+                await new DotNetNew(
                         templateName,
                         "-n",
                         "MyApp",
@@ -176,14 +153,10 @@ internal class CompatibilityCheckTarget(
                         tempDirForFramework,
                         "--force",
                         "-f", framework)
-                    .RunAsync(cancellationToken: cancellationToken);
+                    .RunAsync(cancellationToken: cancellationToken)
+                    .EnsureSuccess();
 
-                if (exitCode != 0)
-                {
-                    throw new InvalidOperationException($"Cannot create app from the template {templateName}.");
-                }
-
-                exitCode = await new DotNetCustom(
+                await new DotNetCustom(
                         "add",
                         Path.Combine(tempDirForFramework),
                         "package",
@@ -195,17 +168,13 @@ internal class CompatibilityCheckTarget(
                         framework,
                         "-s",
                         Path.GetDirectoryName(generatorPackage)!)
-                    .RunAsync(cancellationToken: cancellationToken);
-
-                if (exitCode != 0)
-                {
-                    throw new InvalidOperationException("Cannot add the NuGet package reference.");
-                }
+                    .RunAsync(cancellationToken: cancellationToken)
+                    .EnsureSuccess();
 
                 var libraryPackageDir = Path.GetDirectoryName(library.Package.Path)!;
                 DeleteNuGetPackageFromCache(library.Name, settings.NextVersion, libraryPackageDir);
 
-                exitCode = await new DotNetCustom(
+                await new DotNetCustom(
                         "add",
                         Path.Combine(tempDirForFramework),
                         "package",
@@ -217,34 +186,22 @@ internal class CompatibilityCheckTarget(
                         libraryPackageDir,
                         "-f",
                         framework)
-                    .RunAsync(cancellationToken: cancellationToken);
+                    .RunAsync(cancellationToken: cancellationToken)
+                    .EnsureSuccess();
 
-                if (exitCode != 0)
-                {
-                    throw new InvalidOperationException("Cannot add the NuGet package reference.");
-                }
-
-                exitCode = await new DotNetRestore()
+                await new DotNetRestore()
                     .WithWorkingDirectory(tempDirForFramework)
                     .WithForce(true)
                     .WithNoCache(true)
                     .AddSources(Path.GetDirectoryName(generatorPackage)!, libraryPackageDir)
-                    .RunAsync(cancellationToken: cancellationToken);
+                    .RunAsync(cancellationToken: cancellationToken)
+                    .EnsureSuccess();
 
-                if (exitCode != 0)
-                {
-                    throw new InvalidOperationException("Cannot restore NuGet package.");
-                }
-
-                exitCode = await new DotNetBuild()
+                await new DotNetBuild()
                     .WithWorkingDirectory(tempDirForFramework)
                     .WithNoRestore(true)
-                    .RunAsync(cancellationToken: cancellationToken);
-
-                if (exitCode != 0)
-                {
-                    throw new InvalidOperationException("Cannot build.");
-                }
+                    .RunAsync(cancellationToken: cancellationToken)
+                    .EnsureSuccess();
             }
         }
         finally

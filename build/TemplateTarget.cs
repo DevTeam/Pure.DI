@@ -43,7 +43,7 @@ internal class TemplateTarget(
             .WithProject(Path.Combine(projectDirectory, $"{ProjectName}.csproj"))
             .WithProps(props)
             .Build()
-            .Succeed();
+            .EnsureSuccess();
 
         var targetPackage = Path.Combine(projectDirectory, "bin", $"{ProjectName}.{packageVersion}.nupkg");
         artifactsWriter.PublishArtifact($"{targetPackage} => .");
@@ -59,7 +59,7 @@ internal class TemplateTarget(
             .WithSources("https://api.nuget.org/v3/index.json")
             .WithApiKey(settings.NuGetKey)
             .Build()
-            .Succeed();
+            .EnsureSuccess();
 
         return targetPackage;
     }

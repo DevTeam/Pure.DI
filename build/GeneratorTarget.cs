@@ -74,18 +74,16 @@ internal class GeneratorTarget(
             .WithShortName($"Building {codeAnalysis.AnalyzerRoslynPackageVersion}")
             .WithProps(props)
             .Build()
-            .Succeed();
+            .EnsureSuccess();
 
-        var testResult = new DotNetTest()
+        new DotNetTest()
             .WithShortName($"Testing {codeAnalysis.AnalyzerRoslynPackageVersion}")
             .WithProps(props)
             .WithConfiguration(settings.Configuration)
             .WithNoBuild(true)
             .WithNoLogo(true)
-            .Build();
-
-        WriteLine(testResult.ToString(), Color.Details);
-        testResult.Succeed();
+            .Build()
+            .EnsureSuccess();
 
         var packagePath = Path.Combine(PackagesDir, analyzerRoslynVersion.ToString());
 
@@ -98,7 +96,7 @@ internal class GeneratorTarget(
             .WithProject(Path.Combine(projectDirectory, "Pure.DI.csproj"))
             .WithOutput(Path.Combine(projectDirectory, packagePath))
             .Build()
-            .Succeed();
+            .EnsureSuccess();
 
         return Path.Combine(projectDirectory, packagePath, PackageName);
     }

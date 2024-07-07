@@ -48,20 +48,16 @@ internal class LibrariesTarget(
 
         foreach (var library in libraries)
         {
-            var props = new[]
-            {
-                ("configuration", settings.Configuration),
-                ("version", settings.NextVersion.ToString())
-            };
-
             new DotNetPack()
-                .WithProps(props)
+                .WithProps(
+                    ("configuration", settings.Configuration),
+                    ("version", settings.NextVersion.ToString()))
                 .WithConfiguration(settings.Configuration)
                 .WithNoBuild(true)
                 .WithNoLogo(true)
                 .WithProject(Path.Combine(Path.GetFullPath(Path.Combine("src", library.Name)), $"{library.Name}.csproj"))
                 .Build()
-                .Succeed();
+                .EnsureSuccess();
         }
 
         return Task.FromResult<IReadOnlyCollection<Library>>(libraries);

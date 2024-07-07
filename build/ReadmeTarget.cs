@@ -75,7 +75,7 @@ internal class ReadmeTarget(
                 .WithProject(project)
                 .WithTarget("clean;rebuild")
                 .Build()
-                .Succeed();
+                .EnsureSuccess();
         }
 
         new DotNetTest(usageTestsProjects).Run();
@@ -425,11 +425,11 @@ internal class ReadmeTarget(
 
         var benchmarks = new (string name, string description, string classDiagram)[]
         {
-            (nameof(Transient), "Creating an object graph of 22 transient objects.", new Transient().ToString()),
-            (nameof(Singleton), "Creating an object graph of 20 transition objects plus 1 singleton with an additional 6 transition objects .", new Singleton().ToString()),
-            (nameof(Func), "Creating an object graph of 7 transition objects plus 1 `Func<T>` with additional 1 transition object.", new Func().ToString()),
-            (nameof(Array), "Creating an object graph of 27 transient objects, including 4 transient array objects.", new Array().ToString()),
-            (nameof(Enum), "Creating an object graph of 12 transient objects, including 1 transient enumerable object.", new Enum().ToString())
+            (nameof(Transient), "Creating an object graph of 22 transient objects.", new Transient().ToString()!),
+            (nameof(Singleton), "Creating an object graph of 20 transition objects plus 1 singleton with an additional 6 transition objects .", new Singleton().ToString()!),
+            (nameof(Func), "Creating an object graph of 7 transition objects plus 1 `Func<T>` with additional 1 transition object.", new Func().ToString()!),
+            (nameof(Array), "Creating an object graph of 27 transient objects, including 4 transient array objects.", new Array().ToString()!),
+            (nameof(Enum), "Creating an object graph of 12 transient objects, including 1 transient enumerable object.", new Enum().ToString()!)
         };
 
         foreach (var (name, description, classDiagram) in benchmarks)
