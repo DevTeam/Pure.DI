@@ -38,3 +38,4 @@ Pure.DI is not a framework or library, but a source code generator for creating 
 - [X] Good for building libraries or frameworks where resource consumption is particularly critical.
   >Its high performance, zero memory consumption/preparation overhead, and lack of dependencies make it ideal for building libraries and frameworks.
 
+This project uses [C# interactive](https://github.com/DevTeam/csharp-interactive) build automation system for .NET.
