@@ -4,6 +4,7 @@
         <TargetFramework>$(BaseTargetFramework)-windows</TargetFramework>
         <OutputType>WinExe</OutputType>
         <UseWPF>true</UseWPF>
+        <ApplicationIcon>../../docs/icon.ico</ApplicationIcon>
     </PropertyGroup>
 
     <ItemGroup>

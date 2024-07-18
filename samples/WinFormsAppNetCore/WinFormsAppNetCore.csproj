@@ -4,6 +4,7 @@
         <TargetFramework>$(BaseTargetFramework)-windows</TargetFramework>
         <OutputType>WinExe</OutputType>
         <UseWindowsForms>true</UseWindowsForms>
+        <ApplicationIcon>../../docs/icon.ico</ApplicationIcon>
     </PropertyGroup>
 
     <ItemGroup>
