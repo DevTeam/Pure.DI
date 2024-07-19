@@ -37,9 +37,9 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeFalse(result);
-        result.Errors.Count.ShouldBe(0);
-        result.Warnings.Count.ShouldBe(2);
-        result.Warnings.Count(i => i.Id == LogId.WarningMetadataDefect).ShouldBe(2);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(2, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningMetadataDefect).ShouldBe(2, result);
     }
     
     [Fact]
@@ -78,7 +78,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeFalse(result);
-        result.Errors.Count.ShouldBe(2);
+        result.Errors.Count.ShouldBe(2, result);
     }
     
     [Fact]
@@ -125,7 +125,7 @@ namespace Sample
         result.Success.ShouldBeFalse(result);
         result.Errors
             .Count(i => i is { Id: LogId.ErrorUnableToResolve, Message: "Unable to resolve \"Sample.IService\" in Sample.IService() MyRoot1." })
-            .ShouldBe(1);
+            .ShouldBe(1, result);
     }
     
     [Fact]
@@ -165,9 +165,9 @@ namespace Sample
         // Then
         result.Success.ShouldBeFalse(result);
         result.StdOut.ShouldBe(["Xyz"], result);
-        result.Warnings.Count.ShouldBe(2);
-        result.Warnings.Count(i => i.Id == LogId.WarningOverriddenBinding).ShouldBe(1);
-        result.Warnings.Count(i => i.Id == LogId.WarningMetadataDefect).ShouldBe(1);
+        result.Warnings.Count.ShouldBe(2, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningOverriddenBinding).ShouldBe(1, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningMetadataDefect).ShouldBe(1, result);
     }
     
     [Fact]
@@ -219,8 +219,8 @@ namespace Sample
                 "System.Func`2[System.Int32,System.Collections.Generic.IList`1[System.Char]]"
             ],
             result);
-        result.Warnings.Count.ShouldBe(0);
-        result.Warnings.Count(i => i.Id == LogId.WarningOverriddenBinding).ShouldBe(0);
+        result.Warnings.Count.ShouldBe(0, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningOverriddenBinding).ShouldBe(0, result);
     }
     
     [Fact]
@@ -261,7 +261,7 @@ namespace Sample
         result.Success.ShouldBeFalse(result);
         result.Errors.Count.ShouldBe(0, result);
         result.Warnings.Count.ShouldBe(1, result);
-        result.Warnings.Count(i => i.Id == LogId.WarningMetadataDefect).ShouldBe(1);
+        result.Warnings.Count(i => i.Id == LogId.WarningMetadataDefect).ShouldBe(1, result);
     }
     
     [Fact]
@@ -409,8 +409,8 @@ namespace Sample
         // Then
         result.Success.ShouldBeFalse(result);
         result.StdOut.ShouldBe(["Xyz"], result);
-        result.Warnings.Count.ShouldBe(1);
-        result.Warnings.Count(i => i.Id == LogId.WarningOverriddenBinding).ShouldBe(1);
+        result.Warnings.Count.ShouldBe(1, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningOverriddenBinding).ShouldBe(1, result);
     }
     
     [Fact]

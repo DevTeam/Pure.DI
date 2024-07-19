@@ -126,7 +126,7 @@ namespace Sample
         // Then
         result.Success.ShouldBeFalse(result);
         var errors = result.Logs.Where(i => i.Id == LogId.ErrorUnableToResolve).ToImmutableArray();
-        errors.Length.ShouldBe(1);
+        errors.Length.ShouldBe(1, result);
     }
     
     [Fact]

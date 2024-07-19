@@ -395,9 +395,9 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeFalse(result);
-        result.Errors.Count.ShouldBe(0);
-        result.Warnings.Count.ShouldBe(2);
-        result.Warnings.Count(i => i.Id == LogId.WarningRootArgInResolveMethod).ShouldBe(2);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(2, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningRootArgInResolveMethod).ShouldBe(2, result);
         result.StdOut.ShouldBe(["Some Name_99"], result);
     }
     

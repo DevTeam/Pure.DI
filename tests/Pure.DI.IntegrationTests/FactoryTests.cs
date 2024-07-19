@@ -29,7 +29,7 @@ namespace Sample
     {
         public Service(IDependency dep)
         { 
-            Dep = dep;           
+            Dep = dep;
         }
 
         public IDependency Dep { get; }
@@ -53,9 +53,9 @@ namespace Sample
             var composition = new Composition();
             var service1 = composition.Service;
             var service2 = composition.Service;
-            Console.WriteLine(service1.Dep != service2.Dep);                                            
+            Console.WriteLine(service1.Dep != service2.Dep);
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -113,7 +113,7 @@ namespace Sample
             var composition = new Composition();
             var service1 = composition.Service;
             var service2 = composition.Service;
-            Console.WriteLine(service1.Dep != service2.Dep);                                            
+            Console.WriteLine(service1.Dep != service2.Dep);
         }
     }                
 }
@@ -173,7 +173,7 @@ namespace Sample
             var composition = new Composition();
             var service1 = composition.Service;
             var service2 = composition.Service;
-            Console.WriteLine(service1.Dep != service2.Dep);                                            
+            Console.WriteLine(service1.Dep != service2.Dep);
         }
     }                
 }
@@ -237,7 +237,7 @@ namespace Sample
             var composition = new Composition();
             var service1 = composition.Service;
             var service2 = composition.Service;
-            Console.WriteLine(service1.Dep != service2.Dep);                                            
+            Console.WriteLine(service1.Dep != service2.Dep);
         }
     }                
 }
@@ -297,7 +297,7 @@ namespace Sample
             var composition = new Composition();
             var service1 = composition.Service;
             var service2 = composition.Service;
-            Console.WriteLine(service1.Dep == service2.Dep);                                            
+            Console.WriteLine(service1.Dep == service2.Dep);
         }
     }                
 }
@@ -360,7 +360,7 @@ namespace Sample
             var composition = new Composition();
             var service1 = composition.Service;
             var service2 = composition.Service;
-            Console.WriteLine(service1.Dep != service2.Dep);                                            
+            Console.WriteLine(service1.Dep != service2.Dep);
         }
     }                
 }
@@ -572,7 +572,7 @@ namespace Sample
     {
         public static void Main()
         {
-            var composition = new Composition();                                                        
+            var composition = new Composition();            
         }
     }                
 }
@@ -642,7 +642,7 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();      
-            var service = composition.Service;                                                 
+            var service = composition.Service;     
         }
     }                
 }
@@ -710,7 +710,7 @@ namespace Sample
             var composition = new Composition();
             var service1 = composition.Service;
             var service2 = composition.Service;
-            Console.WriteLine(service1.Dep != service2.Dep);                                            
+            Console.WriteLine(service1.Dep != service2.Dep);
         }
     }                
 }
@@ -782,7 +782,7 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();      
-            var service = composition.Service;                                                 
+            var service = composition.Service;     
         }
     }                
 }
@@ -854,7 +854,7 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();      
-            var service = composition.Service;                                                 
+            var service = composition.Service;     
         }
     }                
 }
@@ -928,7 +928,7 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();      
-            var service = composition.Service;                                                 
+            var service = composition.Service;     
         }
     }                
 }
@@ -938,7 +938,7 @@ namespace Sample
         result.Success.ShouldBeFalse(result);
         result.Errors
             .Count(i => i is { Id: LogId.ErrorInvalidMetadata } && i.Message == $"It is not possible to use \"{contextArgName}\" directly. Only its methods or properties can be used.")
-            .ShouldBe(1);
+            .ShouldBe(1, result);
     }
     
     [Fact]
@@ -1002,7 +1002,7 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();      
-            var service = composition.Service;                                                 
+            var service = composition.Service;     
         }
     }                
 }
@@ -1012,7 +1012,7 @@ namespace Sample
         result.Success.ShouldBeFalse(result);
         result.Errors
             .Count(i => i is { Id: LogId.ErrorInvalidMetadata, Message: "It is not possible to use \"ctx2\" directly. Only its methods or properties can be used." })
-            .ShouldBe(0);
+            .ShouldBe(0, result);
     }
     
     [Fact]
@@ -1067,7 +1067,7 @@ namespace Sample
             var composition = new Composition();
             var service1 = composition.Service;
             var service2 = composition.Service;
-            Console.WriteLine(service1.Dep != service2.Dep);                                            
+            Console.WriteLine(service1.Dep != service2.Dep);
         }
     }                
 }
@@ -1157,7 +1157,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.GeneratedCode.Split(Environment.NewLine).Count(i => i.Contains(" = new Sample.Dependency2();")).ShouldBe(2);
+        result.GeneratedCode.Split(Environment.NewLine).Count(i => i.Contains(" = new Sample.Dependency2();")).ShouldBe(2, result);
     }
     
     [Fact]
@@ -1226,7 +1226,7 @@ partial class Composition
     {
         public static void Main()
         {
-            var service = new Composition().MyService;                                            
+            var service = new Composition().MyService;
         }
     }                
 }
@@ -1235,5 +1235,72 @@ partial class Composition
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Sample.Dependency", "Sample.IDependency", "Sample.Service", "Sample.IService"], result);
+    }
+    
+    [Fact]
+    public async Task ShouldShowCompilationErrorWhenAsyncKeyword()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using System.Threading.Tasks;
+using Pure.DI;
+
+namespace Sample
+{
+    interface IDependency {}
+
+    class Dependency: IDependency {}
+
+    interface IService
+    {
+        IDependency Dep { get; }
+    }
+
+    class Service: IService 
+    {
+        public Service(Task<IDependency> dep)
+        { 
+            Dep = dep.Result;
+        }
+
+        public IDependency Dep { get; }
+    }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup("Composition")
+                .Bind<Task<IDependency>>().To(async ctx => {
+                    await Task.Delay(0);
+                    return (IDependency)new Dependency();
+                })
+                .Bind<IService>().To<Service>()
+                .Root<IService>("Service");
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();
+            var service1 = composition.Service;
+            var service2 = composition.Service;
+            Console.WriteLine(service1.Dep != service2.Dep);
+        }
+    }
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count.ShouldBe(1, result);
+        result.Errors
+            .Count(i => i is { Id: LogId.ErrorInvalidMetadata, Message: "Asynchronous factory with the async keyword is not supported." })
+            .ShouldBe(1, result);
     }
 }

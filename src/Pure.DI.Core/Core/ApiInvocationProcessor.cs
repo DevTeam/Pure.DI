@@ -424,6 +424,11 @@ internal class ApiInvocationProcessor(
         LambdaExpressionSyntax lambdaExpression,
         bool isManual = false)
     {
+        if (lambdaExpression.AsyncKeyword.IsKind(SyntaxKind.AsyncKeyword))
+        {
+            throw new CompileErrorException("Asynchronous factory with the async keyword is not supported.", lambdaExpression.GetLocation(), LogId.ErrorInvalidMetadata);
+        }
+        
         ParameterSyntax contextParameter;
         switch (lambdaExpression)
         {
