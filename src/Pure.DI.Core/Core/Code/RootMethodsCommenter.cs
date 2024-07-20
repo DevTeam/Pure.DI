@@ -15,32 +15,44 @@ internal class RootMethodsCommenter(
         var rootComments = root.Source.Comments;
         var code = composition.Code;
         code.AppendLine("/// <summary>");
-        code.AppendLine("/// <para>");
-        if (rootComments.Count > 0)
+        try
         {
-            foreach (var comment in comments.Format(rootComments, true))
+            code.AppendLine("/// <para>");
+            try
             {
-                code.AppendLine(comment);
+                if (rootComments.Count > 0)
+                {
+                    foreach (var comment in comments.Format(rootComments, true))
+                    {
+                        code.AppendLine(comment);
+                    }
+                }
+                else
+                {
+                    code.AppendLine($"/// Provides a composition root of type {formatter.FormatRef(composition.Source.Source, root.Node.Type)}.");
+                }
             }
+            finally
+            {
+                code.AppendLine("/// </para>");
+            }
+            
+            if (!root.IsPublic)
+            {
+                return;
+            }
+
+            code.AppendLine("/// <example>");
+            code.AppendLine($"/// This example shows how to get an instance of type {formatter.FormatRef(composition.Source.Source, root.Node.Type)}:");
+            code.AppendLine("/// <code>");
+            code.AppendLine($"/// {(composition.TotalDisposablesCount == 0 ? "" : "using ")}var composition = new {composition.Source.Source.Name.ClassName}({string.Join(", ", composition.Args.Where(i => i.Node.Arg?.Source.Kind == ArgKind.Class).Select(arg => arg.VariableDeclarationName))});");
+            code.AppendLine($"/// var instance = composition.{formatter.Format(root)};");
+            code.AppendLine("/// </code>");
+            code.AppendLine("/// </example>");
         }
-        else
+        finally
         {
-            code.AppendLine($"/// Provides a composition root of type {formatter.FormatRef(composition.Source.Source, root.Node.Type)}.");
+            code.AppendLine("/// </summary>");
         }
-        
-        code.AppendLine("/// </para>");
-        if (!root.IsPublic)
-        {
-            return;
-        }
-        
-        code.AppendLine("/// <example>");
-        code.AppendLine($"/// This example shows how to get an instance of type {formatter.FormatRef(composition.Source.Source, root.Node.Type)}:");
-        code.AppendLine("/// <code>");
-        code.AppendLine($"/// {(composition.TotalDisposablesCount == 0 ? "" : "using ")}var composition = new {composition.Source.Source.Name.ClassName}({string.Join(", ", composition.Args.Where(i => i.Node.Arg?.Source.Kind == ArgKind.Class).Select(arg => arg.VariableDeclarationName))});");
-        code.AppendLine($"/// var instance = composition.{formatter.Format(root)};");
-        code.AppendLine("/// </code>");
-        code.AppendLine("/// </example>");
-        code.AppendLine("/// </summary>");
     }
 }

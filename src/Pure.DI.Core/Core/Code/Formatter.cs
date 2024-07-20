@@ -1,11 +1,26 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
+#pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.Core.Code;
 
-internal class Formatter(
-    ITypeResolver typeResolver,
-    IComments comments)
+internal class Formatter(IComments comments)
     : IFormatter
 {
+#if ROSLYN4_8_OR_GREATER
+    private static readonly SymbolDisplayFormat RefFormat = new(
+        genericsOptions:
+            SymbolDisplayGenericsOptions.IncludeTypeParameters,
+        typeQualificationStyle:
+            SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
+        memberOptions:
+            SymbolDisplayMemberOptions.IncludeType |
+            SymbolDisplayMemberOptions.IncludeContainingType,
+        miscellaneousOptions:
+            SymbolDisplayMiscellaneousOptions.ExpandValueTuple |
+            SymbolDisplayMiscellaneousOptions.UseSpecialTypes |
+            SymbolDisplayMiscellaneousOptions.ExpandNullable
+    );
+#endif
+    
     public string Format(Root root)
     {
         var sb = new StringBuilder();
@@ -43,7 +58,7 @@ internal class Formatter(
         {
             sb.Append('{');
             sb.Append(string.Join(", ", typeArgs.Select(i => i.Name)));
-            sb.Append('}');    
+            sb.Append('}');
         }
             
         sb.Append('(');
@@ -52,13 +67,18 @@ internal class Formatter(
         return FormatRef(sb.ToString());
     }
     
-    public string FormatRef(string text) =>
-        $"<see cref=\"{text}\"/>";
+    public string FormatRef(string text)
+    {
+        return $"<see cref=\"{text}\"/>";
+    }
 
-    public string FormatRef(MdSetup setup, ITypeSymbol type) =>
-        FormatRef(
-            comments.Escape(
-                typeResolver.Resolve(setup, type).Name
-                    .Replace('<', '{')
-                    .Replace('>', '}')));
+    public string FormatRef(MdSetup setup, ITypeSymbol type)
+    {
+#if ROSLYN4_8_OR_GREATER
+        var originalDefinitionTypeName = type.OriginalDefinition.ToDisplayString(NullableFlowState.None, RefFormat);
+        return FormatRef(comments.Escape(originalDefinitionTypeName.Replace('<', '{').Replace('>', '}')));
+#else
+        return comments.Escape(type.OriginalDefinition.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.MinimallyQualifiedFormat));
+#endif
+    }
 }

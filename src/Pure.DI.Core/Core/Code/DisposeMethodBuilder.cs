@@ -125,7 +125,7 @@ internal sealed class DisposeMethodBuilder
             code.AppendLine();
             code.AppendLine("/// <summary>");
             code.AppendLine("/// Implement this partial method to handle the exception on async disposing.");
-            code.AppendLine("/// <summary>");
+            code.AppendLine("/// </summary>");
             code.AppendLine("/// <param name=\"asyncDisposableInstance\">The disposable instance.</param>");
             code.AppendLine("/// <param name=\"exception\">Exception occurring during disposal.</param>");
             code.AppendLine("/// <typeparam name=\"T\">The actual type of instance being disposed of.</typeparam>");
