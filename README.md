@@ -846,7 +846,7 @@ Then documentation for the composition root:
 Install the DI template [Pure.DI.Templates](https://www.nuget.org/packages/Pure.DI.Templates)
 
 ```shell
-dotnet new -i Pure.DI.Templates
+dotnet new install Pure.DI.Templates
 ```
 
 Create a "Sample" console application from the template *__di__*
@@ -955,6 +955,13 @@ If you are using the Rider IDE, it already has a set of configurations to run th
 ### Contribution Prerequisites
 
 Installed [.NET SDK 8.0](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+
+### Additional resources:
+
+DotNext video
+
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=nrp9SH-gLqg" target="_blank"><img src="http://img.youtube.com/vi/nrp9SH-gLqg/0.jpg"
+alt="DotNext Pure.DI" width="640" border="10"/></a>
 
 
 ## Benchmarks
