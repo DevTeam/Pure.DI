@@ -8,12 +8,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="CSharpInteractive" Version="1.1.0-beta11" />
+        <PackageReference Include="CSharpInteractive" Version="1.1.0" />
         <PackageReference Include="Pure.DI" Version="$(InternalVersion)">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Immutype" Version="1.0.14">
+        <PackageReference Include="Immutype" Version="1.0.15">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
