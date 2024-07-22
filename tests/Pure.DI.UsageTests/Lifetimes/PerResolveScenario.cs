@@ -2,7 +2,7 @@
 $v=true
 $p=2
 $d=PerResolve
-$h=The _PerResolve_ lifetime guarantees that there will be a single instance of the dependency for each root of the composition.
+$h=The _PerResolve_ lifetime ensures that there will be one instance of the dependency for each composition root instance.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

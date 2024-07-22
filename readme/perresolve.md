@@ -2,7 +2,7 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Lifetimes/PerResolveScenario.cs)
 
-The _PerResolve_ lifetime guarantees that there will be a single instance of the dependency for each root of the composition.
+The _PerResolve_ lifetime ensures that there will be one instance of the dependency for each composition root instance.
 
 
 ```c#

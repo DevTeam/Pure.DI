@@ -2,7 +2,7 @@
 $v=true
 $p=3
 $d=PerBlock
-$h=The _PreBlock_ lifetime does not guarantee that there will be a single instance of the dependency for each root of the composition, but is useful to reduce the number of instances of type.
+$h=The _PreBlock_ lifetime does not guarantee that there will be a single dependency instance for each instance of the composition root (as for the _PreResolve_ lifetime), but is useful for reducing the number of instances of a type.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

@@ -2,7 +2,7 @@
 $v=true
 $p=0
 $d=Transient
-$h=The _Transient _ lifetime specifies to create a new dependency instance each time. It is the default lifetime and can be omitted.
+$h=The _Transient_ lifetime specifies to create a new dependency instance each time. It is the default lifetime and can be omitted.
 $f=The _Transient_ lifetime is the safest and is used by default. Yes, its widespread use can cause a lot of memory traffic, but if there are doubts about thread safety, the _Transient_ lifetime is preferable because each consumer has its own instance of the dependency. The following nuances should be considered when choosing the _Transient_ lifetime:
 $f=
 $f=- There will be unnecessary memory overhead that could be avoided.
