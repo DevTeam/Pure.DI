@@ -38,8 +38,6 @@ Pure.DI is not a framework or library, but a source code generator for creating 
   >_Pure.DI_ already [supports](#base-class-library) many of [BCL types](https://docs.microsoft.com/en-us/dotnet/standard/framework-libraries#base-class-libraries) like `Array`, `IEnumerable<T>`, `IList<T>`, `IReadOnlyCollection<T>`, `IReadOnlyList<T>`, `ISet<T>`, `IProducerConsumerCollection<T>`, `ConcurrentBag<T>`, `Func<T>`, `ThreadLocal`, `ValueTask<T>`, `Task<T>`, `MemoryPool<T>`, `ArrayPool<T>`, `ReadOnlyMemory<T>`, `Memory<T>`, `ReadOnlySpan<T>`, `Span<T>`, `IComparer<T>`, `IEqualityComparer<T>` and etc. without any extra effort.
 - [X] Good for building libraries or frameworks where resource consumption is particularly critical.
   >Its high performance, zero memory consumption/preparation overhead, and lack of dependencies make it ideal for building libraries and frameworks.
-
-This project uses [C# interactive](https://github.com/DevTeam/csharp-interactive) build automation system for .NET.
 ![](di.gif)
 
 ## Schrödinger's cat will demonstrate how it all works [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](samples/ShroedingersCat)
@@ -166,10 +164,10 @@ class Program(IBox<ICat> box)
 }
 ```
 
-The full analog of this application with top-level statements can be found [here](samples/ShroedingersCatTopLevelStatements).
-
 > [!TIP]
 > _Pure.DI_ creates efficient code in a pure DI paradigm, using only basic language constructs as if you were writing code by hand. This allows you to take full advantage of Dependency Injection everywhere and always, without any compromise!
+
+The full analog of this application with top-level statements can be found [here](samples/ShroedingersCatTopLevelStatements).
 
 <details>
 <summary>Just try!</summary>
@@ -190,7 +188,10 @@ cd ./Pure.DI.Example
 dotnet run
 ```
 
+![](docs/icon.png)
+
 </details>
+
 
 ## Examples
 
@@ -943,6 +944,13 @@ For example:
 ```
 
 If you are using the Rider IDE, it already has a set of configurations to run these commands.
+
+> [!TIP]
+> This project uses [C# interactive](https://github.com/DevTeam/csharp-interactive) build automation system for .NET
+>
+> ![](https://raw.githubusercontent.com/DevTeam/csharp-interactive/master/docs/icon.ico)
+>
+> This tool helps to make .NET builds more efficient.
 
 ### Contribution Prerequisites
 
