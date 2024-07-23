@@ -96,10 +96,10 @@ If you specify this value, the class will not be generated, but this setup can b
 
 ```c#
 DI.Setup("BaseComposition", CompositionKind.Internal)
-    .Bind<IDependency>().To<Dependency>();
+    .Bind().To<Dependency>();
 
 DI.Setup("Composition").DependsOn("BaseComposition")
-    .Bind<IService>().To<Service>();    
+    .Bind().To<Service>();    
 ```
 
 If the _CompositionKind.Public_ flag is set in the composition setup, it can also be the base for other compositions, as in the example above.
@@ -134,10 +134,7 @@ In this case, the constructor with arguments is as follows:
 public Composition(string name, int id) { ... }
 ```
 
-and there is no default constructor. 
-
-> [!IMPORTANT]
-> It is important to remember that only those arguments that are used in the object graph will appear in the constructor. Arguments that are not involved cannot be defined, as they are omitted from the constructor parameters to save resources.
+and there is no default constructor. It is important to remember that only those arguments that are used in the object graph will appear in the constructor. Arguments that are not involved cannot be defined, as they are omitted from the constructor parameters to save resources.
 
 ### Scope constructor
 
@@ -150,7 +147,7 @@ This constructor creates a composition instance for the new scope. This allows `
 
 ### Public Composition Roots
 
-To create an object graph quickly and conveniently, a set of properties (or a methods) is formed. These properties are here called roots of compositions. The type of a property/method is the type of the root object created by the composition. Accordingly, each invocation of a property/method leads to the creation of a composition with a root element of this type.
+To create an object graph quickly and conveniently, a set of properties (or a methods) is formed. These properties/methods are here called roots of compositions. The type of a property/method is the type of the root object created by the composition. Accordingly, each invocation of a property/method leads to the creation of a composition with a root element of this type.
 
 ```c#
 DI.Setup("Composition")
@@ -221,15 +218,28 @@ var composition = new Composition();
 composition.Resolve<IService>();
 ```
 
-This is a [not recommended](https://blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern/) way to create composition roots. To control the generation of these methods, see the [Resolve](#resolve-hint) hint.
+This is a [not recommended](https://blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern/) way to create composition roots because _Resolve_ methods have a number of disadvantages:
+- They provide access to an unlimited set of dependencies.
+- Their use can potentially lead to runtime exceptions, for example, when the corresponding root has not been defined.
+- Lead to performance degradation because they search for the root of a composition based on its type.
 
-### Dispose
+To control the generation of these methods, see the [Resolve](#resolve-hint) hint.
 
-Provides a mechanism to release unmanaged resources. This method is generated only if the composition contains at least one singleton instance that implements the [IDisposable](https://learn.microsoft.com/en-us/dotnet/api/system.idisposable) interface. To dispose of all created singleton objects, the `Dispose()` method of the composition should be called:
+### Dispose and DisposeAsync
+
+Provides a mechanism to release unmanaged resources. These methods are generated only if the composition contains at least one singleton/scoped instance that implements either the [IDisposable](https://learn.microsoft.com/en-us/dotnet/api/system.idisposable) and/or [DisposeAsync](https://learn.microsoft.com/en-us/dotnet/api/system.iasyncdisposable.disposeasync) interface. The `Dispose()` or `DisposeAsync()` method of the composition should be called to dispose of all created singleton/scoped objects:
 
 ```c#
 using var composition = new Composition();
 ```
+
+or
+
+```c#
+await using var composition = new Composition();
+```
+
+To dispose objects of other lifetimes please see [this](readme/tracking-disposable-instances-per-a-composition-root.md) or [this](readme/tracking-disposable-instances-in-delegates.md) examples.
 
 </details>
 
@@ -254,11 +264,17 @@ In addition, setup hints can be commented out before the _Setup_ method as `hint
 // Resolve = Off
 // ThreadSafe = Off
 DI.Setup("Composition")
-    .Hint(Hint.ToString, "On")
     ...
 ```
 
-Both approaches can be used in combination with each other.
+Both approaches can be mixed:
+
+```c#
+// Resolve = Off
+DI.Setup("Composition")
+    .Hint(Hint.ThreadSafe, "Off")
+    ...
+```
 
 | Hint                                                                                                                               | Values                                     | C# version | Default   |
 |------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------|------------|-----------|
@@ -310,10 +326,8 @@ Determines whether to use the _OnNewInstance_ partial method. By default, this p
 ```c#
 internal partial class Composition
 {
-    partial void OnNewInstance<T>(ref T value, object? tag, object lifetime)            
-    {
-        Console.WriteLine($"'{typeof(T)}'('{tag}') created.");            
-    }
+    partial void OnNewInstance<T>(ref T value, object? tag, object lifetime) =>
+        Console.WriteLine($"'{typeof(T)}'('{tag}') created.");
 }
 ```
 
@@ -661,13 +675,27 @@ If you are using the Rider IDE, it already has a set of configurations to run th
 >
 > This tool helps to make .NET builds more efficient.
 
-### Contribution Prerequisites
+Contribution Prerequisites:
 
 Installed [.NET SDK 8.0](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 
-### Additional resources:
+### Additional resources
 
-DotNext video
-
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=nrp9SH-gLqg" target="_blank"><img src="http://img.youtube.com/vi/nrp9SH-gLqg/0.jpg"
+> RU DotNext video
+> 
+> <a href="http://www.youtube.com/watch?feature=player_embedded&v=nrp9SH-gLqg" target="_blank"><img src="http://img.youtube.com/vi/nrp9SH-gLqg/0.jpg"
 alt="DotNext Pure.DI" width="640" border="10"/></a>
+
+> [C# interactive](https://github.com/DevTeam/csharp-interactive) build automation system for .NET
+
+Examples of how to set up a composition
+- [Pure.DI](https://github.com/DevTeam/Pure.DI/blob/master/src/Pure.DI.Core/Generator.Composition.cs)
+- [C# interactive](https://github.com/DevTeam/csharp-interactive/blob/master/CSharpInteractive/Composition.cs)
+- [Immutype](https://github.com/DevTeam/Immutype/blob/master/Immutype/Composition.cs)
+- [MSBuild logger](https://github.com/JetBrains/teamcity-msbuild-logger/blob/master/TeamCity.MSBuild.Logger/Composition.cs)
+
+Articles
+- [RU New in Pure.DI](https://habr.com/ru/articles/808297/)
+- [RU Pure.DI v2.1](https://habr.com/ru/articles/795809/)
+- [RU Pure.DI next step](https://habr.com/ru/articles/554236/)
+- [RU Pure.DI for .NET](https://habr.com/ru/articles/552858/)

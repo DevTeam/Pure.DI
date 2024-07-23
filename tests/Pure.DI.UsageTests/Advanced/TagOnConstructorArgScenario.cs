@@ -16,7 +16,7 @@ $f=> Each potentially injectable argument, property, or field contains an additi
 // ReSharper disable UnusedTypeParameter
 #pragma warning disable CS9113 // Parameter is unread.
 // {
-namespace Pure.DI.UsageTests.Advanced.OnConstructorArgScenario;
+namespace Pure.DI.UsageTests.Advanced.TagOnConstructorArgScenario;
 
 // }
 
