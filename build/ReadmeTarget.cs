@@ -14,7 +14,8 @@ internal class ReadmeTarget(
     : IInitializable, ITarget<int>
 {
     private const string ReadmeDir = "readme";
-    private const string ReadmeHeaderFile = "README.md";
+    private const string CommonReadmeFile = "README.md";
+    private const string HeaderTemplateFile = "HEaderTemplate.md";
     private const string ReadmeTemplateFile = "ReadmeTemplate.md";
     private const string FooterTemplateFile = "FooterTemplate.md";
     private const string ReadmeFile = "README.md";
@@ -43,7 +44,7 @@ internal class ReadmeTarget(
 
     public Task InitializeAsync() => commands.Register(
         this,
-        $"Generates {ReadmeHeaderFile}",
+        $"Generates {CommonReadmeFile}",
         "readme",
         "r");
 
@@ -81,8 +82,10 @@ internal class ReadmeTarget(
         new DotNetTest(usageTestsProjects).Run();
 
         await using var readmeWriter = File.CreateText(ReadmeFile);
+        
+        await AddContent(HeaderTemplateFile, readmeWriter);
 
-        await AddContent(ReadmeHeaderFile, readmeWriter, "docs");
+        await AddContent(CommonReadmeFile, readmeWriter, "docs");
 
         await AddContent(ReadmeTemplateFile, readmeWriter);
 
