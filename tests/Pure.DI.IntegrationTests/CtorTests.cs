@@ -32,7 +32,7 @@ namespace Sample
     {
         public ShroedingersCat(int id) { }
 
-        internal ShroedingersCat() { }        
+        internal ShroedingersCat() { }
     }
 
     static class Setup
@@ -41,7 +41,7 @@ namespace Sample
         {
             DI.Setup("Composition")
                 .Bind<ICat>().To<ShroedingersCat>()
-                .Bind<IBox<TT>>().To<CardboardBox<TT>>()                
+                .Bind<IBox<TT>>().To<CardboardBox<TT>>() 
                 .Root<Program>("Root");
         }
     }
@@ -59,7 +59,7 @@ namespace Sample
             var composition = new Composition();
             composition.Root.Run();
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -103,7 +103,7 @@ namespace Sample
         {
             DI.Setup("Composition")
                 .Bind<ICat>().To<ShroedingersCat>()
-                .Bind<IBox<TT>>().To<CardboardBox<TT>>()                
+                .Bind<IBox<TT>>().To<CardboardBox<TT>>() 
                 .Root<Program>("Root");
         }
     }
@@ -121,7 +121,7 @@ namespace Sample
             var composition = new Composition();
             composition.Root.Run();
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -159,7 +159,7 @@ namespace Sample
         public ShroedingersCat(int id = 99)
         {
             Console.WriteLine(id);
-        }                
+        }
     }
 
     static class Setup
@@ -168,7 +168,7 @@ namespace Sample
         {
             DI.Setup("Composition")
                 .Bind<ICat>().To<ShroedingersCat>()
-                .Bind<IBox<TT>>().To<CardboardBox<TT>>()                
+                .Bind<IBox<TT>>().To<CardboardBox<TT>>() 
                 .Root<Program>("Root");
         }
     }
@@ -184,9 +184,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();
-            var program = composition.Root;            
+            var program = composition.Root;
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -225,7 +225,7 @@ namespace Sample
         public ShroedingersCat(int id = 99)
         {
             Console.WriteLine(id);
-        }                
+        }
 
         internal ShroedingersCat(string name)
         {
@@ -240,7 +240,7 @@ namespace Sample
             DI.Setup("Composition")
                 .Bind<string>().To(_ => "Murka")
                 .Bind<ICat>().To<ShroedingersCat>()
-                .Bind<IBox<TT>>().To<CardboardBox<TT>>()                
+                .Bind<IBox<TT>>().To<CardboardBox<TT>>() 
                 .Root<Program>("Root");
         }
     }
@@ -256,9 +256,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();
-            var program = composition.Root;            
+            var program = composition.Root;
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -309,12 +309,12 @@ namespace Sample
         public ShroedingersCat(int id = 99)
         {
             Console.WriteLine(id);
-        }                
+        }
 
         internal ShroedingersCat(string name)
         {
             Console.WriteLine(name);
-        }        
+        }
     }
 
     static class Setup
@@ -324,7 +324,7 @@ namespace Sample
             DI.Setup("Composition")
                 .Bind<string>().To(_ => "Murka")
                 .Bind<ICat>().To<ShroedingersCat>()
-                .Bind<IBox<TT>>().To<CardboardBox<TT>>()                
+                .Bind<IBox<TT>>().To<CardboardBox<TT>>() 
                 .Root<Program>("Root");
         }
     }
@@ -340,9 +340,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();
-            var program = composition.Root;            
+            var program = composition.Root;
         }
-    }                
+    }
 }
 """.RunAsync();
 

@@ -21,7 +21,7 @@ namespace Sample
         private static void SetupComposition()
         {
             DI.Setup("Composition")
-                .Arg<string>("serviceName")           
+                .Arg<string>("serviceName")
                 .Root<string>("ServiceName");
         }
     }
@@ -31,9 +31,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition("Some Name");
-            Console.WriteLine(composition.ServiceName);                               
+            Console.WriteLine(composition.ServiceName);
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -84,8 +84,8 @@ namespace Sample
         {
             DI.Setup("Composition")
                 .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
-                .Bind<IService>().To<Service>()    
-                .Arg<string>("serviceName")           
+                .Bind<IService>().To<Service>()
+                .Arg<string>("serviceName")
                 .Root<IService>("Service");
         }
     }
@@ -95,9 +95,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition("Some Name");
-            Console.WriteLine(composition.Service.Name);                               
+            Console.WriteLine(composition.Service.Name);
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -148,8 +148,8 @@ namespace Sample
         {
             DI.Setup("Composition")
                 .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
-                .Bind<IService>().To<Service>()    
-                .Arg<string>("serviceName")           
+                .Bind<IService>().To<Service>()
+                .Arg<string>("serviceName")
                 .Root<IService>("Service");
         }
     }
@@ -159,9 +159,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition("Some Name");
-            Console.WriteLine(composition.Service.Name);                               
+            Console.WriteLine(composition.Service.Name);
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -222,8 +222,8 @@ namespace Sample
         {
             DI.Setup("Composition")
                 .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
-                .Bind<IService>().To<Service>()    
-                .Arg<string>("serviceName")           
+                .Bind<IService>().To<Service>()
+                .Arg<string>("serviceName")
                 .Root<IService>("Service")
                 .Root<Service2>("Service2");
         }
@@ -234,10 +234,10 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition("Some Name");
-            Console.WriteLine(composition.Service.Name);                               
+            Console.WriteLine(composition.Service.Name);
             Console.WriteLine(composition.Service2.Name);
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -266,7 +266,7 @@ namespace Sample
 
         public Dependency(int id)
         { 
-            _id = id;            
+            _id = id;
         }
 
         public override string ToString() => _id.ToString();
@@ -302,8 +302,8 @@ namespace Sample
         {
             DI.Setup("Composition")
                 .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
-                .Bind<IService>().To<Service>()    
-                .Arg<string>("serviceName")           
+                .Bind<IService>().To<Service>()
+                .Arg<string>("serviceName")
                 .Arg<int>("id", 99)
                 .Arg<int>("depId")
                 .Root<IService>("Service");
@@ -315,9 +315,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition("Some Name", 37, 56);
-            Console.WriteLine(composition.Service.Name);                               
+            Console.WriteLine(composition.Service.Name);
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -497,11 +497,11 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition(-1, 1);
-            Console.WriteLine(composition.Root);                             
-            Console.WriteLine(composition.Root2);                             
-            Console.WriteLine(composition.Root3);                             
+            Console.WriteLine(composition.Root);
+            Console.WriteLine(composition.Root2);
+            Console.WriteLine(composition.Root3);
         }
-    }                
+    }
 }
 """.RunAsync(new Options { LanguageVersion = LanguageVersion.CSharp12 });
 

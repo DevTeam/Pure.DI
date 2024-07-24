@@ -33,9 +33,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition("Some Name");
-            Console.WriteLine(composition.ServiceName);                               
+            Console.WriteLine(composition.ServiceName);
         }
-    }                
+    }
 }
 """.RunAsync();
 

@@ -36,7 +36,7 @@ namespace Sample
         {
             DI.Setup(nameof(Composition))
                 .Hint(Hint.Resolve, "Off")
-                .Bind<IBox<TT>>().To<CardboardBox<TT>>()                
+                .Bind<IBox<TT>>().To<CardboardBox<TT>>() 
                 // Composition Root
                 .Root<IBox<TT>>("GetRoot");
         }
@@ -46,11 +46,11 @@ namespace Sample
     {
         public static void Main()
         {
-            var composition = new Composition();            
+            var composition = new Composition();
             var root = composition.GetRoot<int>();
             Console.WriteLine(root);
         }
-    }                
+    }
 }
 """.RunAsync(new Options(LanguageVersion.CSharp9));
 
@@ -90,7 +90,7 @@ namespace Sample
         void Setup()
         {
             DI.Setup(nameof(Composition))
-                .Bind<IBox<TT>>().To<CardboardBox<TT>>()                
+                .Bind<IBox<TT>>().To<CardboardBox<TT>>() 
                 // Composition Root
                 .Root<IBox<TT>>("GetRoot");
         }
@@ -100,11 +100,11 @@ namespace Sample
     {
         public static void Main()
         {
-            var composition = new Composition();            
+            var composition = new Composition();
             var root = composition.GetRoot<int>();
             Console.WriteLine(root);
         }
-    }                
+    }
 }
 """.RunAsync(new Options(LanguageVersion.CSharp9));
 
@@ -173,7 +173,7 @@ namespace Sample
             var someOtherService = composition.GetOtherService<string>();
             Console.WriteLine(someOtherService);
         }
-    }                
+    }
 }
 """.RunAsync(new Options(LanguageVersion.CSharp9));
 
@@ -233,11 +233,11 @@ namespace Sample
     {
         public static void Main()
         {
-            var composition = new Composition();            
+            var composition = new Composition();
             var root = composition.GetRoot<int>();
             Console.WriteLine(root);
         }
-    }                
+    }
 }
 """.RunAsync(new Options(LanguageVersion.CSharp9));
 
@@ -295,7 +295,7 @@ namespace Sample
         {
             DI.Setup(nameof(Composition))
                 .Hint(Hint.Resolve, "Off")
-                .Bind<IBox<TTDisposable, TTS>>().To<CardboardBox<TTDisposable, TTS>>()                
+                .Bind<IBox<TTDisposable, TTS>>().To<CardboardBox<TTDisposable, TTS>>() 
                 // Composition Root
                 .Root<IBox<TTDisposable, TTS>>("GetRoot");
         }
@@ -305,11 +305,11 @@ namespace Sample
     {
         public static void Main()
         {
-            var composition = new Composition();            
+            var composition = new Composition();
             var root = composition.GetRoot<Disposable, int>();
             Console.WriteLine(root);
         }
-    }                
+    }
 }
 """.RunAsync(new Options(LanguageVersion.CSharp9));
 
@@ -382,7 +382,7 @@ namespace Sample
             var service = composition.GetMyRoot<int, double>();
             Console.WriteLine(service);
         }
-    }                
+    }
 }
 """.RunAsync(new Options(LanguageVersion.CSharp9));
 
@@ -441,11 +441,11 @@ namespace Sample
     {
         public static void Main()
         {
-            var composition = new Composition();            
+            var composition = new Composition();
             var root = composition.GetRoot<string>();
             Console.WriteLine(root);
         }
-    }                
+    }
 }
 """.RunAsync(new Options(LanguageVersion.CSharp9));
 
@@ -530,10 +530,10 @@ namespace Sample
     {
         public static void Main()
         {
-            var composition = new Composition();            
+            var composition = new Composition();
             var root = composition.GetRoot<string>();
         }
-    }                
+    }
 }
 """
             .Replace("###CollectionType###", collectionType)
@@ -622,7 +622,7 @@ namespace Sample
         {
             new Composition().Pipeline.Run(7);
         }
-    }                
+    }
 }
 """.RunAsync(new Options(LanguageVersion.CSharp9));
 

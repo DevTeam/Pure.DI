@@ -44,7 +44,7 @@ namespace Sample
         void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>().Root<IService>(); 
-    }               
+    }       
 
     public class Program { public static void Main() { } }
 }
@@ -101,7 +101,7 @@ namespace Sample
         void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>(); 
-    }               
+    }       
 
     public class Program { public static void Main() { } }
 }
@@ -154,7 +154,7 @@ namespace Sample
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>()
             .Root<IService>("MyService"); 
-    }               
+    }       
 
     public class Program { public static void Main() { } }
 }
@@ -217,7 +217,7 @@ namespace Sample
         void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>().Root<IService>(); 
-    }               
+    }       
 
     public class Program { public static void Main() { } }
 }
@@ -274,7 +274,7 @@ namespace Sample
         void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IDependency>().To(_ => new Dependency())
             .Bind<IService>().To<Service>().Root<IService>(); 
-    }               
+    }       
 
     public class Program { public static void Main() { } }
 }
@@ -333,7 +333,7 @@ namespace Sample
             .Bind<IService>().To<Service>().Root<IService>(); 
     }
 
-    public class Program { public static void Main() { } }               
+    public class Program { public static void Main() { } }       
 }
 """.RunAsync();
 
@@ -393,7 +393,7 @@ namespace Sample
             Pure.DI.DI.Setup("Composition")
                 .Bind<IService>().To<Service>().Root<IService>();
         }  
-    }               
+    }       
 
     public class Program { public static void Main() { } }
 }
@@ -453,7 +453,7 @@ namespace Sample
             .Bind<IService>().To<Service>().Root<IService>("Root"); 
     }
 
-    public class Program { public static void Main() { } }               
+    public class Program { public static void Main() { } }       
 }
 """.RunAsync();
 
@@ -519,7 +519,7 @@ namespace Sample
             .Bind<IService>().To<Service>().Root<IService>();
     }
 
-    public class Program { public static void Main() { } }               
+    public class Program { public static void Main() { } }       
 }
 """.RunAsync();
 
@@ -578,7 +578,7 @@ namespace Sample
             .Bind<IService>().To<Service>().Root<IService>();
     }
 
-    public class Program { public static void Main() { } }               
+    public class Program { public static void Main() { } }       
 }
 """.RunAsync();
 
@@ -640,7 +640,7 @@ namespace Sample
             .Root<IService>();
     }
 
-    public class Program { public static void Main() { } }               
+    public class Program { public static void Main() { } }       
 }
 """.RunAsync();
 
@@ -711,7 +711,7 @@ namespace Sample
     {
         public static void Main()
         {
-            var composition = new Composition();            
+            var composition = new Composition();
 """ + resolveCode +
 """
         }
@@ -791,7 +791,7 @@ namespace Sample
             .Bind<IService>().To<Service>().Root<IService>(); 
     }
 
-    public class Program { public static void Main() { } }               
+    public class Program { public static void Main() { } }       
 }
 """.RunAsync();
 
@@ -848,7 +848,7 @@ namespace Sample
             .Bind<IService>().To<Service>().Root<IService>(); 
     }
 
-    public class Program { public static void Main() { } }               
+    public class Program { public static void Main() { } }       
 }
 """.RunAsync();
 
@@ -905,7 +905,7 @@ namespace Sample
             .Bind<IService>().To<Service>().Root<IService>(); 
     }
 
-    public class Program { public static void Main() { } }               
+    public class Program { public static void Main() { } }       
 }
 """.RunAsync();
 
@@ -958,7 +958,7 @@ namespace Sample
     internal partial class Composition
     {                   
         void Setup() => Pure.DI.DI.Setup("Composition")
-            .Bind<string>("MyStr").To(_ => "Abc")                        
+            .Bind<string>("MyStr").To(_ => "Abc")         
             .Bind<IDependency<TT>>().To(ctx => {
                 ctx.Inject<TT[]>(out var array); 
                 ctx.Inject<string>("MyStr", out var str);
@@ -968,7 +968,7 @@ namespace Sample
             .Bind<int[]>().To(_ => new int[] {1, 2, 3}); 
     }
 
-    public class Program { public static void Main() { } }               
+    public class Program { public static void Main() { } }       
 }
 """.RunAsync();
 
@@ -1054,7 +1054,7 @@ namespace Sample
             .Bind<IService>().To<Service>().Root<IService>(); 
     }
 
-    public class Program { public static void Main() { } }               
+    public class Program { public static void Main() { } }       
 }
 """.RunAsync();
 
@@ -1108,7 +1108,7 @@ namespace Sample
             .Bind<IService>().To<Service>().Root<IService>(); 
     }
 
-    public class Program { public static void Main() { } }               
+    public class Program { public static void Main() { } }       
 }
 """.RunAsync();
 
@@ -1170,7 +1170,7 @@ namespace Sample
             .Bind<IService>().To<Service>().Root<IService>(); 
     }
 
-    public class Program { public static void Main() { } }               
+    public class Program { public static void Main() { } }       
 }
 """.RunAsync();
 
@@ -1224,7 +1224,7 @@ namespace Sample
             .Bind<IService>().To<Service>().Root<IService>(); 
     }
 
-    public class Program { public static void Main() { } }               
+    public class Program { public static void Main() { } }       
 }
 """.RunAsync();
 
@@ -1290,7 +1290,7 @@ namespace Sample
             .Root<IService>("Service"); 
     }
 
-    public class Program { public static void Main() { } }               
+    public class Program { public static void Main() { } }       
 }
 """.RunAsync();
 
@@ -1333,7 +1333,7 @@ namespace Sample
 
         public Dependency(int id)
         { 
-            _id = id;            
+            _id = id;
         }
 
         public override string ToString() => _id.ToString();
@@ -1369,8 +1369,8 @@ namespace Sample
         {
             DI.Setup("Composition")
                 .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
-                .Bind<IService>().To<Service>()    
-                .Arg<string>("serviceName")           
+                .Bind<IService>().To<Service>()
+                .Arg<string>("serviceName")
                 .Arg<int>("id", 99)
                 .Arg<int>("depId")
                 .Root<IService>("Service");
@@ -1382,9 +1382,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition("Some Name", 37, 56);
-            Console.WriteLine(composition.Service.Name);                               
+            Console.WriteLine(composition.Service.Name);
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -1457,7 +1457,7 @@ namespace Sample
         private static void Setup2() => Pure.DI.DI.Setup("Composition2")
             .Bind<IDependency2>().To<Dependency2>()
             .Bind<IService2>().To<Service2>().Root<IService2>();
-    }               
+    }       
 
     public class Program { public static void Main() { } }
 }
@@ -1508,7 +1508,7 @@ namespace Sample
 
     class Service: IService 
     {
-        public Service(System.Collections.Generic.IEnumerable<IDependency> deps) { }                            
+        public Service(System.Collections.Generic.IEnumerable<IDependency> deps) { }    
     }
 
     static class Setup
@@ -1529,9 +1529,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();
-            var service = composition.Service;                                                     
+            var service = composition.Service;                              
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -1611,7 +1611,7 @@ namespace Sample
             .Bind<IService>().To<Service>()
             .Root<IService>("Root")
             .Bind<IService>().To<SimpleService>(); 
-    }               
+    }       
 
     public class Program { public static void Main() { } }
 }

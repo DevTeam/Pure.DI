@@ -58,7 +58,7 @@ namespace Sample
             var composition = new Composition();
             var root = composition.Root;
         }
-    }                
+    }
 }
 """.RunAsync(new Options(LanguageVersion.CSharp10));
 
@@ -119,7 +119,7 @@ namespace Sample
             var composition = new Composition();
             var root = composition.Root;
         }
-    }                
+    }
 }
 """.RunAsync(new Options(LanguageVersion.CSharp10));
 
@@ -182,9 +182,9 @@ namespace Sample
         {
             var composition = new Composition();
             var tuple = composition.Root;
-            Console.WriteLine(tuple);            
+            Console.WriteLine(tuple);
         }
-    }                
+    }
 }
 """.RunAsync(new Options(LanguageVersion.CSharp10));
 

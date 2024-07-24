@@ -36,7 +36,7 @@ namespace Sample
             var service = composition.Resolve<IDependency>();
             Console.WriteLine(service.GetType() == typeof(Dependency));
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -79,7 +79,7 @@ namespace Sample
             var service = composition.Root;
             Console.WriteLine(service.GetType() == typeof(Dependency));
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -122,7 +122,7 @@ namespace Sample
             var service = composition.Root();
             Console.WriteLine(service.GetType() == typeof(Dependency));
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -169,7 +169,7 @@ namespace Sample
             Console.WriteLine(composition.Root == composition.Root2);
             Console.WriteLine(composition.Root != composition.Root3);
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -217,7 +217,7 @@ namespace Sample
             Console.WriteLine(composition.Resolve<IDependency>("RootTag") == composition.Root2);
             Console.WriteLine(composition.Resolve<IDependency>("RootTag") != composition.Root3);
         }
-    }                
+    }
 }
 """.RunAsync(new Options { LanguageVersion = LanguageVersion.CSharp12 });
 

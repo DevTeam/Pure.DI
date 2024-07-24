@@ -23,7 +23,7 @@ namespace Sample
 
     interface IService
     {
-        IDependency Dep { get; }        
+        IDependency Dep { get; }
     }
 
     class Service: IService 
@@ -31,7 +31,7 @@ namespace Sample
         private Func<IDependency> _depFactory;
         public Service(Func<IDependency> depFactory)
         { 
-            _depFactory = depFactory;           
+            _depFactory = depFactory;
         }
 
         public IDependency Dep => _depFactory();
@@ -44,7 +44,7 @@ namespace Sample
             // FormatCode = On
             DI.Setup("Composition")
                 .Bind<IDependency>().To<Dependency>()
-                .Bind<IService>().To<Service>()    
+                .Bind<IService>().To<Service>()
                 .Root<IService>("Service");
         }
     }
@@ -55,9 +55,9 @@ namespace Sample
         {
             var composition = new Composition();
             var service = composition.Service;
-            Console.WriteLine(service.Dep != service.Dep);                               
+            Console.WriteLine(service.Dep != service.Dep);
         }
-    }                
+    }
 }
 """.RunAsync(new Options(languageVersion));
 
@@ -84,7 +84,7 @@ namespace Sample
 
     interface IService
     {
-        IDependency Dep { get; }        
+        IDependency Dep { get; }
     }
 
     class Service: IService 
@@ -92,7 +92,7 @@ namespace Sample
         private Func<IDependency> _depFactory;
         public Service(Func<IDependency> depFactory)
         { 
-            _depFactory = depFactory;           
+            _depFactory = depFactory;
         }
 
         public IDependency Dep => _depFactory();
@@ -104,7 +104,7 @@ namespace Sample
         {
             DI.Setup("Composition")
                 .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
-                .Bind<IService>().To<Service>()    
+                .Bind<IService>().To<Service>()
                 .Root<IService>("Service");
         }
     }
@@ -115,9 +115,9 @@ namespace Sample
         {
             var composition = new Composition();
             var service = composition.Service;
-            Console.WriteLine(service.Dep == service.Dep);                               
+            Console.WriteLine(service.Dep == service.Dep);
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -145,7 +145,7 @@ namespace Sample
 
     interface IService
     {
-        IDependency Dep { get; }        
+        IDependency Dep { get; }
     }
 
     class Service: IService 
@@ -154,7 +154,7 @@ namespace Sample
 
         public Service(Func<IDependency> depFactory)
         { 
-            _depFactory = depFactory;           
+            _depFactory = depFactory;
         }
 
         public IDependency Dep => _depFactory();
@@ -168,7 +168,7 @@ namespace Sample
         public Consumer(Func<IService> serviceFactory, Func<IDependency> depFactory)
         { 
             _serviceFactory = serviceFactory;
-            _depFactory = depFactory;           
+            _depFactory = depFactory;
         }
 
         public IService Service => _serviceFactory();
@@ -182,7 +182,7 @@ namespace Sample
             // FormatCode = On
             DI.Setup("Composition")
                 .Bind<IDependency>().As(Lifetime.PerResolve).To<Dependency>()
-                .Bind<IService>().To<Service>()    
+                .Bind<IService>().To<Service>()
                 .Root<Consumer>("Consumer");
         }
     }
@@ -195,9 +195,9 @@ namespace Sample
             var consumer = composition.Consumer;
             var service = consumer.Service;
             Console.WriteLine(service.Dep == service.Dep);
-            Console.WriteLine(consumer.Dep == service.Dep);                               
+            Console.WriteLine(consumer.Dep == service.Dep);
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -224,7 +224,7 @@ namespace Sample
 
     interface IService
     {
-        IDependency Dep { get; }        
+        IDependency Dep { get; }
     }
 
     class Service: IService 
@@ -232,7 +232,7 @@ namespace Sample
         private Func<IDependency> _depFactory;
         public Service([Tag("Abc")] Func<IDependency> depFactory)
         { 
-            _depFactory = depFactory;           
+            _depFactory = depFactory;
         }
 
         public IDependency Dep => _depFactory();
@@ -245,7 +245,7 @@ namespace Sample
             // FormatCode = On
             DI.Setup("Composition")
                 .Bind<IDependency>("Abc").To<Dependency>()
-                .Bind<IService>().To<Service>()    
+                .Bind<IService>().To<Service>()
                 .Root<IService>("Service");
         }
     }
@@ -256,9 +256,9 @@ namespace Sample
         {
             var composition = new Composition();
             var service = composition.Service;
-            Console.WriteLine(service.Dep != service.Dep);                               
+            Console.WriteLine(service.Dep != service.Dep);
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -285,7 +285,7 @@ namespace Sample
 
     interface IService
     {
-        IDependency Dep { get; }        
+        IDependency Dep { get; }
     }
 
     class Service: IService 
@@ -293,7 +293,7 @@ namespace Sample
         private Func<IDependency> _depFactory;
         public Service(Func<Func<Func<IDependency>>> depFactory)
         { 
-            _depFactory = depFactory()();           
+            _depFactory = depFactory()();
         }
 
         public IDependency Dep => _depFactory();
@@ -306,7 +306,7 @@ namespace Sample
             // FormatCode = On
             DI.Setup("Composition")
                 .Bind<IDependency>().To<Dependency>()
-                .Bind<IService>().To<Service>()    
+                .Bind<IService>().To<Service>()
                 .Root<IService>("Service");
         }
     }
@@ -317,9 +317,9 @@ namespace Sample
         {
             var composition = new Composition();
             var service = composition.Service;
-            Console.WriteLine(service.Dep != service.Dep);                               
+            Console.WriteLine(service.Dep != service.Dep);
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -348,7 +348,7 @@ namespace Sample
 
     interface IService
     {
-        IDependency Dep { get; }        
+        IDependency Dep { get; }
     }
 
     class Service: IService 
@@ -356,7 +356,7 @@ namespace Sample
         private System.Collections.Generic.IEnumerable<IDependency> _depFactory;
         public Service(Func<Func<System.Collections.Generic.IEnumerable<IDependency>>> depFactory)
         { 
-            _depFactory = depFactory()();           
+            _depFactory = depFactory()();
         }
 
         public IDependency Dep => _depFactory.First();
@@ -368,7 +368,7 @@ namespace Sample
         {
             DI.Setup("Composition")
                 .Bind<IDependency>().To<Dependency>()
-                .Bind<IService>().To<Service>()    
+                .Bind<IService>().To<Service>()
                 .Root<IService>("Service");
         }
     }
@@ -379,9 +379,9 @@ namespace Sample
         {
             var composition = new Composition();
             var service = composition.Service;
-            Console.WriteLine(service.Dep != service.Dep);                               
+            Console.WriteLine(service.Dep != service.Dep);
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -410,7 +410,7 @@ namespace Sample
 
     interface IService
     {
-        IDependency Dep { get; }        
+        IDependency Dep { get; }
     }
 
     class Service: IService 
@@ -418,7 +418,7 @@ namespace Sample
         private IDependency[] _depFactory;
         public Service(Func<Func<IDependency[]>> depFactory)
         { 
-            _depFactory = depFactory()();           
+            _depFactory = depFactory()();
         }
 
         public IDependency Dep => _depFactory[0];
@@ -431,7 +431,7 @@ namespace Sample
             // FormatCode = On
             DI.Setup("Composition")
                 .Bind<IDependency>().To<Dependency>()
-                .Bind<IService>().To<Service>()    
+                .Bind<IService>().To<Service>()
                 .Root<IService>("Service");
         }
     }
@@ -440,9 +440,9 @@ namespace Sample
     {
         public static void Main()
         {
-            var composition = new Composition();                                                       
+            var composition = new Composition(); 
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -470,7 +470,7 @@ namespace Sample
 
     interface IService
     {
-        IDependency Dep { get; }        
+        IDependency Dep { get; }
     }
 
     class Service: IService 
@@ -478,7 +478,7 @@ namespace Sample
         private System.Collections.Generic.IEnumerable<IDependency> _depFactory;
         public Service(Func<(System.Collections.Generic.IEnumerable<IDependency>, System.Collections.Generic.IEnumerable<IDependency>)> depFactory)
         { 
-            _depFactory = depFactory().Item1;           
+            _depFactory = depFactory().Item1;
         }
 
         public IDependency Dep => _depFactory.First();
@@ -490,7 +490,7 @@ namespace Sample
         {
             DI.Setup("Composition")
                 .Bind<IDependency>().To<Dependency>()
-                .Bind<IService>().To<Service>()    
+                .Bind<IService>().To<Service>()
                 .Root<IService>("Service");
         }
     }
@@ -501,9 +501,9 @@ namespace Sample
         {
             var composition = new Composition();
             var service = composition.Service;
-            Console.WriteLine(service.Dep != service.Dep);                               
+            Console.WriteLine(service.Dep != service.Dep);
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -540,7 +540,7 @@ namespace Sample
 
     interface IService
     {
-        IDependency Dep { get; }        
+        IDependency Dep { get; }
     }
 
     class Service: IService 
@@ -548,7 +548,7 @@ namespace Sample
         private Func<string, IDependency> _depFactory;
         public Service([Tag(typeof(string))] Func<string, IDependency> depFactory)
         { 
-            _depFactory = depFactory;           
+            _depFactory = depFactory;
         }
 
         public IDependency Dep => _depFactory("Xyz");
@@ -576,9 +576,9 @@ namespace Sample
         {
             var composition = new Composition();
             var service = composition.Service;
-            Console.WriteLine(service.Dep.ToString());                               
+            Console.WriteLine(service.Dep.ToString());
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -615,7 +615,7 @@ namespace Sample
 
     interface IService
     {
-        IDependency Dep { get; }        
+        IDependency Dep { get; }
     }
 
     class Service: IService 
@@ -623,7 +623,7 @@ namespace Sample
         private Func<string, IDependency> _depFactory;
         public Service([Tag(typeof(string))] Func<string, IDependency> depFactory)
         { 
-            _depFactory = depFactory;           
+            _depFactory = depFactory;
         }
 
         public IDependency Dep => _depFactory("Xyz");
@@ -651,9 +651,9 @@ namespace Sample
         {
             var composition = new Composition();
             var service = composition.Service;
-            Console.WriteLine(service.Dep.ToString());                               
+            Console.WriteLine(service.Dep.ToString());
         }
-    }                
+    }
 }
 """.RunAsync(new Options(LanguageVersion.CSharp10));
 
@@ -690,7 +690,7 @@ namespace Sample
 
     interface IService
     {
-        IDependency Dep { get; }        
+        IDependency Dep { get; }
     }
 
     class Service: IService 
@@ -698,7 +698,7 @@ namespace Sample
         private Func<string, IDependency> _depFactory;
         public Service([Tag(typeof(string))] Func<string, IDependency> depFactory)
         { 
-            _depFactory = depFactory;           
+            _depFactory = depFactory;
         }
 
         public IDependency Dep => _depFactory("Xyz");
@@ -715,7 +715,7 @@ namespace Sample
                     return new Dependency(prefix + i);
                 }))
                 .Bind<IService>().To<Service>()
-                .Arg<string>("prefix")    
+                .Arg<string>("prefix")
                 .Root<IService>("Service");
         }
     }
@@ -726,9 +726,9 @@ namespace Sample
         {
             var composition = new Composition("Abc");
             var service = composition.Service;
-            Console.WriteLine(service.Dep.ToString());                               
+            Console.WriteLine(service.Dep.ToString());
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -945,7 +945,7 @@ namespace Sample
         public static void Main()
         {
             var app = new Composition().Root;
-            Console.WriteLine(app);                               
+            Console.WriteLine(app);
         }
     }
 }

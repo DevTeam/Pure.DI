@@ -33,7 +33,7 @@ namespace Sample
 
     interface IService
     {
-        IDependency Dep { get; }        
+        IDependency Dep { get; }
 
         IDependency OtherDep0 { get; }
 
@@ -43,17 +43,17 @@ namespace Sample
     class Service: IService 
     {
         private IDependency _dep1;
-        [Ordinal(1)] public IDependency? _otherDep1;           
+        [Ordinal(1)] public IDependency? _otherDep1;
         [CustomOrdinal(0)] public IDependency? _otherDep0;
 
         public Service(IDependency dep)
         { 
-            _dep1 = dep;           
+            _dep1 = dep;
         }
 
         public IDependency Dep => _dep1;
         public IDependency OtherDep0 => _otherDep0!;
-        public IDependency OtherDep1 => _otherDep1!;                       
+        public IDependency OtherDep1 => _otherDep1!;
     }
 
     static class Setup
@@ -75,9 +75,9 @@ namespace Sample
             var composition = new Composition();
             var service = composition.Service;
             Console.WriteLine(service.Dep != service.OtherDep0);
-            Console.WriteLine(service.Dep != service.OtherDep1);                                         
+            Console.WriteLine(service.Dep != service.OtherDep1);          
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -117,7 +117,7 @@ namespace Sample
 
     interface IService
     {
-        IDependency Dep { get; }        
+        IDependency Dep { get; }
 
         IDependency OtherDep0 { get; }
 
@@ -127,17 +127,17 @@ namespace Sample
     class Service: IService 
     {
         private IDependency _dep1;
-        public required IDependency? _otherDep1;           
+        public required IDependency? _otherDep1;
         [CustomOrdinal(0)] public IDependency? _otherDep0;
 
         public Service(IDependency dep)
         { 
-            _dep1 = dep;           
+            _dep1 = dep;
         }
 
         public IDependency Dep => _dep1;
         public IDependency OtherDep0 => _otherDep0!;
-        public IDependency OtherDep1 => _otherDep1!;                       
+        public IDependency OtherDep1 => _otherDep1!;
     }
 
     static class Setup
@@ -159,9 +159,9 @@ namespace Sample
             var composition = new Composition();
             var service = composition.Service;
             Console.WriteLine(service.Dep != service.OtherDep0);
-            Console.WriteLine(service.Dep != service.OtherDep1);                                         
+            Console.WriteLine(service.Dep != service.OtherDep1);          
         }
-    }                
+    }
 }
 """.RunAsync(new Options(LanguageVersion.Preview));
 
@@ -201,7 +201,7 @@ namespace Sample
 
     interface IService
     {
-        IDependency Dep { get; }        
+        IDependency Dep { get; }
 
         IDependency OtherDep0 { get; }
 
@@ -211,17 +211,17 @@ namespace Sample
     class Service: IService 
     {
         private IDependency _dep1;
-        public required IDependency? _otherDep1;           
+        public required IDependency? _otherDep1;
         [CustomOrdinal(0)] public IDependency? _otherDep0;
 
         public Service(IDependency dep)
         { 
-            _dep1 = dep;           
+            _dep1 = dep;
         }
 
         public IDependency Dep => _dep1;
         public IDependency OtherDep0 => _otherDep0!;
-        public IDependency OtherDep1 => _otherDep1!;                       
+        public IDependency OtherDep1 => _otherDep1!;
     }
     
     class Service2: Service
@@ -251,9 +251,9 @@ namespace Sample
             var composition = new Composition();
             var service = composition.Service;
             Console.WriteLine(service.Dep != service.OtherDep0);
-            Console.WriteLine(service.Dep != service.OtherDep1);                                         
+            Console.WriteLine(service.Dep != service.OtherDep1);          
         }
-    }                
+    }
 }
 """.RunAsync(new Options(LanguageVersion.Preview));
 

@@ -32,8 +32,8 @@ namespace Sample
     {
         public Service(IDependency[] deps)
         { 
-            Console.WriteLine("Service creating");            
-        }                            
+            Console.WriteLine("Service creating");
+        }    
     }
 
     static class Setup
@@ -54,9 +54,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();
-            var service = composition.Service;                                                     
+            var service = composition.Service;                              
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -96,8 +96,8 @@ namespace Sample
     {
         public Service(IDependency[] deps)
         { 
-            Console.WriteLine("Service creating");            
-        }                            
+            Console.WriteLine("Service creating");
+        }    
     }
 
     static class Setup
@@ -125,9 +125,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();
-            var service = composition.Service;                                                     
+            var service = composition.Service;                              
         }
-    }                
+    }
 }
 """.RunAsync();
 

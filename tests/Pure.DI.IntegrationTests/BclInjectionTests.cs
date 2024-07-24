@@ -75,8 +75,8 @@ namespace Sample
     {
         public Service(###CollectionType###<IDependency> deps)
         { 
-            Console.WriteLine("Service creating");            
-        }                            
+            Console.WriteLine("Service creating");
+        }    
     }
 
     static class Setup
@@ -104,13 +104,13 @@ namespace Sample
             {
                 var composition = new Composition();
                 var service = composition.Service;
-            }                                     
+            }             
             catch(Exception ex)
             {
                 Console.WriteLine(ex.Message);
-            }                
+            }
         }
-    }                
+    }
 }
 """.Replace("###CollectionType###", collectionType).RunAsync(
             new Options
@@ -196,8 +196,8 @@ namespace Sample
     {
         public Service(###CollectionType###<IDependency<int>> deps)
         { 
-            Console.WriteLine("Service creating");            
-        }                            
+            Console.WriteLine("Service creating");
+        }    
     }
 
     static class Setup
@@ -224,13 +224,13 @@ namespace Sample
             {
                 var composition = new Composition();
                 var service = composition.Service;
-            }                                     
+            }             
             catch(Exception ex)
             {
                 Console.WriteLine(ex.Message);
-            }                
+            }
         }
-    }                
+    }
 }
 """.Replace("###CollectionType###", collectionType).RunAsync(
             new Options
@@ -293,8 +293,8 @@ namespace Sample
     {
         public Service(###CollectionType###<IDependency> deps)
         { 
-            Console.WriteLine("Service creating");            
-        }                            
+            Console.WriteLine("Service creating");
+        }    
     }
 
     static class Setup
@@ -315,13 +315,13 @@ namespace Sample
             {
                 var composition = new Composition();
                 var service = composition.Service;
-            }                                     
+            }             
             catch(Exception ex)
             {
                 Console.WriteLine(ex.Message);
-            }                
+            }
         }
-    }                
+    }
 }
 """.Replace("###CollectionType###", collectionType).RunAsync(
             new Options
@@ -386,8 +386,8 @@ namespace Sample
             {
             }
 
-            Console.WriteLine("Service creating");            
-        }                            
+            Console.WriteLine("Service creating");
+        }    
     }
 
     static class Setup
@@ -414,13 +414,13 @@ namespace Sample
             {
                 var composition = new Composition();
                 var service = composition.Service;
-            }                                     
+            }             
             catch(Exception ex)
             {
                 Console.WriteLine(ex.Message);
-            }                
+            }
         }
-    }                
+    }
 }
 """.Replace("###CollectionType###", collectionType).RunAsync(
             new Options

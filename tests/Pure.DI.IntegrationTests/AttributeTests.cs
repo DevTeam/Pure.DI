@@ -52,7 +52,7 @@ namespace Sample
                 // Composition root
                 .Root<IService>("Root");
         }
-    }          
+    }  
 
     public class Program
     {
@@ -129,7 +129,7 @@ namespace Sample
                 // Composition root
                 .Root<IService>("Root");
         }
-    }          
+    }  
 
     public class Program
     {
@@ -212,7 +212,7 @@ namespace Sample
                 // Composition root
                 .Root<IPerson>("Person");
         }
-    }          
+    }  
 
     public class Program
     {

@@ -33,7 +33,7 @@ namespace Sample
 
     interface IService
     {
-        IDependency Dep { get; }        
+        IDependency Dep { get; }
     }
 
     class Service: IService 
@@ -41,7 +41,7 @@ namespace Sample
         private IDependency _dep;
         public Service(IDependency dep)
         { 
-            _dep = dep;           
+            _dep = dep;
         }
 
         public IDependency Dep => _dep;
@@ -54,7 +54,7 @@ namespace Sample
                 Console.WriteLine("OtherDep1");
                 Console.WriteLine(value != Dep);
             }
-        }        
+        }
 
         [CustomOrdinal(0)]
         public IDependency OtherDep0
@@ -84,9 +84,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();
-            var service = composition.Service;                                           
+            var service = composition.Service;                    
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -126,7 +126,7 @@ namespace Sample
 
     interface IService
     {
-        IDependency Dep { get; }        
+        IDependency Dep { get; }
     }
 
     class Service: IService 
@@ -134,7 +134,7 @@ namespace Sample
         private IDependency _dep;
         public Service(IDependency dep)
         { 
-            _dep = dep;           
+            _dep = dep;
         }
 
         public IDependency Dep => _dep;
@@ -147,7 +147,7 @@ namespace Sample
                 Console.WriteLine("OtherDep1");
                 Console.WriteLine(value != Dep);
             }
-        }        
+        }
 
         [Ordinal(0)]
         public IDependency OtherDep0
@@ -177,9 +177,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();
-            var service = composition.Service;                                           
+            var service = composition.Service;                    
         }
-    }                
+    }
 }
 """.RunAsync(new Options(LanguageVersion.CSharp9));
 
@@ -208,7 +208,7 @@ namespace Sample
 
     interface IService
     {
-        IDependency Dep { get; }        
+        IDependency Dep { get; }
     }
 
     class Service: IService 
@@ -216,7 +216,7 @@ namespace Sample
         private IDependency _dep;
         public Service(IDependency dep)
         { 
-            _dep = dep;           
+            _dep = dep;
         }
 
         public IDependency Dep => _dep;
@@ -228,7 +228,7 @@ namespace Sample
                 Console.WriteLine("OtherDep1");
                 Console.WriteLine(value != Dep);
             }
-        }        
+        }
 
         [Ordinal(0)]
         public IDependency OtherDep0
@@ -257,9 +257,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();
-            var service = composition.Service;                                           
+            var service = composition.Service;                    
         }
-    }                
+    }
 }
 """.RunAsync(new Options(LanguageVersion.Preview));
 
@@ -288,7 +288,7 @@ namespace Sample
 
     interface IService
     {
-        IDependency Dep { get; }        
+        IDependency Dep { get; }
     }
 
     class Service: IService 
@@ -296,7 +296,7 @@ namespace Sample
         private IDependency _dep;
         public Service(IDependency dep)
         { 
-            _dep = dep;           
+            _dep = dep;
         }
 
         public IDependency Dep => _dep;
@@ -308,7 +308,7 @@ namespace Sample
                 Console.WriteLine("OtherDep1");
                 Console.WriteLine(value != Dep);
             }
-        }        
+        }
     }
     
     class Service2: Service
@@ -345,9 +345,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();
-            var service = composition.Service;                                           
+            var service = composition.Service;                    
         }
-    }                
+    }
 }
 """.RunAsync(new Options(LanguageVersion.Preview));
 

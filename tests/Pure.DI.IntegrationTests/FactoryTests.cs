@@ -41,7 +41,7 @@ namespace Sample
         {
             DI.Setup("Composition")
                 .Bind<IDependency>().To(ctx => new Dependency())
-                .Bind<IService>().To<Service>()    
+                .Bind<IService>().To<Service>()
                 .Root<IService>("Service");
         }
     }
@@ -89,7 +89,7 @@ namespace Sample
     {
         public Service(IDependency dep)
         { 
-            Dep = dep;           
+            Dep = dep;
         }
 
         public IDependency Dep { get; }
@@ -101,7 +101,7 @@ namespace Sample
         {
             DI.Setup("Composition")
                 .Bind<IDependency>().To((ctx) => new Dependency())
-                .Bind<IService>().To<Service>()    
+                .Bind<IService>().To<Service>()
                 .Root<IService>("Service");
         }
     }
@@ -115,7 +115,7 @@ namespace Sample
             var service2 = composition.Service;
             Console.WriteLine(service1.Dep != service2.Dep);
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -149,7 +149,7 @@ namespace Sample
     {
         public Service(IDependency dep)
         { 
-            Dep = dep;           
+            Dep = dep;
         }
 
         public IDependency Dep { get; }
@@ -161,7 +161,7 @@ namespace Sample
         {
             DI.Setup("Composition")
                 .Bind<IDependency>().To<IDependency>((ctx) => new Dependency())
-                .Bind<IService>().To<Service>()    
+                .Bind<IService>().To<Service>()
                 .Root<IService>("Service");
         }
     }
@@ -175,7 +175,7 @@ namespace Sample
             var service2 = composition.Service;
             Console.WriteLine(service1.Dep != service2.Dep);
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -209,7 +209,7 @@ namespace Sample
     {
         public Service(IDependency dep)
         { 
-            Dep = dep;           
+            Dep = dep;
         }
 
         public IDependency Dep { get; }
@@ -225,7 +225,7 @@ namespace Sample
                         return new Dependency(); 
                     }
                 )
-                .Bind<IService>().To<Service>()    
+                .Bind<IService>().To<Service>()
                 .Root<IService>("Service");
         }
     }
@@ -239,7 +239,7 @@ namespace Sample
             var service2 = composition.Service;
             Console.WriteLine(service1.Dep != service2.Dep);
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -273,7 +273,7 @@ namespace Sample
     {
         public Service(IDependency dep)
         { 
-            Dep = dep;           
+            Dep = dep;
         }
 
         public IDependency Dep { get; }
@@ -285,7 +285,7 @@ namespace Sample
         {
             DI.Setup("Composition")
                 .Bind<IDependency>().As(Lifetime.Singleton).To(ctx => new Dependency())
-                .Bind<IService>().To<Service>()    
+                .Bind<IService>().To<Service>()
                 .Root<IService>("Service");
         }
     }
@@ -299,7 +299,7 @@ namespace Sample
             var service2 = composition.Service;
             Console.WriteLine(service1.Dep == service2.Dep);
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -333,7 +333,7 @@ namespace Sample
     {
         public Service(IDependency dep)
         { 
-            Dep = dep;           
+            Dep = dep;
         }
 
         public IDependency Dep { get; }
@@ -348,7 +348,7 @@ namespace Sample
                 .Bind<IService>().To(ctx => {
                     IDependency @dependency1;
                     ctx.Inject<IDependency>(out @dependency1); new Service(@dependency1); ctx.Inject<IDependency>(out var dependency2); return new Service(dependency2);
-                })    
+                })
                 .Root<IService>("Service");
         }
     }
@@ -362,7 +362,7 @@ namespace Sample
             var service2 = composition.Service;
             Console.WriteLine(service1.Dep != service2.Dep);
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -538,7 +538,7 @@ namespace Sample
     {
         public Service(IDependency dep)
         { 
-            Dep = dep;           
+            Dep = dep;
         }
 
         public IDependency Dep { get; }
@@ -572,9 +572,9 @@ namespace Sample
     {
         public static void Main()
         {
-            var composition = new Composition();            
+            var composition = new Composition();
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -608,7 +608,7 @@ namespace Sample
         public Service(IDependency dep)
         { 
             Dep = dep;
-            Console.WriteLine("Created");           
+            Console.WriteLine("Created");
         }
 
         public IDependency Dep { get; }
@@ -616,9 +616,9 @@ namespace Sample
 
     internal partial class Composition
     {
-        private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime)            
+        private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime) 
         {
-            return value;                  
+            return value;      
         }
     }
 
@@ -632,7 +632,7 @@ namespace Sample
                 .Bind<IService>(123).To(ctx => {
                     ctx.Inject<IDependency>(ctx.Tag, out var dependency);
                     return new Service(dependency);
-                })    
+                })
                 .Root<IService>("Service", 123);
         }
     }
@@ -644,7 +644,7 @@ namespace Sample
             var composition = new Composition();      
             var service = composition.Service;     
         }
-    }                
+    }
 }
 """.RunAsync(new Options(LanguageVersion.CSharp9));
 
@@ -678,7 +678,7 @@ namespace Sample
     {
         public Service(IDependency dep)
         { 
-            Dep = dep;           
+            Dep = dep;
         }
 
         public IDependency Dep { get; }
@@ -712,7 +712,7 @@ namespace Sample
             var service2 = composition.Service;
             Console.WriteLine(service1.Dep != service2.Dep);
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -747,7 +747,7 @@ namespace Sample
         public Service(IDependency dep)
         { 
             Dep = dep;
-            Console.WriteLine("Created");           
+            Console.WriteLine("Created");
         }
 
         public IDependency Dep { get; }
@@ -755,9 +755,9 @@ namespace Sample
 
     internal partial class Composition
     {
-        private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime)            
+        private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime) 
         {
-            return value;                  
+            return value;      
         }
     }
 
@@ -772,7 +772,7 @@ namespace Sample
                     System.Console.WriteLine(ctx.Tag);
                     ctx.Inject<IDependency>(ctx.Tag, out var dependency);
                     return new Service(dependency);
-                })    
+                })
                 .Root<IService>("Service", 123);
         }
     }
@@ -784,7 +784,7 @@ namespace Sample
             var composition = new Composition();      
             var service = composition.Service;     
         }
-    }                
+    }
 }
 """.RunAsync(new Options(LanguageVersion.CSharp9));
 
@@ -819,7 +819,7 @@ namespace Sample
         public Service(IDependency dep)
         { 
             Dep = dep;
-            Console.WriteLine("Created");           
+            Console.WriteLine("Created");
         }
 
         public IDependency Dep { get; }
@@ -827,9 +827,9 @@ namespace Sample
 
     internal partial class Composition
     {
-        private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime)            
+        private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime) 
         {
-            return value;                  
+            return value;      
         }
     }
 
@@ -844,7 +844,7 @@ namespace Sample
                     System.Console.WriteLine(ctx.Tag ?? "null");
                     ctx.Inject<IDependency>(123, out var dependency);
                     return new Service(dependency);
-                })    
+                })
                 .Root<IService>("Service");
         }
     }
@@ -856,7 +856,7 @@ namespace Sample
             var composition = new Composition();      
             var service = composition.Service;     
         }
-    }                
+    }
 }
 """.RunAsync(new Options(LanguageVersion.CSharp9));
 
@@ -893,7 +893,7 @@ namespace Sample
         public Service(IDependency dep)
         { 
             Dep = dep;
-            Console.WriteLine("Created");           
+            Console.WriteLine("Created");
         }
 
         public IDependency Dep { get; }
@@ -901,9 +901,9 @@ namespace Sample
 
     internal partial class Composition
     {
-        private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime)            
+        private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime) 
         {
-            return value;                  
+            return value;      
         }
     }
 
@@ -918,7 +918,7 @@ namespace Sample
                     System.Console.WriteLine(#ctx#);
                     ctx.Inject<IDependency>(out var dependency);
                     return new Service(dependency);
-                })    
+                })
                 .Root<IService>("Service");
         }
     }
@@ -930,7 +930,7 @@ namespace Sample
             var composition = new Composition();      
             var service = composition.Service;     
         }
-    }                
+    }
 }
 """.Replace("#ctx#", contextArgName).RunAsync(new Options(LanguageVersion.CSharp9));
 
@@ -967,7 +967,7 @@ namespace Sample
         public Service(IDependency dep)
         { 
             Dep = dep;
-            Console.WriteLine("Created");           
+            Console.WriteLine("Created");
         }
 
         public IDependency Dep { get; }
@@ -975,9 +975,9 @@ namespace Sample
 
     internal partial class Composition
     {
-        private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime)            
+        private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime) 
         {
-            return value;                  
+            return value;      
         }
     }
 
@@ -992,7 +992,7 @@ namespace Sample
                     System.Console.WriteLine(ctx2);
                     ctx.Inject<IDependency>(out var dependency);
                     return new Service(dependency);
-                })    
+                })
                 .Root<IService>("Service");
         }
     }
@@ -1004,7 +1004,7 @@ namespace Sample
             var composition = new Composition();      
             var service = composition.Service;     
         }
-    }                
+    }
 }
 """.RunAsync(new Options(LanguageVersion.CSharp9, CheckCompilationErrors: false));
 
@@ -1040,7 +1040,7 @@ namespace Sample
     {
         public Service(IDependency dep)
         { 
-            Dep = dep;           
+            Dep = dep;
         }
 
         public IDependency Dep { get; }
@@ -1055,7 +1055,7 @@ namespace Sample
                 .Bind<IService>().To(ctx => {
                     IDependency dependency1;
                     ctx.Inject(out dependency1); new Service(dependency1); ctx.Inject(out IDependency dependency2); return new Service(dependency2);
-                })    
+                })
                 .Root<IService>("Service");
         }
     }
@@ -1069,7 +1069,7 @@ namespace Sample
             var service2 = composition.Service;
             Console.WriteLine(service1.Dep != service2.Dep);
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -1228,7 +1228,7 @@ partial class Composition
         {
             var service = new Composition().MyService;
         }
-    }                
+    }
 }
 """.RunAsync(new Options(LanguageVersion.CSharp9));
 

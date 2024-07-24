@@ -31,8 +31,8 @@ namespace Sample
     {
         public Service(Composition composition, IDependency dep)
         { 
-            Console.WriteLine("Service creating");            
-        }                            
+            Console.WriteLine("Service creating");
+        }    
     }
 
     internal partial class Composition { }
@@ -53,9 +53,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();
-            var service = composition.Service;                                                     
+            var service = composition.Service;                              
         }
-    }                
+    }
 }
 """.RunAsync();
 

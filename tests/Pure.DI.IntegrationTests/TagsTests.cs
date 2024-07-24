@@ -30,7 +30,7 @@ namespace Sample
                 .Root<string>("Result3", '3')
                 .Root<string>("Result4", "4");
         }
-    }          
+    }  
 
     public class Program
     {
@@ -38,7 +38,7 @@ namespace Sample
         {
             var composition = new Composition();
             Console.WriteLine(composition.Result);
-            Console.WriteLine(composition.Result2);                                           
+            Console.WriteLine(composition.Result2);
             Console.WriteLine(composition.Result3);
             Console.WriteLine(composition.Result4);
         }
@@ -160,14 +160,14 @@ namespace Sample
                 .Root<string>("Result")
                 .Root<string>("Result2", MyEnum.Option2);
         }
-    }          
+    }  
 
     public class Program
     {
         public static void Main()
         {
             var composition = new Composition();
-            Console.WriteLine(composition.Result);                                           
+            Console.WriteLine(composition.Result);
             Console.WriteLine(composition.Result2);
         }
     }
@@ -201,14 +201,14 @@ namespace Sample
                 .Root<string>("Result")
                 .Root<string>("Result2", typeof(int));
         }
-    }          
+    }  
 
     public class Program
     {
         public static void Main()
         {
             var composition = new Composition();
-            Console.WriteLine(composition.Result);                                           
+            Console.WriteLine(composition.Result);
             Console.WriteLine(composition.Result2);
         }
     }
@@ -242,14 +242,14 @@ namespace Sample
                 .Root<string>("Result")
                 .Root<string>("Result2", 2);
         }
-    }          
+    }  
 
     public class Program
     {
         public static void Main()
         {
             var composition = new Composition();
-            Console.WriteLine(composition.Result);                                           
+            Console.WriteLine(composition.Result);
             Console.WriteLine(composition.Result2);
         }
     }
@@ -283,14 +283,14 @@ namespace Sample
                 .Root<string>("Result")
                 .Root<string>("Result2", 2);
         }
-    }          
+    }  
 
     public class Program
     {
         public static void Main()
         {
             var composition = new Composition();
-            Console.WriteLine(composition.Result);                                           
+            Console.WriteLine(composition.Result);
             Console.WriteLine(composition.Result2);
         }
     }
@@ -326,7 +326,7 @@ namespace Sample
                 .Root<int>("Root2", 1)
                 .Root<int>("Root3", 2);
         }
-    }          
+    }  
 
     public class Program
     {
@@ -369,7 +369,7 @@ namespace Sample
                 .Root<int>("Root2", 1)
                 .Root<int>("Root3", 2);
         }
-    }          
+    }  
 
     public class Program
     {

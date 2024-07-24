@@ -33,9 +33,9 @@ namespace Sample
             Console.WriteLine(composition.Resolve<IService>());
             Console.WriteLine(composition.Resolve<IService>(null));
             Console.WriteLine(composition.Resolve(typeof(IService)));
-            Console.WriteLine(composition.Resolve(typeof(IService), null));                    
+            Console.WriteLine(composition.Resolve(typeof(IService), null));        
         }
-    }                
+    }
 }
 """.RunAsync();
 

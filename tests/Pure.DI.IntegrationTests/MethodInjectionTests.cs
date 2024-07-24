@@ -21,13 +21,13 @@ namespace Sample
         [Ordinal(1)]
         internal void Initialize([Tag(374)] string depName)
         {
-            Console.WriteLine($"Initialize {depName}");            
+            Console.WriteLine($"Initialize {depName}");
         }
     }
 
     interface IService
     {
-        IDependency Dep { get; }        
+        IDependency Dep { get; }
     }
 
     class Service: IService 
@@ -35,20 +35,20 @@ namespace Sample
         private IDependency _dep;
         public Service(IDependency dep)
         { 
-            _dep = dep;           
+            _dep = dep;
         }
 
         public IDependency Dep => _dep;
         
         public void Run()
         {
-            Console.WriteLine("Run");            
+            Console.WriteLine("Run");
         }
 
         [Ordinal(7)]
         public void Activate()
         {
-            Console.WriteLine("Activate");            
+            Console.WriteLine("Activate");
         }
 
         [Ordinal(1)]
@@ -66,7 +66,7 @@ namespace Sample
             DI.Setup("Composition")
                 .Bind<IDependency>().To<Dependency>()
                 .Bind<IService>().To<Service>()
-                .Arg<string>("depName", 374)    
+                .Arg<string>("depName", 374)
                 .Root<IService>("Service");
         }
     }
@@ -76,9 +76,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition("dep");
-            var service = composition.Service;                                           
+            var service = composition.Service;                    
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -117,13 +117,13 @@ namespace Sample
         [Ordinal(1)]
         internal void Initialize([Tag(374)] string depName)
         {
-            Console.WriteLine($"Initialize {depName}");            
+            Console.WriteLine($"Initialize {depName}");
         }
     }
 
     interface IService
     {
-        IDependency Dep { get; }        
+        IDependency Dep { get; }
     }
 
     class Service: IService 
@@ -131,20 +131,20 @@ namespace Sample
         private IDependency _dep;
         public Service(IDependency dep)
         { 
-            _dep = dep;           
+            _dep = dep;
         }
 
         public IDependency Dep => _dep;
         
         public void Run()
         {
-            Console.WriteLine("Run");            
+            Console.WriteLine("Run");
         }
 
         [Ordinal(7)]
         public void Activate()
         {
-            Console.WriteLine("Activate");            
+            Console.WriteLine("Activate");
         }
 
         [CustomOrdinal(1)]
@@ -163,7 +163,7 @@ namespace Sample
                 .Bind<IDependency>().To<Dependency>()
                 .Bind<IService>().To<Service>()
                 .Arg<string>("depName", 374)
-                .OrdinalAttribute<CustomOrdinalAttribute>()                    
+                .OrdinalAttribute<CustomOrdinalAttribute>()     
                 .Root<IService>("Service");
         }
     }
@@ -173,9 +173,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition("dep");
-            var service = composition.Service;                                           
+            var service = composition.Service;                    
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -203,13 +203,13 @@ namespace Sample
         [Ordinal(1)]
         internal void Initialize([Tag(374)] string depName)
         {
-            Console.WriteLine($"Initialize {depName}");            
+            Console.WriteLine($"Initialize {depName}");
         }
     }
 
     interface IService
     {
-        IDependency Dep { get; }        
+        IDependency Dep { get; }
     }
 
     class Service: IService 
@@ -217,14 +217,14 @@ namespace Sample
         private IDependency _dep;
         public Service(IDependency dep)
         { 
-            _dep = dep;           
+            _dep = dep;
         }
 
         public IDependency Dep => _dep;
         
         public void Run()
         {
-            Console.WriteLine("Run");            
+            Console.WriteLine("Run");
         }
 
         [Ordinal(1)]
@@ -245,7 +245,7 @@ namespace Sample
         [Ordinal(7)]
         public void Activate()
         {
-            Console.WriteLine("Activate");            
+            Console.WriteLine("Activate");
         }
     }
 
@@ -256,7 +256,7 @@ namespace Sample
             DI.Setup("Composition")
                 .Bind<IDependency>().To<Dependency>()
                 .Bind<IService>().To<Service2>()
-                .Arg<string>("depName", 374)    
+                .Arg<string>("depName", 374)
                 .Root<IService>("Service");
         }
     }
@@ -266,9 +266,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition("dep");
-            var service = composition.Service;                                           
+            var service = composition.Service;                    
         }
-    }                
+    }
 }
 """.RunAsync();
 

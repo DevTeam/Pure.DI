@@ -39,7 +39,7 @@ namespace Sample
         {
             DI.Setup("MyNs.Abc.Composition")
                 .Bind<IDependency>().To<Dependency>()
-                .Bind<IService>().To<Service>()    
+                .Bind<IService>().To<Service>()
                 .Root<IService>("Service");
         }
     }
@@ -49,9 +49,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new MyNs.Abc.Composition();
-            Console.WriteLine(composition.GetType());                                           
+            Console.WriteLine(composition.GetType());
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -97,7 +97,7 @@ namespace My.Sample
         {
             DI.Setup("Composition")
                 .Bind<IDependency>().To<Dependency>()
-                .Bind<IService>().To<Service>()    
+                .Bind<IService>().To<Service>()
                 .Root<IService>("Service");
         }
     }
@@ -107,9 +107,9 @@ namespace My.Sample
         public static void Main()
         {
             var composition = new My.Sample.Composition();
-            Console.WriteLine(composition.GetType());                                           
+            Console.WriteLine(composition.GetType());
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -155,7 +155,7 @@ static class Setup
     {
         DI.Setup("Composition")
             .Bind<IDependency>().To<Dependency>()
-            .Bind<IService>().To<Service>()    
+            .Bind<IService>().To<Service>()
             .Root<IService>("Service");
     }
 }
@@ -165,9 +165,9 @@ public class Program
     public static void Main()
     {
         var composition = new My.Sample.Composition();
-        Console.WriteLine(composition.GetType());                                           
+        Console.WriteLine(composition.GetType());
     }
-}                
+}
 
 """.RunAsync(new Options { LanguageVersion = LanguageVersion.CSharp10 });
 
@@ -198,7 +198,7 @@ namespace Sample
         public Service(Func<string, Regex> regFactory)
         {             
             Console.WriteLine(regFactory(".+"));
-        }        
+        }
     }
 
     static class Setup
@@ -207,7 +207,7 @@ namespace Sample
         {
             DI.Setup("Composition")
                 .Bind<Func<string, Regex>>().To(_ => new Func<string, Regex>(value => new Regex(value, RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline | RegexOptions.IgnoreCase)))
-                .Bind<IService>().To<Service>()    
+                .Bind<IService>().To<Service>()
                 .Root<IService>("Service");
         }
     }
@@ -217,9 +217,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();
-            var service =  composition.Service;                                                      
+            var service =  composition.Service;                               
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -275,7 +275,7 @@ namespace Sample
         {
             DI.Setup("Composition")
                 .Bind<IDependency>().To<IDependency>(_ => new Dependency().DoSomething())
-                .Bind<IService>().To<Service>()    
+                .Bind<IService>().To<Service>()
                 .Root<IService>("Service");
         }
     }
@@ -284,9 +284,9 @@ namespace Sample
     {
         public static void Main()
         {
-            var composition = new Composition();                                                       
+            var composition = new Composition(); 
         }
-    }                
+    }
 }
 """.RunAsync();
 

@@ -39,7 +39,7 @@ namespace Sample
             foreach (var dep in deps)
             {
             }
-        }                            
+        }    
     }
 
     static class Setup
@@ -60,9 +60,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();
-            var service = composition.Service;                                                     
+            var service = composition.Service;                              
         }
-    }                
+    }
 }
 """.RunAsync(new Options(languageVersion));
 
@@ -105,7 +105,7 @@ namespace Sample
             foreach (var dep in deps)
             {
             }
-        }                            
+        }    
     }
 
     static class Setup
@@ -126,9 +126,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();
-            var service = composition.Service;                                                     
+            var service = composition.Service;                              
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -172,7 +172,7 @@ namespace Sample
             foreach (var dep in deps)
             {
             }
-        }                            
+        }    
     }
 
     static class Setup
@@ -201,9 +201,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();
-            var service = composition.Service;                                                     
+            var service = composition.Service;                              
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -246,7 +246,7 @@ namespace Sample
             foreach (var dep in deps)
             {
             }
-        }                            
+        }    
     }
 
     static class Setup
@@ -264,9 +264,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();
-            var service = composition.Service;                                                     
+            var service = composition.Service;                              
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -309,7 +309,7 @@ namespace Sample
             foreach (var dep in deps)
             {
             }
-        }                            
+        }    
     }
 
     static class Setup
@@ -330,9 +330,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();
-            var service = composition.Service;                                                     
+            var service = composition.Service;                              
         }
-    }                
+    }
 }
 """.RunAsync();
 

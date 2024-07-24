@@ -53,9 +53,9 @@ namespace Sample
             var composition = new Composition();
             var service = composition.Service;    
             Console.WriteLine(service.IntDependency.GetType());
-            Console.WriteLine(service.StringDependency.GetType());                            
+            Console.WriteLine(service.StringDependency.GetType());     
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -118,9 +118,9 @@ namespace Sample
             var composition = new Composition();
             var service = composition.Service;    
             Console.WriteLine(service.IntDependency.GetType());
-            Console.WriteLine(service.StringDependency.GetType());                            
+            Console.WriteLine(service.StringDependency.GetType());     
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -187,9 +187,9 @@ namespace Sample
             var composition = new Composition();
             var service = composition.Service;    
             Console.WriteLine(service.IntDependency.GetType());
-            Console.WriteLine(service.StringDependency.GetType());                            
+            Console.WriteLine(service.StringDependency.GetType());     
         }
-    }                
+    }
 }
 """.RunAsync();
 

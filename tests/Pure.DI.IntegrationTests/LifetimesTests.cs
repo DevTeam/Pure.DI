@@ -21,7 +21,7 @@ namespace Sample
         private static void SetupComposition()
         {
             DI.Setup(nameof(Composition))
-                .Bind<IService>().As(Lifetime.Transient).To<Service>()               
+                .Bind<IService>().As(Lifetime.Transient).To<Service>()
                 .Root<IService>("Service");
         }
     }
@@ -31,9 +31,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();
-            Console.WriteLine(composition.Service != composition.Service);                    
+            Console.WriteLine(composition.Service != composition.Service);        
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -102,7 +102,7 @@ namespace Sample
         private static void SetupComposition()
         {
             DI.Setup(nameof(Composition))
-                .Bind<IService>().To<Service>()               
+                .Bind<IService>().To<Service>()
                 .Root<IService>("Service");
         }
     }
@@ -112,9 +112,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();
-            Console.WriteLine(composition.Service != composition.Service);                    
+            Console.WriteLine(composition.Service != composition.Service);        
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -178,10 +178,10 @@ namespace Sample
             var composition = new Composition();
             var service1 = composition.Root;
             var service2 = composition.Root;
-            Console.WriteLine(service1.Dependency1 == service1.Dependency2);                    
+            Console.WriteLine(service1.Dependency1 == service1.Dependency2);        
             Console.WriteLine(service2.Dependency1 == service1.Dependency1);
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -246,10 +246,10 @@ namespace Sample
             var composition = new Composition();
             var service1 = composition.Root;
             var service2 = composition.Root;
-            Console.WriteLine(service1.Dependency1 == service1.Dependency2);                    
+            Console.WriteLine(service1.Dependency1 == service1.Dependency2);        
             Console.WriteLine(service2.Dependency1 == service1.Dependency1);
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -298,7 +298,7 @@ namespace Sample
         {
             DI.Setup(nameof(Composition))
                 .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
-                .Bind<IService>().To<Service>()               
+                .Bind<IService>().To<Service>()
                 .Root<IService>("Service");
         }
     }
@@ -308,11 +308,11 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();
-            var service1 = composition.Service;                    
+            var service1 = composition.Service;        
             var service2 = composition.Service;
             var service3 = composition.Service;
         }
-    }                
+    }
 }
 """.RunAsync(new Options { LanguageVersion = LanguageVersion.CSharp10 });
 
@@ -403,7 +403,7 @@ namespace Sample
                 .Bind<IDependency1>().To<Dependency1>()
                 .Bind<IDependency2>().As(Lifetime.Singleton).To<Dependency2>()
                 .Bind<IDependency3>().As(Lifetime.Singleton).To<Dependency3>()
-                .Bind<IService>().To<Service>()               
+                .Bind<IService>().To<Service>()
                 .Root<IService>("Service");
         }
     }
@@ -415,13 +415,13 @@ namespace Sample
             var composition = new Composition();
             var service1 = composition.Service;
             var service2 = composition.Service;
-            Console.WriteLine(service1 != service2);                    
+            Console.WriteLine(service1 != service2);        
             Console.WriteLine(service1.Dep1 != service2.Dep1);
-            Console.WriteLine(service1.Dep2 == service2.Dep2);           
+            Console.WriteLine(service1.Dep2 == service2.Dep2);
             Console.WriteLine(service1.Dep2.Dep1 == service2.Dep2.Dep1);
             Console.WriteLine(service1.Dep2.Dep1 != service1.Dep1);
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -526,7 +526,7 @@ namespace Sample
                 .Bind<IDependency1>().To<Dependency1>()
                 .Bind<IDependency2>().As(Lifetime.Singleton).To<Dependency2>()
                 .Bind<IDependency3>().As(Lifetime.Singleton).To<Dependency3>()
-                .Bind<IService>().To<Service>()               
+                .Bind<IService>().To<Service>()
                 .Root<IService>("Service");
         }
     }
@@ -537,9 +537,9 @@ namespace Sample
         {
             using var composition = new Composition();
             var service1 = composition.Service;
-            var service2 = composition.Service;            
+            var service2 = composition.Service;
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -651,7 +651,7 @@ namespace Sample
                 .Bind<IDependency1>().To<Dependency1>()
                 .Bind<IDependency2>().As(Lifetime.Singleton).To<Dependency2>()
                 .Bind<IDependency3>().As(Lifetime.Singleton).To<Dependency3>()
-                .Bind<IService>().To<Service>()               
+                .Bind<IService>().To<Service>()
                 .Root<IService>("Service");
         }
     }
@@ -671,9 +671,9 @@ namespace Sample
             if (valueTask.IsCompleted)
             {
                 valueTask.AsTask().Wait();
-            }            
+            }    
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -780,7 +780,7 @@ namespace Sample
                 .Bind<IDependency1>().To<Dependency1>()
                 .Bind<IDependency2>().As(Lifetime.Singleton).To<Dependency2>()
                 .Bind<IDependency3>().As(Lifetime.Singleton).To<Dependency3>()
-                .Bind<IService>().To<Service>()               
+                .Bind<IService>().To<Service>()
                 .Root<IService>("Service");
         }
     }
@@ -791,7 +791,7 @@ namespace Sample
         {
             using var composition = new Composition();
             var service1 = composition.Service;
-            var service2 = composition.Service;            
+            var service2 = composition.Service;
             
             using var composition2 = new Composition();
             var service3 = composition2.Service;
@@ -802,7 +802,7 @@ namespace Sample
                 valueTask.AsTask().Wait();
             }
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -910,7 +910,7 @@ namespace Sample
                 .Bind<IDependency1>().To<Dependency1>()
                 .Bind<IDependency2>().As(Lifetime.Singleton).To<Dependency2>()
                 .Bind<IDependency3>().As(Lifetime.Singleton).To<Dependency3>()
-                .Bind<IService>().To<Service>()               
+                .Bind<IService>().To<Service>()
                 .Root<IService>("Service");
         }
     }
@@ -930,9 +930,9 @@ namespace Sample
             if (valueTask.IsCompleted)
             {
                 valueTask.AsTask().Wait();
-            }            
+            }    
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -960,7 +960,7 @@ namespace Sample
         private static void SetupComposition()
         {
             DI.Setup(nameof(Composition))
-                .Bind<IService>().As(Lifetime.Singleton).To<Service>()               
+                .Bind<IService>().As(Lifetime.Singleton).To<Service>()
                 .Root<IService>("Service");
         }
     }
@@ -970,9 +970,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();
-            Console.WriteLine(composition.Service == composition.Service);                    
+            Console.WriteLine(composition.Service == composition.Service);        
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -1041,7 +1041,7 @@ namespace Sample
             DI.Setup(nameof(Composition))
                 .Bind<IDependency1>().As(Lifetime.PerResolve).To<Dependency1>()
                 .Bind<IDependency2>().To<Dependency2>()
-                .Bind<IService>().To<Service>()               
+                .Bind<IService>().To<Service>()
                 .Root<IService>("Service");
         }
     }
@@ -1055,7 +1055,7 @@ namespace Sample
             Console.WriteLine(service.Dep1 == service.Dep2.Dep1);
             Console.WriteLine(service.Dep1 == service.Dep3);
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -1112,7 +1112,7 @@ namespace Sample
             DI.Setup(nameof(Composition))
                 .Bind().As(Lifetime.Singleton).To<Abc>()
                 .Bind<IDependency>().As(Lifetime.PerResolve).To<Dependency>()
-                .Bind<IService>().To<Service>()               
+                .Bind<IService>().To<Service>()
                 .Root<IService>("Service");
         }
     }
@@ -1125,7 +1125,7 @@ namespace Sample
             var service = composition.Service;
             Console.WriteLine(service.Dep1 == service.Dep2);
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -1190,9 +1190,9 @@ namespace Sample
            
            internal partial class Composition
            {
-               partial void OnNewInstance<T>(ref T value, object? tag, Lifetime lifetime)            
+               partial void OnNewInstance<T>(ref T value, object? tag, Lifetime lifetime) 
                {
-                   Console.WriteLine($"{typeof(T)} '{tag}' {lifetime} created");            
+                   Console.WriteLine($"{typeof(T)} '{tag}' {lifetime} created");
                }
            }
        
@@ -1253,7 +1253,7 @@ namespace Sample
             Dep = dep;        
         }
 
-        public IDependency Dep { get; }        
+        public IDependency Dep { get; }
     }
 
     interface IService
@@ -1283,7 +1283,7 @@ namespace Sample
             DI.Setup(nameof(Composition))
                 .Bind<IDependency>().As(Lifetime.PerResolve).To<Dependency>()
                 .Bind<ISin>().As(Lifetime.Singleton).To<Sin>()
-                .Bind<IService>().To<Service>()               
+                .Bind<IService>().To<Service>()
                 .Root<IService>("Service");
         }
     }
@@ -1299,7 +1299,7 @@ namespace Sample
             Console.WriteLine(service.Dep != service2.Dep);
             Console.WriteLine(service.Sin == service2.Sin);
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -1336,7 +1336,7 @@ namespace Sample
             Dep = dep;        
         }
 
-        public IDependency Dep { get; }        
+        public IDependency Dep { get; }
     }
 
     interface IService
@@ -1368,7 +1368,7 @@ namespace Sample
             DI.Setup("Composition")
                 .Bind<IDependency>().As(Lifetime.PerResolve).To<Dependency>()
                 .Bind<ISin>().To<Sin>()
-                .Bind<IService>().To<Service>()               
+                .Bind<IService>().To<Service>()
                 .Root<IService>("Service");
         }
     }
@@ -1379,9 +1379,9 @@ namespace Sample
         {
             var composition = new Composition();
             var service = composition.Service;
-            Console.WriteLine(service.Dep == service.Sin.Dep);            
+            Console.WriteLine(service.Dep == service.Sin.Dep);
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -1469,7 +1469,7 @@ namespace Sample
                private static void SetupComposition()
                {
                    DI.Setup("Composition").DependsOn("BaseComposition")
-                       .Bind<IService>().To<Service>()               
+                       .Bind<IService>().To<Service>()
                        .Root<IService>("Service");
                }
            }
@@ -1867,10 +1867,10 @@ namespace Sample
             var composition = new Composition();
             var service1 = composition.Root;
             var service2 = composition.Root;
-            Console.WriteLine(service1.Dependency1 == service1.Dependency2);                    
+            Console.WriteLine(service1.Dependency1 == service1.Dependency2);        
             Console.WriteLine(service2.Dependency1 == service1.Dependency1);
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -2028,7 +2028,7 @@ namespace Sample
             composition.Dispose();
             System.Console.WriteLine(scopedDepInSession1.SingletonDep.IsDisposed);
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -2097,7 +2097,7 @@ namespace Sample
             var composition = new Composition();
             var Host = composition.Host;
         }
-    }                
+    }
 }
 """.Replace("#Lifetime", lifetime).RunAsync();
 
@@ -2163,7 +2163,7 @@ namespace Sample
             var service = composition.Root;
             Console.WriteLine(service.Dependency1 == service.Dependency2);
         }
-    }                
+    }
 }
 """.RunAsync();
 

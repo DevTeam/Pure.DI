@@ -23,13 +23,13 @@ namespace Sample
             DI.Setup("Composition")
                 .Bind<string>().To(_ => "Abc");
         }
-    }          
+    }  
 
     public class Program
     {
         public static void Main()
         {
-            var composition = new Composition();                                                       
+            var composition = new Composition(); 
         }
     }
 }
@@ -64,13 +64,13 @@ namespace Sample
                 .Root<string>("Root2")
                 .Root<string>("Root3");
         }
-    }          
+    }  
 
     public class Program
     {
         public static void Main()
         {
-            var composition = new Composition();                                                       
+            var composition = new Composition(); 
         }
     }
 }
@@ -149,14 +149,14 @@ namespace Sample
                 .Bind<string>().To(_ => "Xyz")
                 .Root<string>("Result");
         }
-    }          
+    }  
 
     public class Program
     {
         public static void Main()
         {
             var composition = new Composition();
-            Console.WriteLine(composition.Result);                                           
+            Console.WriteLine(composition.Result);
         }
     }
 }
@@ -241,17 +241,17 @@ namespace Sample
         {
             DI.Setup("Composition")
                 .Bind<string>().To(_ => "Abc")
-                .Bind<global::System.Collections.Generic.IComparer<TT>>().To(_ => global::System.Collections.Generic.Comparer<TT>.Default)                           
+                .Bind<global::System.Collections.Generic.IComparer<TT>>().To(_ => global::System.Collections.Generic.Comparer<TT>.Default)            
                 .Root<string>("Result");
         }
-    }          
+    }  
 
     public class Program
     {
         public static void Main()
         {
             var composition = new Composition();
-            Console.WriteLine(composition.Result);                                           
+            Console.WriteLine(composition.Result);
         }
     }
 }
@@ -290,14 +290,14 @@ namespace Sample
             DI.Setup("Composition").DependsOn("BaseComposition")
                 .Bind<string>().To(_ => "Xyz");
         }
-    }          
+    }  
 
     public class Program
     {
         public static void Main()
         {
             var composition = new Composition();
-            Console.WriteLine(composition.Result);                                           
+            Console.WriteLine(composition.Result);
         }
     }
 }
@@ -336,14 +336,14 @@ namespace Sample
             DI.Setup("Composition")
                 .Bind<string>().To(_ => "Xyz");
         }
-    }          
+    }  
 
     public class Program
     {
         public static void Main()
         {
             var composition = new Composition();
-            Console.WriteLine(composition.Result);                                           
+            Console.WriteLine(composition.Result);
         }
     }
 }
@@ -393,14 +393,14 @@ namespace Sample
                 .Bind<string>().To(_ => "Xyz")
                 .Root<IService>("Result");
         }
-    }          
+    }  
 
     public class Program
     {
         public static void Main()
         {
             var composition = new Composition();
-            Console.WriteLine(composition.Result.Dep);                                           
+            Console.WriteLine(composition.Result.Dep);
         }
     }
 }
@@ -436,7 +436,7 @@ namespace Sample.Models
     {
         public Service(IEnumerable<IDependency> deps)
         {             
-        }        
+        }
     }
 }
 
@@ -458,7 +458,7 @@ namespace Sample
                     ctx.Inject<IDependency>(out var dep1);
                     ctx.Inject<IDependency>(out var dep2);
                     return new List<IDependency> { dep1, dep2 };
-                })    
+                })
                 .Root<IService>("Service");
         }
     }
@@ -468,9 +468,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new MyNs.Abc.Composition();
-            Console.WriteLine(composition.GetType());                                           
+            Console.WriteLine(composition.GetType());
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -517,7 +517,7 @@ namespace Sample
                 .Bind<IService>().To<Service>()
                 .Root<IService>("Service")
                 .Root<OtherService>("OtherRoot", "Other");
-    }          
+    }  
 
     public class Program
     {
@@ -525,7 +525,7 @@ namespace Sample
         {
             var composition = new Composition();
             Console.WriteLine(composition.Service);
-            Console.WriteLine(composition.OtherRoot);                                           
+            Console.WriteLine(composition.OtherRoot);
         }
     }
 }
@@ -578,13 +578,13 @@ namespace Sample
             DI.Setup("Composition")
                 .Bind<IService>().To<Service>().Root<IService>();
         }
-    }          
+    }  
 
     public class Program
     {
         public static void Main()
         {
-            var composition = new Composition();                                                       
+            var composition = new Composition(); 
         }
     }
 }
@@ -635,14 +635,14 @@ internal interface IDependency { }
                 .Bind<IService1>().Bind<IService2>().Bind<IService3>().To<Service>()
                 .Root<IService2>("Service");
         }
-    }          
+    }  
 
     public class Program
     {
         public static void Main()
         {
             var composition = new Composition();  
-            IService2 service2 = composition.Service;                                                  
+            IService2 service2 = composition.Service;                           
         }
     }
 }
@@ -691,7 +691,7 @@ internal interface IDependency { }
                 .Root<IService2>("Service2")
                 .Root<IService3>("Service3");
         }
-    }          
+    }  
 
     public class Program
     {
@@ -699,7 +699,7 @@ internal interface IDependency { }
         {
             var composition = new Composition();  
             IService2 service2 = composition.Service2;
-            IService3 service3 = composition.Service3;                                                  
+            IService3 service3 = composition.Service3;                           
         }
     }
 }
@@ -959,7 +959,7 @@ namespace Sample
         [Ordinal(1)]
         internal void Initialize([Tag(374)] string depName)
         {
-            Console.WriteLine($"Initialize {depName}");            
+            Console.WriteLine($"Initialize {depName}");
         }
     }
     
@@ -972,7 +972,7 @@ namespace Sample
 
     interface IService
     {
-        IDependency Dep { get; }        
+        IDependency Dep { get; }
     }
 
     class Service: IService 
@@ -980,20 +980,20 @@ namespace Sample
         private IDependency _dep;
         public Service(IDisposable disposable, IDependency dep, IDependency2 dep2)
         { 
-            _dep = dep;           
+            _dep = dep;
         }
 
         public IDependency Dep => _dep;
         
         public void Run()
         {
-            Console.WriteLine("Run");            
+            Console.WriteLine("Run");
         }
 
         [Ordinal(7)]
         public void Activate()
         {
-            Console.WriteLine("Activate");            
+            Console.WriteLine("Activate");
         }
 
         [Ordinal(1)]
@@ -1012,7 +1012,7 @@ namespace Sample
                 .Bind<IDependency>().To<Dependency>()
                 .Bind<IDisposable>().Bind<IDependency2>().As(Lifetime.PerResolve).To<Dependency2>().Root<IDisposable>("Dependency2")
                 .Bind<IService>().To<Service>()
-                .Arg<string>("depName", 374)    
+                .Arg<string>("depName", 374)
                 .Root<IService>("Service");
         }
     }
@@ -1022,9 +1022,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition("dep");
-            var service = composition.Service;                                           
+            var service = composition.Service;                    
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -1399,7 +1399,7 @@ namespace Sample
             DI.Setup("Composition")
             .Bind<IService>("Abc").To<Service>()
             .Root<IService>(tag: "Abc"); 
-    }               
+    }       
 
     public class Program
     {
@@ -1452,7 +1452,7 @@ namespace Sample
                 return new Consumer(service);
             })
             .Root<Consumer>("Root"); 
-    }               
+    }       
 
     public class Program
     {
@@ -1494,7 +1494,7 @@ namespace Sample
                 .Bind(typeof(Service)).To<Service>()
                 .Root<IService>("Root1", typeof(Service))
                 .Root<Service>("Root2", typeof(Service)); 
-    }               
+    }       
 
     public class Program
     {
@@ -1544,7 +1544,7 @@ namespace Sample
                 .Bind().To<MyEnum2>()
                 .Root<MyEnum1>("Root1")
                 .Root<MyEnum2>("Root2"); 
-    }               
+    }       
 
     public class Program
     {
@@ -1594,7 +1594,7 @@ namespace Sample
                 .Bind().To<Dep2>()
                 .Root<Dep1>("Root1")
                 .Root<Dep2>("Root2"); 
-    }               
+    }       
 
     public class Program
     {
@@ -1642,14 +1642,14 @@ namespace Sample
             DI.Setup("Composition").DependsOn(["BaseComposition1", "BaseComposition2"])
                 .Root<(int, string)>("Root");
         }
-    }          
+    }  
 
     public class Program
     {
         public static void Main()
         {
             var composition = new Composition();
-            Console.WriteLine(composition.Root);                                           
+            Console.WriteLine(composition.Root);
         }
     }
 }
@@ -1711,14 +1711,14 @@ namespace Sample
                 .Root<IAbc>("Abc")
                 .Root<IXyz>("Xyz");
         }
-    }          
+    }  
 
     public class Program
     {
         public static void Main()
         {
             var composition = new Composition();
-            Console.WriteLine(composition.Dep);                                           
+            Console.WriteLine(composition.Dep);
             Console.WriteLine(composition.Abc);
             Console.WriteLine(composition.Xyz);
         }
@@ -1765,7 +1765,7 @@ namespace Sample
             DI.Setup()
                 .Bind<IDependency>().To<Dependency>();
         }
-    }          
+    }  
 
     public class Program
     {
@@ -1777,7 +1777,7 @@ namespace Sample
                 .Root<IService>("Root");
 
             var composition = new Composition();
-            System.Console.WriteLine(composition.Root);                                                       
+            System.Console.WriteLine(composition.Root); 
         }
     }
 }
@@ -1813,13 +1813,13 @@ namespace Sample
                 .Bind<string>().To(_ => "Abc")
                 .Root<string>("Root");
         }
-    }          
+    }  
 
     public class Program
     {
         public static void Main()
         {
-            var composition = new Composition();                                                       
+            var composition = new Composition(); 
         }
     }
 }
@@ -1854,13 +1854,13 @@ namespace Sample
                 .Bind<string>().To(_ => "Abc")
                 .Root<string>("Root");
         }
-    }          
+    }  
 
     public class Program
     {
         public static void Main()
         {
-            var composition = new Composition();                                                       
+            var composition = new Composition(); 
         }
     }
 }
@@ -1908,7 +1908,7 @@ namespace Sample
         {
             var composition = new Composition();
         }
-    }                
+    }
 }
 """.RunAsync();
 

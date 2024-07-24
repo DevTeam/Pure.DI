@@ -88,7 +88,7 @@ namespace Sample
                 Console.WriteLine(val);
             }
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -188,7 +188,7 @@ namespace Sample
                 Console.WriteLine(val);
             }
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -280,7 +280,7 @@ namespace Sample
                 }) 
                 .Bind<ICat>().To<ShroedingersCat>()
                 // Represents a cardboard box with any content
-                .Bind<IBox<TT>>().To<CardboardBox<TT>>()                
+                .Bind<IBox<TT>>().To<CardboardBox<TT>>() 
                 // Composition Root
                 .Root<(Program program, Accumulator acc)>("Root");
         }
@@ -294,7 +294,7 @@ namespace Sample
 
         public static void Main()
         {
-            var composition = new Composition();            
+            var composition = new Composition();
             var root = composition.Root;
             Console.WriteLine(root);
             foreach(var dep in root.acc.Items)
@@ -304,7 +304,7 @@ namespace Sample
 
             Console.WriteLine("Program created");
         }
-    }                
+    }
 }
 """.RunAsync(new Options
         {
@@ -343,7 +343,7 @@ namespace Sample
     {
         public Service(IDependency dep)
         { 
-            Dep = dep;           
+            Dep = dep;
         }
 
         public IDependency Dep { get; }
@@ -358,7 +358,7 @@ namespace Sample
             DI.Setup("Composition")
                 .Bind<IDependency>().As(Lifetime.PerResolve).To(ctx => new Dependency())
                 .Bind<IService>().To<Service>()
-                .Accumulate<object, MyAccumulator>(Lifetime.Transient, Lifetime.PerBlock)    
+                .Accumulate<object, MyAccumulator>(Lifetime.Transient, Lifetime.PerBlock)
                 .Root<(IService service, MyAccumulator acc)>("Service");
         }
     }
@@ -372,7 +372,7 @@ namespace Sample
             var service = root.service;
             root.acc.ForEach(i => Console.WriteLine(i));
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -681,7 +681,7 @@ namespace Sample
                 Console.WriteLine(val);
             }
         }
-    }                
+    }
 }
 """.RunAsync(new Options { LanguageVersion = LanguageVersion.CSharp12 });
 

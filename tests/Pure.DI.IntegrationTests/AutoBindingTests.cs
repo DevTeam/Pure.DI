@@ -35,7 +35,7 @@ namespace Sample
         private static void SetupComposition()
         {
             DI.Setup("Composition")
-                .Bind<IService>().As(Lifetime.Transient).To<Service>()               
+                .Bind<IService>().As(Lifetime.Transient).To<Service>()
                 .Root<IService>("Service");
         }
     }
@@ -44,9 +44,9 @@ namespace Sample
     {
         public static void Main()
         {
-            var service = new Composition().Service;                                
+            var service = new Composition().Service;         
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -93,7 +93,7 @@ namespace Sample
         private static void SetupComposition()
         {
             DI.Setup("Composition")
-                .Bind<IService>().As(Lifetime.Transient).To<Service>()               
+                .Bind<IService>().As(Lifetime.Transient).To<Service>()
                 .Root<IService>("Service");
         }
     }
@@ -102,9 +102,9 @@ namespace Sample
     {
         public static void Main()
         {
-            var service = new Composition().Service;                                
+            var service = new Composition().Service;         
         }
-    }                
+    }
 }
 """.RunAsync();
 

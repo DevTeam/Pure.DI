@@ -22,7 +22,7 @@ namespace Sample
 
     internal class Service : IService
     {
-        public Service(IDependency dependency) { }        
+        public Service(IDependency dependency) { }
     }
 
     internal abstract partial class CompositionBase
@@ -51,9 +51,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();
-            var service = composition.Root;            
+            var service = composition.Root;
         }
-    }                
+    }
 }
 """.RunAsync(new Options(LanguageVersion.CSharp9));
 
@@ -81,7 +81,7 @@ namespace Sample
 
     internal class Service : IService
     {
-        public Service(IDependency dependency) { }        
+        public Service(IDependency dependency) { }
     }
 
     internal abstract partial class CompositionBase
@@ -110,9 +110,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();
-            var service = composition.Root;            
+            var service = composition.Root;
         }
-    }                
+    }
 }
 """.RunAsync(new Options(LanguageVersion.CSharp9));
 
@@ -158,9 +158,9 @@ namespace Sample
 
     internal partial class Composition
     {
-        partial void OnNewInstance<T>(ref T value, object? tag, Lifetime lifetime)            
+        partial void OnNewInstance<T>(ref T value, object? tag, Lifetime lifetime) 
         {
-            Console.WriteLine($"{typeof(T)} '{tag}' {lifetime} created");            
+            Console.WriteLine($"{typeof(T)} '{tag}' {lifetime} created");
         }
     }
 
@@ -181,9 +181,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();
-            var service = composition.Root;            
+            var service = composition.Root;
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -218,7 +218,7 @@ namespace Sample
         public Service(IDependency dep)
         { 
             Dep = dep;
-            Console.WriteLine("Created");           
+            Console.WriteLine("Created");
         }
 
         public IDependency Dep { get; }
@@ -226,19 +226,19 @@ namespace Sample
 
     internal partial class Composition
     {
-        partial void OnNewInstance<T>(ref T value, object? tag, Lifetime lifetime)            
+        partial void OnNewInstance<T>(ref T value, object? tag, Lifetime lifetime) 
         {
-            Console.WriteLine($"{typeof(T)} '{tag}' {lifetime} created");            
+            Console.WriteLine($"{typeof(T)} '{tag}' {lifetime} created");
         }
 
-        private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime)            
+        private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime) 
         {
-            return value;                  
+            return value;      
         }
         
-        private static partial void OnNewRoot<TContract, T>(global::Pure.DI.IResolver<Composition, TContract> resolver, string name, object? tag, global::Pure.DI.Lifetime lifetime)            
+        private static partial void OnNewRoot<TContract, T>(global::Pure.DI.IResolver<Composition, TContract> resolver, string name, object? tag, global::Pure.DI.Lifetime lifetime) 
         {
-            Console.WriteLine($"New composition root \"{name}\" {typeof(TContract)} -> {typeof(T)} '{tag}' {lifetime}");            
+            Console.WriteLine($"New composition root \"{name}\" {typeof(TContract)} -> {typeof(T)} '{tag}' {lifetime}");
         }
     }
 
@@ -254,7 +254,7 @@ namespace Sample
                 .Bind<IService>(123).To(ctx => {
                     ctx.Inject<IDependency>(ctx.Tag, out var dependency);
                     return new Service(dependency);
-                })    
+                })
                 .Root<IService>("Service", 123);
         }
     }
@@ -264,9 +264,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();      
-            var service = composition.Service;                                                 
+            var service = composition.Service;                          
         }
-    }                
+    }
 }
 """.RunAsync(new Options(LanguageVersion.CSharp9));
 
@@ -313,10 +313,10 @@ namespace Sample
 
     internal partial class Composition
     {
-        private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime)            
+        private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime) 
         {
             Console.WriteLine($"{typeof(T)} '{tag}' {lifetime} injected");
-            return value;                  
+            return value;      
         }
     }
 
@@ -337,9 +337,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();
-            var service = composition.Root;            
+            var service = composition.Root;
         }
-    }                
+    }
 }
 """.RunAsync(new Options(LanguageVersion.CSharp9));
 
@@ -386,10 +386,10 @@ namespace Sample
 
     internal partial class Composition
     {
-        private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime)            
+        private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime) 
         {
             Console.WriteLine($"{typeof(T)} '{tag}' {lifetime} injected");
-            return value;                  
+            return value;      
         }
     }
 
@@ -412,9 +412,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();
-            var service = composition.Root;            
+            var service = composition.Root;
         }
-    }                
+    }
 }
 """.RunAsync(new Options(LanguageVersion.CSharp9));
 
@@ -461,10 +461,10 @@ namespace Sample
 
     internal partial class Composition
     {
-        private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime)            
+        private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime) 
         {
             Console.WriteLine($"{typeof(T)} '{tag}' {lifetime} injected");
-            return value;                  
+            return value;      
         }
     }
 
@@ -487,9 +487,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();
-            var service = composition.Root;            
+            var service = composition.Root;
         }
-    }                
+    }
 }
 """.RunAsync(new Options(LanguageVersion.CSharp9));
 
@@ -536,10 +536,10 @@ namespace Sample
 
     internal partial class Composition
     {
-        private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime)            
+        private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime) 
         {
             Console.WriteLine($"{typeof(T)} '{tag}' {lifetime} injected");
-            return value;                  
+            return value;      
         }
     }
 
@@ -561,9 +561,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();
-            var service = composition.Root;            
+            var service = composition.Root;
         }
-    }                
+    }
 }
 """.RunAsync(new Options(LanguageVersion.CSharp9));
 
@@ -617,12 +617,12 @@ namespace Sample
 
     internal partial class Composition
     {
-        private partial T OnCannotResolve<T>(object? tag, Lifetime lifetime)            
+        private partial T OnCannotResolve<T>(object? tag, Lifetime lifetime) 
         {
             if (typeof(T) == typeof(string))
             {
                 return (T)(object)"MyService";
-            }            
+            }    
 
             if (typeof(T) == typeof(int) && Equals(tag, "some ID"))
             {
@@ -650,9 +650,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();
-            var service = composition.Root;            
+            var service = composition.Root;
         }
-    }                
+    }
 }
 """.RunAsync(new Options(LanguageVersion.CSharp9));
 
@@ -706,14 +706,14 @@ namespace Sample
 
     internal partial class Composition
     {
-        private partial T OnCannotResolve<T>(object? tag, Lifetime lifetime)            
+        private partial T OnCannotResolve<T>(object? tag, Lifetime lifetime) 
         {
             Console.WriteLine($"{typeof(T).Name} created");
         
             if (typeof(T) == typeof(string))
             {
                 return (T)(object)"MyService";
-            }            
+            }    
 
             if (typeof(T) == typeof(int) && Equals(tag, "some ID"))
             {
@@ -741,9 +741,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();
-            var service1 = composition.Root;            
+            var service1 = composition.Root;
         }
-    }                
+    }
 }
 """.RunAsync(new Options(LanguageVersion.CSharp9));
 
@@ -797,12 +797,12 @@ namespace Sample
 
     internal partial class Composition
     {
-        private partial T OnCannotResolve<T>(object? tag, Lifetime lifetime)            
+        private partial T OnCannotResolve<T>(object? tag, Lifetime lifetime) 
         {
             if (typeof(T) == typeof(string))
             {
                 return (T)(object)"MyService";
-            }            
+            }    
 
             if (typeof(T) == typeof(int) && Equals(tag, "some ID"))
             {
@@ -831,9 +831,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();
-            var service = composition.Root;            
+            var service = composition.Root;
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -886,12 +886,12 @@ namespace Sample
 
     internal partial class Composition
     {
-        private partial T OnCannotResolve<T>(object? tag, Lifetime lifetime)            
+        private partial T OnCannotResolve<T>(object? tag, Lifetime lifetime) 
         {
             if (typeof(T) == typeof(string) && lifetime == Lifetime.Transient)
             {
                 return (T)(object)"MyService";
-            }            
+            }    
 
             if (typeof(T) == typeof(int) && Equals(tag, "some ID") && lifetime == Lifetime.Singleton)
             {
@@ -920,9 +920,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();
-            var service = composition.Root;            
+            var service = composition.Root;
         }
-    }                
+    }
 }
 """.RunAsync();
 
@@ -958,17 +958,17 @@ namespace Sample
         public Service(IDependency<T> dependency)
         {
             Console.WriteLine($"Service with {dependency} created");
-        }        
+        }
     }
 
     internal partial class Composition
     {
-        private partial T OnCannotResolve<T>(object? tag, Lifetime lifetime)            
+        private partial T OnCannotResolve<T>(object? tag, Lifetime lifetime) 
         {
             if (typeof(T) == typeof(IDependency<string>))
             {
                 return (T)(object)new Dependency<string>();
-            }            
+            }    
 
             throw new Exception("Cannot resolve."); 
         }
@@ -990,9 +990,9 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();
-            var service = composition.Root;            
+            var service = composition.Root;
         }
-    }                
+    }
 }
 """.RunAsync(new Options(LanguageVersion.CSharp9));
 
@@ -1040,12 +1040,12 @@ namespace Sample
 
             internal partial class Composition
             {
-                private partial T OnCannotResolve<T>(object? tag, Lifetime lifetime)            
+                private partial T OnCannotResolve<T>(object? tag, Lifetime lifetime) 
                 {
                     if (typeof(T) == typeof(string))
                     {
                         return (T)(object)"MyService";
-                    }            
+                    }    
 
                     if (typeof(T) == typeof(int) && Equals(tag, "some ID"))
                     {
@@ -1074,9 +1074,9 @@ namespace Sample
                 public static void Main()
                 {
                     var composition = new Composition();
-                    var service = composition.Root;            
+                    var service = composition.Root;
                 }
-            }                
+            }
         }
         """.RunAsync(new Options(LanguageVersion.Preview));
 
@@ -1127,9 +1127,9 @@ namespace Sample
 
     internal partial class Composition
     {
-        private static partial void OnNewRoot<TContract, T>(global::Pure.DI.IResolver<Composition, TContract> resolver, string name, object? tag, global::Pure.DI.Lifetime lifetime)            
+        private static partial void OnNewRoot<TContract, T>(global::Pure.DI.IResolver<Composition, TContract> resolver, string name, object? tag, global::Pure.DI.Lifetime lifetime) 
         {
-            Console.WriteLine($"New composition root \"{name}\" {typeof(TContract)} -> {typeof(T)} '{tag}' {lifetime}");            
+            Console.WriteLine($"New composition root \"{name}\" {typeof(TContract)} -> {typeof(T)} '{tag}' {lifetime}");
         }
     }
 
@@ -1153,9 +1153,9 @@ namespace Sample
         {
             var composition = new Composition();
             var service = composition.Root;
-            var service2 = composition.Service2;            
+            var service2 = composition.Service2;
         }
-    }                
+    }
 }
 """.RunAsync(new Options(LanguageVersion.CSharp9));
 

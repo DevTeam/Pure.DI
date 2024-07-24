@@ -74,7 +74,7 @@ namespace Sample
                 }) 
                 .Bind<ICat>().To<ShroedingersCat>()
                 // Represents a cardboard box with any content
-                .Bind<IBox<TT>>().To<CardboardBox<TT>>()                
+                .Bind<IBox<TT>>().To<CardboardBox<TT>>() 
                 // Composition Root
                 .Root<Program>("Root");
         }
@@ -90,11 +90,11 @@ namespace Sample
 
         public static void Main()
         {
-            var composition = new Composition();            
+            var composition = new Composition();
             composition.Root.Run();
             Console.WriteLine(composition);
         }
-    }                
+    }
 }
 """.RunAsync(new Options
         {
