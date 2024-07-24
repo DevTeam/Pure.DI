@@ -64,12 +64,12 @@ internal sealed class MetadataValidator(
         {
             if (marker.IsMarkerBased(setup, accumulator.AccumulatorType))
             {
-                logger.CompileError("Accumulator based on marker type is not supported.", accumulator.Source.GetLocation(), LogId.ErrorInvalidMetadata);
+                logger.CompileError("The accumulator type cannot be based on a generic type marker.", accumulator.Source.GetLocation(), LogId.ErrorInvalidMetadata);
             }
             
             if (marker.IsMarkerBased(setup, accumulator.Type))
             {
-                logger.CompileError("The accumulator cannot accumulate instances based on marker type.", accumulator.Source.GetLocation(), LogId.ErrorInvalidMetadata);
+                logger.CompileError("The accumulator cannot accumulate instances based on a generic type marker.", accumulator.Source.GetLocation(), LogId.ErrorInvalidMetadata);
             }
         }
 
@@ -80,6 +80,10 @@ internal sealed class MetadataValidator(
 
         return true;
     }
+    
+    private static bool IsValidIdentifier(string identifier) => 
+        !string.IsNullOrEmpty(identifier)
+        && SyntaxFacts.IsValidIdentifier(identifier);
 
     private static bool IsValidOrEmptyIdentifier(string identifier) => 
         string.IsNullOrEmpty(identifier)
@@ -113,10 +117,15 @@ internal sealed class MetadataValidator(
                     semanticModel = arg.SemanticModel;
                     implementationType = arg.Type;
                     location = arg.Source.GetLocation();
-                    if (!SyntaxFacts.IsValidIdentifier(arg.ArgName))
+                    if (!IsValidIdentifier(arg.ArgName))
                     {
                         logger.CompileError($"Invalid argument name \"{arg.ArgName}\".", location, LogId.ErrorInvalidMetadata);
                         isValid = false;
+                    }
+                    
+                    if (marker.IsMarkerBased(setup, arg.Type))
+                    {
+                        logger.CompileError("The argument type cannot be based on a generic type marker.", location, LogId.ErrorInvalidMetadata);
                     }
                 }
             }
