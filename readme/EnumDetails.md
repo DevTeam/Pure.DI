@@ -83,6 +83,7 @@ partial class Enum
 {
   private readonly Enum _root;
 
+  [OrdinalAttribute(20)]
   public Enum()
   {
     _root = this;

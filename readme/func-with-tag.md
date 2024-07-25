@@ -44,6 +44,7 @@ partial class Composition
   private readonly Composition _root;
   private readonly object _lock;
 
+  [OrdinalAttribute(20)]
   public Composition()
   {
     _root = this;
@@ -72,8 +73,8 @@ partial class Composition
                   [MethodImpl(MethodImplOptions.AggressiveInlining)]
                   () =>
                   {
-                      IDependency localValue20 = new Dependency();
-                      return localValue20;
+                      IDependency localValue27 = new Dependency();
+                      return localValue27;
                   });
               }
           }

@@ -51,6 +51,7 @@ partial class Composition
 
   private readonly string _argName;
 
+  [OrdinalAttribute(10)]
   public Composition(string name)
   {
     _argName = name ?? throw new ArgumentNullException(nameof(name));

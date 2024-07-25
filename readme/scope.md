@@ -93,6 +93,7 @@ partial class Composition: IDisposable
 
   private Dependency? _scopedDependency39;
 
+  [OrdinalAttribute(20)]
   public Composition()
   {
     _root = this;
@@ -145,8 +146,8 @@ partial class Composition: IDisposable
                   () =>
                   {
                       Composition transientComposition2 = this;
-                      Session localValue55 = new Session(transientComposition2);
-                      return localValue55;
+                      Session localValue62 = new Session(transientComposition2);
+                      return localValue62;
                   });
               }
           }

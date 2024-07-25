@@ -63,6 +63,7 @@ partial class Transient
 {
   private readonly Transient _root;
 
+  [OrdinalAttribute(20)]
   public Transient()
   {
     _root = this;

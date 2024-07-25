@@ -70,6 +70,7 @@ partial class Composition
   private readonly Composition _root;
   private readonly object _lock;
 
+  [OrdinalAttribute(10)]
   public Composition()
   {
     _root = this;
@@ -92,11 +93,11 @@ partial class Composition
     TaskCreationOptions transientTaskCreationOptions2 = TaskCreationOptions.None;
     TaskFactory<IService<T, bool>> perBlockTaskFactory1;
     {
-        CancellationToken localCancellationToken34 = cancellationToken;
-        TaskCreationOptions localTaskCreationOptions35 = transientTaskCreationOptions2;
-        TaskContinuationOptions localTaskContinuationOptions36 = transientTaskContinuationOptions3;
-        TaskScheduler localTaskScheduler37 = transientTaskScheduler4;
-        perBlockTaskFactory1 = new TaskFactory<IService<T, bool>>(localCancellationToken34, localTaskCreationOptions35, localTaskContinuationOptions36, localTaskScheduler37);
+        CancellationToken localCancellationToken41 = cancellationToken;
+        TaskCreationOptions localTaskCreationOptions42 = transientTaskCreationOptions2;
+        TaskContinuationOptions localTaskContinuationOptions43 = transientTaskContinuationOptions3;
+        TaskScheduler localTaskScheduler44 = transientTaskScheduler4;
+        perBlockTaskFactory1 = new TaskFactory<IService<T, bool>>(localCancellationToken41, localTaskCreationOptions42, localTaskContinuationOptions43, localTaskScheduler44);
     }
 
     if (perResolveFunc48 == null)
@@ -111,12 +112,12 @@ partial class Composition
                 {
                     OtherService<T> transientOtherService5;
                     {
-                        IDependency<T> localDependency39 = new Dependency<T>();
-                        transientOtherService5 = new OtherService<T>(localDependency39);
+                        IDependency<T> localDependency46 = new Dependency<T>();
+                        transientOtherService5 = new OtherService<T>(localDependency46);
                     }
 
-                    IService<T, bool> localValue38 = transientOtherService5;
-                    return localValue38;
+                    IService<T, bool> localValue45 = transientOtherService5;
+                    return localValue45;
                 });
             }
         }
@@ -124,9 +125,9 @@ partial class Composition
 
     Task<IService<T, bool>> transientTask0;
     {
-        Func<IService<T, bool>> localFactory40 = perResolveFunc48!;
-        TaskFactory<IService<T, bool>> localTaskFactory41 = perBlockTaskFactory1;
-        transientTask0 = localTaskFactory41.StartNew(localFactory40);
+        Func<IService<T, bool>> localFactory47 = perResolveFunc48!;
+        TaskFactory<IService<T, bool>> localTaskFactory48 = perBlockTaskFactory1;
+        transientTask0 = localTaskFactory48.StartNew(localFactory47);
     }
 
     return transientTask0;
@@ -143,11 +144,11 @@ partial class Composition
     TaskCreationOptions transientTaskCreationOptions2 = TaskCreationOptions.None;
     TaskFactory<IService<T, T1>> perBlockTaskFactory1;
     {
-        CancellationToken localCancellationToken42 = cancellationToken;
-        TaskCreationOptions localTaskCreationOptions43 = transientTaskCreationOptions2;
-        TaskContinuationOptions localTaskContinuationOptions44 = transientTaskContinuationOptions3;
-        TaskScheduler localTaskScheduler45 = transientTaskScheduler4;
-        perBlockTaskFactory1 = new TaskFactory<IService<T, T1>>(localCancellationToken42, localTaskCreationOptions43, localTaskContinuationOptions44, localTaskScheduler45);
+        CancellationToken localCancellationToken49 = cancellationToken;
+        TaskCreationOptions localTaskCreationOptions50 = transientTaskCreationOptions2;
+        TaskContinuationOptions localTaskContinuationOptions51 = transientTaskContinuationOptions3;
+        TaskScheduler localTaskScheduler52 = transientTaskScheduler4;
+        perBlockTaskFactory1 = new TaskFactory<IService<T, T1>>(localCancellationToken49, localTaskCreationOptions50, localTaskContinuationOptions51, localTaskScheduler52);
     }
 
     if (perResolveFunc50 == null)
@@ -160,8 +161,8 @@ partial class Composition
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 () =>
                 {
-                    IService<T, T1> localValue46 = new Service<T, T1>(new Dependency<T>());
-                    return localValue46;
+                    IService<T, T1> localValue53 = new Service<T, T1>(new Dependency<T>());
+                    return localValue53;
                 });
             }
         }
@@ -169,9 +170,9 @@ partial class Composition
 
     Task<IService<T, T1>> transientTask0;
     {
-        Func<IService<T, T1>> localFactory47 = perResolveFunc50!;
-        TaskFactory<IService<T, T1>> localTaskFactory48 = perBlockTaskFactory1;
-        transientTask0 = localTaskFactory48.StartNew(localFactory47);
+        Func<IService<T, T1>> localFactory54 = perResolveFunc50!;
+        TaskFactory<IService<T, T1>> localTaskFactory55 = perBlockTaskFactory1;
+        transientTask0 = localTaskFactory55.StartNew(localFactory54);
     }
 
     return transientTask0;

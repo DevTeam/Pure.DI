@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>CS1591</NoWarn>
+        <RootNamespace>Pure.DI.Integration</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\Pure.DI.Core\Pure.DI.Core.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
+        <ProjectReference Include="..\..\src\Pure.DI\Pure.DI.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
+    </ItemGroup>
+
+</Project>

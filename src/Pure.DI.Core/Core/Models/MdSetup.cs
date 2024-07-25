@@ -23,15 +23,15 @@ internal record MdSetup(
     IReadOnlyCollection<string> Comments,
     ITypeConstructor? TypeConstructor = default)
 {
-    private readonly Lazy<HashSet<ITypeSymbol>> _genericTypeArgumentTypes =
-        new(() => new HashSet<ITypeSymbol>(GenericTypeArguments.Select(i => i.Type), SymbolEqualityComparer.Default));
+    private readonly Lazy<HashSet<string>> _genericTypeArgumentTypes =
+        new(() => [..GenericTypeArguments.Select(i => i.Type.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat))]);
     
-    private readonly Lazy<HashSet<ITypeSymbol>> _genericTypeArgumentAttributesTypes =
-        new(() => new HashSet<ITypeSymbol>(GenericTypeArgumentAttributes.Select(i => i.AttributeType), SymbolEqualityComparer.Default));
+    private readonly Lazy<HashSet<string>> _genericTypeArgumentAttributesTypes =
+        new(() => [..GenericTypeArgumentAttributes.Select(i => i.AttributeType.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat))]);
     
     public bool IsGenericTypeArgument(ITypeSymbol typeSymbol) =>
-        _genericTypeArgumentTypes.Value.Contains(typeSymbol);
+        _genericTypeArgumentTypes.Value.Contains(typeSymbol.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat));
 
     public bool IsGenericTypeArgumentAttribute(ITypeSymbol typeSymbol) =>
-        _genericTypeArgumentAttributesTypes.Value.Contains(typeSymbol);
+        _genericTypeArgumentAttributesTypes.Value.Contains(typeSymbol.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat));
 }

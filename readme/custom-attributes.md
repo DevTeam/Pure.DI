@@ -79,6 +79,7 @@ partial class PersonComposition
 
   private readonly int _argPersonId;
 
+  [OrdinalAttribute(10)]
   public PersonComposition(int personId)
   {
     _argPersonId = personId;

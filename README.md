@@ -292,6 +292,12 @@ dotnet run
 - [Tracking disposable instances in delegates](readme/tracking-disposable-instances-in-delegates.md)
 - [Tracking async disposable instances per a composition root](readme/tracking-async-disposable-instances-per-a-composition-root.md)
 - [Tracking async disposable instances in delegates](readme/tracking-async-disposable-instances-in-delegates.md)
+- [Exposed roots](readme/exposed-roots.md)
+- [Exposed roots with tags](readme/exposed-roots-with-tags.md)
+- [Exposed roots via arg](readme/exposed-roots-via-arg.md)
+- [Exposed roots via root arg](readme/exposed-roots-via-root-arg.md)
+- [Exposed generic roots](readme/exposed-generic-roots.md)
+- [Exposed generic roots it args](readme/exposed-generic-roots-it-args.md)
 ### Applications
 - Console
   - [Schrödinger's cat](readme/Console.md)

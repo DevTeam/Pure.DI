@@ -84,6 +84,12 @@ internal sealed class RootMethodsBuilder(
         }
         
         name.Append(rootArgsStr);
+
+        if ((root.Kind & RootKinds.Exposed) == RootKinds.Exposed)
+        {
+            code.AppendLine($"[{Names.BindAttributeName}(typeof({root.Injection.Type}), {Names.GeneratorName}.Lifetime.Transient, {root.Injection.Tag.ValueToString()})]");
+        }
+        
         if (root.IsMethod)
         {
             code.AppendLine($"[{Names.MethodImplAttributeName}({Names.MethodImplAggressiveInlining})]");

@@ -55,6 +55,7 @@ partial class Composition
   private (IDependency dep3, IDependency dep4) _singletonValueTuple40;
   private bool _singletonValueTuple40Created;
 
+  [OrdinalAttribute(20)]
   public Composition()
   {
     _root = this;

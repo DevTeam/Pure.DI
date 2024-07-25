@@ -78,6 +78,7 @@ partial class Composition
   private readonly Composition _root;
   private readonly object _lock;
 
+  [OrdinalAttribute(10)]
   public Composition()
   {
     _root = this;
@@ -104,8 +105,8 @@ partial class Composition
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 () =>
                 {
-                    IDependency localValue23 = new Dependency();
-                    return localValue23;
+                    IDependency localValue30 = new Dependency();
+                    return localValue30;
                 });
             }
         }
@@ -113,9 +114,9 @@ partial class Composition
 
     Task<IDependency> transientTask1;
     {
-        Func<IDependency> localFactory24 = perResolveFunc45!;
-        CancellationToken localCancellationToken25 = cancellationToken;
-        transientTask1 = new Task<IDependency>(localFactory24, localCancellationToken25);
+        Func<IDependency> localFactory31 = perResolveFunc45!;
+        CancellationToken localCancellationToken32 = cancellationToken;
+        transientTask1 = new Task<IDependency>(localFactory31, localCancellationToken32);
     }
 
     return new Service(transientTask1);

@@ -67,6 +67,7 @@ partial class Composition
 {
   private readonly Composition _root;
 
+  [OrdinalAttribute(20)]
   public Composition()
   {
     _root = this;
@@ -83,8 +84,8 @@ partial class Composition
   {
     OtherService<T> transientOtherService0;
     {
-        IDependency<T> localDependency49 = new Dependency<T>();
-        transientOtherService0 = new OtherService<T>(localDependency49);
+        IDependency<T> localDependency56 = new Dependency<T>();
+        transientOtherService0 = new OtherService<T>(localDependency56);
     }
 
     return transientOtherService0;

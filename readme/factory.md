@@ -72,6 +72,7 @@ partial class Composition
 {
   private readonly Composition _root;
 
+  [OrdinalAttribute(20)]
   public Composition()
   {
     _root = this;
@@ -90,9 +91,9 @@ partial class Composition
       DateTimeOffset transientDateTimeOffset3 = DateTimeOffset.Now;
       Dependency transientDependency1;
       {
-          Dependency localDependency17 = new Dependency(transientDateTimeOffset3);
-          localDependency17.Initialize();
-          transientDependency1 = localDependency17;
+          Dependency localDependency24 = new Dependency(transientDateTimeOffset3);
+          localDependency24.Initialize();
+          transientDependency1 = localDependency24;
       }
 
       return new Service(transientDependency1);

@@ -7,7 +7,9 @@ internal static class CompilationExtensions
     public static IReadOnlyList<AttributeData> GetAttributes(this ISymbol member, INamedTypeSymbol attributeType) =>
         member
             .GetAttributes()
-            .Where(attr => attr.AttributeClass != null && SymbolEqualityComparer.Default.Equals(GetUnboundTypeSymbol(attr.AttributeClass), attributeType))
+            .Where(attr => 
+                attr.AttributeClass != null
+                && GetUnboundTypeSymbol(attr.AttributeClass)?.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat) == attributeType.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat))
             .ToArray();
 
     public static LanguageVersion GetLanguageVersion(this Compilation compilation) =>

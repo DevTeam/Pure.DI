@@ -77,6 +77,7 @@ partial class Composition
 
   private Dependency? _scopedDependency39;
 
+  [OrdinalAttribute(20)]
   public Composition()
   {
     _root = this;
@@ -108,14 +109,14 @@ partial class Composition
                       Composition transientComposition2 = this;
                       IService transientIService1;
                       {
-                          Composition localBaseComposition53 = transientComposition2;
+                          Composition localBaseComposition60 = transientComposition2;
                           // Creates a session
-                          var localSession54 = new Composition(localBaseComposition53);
-                          transientIService1 = localSession54.SessionRoot;
+                          var localSession61 = new Composition(localBaseComposition60);
+                          transientIService1 = localSession61.SessionRoot;
                       }
 
-                      IService localValue52 = transientIService1;
-                      return localValue52;
+                      IService localValue59 = transientIService1;
+                      return localValue59;
                   });
               }
           }

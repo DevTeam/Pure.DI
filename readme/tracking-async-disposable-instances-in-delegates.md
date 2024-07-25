@@ -78,6 +78,7 @@ partial class Composition
   private readonly Composition _root;
   private readonly object _lock;
 
+  [OrdinalAttribute(20)]
   public Composition()
   {
     _root = this;
@@ -115,9 +116,9 @@ partial class Composition
 
                       Owned<IDependency> perBlockOwned1;
                       {
-                          Owned localOwned1 = accumulator41;
-                          IDependency localValue2 = transientDependency3;
-                          perBlockOwned1 = new Owned<IDependency>(localValue2, localOwned1);
+                          Owned localOwned8 = accumulator41;
+                          IDependency localValue9 = transientDependency3;
+                          perBlockOwned1 = new Owned<IDependency>(localValue9, localOwned8);
                       }
 
                       lock (_lock)
@@ -125,8 +126,8 @@ partial class Composition
                           accumulator41.Add(perBlockOwned1);
                       }
 
-                      Owned<IDependency> localValue0 = perBlockOwned1;
-                      return localValue0;
+                      Owned<IDependency> localValue7 = perBlockOwned1;
+                      return localValue7;
                   });
               }
           }

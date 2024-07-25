@@ -66,6 +66,7 @@ partial class Singleton
   private Service1? _scopedService140;
   private Service4? _scopedService443;
 
+  [OrdinalAttribute(20)]
   public Singleton()
   {
     _root = this;

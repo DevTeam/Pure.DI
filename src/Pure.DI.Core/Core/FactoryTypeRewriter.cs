@@ -51,6 +51,11 @@ internal sealed class FactoryTypeRewriter(
         }
         
         var semanticModel = _context.State.SemanticModel;
+        if (identifier.SyntaxTree != semanticModel.SyntaxTree)
+        {
+            return identifier;
+        }
+
         var symbol = semanticModel.GetSymbolInfo(identifier).Symbol;
         if (symbol is not ITypeSymbol type || !marker.IsMarkerBased(_context.Setup, type))
         {
@@ -63,5 +68,46 @@ internal sealed class FactoryTypeRewriter(
             SyntaxFactory.Identifier(newTypeName))
                 .WithLeadingTrivia(node.Identifier.LeadingTrivia)
                 .WithTrailingTrivia(node.Identifier.TrailingTrivia);
+    }
+
+    public override SyntaxNode? VisitTypeArgumentList(TypeArgumentListSyntax node)
+    {
+        var newArgs = new List<TypeSyntax>();
+        var hasMarkerBased = false;
+        var semanticModel = _context.Setup.SemanticModel;
+        foreach (var arg in node.Arguments)
+        {
+            var typeName = arg.ToString();
+            var isFound = false;
+            foreach (var type in semanticModel.Compilation.GetTypesByMetadataName(typeName))
+            {
+                if (!marker.IsMarkerBased(_context.Setup, type))
+                {
+                    newArgs.Add(arg);
+                    isFound = true;
+                    break;
+                }
+
+                hasMarkerBased = true;
+                var constructedType = _context.TypeConstructor.Construct(_context.Setup, semanticModel.Compilation, type);
+                if (SymbolEqualityComparer.Default.Equals(type, constructedType))
+                {
+                    continue;
+                }
+                
+                newArgs.Add(SyntaxFactory.ParseTypeName(constructedType.ToString()));
+                isFound = true;
+                break;
+            }
+
+            if (!isFound)
+            {
+                return base.VisitTypeArgumentList(node);
+            }
+        }
+
+        return hasMarkerBased
+            ? SyntaxFactory.TypeArgumentList().AddArguments(newArgs.ToArray())
+            : base.VisitTypeArgumentList(node);
     }
 }

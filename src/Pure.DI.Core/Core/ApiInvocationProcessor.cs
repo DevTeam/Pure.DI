@@ -1,4 +1,5 @@
 // ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable ConvertIfStatementToConditionalTernaryExpression
 namespace Pure.DI.Core;
 
 using Microsoft.CodeAnalysis.Operations;
@@ -186,18 +187,21 @@ internal class ApiInvocationProcessor(
                             switch (invocation.ArgumentList.Arguments)
                             {
                                 case [{ Expression: LambdaExpressionSyntax lambdaExpression }]:
-                                    VisitFactory(metadataVisitor, semanticModel, semantic.GetTypeSymbol<ITypeSymbol>(semanticModel, implementationTypeSyntax), lambdaExpression);
+                                    var factoryType = semantic.GetTypeSymbol<ITypeSymbol>(semanticModel, implementationTypeSyntax);
+                                    VisitFactory(metadataVisitor, semanticModel, factoryType, lambdaExpression);
                                     break;
                                 
                                 case [{ Expression: LiteralExpressionSyntax { Token.Value: string sourceCodeStatement } }]:
                                     var lambda = SyntaxFactory
                                         .SimpleLambdaExpression(SyntaxFactory.Parameter(SyntaxFactory.Identifier("_")))
                                         .WithExpressionBody(SyntaxFactory.IdentifierName(sourceCodeStatement));
-                                    VisitFactory(metadataVisitor, semanticModel, semantic.GetTypeSymbol<ITypeSymbol>(semanticModel, implementationTypeSyntax), lambda, true);
+                                    factoryType = semantic.GetTypeSymbol<ITypeSymbol>(semanticModel, implementationTypeSyntax);
+                                    VisitFactory(metadataVisitor, semanticModel, factoryType, lambda, true);
                                     break;
 
                                 case []:
-                                    metadataVisitor.VisitImplementation(new MdImplementation(semanticModel, implementationTypeSyntax, semantic.GetTypeSymbol<INamedTypeSymbol>(semanticModel, implementationTypeSyntax)));
+                                    var implementationType = semantic.GetTypeSymbol<INamedTypeSymbol>(semanticModel, implementationTypeSyntax);
+                                    metadataVisitor.VisitImplementation(new MdImplementation(semanticModel, implementationTypeSyntax, implementationType));
                                     break;
 
                                 default:

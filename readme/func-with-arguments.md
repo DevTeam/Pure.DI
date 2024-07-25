@@ -91,6 +91,7 @@ partial class Composition
 
   private Clock? _singletonClock39;
 
+  [OrdinalAttribute(20)]
   public Composition()
   {
     _root = this;
@@ -125,8 +126,8 @@ partial class Composition
               }
           }
 
-          Dependency localDependency19 = new Dependency(_root._singletonClock39!, transientInt323, transientInt324);
-          return localDependency19;
+          Dependency localDependency26 = new Dependency(_root._singletonClock39!, transientInt323, transientInt324);
+          return localDependency26;
       };
       return new Service(transientFunc1);
     }

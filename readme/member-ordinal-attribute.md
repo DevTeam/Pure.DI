@@ -76,6 +76,7 @@ partial class PersonComposition
   private readonly string _argPersonName;
   private readonly DateTime _argPersonBirthday;
 
+  [OrdinalAttribute(10)]
   public PersonComposition(int personId, string personName, DateTime personBirthday)
   {
     _argPersonId = personId;

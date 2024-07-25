@@ -38,6 +38,7 @@ partial class Composition
   private readonly Composition _root;
   private readonly object _lock;
 
+  [OrdinalAttribute(20)]
   public Composition()
   {
     _root = this;
@@ -66,8 +67,8 @@ partial class Composition
                   [MethodImpl(MethodImplOptions.AggressiveInlining)]
                   () =>
                   {
-                      IDependency localValue21 = new Dependency();
-                      return localValue21;
+                      IDependency localValue28 = new Dependency();
+                      return localValue28;
                   });
               }
           }
@@ -75,8 +76,8 @@ partial class Composition
 
       Lazy<IDependency> transientLazy1;
       {
-          Func<IDependency> localFactory22 = perResolveFunc43!;
-          transientLazy1 = new Lazy<IDependency>(localFactory22, true);
+          Func<IDependency> localFactory29 = perResolveFunc43!;
+          transientLazy1 = new Lazy<IDependency>(localFactory29, true);
       }
 
       return new Service(transientLazy1);

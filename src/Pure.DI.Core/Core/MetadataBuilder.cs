@@ -10,6 +10,7 @@ namespace Pure.DI.Core;
 
 internal sealed class MetadataBuilder(
     Func<IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>> setupsBuilderFactory,
+    Func<ISetupFinalizer> setupFinalizerFactory,
     CancellationToken cancellationToken)
     : IBuilder<IEnumerable<SyntaxUpdate>, IEnumerable<MdSetup>>
 {
@@ -33,7 +34,7 @@ internal sealed class MetadataBuilder(
             var setupsBuilder = setupsBuilderFactory();
             foreach (var newSetup in setupsBuilder.Build(update))
             {
-                setups.Add(newSetup);    
+                setups.Add(newSetup);
             }
             
             cancellationToken.ThrowIfCancellationRequested();
@@ -62,7 +63,8 @@ internal sealed class MetadataBuilder(
                 .Concat(Enumerable.Repeat(setup, 1));
             
             MergeSetups(setupsChain, out var mergedSetup, true);
-            yield return mergedSetup;
+            var setupFinalizer = setupFinalizerFactory();
+            yield return setupFinalizer.Finalize(mergedSetup);
         }
     }
 

@@ -1036,6 +1036,19 @@ namespace Pure.DI
         /// <param name="type">The injection type. See also <see cref="IConfiguration.Bind{T}"/> and <see cref="IBinding.Bind{T}"/>.</param>
         public TypeAttribute(global::System.Type type) { }
     }
+    
+    /// <summary>
+    /// Indicates that a property or method can be automatically added as a binding.
+    /// </summary>
+    [global::System.AttributeUsage(global::System.AttributeTargets.Property | global::System.AttributeTargets.Method)]
+    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal class BindAttribute : global::System.Attribute
+    {
+        /// <summary>
+        /// Creates an attribute instance.
+        /// </summary>
+        public BindAttribute(global::System.Type type = default(global::System.Type), Lifetime lifetime = Lifetime.Transient, params object[] tags) { }
+    }
 
     /// <summary>
     /// Determines how the partial class will be generated. The <see cref="DI.Setup"/> method has an additional argument <c>kind</c>, which defines the type of composition:
@@ -1111,7 +1124,12 @@ namespace Pure.DI
         /// <summary>
         /// Specifies to create a partial root of the composition.
         /// </summary>
-        Partial = 64
+        Partial = 64,
+        
+        /// <summary>
+        /// Specifies to create a exposed root of the composition.
+        /// </summary>
+        Exposed = 128
     }
     
     /// <summary>

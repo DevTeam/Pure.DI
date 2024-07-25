@@ -36,6 +36,10 @@ internal static class Names
     public const string IAsyncDisposableInterfaceShortName = $"{nameof(System)}.IAsyncDisposable";
     public const string ResolverInterfaceName = $"{ApiNamespace}{nameof(IResolver<object, object>)}";
     
+    // Attributes
+    public const string OrdinalAttributeName = $"{ApiNamespace}{nameof(OrdinalAttribute)}";
+    public const string BindAttributeName = $"{ApiNamespace}{nameof(BindAttribute)}";
+    
     // Classes
     public const string ValueTaskName = $"{SystemNamespace}Threading.Tasks.ValueTask";
     

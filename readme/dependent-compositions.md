@@ -54,6 +54,7 @@ partial class Composition
 {
   private readonly Composition _root;
 
+  [OrdinalAttribute(20)]
   public Composition()
   {
     _root = this;
@@ -195,6 +196,7 @@ partial class OtherComposition
 {
   private readonly OtherComposition _root;
 
+  [OrdinalAttribute(20)]
   public OtherComposition()
   {
     _root = this;

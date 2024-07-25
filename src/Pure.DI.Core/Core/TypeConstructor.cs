@@ -8,9 +8,11 @@ namespace Pure.DI.Core;
 internal sealed class TypeConstructor(IMarker marker) : ITypeConstructor
 {
     private readonly Dictionary<ITypeSymbol, ITypeSymbol> _map = new(SymbolEqualityComparer.Default);
+    private readonly Dictionary<ITypeSymbol, ITypeSymbol> _reversedMap = new(SymbolEqualityComparer.Default);
 
     public bool TryBind(MdSetup setup, ITypeSymbol source, ITypeSymbol target)
     {
+        _reversedMap.Clear();
         if (marker.IsMarker(setup, source))
         {
             _map[source] = target;
@@ -155,5 +157,18 @@ internal sealed class TypeConstructor(IMarker marker) : ITypeConstructor
             default:
                 return type;
         }
+    }
+
+    public ITypeSymbol ConstructReversed(MdSetup setup, Compilation compilation, ITypeSymbol type)
+    {
+        if (_reversedMap.Count == 0)
+        {
+            foreach (var item in _map)
+            {
+                _reversedMap[item.Value] = item.Key;
+            }
+        }
+
+        return _reversedMap.TryGetValue(type, out var result) ? result : type;
     }
 }

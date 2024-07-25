@@ -83,6 +83,7 @@ partial class Array
 {
   private readonly Array _root;
 
+  [OrdinalAttribute(20)]
   public Array()
   {
     _root = this;

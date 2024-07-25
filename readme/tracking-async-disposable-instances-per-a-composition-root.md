@@ -71,6 +71,7 @@ partial class Composition
   private readonly Composition _root;
   private readonly object _lock;
 
+  [OrdinalAttribute(20)]
   public Composition()
   {
     _root = this;
@@ -97,9 +98,9 @@ partial class Composition
 
       Owned<IService> perBlockOwned0;
       {
-          Owned localOwned3 = accumulator42;
-          IService localValue4 = new Service(transientDependency3);
-          perBlockOwned0 = new Owned<IService>(localValue4, localOwned3);
+          Owned localOwned10 = accumulator42;
+          IService localValue11 = new Service(transientDependency3);
+          perBlockOwned0 = new Owned<IService>(localValue11, localOwned10);
       }
 
       lock (_lock)

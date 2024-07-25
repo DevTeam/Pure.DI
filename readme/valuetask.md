@@ -47,6 +47,7 @@ partial class Composition
 {
   private readonly Composition _root;
 
+  [OrdinalAttribute(20)]
   public Composition()
   {
     _root = this;
@@ -64,8 +65,8 @@ partial class Composition
     {
       ValueTask<IDependency> transientValueTask1;
       {
-          IDependency localValue33 = new Dependency();
-          transientValueTask1 = new ValueTask<IDependency>(localValue33);
+          IDependency localValue40 = new Dependency();
+          transientValueTask1 = new ValueTask<IDependency>(localValue40);
       }
 
       return new Service(transientValueTask1);
