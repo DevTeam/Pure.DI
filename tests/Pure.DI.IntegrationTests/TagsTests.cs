@@ -1411,4 +1411,138 @@ namespace Sample
         result.Warnings.Count(i => i.Id == LogId.WarningMetadataDefect).ShouldBe(1);
         result.StdOut.ShouldBe(["Sample.Service"], result);
     }
+    
+    [Fact]
+    public async Task ShouldSupportTag()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    internal interface IDependency { }
+
+    internal class Dependency : IDependency { }
+
+    internal interface IService
+    {
+        public IDependency Dependency1 { get; }
+                
+        public IDependency Dependency2 { get; }
+    }
+
+    internal class Service : IService
+    {
+        public Service([Tag(123)] Func<IDependency> dependency1, [Tag(123)] IDependency dependency2)
+        {
+            Dependency1 = dependency1();
+            Dependency2 = dependency2;
+        }
+
+        public IDependency Dependency1 { get; }
+                
+        public IDependency Dependency2 { get; }
+    }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup(nameof(Composition))
+                .Bind<IDependency>(123).As(Lifetime.Singleton).To<Dependency>()
+                .Bind<IService>().To<Service>()
+                .Root<IDependency>("Dependency", 123)
+                .Root<IService>("Root");
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();
+            var service1 = composition.Root;
+            var service2 = composition.Root;
+            Console.WriteLine(service1.Dependency1 == service1.Dependency2);        
+            Console.WriteLine(service2.Dependency1 == service1.Dependency1);
+        }
+    }
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True"], result);
+    }
+    
+    [Fact]
+    public async Task ShouldShowErrorWhenCannotResolveByTag()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    internal interface IDependency { }
+
+    internal class Dependency : IDependency { }
+
+    internal interface IService
+    {
+        public IDependency Dependency1 { get; }
+                
+        public IDependency Dependency2 { get; }
+    }
+
+    internal class Service : IService
+    {
+        public Service(Func<IDependency> dependency1, [Tag(123)] IDependency dependency2)
+        {
+            Dependency1 = dependency1();
+            Dependency2 = dependency2;
+        }
+
+        public IDependency Dependency1 { get; }
+                
+        public IDependency Dependency2 { get; }
+    }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup(nameof(Composition))
+                .Bind().As(Lifetime.Singleton).To<Dependency>()
+                .Bind<IService>().To<Service>()
+                .Root<IDependency>("Dependency")
+                .Root<IService>("Root");
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();
+            var service1 = composition.Root;
+            var service2 = composition.Root;
+            Console.WriteLine(service1.Dependency1 == service1.Dependency2);        
+            Console.WriteLine(service2.Dependency1 == service1.Dependency1);
+        }
+    }
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count(i => i.Id == LogId.ErrorUnableToResolve).ShouldBe(1);
+    }
 }
