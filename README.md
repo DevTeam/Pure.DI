@@ -205,6 +205,7 @@ dotnet run
 - [Resolve methods](readme/resolve-methods.md)
 - [Simplified binding](readme/simplified-binding.md)
 - [Factory](readme/factory.md)
+- [Simplified factory](readme/simplified-factory.md)
 - [Class arguments](readme/class-arguments.md)
 - [Root arguments](readme/root-arguments.md)
 - [Tags](readme/tags.md)

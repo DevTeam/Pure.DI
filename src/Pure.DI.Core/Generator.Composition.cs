@@ -64,8 +64,10 @@ public partial class Generator
             .Bind().To<WildcardMatcher>()
             .Bind().To<InjectionSiteFactory>()
             .Bind().To<Semantic>()
-        
-            // Validators
+            .Bind().To<Attributes>()
+            .Bind().To<Compilations>()
+
+        // Validators
             .Bind(Tag.Type).To<MetadataValidator>()
             .Bind(Tag.Type).To<DependencyGraphValidator>()
             .Bind(Tag.Type).To<RootValidator>()

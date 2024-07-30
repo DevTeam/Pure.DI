@@ -57,17 +57,34 @@ internal class ApiInvocationProcessor(
                         switch (invocation.ArgumentList.Arguments)
                         {
                             case [{ Expression: LambdaExpressionSyntax lambdaExpression }]:
-                                var type = semantic.TryGetTypeSymbol<ITypeSymbol>(semanticModel, lambdaExpression) ?? semantic.GetTypeSymbol<ITypeSymbol>(semanticModel, lambdaExpression.Body);
-                                // ReSharper disable once ConvertIfStatementToConditionalTernaryExpression
-                                if (type is INamedTypeSymbol { TypeArguments.Length: 2, TypeArguments: [_, { } resultType] })
+                                var type = semantic.TryGetTypeSymbol<ITypeSymbol>(semanticModel, lambdaExpression)
+                                           ?? semantic.GetTypeSymbol<ITypeSymbol>(semanticModel, lambdaExpression.Body);
+
+                                if (type is INamedTypeSymbol symbol)
                                 {
-                                    VisitFactory(metadataVisitor, semanticModel, resultType, lambdaExpression);
-                                }
-                                else
-                                {
-                                    VisitFactory(metadataVisitor, semanticModel, type, lambdaExpression);
+                                    if (symbol.TypeArguments.Length > 1
+                                        && invocation.ArgumentList.Arguments[0].Expression is ParenthesizedLambdaExpressionSyntax { ParameterList.Parameters.Count: > 0 } parenthesizedLambdaExpressionSyntaxWithTypes
+                                        && symbol.TypeArguments[0].ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat) != Names.ContextInterfaceName)
+                                    {
+                                        VisitSimpleFactory(
+                                            metadataVisitor,
+                                            semanticModel,
+                                            invocation,
+                                            symbol.TypeArguments.Last(),
+                                            parenthesizedLambdaExpressionSyntaxWithTypes.ParameterList.Parameters.Select(i => i.Type!).ToList(),
+                                            parenthesizedLambdaExpressionSyntaxWithTypes);
+                                        
+                                        break;
+                                    }
+
+                                    if (symbol.TypeArguments.Length == 2 && symbol.TypeArguments is [_, { } resultType])
+                                    {
+                                        VisitFactory(metadataVisitor, semanticModel, resultType, lambdaExpression);
+                                        break;
+                                    }
                                 }
                                 
+                                VisitFactory(metadataVisitor, semanticModel, type, lambdaExpression);
                                 break;
 
                             case []:
@@ -182,6 +199,27 @@ internal class ApiInvocationProcessor(
                         break;
 
                     case nameof(IBinding.To):
+                        if (genericName.TypeArgumentList.Arguments.Count > 1 
+                            && invocation.ArgumentList.Arguments.Count == 1)
+                        {
+                            if (invocation.ArgumentList.Arguments[0].Expression is not ParenthesizedLambdaExpressionSyntax parenthesizedLambdaExpressionSyntax
+                                || parenthesizedLambdaExpressionSyntax.ParameterList.Parameters.Count == 0)
+                            {
+                                NotSupported(invocation);
+                                break;
+                            }
+
+                            VisitSimpleFactory(
+                                metadataVisitor,
+                                semanticModel,
+                                invocation,
+                                semantic.GetTypeSymbol<ITypeSymbol>(semanticModel, genericName.TypeArgumentList.Arguments.Last()),
+                                genericName.TypeArgumentList.Arguments.Reverse().Skip(1).Reverse().ToList(),
+                                parenthesizedLambdaExpressionSyntax);
+
+                            break;
+                        }
+
                         if (genericName.TypeArgumentList.Arguments is [{ } implementationTypeSyntax])
                         {
                             switch (invocation.ArgumentList.Arguments)
@@ -190,7 +228,7 @@ internal class ApiInvocationProcessor(
                                     var factoryType = semantic.GetTypeSymbol<ITypeSymbol>(semanticModel, implementationTypeSyntax);
                                     VisitFactory(metadataVisitor, semanticModel, factoryType, lambdaExpression);
                                     break;
-                                
+
                                 case [{ Expression: LiteralExpressionSyntax { Token.Value: string sourceCodeStatement } }]:
                                     var lambda = SyntaxFactory
                                         .SimpleLambdaExpression(SyntaxFactory.Parameter(SyntaxFactory.Identifier("_")))
@@ -322,6 +360,80 @@ internal class ApiInvocationProcessor(
         }
     }
 
+    private void VisitSimpleFactory(
+        IMetadataVisitor metadataVisitor,
+        SemanticModel semanticModel,
+        InvocationExpressionSyntax source,
+        ITypeSymbol returnType,
+        List<TypeSyntax> argsTypes,
+        ParenthesizedLambdaExpressionSyntax lambdaExpression)
+    {
+        CheckNotAsync(lambdaExpression);
+        var identifiers = lambdaExpression.ParameterList.Parameters.Select(i => i.Identifier).ToList();
+        var paramAttributes = lambdaExpression.ParameterList.Parameters.Select(i => i.AttributeLists.SelectMany(j => j.Attributes).ToList()).ToList();
+        const string ctxName = "ctx_1182D127";
+        var contextParameter = SyntaxFactory.Parameter(SyntaxFactory.Identifier(ctxName));
+        var resolvers = new List<MdResolver>();
+        var block = new List<StatementSyntax>();
+        for (var i = 0; i < argsTypes.Count; i++)
+        {
+            var argTypeSyntax = argsTypes[i];
+            var argType = semantic.GetTypeSymbol<ITypeSymbol>(semanticModel, argTypeSyntax);
+            var attributes = paramAttributes[i];
+            resolvers.Add(new MdResolver
+            {
+                SemanticModel = semanticModel,
+                Source = argTypeSyntax,
+                ContractType = argType,
+                Tag = new MdTag(0, null),
+                Position = i,
+                Attributes = attributes.ToImmutableArray()
+            });
+
+            var valueDeclaration = SyntaxFactory.DeclarationExpression(
+                argTypeSyntax,
+                SyntaxFactory.SingleVariableDesignation(identifiers[i]));
+
+            var valueArg =
+                SyntaxFactory.Argument(valueDeclaration)
+                    .WithRefOrOutKeyword(SyntaxFactory.Token(SyntaxKind.OutKeyword));
+
+            var injection = SyntaxFactory.InvocationExpression(
+                    SyntaxFactory.MemberAccessExpression(
+                        SyntaxKind.SimpleMemberAccessExpression,
+                        SyntaxFactory.IdentifierName(ctxName),
+                        SyntaxFactory.IdentifierName(nameof(IContext.Inject))))
+                .AddArgumentListArguments(valueArg);
+                                
+            block.Add(SyntaxFactory.ExpressionStatement(injection));
+        }
+        
+        if (lambdaExpression.Block is {} lambdaBlock)
+        {
+            block.AddRange(lambdaBlock.Statements);
+        }
+        else
+        {
+            if (lambdaExpression.ExpressionBody is { } body)
+            {
+                block.Add(SyntaxFactory.ReturnStatement(body));
+            }
+        }
+        
+        var newLambdaExpression = SyntaxFactory.SimpleLambdaExpression(contextParameter)
+            .WithBlock(SyntaxFactory.Block(block));
+
+        metadataVisitor.VisitFactory(
+            new MdFactory(
+                semanticModel,
+                source,
+                returnType,
+                newLambdaExpression,
+                contextParameter,
+                resolvers.ToImmutableArray(),
+                false));
+    }
+
     private bool TryGetAttributeType(
         GenericNameSyntax genericName,
         SemanticModel semanticModel,
@@ -428,11 +540,7 @@ internal class ApiInvocationProcessor(
         LambdaExpressionSyntax lambdaExpression,
         bool isManual = false)
     {
-        if (lambdaExpression.AsyncKeyword.IsKind(SyntaxKind.AsyncKeyword))
-        {
-            throw new CompileErrorException("Asynchronous factory with the async keyword is not supported.", lambdaExpression.GetLocation(), LogId.ErrorInvalidMetadata);
-        }
-        
+        CheckNotAsync(lambdaExpression);
         ParameterSyntax contextParameter;
         switch (lambdaExpression)
         {
@@ -528,6 +636,14 @@ internal class ApiInvocationProcessor(
                 contextParameter,
                 resolvers,
                 hasContextTag));
+    }
+
+    private static void CheckNotAsync(LambdaExpressionSyntax lambdaExpression)
+    {
+        if (lambdaExpression.AsyncKeyword.IsKind(SyntaxKind.AsyncKeyword))
+        {
+            throw new CompileErrorException("Asynchronous factory with the async keyword is not supported.", lambdaExpression.GetLocation(), LogId.ErrorInvalidMetadata);
+        }
     }
 
     private static void VisitUsingDirectives(

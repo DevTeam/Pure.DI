@@ -88,11 +88,11 @@ partial class Composition
     TaskCreationOptions transientTaskCreationOptions3 = TaskCreationOptions.None;
     TaskFactory<IDependency> perBlockTaskFactory2;
     {
-        CancellationToken localCancellationToken33 = cancellationToken;
-        TaskCreationOptions localTaskCreationOptions34 = transientTaskCreationOptions3;
-        TaskContinuationOptions localTaskContinuationOptions35 = transientTaskContinuationOptions4;
-        TaskScheduler localTaskScheduler36 = transientTaskScheduler5;
-        perBlockTaskFactory2 = new TaskFactory<IDependency>(localCancellationToken33, localTaskCreationOptions34, localTaskContinuationOptions35, localTaskScheduler36);
+        CancellationToken localCancellationToken35 = cancellationToken;
+        TaskCreationOptions localTaskCreationOptions36 = transientTaskCreationOptions3;
+        TaskContinuationOptions localTaskContinuationOptions37 = transientTaskContinuationOptions4;
+        TaskScheduler localTaskScheduler38 = transientTaskScheduler5;
+        perBlockTaskFactory2 = new TaskFactory<IDependency>(localCancellationToken35, localTaskCreationOptions36, localTaskContinuationOptions37, localTaskScheduler38);
     }
 
     if (perResolveFunc45 == null)
@@ -105,8 +105,8 @@ partial class Composition
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 () =>
                 {
-                    IDependency localValue37 = new Dependency();
-                    return localValue37;
+                    IDependency localValue39 = new Dependency();
+                    return localValue39;
                 });
             }
         }
@@ -114,9 +114,9 @@ partial class Composition
 
     Task<IDependency> transientTask1;
     {
-        Func<IDependency> localFactory38 = perResolveFunc45!;
-        TaskFactory<IDependency> localTaskFactory39 = perBlockTaskFactory2;
-        transientTask1 = localTaskFactory39.StartNew(localFactory38);
+        Func<IDependency> localFactory40 = perResolveFunc45!;
+        TaskFactory<IDependency> localTaskFactory41 = perBlockTaskFactory2;
+        transientTask1 = localTaskFactory41.StartNew(localFactory40);
     }
 
     return new Service(transientTask1);

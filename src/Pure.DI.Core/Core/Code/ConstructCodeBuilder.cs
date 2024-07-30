@@ -1,7 +1,9 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
-internal class ConstructCodeBuilder(ITypeResolver typeResolver)
+internal class ConstructCodeBuilder(
+    ITypeResolver typeResolver,
+    ICompilations compilations)
     : ICodeBuilder<DpConstruct>
 {
     public void Build(BuildContext ctx, in DpConstruct construct)
@@ -51,7 +53,7 @@ internal class ConstructCodeBuilder(ITypeResolver typeResolver)
         var code = ctx.Code;
         var level = ctx.Level + 1;
         var localMethodName = $"{Names.EnumerateMethodNamePrefix}_{variable.VariableDeclarationName}".Replace("__", "_");
-        if (enumerable.Source.SemanticModel.Compilation.GetLanguageVersion() >= LanguageVersion.CSharp9)
+        if (compilations.GetLanguageVersion(enumerable.Source.SemanticModel.Compilation) >= LanguageVersion.CSharp9)
         {
             code.AppendLine($"[{Names.MethodImplAttributeName}({Names.MethodImplAggressiveInlining})]");
         }
@@ -110,7 +112,7 @@ internal class ConstructCodeBuilder(ITypeResolver typeResolver)
 
         var isStackalloc = 
             span.Source.ElementType.IsValueType
-            && span.Binding.SemanticModel.Compilation.GetLanguageVersion() >= LanguageVersion.CSharp7_3;
+            && compilations.GetLanguageVersion(span.Binding.SemanticModel.Compilation) >= LanguageVersion.CSharp7_3;
         
         var createInstance = isStackalloc ? $"stackalloc {createArray}" : $"new {Names.SystemNamespace}Span<{typeResolver.Resolve(ctx.DependencyGraph.Source, span.Source.ElementType)}>(new {createArray})";
         ctx.Code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VariableName} = {createInstance};");

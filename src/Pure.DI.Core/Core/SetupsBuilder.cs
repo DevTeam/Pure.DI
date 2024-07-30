@@ -202,7 +202,7 @@ internal sealed class SetupsBuilder(
                 contractType = newContractType;
             }
             
-            const string ctxName = "ctx";
+            const string ctxName = "ctx_1182D127";
             const string valueName = "value";
             var instance = SyntaxFactory.IdentifierName(valueName);
             ExpressionSyntax value;
@@ -246,6 +246,7 @@ internal sealed class SetupsBuilder(
                         }
                         
                         var typeArgs = new List<TypeSyntax>();
+                        // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
                         foreach (var typeArg in methodSymbol.TypeArguments)
                         {
                             var argType = typeConstructor.ConstructReversed(setup, binding.SemanticModel.Compilation, typeArg);
@@ -359,7 +360,7 @@ internal sealed class SetupsBuilder(
                     lambdaExpression,
                     contextParameter,
                     resolvers.ToImmutableArray(),
-                    true));
+                    false));
 
             continue;
 

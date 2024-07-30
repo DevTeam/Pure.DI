@@ -4,6 +4,7 @@ namespace Pure.DI.Core.Code;
 
 internal sealed class FactoryRewriter(
     IArguments arguments,
+    ICompilations compilations,
     DpFactory factory,
     Variable variable,
     string finishLabel,
@@ -48,7 +49,7 @@ internal sealed class FactoryRewriter(
             var processedNode = base.VisitParenthesizedLambdaExpression(node);
             if (_nestedBlockCounter > 0
                 || processedNode is not ParenthesizedLambdaExpressionSyntax lambda
-                || factory.Source.SemanticModel.Compilation.GetLanguageVersion() < LanguageVersion.CSharp10)
+                || compilations.GetLanguageVersion(factory.Source.SemanticModel.Compilation) < LanguageVersion.CSharp10)
             {
                 return processedNode;
             }

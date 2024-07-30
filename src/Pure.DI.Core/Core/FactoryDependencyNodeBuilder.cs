@@ -2,7 +2,8 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal sealed class FactoryDependencyNodeBuilder : IBuilder<MdSetup, IEnumerable<DependencyNode>>
+internal sealed class FactoryDependencyNodeBuilder(IAttributes attributes)
+    : IBuilder<MdSetup, IEnumerable<DependencyNode>>
 {
     public IEnumerable<DependencyNode> Build(MdSetup setup)
     {
@@ -16,7 +17,8 @@ internal sealed class FactoryDependencyNodeBuilder : IBuilder<MdSetup, IEnumerab
             var injections = new List<Injection>(factory.Resolvers.Length);
             foreach (var resolver in factory.Resolvers)
             {
-                injections.Add(new Injection(resolver.ContractType.WithNullableAnnotation(NullableAnnotation.NotAnnotated), resolver.Tag?.Value));
+                var tag = attributes.GetAttribute(resolver.SemanticModel, setup.TagAttributes, resolver.Attributes, default(object?)) ?? resolver.Tag?.Value;
+                injections.Add(new Injection(resolver.ContractType.WithNullableAnnotation(NullableAnnotation.NotAnnotated), tag));
             }
 
             yield return new DependencyNode(0, binding, Factory: new DpFactory(factory, binding, injections.ToImmutableArray()));

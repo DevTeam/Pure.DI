@@ -2,7 +2,8 @@
 namespace Pure.DI.Core.Code;
 
 internal class BlockCodeBuilder(
-    INodeInfo nodeInfo)
+    INodeInfo nodeInfo,
+    ICompilations compilations)
     : ICodeBuilder<Block>
 {
     public void Build(BuildContext ctx, in Block block)
@@ -132,7 +133,7 @@ internal class BlockCodeBuilder(
                     && code.Count > 11)
                 {
                     var localMethodCode = ctx.LocalFunctionsCode;
-                    if (variable.Node.Binding.SemanticModel.Compilation.GetLanguageVersion() >= LanguageVersion.CSharp9)
+                    if (compilations.GetLanguageVersion(variable.Node.Binding.SemanticModel.Compilation) >= LanguageVersion.CSharp9)
                     {
                         localMethodCode.AppendLine($"[{Names.MethodImplAttributeName}({Names.MethodImplAggressiveInlining})]");
                     }

@@ -23,6 +23,8 @@ namespace System
 
 namespace Pure.DI
 {
+    using System;
+
     /// <summary>
     /// Binding lifetimes.
     /// <example>
@@ -2073,6 +2075,22 @@ namespace Pure.DI
         /// <typeparam name="T">The implementation type.</typeparam>
         /// <returns>Reference to the setup continuation chain.</returns>
         IConfiguration To<T>(string sourceCodeStatement);
+
+        IConfiguration To<T1, T>(global::System.Func<T1, T> factory);
+        
+        IConfiguration To<T1, T2, T>(global::System.Func<T1, T2, T> factory);
+        
+        IConfiguration To<T1, T2, T3, T>(global::System.Func<T1, T2, T3, T> factory);
+        
+        IConfiguration To<T1, T2, T3, T4, T>(global::System.Func<T1, T2, T3, T4, T> factory);
+        
+        IConfiguration To<T1, T2, T3, T4, T5, T>(global::System.Func<T1, T2, T3, T4, T5, T> factory);
+        
+        IConfiguration To<T1, T2, T3, T4, T5, T6, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T> factory);
+        
+        IConfiguration To<T1, T2, T3, T4, T5, T6, T7, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T> factory);
+        
+        IConfiguration To<T1, T2, T3, T4, T5, T6, T7, T8, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T8, T> factory);
     }
 
     /// <summary>
@@ -2420,6 +2438,54 @@ namespace Pure.DI
 
             /// <inheritdoc />
             public IConfiguration To<T>(string sourceCodeStatement)
+            {
+                return Configuration.Shared;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T1, T>(global::System.Func<T1, T> factory)
+            {
+                return Configuration.Shared;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T1, T2, T>(global::System.Func<T1, T2, T> factory)
+            {
+                return Configuration.Shared;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T1, T2, T3, T>(global::System.Func<T1, T2, T3, T> factory)
+            {
+                return Configuration.Shared;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T1, T2, T3, T4, T>(Func<T1, T2, T3, T4, T> factory)
+            {
+                return Configuration.Shared;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T1, T2, T3, T4, T5, T>(Func<T1, T2, T3, T4, T5, T> factory)
+            {
+                return Configuration.Shared;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T1, T2, T3, T4, T5, T6, T>(Func<T1, T2, T3, T4, T5, T6, T> factory)
+            {
+                return Configuration.Shared;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T1, T2, T3, T4, T5, T6, T7, T>(Func<T1, T2, T3, T4, T5, T6, T7, T> factory)
+            {
+                return Configuration.Shared;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T1, T2, T3, T4, T5, T6, T7, T8, T>(Func<T1, T2, T3, T4, T5, T6, T7, T8, T> factory)
             {
                 return Configuration.Shared;
             }

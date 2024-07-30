@@ -5,11 +5,11 @@
 namespace Pure.DI.Core;
 
 internal sealed class ImplementationDependencyNodeBuilder(
-    ILogger<ImplementationDependencyNodeBuilder> logger,
     IBuilder<DpImplementation, IEnumerable<DpImplementation>> implementationVariantsBuilder,
     IWildcardMatcher wildcardMatcher,
     IInjectionSiteFactory injectionSiteFactory,
     ISemantic semantic,
+    IAttributes attributes,
     IRegistryManager<MdInjectionSite> registryManager)
     : IBuilder<MdSetup, IEnumerable<DependencyNode>>
 {
@@ -51,7 +51,7 @@ internal sealed class ImplementationDependencyNodeBuilder(
                 constructors.Add(
                     new DpMethod(
                         constructor,
-                        GetAttribute(setup.OrdinalAttributes, constructor, default(int?)),
+                        attributes.GetAttribute(setup.OrdinalAttributes, constructor, default(int?)),
                         GetParameters(setup, constructor.Parameters, compilation, setup.TypeConstructor)));
             }
 
@@ -85,9 +85,9 @@ internal sealed class ImplementationDependencyNodeBuilder(
                     case IMethodSymbol method:
                         if (method.MethodKind == MethodKind.Ordinary)
                         {
-                            var ordinal = GetAttribute(allAttributes, member, default(int?))
+                            var ordinal = attributes.GetAttribute(allAttributes, member, default(int?))
                                           ?? method.Parameters
-                                              .Select(param => GetAttribute(allAttributes, param, default(int?)))
+                                              .Select(param => attributes.GetAttribute(allAttributes, param, default(int?)))
                                               .FirstOrDefault(i => i.HasValue);
                             
                             if (ordinal.HasValue)
@@ -101,7 +101,7 @@ internal sealed class ImplementationDependencyNodeBuilder(
                     case IFieldSymbol field:
                         if (field is { IsReadOnly: false, IsStatic: false, IsConst: false })
                         {
-                            var ordinal = GetAttribute(allAttributes, member, default(int?));
+                            var ordinal = attributes.GetAttribute(allAttributes, member, default(int?));
                             if (field.IsRequired || ordinal.HasValue)
                             {
                                 var type = field.Type.WithNullableAnnotation(NullableAnnotation.NotAnnotated);
@@ -110,7 +110,7 @@ internal sealed class ImplementationDependencyNodeBuilder(
                                         field,
                                         ordinal,
                                         new Injection(
-                                            GetAttribute(setup.TypeAttributes, field, setup.TypeConstructor?.Construct(setup, compilation, type) ?? type),
+                                            attributes.GetAttribute(setup.TypeAttributes, field, setup.TypeConstructor?.Construct(setup, compilation, type) ?? type),
                                             GetTagAttribute(setup, field))));
                             }
                         }
@@ -120,7 +120,7 @@ internal sealed class ImplementationDependencyNodeBuilder(
                     case IPropertySymbol property:
                         if (property is { IsReadOnly: false, IsStatic: false, IsIndexer: false })
                         {
-                            var ordinal = GetAttribute(allAttributes, member, default(int?));
+                            var ordinal = attributes.GetAttribute(allAttributes, member, default(int?));
                             if (ordinal.HasValue || property.IsRequired)
                             {
                                 var type = property.Type.WithNullableAnnotation(NullableAnnotation.NotAnnotated);
@@ -129,7 +129,7 @@ internal sealed class ImplementationDependencyNodeBuilder(
                                         property,
                                         ordinal,
                                         new Injection(
-                                            GetAttribute(setup.TypeAttributes, property, setup.TypeConstructor?.Construct(setup, compilation, type) ?? type),
+                                            attributes.GetAttribute(setup.TypeAttributes, property, setup.TypeConstructor?.Construct(setup, compilation, type) ?? type),
                                             GetTagAttribute(setup, property))));
                             }
                         }
@@ -223,7 +223,7 @@ internal sealed class ImplementationDependencyNodeBuilder(
                 new DpParameter(
                     parameter,
                     new Injection(
-                        GetAttribute(setup.TypeAttributes, parameter, typeConstructor?.Construct(setup, compilation, type) ?? type),
+                        attributes.GetAttribute(setup.TypeAttributes, parameter, typeConstructor?.Construct(setup, compilation, type) ?? type),
                         GetTagAttribute(setup, parameter))));
         }
 
@@ -233,7 +233,7 @@ internal sealed class ImplementationDependencyNodeBuilder(
     private object? GetTagAttribute(
         MdSetup setup,
         ISymbol member) =>
-        GetAttribute(setup.TagAttributes, member, default(object?))
+        attributes.GetAttribute(setup.TagAttributes, member, default(object?))
         ?? TryCreateTagOnSite(setup, member);
 
     private object? TryCreateTagOnSite(
@@ -259,50 +259,6 @@ internal sealed class ImplementationDependencyNodeBuilder(
         return default;
     }
     
-    private T GetAttribute<TMdAttribute, T>(
-        in ImmutableArray<TMdAttribute> attributeMetadata,
-        ISymbol member,
-        T defaultValue)
-        where TMdAttribute: IMdAttribute
-    {
-        foreach (var attribute in attributeMetadata)
-        {
-            var attributeData = member.GetAttributes(attribute.AttributeType);
-            switch (attributeData.Count)
-            {
-                case 1:
-                    var attr = attributeData[0];
-                    if (typeof(ITypeSymbol).IsAssignableFrom(typeof(T)) && attr.AttributeClass is { IsGenericType: true, TypeArguments.Length: > 0 } attributeClass)
-                    {
-                        if (attribute.ArgumentPosition < attributeClass.TypeArguments.Length
-                            && attributeClass.TypeArguments[attribute.ArgumentPosition] is { } typeSymbol)
-                        {
-                            return (T)typeSymbol;
-                        }
-                    }
-                    
-                    var args = attr.ConstructorArguments;
-                    if (attribute.ArgumentPosition >= args.Length)
-                    {
-                        logger.CompileError($"The argument position {attribute.ArgumentPosition.ToString()} of attribute {attribute.Source} is out of range [0..{args.Length.ToString()}].", attribute.Source.GetLocation(), LogId.ErrorInvalidMetadata);
-                    }
-
-                    var typedConstant = args[attribute.ArgumentPosition];
-                    if (typedConstant.Value is T value)
-                    {
-                        return value;
-                    }
-
-                    break;
-
-                case > 1:
-                    throw new CompileErrorException($"{member} of the type {member.ContainingType} cannot be processed because it is marked with multiple mutually exclusive attributes.", attribute.Source.GetLocation(), LogId.ErrorInvalidMetadata);                 
-            }
-        }
-
-        return defaultValue;
-    }
-
     private sealed class DependenciesToInjectionsCountWalker: DependenciesWalker<Unit>
     {
         public int Count { get; private set; }

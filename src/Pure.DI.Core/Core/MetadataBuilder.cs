@@ -11,6 +11,7 @@ namespace Pure.DI.Core;
 internal sealed class MetadataBuilder(
     Func<IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>> setupsBuilderFactory,
     Func<ISetupFinalizer> setupFinalizerFactory,
+    ICompilations compilations,
     CancellationToken cancellationToken)
     : IBuilder<IEnumerable<SyntaxUpdate>, IEnumerable<MdSetup>>
 {
@@ -25,7 +26,7 @@ internal sealed class MetadataBuilder(
         var setups = new List<MdSetup>();
         foreach (var update in actualUpdates)
         {
-            var languageVersion = update.SemanticModel.Compilation.GetLanguageVersion();
+            var languageVersion = compilations.GetLanguageVersion(update.SemanticModel.Compilation);
             if (languageVersion < LanguageVersion.CSharp8)
             {
                 throw new CompileErrorException($"{Names.GeneratorName} does not support C# {languageVersion.ToDisplayString()}. Please use language version {LanguageVersion.CSharp8.ToDisplayString()} or greater.", update.Node.GetLocation(), LogId.ErrorNotSupportedLanguageVersion);
