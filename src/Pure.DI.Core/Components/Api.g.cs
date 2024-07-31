@@ -13,13 +13,22 @@ namespace System.Diagnostics.CodeAnalysis
 }
 #endif
 
-#if NET20
 namespace System
 {
-    internal delegate TResult Func<TResult>();
-    internal delegate TResult Func<T, TResult>(T arg);
-}
+#if NET20
+    internal delegate TResult Func<out TResult>();
 #endif
+#if NET20 || NET35
+    internal delegate TResult Func<in T, out TResult>(T arg);
+    internal delegate TResult Func<in T1, in T2, out TResult>(T1 arg1, T2 arg2);
+    internal delegate TResult Func<in T1, in T2, in T3, out TResult>(T1 arg1, T2 arg2, T3 arg3);
+    internal delegate TResult Func<in T1, in T2, in T3, in T4, out TResult>(T1 arg1, T2 arg2, T3 arg3, T4 arg4);
+    internal delegate TResult Func<in T1, in T2, in T3, in T4, in T5, out TResult>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5);
+    internal delegate TResult Func<in T1, in T2, in T3, in T4, in T5, in T6, out TResult>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6);
+    internal delegate TResult Func<in T1, in T2, in T3, in T4, in T5, in T6, in T7, out TResult>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7);
+    internal delegate TResult Func<in T1, in T2, in T3, in T4, in T5, in T6, in T7, in T8, out TResult>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8);
+#endif
+}
 
 namespace Pure.DI
 {
@@ -1041,6 +1050,29 @@ namespace Pure.DI
     
     /// <summary>
     /// Indicates that a property or method can be automatically added as a binding.
+    /// <example>
+    /// <code>
+    /// internal class DependencyProvider
+    /// {
+    ///     [Bind()]
+    ///     public Dependency Dep => new Dependency();
+    /// }
+    /// </code>
+    /// <code>
+    /// internal class DependencyProvider
+    /// {
+    ///     [Bind(typeof(IDependency&lt;TT&gt;), Lifetime.Singleton)]
+    ///     public Dependency GetDep&lt;T&gt;() =&gt; new Dependency();
+    /// }
+    /// </code>
+    /// <code>
+    /// internal class DependencyProvider
+    /// {
+    ///     [Bind(typeof(IDependency), Lifetime.PerResolve, "some tag")]
+    ///     public Dependency GetDep(int id) => new Dependency(id);
+    /// }
+    /// </code>
+    /// </example>
     /// </summary>
     [global::System.AttributeUsage(global::System.AttributeTargets.Property | global::System.AttributeTargets.Method)]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
@@ -1787,13 +1819,16 @@ namespace Pure.DI
         /// DI.Setup("Composition")
         ///     .Bind().To&lt;Service&gt;();
         /// </code>
-        /// See also:
-        /// <br/><see cref="IBinding.As"/>
-        /// <br/><see cref="IBinding.To{T}()"/>
         /// </example>
         /// </summary>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
+        /// <seealso cref="To{T}()"/>
+        /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
+        /// <seealso cref="To{T1,T}()"/>
+        /// <seealso cref="To{T1,T2,T}()"/>
+        /// <seealso cref="Tags"/>
+        /// <seealso cref="As"/>
         IBinding Bind(params object[] tags);
         
         /// <summary>
@@ -1804,45 +1839,51 @@ namespace Pure.DI
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
         /// </example>
-        /// See also:
-        /// <br/><see cref="IBinding.As"/>
-        /// <br/><see cref="IBinding.To{T}()"/>
         /// </summary>
         /// <typeparam name="T">The type of dependency to be bound. Common type markers such as <see cref="TT"/>, <see cref="TTList{T}"/> and others are also supported.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
+        /// <seealso cref="To{T}()"/>
+        /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
+        /// <seealso cref="To{T1,T}()"/>
+        /// <seealso cref="To{T1,T2,T}()"/>
+        /// <seealso cref="Tags"/>
+        /// <seealso cref="As"/>
         IBinding Bind<T>(params object[] tags);
         
         /// <summary>
         /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
-        /// <br/>See also:
-        /// <br/><see cref="IBinding.As"/>
-        /// <br/><see cref="IBinding.To{T}()"/>
         /// </summary>
         /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
         /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
+        /// <seealso cref="To{T}()"/>
+        /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
+        /// <seealso cref="To{T1,T}()"/>
+        /// <seealso cref="To{T1,T2,T}()"/>
+        /// <seealso cref="Tags"/>
+        /// <seealso cref="As"/>
         IBinding Bind<T1, T2>(params object[] tags);
         
         /// <summary>
         /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
-        /// <br/>See also:
-        /// <br/><see cref="IBinding.As"/>
-        /// <br/><see cref="IBinding.To{T}()"/>
         /// </summary>
         /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
         /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
         /// <typeparam name="T3">The type 3 of dependency to be bound.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
+        /// <seealso cref="To{T}()"/>
+        /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
+        /// <seealso cref="To{T1,T}()"/>
+        /// <seealso cref="To{T1,T2,T}()"/>
+        /// <seealso cref="Tags"/>
+        /// <seealso cref="As"/>
         IBinding Bind<T1, T2, T3>(params object[] tags);
         
         /// <summary>
         /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
-        /// <br/>See also:
-        /// <br/><see cref="IBinding.As"/>
-        /// <br/><see cref="IBinding.To{T}()"/>
         /// </summary>
         /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
         /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
@@ -1850,13 +1891,16 @@ namespace Pure.DI
         /// <typeparam name="T4">The type 3 of dependency to be bound.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
+        /// <seealso cref="To{T}()"/>
+        /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
+        /// <seealso cref="To{T1,T}()"/>
+        /// <seealso cref="To{T1,T2,T}()"/>
+        /// <seealso cref="Tags"/>
+        /// <seealso cref="As"/>
         IBinding Bind<T1, T2, T3, T4>(params object[] tags);
         
         /// <summary>
         /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
-        /// <br/>See also:
-        /// <br/><see cref="IBinding.As"/>
-        /// <br/><see cref="IBinding.To{T}()"/>
         /// </summary>
         /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
         /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
@@ -1865,13 +1909,16 @@ namespace Pure.DI
         /// <typeparam name="T5">The type 5 of dependency to be bound.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
+        /// <seealso cref="To{T}()"/>
+        /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
+        /// <seealso cref="To{T1,T}()"/>
+        /// <seealso cref="To{T1,T2,T}()"/>
+        /// <seealso cref="Tags"/>
+        /// <seealso cref="As"/>
         IBinding Bind<T1, T2, T3, T4, T5>(params object[] tags);
         
         /// <summary>
         /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
-        /// <br/>See also:
-        /// <br/><see cref="IBinding.As"/>
-        /// <br/><see cref="IBinding.To{T}()"/>
         /// </summary>
         /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
         /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
@@ -1881,13 +1928,16 @@ namespace Pure.DI
         /// <typeparam name="T6">The type 6 of dependency to be bound.</typeparam> 
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
+        /// <seealso cref="To{T}()"/>
+        /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
+        /// <seealso cref="To{T1,T}()"/>
+        /// <seealso cref="To{T1,T2,T}()"/>
+        /// <seealso cref="Tags"/>
+        /// <seealso cref="As"/>
         IBinding Bind<T1, T2, T3, T4, T5, T6>(params object[] tags);
         
         /// <summary>
         /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
-        /// <br/>See also:
-        /// <br/><see cref="IBinding.As"/>
-        /// <br/><see cref="IBinding.To{T}()"/>
         /// </summary>
         /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
         /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
@@ -1898,13 +1948,16 @@ namespace Pure.DI
         /// <typeparam name="T7">The type 7 of dependency to be bound.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
+        /// <seealso cref="To{T}()"/>
+        /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
+        /// <seealso cref="To{T1,T}()"/>
+        /// <seealso cref="To{T1,T2,T}()"/>
+        /// <seealso cref="Tags"/>
+        /// <seealso cref="As"/>
         IBinding Bind<T1, T2, T3, T4, T5, T6, T7>(params object[] tags);
         
         /// <summary>
         /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
-        /// <br/>See also:
-        /// <br/><see cref="IBinding.As"/>
-        /// <br/><see cref="IBinding.To{T}()"/>
         /// </summary>
         /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
         /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
@@ -1916,6 +1969,12 @@ namespace Pure.DI
         /// <typeparam name="T8">The type 8 of dependency to be bound.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
+        /// <seealso cref="To{T}()"/>
+        /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
+        /// <seealso cref="To{T1,T}()"/>
+        /// <seealso cref="To{T1,T2,T}()"/>
+        /// <seealso cref="Tags"/>
+        /// <seealso cref="As"/>
         IBinding Bind<T1, T2, T3, T4, T5, T6, T7, T8>(params object[] tags);
 
         /// <summary>
@@ -1925,13 +1984,16 @@ namespace Pure.DI
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().As(Lifetime.Singleton).To&lt;Dependency&gt;();
         /// </code>
-        /// See also:
-        /// <br/><see cref="Pure.DI.Lifetime"/>
-        /// <br/><see cref="IConfiguration.DefaultLifetime"/>
         /// </example>
         /// </summary>
         /// <param name="lifetime">The <see cref="Lifetime"/> of a binding</param>
         /// <returns>Reference to the setup continuation chain.</returns>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="To{T}()"/>
+        /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
+        /// <seealso cref="To{T1,T}()"/>
+        /// <seealso cref="To{T1,T2,T}()"/>
+        /// <seealso cref="Tags"/>
         IBinding As(Pure.DI.Lifetime lifetime);
 
         /// <summary>
@@ -1982,12 +2044,16 @@ namespace Pure.DI
         ///     .Bind&lt;IDependency&gt;().Tags("Xyz").To&lt;XyzDependency&gt;()
         ///     .Bind&lt;IService&gt;().To&lt;Service&gt;().Root&lt;IService&gt;("Root");
         /// </code>
-        /// See also:
-        /// <br/><see cref="IConfiguration.Bind{T}"/>
         /// </example>
         /// </summary>
         /// <param name="tags">The binding tags.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="To{T}()"/>
+        /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
+        /// <seealso cref="To{T1,T}()"/>
+        /// <seealso cref="To{T1,T2,T}()"/>
+        /// <seealso cref="As"/>
         IBinding Tags(params object[] tags);
 
         /// <summary>
@@ -1997,12 +2063,16 @@ namespace Pure.DI
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// See also:
-        /// <br/><see cref="IConfiguration.Bind{T}"/>
         /// </example>
         /// </summary>
         /// <typeparam name="T">The implementation type. Also supports generic type markers such as <see cref="TT"/>, <see cref="TTList{T}"/>, and others.</typeparam>
         /// <returns>Reference to the setup continuation chain.</returns>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
+        /// <seealso cref="To{T1,T}()"/>
+        /// <seealso cref="To{T1,T2,T}()"/>
+        /// <seealso cref="Tags"/>
+        /// <seealso cref="As"/>
         IConfiguration To<T>();
 
         /// <summary>
@@ -2044,13 +2114,17 @@ namespace Pure.DI
         ///         return service;
         ///     })
         /// </code>
-        /// See also:
-        /// <br/><see cref="IConfiguration.Bind{T}"/>
         /// </example>
         /// </summary>
         /// <param name="factory">Lambda expression to manually create an instance.</param>
         /// <typeparam name="T">The implementation type.</typeparam>
         /// <returns>Reference to the setup continuation chain.</returns>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="To{T}()"/>
+        /// <seealso cref="To{T1,T}()"/>
+        /// <seealso cref="To{T1,T2,T}()"/>
+        /// <seealso cref="Tags"/>
+        /// <seealso cref="As"/>
         IConfiguration To<T>(global::System.Func<IContext, T> factory);
         
         /// <summary>
@@ -2067,29 +2141,197 @@ namespace Pure.DI
         ///                 return dependency;
         ///             });
         /// </code>
-        /// See also:
-        /// <br/><see cref="IConfiguration.Bind{T}"/>
         /// </example>
         /// </summary>
         /// <param name="sourceCodeStatement">Source code statement</param>
         /// <typeparam name="T">The implementation type.</typeparam>
         /// <returns>Reference to the setup continuation chain.</returns>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
         IConfiguration To<T>(string sourceCodeStatement);
 
+        /// <summary>
+        /// Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the <see cref="TagAttribute"/> in front of the parameter to specify the tag of the injected dependency.
+        /// <example>
+        /// <code>
+        /// DI.Setup(nameof(Composition))
+        ///     .Bind&lt;IDependency&gt;().To((
+        ///         Dependency dependency) =&gt;
+        ///     {
+        ///         dependency.Initialize();
+        ///         return dependency;
+        ///     });
+        /// </code>
+        /// A variant using <see cref="TagAttribute"/>:
+        /// <code>
+        /// DI.Setup(nameof(Composition))
+        ///     .Bind&lt;IDependency&gt;().To((
+        ///         [Tag(&quot;some tag&quot;)] Dependency dependency) =&gt;
+        ///     {
+        ///         dependency.Initialize();
+        ///         return dependency;
+        ///     });
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <param name="factory">Lambda expression to manually create an instance.</param>
+        /// <typeparam name="T1">Type #1 of injected dependency.</typeparam>
+        /// <typeparam name="T">The implementation type.</typeparam>
+        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
+        /// <seealso cref="To{T}()"/>
+        /// <seealso cref="Tags"/>
+        /// <seealso cref="As"/>
         IConfiguration To<T1, T>(global::System.Func<T1, T> factory);
-        
+
+        /// <summary>
+        /// Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the <see cref="TagAttribute"/> in front of the parameter to specify the tag of the injected dependency.
+        /// <example>
+        /// <code>
+        /// DI.Setup(nameof(Composition))
+        ///     .Bind&lt;IDependency&gt;().To((
+        ///         Dependency dependency,
+        ///         DateTimeOffset time) =&gt;
+        ///     {
+        ///         dependency.Initialize(time);
+        ///         return dependency;
+        ///     });
+        /// </code>
+        /// A variant using <see cref="TagAttribute"/>:
+        /// <code>
+        /// DI.Setup(nameof(Composition))
+        ///     .Bind(&quot;now datetime&quot;).To(_ =&gt; DateTimeOffset.Now)
+        ///     .Bind&lt;IDependency&gt;().To((
+        ///         Dependency dependency,
+        ///         [Tag(&quot;now datetime&quot;)] DateTimeOffset time) =&gt;
+        ///     {
+        ///         dependency.Initialize(time);
+        ///         return dependency;
+        ///     });
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <param name="factory">Lambda expression to manually create an instance.</param>
+        /// <typeparam name="T1">Type #1 of injected dependency.</typeparam>
+        /// <typeparam name="T2">Type #2 of injected dependency.</typeparam>
+        /// <typeparam name="T">The implementation type.</typeparam>
+        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
+        /// <seealso cref="To{T}()"/>
+        /// <seealso cref="Tags"/>
+        /// <seealso cref="As"/>
         IConfiguration To<T1, T2, T>(global::System.Func<T1, T2, T> factory);
         
+        /// <summary>
+        /// Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the <see cref="TagAttribute"/> in front of the parameter to specify the tag of the injected dependency.
+        /// </summary>
+        /// <param name="factory">Lambda expression to manually create an instance.</param>
+        /// <typeparam name="T1">Type #1 of injected dependency.</typeparam>
+        /// <typeparam name="T2">Type #2 of injected dependency.</typeparam>
+        /// <typeparam name="T3">Type #3 of injected dependency.</typeparam>
+        /// <typeparam name="T">The implementation type.</typeparam>
+        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
+        /// <seealso cref="To{T}()"/>
+        /// <seealso cref="Tags"/>
+        /// <seealso cref="As"/>
         IConfiguration To<T1, T2, T3, T>(global::System.Func<T1, T2, T3, T> factory);
         
+        /// <summary>
+        /// Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the <see cref="TagAttribute"/> in front of the parameter to specify the tag of the injected dependency.
+        /// </summary>
+        /// <param name="factory">Lambda expression to manually create an instance.</param>
+        /// <typeparam name="T1">Type #1 of injected dependency.</typeparam>
+        /// <typeparam name="T2">Type #2 of injected dependency.</typeparam>
+        /// <typeparam name="T3">Type #3 of injected dependency.</typeparam>
+        /// <typeparam name="T4">Type #4 of injected dependency.</typeparam>
+        /// <typeparam name="T">The implementation type.</typeparam>
+        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
+        /// <seealso cref="To{T}()"/>
+        /// <seealso cref="Tags"/>
+        /// <seealso cref="As"/>
         IConfiguration To<T1, T2, T3, T4, T>(global::System.Func<T1, T2, T3, T4, T> factory);
         
+        /// <summary>
+        /// Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the <see cref="TagAttribute"/> in front of the parameter to specify the tag of the injected dependency.
+        /// </summary>
+        /// <param name="factory">Lambda expression to manually create an instance.</param>
+        /// <typeparam name="T1">Type #1 of injected dependency.</typeparam>
+        /// <typeparam name="T2">Type #2 of injected dependency.</typeparam>
+        /// <typeparam name="T3">Type #3 of injected dependency.</typeparam>
+        /// <typeparam name="T4">Type #4 of injected dependency.</typeparam>
+        /// <typeparam name="T5">Type #5 of injected dependency.</typeparam>
+        /// <typeparam name="T">The implementation type.</typeparam>
+        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
+        /// <seealso cref="To{T}()"/>
+        /// <seealso cref="Tags"/>
+        /// <seealso cref="As"/>
         IConfiguration To<T1, T2, T3, T4, T5, T>(global::System.Func<T1, T2, T3, T4, T5, T> factory);
         
+        /// <summary>
+        /// Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the <see cref="TagAttribute"/> in front of the parameter to specify the tag of the injected dependency.
+        /// </summary>
+        /// <param name="factory">Lambda expression to manually create an instance.</param>
+        /// <typeparam name="T1">Type #1 of injected dependency.</typeparam>
+        /// <typeparam name="T2">Type #2 of injected dependency.</typeparam>
+        /// <typeparam name="T3">Type #3 of injected dependency.</typeparam>
+        /// <typeparam name="T4">Type #4 of injected dependency.</typeparam>
+        /// <typeparam name="T5">Type #5 of injected dependency.</typeparam>
+        /// <typeparam name="T6">Type #6 of injected dependency.</typeparam>
+        /// <typeparam name="T">The implementation type.</typeparam>
+        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
+        /// <seealso cref="To{T}()"/>
+        /// <seealso cref="Tags"/>
+        /// <seealso cref="As"/>
         IConfiguration To<T1, T2, T3, T4, T5, T6, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T> factory);
         
+        /// <summary>
+        /// Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the <see cref="TagAttribute"/> in front of the parameter to specify the tag of the injected dependency.
+        /// </summary>
+        /// <param name="factory">Lambda expression to manually create an instance.</param>
+        /// <typeparam name="T1">Type #1 of injected dependency.</typeparam>
+        /// <typeparam name="T2">Type #2 of injected dependency.</typeparam>
+        /// <typeparam name="T3">Type #3 of injected dependency.</typeparam>
+        /// <typeparam name="T4">Type #4 of injected dependency.</typeparam>
+        /// <typeparam name="T5">Type #5 of injected dependency.</typeparam>
+        /// <typeparam name="T6">Type #6 of injected dependency.</typeparam>
+        /// <typeparam name="T7">Type #7 of injected dependency.</typeparam>
+        /// <typeparam name="T">The implementation type.</typeparam>
+        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
+        /// <seealso cref="To{T}()"/>
+        /// <seealso cref="Tags"/>
+        /// <seealso cref="As"/>
         IConfiguration To<T1, T2, T3, T4, T5, T6, T7, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T> factory);
         
+        /// <summary>
+        /// Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the <see cref="TagAttribute"/> in front of the parameter to specify the tag of the injected dependency.
+        /// </summary>
+        /// <param name="factory">Lambda expression to manually create an instance.</param>
+        /// <typeparam name="T1">Type #1 of injected dependency.</typeparam>
+        /// <typeparam name="T2">Type #2 of injected dependency.</typeparam>
+        /// <typeparam name="T3">Type #3 of injected dependency.</typeparam>
+        /// <typeparam name="T4">Type #4 of injected dependency.</typeparam>
+        /// <typeparam name="T5">Type #5 of injected dependency.</typeparam>
+        /// <typeparam name="T6">Type #6 of injected dependency.</typeparam>
+        /// <typeparam name="T7">Type #7 of injected dependency.</typeparam>
+        /// <typeparam name="T8">Type #7 of injected dependency.</typeparam>
+        /// <typeparam name="T">The implementation type.</typeparam>
+        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
+        /// <seealso cref="To{T}()"/>
+        /// <seealso cref="Tags"/>
+        /// <seealso cref="As"/>
         IConfiguration To<T1, T2, T3, T4, T5, T6, T7, T8, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T8, T> factory);
     }
 
@@ -2110,10 +2352,10 @@ namespace Pure.DI
         ///         return new Lazy&lt;TT&gt;(func, false);
         ///     };
         /// </code>
-        /// See also:
-        /// <br/><see cref="IConfiguration.Bind{T}"/>
         /// </example>
         /// </summary>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="IBinding.Tags"/>
         object Tag { get; }
             
         /// <summary>
@@ -2143,12 +2385,11 @@ namespace Pure.DI
         ///         return service;
         ///     })
         /// </code>
-        /// See also:
-        /// <br/><see cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
         /// </example>
         /// </summary>
         /// <param name="value">Injectable instance.</param>.
         /// <typeparam name="T">Instance type.</typeparam>
+        /// <seealso cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
         void Inject<T>(out T value);
 
         /// <summary>
@@ -2163,13 +2404,12 @@ namespace Pure.DI
         ///         return new Service(dependency);
         ///     })
         /// </code>
-        /// See also:
-        /// <br/><see cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
         /// </example>
         /// </summary>
         /// <param name="tag">The injection tag. See also <see cref="IBinding.Tags"/></param>.
         /// <param name="value">Injectable instance.</param>.
         /// <typeparam name="T">Instance type.</typeparam>
+        /// <seealso cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
         void Inject<T>(object tag, out T value);
     }
     
