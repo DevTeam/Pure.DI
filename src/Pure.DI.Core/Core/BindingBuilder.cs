@@ -7,7 +7,7 @@ internal class BindingBuilder(
     IBaseSymbolsProvider baseSymbolsProvider)
     : IBindingBuilder
 {
-    private MdDefaultLifetime? _defaultLifetime;
+    private readonly LinkedList<MdDefaultLifetime> _defaultLifetimes = [];
     private SemanticModel? _semanticModel;
     private SyntaxNode? _source;
     private MdLifetime? _lifetime;
@@ -17,10 +17,8 @@ internal class BindingBuilder(
     private readonly List<MdContract> _contracts = [];
     private readonly List<MdTag> _tags = [];
 
-    public MdDefaultLifetime DefaultLifetime
-    {
-        set => _defaultLifetime = value;
-    }
+    public void AddDefaultLifetime(MdDefaultLifetime defaultLifetime) => 
+        _defaultLifetimes.AddFirst(defaultLifetime);
 
     public MdLifetime Lifetime
     {
@@ -65,7 +63,7 @@ internal class BindingBuilder(
 
     public MdBinding Build(MdSetup setup)
     {
-        var type = _implementation?.Type ?? _factory?.Type ??_arg?.Type;
+        var implementationType = _implementation?.Type ?? _factory?.Type ??_arg?.Type;
         var contractsSource = _implementation?.Source ?? _factory?.Source;
         try
         {
@@ -80,18 +78,18 @@ internal class BindingBuilder(
                         _contracts.Remove(contract);
                     }
                     
-                    if (type is not null && contractsSource is not null)
+                    if (implementationType is not null && contractsSource is not null)
                     {
                         var baseSymbols = Enumerable.Empty<ITypeSymbol>();
-                        if (type is { SpecialType: SpecialType.None, TypeKind: TypeKind.Class, IsAbstract: false })
+                        if (implementationType is { SpecialType: SpecialType.None, TypeKind: TypeKind.Class, IsAbstract: false })
                         {
                             baseSymbols = baseSymbolsProvider
-                                .GetBaseSymbols(type, (i, deepness) => deepness switch
+                                .GetBaseSymbols(implementationType, (i, deepness) => deepness switch
                                 {
                                     0 => true,
                                     1 when 
-                                        type.TypeKind != TypeKind.Interface
-                                        && !type.IsAbstract
+                                        implementationType.TypeKind != TypeKind.Interface
+                                        && !implementationType.IsAbstract
                                         && (i.TypeKind == TypeKind.Interface || i.IsAbstract)
                                         && i.SpecialType == SpecialType.None 
                                         => true,
@@ -101,7 +99,7 @@ internal class BindingBuilder(
                         
                         var contracts = new HashSet<ITypeSymbol>(baseSymbols, SymbolEqualityComparer.Default)
                         {
-                            type
+                            implementationType
                         };
                         
                         var tags = autoContracts
@@ -124,14 +122,15 @@ internal class BindingBuilder(
                 }
 
                 var id = new Lazy<int>(idGenerator.Generate);
+                var implementationTags = _tags.Select(tag => BuildTag(tag, implementationType, id)).ToImmutableArray();
                 return new MdBinding(
                     0,
                     source,
                     setup,
                     semanticModel,
-                    _contracts.Select(i => i with { Tags = i.Tags.Select(tag => BuildTag(tag, type, id)).ToImmutableArray()}).ToImmutableArray(),
-                    _tags.Select(tag => BuildTag(tag, type, id)).ToImmutableArray(),
-                    _lifetime ?? _defaultLifetime?.Lifetime,
+                    _contracts.Select(i => i with { Tags = i.Tags.Select(tag => BuildTag(tag, implementationType, id)).ToImmutableArray()}).ToImmutableArray(),
+                    implementationTags,
+                    GetLifetime(implementationType, implementationTags),
                     _implementation,
                     _factory,
                     _arg);
@@ -174,5 +173,50 @@ internal class BindingBuilder(
         }
 
         return tag;
+    }
+
+    private MdLifetime? GetLifetime(ITypeSymbol? implementationType, ImmutableArray<MdTag> implementationTags)
+    {
+        if (_lifetime.HasValue)
+        {
+            return _lifetime.Value;
+        }
+
+        if (implementationType is not null)
+        {
+            foreach (var defaultLifetime in _defaultLifetimes.Where(i => i.Type is not null))
+            {
+                var tags = defaultLifetime.Tags.IsDefaultOrEmpty 
+                    ? ImmutableHashSet<MdTag>.Empty
+                    : defaultLifetime.Tags.ToImmutableHashSet();
+
+                var baseSymbols = baseSymbolsProvider.GetBaseSymbols(implementationType, (i, _) =>
+                {
+                    if (!tags.IsEmpty)
+                    {
+                        var bindingTags = implementationTags.ToImmutableHashSet();
+                        var contractTags = _contracts.FirstOrDefault(j => SymbolEqualityComparer.Default.Equals(j.ContractType, i)).Tags;
+                        if (!contractTags.IsDefaultOrEmpty)
+                        {
+                            bindingTags = bindingTags.Union(contractTags);
+                        }
+
+                        if (bindingTags.Intersect(tags).IsEmpty)
+                        {
+                            return false;
+                        }
+                    }
+
+                    return SymbolEqualityComparer.Default.Equals(defaultLifetime.Type, i);
+                });
+                
+                if (baseSymbols.Any())
+                {
+                    return defaultLifetime.Lifetime;
+                }
+            }
+        }
+
+        return _defaultLifetimes.FirstOrDefault(i => i.Type is null).Lifetime;
     }
 }

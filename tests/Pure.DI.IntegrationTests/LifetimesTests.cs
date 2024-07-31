@@ -2171,4 +2171,336 @@ namespace Sample
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["True"], result);
     }
+    
+    [Fact]
+    public async Task ShouldDefaultLifetimeForInterface()
+    {
+        // Given
+
+        // When
+        var result = await """
+       using System;
+       using Pure.DI;
+
+       namespace Sample
+       {
+           interface IService {}
+           class Service: IService {}
+           static class Setup
+           {
+               private static void SetupComposition()
+               {
+                   DI.Setup("Composition")
+                       .DefaultLifetime<IService>(Lifetime.Singleton)
+                       .Bind().To<Service>()
+                       .Root<IService>("Service");
+               }
+           }
+       
+           public class Program
+           {
+               public static void Main()
+               {
+                   var composition = new Composition();
+                   Console.WriteLine(composition.Service == composition.Service);
+               }
+           }
+       }
+       """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+    
+    [Fact]
+    public async Task ShouldDefaultLifetimeForInstance()
+    {
+        // Given
+
+        // When
+        var result = await """
+       using System;
+       using Pure.DI;
+
+       namespace Sample
+       {
+           interface IService {}
+           class Service: IService {}
+           static class Setup
+           {
+               private static void SetupComposition()
+               {
+                   DI.Setup("Composition")
+                       .DefaultLifetime<Service>(Lifetime.Singleton)
+                       .Bind().To<Service>()
+                       .Root<IService>("Service");
+               }
+           }
+       
+           public class Program
+           {
+               public static void Main()
+               {
+                   var composition = new Composition();
+                   Console.WriteLine(composition.Service == composition.Service);
+               }
+           }
+       }
+       """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+    
+    [Fact]
+    public async Task ShouldDefaultLifetimeForTypIsNotMatch()
+    {
+        // Given
+
+        // When
+        var result = await """
+       using System;
+       using Pure.DI;
+
+       namespace Sample
+       {
+           interface IService {}
+           class Service: IService {}
+           static class Setup
+           {
+               private static void SetupComposition()
+               {
+                   DI.Setup("Composition")
+                       .DefaultLifetime<string>(Lifetime.Singleton)
+                       .Bind().To<Service>()
+                       .Root<IService>("Service");
+               }
+           }
+       
+           public class Program
+           {
+               public static void Main()
+               {
+                   var composition = new Composition();
+                   Console.WriteLine(composition.Service != composition.Service);
+               }
+           }
+       }
+       """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+    
+    [Fact]
+    public async Task ShouldDefaultLifetimeForTypIsNotMatchButHasDefault()
+    {
+        // Given
+
+        // When
+        var result = await """
+       using System;
+       using Pure.DI;
+
+       namespace Sample
+       {
+           interface IService {}
+           class Service: IService {}
+           static class Setup
+           {
+               private static void SetupComposition()
+               {
+                   DI.Setup("Composition")
+                       .DefaultLifetime<string>(Lifetime.Singleton)
+                       .DefaultLifetime(Lifetime.Singleton)
+                       .Bind().To<Service>()
+                       .Root<IService>("Service");
+               }
+           }
+       
+           public class Program
+           {
+               public static void Main()
+               {
+                   var composition = new Composition();
+                   Console.WriteLine(composition.Service == composition.Service);
+               }
+           }
+       }
+       """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+    
+    [Fact]
+    public async Task ShouldDefaultLifetimeForInstanceWhenTag()
+    {
+        // Given
+
+        // When
+        var result = await """
+       using System;
+       using Pure.DI;
+
+       namespace Sample
+       {
+           interface IService {}
+           class Service: IService {}
+           static class Setup
+           {
+               private static void SetupComposition()
+               {
+                   DI.Setup("Composition")
+                       .DefaultLifetime<Service>(Lifetime.Singleton, "abc", "xyz")
+                       .Bind("xyz").To<Service>()
+                       .Root<IService>("Service", "xyz");
+               }
+           }
+       
+           public class Program
+           {
+               public static void Main()
+               {
+                   var composition = new Composition();
+                   Console.WriteLine(composition.Service == composition.Service);
+               }
+           }
+       }
+       """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+#if  ROSLYN4_8_OR_GREATER
+    [Fact]
+    public async Task ShouldDefaultLifetimeForInstanceWhenTagsArray()
+    {
+        // Given
+
+        // When
+        var result = await """
+       using System;
+       using Pure.DI;
+
+       namespace Sample
+       {
+           interface IService {}
+           class Service: IService {}
+           static class Setup
+           {
+               private static void SetupComposition()
+               {
+                   DI.Setup("Composition")
+                       .DefaultLifetime<Service>(Lifetime.Singleton, ["abc", "xyz"])
+                       .Bind("xyz").To<Service>()
+                       .Root<IService>("Service", "xyz");
+               }
+           }
+       
+           public class Program
+           {
+               public static void Main()
+               {
+                   var composition = new Composition();
+                   Console.WriteLine(composition.Service == composition.Service);
+               }
+           }
+       }
+       """.RunAsync(new Options(LanguageVersion.CSharp12));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+#endif
+    
+    [Fact]
+    public async Task ShouldDefaultLifetimeForInstanceWhenTagIsNotMatch()
+    {
+        // Given
+
+        // When
+        var result = await """
+       using System;
+       using Pure.DI;
+
+       namespace Sample
+       {
+           interface IService {}
+           class Service: IService {}
+           static class Setup
+           {
+               private static void SetupComposition()
+               {
+                   DI.Setup("Composition")
+                       .DefaultLifetime<Service>(Lifetime.Singleton, "abc", "xyz")
+                       .Bind("asd").To<Service>()
+                       .Root<IService>("Service", "asd");
+               }
+           }
+       
+           public class Program
+           {
+               public static void Main()
+               {
+                   var composition = new Composition();
+                   Console.WriteLine(composition.Service != composition.Service);
+               }
+           }
+       }
+       """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+    
+    [Fact]
+    public async Task ShouldUseDefaultLifetimeForInterfaceWhenHasCommonDefaultLifetime()
+    {
+        // Given
+
+        // When
+        var result = await """
+       using System;
+       using Pure.DI;
+
+       namespace Sample
+       {
+           interface IService {}
+           class Service: IService {}
+           static class Setup
+           {
+               private static void SetupComposition()
+               {
+                   DI.Setup("Composition")
+                       .DefaultLifetime<IService>(Lifetime.Singleton)
+                       .DefaultLifetime(Lifetime.PerBlock)
+                       .Bind().To<Service>()
+                       .Root<IService>("Service");
+               }
+           }
+       
+           public class Program
+           {
+               public static void Main()
+               {
+                   var composition = new Composition();
+                   Console.WriteLine(composition.Service == composition.Service);
+               }
+           }
+       }
+       """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
 }

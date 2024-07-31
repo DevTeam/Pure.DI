@@ -2,7 +2,7 @@
 
 internal interface IBindingBuilder
 {
-    MdDefaultLifetime DefaultLifetime { set; }
+    void AddDefaultLifetime(MdDefaultLifetime defaultLifetime);
     
     MdLifetime Lifetime { set; }
     

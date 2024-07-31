@@ -88,7 +88,7 @@ internal sealed class SetupsBuilder(
         _genericTypeArgumentAttributes.Add(genericTypeArgumentAttribute);
 
     public void VisitDefaultLifetime(in MdDefaultLifetime defaultLifetime) =>
-        _bindingBuilder.DefaultLifetime = defaultLifetime;
+        _bindingBuilder.AddDefaultLifetime(defaultLifetime);
 
     public void VisitDependsOn(in MdDependsOn dependsOn) =>
         _dependsOn.Add(dependsOn);

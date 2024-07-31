@@ -354,6 +354,24 @@ internal class ApiInvocationProcessor(
                         }
 
                         break;
+                    
+                    case nameof(IConfiguration.DefaultLifetime):
+                        if (invocation.ArgumentList.Arguments.Count > 0
+                            && genericName.TypeArgumentList.Arguments is [var defaultLifetimeTypeSyntax])
+                        {
+                            var defaultLifetimeTypeSymbol = semantic.GetTypeSymbol<ITypeSymbol>(semanticModel, defaultLifetimeTypeSyntax);
+                            var defaultLifetimeArgs = arguments.GetArgs(invocation.ArgumentList, "lifetime", "tags");
+                            var defaultLifetimeSyntax = defaultLifetimeArgs[0]!.Expression;
+                            var defaultLifetimeTagArguments = invocation.ArgumentList.Arguments.SkipWhile((arg, i) => arg.NameColon?.Name.Identifier.Text != "tags" && i < 2);
+                            var defaultLifetimeTags = BuildTags(semanticModel, defaultLifetimeTagArguments);
+                            metadataVisitor.VisitDefaultLifetime(
+                                new MdDefaultLifetime(
+                                    new MdLifetime(semanticModel, invocation.ArgumentList, semantic.GetRequiredConstantValue<Lifetime>(semanticModel, defaultLifetimeSyntax)),
+                                    defaultLifetimeTypeSymbol,
+                                    defaultLifetimeTags));
+                        }
+
+                        break;
                 }
 
                 break;

@@ -67,7 +67,7 @@ public partial class Generator
             .Bind().To<Attributes>()
             .Bind().To<Compilations>()
 
-        // Validators
+            // Validators
             .Bind(Tag.Type).To<MetadataValidator>()
             .Bind(Tag.Type).To<DependencyGraphValidator>()
             .Bind(Tag.Type).To<RootValidator>()

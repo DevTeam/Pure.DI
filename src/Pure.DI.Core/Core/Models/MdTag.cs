@@ -5,6 +5,10 @@ internal readonly record struct MdTag(
     int Position,
     object? Value)
 {
+    public bool Equals(MdTag other) => Equals(Value, other.Value);
+
+    public override int GetHashCode() => Value != null ? Value.GetHashCode() : 0;
+
     public static readonly object ContextTag = new ContextTagObject();
     
     public static MdTag CreateTypeTag(MdTag baseTag, ITypeSymbol? type) =>

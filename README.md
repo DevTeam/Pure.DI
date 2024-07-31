@@ -224,6 +224,8 @@ dotnet run
 - [Scope](readme/scope.md)
 - [Auto scoped](readme/auto-scoped.md)
 - [Default lifetime](readme/default-lifetime.md)
+- [Default lifetime for a type](readme/default-lifetime-for-a-type.md)
+- [Default lifetime for a type and a tag](readme/default-lifetime-for-a-type-and-a-tag.md)
 - [Disposable singleton](readme/disposable-singleton.md)
 - [Async disposable singleton](readme/async-disposable-singleton.md)
 - [Async disposable scope](readme/async-disposable-scope.md)
