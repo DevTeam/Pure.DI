@@ -1,7 +1,7 @@
 ﻿/*
 $v=true
 $p=211
-$d=Exposed generic roots it args
+$d=Exposed generic roots with args
 $h=Composition roots from other assemblies or projects can be used as a source of bindings. When you add a binding to a composition from another assembly or project, the roots of the composition with the `RootKind.Exposed` type will be used in the bindings automatically. For example, in some assembly a composition is defined as:
 $h=```c#
 $h=public partial class CompositionWithGenericRootsAndArgsInOtherProject

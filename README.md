@@ -298,7 +298,7 @@ dotnet run
 - [Exposed roots via arg](readme/exposed-roots-via-arg.md)
 - [Exposed roots via root arg](readme/exposed-roots-via-root-arg.md)
 - [Exposed generic roots](readme/exposed-generic-roots.md)
-- [Exposed generic roots it args](readme/exposed-generic-roots-it-args.md)
+- [Exposed generic roots with args](readme/exposed-generic-roots-with-args.md)
 ### Applications
 - Console
   - [Schrödinger's cat](readme/Console.md)

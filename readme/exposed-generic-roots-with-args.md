@@ -1,4 +1,4 @@
-#### Exposed generic roots it args
+#### Exposed generic roots with args
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Advanced/ExposedGenericRootsWithArgsScenario.cs)
 
