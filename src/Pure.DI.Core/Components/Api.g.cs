@@ -2140,7 +2140,7 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <param name="factory">Lambda expression to manually create an instance.</param>
+        /// <param name="factory">An expression for manually creating and initializing an instance.</param>
         /// <typeparam name="T">The implementation type.</typeparam>
         /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="IConfiguration.Bind{T}"/>
@@ -2197,7 +2197,7 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <param name="factory">Lambda expression to manually create an instance.</param>
+        /// <param name="factory">An expression for manually creating and initializing an instance.</param>
         /// <typeparam name="T1">Type #1 of injected dependency.</typeparam>
         /// <typeparam name="T">The implementation type.</typeparam>
         /// <returns>Reference to the setup continuation chain.</returns>
@@ -2235,7 +2235,7 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <param name="factory">Lambda expression to manually create an instance.</param>
+        /// <param name="factory">An expression for manually creating and initializing an instance.</param>
         /// <typeparam name="T1">Type #1 of injected dependency.</typeparam>
         /// <typeparam name="T2">Type #2 of injected dependency.</typeparam>
         /// <typeparam name="T">The implementation type.</typeparam>
@@ -2250,7 +2250,7 @@ namespace Pure.DI
         /// <summary>
         /// Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the <see cref="TagAttribute"/> in front of the parameter to specify the tag of the injected dependency.
         /// </summary>
-        /// <param name="factory">Lambda expression to manually create an instance.</param>
+        /// <param name="factory">An expression for manually creating and initializing an instance.</param>
         /// <typeparam name="T1">Type #1 of injected dependency.</typeparam>
         /// <typeparam name="T2">Type #2 of injected dependency.</typeparam>
         /// <typeparam name="T3">Type #3 of injected dependency.</typeparam>
@@ -2266,7 +2266,7 @@ namespace Pure.DI
         /// <summary>
         /// Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the <see cref="TagAttribute"/> in front of the parameter to specify the tag of the injected dependency.
         /// </summary>
-        /// <param name="factory">Lambda expression to manually create an instance.</param>
+        /// <param name="factory">An expression for manually creating and initializing an instance.</param>
         /// <typeparam name="T1">Type #1 of injected dependency.</typeparam>
         /// <typeparam name="T2">Type #2 of injected dependency.</typeparam>
         /// <typeparam name="T3">Type #3 of injected dependency.</typeparam>
@@ -2283,7 +2283,7 @@ namespace Pure.DI
         /// <summary>
         /// Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the <see cref="TagAttribute"/> in front of the parameter to specify the tag of the injected dependency.
         /// </summary>
-        /// <param name="factory">Lambda expression to manually create an instance.</param>
+        /// <param name="factory">An expression for manually creating and initializing an instance.</param>
         /// <typeparam name="T1">Type #1 of injected dependency.</typeparam>
         /// <typeparam name="T2">Type #2 of injected dependency.</typeparam>
         /// <typeparam name="T3">Type #3 of injected dependency.</typeparam>
@@ -2301,7 +2301,7 @@ namespace Pure.DI
         /// <summary>
         /// Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the <see cref="TagAttribute"/> in front of the parameter to specify the tag of the injected dependency.
         /// </summary>
-        /// <param name="factory">Lambda expression to manually create an instance.</param>
+        /// <param name="factory">An expression for manually creating and initializing an instance.</param>
         /// <typeparam name="T1">Type #1 of injected dependency.</typeparam>
         /// <typeparam name="T2">Type #2 of injected dependency.</typeparam>
         /// <typeparam name="T3">Type #3 of injected dependency.</typeparam>
@@ -2320,7 +2320,7 @@ namespace Pure.DI
         /// <summary>
         /// Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the <see cref="TagAttribute"/> in front of the parameter to specify the tag of the injected dependency.
         /// </summary>
-        /// <param name="factory">Lambda expression to manually create an instance.</param>
+        /// <param name="factory">An expression for manually creating and initializing an instance.</param>
         /// <typeparam name="T1">Type #1 of injected dependency.</typeparam>
         /// <typeparam name="T2">Type #2 of injected dependency.</typeparam>
         /// <typeparam name="T3">Type #3 of injected dependency.</typeparam>
@@ -2340,7 +2340,7 @@ namespace Pure.DI
         /// <summary>
         /// Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the <see cref="TagAttribute"/> in front of the parameter to specify the tag of the injected dependency.
         /// </summary>
-        /// <param name="factory">Lambda expression to manually create an instance.</param>
+        /// <param name="factory">An expression for manually creating and initializing an instance.</param>
         /// <typeparam name="T1">Type #1 of injected dependency.</typeparam>
         /// <typeparam name="T2">Type #2 of injected dependency.</typeparam>
         /// <typeparam name="T3">Type #3 of injected dependency.</typeparam>
