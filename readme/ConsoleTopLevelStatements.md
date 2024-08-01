@@ -17,11 +17,7 @@ DI.Setup("Composition")
     // Models a random subatomic event that may or may not occur
     .Bind().As(Singleton).To<Random>()
     // Represents a quantum superposition of 2 states: Alive or Dead
-    .Bind().To(ctx =>
-    {
-        ctx.Inject<Random>(out var random);
-        return (State)random.Next(2);
-    })
+    .Bind().To((Random random) => (State)random.Next(2))
     // Represents schrodinger's cat
     .Bind().To<ShroedingersCat>()
     // Represents a cardboard box with any content
@@ -78,7 +74,7 @@ The [project file](/samples/ShroedingersCatTopLevelStatements/ShroedingersCatTop
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.1.28">
+        <PackageReference Include="Pure.DI" Version="2.1.29">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>

@@ -21,11 +21,7 @@ static void Setup() =>
         // Models a random subatomic event that may or may not occur
         .Bind().As(Singleton).To<Random>()
         // Represents a quantum superposition of 2 states: Alive or Dead
-        .Bind().To(ctx =>
-        {
-            ctx.Inject<Random>(out var random);
-            return (State)random.Next(2);
-        })
+        .Bind().To((Random random) => (State)random.Next(2))
         .Bind().To<ShroedingersCat>()
         // Represents a cardboard box with any content
         .Bind().To<CardboardBox<TT>>()
