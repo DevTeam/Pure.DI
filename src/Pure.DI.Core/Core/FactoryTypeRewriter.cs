@@ -57,7 +57,12 @@ internal sealed class FactoryTypeRewriter(
         }
 
         var symbol = semanticModel.GetSymbolInfo(identifier).Symbol;
-        if (symbol is not ITypeSymbol type || !marker.IsMarkerBased(_context.Setup, type))
+        if (symbol is not ITypeSymbol type)
+        {
+            return identifier;
+        }
+        
+        if (!marker.IsMarkerBased(_context.Setup, type))
         {
             return identifier;
         }

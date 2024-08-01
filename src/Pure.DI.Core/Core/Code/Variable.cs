@@ -40,5 +40,5 @@ internal record Variable(
     
     public ITypeSymbol ContractType => Injection.Type;
 
-    public override string ToString() => $"{InstanceType} {VariableName}";
+    public override string ToString() => $"{InstanceType.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat)} {VariableName}";
 }

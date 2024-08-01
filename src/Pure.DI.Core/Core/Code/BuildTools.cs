@@ -46,7 +46,7 @@ internal class BuildTools(
         if (!filter.IsMeetRegularExpression(
                 ctx.DependencyGraph.Source,
                 (Hint.OnDependencyInjectionImplementationTypeNameRegularExpression, typeResolver.Resolve(variable.Setup, variable.InstanceType).Name),
-                (Hint.OnDependencyInjectionContractTypeNameRegularExpression, variable.ContractType.ToString()),
+                (Hint.OnDependencyInjectionContractTypeNameRegularExpression, variable.ContractType.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat)),
                 (Hint.OnDependencyInjectionTagRegularExpression, variable.Injection.Tag.ValueToString()),
                 (Hint.OnDependencyInjectionLifetimeRegularExpression, variable.Node.Lifetime.ValueToString())))
         {
@@ -54,7 +54,7 @@ internal class BuildTools(
         }
         
         var tag = GetTag(ctx, variable);
-        return $"{Names.OnDependencyInjectionMethodName}<{variable.ContractType}>({variableCode}, {tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()})";
+        return $"{Names.OnDependencyInjectionMethodName}<{typeResolver.Resolve(variable.Setup, variable.ContractType)}>({variableCode}, {tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()})";
     }
     
     public IEnumerable<Line> OnCreated(BuildContext ctx, Variable variable)

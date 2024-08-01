@@ -89,7 +89,7 @@ namespace Pure.DI
                         return taskFactory.StartNew(factory);
                     })
 #endif                
-#if NETSTANDARD2_1_OR_GREATER || NET || NETCOREAPP                
+#if NETSTANDARD2_1_OR_GREATER || NET || NETCOREAPP
                 .Bind<global::System.Threading.Tasks.ValueTask<TT>>()
                     .To(ctx =>
                     {
@@ -97,7 +97,7 @@ namespace Pure.DI
                         return new global::System.Threading.Tasks.ValueTask<TT>(value);
                     })
 #endif                
-#if NETSTANDARD || NET || NETCOREAPP                
+#if NETSTANDARD || NET || NETCOREAPP
                 .Bind<global::System.Lazy<TT, TT1>>()
                     .To(ctx =>
                     {
@@ -169,7 +169,7 @@ namespace Pure.DI
                         return new global::System.Collections.Concurrent.BlockingCollection<TT>(concurrentBag);
                     })
 #endif
-#if NETSTANDARD || NET || NETCOREAPP || NET40_OR_GREATER                
+#if NETSTANDARD || NET || NETCOREAPP || NET40_OR_GREATER
                 .Bind<global::System.Collections.Generic.ISet<TT>>()
 #endif
 #if NETSTANDARD || NET || NETCOREAPP || NET35_OR_GREATER
@@ -200,7 +200,7 @@ namespace Pure.DI
                         ctx.Inject<TT[]>(out var arr);
                         return new global::System.Collections.Generic.Stack<TT>(arr);
                     })
-#if NETCOREAPP || NET                
+#if NETCOREAPP || NET
 #if NETCOREAPP3_0_OR_GREATER
                 .Bind<global::System.Collections.Immutable.ImmutableArray<TT>>()
                     .To(ctx =>
@@ -288,7 +288,7 @@ namespace Pure.DI
 #if NET6_0_OR_GREATER
                 .Bind<global::System.Random>().To(_ => global::System.Random.Shared)
 #endif
-#if NETCOREAPP2_0 || NET || NETSTANDARD2_0_OR_GREATER                
+#if NETCOREAPP2_0 || NET || NETSTANDARD2_0_OR_GREATER
                 .Bind<global::System.Text.Encoding>().To(_ => global::System.Text.Encoding.Default)
 #endif
                 .Bind<global::System.Text.Decoder>().To(ctx =>

@@ -142,7 +142,7 @@ public class BenchmarksTests
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.GeneratedCode.Split(Environment.NewLine).Count(i => i.Contains("new Sample.Service3(new Sample.Service4(), new Sample.Service4());")).ShouldBe(1);
+        result.GeneratedCode.Split(Environment.NewLine).Count(i => i.Contains("new global::Sample.Service3(new global::Sample.Service4(), new global::Sample.Service4());")).ShouldBe(1);
     }
     
     [Fact]
@@ -184,6 +184,6 @@ public class BenchmarksTests
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.GeneratedCode.Split(Environment.NewLine).Count(i => i.Contains("new Sample.Service3(new Sample.Service4(), new Sample.Service4());")).ShouldBe(1);
+        result.GeneratedCode.Split(Environment.NewLine).Count(i => i.Contains("new global::Sample.Service3(new global::Sample.Service4(), new global::Sample.Service4());")).ShouldBe(1);
     }
 }

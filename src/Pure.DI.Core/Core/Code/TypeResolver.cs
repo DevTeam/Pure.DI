@@ -29,7 +29,7 @@ internal class TypeResolver(
                 }
                 else
                 {
-                    description = new TypeDescription(type.ToString(), ImmutableArray<TypeDescription>.Empty, typeParam);
+                    description = new TypeDescription(type.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat), ImmutableArray<TypeDescription>.Empty, typeParam);
                 }
                 
                 break;
@@ -69,7 +69,7 @@ internal class TypeResolver(
                 break;
             
             default:
-                description = new TypeDescription(type.ToString(), ImmutableArray<TypeDescription>.Empty, typeParam);
+                description = new TypeDescription(type.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat), ImmutableArray<TypeDescription>.Empty, typeParam);
                 break;
         }
         
