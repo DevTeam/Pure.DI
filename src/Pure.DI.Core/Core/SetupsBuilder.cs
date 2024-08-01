@@ -208,6 +208,7 @@ internal sealed class SetupsBuilder(
             ExpressionSyntax value;
 
             var position = 0;
+            var namespaces = new HashSet<string>();
             var resolvers = new List<MdResolver>();
             var block = new List<StatementSyntax>();
             switch (member)
@@ -361,11 +362,13 @@ internal sealed class SetupsBuilder(
                     contextParameter,
                     resolvers.ToImmutableArray(),
                     false));
-
+            
+            VisitUsingDirectives(new MdUsingDirectives(namespaces.ToImmutableArray(), ImmutableArray<string>.Empty));
             continue;
 
             InvocationExpressionSyntax Inject(ITypeSymbol injectedType, string injectedName, ICollection<MdResolver> resolversSet, object? tag, ref int curPosition)
             {
+                namespaces.Add(injectedType.ContainingNamespace.ToString());
                 resolversSet.Add(new MdResolver
                 {
                     SemanticModel = semanticModel,

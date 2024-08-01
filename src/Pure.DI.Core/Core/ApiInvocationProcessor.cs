@@ -393,10 +393,12 @@ internal class ApiInvocationProcessor(
         var contextParameter = SyntaxFactory.Parameter(SyntaxFactory.Identifier(ctxName));
         var resolvers = new List<MdResolver>();
         var block = new List<StatementSyntax>();
+        var namespaces = new HashSet<string>();
         for (var i = 0; i < argsTypes.Count; i++)
         {
             var argTypeSyntax = argsTypes[i];
             var argType = semantic.GetTypeSymbol<ITypeSymbol>(semanticModel, argTypeSyntax);
+            namespaces.Add(argType.ContainingNamespace.ToString());
             var attributes = paramAttributes[i];
             resolvers.Add(new MdResolver
             {
@@ -450,6 +452,8 @@ internal class ApiInvocationProcessor(
                 contextParameter,
                 resolvers.ToImmutableArray(),
                 false));
+
+        metadataVisitor.VisitUsingDirectives(new MdUsingDirectives(namespaces.ToImmutableArray(), ImmutableArray<string>.Empty));
     }
 
     private bool TryGetAttributeType(
