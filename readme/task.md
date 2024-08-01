@@ -130,7 +130,7 @@ Class diagram:
 classDiagram
 	class Composition {
 		<<partial>>
-		+IService GetRoot(System.Threading.CancellationToken cancellationToken)
+		+IService GetRoot(global::System.Threading.CancellationToken cancellationToken)
 	}
 	class TaskCreationOptions
 	class TaskContinuationOptions
@@ -154,7 +154,7 @@ classDiagram
 	class IService {
 		<<interface>>
 	}
-	Composition ..> Service : IService GetRoot(System.Threading.CancellationToken cancellationToken)
+	Composition ..> Service : IService GetRoot(global::System.Threading.CancellationToken cancellationToken)
 	TaskFactory o-- CancellationToken : Argument "cancellationToken"
 	TaskFactory *--  TaskCreationOptions : TaskCreationOptions
 	TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions

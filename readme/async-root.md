@@ -101,7 +101,7 @@ Class diagram:
 classDiagram
 	class Composition {
 		<<partial>>
-		+TaskᐸIServiceᐳ GetMyServiceAsync(System.Threading.CancellationToken cancellationToken)
+		+TaskᐸIServiceᐳ GetMyServiceAsync(global::System.Threading.CancellationToken cancellationToken)
 	}
 	class TaskScheduler
 	class TaskCreationOptions
@@ -124,7 +124,7 @@ classDiagram
 	class IService {
 		<<interface>>
 	}
-	Composition ..> TaskᐸIServiceᐳ : TaskᐸIServiceᐳ GetMyServiceAsync(System.Threading.CancellationToken cancellationToken)
+	Composition ..> TaskᐸIServiceᐳ : TaskᐸIServiceᐳ GetMyServiceAsync(global::System.Threading.CancellationToken cancellationToken)
 	TaskFactory o-- CancellationToken : Argument "cancellationToken"
 	TaskFactory *--  TaskCreationOptions : TaskCreationOptions
 	TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions
