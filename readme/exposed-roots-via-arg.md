@@ -16,24 +16,12 @@ public partial class CompositionInOtherProject
 
 
 ```c#
-interface IDependency;
-
-class Dependency : IDependency;
-
-interface IService;
-
-class Service(IDependency dependency) : IService;
-
-class Program(IService service, IMyService myService)
+class Program(IMyService myService)
 {
-    public IService Service { get; } = service;
-
     public void DoSomething() => myService.DoSomething();
 }
 
 DI.Setup(nameof(Composition))
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>()
     // Binds to exposed composition roots from other project
     .Arg<CompositionInOtherProject>("baseComposition")
     .Root<Program>("Program");
@@ -71,13 +59,13 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Integration.IMyService transientIMyService2;
+      Integration.IMyService transientIMyService1;
       {
           Integration.CompositionInOtherProject localValue4 = _argBaseComposition;
-          transientIMyService2 = localValue4.MyService;
+          transientIMyService1 = localValue4.MyService;
       }
 
-      return new Program(new Service(new Dependency()), transientIMyService2);
+      return new Program(transientIMyService1);
     }
   }
 

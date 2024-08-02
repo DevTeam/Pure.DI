@@ -30,18 +30,8 @@ using Pure.DI;
 using Xunit;
 
 // {
-interface IDependency;
-
-class Dependency : IDependency;
-
-interface IService;
-
-class Service(IDependency dependency) : IService;
-
-class Program(IService service, IMyService myService)
+class Program(IMyService myService)
 {
-    public IService Service { get; } = service;
-
     public void DoSomething() => myService.DoSomething();
 }
 // }
@@ -53,8 +43,6 @@ public class Scenario
     {
 // {    
         DI.Setup(nameof(Composition))
-            .Bind<IDependency>().To<Dependency>()
-            .Bind<IService>().To<Service>()
             // Binds to exposed composition roots from other project
             .Bind().As(Lifetime.Singleton).To<CompositionInOtherProject>()
             .Root<Program>("Program");

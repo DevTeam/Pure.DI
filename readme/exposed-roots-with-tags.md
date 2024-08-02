@@ -16,24 +16,12 @@ public partial class CompositionWithTagsInOtherProject
 
 
 ```c#
-interface IDependency;
-
-class Dependency : IDependency;
-
-interface IService;
-
-class Service(IDependency dependency) : IService;
-
-class Program(IService service, [Tag("Some tag")] IMyService myService)
+class Program([Tag("Some tag")] IMyService myService)
 {
-    public IService Service { get; } = service;
-
     public void DoSomething() => myService.DoSomething();
 }
 
 DI.Setup(nameof(Composition))
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>()
     // Binds to exposed composition roots from other project
     .Bind().As(Lifetime.Singleton).To<CompositionWithTagsInOtherProject>()
     .Root<Program>("Program");
@@ -51,7 +39,7 @@ partial class Composition
   private readonly Composition _root;
   private readonly object _lock;
 
-  private Integration.CompositionWithTagsInOtherProject? _singletonCompositionWithTagsInOtherProject41;
+  private Integration.CompositionWithTagsInOtherProject? _singletonCompositionWithTagsInOtherProject39;
 
   [OrdinalAttribute(20)]
   public Composition()
@@ -71,24 +59,24 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonCompositionWithTagsInOtherProject41 == null)
+      if (_root._singletonCompositionWithTagsInOtherProject39 == null)
       {
           lock (_lock)
           {
-              if (_root._singletonCompositionWithTagsInOtherProject41 == null)
+              if (_root._singletonCompositionWithTagsInOtherProject39 == null)
               {
-                  _root._singletonCompositionWithTagsInOtherProject41 = new Integration.CompositionWithTagsInOtherProject();
+                  _root._singletonCompositionWithTagsInOtherProject39 = new Integration.CompositionWithTagsInOtherProject();
               }
           }
       }
 
-      Integration.IMyService transientIMyService2;
+      Integration.IMyService transientIMyService1;
       {
-          Integration.CompositionWithTagsInOtherProject localValue6 = _root._singletonCompositionWithTagsInOtherProject41!;
-          transientIMyService2 = localValue6.MyService;
+          Integration.CompositionWithTagsInOtherProject localValue6 = _root._singletonCompositionWithTagsInOtherProject39!;
+          transientIMyService1 = localValue6.MyService;
       }
 
-      return new Program(new Service(new Dependency()), transientIMyService2);
+      return new Program(transientIMyService1);
     }
   }
 

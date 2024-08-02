@@ -16,24 +16,12 @@ public partial class CompositionInOtherProject
 
 
 ```c#
-interface IDependency;
-
-class Dependency : IDependency;
-
-interface IService;
-
-class Service(IDependency dependency) : IService;
-
-class Program(IService service, IMyService myService)
+class Program(IMyService myService)
 {
-    public IService Service { get; } = service;
-
     public void DoSomething() => myService.DoSomething();
 }
 
 DI.Setup(nameof(Composition))
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>()
     // Binds to exposed composition roots from other project
     .Bind().As(Lifetime.Singleton).To<CompositionInOtherProject>()
     .Root<Program>("Program");
@@ -54,7 +42,7 @@ partial class Composition
   private readonly Composition _root;
   private readonly object _lock;
 
-  private Integration.CompositionInOtherProject? _singletonCompositionInOtherProject41;
+  private Integration.CompositionInOtherProject? _singletonCompositionInOtherProject39;
 
   [OrdinalAttribute(20)]
   public Composition()
@@ -74,24 +62,24 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonCompositionInOtherProject41 == null)
+      if (_root._singletonCompositionInOtherProject39 == null)
       {
           lock (_lock)
           {
-              if (_root._singletonCompositionInOtherProject41 == null)
+              if (_root._singletonCompositionInOtherProject39 == null)
               {
-                  _root._singletonCompositionInOtherProject41 = new Integration.CompositionInOtherProject();
+                  _root._singletonCompositionInOtherProject39 = new Integration.CompositionInOtherProject();
               }
           }
       }
 
-      Integration.IMyService transientIMyService2;
+      Integration.IMyService transientIMyService1;
       {
-          Integration.CompositionInOtherProject localValue3 = _root._singletonCompositionInOtherProject41!;
-          transientIMyService2 = localValue3.MyService;
+          Integration.CompositionInOtherProject localValue3 = _root._singletonCompositionInOtherProject39!;
+          transientIMyService1 = localValue3.MyService;
       }
 
-      return new Program(new Service(new Dependency()), transientIMyService2);
+      return new Program(transientIMyService1);
     }
   }
 

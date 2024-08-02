@@ -67,8 +67,8 @@ partial class Composition
                   [MethodImpl(MethodImplOptions.AggressiveInlining)]
                   () =>
                   {
-                      IDependency localValue30 = new Dependency();
-                      return localValue30;
+                      IDependency localValue33 = new Dependency();
+                      return localValue33;
                   });
               }
           }
@@ -76,8 +76,8 @@ partial class Composition
 
       Lazy<IDependency> transientLazy1;
       {
-          Func<IDependency> localFactory31 = perResolveFunc43!;
-          transientLazy1 = new Lazy<IDependency>(localFactory31, true);
+          Func<IDependency> localFactory34 = perResolveFunc43!;
+          transientLazy1 = new Lazy<IDependency>(localFactory34, true);
       }
 
       return new Service(transientLazy1);

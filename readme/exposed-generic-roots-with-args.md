@@ -18,26 +18,14 @@ public partial class CompositionWithGenericRootsAndArgsInOtherProject
 
 
 ```c#
-interface IDependency;
-
-class Dependency : IDependency;
-
-interface IService;
-
-class Service(IDependency dependency) : IService;
-
-class Program(IService service, IMyGenericService<int> myService)
+class Program(IMyGenericService<int> myService)
 {
-    public IService Service { get; } = service;
-
     public void DoSomething(int value) => myService.DoSomething(value);
 }
 
 DI.Setup(nameof(Composition))
     .Hint(Hint.Resolve, "Off")
     .RootArg<int>("id")
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>()
     // Binds to exposed composition roots from other project
     .Bind().As(Lifetime.Singleton).To<CompositionWithGenericRootsAndArgsInOtherProject>()
     .Root<Program>("GetProgram");
@@ -55,7 +43,7 @@ partial class Composition
   private readonly Composition _root;
   private readonly object _lock;
 
-  private Integration.CompositionWithGenericRootsAndArgsInOtherProject? _singletonCompositionWithGenericRootsAndArgsInOtherProject42;
+  private Integration.CompositionWithGenericRootsAndArgsInOtherProject? _singletonCompositionWithGenericRootsAndArgsInOtherProject40;
 
   [OrdinalAttribute(10)]
   public Composition()
@@ -73,25 +61,25 @@ partial class Composition
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Program GetProgram(int id)
   {
-    if (_root._singletonCompositionWithGenericRootsAndArgsInOtherProject42 == null)
+    if (_root._singletonCompositionWithGenericRootsAndArgsInOtherProject40 == null)
     {
         lock (_lock)
         {
-            if (_root._singletonCompositionWithGenericRootsAndArgsInOtherProject42 == null)
+            if (_root._singletonCompositionWithGenericRootsAndArgsInOtherProject40 == null)
             {
-                _root._singletonCompositionWithGenericRootsAndArgsInOtherProject42 = new Integration.CompositionWithGenericRootsAndArgsInOtherProject();
+                _root._singletonCompositionWithGenericRootsAndArgsInOtherProject40 = new Integration.CompositionWithGenericRootsAndArgsInOtherProject();
             }
         }
     }
 
-    Integration.IMyGenericService<int> transientIMyGenericService2;
+    Integration.IMyGenericService<int> transientIMyGenericService1;
     {
         int localId1 = id;
-        Integration.CompositionWithGenericRootsAndArgsInOtherProject localValue2 = _root._singletonCompositionWithGenericRootsAndArgsInOtherProject42!;
-        transientIMyGenericService2 = localValue2.GetMyService<int>(localId1);
+        Integration.CompositionWithGenericRootsAndArgsInOtherProject localValue2 = _root._singletonCompositionWithGenericRootsAndArgsInOtherProject40!;
+        transientIMyGenericService1 = localValue2.GetMyService<int>(localId1);
     }
 
-    return new Program(new Service(new Dependency()), transientIMyGenericService2);
+    return new Program(transientIMyGenericService1);
   }
 }
 ```

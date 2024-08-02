@@ -255,6 +255,9 @@ dotnet run
 - [Custom attributes](readme/custom-attributes.md)
 - [Custom universal attribute](readme/custom-universal-attribute.md)
 - [Custom generic argument attribute](readme/custom-generic-argument-attribute.md)
+- [Bind attribute](readme/bind-attribute.md)
+- [Bind attribute with lifetime and tag](readme/bind-attribute-with-lifetime-and-tag.md)
+- [Bind attribute for a generic type](readme/bind-attribute-for-a-generic-type.md)
 ### Interception
 - [Decorator](readme/decorator.md)
 - [Interception](readme/interception.md)

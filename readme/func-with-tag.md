@@ -73,8 +73,8 @@ partial class Composition
                   [MethodImpl(MethodImplOptions.AggressiveInlining)]
                   () =>
                   {
-                      IDependency localValue29 = new Dependency();
-                      return localValue29;
+                      IDependency localValue32 = new Dependency();
+                      return localValue32;
                   });
               }
           }

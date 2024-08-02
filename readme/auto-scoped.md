@@ -109,14 +109,14 @@ partial class Composition
                       Composition transientComposition2 = this;
                       IService transientIService1;
                       {
-                          Composition localBaseComposition62 = transientComposition2;
+                          Composition localBaseComposition65 = transientComposition2;
                           // Creates a session
-                          var localSession63 = new Composition(localBaseComposition62);
-                          transientIService1 = localSession63.SessionRoot;
+                          var localSession66 = new Composition(localBaseComposition65);
+                          transientIService1 = localSession66.SessionRoot;
                       }
 
-                      IService localValue61 = transientIService1;
-                      return localValue61;
+                      IService localValue64 = transientIService1;
+                      return localValue64;
                   });
               }
           }
