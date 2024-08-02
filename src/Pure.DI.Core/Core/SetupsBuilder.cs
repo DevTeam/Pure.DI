@@ -188,7 +188,7 @@ internal sealed class SetupsBuilder(
         
         var membersToBind =
             from member in type.GetMembers()
-            where member.DeclaredAccessibility >= Accessibility.Internal && !member.IsStatic && member.CanBeReferencedByName && member is IFieldSymbol or IPropertySymbol or IMethodSymbol
+            where member.DeclaredAccessibility >= Accessibility.Internal && member.CanBeReferencedByName && member is IFieldSymbol or IPropertySymbol or IMethodSymbol
             from attribute in member.GetAttributes()
             where attribute.AttributeClass?.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat) == Names.BindAttributeName
             select (attribute, member);
@@ -204,7 +204,10 @@ internal sealed class SetupsBuilder(
             
             const string ctxName = "ctx_1182D127";
             const string valueName = "value";
-            var instance = SyntaxFactory.IdentifierName(valueName);
+            ExpressionSyntax instance = member.IsStatic 
+                ? SyntaxFactory.ParseTypeName(type.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat))
+                : SyntaxFactory.IdentifierName(valueName);
+
             ExpressionSyntax value;
 
             var position = 0;
@@ -323,8 +326,12 @@ internal sealed class SetupsBuilder(
             {
                 valueTag = contract.Tags.First().Value;
             }
-            
-            block.Add(SyntaxFactory.ExpressionStatement(Inject(contract.ContractType!, valueName, resolvers, valueTag, ref position)));
+
+            if (!member.IsStatic)
+            {
+                block.Add(SyntaxFactory.ExpressionStatement(Inject(contract.ContractType!, valueName, resolvers, valueTag, ref position)));
+            }
+
             block.Add(SyntaxFactory.ReturnStatement(value));
             var lambdaExpression = SyntaxFactory.SimpleLambdaExpression(contextParameter)
                 .WithBlock(SyntaxFactory.Block(block));

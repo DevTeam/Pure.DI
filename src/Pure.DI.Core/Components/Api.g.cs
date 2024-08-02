@@ -1035,7 +1035,7 @@ namespace Pure.DI
     /// </code>
     /// </example>
     /// </summary>
-    [global::System.AttributeUsage(global::System.AttributeTargets.Property | global::System.AttributeTargets.Method)]
+    [global::System.AttributeUsage(global::System.AttributeTargets.Property | global::System.AttributeTargets.Method | global::System.AttributeTargets.Field)]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class BindAttribute : global::System.Attribute
     {

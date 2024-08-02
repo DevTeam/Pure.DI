@@ -59,6 +59,174 @@ namespace Sample
     }
     
     [Fact]
+    public async Task ShouldSupportBindAttributeWhenField()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    internal interface IDependency { }
+
+    internal class Dependency : IDependency { }
+
+    internal interface IService { }
+
+    internal class Service : IService
+    {
+        public Service(IDependency dependency)
+        {
+        }
+    }
+    
+    internal class BaseComposition
+    {
+        [Bind]
+        public IDependency Dep = new Dependency();
+    }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup("Composition")
+                .Bind().To<BaseComposition>()
+                .Bind().To<Service>()
+                .Root<IService>("Service");
+        }
+    }  
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition(); 
+        }
+    }
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportBindAttributeWhenStaticField()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    internal interface IDependency { }
+
+    internal class Dependency : IDependency { }
+
+    internal interface IService { }
+
+    internal class Service : IService
+    {
+        public Service(IDependency dependency)
+        {
+        }
+    }
+    
+    internal class BaseComposition
+    {
+        [Bind]
+        public static IDependency Dep = new Dependency();
+    }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup("Composition")
+                .Bind().To<BaseComposition>()
+                .Bind().To<Service>()
+                .Root<IService>("Service");
+        }
+    }  
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition(); 
+        }
+    }
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportBindAttributeWhenStaticProperty()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    internal interface IDependency { }
+
+    internal class Dependency : IDependency { }
+
+    internal interface IService { }
+
+    internal class Service : IService
+    {
+        public Service(IDependency dependency)
+        {
+        }
+    }
+    
+    internal class BaseComposition
+    {
+        [Bind]
+        public static IDependency Dep => new Dependency();
+    }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup("Composition")
+                .Bind().To<BaseComposition>()
+                .Bind().To<Service>()
+                .Root<IService>("Service");
+        }
+    }  
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition(); 
+        }
+    }
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
+    
+    [Fact]
     public async Task ShouldSupportBindAttributeWhenTagInBindingSetup()
     {
         // Given
@@ -262,6 +430,62 @@ namespace Sample
     {
         [Bind(typeof(IDependency), Lifetime.Singleton, null, 1, "abc")]
         public Dependency GetDep() => new Dependency();
+    }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup("Composition")
+                .Bind().To<BaseComposition>()
+                .Bind().To<Service>()
+                .Root<IService>("Service");
+        }
+    }  
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition(); 
+        }
+    }
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportBindAttributeWhenStaticMethod()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    internal interface IDependency { }
+
+    internal class Dependency : IDependency { }
+
+    internal interface IService { }
+
+    internal class Service : IService
+    {
+        public Service(IDependency dependency)
+        {
+        }
+    }
+    
+    internal class BaseComposition
+    {
+        [Bind(typeof(IDependency), Lifetime.Singleton, null, 1, "abc")]
+        public static Dependency GetDep() => new Dependency();
     }
 
     static class Setup
