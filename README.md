@@ -112,28 +112,21 @@ The above code specifies the generation of a partial class named *__Composition_
 partial class Composition
 {
     private object _lock = new object();
-    private Random? _random;    
+    private Random? _random;
     
     public Program Root
     {
       get
       {
-        var stateFunc = new Func<State>(() =>
-            {
+        var stateFunc = new Func<State>(() => {
               if (_random == null)
-              {
                 lock (_lock)
-                {
                   if (_random == null)
-                  {
                     _random = new Random();
-                  }
-                }
-              }
-              
-              return (State)_random.Next(2);      
+
+              return (State)_random.Next(2)
             });
-        
+
         return new Program(
           new CardboardBox<ICat>(
             new ShroedingersCat(
@@ -143,8 +136,8 @@ partial class Composition
     }
     
     public T Resolve<T>() { ... }
-    
-    public object Resolve(Type type) { ... }    
+
+    public object Resolve(Type type) { ... }
 }
 ```
 
@@ -156,7 +149,8 @@ The `public Program Root { get; }` property here is a [*__Composition Root__*](h
 class Program(IBox<ICat> box)
 {
   // Composition Root, a single place in an application
-  // where the composition of the object graphs for an application take place
+  // where the composition of the object graphs
+  // for an application take place
   static void Main() => new Composition().Root.Run();
 
   private void Run() => Console.WriteLine(box);

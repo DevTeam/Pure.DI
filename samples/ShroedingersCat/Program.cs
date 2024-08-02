@@ -75,7 +75,8 @@ internal partial class Composition
 public class Program(IBox<ICat> box)
 {
     // Composition Root, a single place in an application
-    // where the composition of the object graphs for an application take place
+    // where the composition of the object graphs
+    // for an application take place
     public static void Main() => new Composition().Root.Run();
 
     private void Run() => Console.WriteLine(box);
