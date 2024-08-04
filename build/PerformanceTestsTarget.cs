@@ -11,7 +11,7 @@ internal class PerformanceTestsTarget(
     FileSystem fileSystem,
     Json json,
     Analyzer analyzer)
-    : IInitializable, ITarget<BuildStatus>
+    : IInitializable, ITarget<bool>
 {
     private static readonly string[] Filters =
     [
@@ -19,13 +19,10 @@ internal class PerformanceTestsTarget(
         "Pure.DI.Benchmarks.Benchmarks.*.Test*"
     ];
 
-    public Task InitializeAsync() => commands.Register(
-        this,
-        "Runs performance tests",
-        "performance",
-        "perf");
+    public Task InitializeAsync(CancellationToken cancellationToken) => commands.RegisterAsync(
+        this, "Runs performance tests", "performance", "perf");
 
-    public async Task<BuildStatus> RunAsync(CancellationToken cancellationToken)
+    public async Task<bool> RunAsync(CancellationToken cancellationToken)
     {
         var solutionDirectory = env.GetPath(PathType.SolutionDirectory);
         var logsDirectory = Path.Combine(solutionDirectory, ".logs");
@@ -35,7 +32,7 @@ internal class PerformanceTestsTarget(
         var benchmarks = new List<Benchmark>();
         try
         {
-            new DotNetRun()
+            await new DotNetRun()
                 .WithProject(Path.Combine("benchmarks", "Pure.DI.Benchmarks", "Pure.DI.Benchmarks.csproj"))
                 .WithConfiguration(settings.Configuration)
                 .WithArgs(
@@ -44,8 +41,7 @@ internal class PerformanceTestsTarget(
                     "--artifacts", tempDirectory,
                     "--", "--filter")
                 .AddArgs(Filters.Select(filter => filter).ToArray())
-                .Run()
-                .EnsureSuccess();
+                .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
             
             foreach (var reportName in fileSystem.EnumerateFiles(tempDirectory, "*.json", SearchOption.AllDirectories))
             {

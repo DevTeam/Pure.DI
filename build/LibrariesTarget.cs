@@ -15,14 +15,11 @@ internal class LibrariesTarget(
     Sdk sdk)
     : IInitializable, ITarget<IReadOnlyCollection<Library>>
 {
-    public Task InitializeAsync() => commands.Register(
-        this,
-        "Builds and tests libraries",
-        "libs",
-        "l");
+    public Task InitializeAsync(CancellationToken cancellationToken) => commands.RegisterAsync(
+        this, "Builds and tests libraries", "libs", "l");
 
     [SuppressMessage("Performance", "CA1861:Avoid constant arrays as arguments")]
-    public Task<IReadOnlyCollection<Library>> RunAsync(CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<Library>> RunAsync(CancellationToken cancellationToken)
     {
         // Libraries
         List<Library> libraries =
@@ -48,19 +45,16 @@ internal class LibrariesTarget(
 
         foreach (var library in libraries)
         {
-            new DotNetPack()
+            await new DotNetPack()
                 .WithProps(
                     ("configuration", settings.Configuration),
                     ("version", settings.NextVersion.ToString()))
-                .WithConfiguration(settings.Configuration)
-                .WithNoBuild(true)
-                .WithNoLogo(true)
+                .WithConfiguration(settings.Configuration).WithNoBuild(true).WithNoLogo(true)
                 .WithProject(Path.Combine(Path.GetFullPath(Path.Combine("src", library.Name)), $"{library.Name}.csproj"))
-                .Build()
-                .EnsureSuccess();
+                .BuildAsync(cancellationToken: cancellationToken).EnsureSuccess();
         }
 
-        return Task.FromResult<IReadOnlyCollection<Library>>(libraries);
+        return libraries;
     }
 
     private string GetPackagePath(string library, NuGetVersion version)

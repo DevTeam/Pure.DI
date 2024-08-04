@@ -4,9 +4,9 @@ namespace Build.Benchmarks;
 [SuppressMessage("Performance", "CA1822:Mark members as static")]
 internal class Analyzer
 {
-    public BuildStatus Analyze(IEnumerable<Benchmark> benchmarks, params Thresholds[] thresholds)
+    public bool Analyze(IEnumerable<Benchmark> benchmarks, params Thresholds[] thresholds)
     {
-        var status = BuildStatus.Succeed;
+        var status = true;
         var groupsByType = benchmarks.GroupBy(i => i.Type, StringComparer.InvariantCultureIgnoreCase);
         foreach (var groupByType in groupsByType)
         {
@@ -17,16 +17,16 @@ internal class Analyzer
                 if (!methods.TryGetValue(threshold.BenchmarkMethod, out var benchmark))
                 {
                     Error($"Cannot find baseline method \"{threshold.BenchmarkMethod}\" in \"{benchmarkType}\".");
-                    return BuildStatus.Fail;
+                    return false;
                 }
                 
                 if (!methods.TryGetValue(threshold.BaselineMethod, out var baselineBenchmark))
                 {
                     Error($"Cannot find baseline method \"{threshold.BaselineMethod}\" in \"{benchmarkType}\".");
-                    return BuildStatus.Fail;
+                    return false;
                 }
 
-                status += CheckThreshold(
+                status |= CheckThreshold(
                     "time",
                     threshold.WarningTimeRatio,
                     threshold.ErrorTimeRatio,
@@ -35,7 +35,7 @@ internal class Analyzer
                     benchmarkType,
                     threshold.BenchmarkMethod);
                 
-                status += CheckThreshold(
+                status |= CheckThreshold(
                     "bytes allocated per operation",
                     threshold.WarningBytesAllocatedPerOperationRatio,
                     threshold.ErrorBytesAllocatedPerOperationRatio,
@@ -49,23 +49,23 @@ internal class Analyzer
         return status;
     }
     
-    private static BuildStatus CheckThreshold(string name, double? warningThreshold, double? errorThreshold, double baseline, double value, string benchmarkType, string benchmarkMethod)
+    private static bool CheckThreshold(string name, double? warningThreshold, double? errorThreshold, double baseline, double value, string benchmarkType, string benchmarkMethod)
     {
         var ratio = value / baseline;
         if (errorThreshold > double.Epsilon && ratio > errorThreshold)
         {
             Error(CreateMessage(name, errorThreshold, ratio, benchmarkType, benchmarkMethod, "must"));
-            return BuildStatus.Fail;
+            return false;
         }
         
         // ReSharper disable once InvertIf
         if (warningThreshold > double.Epsilon && ratio > warningThreshold)
         {
             Warning(CreateMessage(name, warningThreshold, ratio, benchmarkType, benchmarkMethod, "could"));
-            return BuildStatus.Warnings;
+            return true;
         }
         
-        return BuildStatus.Succeed;
+        return true;
     }
 
     private static string CreateMessage(

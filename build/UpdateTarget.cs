@@ -14,19 +14,16 @@ internal class UpdateTarget(
 {
     private const string VersionPrefix = "PUREDI_API_V";
 
-    public Task InitializeAsync() => commands.Register(
-        this,
-        "Upgrading the internal version of DI to the latest public version",
-        "upgrade",
-        "u");
-    
+    public Task InitializeAsync(CancellationToken cancellationToken) => commands.RegisterAsync(
+        this, "Upgrading the internal version of DI to the latest public version", "upgrade", "u");
+
     [SuppressMessage("Performance", "CA1861:Avoid constant arrays as arguments")]
-    public Task<NuGetVersion> RunAsync(CancellationToken cancellationToken)
+    public async Task<NuGetVersion> RunAsync(CancellationToken cancellationToken)
     {
         var solutionDirectory = env.GetPath(PathType.SolutionDirectory);
         var currentVersion = settings.CurrentVersion;
         var propsFile = Path.Combine(solutionDirectory, "Directory.Build.props");
-        var props = File.ReadAllLines(propsFile);
+        var props = await File.ReadAllLinesAsync(propsFile, cancellationToken);
         var contents = new List<string>();
         foreach (var prop in props)
         {
@@ -40,7 +37,7 @@ internal class UpdateTarget(
             contents.Add(line);
         }
         
-        File.WriteAllLines(propsFile, contents);
+        await File.WriteAllLinesAsync(propsFile, contents, cancellationToken);
         WriteLine($"The internal version of Pure.DI has been updated to {currentVersion}.", Color.Details);
         
         var projectDir = Path.Combine(solutionDirectory, "src", "Pure.DI.Core");
@@ -78,13 +75,13 @@ internal class UpdateTarget(
 
             if (hasVersion)
             {
-                File.WriteAllLines(file, contents);
+                await File.WriteAllLinesAsync(file, contents, cancellationToken);
             }
         }
 
-        new DotNetBuildServerShutdown().Run();
-        new DotNetRestore().Run();
-        new DotNetBuild().Run();
-        return Task.FromResult(currentVersion);
+        await new DotNetBuildServerShutdown().RunAsync(cancellationToken: cancellationToken);
+        await new DotNetRestore().RunAsync(cancellationToken: cancellationToken);
+        await new DotNetBuild().BuildAsync(cancellationToken: cancellationToken);
+        return currentVersion;
     }
 }

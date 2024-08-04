@@ -10,18 +10,12 @@ internal class BenchmarksTarget(
     ITeamCityArtifactsWriter artifactsWriter)
     : IInitializable, ITarget<int>
 {
-    private static readonly string[] Filters =
-    [
-        "Pure.DI.Benchmarks.Benchmarks.*"
-    ];
+    private static readonly string[] Filters = ["Pure.DI.Benchmarks.Benchmarks.*"];
 
-    public Task InitializeAsync() => commands.Register(
-        this,
-        "Runs benchmarks",
-        "benchmarks",
-        "bm");
+    public Task InitializeAsync(CancellationToken cancellationToken) => commands.RegisterAsync(
+        this, "Runs benchmarks", "benchmarks", "bm");
 
-    public Task<int> RunAsync(CancellationToken cancellationToken)
+    public async Task<int> RunAsync(CancellationToken cancellationToken)
     {
         var solutionDirectory = env.GetPath(PathType.SolutionDirectory);
         var logsDirectory = Path.Combine(solutionDirectory, ".logs");
@@ -34,15 +28,12 @@ internal class BenchmarksTarget(
         else
         {
             Directory.CreateDirectory(artifactsDirectory);
-            new DotNetRun()
+            await new DotNetRun()
                 .WithProject(Path.Combine("benchmarks", "Pure.DI.Benchmarks", "Pure.DI.Benchmarks.csproj"))
                 .WithConfiguration(settings.Configuration)
-                .WithArgs(
-                    "--artifacts", artifactsDirectory,
-                    "--", "--filter")
+                .WithArgs("--artifacts", artifactsDirectory, "--", "--filter")
                 .AddArgs(Filters.Select(filter => filter).ToArray())
-                .Run()
-                .EnsureSuccess();
+                .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
         }
 
         var index = 0;
@@ -54,6 +45,6 @@ internal class BenchmarksTarget(
             artifactsWriter.PublishArtifact($"{originalReportFile} => .");
         }
 
-        return Task.FromResult(0);
+        return 0;
     }
 }

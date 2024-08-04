@@ -9,6 +9,7 @@ DI.Setup(nameof(Composition))
     .Bind().To<Settings>()
     .Bind<ITeamCityArtifactsWriter>().To(_ => GetService<ITeamCityWriter>())
     .Bind().To(_ => GetService<INuGet>())
+    .Bind(Tag.Type).To<DotNetEnv>()
     
     // Targets
     .Bind(Tag.Type).To<GeneratorTarget>()

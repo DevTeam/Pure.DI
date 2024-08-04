@@ -7,13 +7,11 @@ using System.Collections.Immutable;
 using NuGet.Versioning;
 
 [SuppressMessage("Performance", "CA1822:Mark members as static")]
-internal class Settings(
-    Properties properties,
-    Versions versions)
+internal class Settings(Properties properties, Versions versions)
 {
     public static readonly VersionRange VersionRange = VersionRange.Parse("2.1.*");
 
-    private readonly Lazy<NuGetVersion> _currentVersion = new(() => GetVersion(properties, versions));
+    private readonly Lazy<NuGetVersion> _currentVersion = new(() => GetVersion(versions));
 
     public bool BuildServer { get; } = Environment.GetEnvironmentVariable("TEAMCITY_VERSION") is not null;
 
@@ -44,6 +42,6 @@ internal class Settings(
         new CodeAnalysis(new Version(4, 3, 1))
     ];
 
-    private static NuGetVersion GetVersion(Properties properties, Versions versions) => 
+    private static NuGetVersion GetVersion(Versions versions) => 
         versions.GetNext(new NuGetRestoreSettings("Pure.DI"), VersionRange, 0);
 }

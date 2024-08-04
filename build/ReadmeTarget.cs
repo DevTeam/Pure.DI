@@ -42,11 +42,8 @@ internal class ReadmeTarget(
 
     private static readonly char[] Separator = ['='];
 
-    public Task InitializeAsync() => commands.Register(
-        this,
-        $"Generates {CommonReadmeFile}",
-        "readme",
-        "r");
+    public Task InitializeAsync(CancellationToken cancellationToken) => commands.RegisterAsync(
+        this, $"Generates {CommonReadmeFile}", "readme", "r");
 
     public async Task<int> RunAsync(CancellationToken cancellationToken)
     {
@@ -72,39 +69,38 @@ internal class ReadmeTarget(
 
         foreach (var project in projects)
         {
-            new MSBuild()
+            await new MSBuild()
                 .WithProject(project)
                 .WithTarget("clean;rebuild")
-                .Build()
-                .EnsureSuccess();
+                .BuildAsync(cancellationToken: cancellationToken).EnsureSuccess();
         }
 
-        new DotNetTest(usageTestsProjects).Run();
+        await new DotNetTest(usageTestsProjects).RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
         await using var readmeWriter = File.CreateText(ReadmeFile);
         
-        await AddContent(HeaderTemplateFile, readmeWriter);
+        await AddContentAsync(HeaderTemplateFile, readmeWriter);
 
-        await AddContent(CommonReadmeFile, readmeWriter, "docs");
+        await AddContentAsync(CommonReadmeFile, readmeWriter, "docs");
 
-        await AddContent(ReadmeTemplateFile, readmeWriter);
-
-        await readmeWriter.WriteLineAsync("");
-
-        var examples = await CreateExamples(cancellationToken);
-        await GenerateExamples(examples, readmeWriter, logsDirectory);
-
-        await AddContent(FooterTemplateFile, readmeWriter);
+        await AddContentAsync(ReadmeTemplateFile, readmeWriter);
 
         await readmeWriter.WriteLineAsync("");
 
-        await AddBenchmarks(logsDirectory, readmeWriter);
+        var examples = await CreateExamplesAsync(cancellationToken);
+        await GenerateExamplesAsync(examples, readmeWriter, logsDirectory);
+
+        await AddContentAsync(FooterTemplateFile, readmeWriter);
+
+        await readmeWriter.WriteLineAsync("");
+
+        await AddBenchmarksAsync(logsDirectory, readmeWriter);
 
         await readmeWriter.FlushAsync(cancellationToken);
         return 0;
     }
 
-    private static async Task AddContent(string sourceFile, TextWriter readmeWriter, string readmeDir = ReadmeDir)
+    private static async Task AddContentAsync(string sourceFile, TextWriter readmeWriter, string readmeDir = ReadmeDir)
     {
         Info($"Adding a content from \"{sourceFile}\"");
         foreach (var line in await File.ReadAllLinesAsync(Path.Combine(readmeDir, sourceFile)))
@@ -113,7 +109,7 @@ internal class ReadmeTarget(
         }
     }
 
-    private async Task<IEnumerable<(string GroupName, Dictionary<string, string>[] SampleItems)>> CreateExamples(CancellationToken cancellationToken)
+    private async Task<IEnumerable<(string GroupName, Dictionary<string, string>[] SampleItems)>> CreateExamplesAsync(CancellationToken cancellationToken)
     {
         var items = new List<Dictionary<string, string>>();
         var testsDir = Path.Combine(env.GetPath(PathType.SolutionDirectory), "tests", "Pure.DI.UsageTests");
@@ -231,7 +227,7 @@ internal class ReadmeTarget(
         return examples;
     }
 
-    private async Task GenerateExamples(IEnumerable<(string GroupName, Dictionary<string, string>[] SampleItems)> examples, TextWriter readmeWriter, string logsDirectory)
+    private async Task GenerateExamplesAsync(IEnumerable<(string GroupName, Dictionary<string, string>[] SampleItems)> examples, TextWriter readmeWriter, string logsDirectory)
     {
         var generatorPackageVersion = versions.GetNext(new NuGetRestoreSettings("Pure.DI"), Settings.VersionRange, 0).ToString();
         var msPackageVersion = versions.GetNext(new NuGetRestoreSettings("Pure.DI.MS"), Settings.VersionRange, 0).ToString();
@@ -371,7 +367,7 @@ internal class ReadmeTarget(
         }
     }
 
-    private static async Task AddBenchmarks(string logsDirectory, TextWriter readmeWriter)
+    private static async Task AddBenchmarksAsync(string logsDirectory, TextWriter readmeWriter)
     {
         var benchmarksReportFiles = Directory.EnumerateFiles(logsDirectory, "*.html").ToArray();
         if (benchmarksReportFiles.Length != 0)
@@ -428,11 +424,11 @@ internal class ReadmeTarget(
 
         var benchmarks = new (string name, string description, string classDiagram)[]
         {
-            (nameof(Transient), "Creating an object graph of 22 transient objects.", new Transient().ToString()!),
-            (nameof(Singleton), "Creating an object graph of 20 transition objects plus 1 singleton with an additional 6 transition objects .", new Singleton().ToString()!),
-            (nameof(Func), "Creating an object graph of 7 transition objects plus 1 `Func<T>` with additional 1 transition object.", new Func().ToString()!),
-            (nameof(Array), "Creating an object graph of 27 transient objects, including 4 transient array objects.", new Array().ToString()!),
-            (nameof(Enum), "Creating an object graph of 12 transient objects, including 1 transient enumerable object.", new Enum().ToString()!)
+            (nameof(Transient), "Creating an object graph of 22 transient objects.", new Transient().ToString()),
+            (nameof(Singleton), "Creating an object graph of 20 transition objects plus 1 singleton with an additional 6 transition objects .", new Singleton().ToString()),
+            (nameof(Func), "Creating an object graph of 7 transition objects plus 1 `Func<T>` with additional 1 transition object.", new Func().ToString()),
+            (nameof(Array), "Creating an object graph of 27 transient objects, including 4 transient array objects.", new Array().ToString()),
+            (nameof(Enum), "Creating an object graph of 12 transient objects, including 1 transient enumerable object.", new Enum().ToString())
         };
 
         foreach (var (name, description, classDiagram) in benchmarks)

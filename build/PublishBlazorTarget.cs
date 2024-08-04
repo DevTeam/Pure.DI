@@ -11,7 +11,7 @@ internal class PublishBlazorTarget(
     Commands commands)
     : IInitializable, ITarget<int>
 {
-    public Task InitializeAsync() => commands.Register(
+    public Task InitializeAsync(CancellationToken cancellationToken) => commands.RegisterAsync(
         this,
         "Publish balazor web sssembly example",
         "publish",
@@ -27,8 +27,7 @@ internal class PublishBlazorTarget(
             .WithProject(projectPath)
             .WithConfiguration("Release")
             .WithOutput(publishPath)
-            .RunAsync(cancellationToken: cancellationToken)
-            .EnsureSuccess();
+            .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
         
         // Change the base-tag in index.html from '/' to 'BlazorWebAssemblyApp' to match GitHub Pages repository subdirectory
         var indexFile = Path.Combine(rootPath, "index.html");

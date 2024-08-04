@@ -2,5 +2,5 @@
 
 internal interface IInitializable
 {
-    Task InitializeAsync();
+    Task InitializeAsync(CancellationToken cancellationToken);
 }

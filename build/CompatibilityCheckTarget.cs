@@ -18,11 +18,8 @@ internal class CompatibilityCheckTarget(
     [Tag(typeof(LibrariesTarget))] ITarget<IReadOnlyCollection<Library>> librariesTarget)
     : IInitializable, ITarget<IReadOnlyCollection<Package>>
 {
-    public Task InitializeAsync() => commands.Register(
-        this,
-        "Compatibility checks",
-        "check",
-        "c");
+    public Task InitializeAsync(CancellationToken cancellationToken) => commands.RegisterAsync(
+        this, "Compatibility checks", "check", "c");
 
     [SuppressMessage("Performance", "CA1861:Avoid constant arrays as arguments")]
     public async Task<IReadOnlyCollection<Package>> RunAsync(CancellationToken cancellationToken)
@@ -31,7 +28,8 @@ internal class CompatibilityCheckTarget(
         var libraries = await librariesTarget.RunAsync(cancellationToken);
 
         DeleteNuGetPackageFromCache("Pure.DI", settings.NextVersion, Path.GetDirectoryName(generatorPackage.Path)!);
-        await new DotNetCustom("new", "-i", "Pure.DI.Templates").RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
+        await new DotNetCustom("new", "install", "Pure.DI.Templates")
+            .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
         
         string[] frameworks =
         [
@@ -93,8 +91,7 @@ internal class CompatibilityCheckTarget(
                     tempDirectory,
                     "--force",
                     "-f", framework)
-                .RunAsync(cancellationToken: cancellationToken)
-                .EnsureSuccess();
+                .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
             await new DotNetRestore().WithWorkingDirectory(tempDirectory).RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
@@ -105,8 +102,7 @@ internal class CompatibilityCheckTarget(
                         Path.Combine(tempDirectory),
                         "package",
                         "Microsoft.NETFramework.ReferenceAssemblies")
-                    .RunAsync(cancellationToken: cancellationToken)
-                    .EnsureSuccess();
+                    .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
             }
 
             await new DotNetCustom(
@@ -118,12 +114,10 @@ internal class CompatibilityCheckTarget(
                     settings.NextVersion.ToString(),
                     "-s",
                     Path.GetDirectoryName(generatorPackage)!)
-                .RunAsync(cancellationToken: cancellationToken)
-                .EnsureSuccess();
+                .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
             await new DotNetBuild().WithWorkingDirectory(tempDirectory)
-                .RunAsync(cancellationToken: cancellationToken)
-                .EnsureSuccess();
+                .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
         }
         finally
         {
@@ -153,8 +147,7 @@ internal class CompatibilityCheckTarget(
                         tempDirForFramework,
                         "--force",
                         "-f", framework)
-                    .RunAsync(cancellationToken: cancellationToken)
-                    .EnsureSuccess();
+                    .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
                 await new DotNetCustom(
                         "add",
@@ -168,8 +161,7 @@ internal class CompatibilityCheckTarget(
                         framework,
                         "-s",
                         Path.GetDirectoryName(generatorPackage)!)
-                    .RunAsync(cancellationToken: cancellationToken)
-                    .EnsureSuccess();
+                    .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
                 var libraryPackageDir = Path.GetDirectoryName(library.Package.Path)!;
                 DeleteNuGetPackageFromCache(library.Name, settings.NextVersion, libraryPackageDir);
@@ -186,22 +178,19 @@ internal class CompatibilityCheckTarget(
                         libraryPackageDir,
                         "-f",
                         framework)
-                    .RunAsync(cancellationToken: cancellationToken)
-                    .EnsureSuccess();
+                    .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
                 await new DotNetRestore()
                     .WithWorkingDirectory(tempDirForFramework)
                     .WithForce(true)
                     .WithNoCache(true)
                     .AddSources(Path.GetDirectoryName(generatorPackage)!, libraryPackageDir)
-                    .RunAsync(cancellationToken: cancellationToken)
-                    .EnsureSuccess();
+                    .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
                 await new DotNetBuild()
                     .WithWorkingDirectory(tempDirForFramework)
                     .WithNoRestore(true)
-                    .RunAsync(cancellationToken: cancellationToken)
-                    .EnsureSuccess();
+                    .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
             }
         }
         finally

@@ -5,7 +5,7 @@ namespace Build.Tools;
 [SuppressMessage("Reliability", "CA2012:Use ValueTasks correctly")]
 internal class Commands(RootCommand rootCommand)
 {
-    public Task Register<T>(
+    public Task RegisterAsync<T>(
         ITarget<T> target,
         string description,
         string name,

@@ -3,10 +3,10 @@ namespace Build.Tools;
 
 using System.IO.Compression;
 
-[SuppressMessage("Performance", "CA1822:Пометьте члены как статические")]
 public class Packages
 {
-    public string Merge(IEnumerable<string> mergingPackages, string targetPackage)
+    [SuppressMessage("Performance", "CA1822:Mark members as static")]
+    public async Task<string> MergeAsync(IAsyncEnumerable<string> mergingPackages, string targetPackage, CancellationToken cancellationToken)
     {
         Info($"Creating NuGet package {targetPackage}");
         var targetDir = Path.GetDirectoryName(targetPackage);
@@ -20,14 +20,14 @@ public class Packages
             File.Delete(targetPackage);
         }
 
-        using var outStream = File.Create(targetPackage);
+        await using var outStream = File.Create(targetPackage);
         using var outArchive = new ZipArchive(outStream, ZipArchiveMode.Create);
         var buffer = new byte[4096];
         var paths = new HashSet<string>();
-        foreach (var package in mergingPackages)
+        await foreach (var package in mergingPackages.WithCancellation(cancellationToken))
         {
             Info($"Processing \"{package}\".");
-            using var inStream = File.OpenRead(package);
+            await using var inStream = File.OpenRead(package);
             using var inArchive = new ZipArchive(inStream, ZipArchiveMode.Read);
             foreach (var entry in inArchive.Entries)
             {
@@ -37,20 +37,20 @@ public class Packages
                     continue;
                 }
 
-                using var prevStream = entry.Open();
+                await using var prevStream = entry.Open();
                 var newEntry = outArchive.CreateEntry(entry.FullName, CompressionLevel.Optimal);
-                using var newStream = newEntry.Open();
+                await using var newStream = newEntry.Open();
                 int size;
                 do
                 {
-                    size = prevStream.Read(buffer, 0, buffer.Length);
+                    size = await prevStream.ReadAsync(buffer, cancellationToken);
                     if (size > 0)
                     {
-                        newStream.Write(buffer, 0, size);
+                        await newStream.WriteAsync(buffer.AsMemory(0, size), cancellationToken);
                     }
                 } while (size > 0);
 
-                newStream.Flush();
+                await newStream.FlushAsync(cancellationToken);
                 WriteLine($"{entry.FullName, -100} - merged", Color.Details);
             }
         }

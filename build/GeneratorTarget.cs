@@ -1,5 +1,7 @@
 namespace Build;
 
+using System.Runtime.CompilerServices;
+
 internal class GeneratorTarget(
     Settings settings,
     Commands commands,
@@ -10,29 +12,28 @@ internal class GeneratorTarget(
     
     private string PackageName => $"Pure.DI.{settings.NextVersion}.nupkg";
 
-    public Task InitializeAsync() => commands.Register(
-        this,
-        "Builds and tests generator",
-        "generator",
-        "g");
+    public Task InitializeAsync(CancellationToken cancellationToken) => commands.RegisterAsync(
+        this, "Builds and tests generator", "generator", "g");
 
     [SuppressMessage("Performance", "CA1861:Avoid constant arrays as arguments")]
-    public Task<Package> RunAsync(CancellationToken cancellationToken)
+    public async Task<Package> RunAsync(CancellationToken cancellationToken)
     {
-        // Generator package
         var generatorProjectDirectory = Path.Combine("src", "Pure.DI");
-        var generatorPackages = settings.CodeAnalysis
-            .Select(codeAnalysis => CreateGeneratorPackage(codeAnalysis, generatorProjectDirectory))
-            .ToList();
-        
-        var targetPackage = Path.GetFullPath(Path.Combine(generatorProjectDirectory, PackagesDir, PackageName));
-        return Task.FromResult(
-            new Package(
-                Path.GetFullPath(packages.Merge(generatorPackages, targetPackage)),
-                true));
+        var mergedPackagePath = Path.GetFullPath(Path.Combine(generatorProjectDirectory, PackagesDir, PackageName));
+        var generatorPackages = CreateGeneratorPackagesAsync(generatorProjectDirectory, cancellationToken);
+        var mergedPackage = await packages.MergeAsync(generatorPackages, mergedPackagePath, cancellationToken);
+        return new Package(mergedPackage, true);
     }
 
-    private string CreateGeneratorPackage(CodeAnalysis codeAnalysis, string projectDirectory)
+    private async IAsyncEnumerable<string> CreateGeneratorPackagesAsync(string generatorProjectDirectory, [EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        foreach (var codeAnalysis in settings.CodeAnalysis)
+        {
+            yield return await CreateGeneratorPackageAsync(codeAnalysis, generatorProjectDirectory, cancellationToken);
+        }
+    }
+
+    private async Task<string> CreateGeneratorPackageAsync(CodeAnalysis codeAnalysis, string projectDirectory, CancellationToken cancellationToken)
     {
         var analyzerRoslynPackageVersion = codeAnalysis.AnalyzerRoslynPackageVersion;
         var analyzerRoslynVersion = new Version(analyzerRoslynPackageVersion.Major, analyzerRoslynPackageVersion.Minor);
@@ -70,24 +71,21 @@ internal class GeneratorTarget(
             Directory.Delete(obj, true);
         }
 
-        new DotNetBuild()
+        await new DotNetBuild()
             .WithShortName($"Building {codeAnalysis.AnalyzerRoslynPackageVersion}")
             .WithProps(props)
-            .Build()
-            .EnsureSuccess();
+            .BuildAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
-        new DotNetTest()
+        await new DotNetTest()
             .WithShortName($"Testing {codeAnalysis.AnalyzerRoslynPackageVersion}")
             .WithProps(props)
             .WithConfiguration(settings.Configuration)
-            .WithNoBuild(true)
-            .WithNoLogo(true)
-            .Build()
-            .EnsureSuccess();
+            .WithNoBuild(true).WithNoLogo(true)
+            .BuildAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
         var packagePath = Path.Combine(PackagesDir, analyzerRoslynVersion.ToString());
 
-        new DotNetPack()
+        await new DotNetPack()
             .WithShortName($"Packing {codeAnalysis.AnalyzerRoslynPackageVersion}")
             .WithProps(props)
             .WithConfiguration(settings.Configuration)
@@ -95,8 +93,7 @@ internal class GeneratorTarget(
             .WithNoLogo(true)
             .WithProject(Path.Combine(projectDirectory, "Pure.DI.csproj"))
             .WithOutput(Path.Combine(projectDirectory, packagePath))
-            .Build()
-            .EnsureSuccess();
+            .BuildAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
         return Path.Combine(projectDirectory, packagePath, PackageName);
     }

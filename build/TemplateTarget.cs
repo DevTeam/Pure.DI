@@ -12,11 +12,8 @@ internal class TemplateTarget(
 {
     private const string ProjectName = "Pure.DI.Templates";
 
-    public Task InitializeAsync() => commands.Register(
-        this,
-        "Creates and deploys templates",
-        "template",
-        "t");
+    public Task InitializeAsync(CancellationToken cancellationToken) => commands.RegisterAsync(
+        this, "Creates and deploys templates", "template", "t");
 
     public async Task<string> RunAsync(CancellationToken cancellationToken)
     {
@@ -39,11 +36,10 @@ internal class TemplateTarget(
         };
 
         var projectDirectory = Path.Combine("src", ProjectName);
-        new DotNetPack()
+        await new DotNetPack()
             .WithProject(Path.Combine(projectDirectory, $"{ProjectName}.csproj"))
             .WithProps(props)
-            .Build()
-            .EnsureSuccess();
+            .BuildAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
         var targetPackage = Path.Combine(projectDirectory, "bin", $"{ProjectName}.{packageVersion}.nupkg");
         artifactsWriter.PublishArtifact($"{targetPackage} => .");
@@ -54,12 +50,11 @@ internal class TemplateTarget(
             return targetPackage;
         }
 
-        new DotNetNuGetPush()
+        await new DotNetNuGetPush()
             .WithPackage(targetPackage)
             .WithSources("https://api.nuget.org/v3/index.json")
             .WithApiKey(settings.NuGetKey)
-            .Build()
-            .EnsureSuccess();
+            .BuildAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
         return targetPackage;
     }
