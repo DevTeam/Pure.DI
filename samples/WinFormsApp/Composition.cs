@@ -12,7 +12,7 @@ using static Pure.DI.Lifetime;
 internal partial class Composition
 {
     private static void Setup() => DI.Setup()
-        .Root<FormMain>("FormMain")
+        .Root<FormMain>(nameof(FormMain))
 
         // Forms
         .Bind().As(Singleton).To<FormMain>()

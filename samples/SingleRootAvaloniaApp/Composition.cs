@@ -13,7 +13,7 @@ internal partial class Composition
 {
     void Setup() => DI.Setup()
         // A single compositional root for the application
-        .Root<AppDataContext>("App")
+        .Root<AppDataContext>(nameof(App))
         
         .Bind().As(Singleton).To<AppDataContext>()
         

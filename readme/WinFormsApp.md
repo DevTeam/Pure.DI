@@ -10,7 +10,7 @@ The composition definition is in the file [Composition.cs](/samples/WinFormsApp/
 internal partial class Composition
 {
     void Setup() => DI.Setup()
-        .Root<FormMain>("FormMain")
+        .Root<FormMain>(nameof(FormMain))
 
         // Forms
         .Bind().As(Singleton).To<FormMain>()

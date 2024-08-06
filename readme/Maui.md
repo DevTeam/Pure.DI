@@ -17,8 +17,8 @@ internal partial class Composition: ServiceProviderFactory<Composition>
         .Hint(Hint.OnCannotResolveContractTypeNameRegularExpression, "^Microsoft\\.(Extensions|Maui)\\..+$")
 
         // Roots
-        .Root<AppShell>("AppShell")
-        .Root<IClockViewModel>("ClockViewModel")
+        .Root<AppShell>(nameof(AppShell))
+        .Root<IClockViewModel>(nameof(ClockViewModel))
         
         // View Models
         .Bind().As(Singleton).To<ClockViewModel>()

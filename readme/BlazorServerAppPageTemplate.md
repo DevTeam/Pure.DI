@@ -21,7 +21,7 @@ internal partial class Composition: ServiceProviderFactory<Composition>
         // View Models
         .Bind().To<ClockViewModel>()
             // Provides the composition root for Clock view model
-            .Root<IClockViewModel>("ClockViewModel")
+            .Root<IClockViewModel>(nameof(ClockViewModel))
         .Bind().To<ErrorViewModel>()
             // Provides the composition root for Error view model
             .Root<IErrorViewModel>()

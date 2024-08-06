@@ -15,9 +15,9 @@ internal partial class Composition
 {
     void Setup() => DI.Setup()
         // Provides the composition root for main window
-        .Root<MainWindow>("MainWindow")
+        .Root<MainWindow>(nameof(MainWindow))
         // Provides the composition root for Clock view model
-        .Root<IClockViewModel>("ClockViewModel")
+        .Root<IClockViewModel>(nameof(ClockViewModel))
 
         // View Models
         .Bind().As(Singleton).To<ClockViewModel>()

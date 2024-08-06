@@ -23,5 +23,5 @@ internal partial class Composition : ServiceProviderFactory<Composition>
         .Root<IWeatherForecastService>()
 
         // Application composition root
-        .Root<Program>("Root");
+        .Root<Program>(nameof(Root));
 }

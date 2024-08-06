@@ -11,7 +11,7 @@ internal partial class Composition
 {
     void Setup() => DI.Setup()
         // Provides the composition root for main form
-        .Root<FormMain>("FormMain")
+        .Root<FormMain>(nameof(FormMain))
 
         // Forms
         .Bind().As(Singleton).To<FormMain>()
