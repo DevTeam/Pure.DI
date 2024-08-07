@@ -644,10 +644,82 @@ namespace Sample
     }
     
     [Theory]
+    [InlineData("Pure.DI.", "Bind")]
+    [InlineData("", "Bind")]
+    [InlineData("global::Pure.DI.", "Bind")]
+    [InlineData("Pure.DI.", "BindAttribute")]
+    [InlineData("", "BindAttribute")]
+    [InlineData("global::Pure.DI.", "BindAttribute")]
+    public async Task ShouldSupportBindAttributeWhenGenericMethodWithArgs(string typeName, string attrName)
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    internal interface IDependency<T> { }
+
+    internal class Dependency<T> : IDependency<T>
+    {
+        public Dependency() { }
+    }
+
+    internal interface IService { }
+
+    internal class Service : IService
+    {
+        public Service(IDependency<int> dependency)
+        {
+        }
+    }
+    
+    internal class BaseComposition
+    {
+        [#TypeName#AttrName(typeof(Sample.IDependency<#TypeNameTT>), #TypeNameLifetime.Transient, null)]
+        public Sample.IDependency<T> GetDep<T>(int id)
+        {
+            Console.WriteLine(id);
+            return new Dependency<T>();
+        }
+    }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup("Composition")
+                .Bind().To(_ => 77)
+                .Bind().To<BaseComposition>()
+                .Bind().To<Service>()
+                .Root<IService>("Service");
+        }
+    }  
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();
+            var service = composition.Service;
+        }
+    }
+}
+""".Replace("#TypeName", typeName).Replace("#AttrName", attrName).RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["77"], result);
+    }
+    
+    [Theory]
     [InlineData("Pure.DI.")]
     [InlineData("")]
     [InlineData("global::Pure.DI.")]
-    public async Task ShouldSupportBindAttributeWhenGenericMethodWithArgs(string typeName)
+    public async Task ShouldSupportBindAttributeWhenGenericMethodWithGenericArgs(string typeName)
     {
         // Given
 
@@ -676,7 +748,7 @@ namespace Sample
     
     internal class BaseComposition
     {
-        [Bind(typeof(Sample.IDependency<#TypeNameTT>), Lifetime.Singleton, null, 1, "abc")]
+        [#TypeNameBind(typeof(Sample.IDependency<#TypeNameTT>), #TypeNameLifetime.Singleton, null, 1, "abc")]
         public Sample.IDependency<T> GetDep<T>(T val, string str)
         {
             Console.WriteLine(val);

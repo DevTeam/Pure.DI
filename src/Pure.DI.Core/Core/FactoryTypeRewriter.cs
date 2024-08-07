@@ -42,77 +42,51 @@ internal sealed class FactoryTypeRewriter(
         return default;
     }
 
-    public override SyntaxNode? VisitIdentifierName(IdentifierNameSyntax node)
+    public override SyntaxNode? VisitIdentifierName(IdentifierNameSyntax node) => 
+        TryCreateTypeSyntax(node) ?? base.VisitIdentifierName(node);
+
+    public override SyntaxNode? VisitQualifiedName(QualifiedNameSyntax node) => 
+        TryCreateTypeSyntax(node) ?? base.VisitQualifiedName(node);
+
+    private SyntaxNode? TryCreateTypeSyntax(SyntaxNode node) =>
+        TryGetNewTypeName(node, out var newTypeName)
+            ? SyntaxFactory.ParseTypeName(newTypeName)
+                .WithLeadingTrivia(node.GetLeadingTrivia())
+                .WithTrailingTrivia(node.GetTrailingTrivia())
+            : default(SyntaxNode?);
+
+    private bool TryGetNewTypeName(SyntaxNode? node, [NotNullWhen(true)] out string? newTypeName)
     {
-        var identifier = base.VisitIdentifierName(node) as IdentifierNameSyntax;
-        if (identifier is null)
+        newTypeName = default;
+        if (node is null)
         {
-            return identifier;
+            return false;
         }
         
         var semanticModel = _context.State.SemanticModel;
-        if (identifier.SyntaxTree != semanticModel.SyntaxTree)
+        if (semanticModel.GetSymbolInfo(node).Symbol is ITypeSymbol type)
         {
-            return identifier;
+            return TryGetNewTypeName(type, true, out newTypeName);
         }
 
-        var symbol = semanticModel.GetSymbolInfo(identifier).Symbol;
-        if (symbol is not ITypeSymbol type)
-        {
-            return identifier;
-        }
-        
+        return false;
+    }
+    
+    private bool TryGetNewTypeName(ITypeSymbol type, bool inTree, [NotNullWhen(true)] out string? newTypeName)
+    {
+        newTypeName = default;
         if (!marker.IsMarkerBased(_context.Setup, type))
         {
-            return identifier;
+            return false;
+        }
+
+        var newType = _context.TypeConstructor.Construct(_context.Setup, _context.State.SemanticModel.Compilation, type);
+        if (!inTree && SymbolEqualityComparer.Default.Equals(newType, type))
+        {
+            return false;
         }
         
-        var newType = _context.TypeConstructor.Construct(_context.Setup, semanticModel.Compilation, type);
-        var newTypeName = typeResolver.Resolve(_context.Setup, newType).Name;
-        return node.WithIdentifier(
-            SyntaxFactory.Identifier(newTypeName))
-                .WithLeadingTrivia(node.Identifier.LeadingTrivia)
-                .WithTrailingTrivia(node.Identifier.TrailingTrivia);
-    }
-
-    public override SyntaxNode? VisitTypeArgumentList(TypeArgumentListSyntax node)
-    {
-        var newArgs = new List<TypeSyntax>();
-        var hasMarkerBased = false;
-        var semanticModel = _context.Setup.SemanticModel;
-        foreach (var arg in node.Arguments)
-        {
-            var typeName = arg.ToString();
-            var isFound = false;
-            foreach (var type in semanticModel.Compilation.GetTypesByMetadataName(typeName))
-            {
-                if (!marker.IsMarkerBased(_context.Setup, type))
-                {
-                    newArgs.Add(arg);
-                    isFound = true;
-                    break;
-                }
-
-                hasMarkerBased = true;
-                var constructedType = _context.TypeConstructor.Construct(_context.Setup, semanticModel.Compilation, type);
-                if (SymbolEqualityComparer.Default.Equals(type, constructedType))
-                {
-                    continue;
-                }
-                
-                newArgs.Add(SyntaxFactory.ParseTypeName(constructedType.ToString()));
-                isFound = true;
-                break;
-            }
-
-            if (!isFound)
-            {
-                return base.VisitTypeArgumentList(node);
-            }
-        }
-
-        return hasMarkerBased
-            ? SyntaxFactory.TypeArgumentList().AddArguments(newArgs.ToArray())
-            : base.VisitTypeArgumentList(node);
+        newTypeName = typeResolver.Resolve(_context.Setup, newType).Name;
+        return true;
     }
 }

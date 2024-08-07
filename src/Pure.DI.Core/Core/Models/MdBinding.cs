@@ -11,7 +11,8 @@ internal record MdBinding(
     in MdImplementation? Implementation = default,
     in MdFactory? Factory = default,
     in MdArg? Arg = default,
-    in MdConstruct? Construct = default)
+    in MdConstruct? Construct = default,
+    ITypeConstructor? TypeConstructor = default)
 {
     public override string ToString()
     {

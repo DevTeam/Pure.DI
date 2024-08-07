@@ -458,6 +458,7 @@ internal sealed class DependencyGraphBuilder(
         return sourceNode.Binding with
         {
             Id = newId,
+            TypeConstructor = typeConstructor,
             Contracts = newContracts,
             Implementation = sourceNode.Binding.Implementation.HasValue
                 ? sourceNode.Binding.Implementation.Value with
@@ -518,9 +519,9 @@ internal sealed class DependencyGraphBuilder(
         var semanticModel = targetNode.Binding.SemanticModel;
         var compilation = semanticModel.Compilation;
         var sourceType = injection.Type;
+        var typeConstructor = typeConstructorFactory();
         if (marker.IsMarkerBased(setup, injection.Type))
         {
-            var typeConstructor = typeConstructorFactory();
             typeConstructor.TryBind(setup, injection.Type, injection.Type);
             sourceType = typeConstructor.Construct(setup, compilation, injection.Type);
         }
@@ -538,7 +539,8 @@ internal sealed class DependencyGraphBuilder(
             newContracts,
             newTags,
             new MdLifetime(semanticModel, setup.Source, Lifetime.Transient),
-            new MdImplementation(semanticModel, setup.Source, sourceType));
+            new MdImplementation(semanticModel, setup.Source, sourceType),
+            TypeConstructor: typeConstructor);
         return newBinding;
     }
 
