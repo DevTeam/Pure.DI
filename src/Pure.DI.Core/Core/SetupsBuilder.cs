@@ -6,7 +6,7 @@ internal sealed class SetupsBuilder(
     ICache<ImmutableArray<byte>, bool> setupCache,
     Func<IBindingBuilder> bindingBuilderFactory,
     IArguments arguments,
-    ITypeConstructor typeConstructor)
+    Func<ITypeConstructor> typeConstructorFactory)
     : IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>, IMetadataVisitor, ISetupFinalizer
 {
     private readonly List<MdSetup> _setups = [];
@@ -193,6 +193,7 @@ internal sealed class SetupsBuilder(
             where attribute.AttributeClass?.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat) == Names.BindAttributeName
             select (attribute, member);
 
+        var typeConstructor = typeConstructorFactory();
         foreach (var (attribute, member) in membersToBind)
         {
             var values = arguments.GetArgs(attribute.ConstructorArguments, attribute.NamedArguments, "type", "lifetime", "tags");
@@ -202,86 +203,42 @@ internal sealed class SetupsBuilder(
                 contractType = newContractType;
             }
             
-            const string ctxName = "ctx_1182D127";
-            const string valueName = "value";
-            ExpressionSyntax instance = member.IsStatic 
-                ? SyntaxFactory.ParseTypeName(type.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat))
-                : SyntaxFactory.IdentifierName(valueName);
-
-            ExpressionSyntax value;
-
             var position = 0;
             var namespaces = new HashSet<string>();
             var resolvers = new List<MdResolver>();
-            var block = new List<StatementSyntax>();
             switch (member)
             {
                 case IFieldSymbol fieldSymbol:
                     contractType ??= fieldSymbol.Type;
-                    value = SyntaxFactory.MemberAccessExpression(
-                        SyntaxKind.SimpleMemberAccessExpression,
-                        instance,
-                        SyntaxFactory.IdentifierName(member.Name));
                     break;
 
                 case IPropertySymbol propertySymbol:
                     contractType ??= propertySymbol.Type;
-                    value = SyntaxFactory.MemberAccessExpression(
-                        SyntaxKind.SimpleMemberAccessExpression,
-                        instance,
-                        SyntaxFactory.IdentifierName(member.Name));
                     break;
 
                 case IMethodSymbol methodSymbol:
                     contractType ??= methodSymbol.ReturnType;
-
-                    var args = methodSymbol.Parameters
-                        .Select(i => SyntaxFactory.Argument(SyntaxFactory.IdentifierName(i.Name)))
-                        .ToArray();
-                    
                     if (methodSymbol.IsGenericMethod)
                     {
                         typeConstructor.TryBind(setup, contractType, methodSymbol.ReturnType);
+                        contractType = typeConstructor.ConstructReversed(setup, semanticModel.Compilation, contractType);
+
                         // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
                         foreach (var parameter in methodSymbol.Parameters)
                         {
                             var paramType = typeConstructor.ConstructReversed(setup, binding.SemanticModel.Compilation, parameter.Type);
-                            block.Add(SyntaxFactory.ExpressionStatement(Inject(paramType, parameter.Name, resolvers, MdTag.ContextTag, ref position)));
+                            resolvers.Add(CreateResolver(typeConstructor, parameter.Name, paramType, MdTag.ContextTag, ref position));
                         }
-                        
-                        var typeArgs = new List<TypeSyntax>();
-                        // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
-                        foreach (var typeArg in methodSymbol.TypeArguments)
-                        {
-                            var argType = typeConstructor.ConstructReversed(setup, binding.SemanticModel.Compilation, typeArg);
-                            var typeName = argType.ToString();
-                            typeArgs.Add(SyntaxFactory.ParseTypeName(typeName));
-                        }
-                        
-                        value = SyntaxFactory.MemberAccessExpression(
-                            SyntaxKind.SimpleMemberAccessExpression,
-                            instance,
-                            SyntaxFactory.GenericName(member.Name)
-                                .AddTypeArgumentListArguments(typeArgs.ToArray()));
                     }
                     else
                     {
                         // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
                         foreach (var parameter in methodSymbol.Parameters)
                         {
-                            block.Add(SyntaxFactory.ExpressionStatement(Inject(parameter.Type, parameter.Name, resolvers, MdTag.ContextTag, ref position)));
+                            resolvers.Add(CreateResolver(typeConstructor, parameter.Name, parameter.Type, MdTag.ContextTag, ref position));
                         }
-                        
-                        value = SyntaxFactory.MemberAccessExpression(
-                            SyntaxKind.SimpleMemberAccessExpression,
-                            instance,
-                            SyntaxFactory.IdentifierName(member.Name));
                     }
-
-                    value = SyntaxFactory
-                        .InvocationExpression(value)
-                        .AddArgumentListArguments(args);
-
+                    
                     break;
                 
                 default:
@@ -320,21 +277,16 @@ internal sealed class SetupsBuilder(
                 tags = [];
             }
 
-            var contextParameter = SyntaxFactory.Parameter(SyntaxFactory.Identifier(ctxName));
             object? valueTag = default;
             if (!contract.Tags.IsDefaultOrEmpty)
             {
                 valueTag = contract.Tags.First().Value;
             }
-
+            
             if (!member.IsStatic)
             {
-                block.Add(SyntaxFactory.ExpressionStatement(Inject(contract.ContractType!, valueName, resolvers, valueTag, ref position)));
+                resolvers.Add(CreateResolver(typeConstructor, FactoryCodeBuilder.DefaultInstanceValueName, contract.ContractType!, valueTag, ref position));
             }
-
-            block.Add(SyntaxFactory.ReturnStatement(value));
-            var lambdaExpression = SyntaxFactory.SimpleLambdaExpression(contextParameter)
-                .WithBlock(SyntaxFactory.Block(block));
 
             VisitContract(
                 new MdContract(
@@ -360,47 +312,37 @@ internal sealed class SetupsBuilder(
                 VisitTag(new MdTag(tagPosition, default));
             }
 
+            var memberResolver = CreateResolver(typeConstructor, FactoryCodeBuilder.DefaultInstanceValueName, contract.ContractType!, valueTag, ref position);
+            memberResolver = memberResolver with { Member = member };
             VisitFactory(
                 new MdFactory(
                     semanticModel,
                     source,
                     contractType,
-                    lambdaExpression,
-                    contextParameter,
+                    FactoryCodeBuilder.DefaultBindAttrParenthesizedLambda,
+                    FactoryCodeBuilder.DefaultCtxParameter,
                     resolvers.ToImmutableArray(),
-                    false));
-            
+                    false,
+                    memberResolver));
+
             VisitUsingDirectives(new MdUsingDirectives(namespaces.ToImmutableArray(), ImmutableArray<string>.Empty));
             continue;
 
-            InvocationExpressionSyntax Inject(ITypeSymbol injectedType, string injectedName, ICollection<MdResolver> resolversSet, object? tag, ref int curPosition)
+            MdResolver CreateResolver(ITypeConstructor constructor, string name, ITypeSymbol injectedType, object? tag, ref int curPosition)
             {
+                var typeSyntax = SyntaxFactory.ParseTypeName(injectedType.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat));
                 namespaces.Add(injectedType.ContainingNamespace.ToString());
-                resolversSet.Add(new MdResolver
+                return new MdResolver
                 {
                     SemanticModel = semanticModel,
                     Source = source,
                     ContractType = injectedType,
                     Tag = new MdTag(curPosition, tag),
-                    Position = curPosition
-                });
-
-                curPosition++;
-                
-                var valueDeclaration = SyntaxFactory.DeclarationExpression(
-                    SyntaxFactory.ParseTypeName(injectedType.ToString()).WithTrailingTrivia(SyntaxFactory.Space),
-                    SyntaxFactory.SingleVariableDesignation(SyntaxFactory.Identifier(injectedName)));
-
-                var valueArg =
-                    SyntaxFactory.Argument(valueDeclaration)
-                        .WithRefOrOutKeyword(SyntaxFactory.Token(SyntaxKind.OutKeyword));
-
-                return SyntaxFactory.InvocationExpression(
-                        SyntaxFactory.MemberAccessExpression(
-                            SyntaxKind.SimpleMemberAccessExpression,
-                            SyntaxFactory.IdentifierName(ctxName),
-                            SyntaxFactory.IdentifierName(nameof(IContext.Inject))))
-                    .AddArgumentListArguments(valueArg);
+                    ArgumentType = typeSyntax,
+                    Parameter = SyntaxFactory.Parameter(SyntaxFactory.Identifier(name)).WithType(typeSyntax),
+                    Position = curPosition++,
+                    TypeConstructor = constructor
+                };
             }
         }
     }

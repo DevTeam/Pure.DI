@@ -11,6 +11,9 @@ internal class FactoryCodeBuilder(
     ICompilations compilations)
     : ICodeBuilder<DpFactory>
 {
+    public static readonly ParenthesizedLambdaExpressionSyntax DefaultBindAttrParenthesizedLambda = SyntaxFactory.ParenthesizedLambdaExpression();
+    public static readonly ParameterSyntax DefaultCtxParameter = SyntaxFactory.Parameter(SyntaxFactory.Identifier("ctx_1182D127"));
+    public const string DefaultInstanceValueName = "instance_1182D127";
     private static readonly string InjectionStatement = $"{Names.InjectionMarker};";
 
     public void Build(BuildContext ctx, in DpFactory factory)
@@ -25,11 +28,134 @@ internal class FactoryCodeBuilder(
             lockIsRequired = default;
         }
         
+        var originalLambda = factory.Source.Factory;
+        // Simple factory
+        if (originalLambda is ParenthesizedLambdaExpressionSyntax parenthesizedLambda)
+        {
+            var block = new List<StatementSyntax>();
+            foreach (var resolver in factory.Source.Resolvers)
+            {
+                if (resolver.ArgumentType is not { } argumentType || resolver.Parameter is not {} parameter)
+                {
+                    continue;
+                }
+                
+                var valueDeclaration = SyntaxFactory.DeclarationExpression(
+                    argumentType,
+                    SyntaxFactory.SingleVariableDesignation(parameter.Identifier));
+
+                var valueArg =
+                    SyntaxFactory.Argument(valueDeclaration)
+                        .WithRefOrOutKeyword(SyntaxFactory.Token(SyntaxKind.OutKeyword));
+
+                var injection = SyntaxFactory.InvocationExpression(
+                        SyntaxFactory.MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            SyntaxFactory.IdentifierName(DefaultCtxParameter.Identifier),
+                            SyntaxFactory.IdentifierName(nameof(IContext.Inject))))
+                    .AddArgumentListArguments(valueArg);
+
+                block.Add(SyntaxFactory.ExpressionStatement(injection));
+            }
+
+            if (factory.Source.MemberResolver is {} memberResolver
+                && memberResolver.Member is {} member
+                && memberResolver.TypeConstructor is {} typeConstructor)
+            {
+                ExpressionSyntax? value = default;
+                var type = memberResolver.ContractType;
+                ExpressionSyntax instance = member.IsStatic 
+                    ? SyntaxFactory.ParseTypeName(type.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat))
+                    : SyntaxFactory.IdentifierName(DefaultInstanceValueName);
+
+                switch (member)
+                {
+                    case IFieldSymbol fieldSymbol:
+                        value = SyntaxFactory.MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            instance,
+                            SyntaxFactory.IdentifierName(member.Name));
+                        break;
+
+                    case IPropertySymbol propertySymbol:
+                        value = SyntaxFactory.MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            instance,
+                            SyntaxFactory.IdentifierName(member.Name));
+                        break;
+
+                    case IMethodSymbol methodSymbol:
+                        var args = methodSymbol.Parameters
+                            .Select(i => SyntaxFactory.Argument(SyntaxFactory.IdentifierName(i.Name)))
+                            .ToArray();
+                        
+                        if (methodSymbol.IsGenericMethod)
+                        {
+                            var setup = variable.Setup;
+                            var binding = variable.Node.Binding;
+                            var typeArgs = new List<TypeSyntax>();
+                            // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
+                            foreach (var typeArg in methodSymbol.TypeArguments)
+                            {
+                                var argType = typeConstructor.ConstructReversed(setup, binding.SemanticModel.Compilation, typeArg);
+                                if (binding.TypeConstructor is { } bindingTypeConstructor)
+                                {
+                                    argType = bindingTypeConstructor.Construct(setup, binding.SemanticModel.Compilation, argType);
+                                }
+
+                                var typeName = argType.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat);
+                                typeArgs.Add(SyntaxFactory.ParseTypeName(typeName));
+                            }
+                            
+                            value = SyntaxFactory.MemberAccessExpression(
+                                SyntaxKind.SimpleMemberAccessExpression,
+                                instance,
+                                SyntaxFactory.GenericName(member.Name).AddTypeArgumentListArguments(typeArgs.ToArray()));
+                        }
+                        else
+                        {
+                            value = SyntaxFactory.MemberAccessExpression(
+                                SyntaxKind.SimpleMemberAccessExpression,
+                                instance,
+                                SyntaxFactory.IdentifierName(member.Name));
+                        }
+
+                        value = SyntaxFactory
+                            .InvocationExpression(value)
+                            .AddArgumentListArguments(args);
+
+                        break;
+                }
+
+                if (value is not null)
+                {
+                    block.Add(SyntaxFactory.ReturnStatement(value));
+                }
+            }
+            else
+            {
+                if (parenthesizedLambda.Block is {} lambdaBlock)
+                {
+                    block.AddRange(lambdaBlock.Statements);
+                }
+                else
+                {
+                    if (parenthesizedLambda.ExpressionBody is { } body)
+                    {
+                        block.Add(SyntaxFactory.ReturnStatement(body));
+                    }
+                }
+            }
+
+            originalLambda = SyntaxFactory.SimpleLambdaExpression(DefaultCtxParameter)
+                .WithBlock(SyntaxFactory.Block(block));
+        }
+
         // Rewrites syntax tree
         var finishLabel = $"{variable.VariableDeclarationName}Finish";
         var injections = new List<FactoryRewriter.Injection>();
         var localVariableRenamingRewriter = new LocalVariableRenamingRewriter(idGenerator, factory.Source.SemanticModel);
-        var factoryExpression = localVariableRenamingRewriter.Rewrite(factory.Source.Factory);
+        var factoryExpression = localVariableRenamingRewriter.Rewrite(originalLambda);
         var factoryRewriter = new FactoryRewriter(arguments, compilations, factory, variable, finishLabel, injections);
         var lambda = factoryRewriter.Rewrite(factoryExpression);
         new FactoryValidator(factory).Validate(lambda); 
