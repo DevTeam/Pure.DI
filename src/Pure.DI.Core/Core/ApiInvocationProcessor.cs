@@ -387,12 +387,9 @@ internal class ApiInvocationProcessor(
         ParenthesizedLambdaExpressionSyntax lambdaExpression)
     {
         CheckNotAsync(lambdaExpression);
-        var identifiers = lambdaExpression.ParameterList.Parameters.Select(i => i.Identifier).ToList();
-        var paramAttributes = lambdaExpression.ParameterList.Parameters.Select(i => i.AttributeLists.SelectMany(j => j.Attributes).ToList()).ToList();
-        const string ctxName = "ctx_1182D127";
-        var contextParameter = SyntaxFactory.Parameter(SyntaxFactory.Identifier(ctxName));
+        var parameters = lambdaExpression.ParameterList.Parameters;
+        var paramAttributes = parameters.Select(i => i.AttributeLists.SelectMany(j => j.Attributes).ToList()).ToList();
         var resolvers = new List<MdResolver>();
-        var block = new List<StatementSyntax>();
         var namespaces = new HashSet<string>();
         for (var i = 0; i < argsTypes.Count; i++)
         {
@@ -411,52 +408,20 @@ internal class ApiInvocationProcessor(
                 Source = argTypeSyntax,
                 ContractType = argType,
                 Tag = new MdTag(0, null),
+                ArgumentType = argTypeSyntax,
+                Parameter = parameters[i],
                 Position = i,
                 Attributes = attributes.ToImmutableArray()
             });
-
-            var valueDeclaration = SyntaxFactory.DeclarationExpression(
-                argTypeSyntax,
-                SyntaxFactory.SingleVariableDesignation(identifiers[i]));
-
-            var valueArg =
-                SyntaxFactory.Argument(valueDeclaration)
-                    .WithRefOrOutKeyword(SyntaxFactory.Token(SyntaxKind.OutKeyword));
-
-            var injection = SyntaxFactory.InvocationExpression(
-                    SyntaxFactory.MemberAccessExpression(
-                        SyntaxKind.SimpleMemberAccessExpression,
-                        SyntaxFactory.IdentifierName(ctxName),
-                        SyntaxFactory.IdentifierName(nameof(IContext.Inject))))
-                .AddArgumentListArguments(valueArg);
-
-            block.Add(SyntaxFactory.ExpressionStatement(injection));
         }
         
-        var fullyQualifiedNameRewriter = new FullyQualifiedNameRewriter(semanticModel);
-        var fullyQualifiedTypesLambdaExpression = (ParenthesizedLambdaExpressionSyntax)fullyQualifiedNameRewriter.VisitParenthesizedLambdaExpression(lambdaExpression)!;
-        if (fullyQualifiedTypesLambdaExpression.Block is {} lambdaBlock)
-        {
-            block.AddRange(lambdaBlock.Statements);
-        }
-        else
-        {
-            if (fullyQualifiedTypesLambdaExpression.ExpressionBody is { } body)
-            {
-                block.Add(SyntaxFactory.ReturnStatement(body));
-            }
-        }
-        
-        var newLambdaExpression = SyntaxFactory.SimpleLambdaExpression(contextParameter)
-            .WithBlock(SyntaxFactory.Block(block));
-
         metadataVisitor.VisitFactory(
             new MdFactory(
                 semanticModel,
                 source,
                 returnType,
-                newLambdaExpression,
-                contextParameter,
+                lambdaExpression,
+                SyntaxFactory.Parameter(SyntaxFactory.Identifier("ctx_1182D127")),
                 resolvers.ToImmutableArray(),
                 false));
 

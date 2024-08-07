@@ -25,11 +25,59 @@ internal class FactoryCodeBuilder(
             lockIsRequired = default;
         }
         
+        var oiginalLambda = factory.Source.Factory;
+        // Simple factory
+        if (oiginalLambda is ParenthesizedLambdaExpressionSyntax parenthesizedLambda)
+        {
+            const string ctxName = "ctx_1182D127";
+            var contextParameter = SyntaxFactory.Parameter(SyntaxFactory.Identifier(ctxName));
+            var block = new List<StatementSyntax>();
+            foreach (var resolver in factory.Source.Resolvers)
+            {
+                if (resolver.ArgumentType is not { } argumentType || resolver.Parameter is not {} parameter)
+                {
+                    continue;
+                }
+                
+                var valueDeclaration = SyntaxFactory.DeclarationExpression(
+                    argumentType,
+                    SyntaxFactory.SingleVariableDesignation(parameter.Identifier));
+
+                var valueArg =
+                    SyntaxFactory.Argument(valueDeclaration)
+                        .WithRefOrOutKeyword(SyntaxFactory.Token(SyntaxKind.OutKeyword));
+
+                var injection = SyntaxFactory.InvocationExpression(
+                        SyntaxFactory.MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            SyntaxFactory.IdentifierName(ctxName),
+                            SyntaxFactory.IdentifierName(nameof(IContext.Inject))))
+                    .AddArgumentListArguments(valueArg);
+
+                block.Add(SyntaxFactory.ExpressionStatement(injection));
+            }
+
+            if (parenthesizedLambda.Block is {} lambdaBlock)
+            {
+                block.AddRange(lambdaBlock.Statements);
+            }
+            else
+            {
+                if (parenthesizedLambda.ExpressionBody is { } body)
+                {
+                    block.Add(SyntaxFactory.ReturnStatement(body));
+                }
+            }
+            
+            oiginalLambda = SyntaxFactory.SimpleLambdaExpression(contextParameter)
+                .WithBlock(SyntaxFactory.Block(block));
+        }
+
         // Rewrites syntax tree
         var finishLabel = $"{variable.VariableDeclarationName}Finish";
         var injections = new List<FactoryRewriter.Injection>();
         var localVariableRenamingRewriter = new LocalVariableRenamingRewriter(idGenerator, factory.Source.SemanticModel);
-        var factoryExpression = localVariableRenamingRewriter.Rewrite(factory.Source.Factory);
+        var factoryExpression = localVariableRenamingRewriter.Rewrite(oiginalLambda);
         var factoryRewriter = new FactoryRewriter(arguments, compilations, factory, variable, finishLabel, injections);
         var lambda = factoryRewriter.Rewrite(factoryExpression);
         new FactoryValidator(factory).Validate(lambda); 

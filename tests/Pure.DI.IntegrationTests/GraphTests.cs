@@ -917,8 +917,8 @@ namespace Sample
 Sample.IService() 
   +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))]
 Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))
-  +[Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))]<--[Sample.IDependency<int>]--[new Dependency<int>(new int[1])]
-new Dependency<int>(new int[1])
+  +[Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))]<--[Sample.IDependency<int>]--[new Sample.Dependency<int>(new int[1])]
+new Sample.Dependency<int>(new int[1])
 """.Replace("\r", ""));
     }
     
@@ -984,23 +984,23 @@ Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))
   +[Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))]<--[Sample.IDependency<int>]--[{
                 ctx.Inject<int[]>(out int[] array); 
                 ctx.Inject<string>("MyStr", out var str);
-                return new Dependency<int>(array, str);
+                return new Sample.Dependency<int>(array, str);
             }]
 new int[] {1, 2, 3}
 {
                 ctx.Inject<int[]>(out int[] array); 
                 ctx.Inject<string>("MyStr", out var str);
-                return new Dependency<int>(array, str);
+                return new Sample.Dependency<int>(array, str);
             }
   +[{
                 ctx.Inject<int[]>(out int[] array); 
                 ctx.Inject<string>("MyStr", out var str);
-                return new Dependency<int>(array, str);
+                return new Sample.Dependency<int>(array, str);
             }]<--[int[]]--[new int[] {1, 2, 3}]
   +[{
                 ctx.Inject<int[]>(out int[] array); 
                 ctx.Inject<string>("MyStr", out var str);
-                return new Dependency<int>(array, str);
+                return new Sample.Dependency<int>(array, str);
             }]<--[string("MyStr")]--["Abc"]
 """.Replace("\r", ""));
     }

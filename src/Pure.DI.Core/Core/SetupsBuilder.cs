@@ -9,6 +9,12 @@ internal sealed class SetupsBuilder(
     ITypeConstructor typeConstructor)
     : IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>, IMetadataVisitor, ISetupFinalizer
 {
+    private static readonly SymbolDisplayFormat FullTypeNameFormat =
+        new(globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.Omitted,
+            typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
+            genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters,
+            miscellaneousOptions: SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers | SymbolDisplayMiscellaneousOptions.UseSpecialTypes);
+    
     private readonly List<MdSetup> _setups = [];
     private readonly List<MdBinding> _bindings = [];
     private readonly List<MdRoot> _roots = [];
@@ -202,7 +208,6 @@ internal sealed class SetupsBuilder(
                 contractType = newContractType;
             }
             
-            const string ctxName = "ctx_1182D127";
             const string valueName = "value";
             ExpressionSyntax instance = member.IsStatic 
                 ? SyntaxFactory.ParseTypeName(type.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat))
@@ -213,7 +218,6 @@ internal sealed class SetupsBuilder(
             var position = 0;
             var namespaces = new HashSet<string>();
             var resolvers = new List<MdResolver>();
-            var block = new List<StatementSyntax>();
             switch (member)
             {
                 case IFieldSymbol fieldSymbol:
@@ -246,7 +250,7 @@ internal sealed class SetupsBuilder(
                         foreach (var parameter in methodSymbol.Parameters)
                         {
                             var paramType = typeConstructor.ConstructReversed(setup, binding.SemanticModel.Compilation, parameter.Type);
-                            block.Add(SyntaxFactory.ExpressionStatement(Inject(paramType, parameter.Name, resolvers, MdTag.ContextTag, ref position)));
+                            Inject(parameter.Name, paramType, resolvers, MdTag.ContextTag, ref position);
                         }
                         
                         var typeArgs = new List<TypeSyntax>();
@@ -254,22 +258,21 @@ internal sealed class SetupsBuilder(
                         foreach (var typeArg in methodSymbol.TypeArguments)
                         {
                             var argType = typeConstructor.ConstructReversed(setup, binding.SemanticModel.Compilation, typeArg);
-                            var typeName = argType.ToString();
+                            var typeName = argType.ToDisplayString(NullableFlowState.None, FullTypeNameFormat);
                             typeArgs.Add(SyntaxFactory.ParseTypeName(typeName));
                         }
                         
                         value = SyntaxFactory.MemberAccessExpression(
                             SyntaxKind.SimpleMemberAccessExpression,
                             instance,
-                            SyntaxFactory.GenericName(member.Name)
-                                .AddTypeArgumentListArguments(typeArgs.ToArray()));
+                            SyntaxFactory.GenericName(member.Name).AddTypeArgumentListArguments(typeArgs.ToArray()));
                     }
                     else
                     {
                         // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
                         foreach (var parameter in methodSymbol.Parameters)
                         {
-                            block.Add(SyntaxFactory.ExpressionStatement(Inject(parameter.Type, parameter.Name, resolvers, MdTag.ContextTag, ref position)));
+                            Inject(parameter.Name, parameter.Type, resolvers, MdTag.ContextTag, ref position);
                         }
                         
                         value = SyntaxFactory.MemberAccessExpression(
@@ -320,7 +323,6 @@ internal sealed class SetupsBuilder(
                 tags = [];
             }
 
-            var contextParameter = SyntaxFactory.Parameter(SyntaxFactory.Identifier(ctxName));
             object? valueTag = default;
             if (!contract.Tags.IsDefaultOrEmpty)
             {
@@ -329,13 +331,10 @@ internal sealed class SetupsBuilder(
 
             if (!member.IsStatic)
             {
-                block.Add(SyntaxFactory.ExpressionStatement(Inject(contract.ContractType!, valueName, resolvers, valueTag, ref position)));
+                Inject(valueName, contract.ContractType!, resolvers, valueTag, ref position);
             }
 
-            block.Add(SyntaxFactory.ReturnStatement(value));
-            var lambdaExpression = SyntaxFactory.SimpleLambdaExpression(contextParameter)
-                .WithBlock(SyntaxFactory.Block(block));
-
+            var lambdaExpression = SyntaxFactory.ParenthesizedLambdaExpression().WithBody(value);
             VisitContract(
                 new MdContract(
                     semanticModel,
@@ -366,15 +365,16 @@ internal sealed class SetupsBuilder(
                     source,
                     contractType,
                     lambdaExpression,
-                    contextParameter,
+                    SyntaxFactory.Parameter(SyntaxFactory.Identifier("ctx_1182D127")),
                     resolvers.ToImmutableArray(),
                     false));
             
             VisitUsingDirectives(new MdUsingDirectives(namespaces.ToImmutableArray(), ImmutableArray<string>.Empty));
             continue;
 
-            InvocationExpressionSyntax Inject(ITypeSymbol injectedType, string injectedName, ICollection<MdResolver> resolversSet, object? tag, ref int curPosition)
+            void Inject(string name, ITypeSymbol injectedType, ICollection<MdResolver> resolversSet, object? tag, ref int curPosition)
             {
+                var typeSyntax = SyntaxFactory.ParseTypeName(injectedType.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat));
                 namespaces.Add(injectedType.ContainingNamespace.ToString());
                 resolversSet.Add(new MdResolver
                 {
@@ -382,25 +382,12 @@ internal sealed class SetupsBuilder(
                     Source = source,
                     ContractType = injectedType,
                     Tag = new MdTag(curPosition, tag),
+                    ArgumentType = typeSyntax,
+                    Parameter = SyntaxFactory.Parameter(SyntaxFactory.Identifier(name)).WithType(typeSyntax),
                     Position = curPosition
                 });
 
                 curPosition++;
-                
-                var valueDeclaration = SyntaxFactory.DeclarationExpression(
-                    SyntaxFactory.ParseTypeName(injectedType.ToDisplayString(NullableFlowState.None, FullyQualifiedNameRewriter.FullTypeNameFormat)).WithTrailingTrivia(SyntaxFactory.Space),
-                    SyntaxFactory.SingleVariableDesignation(SyntaxFactory.Identifier(injectedName)));
-
-                var valueArg =
-                    SyntaxFactory.Argument(valueDeclaration)
-                        .WithRefOrOutKeyword(SyntaxFactory.Token(SyntaxKind.OutKeyword));
-
-                return SyntaxFactory.InvocationExpression(
-                        SyntaxFactory.MemberAccessExpression(
-                            SyntaxKind.SimpleMemberAccessExpression,
-                            SyntaxFactory.IdentifierName(ctxName),
-                            SyntaxFactory.IdentifierName(nameof(IContext.Inject))))
-                    .AddArgumentListArguments(valueArg);
             }
         }
     }

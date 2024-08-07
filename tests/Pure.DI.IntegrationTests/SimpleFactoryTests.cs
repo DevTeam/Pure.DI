@@ -71,10 +71,16 @@ namespace Sample
     }
     
     [Theory]
-    [InlineData("global::System.Collections.Generic.")]
-    [InlineData("System.Collections.Generic.")]
-    [InlineData("")]
-    public async Task ShouldSupportSimpleFactoryWhenArrOfT(string typePrefix)
+    [InlineData("global::System.Collections.Generic.", "Pure.DI.")]
+    [InlineData("System.Collections.Generic.", "Pure.DI.")]
+    [InlineData("", "Pure.DI.")]
+    [InlineData("global::System.Collections.Generic.", "global::Pure.DI.")]
+    [InlineData("System.Collections.Generic.", "global::Pure.DI.")]
+    [InlineData("", "global::Pure.DI.")]
+    [InlineData("global::System.Collections.Generic.", "")]
+    [InlineData("System.Collections.Generic.", "")]
+    [InlineData("", "")]
+    public async Task ShouldSupportSimpleFactoryWhenArrOfT(string typePrefix, string ttPrefix)
     {
         // Given
 
@@ -118,10 +124,10 @@ namespace Sample
         private static void SetupComposition()
         {
             DI.Setup("Composition")
-                .Bind<global::System.Collections.Generic.ICollection<TT>>()
-                .Bind<global::System.Collections.Generic.IList<TT>>()
-                .Bind<global::System.Collections.Generic.List<TT>>()
-                    .To((TT[] arr) => new global::System.Collections.Generic.List<TT>(arr))
+                .Bind<#TypePrefixICollection<#ttPrefixTT>>()
+                .Bind<#TypePrefixIList<#ttPrefixTT>>()
+                .Bind<#TypePrefixList<#ttPrefixTT>>()
+                    .To((#ttPrefixTT[] arr) => new #TypePrefixList<#ttPrefixTT>(arr))
                 .Bind().To<Dependency>()
                 .Bind().To<Service>()
                 .Bind<string>().To((IService service, #TypePrefixIList<IDependency> dependency) => service.Initialize(dependency[0]).ToString() ?? "")
@@ -139,7 +145,7 @@ namespace Sample
         }
     }
 }
-""".Replace("#TypePrefix", typePrefix).RunAsync();
+""".Replace("#TypePrefix", typePrefix).Replace("#ttPrefix", ttPrefix).RunAsync();
 
         // Then
         result.Success.ShouldBeTrue(result);
