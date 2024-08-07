@@ -398,7 +398,12 @@ internal class ApiInvocationProcessor(
         {
             var argTypeSyntax = argsTypes[i];
             var argType = semantic.GetTypeSymbol<ITypeSymbol>(semanticModel, argTypeSyntax);
-            namespaces.Add(argType.ContainingNamespace.ToString());
+            var argNamespace = argType.ContainingNamespace;
+            if (argNamespace is not null)
+            {
+                namespaces.Add(argNamespace.ToString());
+            }
+
             var attributes = paramAttributes[i];
             resolvers.Add(new MdResolver
             {
@@ -424,17 +429,19 @@ internal class ApiInvocationProcessor(
                         SyntaxFactory.IdentifierName(ctxName),
                         SyntaxFactory.IdentifierName(nameof(IContext.Inject))))
                 .AddArgumentListArguments(valueArg);
-                                
+
             block.Add(SyntaxFactory.ExpressionStatement(injection));
         }
         
-        if (lambdaExpression.Block is {} lambdaBlock)
+        var fullyQualifiedNameRewriter = new FullyQualifiedNameRewriter(semanticModel);
+        var fullyQualifiedTypesLambdaExpression = (ParenthesizedLambdaExpressionSyntax)fullyQualifiedNameRewriter.VisitParenthesizedLambdaExpression(lambdaExpression)!;
+        if (fullyQualifiedTypesLambdaExpression.Block is {} lambdaBlock)
         {
             block.AddRange(lambdaBlock.Statements);
         }
         else
         {
-            if (lambdaExpression.ExpressionBody is { } body)
+            if (fullyQualifiedTypesLambdaExpression.ExpressionBody is { } body)
             {
                 block.Add(SyntaxFactory.ReturnStatement(body));
             }

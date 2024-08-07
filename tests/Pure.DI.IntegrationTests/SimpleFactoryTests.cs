@@ -70,6 +70,82 @@ namespace Sample
         result.StdOut.ShouldBe(["Sample.Dependency"], result);
     }
     
+    [Theory]
+    [InlineData("global::System.Collections.Generic.")]
+    [InlineData("System.Collections.Generic.")]
+    [InlineData("")]
+    public async Task ShouldSupportSimpleFactoryWhenArrOfT(string typePrefix)
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using System.Collections.Generic;
+using Pure.DI;
+
+namespace Sample
+{
+    interface IDependency {}
+
+    class Dependency: IDependency {}
+
+    interface IService
+    {
+        IDependency? Dep { get; }
+        
+        IService Initialize(IDependency dep);
+    }
+
+    class Service: IService 
+    {
+        public IDependency? Dep { get; private set; }
+        
+        public IService Initialize(IDependency dep)
+        {
+            Dep = dep;
+            return this;
+        }
+        
+        public override string ToString()
+        {
+            return Dep?.ToString() ?? "";
+        }
+    }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup("Composition")
+                .Bind<global::System.Collections.Generic.ICollection<TT>>()
+                .Bind<global::System.Collections.Generic.IList<TT>>()
+                .Bind<global::System.Collections.Generic.List<TT>>()
+                    .To((TT[] arr) => new global::System.Collections.Generic.List<TT>(arr))
+                .Bind().To<Dependency>()
+                .Bind().To<Service>()
+                .Bind<string>().To((IService service, #TypePrefixIList<IDependency> dependency) => service.Initialize(dependency[0]).ToString() ?? "")
+                .Root<string>("DepName");
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();
+            var depName = composition.DepName;
+            Console.WriteLine(depName);
+        }
+    }
+}
+""".Replace("#TypePrefix", typePrefix).RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Sample.Dependency"], result);
+    }
+    
     [Fact]
     public async Task ShouldSupportSimpleFactoryWhenSimpleLambdaWitgGenericParams()
     {

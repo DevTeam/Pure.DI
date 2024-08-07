@@ -82,7 +82,7 @@ internal sealed class FactoryTypeRewriter(
         var semanticModel = _context.Setup.SemanticModel;
         foreach (var arg in node.Arguments)
         {
-            var typeName = arg.ToString();
+           var typeName = arg.ToString();
             var isFound = false;
             foreach (var type in semanticModel.Compilation.GetTypesByMetadataName(typeName))
             {

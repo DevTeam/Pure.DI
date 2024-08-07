@@ -388,7 +388,7 @@ internal sealed class SetupsBuilder(
                 curPosition++;
                 
                 var valueDeclaration = SyntaxFactory.DeclarationExpression(
-                    SyntaxFactory.ParseTypeName(injectedType.ToString()).WithTrailingTrivia(SyntaxFactory.Space),
+                    SyntaxFactory.ParseTypeName(injectedType.ToDisplayString(NullableFlowState.None, FullyQualifiedNameRewriter.FullTypeNameFormat)).WithTrailingTrivia(SyntaxFactory.Space),
                     SyntaxFactory.SingleVariableDesignation(SyntaxFactory.Identifier(injectedName)));
 
                 var valueArg =
