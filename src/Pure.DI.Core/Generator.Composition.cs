@@ -38,12 +38,8 @@ public partial class Generator
             .DefaultLifetime(Singleton)
             .Bind().To<Cache<TT1, TT2>>()
             .Bind().To<ObserversRegistry>()
-            .Bind().To(ctx =>
-            {
-                ctx.Inject<IBuilder<Unit, IEnumerable<Source>>>(out var api);
-                return api.Build(Unit.Shared);
-            })
-        
+            .Bind().To((IBuilder<Unit, IEnumerable<Source>> api) => api.Build(Unit.Shared))
+
         // PerBlock
             .DefaultLifetime(PerBlock)
             .Bind().To<Arguments>()
