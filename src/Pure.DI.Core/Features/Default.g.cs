@@ -24,11 +24,7 @@ namespace Pure.DI
                     Lifetime.PerResolve,
                     Lifetime.PerBlock)
 #endif
-                .Bind<IOwned>().To(ctx =>
-                {
-                    ctx.Inject<Owned>(out var owned);
-                    return owned;
-                })
+                .Bind<IOwned>().To((Owned owned) => owned)
                 .Bind<Owned<TT>>()
                     .As(Lifetime.PerBlock)
                     .To(ctx => {
@@ -64,23 +60,11 @@ namespace Pure.DI
                 .Bind<global::System.Threading.Tasks.TaskContinuationOptions>()
                     .To(_ => global::System.Threading.Tasks.TaskContinuationOptions.None)
                 .Bind<global::System.Threading.Tasks.TaskFactory>().As(Lifetime.PerBlock)
-                    .To(ctx =>
-                    {
-                        ctx.Inject(out global::System.Threading.CancellationToken cancellationToken);
-                        ctx.Inject(out global::System.Threading.Tasks.TaskCreationOptions taskCreationOptions);
-                        ctx.Inject(out global::System.Threading.Tasks.TaskContinuationOptions taskContinuationOptions);
-                        ctx.Inject(out global::System.Threading.Tasks.TaskScheduler taskScheduler);
-                        return new global::System.Threading.Tasks.TaskFactory(cancellationToken, taskCreationOptions, taskContinuationOptions, taskScheduler);
-                    })
+                    .To((global::System.Threading.CancellationToken cancellationToken, global::System.Threading.Tasks.TaskCreationOptions taskCreationOptions, global::System.Threading.Tasks.TaskContinuationOptions taskContinuationOptions, global::System.Threading.Tasks.TaskScheduler taskScheduler) =>
+                    new global::System.Threading.Tasks.TaskFactory(cancellationToken, taskCreationOptions, taskContinuationOptions, taskScheduler))
                 .Bind<global::System.Threading.Tasks.TaskFactory<TT>>().As(Lifetime.PerBlock)
-                    .To(ctx =>
-                    {
-                        ctx.Inject(out global::System.Threading.CancellationToken cancellationToken);
-                        ctx.Inject(out global::System.Threading.Tasks.TaskCreationOptions taskCreationOptions);
-                        ctx.Inject(out global::System.Threading.Tasks.TaskContinuationOptions taskContinuationOptions);
-                        ctx.Inject(out global::System.Threading.Tasks.TaskScheduler taskScheduler);
-                        return new global::System.Threading.Tasks.TaskFactory<TT>(cancellationToken, taskCreationOptions, taskContinuationOptions, taskScheduler);
-                    })
+                    .To((global::System.Threading.CancellationToken cancellationToken, global::System.Threading.Tasks.TaskCreationOptions taskCreationOptions, global::System.Threading.Tasks.TaskContinuationOptions taskContinuationOptions, global::System.Threading.Tasks.TaskScheduler taskScheduler) =>
+                    new global::System.Threading.Tasks.TaskFactory<TT>(cancellationToken, taskCreationOptions, taskContinuationOptions, taskScheduler))
                 .Bind<global::System.Threading.Tasks.Task<TT>>()
                     .To(ctx =>
                     {
@@ -109,17 +93,9 @@ namespace Pure.DI
                 // Collections
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
                 .Bind<global::System.Memory<TT>>()
-                    .To(ctx =>
-                    {
-                        ctx.Inject<TT[]>(out var arr);
-                        return new global::System.Memory<TT>(arr);
-                    })
+                    .To((TT[] arr) => new global::System.Memory<TT>(arr))
                 .Bind<global::System.ReadOnlyMemory<TT>>()
-                    .To(ctx =>
-                    {
-                        ctx.Inject<TT[]>(out var arr);
-                        return new global::System.ReadOnlyMemory<TT>(arr);
-                    })
+                    .To((TT[] arr) => new global::System.ReadOnlyMemory<TT>(arr))
                 .Bind<global::System.Buffers.MemoryPool<TT>>()
                     .To(_ => global::System.Buffers.MemoryPool<TT>.Shared)
                 .Bind<global::System.Buffers.ArrayPool<TT>>()
@@ -128,161 +104,74 @@ namespace Pure.DI
                 .Bind<global::System.Collections.Generic.ICollection<TT>>()
                 .Bind<global::System.Collections.Generic.IList<TT>>()
                 .Bind<global::System.Collections.Generic.List<TT>>()
-                    .To(ctx =>
-                    {
-                        ctx.Inject<TT[]>(out var arr);
-                        return new global::System.Collections.Generic.List<TT>(arr);
-                    })
+                    .To((TT[] arr) => new global::System.Collections.Generic.List<TT>(arr))
 #if NETSTANDARD || NET || NETCOREAPP || NET45_OR_GREATER
                 .Bind<global::System.Collections.Generic.IReadOnlyCollection<TT>>()
                 .Bind<global::System.Collections.Generic.IReadOnlyList<TT>>()
-                    .To(ctx =>
-                    {
-                        ctx.Inject<TT[]>(out var arr);
-                        return arr;
-                    })
+                    .To((TT[] arr) => arr)
 #endif
 #if NETSTANDARD1_1_OR_GREATER || NET || NETCOREAPP || NET40_OR_GREATER
                 .Bind<global::System.Collections.Concurrent.IProducerConsumerCollection<TT>>()
                 .Bind<global::System.Collections.Concurrent.ConcurrentBag<TT>>()
-                    .To(ctx =>
-                    {
-                        ctx.Inject<TT[]>(out var arr);
-                        return new global::System.Collections.Concurrent.ConcurrentBag<TT>(arr);
-                    })
+                    .To((TT[] arr) => new global::System.Collections.Concurrent.ConcurrentBag<TT>(arr))
                 .Bind<global::System.Collections.Concurrent.ConcurrentQueue<TT>>()
-                    .To(ctx =>
-                    {
-                        ctx.Inject<TT[]>(out var arr);
-                        return new global::System.Collections.Concurrent.ConcurrentQueue<TT>(arr);
-                    })
+                    .To((TT[] arr) => new global::System.Collections.Concurrent.ConcurrentQueue<TT>(arr))
                 .Bind<global::System.Collections.Concurrent.ConcurrentStack<TT>>()
-                    .To(ctx =>
-                    {
-                        ctx.Inject<TT[]>(out var arr);
-                        return new global::System.Collections.Concurrent.ConcurrentStack<TT>(arr);
-                    })
+                    .To((TT[] arr) => new global::System.Collections.Concurrent.ConcurrentStack<TT>(arr))
                 .Bind<global::System.Collections.Concurrent.BlockingCollection<TT>>()
-                    .To(ctx =>
-                    {
-                        ctx.Inject<global::System.Collections.Concurrent.ConcurrentBag<TT>>(out var concurrentBag);
-                        return new global::System.Collections.Concurrent.BlockingCollection<TT>(concurrentBag);
-                    })
+                    .To((global::System.Collections.Concurrent.ConcurrentBag<TT> concurrentBag) =>
+                    new global::System.Collections.Concurrent.BlockingCollection<TT>(concurrentBag))
 #endif
 #if NETSTANDARD || NET || NETCOREAPP || NET40_OR_GREATER
                 .Bind<global::System.Collections.Generic.ISet<TT>>()
 #endif
 #if NETSTANDARD || NET || NETCOREAPP || NET35_OR_GREATER
                 .Bind<global::System.Collections.Generic.HashSet<TT>>()
-                    .To(ctx =>
-                    {
-                        ctx.Inject<TT[]>(out var arr);
-                        return new global::System.Collections.Generic.HashSet<TT>(arr);
-                    })
+                    .To((TT[] arr) =>new global::System.Collections.Generic.HashSet<TT>(arr))
 #endif
 #if NETSTANDARD || NET || NETCOREAPP || NET45_OR_GREATER
                 .Bind<global::System.Collections.Generic.SortedSet<TT>>()
-                    .To(ctx =>
-                    {
-                        ctx.Inject<TT[]>(out var arr);
-                        return new global::System.Collections.Generic.SortedSet<TT>(arr);
-                    })
+                    .To((TT[] arr) => new global::System.Collections.Generic.SortedSet<TT>(arr))
 #endif                
                 .Bind<global::System.Collections.Generic.Queue<TT>>()
-                    .To(ctx =>
-                    {
-                        ctx.Inject<TT[]>(out var arr);
-                        return new global::System.Collections.Generic.Queue<TT>(arr);
-                    })
+                    .To((TT[] arr) => new global::System.Collections.Generic.Queue<TT>(arr))
                 .Bind<global::System.Collections.Generic.Stack<TT>>()
-                    .To(ctx =>
-                    {
-                        ctx.Inject<TT[]>(out var arr);
-                        return new global::System.Collections.Generic.Stack<TT>(arr);
-                    })
+                    .To((TT[] arr) => new global::System.Collections.Generic.Stack<TT>(arr))
 #if NETCOREAPP || NET
 #if NETCOREAPP3_0_OR_GREATER
                 .Bind<global::System.Collections.Immutable.ImmutableArray<TT>>()
-                    .To(ctx =>
-                    {
-                        ctx.Inject<TT[]>(out var arr);
-                        return global::System.Runtime.CompilerServices.Unsafe.As<TT[], global::System.Collections.Immutable.ImmutableArray<TT>>(ref arr);
-                    })
+                    .To((TT[] arr) => global::System.Runtime.CompilerServices.Unsafe.As<TT[], global::System.Collections.Immutable.ImmutableArray<TT>>(ref arr))
                 .Bind<global::System.Collections.Immutable.IImmutableList<TT>>()
                 .Bind<global::System.Collections.Immutable.ImmutableList<TT>>()
-                    .To(ctx =>
-                    {
-                        ctx.Inject<TT[]>(out var arr);
-                        return global::System.Runtime.CompilerServices.Unsafe.As<TT[], global::System.Collections.Immutable.ImmutableList<TT>>(ref arr);
-                    })
+                    .To((TT[] arr) => global::System.Runtime.CompilerServices.Unsafe.As<TT[], global::System.Collections.Immutable.ImmutableList<TT>>(ref arr))
                 .Bind<global::System.Collections.Immutable.IImmutableSet<TT>>()
                 .Bind<global::System.Collections.Immutable.ImmutableHashSet<TT>>()
-                    .To(ctx =>
-                    {
-                        ctx.Inject<TT[]>(out var arr);
-                        return global::System.Runtime.CompilerServices.Unsafe.As<TT[], global::System.Collections.Immutable.ImmutableHashSet<TT>>(ref arr);
-                    })
+                    .To((TT[] arr) => global::System.Runtime.CompilerServices.Unsafe.As<TT[], global::System.Collections.Immutable.ImmutableHashSet<TT>>(ref arr))
                 .Bind<global::System.Collections.Immutable.ImmutableSortedSet<TT>>()
-                    .To(ctx =>
-                    {
-                        ctx.Inject<TT[]>(out var arr);
-                        return global::System.Runtime.CompilerServices.Unsafe.As<TT[], global::System.Collections.Immutable.ImmutableSortedSet<TT>>(ref arr);
-                    })
+                    .To((TT[] arr) => global::System.Runtime.CompilerServices.Unsafe.As<TT[], global::System.Collections.Immutable.ImmutableSortedSet<TT>>(ref arr))
                 .Bind<global::System.Collections.Immutable.IImmutableQueue<TT>>()
                 .Bind<global::System.Collections.Immutable.ImmutableQueue<TT>>()
-                    .To(ctx =>
-                    {
-                        ctx.Inject<TT[]>(out var arr);
-                        return global::System.Runtime.CompilerServices.Unsafe.As<TT[], global::System.Collections.Immutable.ImmutableQueue<TT>>(ref arr);
-                    })
+                    .To((TT[] arr) => global::System.Runtime.CompilerServices.Unsafe.As<TT[], global::System.Collections.Immutable.ImmutableQueue<TT>>(ref arr))
                 .Bind<global::System.Collections.Immutable.IImmutableStack<TT>>()
                 .Bind<global::System.Collections.Immutable.ImmutableStack<TT>>()
-                    .To(ctx =>
-                    {
-                        ctx.Inject<TT[]>(out var arr);
-                        return global::System.Runtime.CompilerServices.Unsafe.As<TT[], global::System.Collections.Immutable.ImmutableStack<TT>>(ref arr);
-                    })
+                    .To((TT[] arr) => global::System.Runtime.CompilerServices.Unsafe.As<TT[], global::System.Collections.Immutable.ImmutableStack<TT>>(ref arr))
 #else                
                 .Bind<global::System.Collections.Immutable.ImmutableArray<TT>>()
-                    .To(ctx =>
-                    {
-                        ctx.Inject<TT[]>(out var arr);
-                        return global::System.Collections.Immutable.ImmutableArray.Create<TT>(arr);
-                    })
+                    .To((TT[] arr) => global::System.Collections.Immutable.ImmutableArray.Create<TT>(arr))
                 .Bind<global::System.Collections.Immutable.IImmutableList<TT>>()
                 .Bind<global::System.Collections.Immutable.ImmutableList<TT>>()
-                    .To(ctx =>
-                    {
-                        ctx.Inject<TT[]>(out var arr);
-                        return global::System.Collections.Immutable.ImmutableList.Create<TT>(arr);
-                    })
+                    .To((TT[] arr) => global::System.Collections.Immutable.ImmutableList.Create<TT>(arr))
                 .Bind<global::System.Collections.Immutable.IImmutableSet<TT>>()
                 .Bind<global::System.Collections.Immutable.ImmutableHashSet<TT>>()
-                    .To(ctx =>
-                    {
-                        ctx.Inject<TT[]>(out var arr);
-                        return global::System.Collections.Immutable.ImmutableHashSet.Create<TT>(arr);
-                    })
+                    .To((TT[] arr) => global::System.Collections.Immutable.ImmutableHashSet.Create<TT>(arr))
                 .Bind<global::System.Collections.Immutable.ImmutableSortedSet<TT>>()
-                    .To(ctx =>
-                    {
-                        ctx.Inject<TT[]>(out var arr);
-                        return global::System.Collections.Immutable.ImmutableSortedSet.Create<TT>(arr);
-                    })
+                    .To((TT[] arr) => global::System.Collections.Immutable.ImmutableSortedSet.Create<TT>(arr))
                 .Bind<global::System.Collections.Immutable.IImmutableQueue<TT>>()
                 .Bind<global::System.Collections.Immutable.ImmutableQueue<TT>>()
-                    .To(ctx =>
-                    {
-                        ctx.Inject<TT[]>(out var arr);
-                        return global::System.Collections.Immutable.ImmutableQueue.Create<TT>(arr);
-                    })
+                    .To((TT[] arr) => global::System.Collections.Immutable.ImmutableQueue.Create<TT>(arr))
                 .Bind<global::System.Collections.Immutable.IImmutableStack<TT>>()
                 .Bind<global::System.Collections.Immutable.ImmutableStack<TT>>()
-                    .To(ctx =>
-                    {
-                        ctx.Inject<TT[]>(out var arr);
-                        return global::System.Collections.Immutable.ImmutableStack.Create<TT>(arr);
-                    })
+                    .To((TT[] arr) => global::System.Collections.Immutable.ImmutableStack.Create<TT>(arr))
 #endif
 #endif
 #if NET6_0_OR_GREATER
@@ -291,16 +180,8 @@ namespace Pure.DI
 #if NETCOREAPP2_0 || NET || NETSTANDARD2_0_OR_GREATER
                 .Bind<global::System.Text.Encoding>().To(_ => global::System.Text.Encoding.Default)
 #endif
-                .Bind<global::System.Text.Decoder>().To(ctx =>
-                {
-                    ctx.Inject(out global::System.Text.Encoding encoding);
-                    return encoding.GetDecoder();
-                })
-                .Bind<global::System.Text.Encoder>().To(ctx =>
-                {
-                    ctx.Inject(out global::System.Text.Encoding encoding);
-                    return encoding.GetEncoder();
-                })
+                .Bind<global::System.Text.Decoder>().To((global::System.Text.Encoding encoding) => encoding.GetDecoder())
+                .Bind<global::System.Text.Encoder>().To((global::System.Text.Encoding encoding) => encoding.GetEncoder())
 ;
         }
     }
