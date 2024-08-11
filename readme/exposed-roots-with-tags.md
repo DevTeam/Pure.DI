@@ -72,8 +72,8 @@ partial class Composition
 
       Integration.IMyService transientIMyService1;
       {
-          Integration.CompositionWithTagsInOtherProject localValue6 = _root._singletonCompositionWithTagsInOtherProject39!;
-          transientIMyService1 = localValue6.MyService;
+          Integration.CompositionWithTagsInOtherProject localInstance_1182D1276 = _root._singletonCompositionWithTagsInOtherProject39!;
+          transientIMyService1 = localInstance_1182D1276.MyService;
       }
 
       return new Program(transientIMyService1);

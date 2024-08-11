@@ -7,15 +7,16 @@ namespace AvaloniaApp;
 using Clock.Models;
 using Clock.ViewModels;
 using Pure.DI;
+using Views;
 using static Pure.DI.Lifetime;
 
 internal partial class Composition
 {
     void Setup() => DI.Setup()
-        // A single compositional root for the application
-        .Root<AppDataContext>(nameof(App))
+        // Single composition root for the application
+        .Root<Root>(nameof(Root))
         
-        .Bind().As(Singleton).To<AppDataContext>()
+        .Bind().As(Singleton).To<Root>()
         
         // View Models
         .Bind().To<ClockViewModel>()

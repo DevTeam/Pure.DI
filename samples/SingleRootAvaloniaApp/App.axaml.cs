@@ -14,7 +14,7 @@ public class App : Application
             && Resources["Composition"] is Composition composition)
         {
             // Assignment of the main window
-            desktop.MainWindow = composition.App.MainWindow;
+            desktop.MainWindow = composition.Root.MainWindow.Value;
             // Handles disposables
             desktop.Exit += (_, _) => composition.Dispose();
         }

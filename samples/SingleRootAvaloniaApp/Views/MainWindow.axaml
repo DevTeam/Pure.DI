@@ -7,12 +7,12 @@
         x:Class="AvaloniaApp.Views.MainWindow"
         x:DataType="avaloniaApp:Composition"
         DataContext="{StaticResource Composition}"
-        Title="{Binding App.ClockViewModel.Time}"
+        Title="{Binding Root.ClockViewModel.Time}"
         Icon="/Assets/avalonia-logo.ico"
         FontFamily="Consolas"
         FontWeight="Bold">
 
-    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" DataContext="{Binding App.ClockViewModel}">
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" DataContext="{Binding Root.ClockViewModel}">
         <TextBlock Text="{Binding Date}" FontSize="64" HorizontalAlignment="Center" />
         <TextBlock Text="{Binding Time}" FontSize="128" HorizontalAlignment="Center" />
     </StackPanel>

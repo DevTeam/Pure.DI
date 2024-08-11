@@ -83,8 +83,8 @@ partial class Composition
 
       IDependency<int> transientIDependency1;
       {
-          Facade localValue24 = _root._singletonFacade39!;
-          transientIDependency1 = localValue24.GetDependency<int>();
+          Facade localInstance_1182D12724 = _root._singletonFacade39!;
+          transientIDependency1 = localInstance_1182D12724.GetDependency<int>();
       }
 
       return new Service(transientIDependency1);

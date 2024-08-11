@@ -61,8 +61,8 @@ partial class Composition
     {
       Integration.IMyService transientIMyService1;
       {
-          Integration.CompositionInOtherProject localValue4 = _argBaseComposition;
-          transientIMyService1 = localValue4.MyService;
+          Integration.CompositionInOtherProject localInstance_1182D1274 = _argBaseComposition;
+          transientIMyService1 = localInstance_1182D1274.MyService;
       }
 
       return new Program(transientIMyService1);
