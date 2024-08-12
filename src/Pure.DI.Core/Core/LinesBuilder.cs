@@ -55,22 +55,22 @@ internal sealed class LinesBuilder: IEnumerable<string>
         }
     }
 
-    public IDisposable Indent()
+    public IDisposable Indent(int size = 1)
     {
-        IncIndent();
-        return Disposables.Create(DecIndent);
+        IncIndent(size);
+        return Disposables.Create(() => DecIndent(size));
     }
 
-    public void IncIndent()
+    public void IncIndent(int size = 1)
     {
         FlushLines();
-        _indent = new Indent(_indent.Value + 1);
+        _indent = new Indent(_indent.Value + size);
     }
 
-    public void DecIndent()
+    public void DecIndent(int size = 1)
     {
         FlushLines();
-        _indent = new Indent(_indent.Value - 1);
+        _indent = new Indent(_indent.Value - size);
     }
 
     public IEnumerator<string> GetEnumerator()

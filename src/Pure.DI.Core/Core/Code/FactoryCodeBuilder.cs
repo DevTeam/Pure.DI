@@ -160,16 +160,25 @@ internal class FactoryCodeBuilder(
         var lambda = factoryRewriter.Rewrite(factoryExpression);
         new FactoryValidator(factory).Validate(lambda); 
         SyntaxNode syntaxNode = lambda.Block is not null ? lambda.Block : SyntaxFactory.ExpressionStatement((ExpressionSyntax)lambda.Body);
-        if (syntaxNode is not BlockSyntax)
-        {
-            code.Append($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VariableName} = ");
-        }
-        else
+        var lines = new List<TextLine>();
+        if (syntaxNode is BlockSyntax curBlock)
         {
             if (!variable.IsDeclared)
             {
                 code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VariableName};");
             }
+
+            foreach (var statement in curBlock.Statements)
+            {
+                var text = statement.GetText();
+                lines.AddRange(text.Lines);
+            }
+        }
+        else
+        {
+            code.Append($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VariableName} = ");
+            var text = syntaxNode.GetText();
+            lines.AddRange(text.Lines);
         }
 
         // Replaces injection markers by injection code
@@ -195,16 +204,49 @@ internal class FactoryCodeBuilder(
                         .Select(accumulator => accumulator with { IsDeclared = false }))
             };
         }
-        
-        var text = syntaxNode.GetText();
-        foreach (var textLine in text.Lines)
+
+        var prefixes = new Stack<string>();
+        prefixes.Push("");
+        foreach (var textLine in lines)
         {
-            var line = text.ToString(textLine.Span);
+            var line = textLine.ToString();
+            if (string.IsNullOrWhiteSpace(line))
+            {
+                continue;
+            }
+
+            var prefix = new string(line.TakeWhile(char.IsWhiteSpace).ToArray());
+            if (prefix.Length > 0)
+            {
+                if (prefix.Length > prefixes.Peek().Length)
+                {
+                    prefixes.Push(prefix);
+                }
+                else
+                {
+                    if (prefixes.Count > 1 && prefix.Length < prefixes.Peek().Length)
+                    {
+                        prefixes.Pop();
+                    }
+                }
+            }
+
+            if (prefix.Length > 0 && prefixes.Count > 1 && line.StartsWith(prefix))
+            {
+                line = Formatting.IndentPrefix(new Indent(prefixes.Count - 2)) + line[prefix.Length..];
+            }
+
             if (line.Contains(InjectionStatement) && resolvers.MoveNext())
             {
                 // When an injection marker
                 var (injection, argument) = resolvers.Current;
-                using (code.Indent())
+                var indent = prefixes.Count - 1;
+                if (indent < 0)
+                {
+                    indent = 0;
+                }
+
+                using (code.Indent(indent))
                 {
                     ctx.StatementBuilder.Build(injectionsCtx with { Level = level, Variable = argument.Current, LockIsRequired = lockIsRequired }, argument);
                     code.AppendLine($"{(injection.DeclarationRequired ? $"{typeResolver.Resolve(ctx.DependencyGraph.Source, argument.Current.Injection.Type)} " : "")}{injection.VariableName} = {ctx.BuildTools.OnInjected(ctx, argument.Current)};");
