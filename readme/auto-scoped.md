@@ -102,19 +102,14 @@ partial class Composition
         {
           if (perResolveFunc46 == null)
           {
-            perResolveFunc46 = new Func<IService>(
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            () =>
+            perResolveFunc46 = new Func<IService>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
             {
               Composition transientComposition2 = this;
               IService transientIService1;
-              {
-                Composition localBaseComposition65 = transientComposition2;
-                // Creates a session
-                var localSession66 = new Composition(localBaseComposition65);
-                transientIService1 = localSession66.SessionRoot;
-              }
-
+              Composition localBaseComposition65 = transientComposition2;
+              // Creates a session
+              var localSession66= new Composition(localBaseComposition65);
+               transientIService1 = localSession66.SessionRoot;
               IService localValue64 = transientIService1;
               return localValue64;
             });

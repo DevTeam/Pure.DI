@@ -72,9 +72,7 @@ partial class Composition
         {
           if (perResolveFunc42 == null)
           {
-            perResolveFunc42 = new Func<IDependency>(
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            () =>
+            perResolveFunc42 = new Func<IDependency>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
             {
               IDependency localValue30 = new Dependency();
               return localValue30;

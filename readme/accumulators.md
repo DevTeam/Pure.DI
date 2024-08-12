@@ -91,13 +91,11 @@ partial class Composition
       {
         accumulator44.Add(transientAbcDependency3);
       }
-
       Service transientService1 = new Service(transientAbcDependency3, _root._singletonXyzDependency41!, perBlockAbcDependency4);
       lock (_lock)
       {
         accumulator44.Add(transientService1);
       }
-
       return (transientService1, accumulator44);
     }
   }

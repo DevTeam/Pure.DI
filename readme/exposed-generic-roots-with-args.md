@@ -73,12 +73,9 @@ partial class Composition
     }
 
     Integration.IMyGenericService<int> transientIMyGenericService1;
-    {
-      int localId1 = id;
-      Integration.CompositionWithGenericRootsAndArgsInOtherProject localInstance_1182D1272 = _root._singletonCompositionWithGenericRootsAndArgsInOtherProject40!;
-      transientIMyGenericService1 = localInstance_1182D1272.GetMyService<int>(localId1);
-    }
-
+    int localId1 = id;
+    Integration.CompositionWithGenericRootsAndArgsInOtherProject localInstance_1182D1272 = _root._singletonCompositionWithGenericRootsAndArgsInOtherProject40!;
+    transientIMyGenericService1 = localInstance_1182D1272.GetMyService<int>(localId1);
     return new Program(transientIMyGenericService1);
   }
 }

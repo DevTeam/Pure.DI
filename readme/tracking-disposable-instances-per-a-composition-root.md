@@ -91,19 +91,14 @@ partial class Composition
       {
         accumulator42.Add(transientDependency3);
       }
-
       Owned<IService> perBlockOwned0;
-      {
-        Owned localOwned15 = accumulator42;
-        IService localValue16 = new Service(transientDependency3);
-        perBlockOwned0 = new Owned<IService>(localValue16, localOwned15);
-      }
-
+      Owned localOwned15 = accumulator42;
+      IService localValue16 = new Service(transientDependency3);
+      perBlockOwned0 = new Owned<IService>(localValue16, localOwned15);
       lock (_lock)
       {
         accumulator42.Add(perBlockOwned0);
       }
-
       return perBlockOwned0;
     }
   }

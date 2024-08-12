@@ -96,9 +96,7 @@ partial class Composition
         {
           if (perResolveFunc42 == null)
           {
-            perResolveFunc42 = new Func<Owned<IDependency>>(
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            () =>
+            perResolveFunc42 = new Func<Owned<IDependency>>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
             {
               var accumulator41 = new Owned();
               Dependency transientDependency3 = new Dependency();
@@ -106,19 +104,14 @@ partial class Composition
               {
                 accumulator41.Add(transientDependency3);
               }
-
               Owned<IDependency> perBlockOwned1;
-              {
-                Owned localOwned13 = accumulator41;
-                IDependency localValue14 = transientDependency3;
-                perBlockOwned1 = new Owned<IDependency>(localValue14, localOwned13);
-              }
-
+              Owned localOwned13 = accumulator41;
+              IDependency localValue14 = transientDependency3;
+              perBlockOwned1 = new Owned<IDependency>(localValue14, localOwned13);
               lock (_lock)
               {
                 accumulator41.Add(perBlockOwned1);
               }
-
               Owned<IDependency> localValue12 = perBlockOwned1;
               return localValue12;
             });

@@ -90,10 +90,7 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new Service(new XyzDependency(), new XyzDependency(), new Consumer<string>(new AbcDependency()))
-      {
-        Dependency3 = new AbcDependency()
-      };
+      return new Service(new XyzDependency(), new XyzDependency(), new Consumer<string>(new AbcDependency())) { Dependency3 = new AbcDependency() };
     }
   }
 }

@@ -71,6 +71,7 @@ public class Scenario
     [Fact]
     public void Run()
     {
+        // FormatCode = On
 // {    
         DI.Setup(nameof(Composition))
             .Bind<IClock>().As(Lifetime.Singleton).To<Clock>()

@@ -101,9 +101,7 @@ partial class Composition
       {
         if (perResolveFunc45 == null)
         {
-          perResolveFunc45 = new Func<IDependency>(
-          [MethodImpl(MethodImplOptions.AggressiveInlining)]
-          () =>
+          perResolveFunc45 = new Func<IDependency>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
           {
             IDependency localValue35 = new Dependency();
             return localValue35;
@@ -113,12 +111,9 @@ partial class Composition
     }
 
     Task<IDependency> transientTask1;
-    {
-      Func<IDependency> localFactory36 = perResolveFunc45!;
-      CancellationToken localCancellationToken37 = cancellationToken;
-      transientTask1 = new Task<IDependency>(localFactory36, localCancellationToken37);
-    }
-
+    Func<IDependency> localFactory36 = perResolveFunc45!;
+    CancellationToken localCancellationToken37 = cancellationToken;
+    transientTask1 = new Task<IDependency>(localFactory36, localCancellationToken37);
     return new Service(transientTask1);
   }
 }

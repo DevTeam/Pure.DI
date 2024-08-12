@@ -65,10 +65,7 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new Service()
-      {
-        Dependency = new XyzDependency()
-      };
+      return new Service() { Dependency = new XyzDependency() };
     }
   }
 }

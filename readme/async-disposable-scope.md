@@ -143,9 +143,7 @@ partial class Composition: IDisposable, IAsyncDisposable
         {
           if (perResolveFunc47 == null)
           {
-            perResolveFunc47 = new Func<Session>(
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            () =>
+            perResolveFunc47 = new Func<Session>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
             {
               Composition transientComposition2 = this;
               Session localValue63 = new Session(transientComposition2);
