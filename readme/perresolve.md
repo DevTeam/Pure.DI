@@ -76,31 +76,31 @@ partial class Composition
       var perResolveDependency39 = default(Dependency);
       if (!_root._singletonValueTuple40Created)
       {
-          lock (_lock)
+        lock (_lock)
+        {
+          if (!_root._singletonValueTuple40Created)
           {
-              if (!_root._singletonValueTuple40Created)
-              {
-                  if (perResolveDependency39 == null)
-                  {
-                      perResolveDependency39 = new Dependency();
-                  }
+            if (perResolveDependency39 == null)
+            {
+              perResolveDependency39 = new Dependency();
+            }
 
-                  _root._singletonValueTuple40 = (perResolveDependency39!, perResolveDependency39!);
-                  Thread.MemoryBarrier();
-                  _root._singletonValueTuple40Created = true;
-              }
+            _root._singletonValueTuple40 = (perResolveDependency39!, perResolveDependency39!);
+            Thread.MemoryBarrier();
+            _root._singletonValueTuple40Created = true;
           }
+        }
       }
 
       if (perResolveDependency39 == null)
       {
-          lock (_lock)
+        lock (_lock)
+        {
+          if (perResolveDependency39 == null)
           {
-              if (perResolveDependency39 == null)
-              {
-                  perResolveDependency39 = new Dependency();
-              }
+            perResolveDependency39 = new Dependency();
           }
+        }
       }
 
       return new Service(perResolveDependency39!, perResolveDependency39!, _root._singletonValueTuple40);

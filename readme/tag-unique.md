@@ -62,8 +62,8 @@ partial class Composition
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       IEnumerable<IDependency<string>> EnumerationOf_perBlockIEnumerable1()
       {
-          yield return new AbcDependency<string>();
-          yield return new XyzDependency<string>();
+        yield return new AbcDependency<string>();
+        yield return new XyzDependency<string>();
       }
 
       IEnumerable<IDependency<string>> perBlockIEnumerable1 = EnumerationOf_perBlockIEnumerable1();

@@ -117,14 +117,14 @@ partial class Composition: IDisposable, IAsyncDisposable
     {
       if (_scopedDependency39 == null)
       {
-          lock (_lock)
+        lock (_lock)
+        {
+          if (_scopedDependency39 == null)
           {
-              if (_scopedDependency39 == null)
-              {
-                  _scopedDependency39 = new Dependency();
-                  _disposables[_disposeIndex++] = _scopedDependency39;
-              }
+            _scopedDependency39 = new Dependency();
+            _disposables[_disposeIndex++] = _scopedDependency39;
           }
+        }
       }
 
       return new Service(_scopedDependency39!);
@@ -139,20 +139,20 @@ partial class Composition: IDisposable, IAsyncDisposable
       var perResolveFunc47 = default(Func<Session>);
       if (perResolveFunc47 == null)
       {
-          lock (_lock)
+        lock (_lock)
+        {
+          if (perResolveFunc47 == null)
           {
-              if (perResolveFunc47 == null)
-              {
-                  perResolveFunc47 = new Func<Session>(
-                  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                  () =>
-                  {
-                      Composition transientComposition2 = this;
-                      Session localValue63 = new Session(transientComposition2);
-                      return localValue63;
-                  });
-              }
+            perResolveFunc47 = new Func<Session>(
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            () =>
+            {
+              Composition transientComposition2 = this;
+              Session localValue63 = new Session(transientComposition2);
+              return localValue63;
+            });
           }
+        }
       }
 
       return new Program(perResolveFunc47!);

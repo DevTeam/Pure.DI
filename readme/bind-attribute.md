@@ -76,19 +76,19 @@ partial class Composition
     {
       if (_root._singletonFacade39 == null)
       {
-          lock (_lock)
+        lock (_lock)
+        {
+          if (_root._singletonFacade39 == null)
           {
-              if (_root._singletonFacade39 == null)
-              {
-                  _root._singletonFacade39 = new Facade();
-              }
+            _root._singletonFacade39 = new Facade();
           }
+        }
       }
 
       IDependency transientIDependency1;
       {
-          Facade localInstance_1182D12725 = _root._singletonFacade39!;
-          transientIDependency1 = localInstance_1182D12725.Dependency;
+        Facade localInstance_1182D12725 = _root._singletonFacade39!;
+        transientIDependency1 = localInstance_1182D12725.Dependency;
       }
 
       return new Service(transientIDependency1);

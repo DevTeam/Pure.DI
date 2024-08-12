@@ -113,21 +113,21 @@ partial class Composition
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       (dependencyId, subId) =>
       {
-          int transientInt324 = subId;
-          int transientInt323 = dependencyId;
-          if (_root._singletonClock39 == null)
+        int transientInt324 = subId;
+        int transientInt323 = dependencyId;
+        if (_root._singletonClock39 == null)
+        {
+          lock (_lock)
           {
-              lock (_lock)
-              {
-                  if (_root._singletonClock39 == null)
-                  {
-                      _root._singletonClock39 = new Clock();
-                  }
-              }
+            if (_root._singletonClock39 == null)
+            {
+              _root._singletonClock39 = new Clock();
+            }
           }
+        }
 
-          Dependency localDependency31 = new Dependency(_root._singletonClock39!, transientInt323, transientInt324);
-          return localDependency31;
+        Dependency localDependency31 = new Dependency(_root._singletonClock39!, transientInt323, transientInt324);
+        return localDependency31;
       };
       return new Service(transientFunc1);
     }

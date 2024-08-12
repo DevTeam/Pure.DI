@@ -98,28 +98,28 @@ partial class Composition
       var perResolveFunc46 = default(Func<IService>);
       if (perResolveFunc46 == null)
       {
-          lock (_lock)
+        lock (_lock)
+        {
+          if (perResolveFunc46 == null)
           {
-              if (perResolveFunc46 == null)
+            perResolveFunc46 = new Func<IService>(
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            () =>
+            {
+              Composition transientComposition2 = this;
+              IService transientIService1;
               {
-                  perResolveFunc46 = new Func<IService>(
-                  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                  () =>
-                  {
-                      Composition transientComposition2 = this;
-                      IService transientIService1;
-                      {
-                          Composition localBaseComposition65 = transientComposition2;
-                          // Creates a session
-                          var localSession66 = new Composition(localBaseComposition65);
-                          transientIService1 = localSession66.SessionRoot;
-                      }
-
-                      IService localValue64 = transientIService1;
-                      return localValue64;
-                  });
+                Composition localBaseComposition65 = transientComposition2;
+                // Creates a session
+                var localSession66 = new Composition(localBaseComposition65);
+                transientIService1 = localSession66.SessionRoot;
               }
+
+              IService localValue64 = transientIService1;
+              return localValue64;
+            });
           }
+        }
       }
 
       return new Program(perResolveFunc46!);
@@ -133,13 +133,13 @@ partial class Composition
     {
       if (_scopedDependency39 == null)
       {
-          lock (_lock)
+        lock (_lock)
+        {
+          if (_scopedDependency39 == null)
           {
-              if (_scopedDependency39 == null)
-              {
-                  _scopedDependency39 = new Dependency();
-              }
+            _scopedDependency39 = new Dependency();
           }
+        }
       }
 
       return new Service(_scopedDependency39!);

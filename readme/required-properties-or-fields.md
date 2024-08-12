@@ -71,8 +71,8 @@ partial class Composition
     {
       return new Service()
       {
-          ServiceNameField = _argName,
-          Dependency = new Dependency()
+        ServiceNameField = _argName,
+        Dependency = new Dependency()
       };
     }
   }

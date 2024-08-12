@@ -9,8 +9,6 @@ internal sealed class RootMethodsBuilder(
     CancellationToken cancellationToken)
     : IBuilder<CompositionCode, CompositionCode>
 {
-    private static readonly char[] NewLineSeparators = ['\n'];
-
     public CompositionCode Build(CompositionCode composition)
     {
         if (!composition.Roots.Any())
@@ -184,11 +182,9 @@ internal sealed class RootMethodsBuilder(
                 {
                     var codeText = string.Join(Environment.NewLine, root.Lines);
                     var syntaxTree = CSharpSyntaxTree.ParseText(codeText, cancellationToken: cancellationToken);
-                    codeText = syntaxTree.GetRoot().NormalizeWhitespace("\t", "\n").ToFullString();
-                    var lines = codeText.Split(NewLineSeparators, StringSplitOptions.None);
-                    foreach (var line in lines)
+                    foreach (var line in syntaxTree.GetRoot().NormalizeWhitespace("\t", "\n").GetText().Lines)
                     {
-                        code.AppendLine(line);
+                        code.AppendLine(line.ToString());
                     }
                 }
                 else

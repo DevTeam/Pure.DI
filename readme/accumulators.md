@@ -73,29 +73,29 @@ partial class Composition
       AbcDependency perBlockAbcDependency4 = new AbcDependency();
       if (_root._singletonXyzDependency41 == null)
       {
-          lock (_lock)
+        lock (_lock)
+        {
+          if (_root._singletonXyzDependency41 == null)
           {
-              if (_root._singletonXyzDependency41 == null)
-              {
-                  XyzDependency _singletonXyzDependency41Temp;
-                  _singletonXyzDependency41Temp = new XyzDependency();
-                  accumulator44.Add(_singletonXyzDependency41Temp);
-                  Thread.MemoryBarrier();
-                  _root._singletonXyzDependency41 = _singletonXyzDependency41Temp;
-              }
+            XyzDependency _singletonXyzDependency41Temp;
+            _singletonXyzDependency41Temp = new XyzDependency();
+            accumulator44.Add(_singletonXyzDependency41Temp);
+            Thread.MemoryBarrier();
+            _root._singletonXyzDependency41 = _singletonXyzDependency41Temp;
           }
+        }
       }
 
       AbcDependency transientAbcDependency3 = new AbcDependency();
       lock (_lock)
       {
-          accumulator44.Add(transientAbcDependency3);
+        accumulator44.Add(transientAbcDependency3);
       }
 
       Service transientService1 = new Service(transientAbcDependency3, _root._singletonXyzDependency41!, perBlockAbcDependency4);
       lock (_lock)
       {
-          accumulator44.Add(transientService1);
+        accumulator44.Add(transientService1);
       }
 
       return (transientService1, accumulator44);

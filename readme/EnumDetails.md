@@ -100,10 +100,10 @@ partial class Enum
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     IEnumerable<IService3> EnumerationOf_perBlockIEnumerable10()
     {
-        yield return new Service3(new Service4(), new Service4());
-        yield return new Service3v2(new Service4(), new Service4());
-        yield return new Service3v3(new Service4(), new Service4());
-        yield return new Service3v4(new Service4(), new Service4());
+      yield return new Service3(new Service4(), new Service4());
+      yield return new Service3v2(new Service4(), new Service4());
+      yield return new Service3v3(new Service4(), new Service4());
+      yield return new Service3v4(new Service4(), new Service4());
     }
 
     IEnumerable<IService3> perBlockIEnumerable10 = EnumerationOf_perBlockIEnumerable10();

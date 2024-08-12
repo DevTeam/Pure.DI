@@ -81,14 +81,14 @@ partial class Composition: IDisposable
     {
       if (_root._singletonDependency39 == null)
       {
-          lock (_lock)
+        lock (_lock)
+        {
+          if (_root._singletonDependency39 == null)
           {
-              if (_root._singletonDependency39 == null)
-              {
-                  _root._singletonDependency39 = new Dependency();
-                  _root._disposables[_root._disposeIndex++] = _root._singletonDependency39;
-              }
+            _root._singletonDependency39 = new Dependency();
+            _root._disposables[_root._disposeIndex++] = _root._singletonDependency39;
           }
+        }
       }
 
       return new Service(_root._singletonDependency39!);

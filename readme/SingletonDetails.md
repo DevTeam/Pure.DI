@@ -82,17 +82,17 @@ partial class Singleton
   {
     if (_scopedService443 == null)
     {
-        _scopedService443 = new Service4();
+      _scopedService443 = new Service4();
     }
 
     if (_scopedService140 == null)
     {
-        if (_scopedService443 == null)
-        {
-            _scopedService443 = new Service4();
-        }
+      if (_scopedService443 == null)
+      {
+        _scopedService443 = new Service4();
+      }
 
-        _scopedService140 = new Service1(new Service2(new Service3(_scopedService443!, _scopedService443!), new Service3(_scopedService443!, _scopedService443!), new Service3(_scopedService443!, _scopedService443!), new Service3(_scopedService443!, _scopedService443!), new Service3(_scopedService443!, _scopedService443!)));
+      _scopedService140 = new Service1(new Service2(new Service3(_scopedService443!, _scopedService443!), new Service3(_scopedService443!, _scopedService443!), new Service3(_scopedService443!, _scopedService443!), new Service3(_scopedService443!, _scopedService443!), new Service3(_scopedService443!, _scopedService443!)));
     }
 
     return new CompositionRoot(_scopedService140!, new Service2(new Service3(_scopedService443!, _scopedService443!), new Service3(_scopedService443!, _scopedService443!), new Service3(_scopedService443!, _scopedService443!), new Service3(_scopedService443!, _scopedService443!), new Service3(_scopedService443!, _scopedService443!)), new Service2(new Service3(_scopedService443!, _scopedService443!), new Service3(_scopedService443!, _scopedService443!), new Service3(_scopedService443!, _scopedService443!), new Service3(_scopedService443!, _scopedService443!), new Service3(_scopedService443!, _scopedService443!)), new Service2(new Service3(_scopedService443!, _scopedService443!), new Service3(_scopedService443!, _scopedService443!), new Service3(_scopedService443!, _scopedService443!), new Service3(_scopedService443!, _scopedService443!), new Service3(_scopedService443!, _scopedService443!)), new Service3(_scopedService443!, _scopedService443!), _scopedService443!, _scopedService443!);

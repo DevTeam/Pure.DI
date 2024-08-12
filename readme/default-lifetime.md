@@ -78,18 +78,18 @@ partial class Composition
     {
       if (_root._singletonService40 == null)
       {
-          lock (_lock)
+        lock (_lock)
+        {
+          if (_root._singletonService40 == null)
           {
-              if (_root._singletonService40 == null)
-              {
-                  if (_root._singletonDependency39 == null)
-                  {
-                      _root._singletonDependency39 = new Dependency();
-                  }
+            if (_root._singletonDependency39 == null)
+            {
+              _root._singletonDependency39 = new Dependency();
+            }
 
-                  _root._singletonService40 = new Service(_root._singletonDependency39!, _root._singletonDependency39!);
-              }
+            _root._singletonService40 = new Service(_root._singletonDependency39!, _root._singletonDependency39!);
           }
+        }
       }
 
       return _root._singletonService40!;

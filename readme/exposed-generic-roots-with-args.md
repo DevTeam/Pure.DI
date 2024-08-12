@@ -63,20 +63,20 @@ partial class Composition
   {
     if (_root._singletonCompositionWithGenericRootsAndArgsInOtherProject40 == null)
     {
-        lock (_lock)
+      lock (_lock)
+      {
+        if (_root._singletonCompositionWithGenericRootsAndArgsInOtherProject40 == null)
         {
-            if (_root._singletonCompositionWithGenericRootsAndArgsInOtherProject40 == null)
-            {
-                _root._singletonCompositionWithGenericRootsAndArgsInOtherProject40 = new Integration.CompositionWithGenericRootsAndArgsInOtherProject();
-            }
+          _root._singletonCompositionWithGenericRootsAndArgsInOtherProject40 = new Integration.CompositionWithGenericRootsAndArgsInOtherProject();
         }
+      }
     }
 
     Integration.IMyGenericService<int> transientIMyGenericService1;
     {
-        int localId1 = id;
-        Integration.CompositionWithGenericRootsAndArgsInOtherProject localInstance_1182D1272 = _root._singletonCompositionWithGenericRootsAndArgsInOtherProject40!;
-        transientIMyGenericService1 = localInstance_1182D1272.GetMyService<int>(localId1);
+      int localId1 = id;
+      Integration.CompositionWithGenericRootsAndArgsInOtherProject localInstance_1182D1272 = _root._singletonCompositionWithGenericRootsAndArgsInOtherProject40!;
+      transientIMyGenericService1 = localInstance_1182D1272.GetMyService<int>(localId1);
     }
 
     return new Program(transientIMyGenericService1);

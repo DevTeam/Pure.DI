@@ -89,17 +89,17 @@ partial class Composition
     {
       if (_root._singletonDependency39 == null)
       {
-          lock (_lock)
+        lock (_lock)
+        {
+          if (_root._singletonDependency39 == null)
           {
-              if (_root._singletonDependency39 == null)
-              {
-                  Dependency _singletonDependency39Temp;
-                  _singletonDependency39Temp = new Dependency();
-                  OnNewInstance<Dependency>(ref _singletonDependency39Temp, null, Lifetime.Singleton);
-                  Thread.MemoryBarrier();
-                  _root._singletonDependency39 = _singletonDependency39Temp;
-              }
+            Dependency _singletonDependency39Temp;
+            _singletonDependency39Temp = new Dependency();
+            OnNewInstance<Dependency>(ref _singletonDependency39Temp, null, Lifetime.Singleton);
+            Thread.MemoryBarrier();
+            _root._singletonDependency39 = _singletonDependency39Temp;
           }
+        }
       }
 
       Service transientService0 = new Service(_root._singletonDependency39!);

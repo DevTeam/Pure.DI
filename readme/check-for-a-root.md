@@ -86,7 +86,7 @@ partial class Composition
     {
       return new Service()
       {
-          Dependency = new Dependency()
+        Dependency = new Dependency()
       };
     }
   }

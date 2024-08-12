@@ -75,16 +75,16 @@ partial class Composition
     {
       if (!_root._singletonValueTuple40Created)
       {
-          lock (_lock)
+        lock (_lock)
+        {
+          if (!_root._singletonValueTuple40Created)
           {
-              if (!_root._singletonValueTuple40Created)
-              {
-                  Dependency perBlockDependency2 = new Dependency();
-                  _root._singletonValueTuple40 = (perBlockDependency2, perBlockDependency2);
-                  Thread.MemoryBarrier();
-                  _root._singletonValueTuple40Created = true;
-              }
+            Dependency perBlockDependency2 = new Dependency();
+            _root._singletonValueTuple40 = (perBlockDependency2, perBlockDependency2);
+            Thread.MemoryBarrier();
+            _root._singletonValueTuple40Created = true;
           }
+        }
       }
 
       Dependency perBlockDependency1 = new Dependency();

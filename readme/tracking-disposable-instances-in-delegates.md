@@ -92,38 +92,38 @@ partial class Composition
       var perResolveFunc42 = default(Func<Owned<IDependency>>);
       if (perResolveFunc42 == null)
       {
-          lock (_lock)
+        lock (_lock)
+        {
+          if (perResolveFunc42 == null)
           {
-              if (perResolveFunc42 == null)
+            perResolveFunc42 = new Func<Owned<IDependency>>(
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            () =>
+            {
+              var accumulator41 = new Owned();
+              Dependency transientDependency3 = new Dependency();
+              lock (_lock)
               {
-                  perResolveFunc42 = new Func<Owned<IDependency>>(
-                  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                  () =>
-                  {
-                      var accumulator41 = new Owned();
-                      Dependency transientDependency3 = new Dependency();
-                      lock (_lock)
-                      {
-                          accumulator41.Add(transientDependency3);
-                      }
-
-                      Owned<IDependency> perBlockOwned1;
-                      {
-                          Owned localOwned13 = accumulator41;
-                          IDependency localValue14 = transientDependency3;
-                          perBlockOwned1 = new Owned<IDependency>(localValue14, localOwned13);
-                      }
-
-                      lock (_lock)
-                      {
-                          accumulator41.Add(perBlockOwned1);
-                      }
-
-                      Owned<IDependency> localValue12 = perBlockOwned1;
-                      return localValue12;
-                  });
+                accumulator41.Add(transientDependency3);
               }
+
+              Owned<IDependency> perBlockOwned1;
+              {
+                Owned localOwned13 = accumulator41;
+                IDependency localValue14 = transientDependency3;
+                perBlockOwned1 = new Owned<IDependency>(localValue14, localOwned13);
+              }
+
+              lock (_lock)
+              {
+                accumulator41.Add(perBlockOwned1);
+              }
+
+              Owned<IDependency> localValue12 = perBlockOwned1;
+              return localValue12;
+            });
           }
+        }
       }
 
       return new Service(perResolveFunc42!);

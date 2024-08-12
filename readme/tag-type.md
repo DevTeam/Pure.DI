@@ -85,13 +85,13 @@ partial class Composition
     {
       if (_root._singletonXyzDependency40 == null)
       {
-          lock (_lock)
+        lock (_lock)
+        {
+          if (_root._singletonXyzDependency40 == null)
           {
-              if (_root._singletonXyzDependency40 == null)
-              {
-                  _root._singletonXyzDependency40 = new XyzDependency();
-              }
+            _root._singletonXyzDependency40 = new XyzDependency();
           }
+        }
       }
 
       return _root._singletonXyzDependency40!;
@@ -105,13 +105,13 @@ partial class Composition
     {
       if (_root._singletonXyzDependency40 == null)
       {
-          lock (_lock)
+        lock (_lock)
+        {
+          if (_root._singletonXyzDependency40 == null)
           {
-              if (_root._singletonXyzDependency40 == null)
-              {
-                  _root._singletonXyzDependency40 = new XyzDependency();
-              }
+            _root._singletonXyzDependency40 = new XyzDependency();
           }
+        }
       }
 
       return new Service(new AbcDependency(), _root._singletonXyzDependency40!, new AbcDependency());

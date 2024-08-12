@@ -92,7 +92,7 @@ partial class Composition
     {
       return new Service(new XyzDependency(), new XyzDependency(), new Consumer<string>(new AbcDependency()))
       {
-          Dependency3 = new AbcDependency()
+        Dependency3 = new AbcDependency()
       };
     }
   }

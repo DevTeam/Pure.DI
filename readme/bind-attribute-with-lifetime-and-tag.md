@@ -73,21 +73,21 @@ partial class Composition
     {
       if (_root._singletonIDependency0 == null)
       {
-          lock (_lock)
+        lock (_lock)
+        {
+          if (_root._singletonIDependency0 == null)
           {
-              if (_root._singletonIDependency0 == null)
-              {
-                  if (_root._singletonFacade39 == null)
-                  {
-                      _root._singletonFacade39 = new Facade();
-                  }
+            if (_root._singletonFacade39 == null)
+            {
+              _root._singletonFacade39 = new Facade();
+            }
 
-                  {
-                      Facade localInstance_1182D12726 = _root._singletonFacade39!;
-                      _root._singletonIDependency0 = localInstance_1182D12726.Dependency;
-                  }
-              }
+            {
+              Facade localInstance_1182D12726 = _root._singletonFacade39!;
+              _root._singletonIDependency0 = localInstance_1182D12726.Dependency;
+            }
           }
+        }
       }
 
       return new Service(_root._singletonIDependency0!);

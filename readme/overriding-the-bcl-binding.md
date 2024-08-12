@@ -67,9 +67,9 @@ partial class Composition
     {
       IDependency[] transient1 = new IDependency[]
       {
-          new AbcDependency(),
-          new XyzDependency(),
-          new AbcDependency()
+        new AbcDependency(),
+        new XyzDependency(),
+        new AbcDependency()
       };
       return new Service(transient1);
     }

@@ -61,19 +61,19 @@ partial class Composition
     {
       if (_root._singletonCompositionWithTagsInOtherProject39 == null)
       {
-          lock (_lock)
+        lock (_lock)
+        {
+          if (_root._singletonCompositionWithTagsInOtherProject39 == null)
           {
-              if (_root._singletonCompositionWithTagsInOtherProject39 == null)
-              {
-                  _root._singletonCompositionWithTagsInOtherProject39 = new Integration.CompositionWithTagsInOtherProject();
-              }
+            _root._singletonCompositionWithTagsInOtherProject39 = new Integration.CompositionWithTagsInOtherProject();
           }
+        }
       }
 
       Integration.IMyService transientIMyService1;
       {
-          Integration.CompositionWithTagsInOtherProject localInstance_1182D1276 = _root._singletonCompositionWithTagsInOtherProject39!;
-          transientIMyService1 = localInstance_1182D1276.MyService;
+        Integration.CompositionWithTagsInOtherProject localInstance_1182D1276 = _root._singletonCompositionWithTagsInOtherProject39!;
+        transientIMyService1 = localInstance_1182D1276.MyService;
       }
 
       return new Program(transientIMyService1);

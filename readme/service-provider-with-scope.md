@@ -105,13 +105,13 @@ partial class Composition: IDisposable
     {
       if (_root._singletonDependency39 == null)
       {
-          lock (_lock)
+        lock (_lock)
+        {
+          if (_root._singletonDependency39 == null)
           {
-              if (_root._singletonDependency39 == null)
-              {
-                  _root._singletonDependency39 = new Dependency();
-              }
+            _root._singletonDependency39 = new Dependency();
           }
+        }
       }
 
       return _root._singletonDependency39!;
@@ -125,19 +125,19 @@ partial class Composition: IDisposable
     {
       if (_scopedService40 == null)
       {
-          lock (_lock)
+        lock (_lock)
+        {
+          if (_scopedService40 == null)
           {
-              if (_scopedService40 == null)
-              {
-                  if (_root._singletonDependency39 == null)
-                  {
-                      _root._singletonDependency39 = new Dependency();
-                  }
+            if (_root._singletonDependency39 == null)
+            {
+              _root._singletonDependency39 = new Dependency();
+            }
 
-                  _scopedService40 = new Service(_root._singletonDependency39!);
-                  _disposables[_disposeIndex++] = _scopedService40;
-              }
+            _scopedService40 = new Service(_root._singletonDependency39!);
+            _disposables[_disposeIndex++] = _scopedService40;
           }
+        }
       }
 
       return _scopedService40!;

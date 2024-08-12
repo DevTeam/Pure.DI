@@ -69,9 +69,9 @@ partial class Composition
     {
       ReadOnlySpan<Dependency> transientReadOnlySpan1 = stackalloc Dependency[3]
       {
-          new Dependency(),
-          new Dependency(),
-          new Dependency()
+        new Dependency(),
+        new Dependency(),
+        new Dependency()
       };
       return new Service(transientReadOnlySpan1);
     }

@@ -68,19 +68,19 @@ partial class Composition
       var perResolveFunc42 = default(Func<IDependency>);
       if (perResolveFunc42 == null)
       {
-          lock (_lock)
+        lock (_lock)
+        {
+          if (perResolveFunc42 == null)
           {
-              if (perResolveFunc42 == null)
-              {
-                  perResolveFunc42 = new Func<IDependency>(
-                  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                  () =>
-                  {
-                      IDependency localValue30 = new Dependency();
-                      return localValue30;
-                  });
-              }
+            perResolveFunc42 = new Func<IDependency>(
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            () =>
+            {
+              IDependency localValue30 = new Dependency();
+              return localValue30;
+            });
           }
+        }
       }
 
       return new Service(perResolveFunc42!);
