@@ -4,10 +4,12 @@ namespace Pure.DI.Core.Code;
 internal sealed class RootMethodsBuilder(
     IBuildTools buildTools,
     ITypeResolver typeResolver,
-    [Tag(typeof(RootMethodsCommenter))] ICommenter<Root> rootCommenter)
+    [Tag(typeof(RootMethodsCommenter))] ICommenter<Root> rootCommenter,
+    IMarker marker,
+    CancellationToken cancellationToken)
     : IBuilder<CompositionCode, CompositionCode>
 {
-    private static readonly string[] NewLineSeparators = [Environment.NewLine];
+    private static readonly char[] NewLineSeparators = ['\n'];
 
     public CompositionCode Build(CompositionCode composition)
     {
@@ -19,7 +21,7 @@ internal sealed class RootMethodsBuilder(
         var code = composition.Code;
         var generatePrivateRoots = composition.Source.Source.Hints.IsResolveEnabled;
         var membersCounter = composition.MembersCount;
-        code.AppendLine("#region Composition Roots");
+        code.AppendLine("#region Roots");
         var isFirst = true;
         foreach (var root in composition.Roots.Where(i => generatePrivateRoots || i.IsPublic))
         {
@@ -87,7 +89,27 @@ internal sealed class RootMethodsBuilder(
 
         if ((root.Kind & RootKinds.Exposed) == RootKinds.Exposed)
         {
-            code.AppendLine($"[{Names.BindAttributeName}(typeof({root.Injection.Type}), {Names.GeneratorName}.Lifetime.Transient, {root.Injection.Tag.ValueToString()})]");
+            var tag = root.Injection.Tag;
+            if (tag == MdTag.ContextTag)
+            {
+                tag = default;
+            }
+
+            if (tag is not null)
+            {
+                code.AppendLine($"[{Names.BindAttributeName}(typeof({root.Injection.Type}), {Names.GeneratorName}.{nameof(Lifetime)}.{nameof(Lifetime.Transient)}, {tag.ValueToString()})]");
+            }
+            else
+            {
+                if (root.IsMethod && marker.IsMarkerBased(composition.Source.Source, root.Injection.Type))
+                {
+                    code.AppendLine($"[{Names.BindAttributeName}(typeof({root.Injection.Type}))]");
+                }
+                else
+                {
+                    code.AppendLine($"[{Names.BindAttributeName}]");
+                }
+            }
         }
         
         if (root.IsMethod)
@@ -161,8 +183,8 @@ internal sealed class RootMethodsBuilder(
                 if (composition.Source.Source.Hints.IsFormatCodeEnabled)
                 {
                     var codeText = string.Join(Environment.NewLine, root.Lines);
-                    var syntaxTree = CSharpSyntaxTree.ParseText(codeText);
-                    codeText = syntaxTree.GetRoot().NormalizeWhitespace().ToString();
+                    var syntaxTree = CSharpSyntaxTree.ParseText(codeText, cancellationToken: cancellationToken);
+                    codeText = syntaxTree.GetRoot().NormalizeWhitespace("\t", "\n").ToFullString();
                     var lines = codeText.Split(NewLineSeparators, StringSplitOptions.None);
                     foreach (var line in lines)
                     {
