@@ -57,14 +57,14 @@ internal class ClassCommenter(
                     var term = new StringBuilder();
                     if (root.IsPublic)
                     {
-                        term.Append(formatter.FormatRef(composition.Source.Source, root.Injection.Type));
+                        term.Append(formatter.FormatRef(root.Injection.Type));
                         term.Append(' ');
                         term.Append(formatter.FormatRef(root));
                     }
                     else
                     {
                         term.Append("Private composition root of type ");
-                        term.Append(formatter.FormatRef(composition.Source.Source, root.Injection.Type));
+                        term.Append(formatter.FormatRef(root.Injection.Type));
                         term.Append('.');
                     }
 
@@ -113,14 +113,14 @@ internal class ClassCommenter(
                 IReadOnlyCollection<string> CreateRootDescriptions(Root root) =>
                     root.Source.Comments.Count > 0
                         ? root.Source.Comments.Select(comments.Escape).ToList()
-                        : [$"Provides a composition root of type {formatter.FormatRef(composition.Source.Source, root.Node.Type)}."];
+                        : [$"Provides a composition root of type {formatter.FormatRef(root.Node.Type)}."];
             }
 
             var root = orderedRoots.FirstOrDefault(i => i.IsPublic);
             if (root is not null)
             {
                 code.AppendLine("/// <example>");
-                code.AppendLine($"/// This example shows how to get an instance of type {formatter.FormatRef(composition.Source.Source, root.Node.Type)} using the composition root {formatter.FormatRef(root)}:");
+                code.AppendLine($"/// This example shows how to get an instance of type {formatter.FormatRef(root.Node.Type)} using the composition root {formatter.FormatRef(root)}:");
                 code.AppendLine("/// <code>");
                 code.AppendLine($"/// {(composition.TotalDisposablesCount == 0 ? "" : "using ")}var composition = new {composition.Source.Source.Name.ClassName}({string.Join(", ", composition.Args.Where(i => i.Node.Arg?.Source.Kind == ArgKind.Class).Select(arg => arg.VariableDeclarationName))});");
                 code.AppendLine($"/// var instance = composition.{formatter.Format(root)};");

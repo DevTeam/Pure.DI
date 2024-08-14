@@ -70,14 +70,14 @@ internal class FactoryCodeBuilder(
 
                 switch (member)
                 {
-                    case IFieldSymbol fieldSymbol:
+                    case IFieldSymbol:
                         value = SyntaxFactory.MemberAccessExpression(
                             SyntaxKind.SimpleMemberAccessExpression,
                             instance,
                             SyntaxFactory.IdentifierName(member.Name));
                         break;
 
-                    case IPropertySymbol propertySymbol:
+                    case IPropertySymbol:
                         value = SyntaxFactory.MemberAccessExpression(
                             SyntaxKind.SimpleMemberAccessExpression,
                             instance,
@@ -97,7 +97,7 @@ internal class FactoryCodeBuilder(
                             // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
                             foreach (var typeArg in methodSymbol.TypeArguments)
                             {
-                                var argType = typeConstructor.ConstructReversed(setup, binding.SemanticModel.Compilation, typeArg);
+                                var argType = typeConstructor.ConstructReversed(typeArg);
                                 if (binding.TypeConstructor is { } bindingTypeConstructor)
                                 {
                                     argType = bindingTypeConstructor.Construct(setup, binding.SemanticModel.Compilation, argType);

@@ -1,7 +1,5 @@
 ﻿namespace Pure.DI.Core;
 
-using Microsoft.CodeAnalysis.Operations;
-
 internal interface IAttributes
 {
     T GetAttribute<TMdAttribute, T>(

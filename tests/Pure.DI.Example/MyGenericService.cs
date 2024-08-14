@@ -1,4 +1,5 @@
-﻿namespace Pure.DI.Integration;
+﻿// ReSharper disable UnusedMember.Global
+namespace Pure.DI.Integration;
 
 internal class MyGenericService<T>(IMyDependency dependency, int id) : IMyGenericService<T>
 {

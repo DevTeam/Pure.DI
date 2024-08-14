@@ -17,13 +17,15 @@ public partial class Generator
         .Hint(Hint.Resolve, "Off")
         
         // Roots
-            .Root<IEnumerable<Source>>("Api")
-            .Root<IObserversRegistry>("Observers")
-            .Root<IBuilder<IEnumerable<SyntaxUpdate>, Unit>>("CreateGenerator", kind: RootKinds.Private)
+            .Root<IEnumerable<Source>>(nameof(Api))
+            .Root<IObserversRegistry>(nameof(Observers))
+            .RootBind<Generation>(nameof(Generate), kind: RootKinds.Internal, "internal")
+                .To((IBuilder<ImmutableArray<SyntaxUpdate>, Generation> generator, ImmutableArray<SyntaxUpdate> updates) => generator.Build(updates))
 
             .RootArg<IGeneratorOptions>("options")
             .RootArg<IGeneratorSources>("sources")
             .RootArg<IGeneratorDiagnostic>("diagnostic")
+            .RootArg<ImmutableArray<SyntaxUpdate>>("updates")
             .RootArg<CancellationToken>("cancellationToken")
         
         // Transient

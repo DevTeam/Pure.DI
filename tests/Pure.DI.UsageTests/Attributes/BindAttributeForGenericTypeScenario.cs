@@ -10,6 +10,7 @@ $d=Bind attribute for a generic type
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable MemberCanBeMadeStatic.Global
 // ReSharper disable UnusedTypeParameter
+#pragma warning disable CA1822
 namespace Pure.DI.UsageTests.Basics.BindAttributeForGenericTypeScenario;
 
 using Xunit;
@@ -63,3 +64,4 @@ public class Scenario
         composition.SaveClassDiagram();
     }
 }
+#pragma warning restore CA1822

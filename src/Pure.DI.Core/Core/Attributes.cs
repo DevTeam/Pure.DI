@@ -1,8 +1,6 @@
 ﻿// ReSharper disable HeapView.DelegateAllocation
 namespace Pure.DI.Core;
 
-using Microsoft.CodeAnalysis.Operations;
-
 internal class Attributes(ISemantic semantic)
     : IAttributes
 {

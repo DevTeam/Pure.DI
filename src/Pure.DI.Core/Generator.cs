@@ -7,31 +7,12 @@ public sealed partial class Generator
         AnalyzerConfigOptionsProvider analyzerConfigOptionsProvider,
         in SourceProductionContext sourceProductionContext,
         in ImmutableArray<GeneratorSyntaxContext> changes,
-        CancellationToken cancellationToken)
-    {
-        if (changes.IsEmpty)
-        {
-            return;
-        }
-
+        CancellationToken cancellationToken) => 
+        // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
         Generate(
             new GeneratorOptions(parseOptions, analyzerConfigOptionsProvider),
             new GeneratorSources(sourceProductionContext),
             new GeneratorDiagnostic(sourceProductionContext),
-            changes.Select(change => new SyntaxUpdate(change.Node, change.SemanticModel)),
+            changes.Select(change => new SyntaxUpdate(change.Node, change.SemanticModel)).ToImmutableArray(),
             cancellationToken);
-    }
-
-    internal void Generate(
-        IGeneratorOptions options,
-        IGeneratorSources sources,
-        IGeneratorDiagnostic diagnostic,
-        IEnumerable<SyntaxUpdate> updates,
-        CancellationToken cancellationToken) =>
-        CreateGenerator(
-                options: options,
-                sources: sources,
-                diagnostic: diagnostic,
-                cancellationToken: cancellationToken)
-            .Build(updates);
 }

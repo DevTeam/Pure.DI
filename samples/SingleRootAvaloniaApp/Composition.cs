@@ -7,7 +7,6 @@ namespace AvaloniaApp;
 using Clock.Models;
 using Clock.ViewModels;
 using Pure.DI;
-using Views;
 using static Pure.DI.Lifetime;
 
 internal partial class Composition

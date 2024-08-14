@@ -42,7 +42,7 @@ class Service(IDependency dependency) : IService
 
 partial class Composition
 {
-    void Setup() =>
+    static void Setup() =>
         DI.Setup()
             .Bind().To<Dependency>()
             .Bind().To<Service>()

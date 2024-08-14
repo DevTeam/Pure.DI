@@ -1,4 +1,5 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable NotAccessedPositionalProperty.Local
 namespace Pure.DI.Core;
 
 internal class Registry<T>: IRegistryManager<T>, IRegistry<T>

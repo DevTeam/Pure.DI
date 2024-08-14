@@ -41,8 +41,8 @@ partial class Composition
     // Check that the root can be resolved by Resolve methods
     internal static bool HasRoot(Type type, object? key = default) =>
         Roots.Contains((type, key));
-        
-    void Setup() =>
+
+    static void Setup() =>
         DI.Setup()
             // Specifies to use the partial OnNewRoot method
             // to register each root

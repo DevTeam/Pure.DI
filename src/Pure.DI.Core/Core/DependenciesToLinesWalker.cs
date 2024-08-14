@@ -79,5 +79,6 @@ internal sealed class DependenciesToLinesWalker(int indent)
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
+    // ReSharper disable once NotDisposedResourceIsReturned
     public IEnumerator<string> GetEnumerator() => _lb.GetEnumerator();
 }

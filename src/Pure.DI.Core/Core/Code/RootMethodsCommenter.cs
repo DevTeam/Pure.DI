@@ -29,7 +29,7 @@ internal class RootMethodsCommenter(
                 }
                 else
                 {
-                    code.AppendLine($"/// Provides a composition root of type {formatter.FormatRef(composition.Source.Source, root.Node.Type)}.");
+                    code.AppendLine($"/// Provides a composition root of type {formatter.FormatRef(root.Node.Type)}.");
                 }
             }
             finally
@@ -43,7 +43,7 @@ internal class RootMethodsCommenter(
             }
 
             code.AppendLine("/// <example>");
-            code.AppendLine($"/// This example shows how to get an instance of type {formatter.FormatRef(composition.Source.Source, root.Node.Type)}:");
+            code.AppendLine($"/// This example shows how to get an instance of type {formatter.FormatRef(root.Node.Type)}:");
             code.AppendLine("/// <code>");
             code.AppendLine($"/// {(composition.TotalDisposablesCount == 0 ? "" : "using ")}var composition = new {composition.Source.Source.Name.ClassName}({string.Join(", ", composition.Args.Where(i => i.Node.Arg?.Source.Kind == ArgKind.Class).Select(arg => arg.VariableDeclarationName))});");
             code.AppendLine($"/// var instance = composition.{formatter.Format(root)};");

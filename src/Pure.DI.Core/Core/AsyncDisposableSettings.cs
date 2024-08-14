@@ -8,7 +8,4 @@ internal class AsyncDisposableSettings(ICache<Compilation, INamedTypeSymbol?> as
         asyncDisposableTypes.Get(
             compilation,
             i => i.GetTypeByMetadataName(Names.IAsyncDisposableInterfaceShortName));
-
-    public bool IsEnabled(Compilation compilation) => 
-        TryGetAsyncDisposableType(compilation) is not null;
 }

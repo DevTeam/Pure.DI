@@ -159,7 +159,7 @@ internal sealed class TypeConstructor(IMarker marker) : ITypeConstructor
         }
     }
 
-    public ITypeSymbol ConstructReversed(MdSetup setup, Compilation compilation, ITypeSymbol type)
+    public ITypeSymbol ConstructReversed(ITypeSymbol type)
     {
         if (_reversedMap.Count == 0)
         {

@@ -72,7 +72,7 @@ internal class Formatter(IComments comments)
         return $"<see cref=\"{text}\"/>";
     }
 
-    public string FormatRef(MdSetup setup, ITypeSymbol type)
+    public string FormatRef(ITypeSymbol type)
     {
 #if ROSLYN4_8_OR_GREATER
         var originalDefinitionTypeName = type.OriginalDefinition.ToDisplayString(NullableFlowState.None, RefFormat);

@@ -22,7 +22,7 @@ DI.Setup(nameof(Composition))
     .Bind().To<Dependency>()
     .Root<IDependency>("DependencyRoot")
     .Bind().To<Service>()
-    .Root<IService>("Root");;
+    .Root<IService>("Root");
 
 var composition = new Composition();
 var service = composition.Root;

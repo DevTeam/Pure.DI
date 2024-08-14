@@ -10,10 +10,15 @@ internal sealed class Generator(
     IBuilder<IEnumerable<SyntaxUpdate>, IEnumerable<MdSetup>> metadataBuilder,
     Func<IBuilder<MdSetup, Unit>> codeBuilderFactory,
     CancellationToken cancellationToken)
-    : IBuilder<IEnumerable<SyntaxUpdate>, Unit>
+    : IBuilder<ImmutableArray<SyntaxUpdate>, Generation>
 {
-    public Unit Build(IEnumerable<SyntaxUpdate> updates)
+    public Generation Build(ImmutableArray<SyntaxUpdate> updates)
     {
+        if (updates.IsDefaultOrEmpty)
+        {
+            return new Generation();
+        }
+
         if (globalOptions.TryGetProfilePath(out var profilePath))
         {
             profiler.Profiling(profilePath);
@@ -29,10 +34,10 @@ internal sealed class Generator(
             logObserver.OnCompleted();
         }
 
-        return Unit.Shared;
+        return new Generation();
     }
     
-    private void ProcessUpdates(IEnumerable<SyntaxUpdate> updates)
+    private void ProcessUpdates(ImmutableArray<SyntaxUpdate> updates)
     {
         foreach (var setup in metadataBuilder.Build(updates))
         {

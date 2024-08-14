@@ -15,7 +15,7 @@ namespace Pure.DI.UsageTests.Advanced.GlobalCompositionsScenario;
 // {
 class MyGlobalComposition
 {
-    void Setup() =>
+    static void Setup() =>
         DI.Setup(kind: CompositionKind.Global)
             .Hint(Hint.ToString, "Off")
             .Hint(Hint.FormatCode, "Off");
@@ -23,7 +23,7 @@ class MyGlobalComposition
 
 class MyGlobalComposition2
 {
-    void Setup() =>
+    static void Setup() =>
         DI.Setup(kind: CompositionKind.Global)
             .Hint(Hint.ToString, "On");
 }

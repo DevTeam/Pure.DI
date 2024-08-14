@@ -51,7 +51,7 @@ class Service(Func<Owned<IDependency>> dependencyFactory)
 
 partial class Composition
 {
-    void Setup() =>
+    static void Setup() =>
         DI.Setup()
             .Bind<IDependency>().To<Dependency>()
             .Bind().To<Service>()

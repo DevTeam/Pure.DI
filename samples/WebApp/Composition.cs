@@ -12,7 +12,7 @@ using static Pure.DI.Lifetime;
 
 internal partial class Composition : ServiceProviderFactory<Composition>
 {
-    void Setup() => DI.Setup()
+    static void Setup() => DI.Setup()
         .DependsOn(Base)
         // Specifies not to attempt to resolve types whose fully qualified name
         // begins with Microsoft.Extensions., Microsoft.AspNetCore.

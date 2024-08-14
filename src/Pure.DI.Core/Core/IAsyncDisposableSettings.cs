@@ -3,6 +3,4 @@
 internal interface IAsyncDisposableSettings
 {
     INamedTypeSymbol? TryGetAsyncDisposableType(Compilation compilation);
-
-    bool IsEnabled(Compilation compilation);
 }

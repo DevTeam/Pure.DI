@@ -221,12 +221,12 @@ internal sealed class SetupsBuilder(
                     if (methodSymbol.IsGenericMethod)
                     {
                         typeConstructor.TryBind(setup, contractType, methodSymbol.ReturnType);
-                        contractType = typeConstructor.ConstructReversed(setup, semanticModel.Compilation, contractType);
+                        contractType = typeConstructor.ConstructReversed(contractType);
 
                         // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
                         foreach (var parameter in methodSymbol.Parameters)
                         {
-                            var paramType = typeConstructor.ConstructReversed(setup, binding.SemanticModel.Compilation, parameter.Type);
+                            var paramType = typeConstructor.ConstructReversed(parameter.Type);
                             resolvers.Add(CreateResolver(typeConstructor, parameter.Name, paramType, MdTag.ContextTag, ref position));
                         }
                     }

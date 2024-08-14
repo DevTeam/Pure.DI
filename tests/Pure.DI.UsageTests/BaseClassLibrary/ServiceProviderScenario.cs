@@ -34,7 +34,7 @@ class Service(IDependency dependency) : IService
 
 partial class Composition: IServiceProvider
 {
-    void Setup() =>
+    static void Setup() =>
         DI.Setup()
             // The following hint overrides the name of the
             // "object Resolve(Type type)" method in "GetService",

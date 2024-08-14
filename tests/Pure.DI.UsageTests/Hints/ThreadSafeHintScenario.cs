@@ -41,7 +41,7 @@ public class Scenario
             .Hint(ThreadSafe, "Off")
             .Bind().To<Dependency>()
             .Bind().To<Service>()
-            .Root<IService>("Root");;
+            .Root<IService>("Root");
 
         var composition = new Composition();
         var service = composition.Root;

@@ -28,7 +28,7 @@ class Program(Func<IService> serviceFactory)
 
 partial class Composition
 {
-    void Setup() =>
+    static void Setup() =>
         DI.Setup()
             // This hint indicates to not generate methods such as Resolve
             .Hint(Hint.Resolve, "Off")

@@ -6,5 +6,5 @@ internal interface ITypeConstructor
 
     ITypeSymbol Construct(MdSetup setup, Compilation compilation, ITypeSymbol type);
     
-    ITypeSymbol ConstructReversed(MdSetup setup, Compilation compilation, ITypeSymbol type);
+    ITypeSymbol ConstructReversed(ITypeSymbol type);
 }

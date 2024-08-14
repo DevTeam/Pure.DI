@@ -61,5 +61,6 @@ internal sealed class MetadataToLinesWalker(int indent) : MetadataWalkerBase, IE
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
+    // ReSharper disable once NotDisposedResourceIsReturned
     public IEnumerator<string> GetEnumerator() => _lb.GetEnumerator();
 }

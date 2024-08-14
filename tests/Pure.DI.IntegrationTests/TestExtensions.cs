@@ -28,6 +28,7 @@ using Generator = Generator;
 
 public static class TestExtensions
 {
+    [SuppressMessage("Performance", "CA1806:Не игнорируйте результаты метода")]
     internal static async Task<Result> RunAsync(this string setupCode, Options? options = default)
     {
         var stdOut = new List<string>();
@@ -70,7 +71,8 @@ public static class TestExtensions
         var logEntryObserver = new Observer<LogEntry>();
         using var logEntryObserverToken = generator.Observers.Register(logEntryObserver);
 
-        generator.Generate(contextOptions.Object, contextProducer.Object, contextDiagnostic.Object, updates, CancellationToken.None);
+        // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
+        generator.Generate(contextOptions.Object, contextProducer.Object, contextDiagnostic.Object, [..updates], CancellationToken.None);
 
         var logs = logEntryObserver.Values;
         var errors = logs.Where(i => i.Severity == DiagnosticSeverity.Error).ToImmutableArray();

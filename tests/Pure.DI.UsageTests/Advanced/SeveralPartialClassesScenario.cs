@@ -29,7 +29,7 @@ class Service(IDependency dependency) : IService;
 partial class Composition
 {
     // This method will not be called in runtime
-    void Setup1() =>
+    static void Setup1() =>
         DI.Setup()
             .Bind<IDependency>().To<Dependency>();
 }
@@ -37,7 +37,7 @@ partial class Composition
 partial class Composition
 {
     // This method will not be called in runtime
-    void Setup2() =>
+    static void Setup2() =>
         DI.Setup()
             .Bind<IService>().To<Service>();
 }
@@ -45,7 +45,7 @@ partial class Composition
 partial class Composition
 {
     // This method will not be called in runtime
-    private void Setup3() =>
+    private static void Setup3() =>
         DI.Setup()
             .Root<IService>("Root");
 }

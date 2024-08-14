@@ -40,7 +40,7 @@ partial class Composition: ServiceProviderFactory<Composition>
     public IServiceCollection ServiceCollection =>
         CreateServiceCollection(this);
 
-    void Setup() =>
+    static void Setup() =>
         DI.Setup()
             .DependsOn(Base)
             .Bind<IDependency>("Dependency Key").As(Lifetime.Singleton).To<Dependency>()

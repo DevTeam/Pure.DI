@@ -2046,7 +2046,7 @@ namespace Sample
         // Given
 
         // When
-        var result = await $$"""
+        var result = await """
     using System;
     using Pure.DI;
     using System.Collections.Generic;

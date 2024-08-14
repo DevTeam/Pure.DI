@@ -58,7 +58,7 @@ internal partial class Composition
     // [Conditional("DI")] attribute avoids generating IL code for the method that follows it.
     // Since this method is needed only at the compile time.
     [Conditional("DI")]
-    void Setup() => DI.Setup()
+    static void Setup() => DI.Setup()
         // Models a random subatomic event that may or may not occur
         .Bind().As(Singleton).To<Random>()
         // Quantum superposition of two states: Alive or Dead
