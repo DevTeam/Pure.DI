@@ -1,8 +1,10 @@
 ﻿namespace AvaloniaApp;
 
 using Clock.ViewModels;
+using Pure.DI;
 using Views;
 
-internal record Root(
-    Lazy<MainWindow> MainWindow,
+internal readonly record struct Root(
+    IOwned Owned,
+    Func<MainWindow> CreateMainWindow,
     IClockViewModel ClockViewModel);

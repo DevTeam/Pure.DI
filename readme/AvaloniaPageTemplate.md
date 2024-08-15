@@ -59,13 +59,25 @@ public class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop
-            && Resources["Composition"] is Composition composition)
+        if (Resources[nameof(Composition)] is Composition composition)
         {
-            // Assignment of the main window
-            desktop.MainWindow = composition.MainWindow;
+            // Assigns the main window/view
+            switch (ApplicationLifetime)
+            {
+                case IClassicDesktopStyleApplicationLifetime desktop:
+                    desktop.MainWindow = composition.MainWindow;
+                    break;
+
+                case ISingleViewApplicationLifetime singleViewPlatform:
+                    singleViewPlatform.MainView = composition.MainWindow;
+                    break;
+            }
+
             // Handles disposables
-            desktop.Exit += (_, _) => composition.Dispose();
+            if (ApplicationLifetime is IControlledApplicationLifetime controlledApplicationLifetime)
+            {
+                controlledApplicationLifetime.Exit += (_, _) => composition.Dispose();
+            }
         }
 
         base.OnFrameworkInitializationCompleted();
