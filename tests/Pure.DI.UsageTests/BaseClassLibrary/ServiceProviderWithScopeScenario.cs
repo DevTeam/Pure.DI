@@ -36,7 +36,7 @@ class Service(IDependency dependency) : IService
 partial class Composition
     : IKeyedServiceProvider, IServiceScopeFactory, IServiceScope
 {
-    void Setup() =>
+    static void Setup() =>
         // The following hint overrides the name of the
         // "object Resolve(Type type)" method in "GetService",
         // which implements the "IServiceProvider" interface:

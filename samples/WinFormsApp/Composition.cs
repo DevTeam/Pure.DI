@@ -1,6 +1,7 @@
 // ReSharper disable UnusedMember.Local
 // ReSharper disable UnusedMember.Global
 // ReSharper disable RedundantNameQualifier
+// ReSharper disable ArrangeTypeMemberModifiers
 namespace WinFormsApp;
 
 using System;
@@ -11,21 +12,22 @@ using static Pure.DI.Lifetime;
 
 internal partial class Composition
 {
-    private static void Setup() => DI.Setup()
-        .Root<FormMain>(nameof(FormMain))
+    void Setup() => DI.Setup()
+        // Provides the composition root for main form
+        .Root<Owned<FormMain>>(nameof(Root))
 
         // Forms
         .Bind().As(Singleton).To<FormMain>()
         
         // View Models
-        .Bind().As(Singleton).To<ClockViewModel>()
+        .Bind().To<ClockViewModel>()
 
         // Models
         .Bind().To<Log<TT>>()
         .Bind().To(_ => TimeSpan.FromSeconds(1))
-        .Bind().As(Singleton).To<Clock.Models.Timer>()
+        .Bind().To<Clock.Models.Timer>()
         .Bind().As(PerBlock).To<SystemClock>()
     
         // Infrastructure
-        .Bind().As(Singleton).To<Dispatcher>();
+        .Bind().To<Dispatcher>();
 }

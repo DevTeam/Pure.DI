@@ -4,6 +4,9 @@
 #pragma warning disable
 namespace Pure.DI.Abstractions
 {
+#if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
+    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
     internal static class Composition
     {
         [global::System.Diagnostics.Conditional("A2768DE22DE3E430C9653990D516CC9B")]

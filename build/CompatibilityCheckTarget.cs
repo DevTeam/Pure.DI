@@ -188,6 +188,7 @@ internal class CompatibilityCheckTarget(
                     .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
                 await new DotNetBuild()
+                    .WithShortName($"Build for compatibility check of {framework} for template {templateName}")
                     .WithWorkingDirectory(tempDirForFramework)
                     .WithNoRestore(true)
                     .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();

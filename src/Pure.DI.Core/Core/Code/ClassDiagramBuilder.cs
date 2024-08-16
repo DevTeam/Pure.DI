@@ -168,7 +168,7 @@ internal sealed class ClassDiagramBuilder(
         var rootArgsStr = "";
         if (root.IsMethod)
         {
-            rootArgsStr = $"({string.Join(", ", root.Args.Select(arg => $"{typeResolver.Resolve(setup, arg.InstanceType)} {arg.VariableDeclarationName}"))})";
+            rootArgsStr = $"({string.Join(", ", root.Args.Select(arg => $"{ResolveTypeName(setup, arg.InstanceType)} {arg.VariableDeclarationName}"))})";
         }
 
         var displayName = root.IsPublic ? root.DisplayName : "_";
@@ -258,7 +258,7 @@ internal sealed class ClassDiagramBuilder(
     {
         if (symbol is ITypeSymbol typeSymbol && marker.IsMarker(setup, typeSymbol))
         {
-            return typeResolver.Resolve(setup, typeSymbol).Name;
+            return ResolveTypeName(setup, typeSymbol);
         }
         
         return symbol switch
@@ -269,6 +269,12 @@ internal sealed class ClassDiagramBuilder(
         };
         
         string FormatSymbolLocal(ITypeSymbol i) => FormatSymbol(setup, i, options);
+    }
+
+    private string ResolveTypeName(MdSetup setup, ITypeSymbol typeSymbol)
+    {
+        var typeName = typeResolver.Resolve(setup, typeSymbol).Name;
+        return typeName.StartsWith(Names.GlobalNamespacePrefix) ? typeName[Names.GlobalNamespacePrefix.Length..] : typeName;
     }
 
     private static string Format(Accessibility accessibility) =>

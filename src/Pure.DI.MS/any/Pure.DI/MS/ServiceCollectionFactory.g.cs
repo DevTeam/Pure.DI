@@ -15,7 +15,9 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 /// Creates a service collection <see cref="Microsoft.Extensions.DependencyInjection.ServiceCollection"/> based resolvers.
 /// </summary>
 /// <typeparam name="TComposition">The composition class itself.</typeparam>
+#if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
 [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
 internal class ServiceCollectionFactory<TComposition>
 {
     private static readonly Func<TComposition, InstanceResolver, ServiceDescriptor> ServiceDescriptorProvider;

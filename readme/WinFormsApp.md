@@ -10,18 +10,19 @@ The composition definition is in the file [Composition.cs](/samples/WinFormsApp/
 internal partial class Composition
 {
     void Setup() => DI.Setup()
-        .Root<FormMain>(nameof(FormMain))
+        // Provides the composition root for main form
+        .Root<Owned<FormMain>>(nameof(Root))
 
         // Forms
         .Bind().As(Singleton).To<FormMain>()
         
         // View Models
-        .Bind().As(Singleton).To<ClockViewModel>()
+        .Bind().To<ClockViewModel>()
 
         // Models
         .Bind().To<Log<TT>>()
         .Bind().To(_ => TimeSpan.FromSeconds(1))
-        .Bind().As(Singleton).To<Clock.Models.Timer>()
+        .Bind().To<Clock.Models.Timer>()
         .Bind().As(PerBlock).To<SystemClock>()
     
         // Infrastructure
@@ -43,7 +44,8 @@ public static class Program
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
         using var composition = new Composition();
-        Application.Run(composition.FormMain);
+        using var root = composition.Root;
+        Application.Run(root.Value);
     }
 }
 ```

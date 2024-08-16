@@ -11,18 +11,18 @@ internal partial class Composition
 {
     void Setup() => DI.Setup()
         // Provides the composition root for main form
-        .Root<FormMain>(nameof(FormMain))
+        .Root<Owned<FormMain>>(nameof(Root))
 
         // Forms
         .Bind().As(Singleton).To<FormMain>()
         
         // View Models
-        .Bind().As(Singleton).To<ClockViewModel>()
+        .Bind().To<ClockViewModel>()
 
         // Models
         .Bind().To<Log<TT>>()
         .Bind().To(_ => TimeSpan.FromSeconds(1))
-        .Bind().As(Singleton).To<Clock.Models.Timer>()
+        .Bind().To<Clock.Models.Timer>()
         .Bind().As(PerBlock).To<SystemClock>()
     
         // Infrastructure
@@ -45,7 +45,8 @@ public static class Program
         // see https://aka.ms/applicationconfiguration.
         ApplicationConfiguration.Initialize();
         using var composition = new Composition();
-        Application.Run(composition.FormMain);
+        using var root = composition.Root;
+        Application.Run(root.Value);
     }
 }
 ```

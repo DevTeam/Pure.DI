@@ -2,17 +2,7 @@
 #if !PUREDI_API_SUPPRESSION || PUREDI_API_V2
 #pragma warning disable
 
-#if !NET40_OR_GREATER && !NETSTANDARD2_0_OR_GREATER && !NETCOREAPP2_0_OR_GREATER && !NET5_0_OR_GREATER
-namespace System.Diagnostics.CodeAnalysis
-{
-    // ReSharper disable UnusedType.Global
-    [global::System.AttributeUsage(global::System.AttributeTargets.Assembly | global::System.AttributeTargets.Class | global::System.AttributeTargets.Constructor | global::System.AttributeTargets.Event | global::System.AttributeTargets.Method | global::System.AttributeTargets.Property | global::System.AttributeTargets.Struct, AllowMultiple = false, Inherited = false)]
-    internal sealed class ExcludeFromCodeCoverageAttribute : global::System.Attribute
-    {
-    }
-}
-#endif
-
+#if !PUREDI_API_FUNC_SUPPRESSION
 namespace System
 {
 #if NET20
@@ -29,6 +19,7 @@ namespace System
     internal delegate TResult Func<in T1, in T2, in T3, in T4, in T5, in T6, in T7, in T8, out TResult>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8);
 #endif
 }
+#endif
 
 namespace Pure.DI
 {
@@ -820,7 +811,9 @@ namespace Pure.DI
     /// </example>
     /// </summary>
     [global::System.AttributeUsage(global::System.AttributeTargets.Class | global::System.AttributeTargets.Interface | global::System.AttributeTargets.Struct)]
+#if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
     internal sealed class GenericTypeArgumentAttribute : global::System.Attribute { }
     
     /// <summary>
@@ -877,7 +870,9 @@ namespace Pure.DI
     /// <seealso cref="TagAttribute"/>
     /// <seealso cref="TypeAttribute"/>
     [global::System.AttributeUsage(global::System.AttributeTargets.Constructor | global::System.AttributeTargets.Method | global::System.AttributeTargets.Property | global::System.AttributeTargets.Field, AllowMultiple = false)]
+#if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
     internal class OrdinalAttribute : global::System.Attribute
     {
         /// <summary>
@@ -941,7 +936,9 @@ namespace Pure.DI
     /// <seealso cref="OrdinalAttribute"/>
     /// <seealso cref="TypeAttribute"/>
     [global::System.AttributeUsage(global::System.AttributeTargets.Parameter | global::System.AttributeTargets.Property | global::System.AttributeTargets.Field, AllowMultiple = false)]
+#if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
     internal class TagAttribute : global::System.Attribute
     {
         /// <summary>
@@ -999,7 +996,9 @@ namespace Pure.DI
     /// <seealso cref="TagAttribute"/>
     /// <seealso cref="OrdinalAttribute"/>
     [global::System.AttributeUsage(global::System.AttributeTargets.Parameter | global::System.AttributeTargets.Property | global::System.AttributeTargets.Field, AllowMultiple = false)]
+#if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
     internal class TypeAttribute : global::System.Attribute
     {
         /// <summary>
@@ -1036,7 +1035,9 @@ namespace Pure.DI
     /// </example>
     /// </summary>
     [global::System.AttributeUsage(global::System.AttributeTargets.Property | global::System.AttributeTargets.Method | global::System.AttributeTargets.Field)]
+#if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
     internal class BindAttribute : global::System.Attribute
     {
         /// <summary>
@@ -1128,6 +1129,9 @@ namespace Pure.DI
     /// <summary>
     /// Represents well known tags.
     /// </summary>
+#if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
+    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
     internal class Tag
     {
         private static readonly Tag Shared = new Tag();
@@ -1234,6 +1238,9 @@ namespace Pure.DI
     /// <summary>
     /// Gives the ability to manage disposable objects.
     /// </summary>
+#if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
+    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
     internal sealed partial class Owned : global::System.Collections.Generic.List<object>, global::Pure.DI.IOwned
     {
         /// <inheritdoc />
@@ -1367,8 +1374,11 @@ namespace Pure.DI
         {
             return _owned.DisposeAsync();
         }
-#endif        
-        
+#endif
+
+#if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
+        [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
         private class DebugView
         {
             private readonly global::Pure.DI.Owned<T> _owned;
@@ -2441,7 +2451,9 @@ namespace Pure.DI
     /// An API for a Dependency Injection setup.
     /// </summary>
     /// <seealso cref="Setup"/>
+#if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
     internal static class DI
     {
         /// <summary>
@@ -2475,6 +2487,9 @@ namespace Pure.DI
             return Configuration.Shared;
         }
 
+#if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
+        [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
         private sealed class Configuration : IConfiguration
         {
             public static readonly IConfiguration Shared = new Configuration();
@@ -2764,7 +2779,9 @@ namespace Pure.DI
     /// <summary>
     /// For internal use.
     /// </summary>
+#if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
     [global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
     internal struct Pair<TKey, TValue>
     {
@@ -2786,7 +2803,9 @@ namespace Pure.DI
     /// <summary>
     /// For internal use. 
     /// </summary>
+#if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
     internal static class Buckets<TKey, TValue>
     {
         public static uint GetDivisor(uint count)

@@ -12,6 +12,7 @@ public static class Program
         // see https://aka.ms/applicationconfiguration.
         ApplicationConfiguration.Initialize();
         using var composition = new Composition();
-        Application.Run(composition.FormMain);
+        using var root = composition.Root;
+        Application.Run(root.Value);
     }
 }

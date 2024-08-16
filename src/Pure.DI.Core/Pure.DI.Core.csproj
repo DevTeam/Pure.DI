@@ -25,4 +25,10 @@
         </Compile>
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="Components\GenericTypeArguments.g.tt">
+        <Generator>TextTemplatingFileGenerator</Generator>
+      </None>
+    </ItemGroup>
+
 </Project>
