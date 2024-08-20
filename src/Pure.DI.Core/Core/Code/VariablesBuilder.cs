@@ -102,7 +102,7 @@ internal class VariablesBuilder(
                             {
                                 continue;
                             }
-
+                            
                             var hasCycle = pathIds.Contains(depNode.Binding.Id);
                             var isAlreadyCreated = false;
                             if (hasCycle)

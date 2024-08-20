@@ -15,6 +15,7 @@ internal static class LogId
     public const string WarningMetadataDefect = "DIW001";
     public const string WarningRootArgInResolveMethod = "DIW002";
     public const string WarningTypeArgInResolveMethod = "DIW003";
+    public const string WarningLifetimeDefect = "DIW004";
 
     // Info
     public const string InfoGenerationInterrupted = "DII000";

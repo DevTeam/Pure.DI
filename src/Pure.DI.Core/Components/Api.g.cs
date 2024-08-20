@@ -54,28 +54,6 @@ namespace Pure.DI
         /// </example>
         /// </summary>
         Transient,
-
-        /// <summary>
-        /// Ensures that there will be a single instance of the dependency for each composition.
-        /// <example>
-        /// <code>
-        /// DI.Setup("Composition")
-        ///     .Bind&lt;IDependency&gt;().As(Lifetime.Singleton).To&lt;Dependency&gt;();
-        /// </code>
-        /// </example>
-        /// </summary>
-        Singleton,
-
-        /// <summary>
-        /// Guarantees that there will be a single instance of the dependency for each root of the composition.
-        /// <example>
-        /// <code>
-        /// DI.Setup("Composition")
-        ///     .Bind&lt;IDependency&gt;().As(Lifetime.PerResolve).To&lt;Dependency&gt;();
-        /// </code>
-        /// </example>
-        /// </summary>
-        PerResolve,
         
         /// <summary>
         /// Does not guarantee that there will be a single instance of the dependency for each root of the composition, but is useful to reduce the number of instances of type.
@@ -89,6 +67,17 @@ namespace Pure.DI
         PerBlock,
         
         /// <summary>
+        /// Guarantees that there will be a single instance of the dependency for each root of the composition.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IDependency&gt;().As(Lifetime.PerResolve).To&lt;Dependency&gt;();
+        /// </code>
+        /// </example>
+        /// </summary>
+        PerResolve,
+        
+        /// <summary>
         /// Ensures that there will be a single instance of the dependency for each scope.
         /// <example>
         /// <code>
@@ -97,7 +86,18 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        Scoped
+        Scoped,
+        
+        /// <summary>
+        /// Ensures that there will be a single instance of the dependency for each composition.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IDependency&gt;().As(Lifetime.Singleton).To&lt;Dependency&gt;();
+        /// </code>
+        /// </example>
+        /// </summary>
+        Singleton
     }
     
     /// <summary>
