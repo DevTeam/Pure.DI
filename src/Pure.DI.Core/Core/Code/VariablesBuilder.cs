@@ -57,7 +57,6 @@ internal class VariablesBuilder(
                         }
 
                         var pathIds = new HashSet<int>();
-                        var hasLazy = false;
                         ICollection<Accumulator>? accumulators = default;
                         var isRoot = true;
                         foreach (var pathItem in currentStatement.GetPath())
@@ -69,7 +68,6 @@ internal class VariablesBuilder(
                                 continue;
                             }
                             
-                            hasLazy = true;
                             if (accumulators != default)
                             {
                                 continue;
@@ -107,12 +105,6 @@ internal class VariablesBuilder(
                             var isAlreadyCreated = false;
                             if (hasCycle)
                             {
-                                if (!hasLazy)
-                                {
-                                    var pathStr = string.Join(" <-- ", currentStatement.GetPath().Reverse().Select(i => i.Current.Node).Concat(Enumerable.Repeat(depNode, 1)).Select(i => i.Type));
-                                    throw new CompileErrorException($"Cyclic dependency has been found: {pathStr}.", depNode.Binding.Source.GetLocation(), LogId.ErrorCyclicDependency);
-                                }
-
                                 isAlreadyCreated = nodeInfo.IsLazy(depNode);
                             }
 

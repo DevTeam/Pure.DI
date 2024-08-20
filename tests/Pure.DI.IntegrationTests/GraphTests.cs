@@ -1282,7 +1282,7 @@ namespace Sample
     }
 
     internal partial class Composition
-    {                   
+    {
         void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IDependency1>().To<Dependency1>()
             .Bind<IDependency2>().To<Dependency2>()
@@ -1290,7 +1290,7 @@ namespace Sample
             .Root<IService>("Service"); 
     }
 
-    public class Program { public static void Main() { } }       
+    public class Program { public static void Main() { } }
 }
 """.RunAsync();
 

@@ -9,6 +9,7 @@ internal class PathsWalker<TContext> : IPathsWalker<TContext>
         IPathVisitor<TContext> visitor,
         CancellationToken cancellationToken)
     {
+        HashSet<DependencyNode> processedNodes = [];
         var paths = new Stack<ImmutableArray<DependencyNode>>();
         paths.Push(ImmutableArray.Create(root));
         while (paths.TryPop(out var path))
@@ -30,13 +31,21 @@ internal class PathsWalker<TContext> : IPathsWalker<TContext>
                     break;
                 }
 
+                if (!dependency.IsResolved)
+                {
+                    continue;
+                }
+
                 var visitingPath = path.Add(dependency.Source);
                 if (!visitor.Visit(ctx, visitingPath))
                 {
                     continue;
                 }
                 
-                paths.Push(visitingPath);
+                if (processedNodes.Add(dependency.Source))
+                {
+                    paths.Push(visitingPath);
+                }
             }
         }
     }

@@ -35,7 +35,6 @@ public partial class Generator
             .Bind().To<TypeConstructor>()
             .Bind<IEqualityComparer<string>>().To(_ => StringComparer.InvariantCultureIgnoreCase)
             .Bind().To<BindingBuilder>()
-            .Bind(Tag.Type).To<LifetimesValidatorVisitor>()
         
         // Singleton
             .DefaultLifetime(Singleton)
@@ -66,10 +65,13 @@ public partial class Generator
             .Bind().To<Attributes>()
             .Bind().To<Compilations>()
             .Bind().To<PathsWalker<TT>>()
+            .Bind(Tag.Type).To<LifetimesValidatorVisitor>()
+            .Bind(Tag.Type).To<CyclicDependencyValidatorVisitor>()
 
             // Validators
             .Bind(Tag.Type).To<MetadataValidator>()
             .Bind(Tag.Type).To<DependencyGraphValidator>()
+            .Bind(Tag.Type).To<CyclicDependenciesValidator>()
             .Bind(Tag.Type).To<RootValidator>()
             .Bind(Tag.Type).To<TagOnSitesValidator>()
             .Bind(Tag.Type).To<BindingsValidator>()

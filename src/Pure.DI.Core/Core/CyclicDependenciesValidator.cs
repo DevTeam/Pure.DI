@@ -1,31 +1,27 @@
+
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal sealed class LifetimesValidator(
+internal sealed class CyclicDependenciesValidator(
     IPathsWalker<HashSet<object>> pathsWalker,
-    [Tag(typeof(LifetimesValidatorVisitor))] IPathVisitor<HashSet<object>> visitor,
+    [Tag(typeof(CyclicDependencyValidatorVisitor))] IPathVisitor<HashSet<object>> visitor,
     CancellationToken cancellationToken)
     : IValidator<DependencyGraph>
 {
     public bool Validate(DependencyGraph dependencyGraph)
     {
-        if (!dependencyGraph.IsResolved)
-        {
-            return false;
-        }
-
-        var warnings = new HashSet<object>();
         var graph = dependencyGraph.Graph;
+        var errors = new HashSet<object>();
         foreach (var root in dependencyGraph.Roots)
         {
             pathsWalker.Walk(
-                warnings,
+                errors,
                 graph,
                 root.Value.Node,
                 visitor,
                 cancellationToken);
         }
 
-        return true;
+        return errors.Count == 0;
     }
 }

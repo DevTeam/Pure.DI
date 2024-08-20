@@ -2,5 +2,5 @@
 
 internal interface IPathVisitor<in TContext>
 {
-    bool Visit(TContext ctx, in ImmutableArray<DependencyNode> path);
+    bool Visit(TContext errors, in ImmutableArray<DependencyNode> path);
 }
