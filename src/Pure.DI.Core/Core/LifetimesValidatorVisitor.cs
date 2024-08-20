@@ -4,6 +4,17 @@ internal class LifetimesValidatorVisitor(
     ILogger<LifetimesValidatorVisitor> logger)
     : IPathVisitor<HashSet<object>>
 {
+    private static readonly List<Lifetime> LifetimesByPriority = [Lifetime.Transient, Lifetime.PerBlock, Lifetime.PerResolve, Lifetime.Scoped, Lifetime.Singleton];
+    private static readonly int[] LifetimePriorities = new int[(int)LifetimesByPriority.Max() + 1];
+
+    static LifetimesValidatorVisitor()
+    {
+        for (var priority = 0; priority < LifetimesByPriority.Count; priority++)
+        {
+            LifetimePriorities[(int)LifetimesByPriority[priority]] = priority;
+        }
+    }
+    
     public bool Visit(HashSet<object> errors, in ImmutableArray<DependencyNode> path)
     {
         var actualTargetLifetimeNode = path[0];
@@ -18,7 +29,7 @@ internal class LifetimesValidatorVisitor(
                 }
             }
 
-            if (dependencyNode.Lifetime >= actualTargetLifetimeNode.Lifetime)
+            if (LifetimePriorities[(int)dependencyNode.Lifetime] >= LifetimePriorities[(int)actualTargetLifetimeNode.Lifetime])
             {
                 actualTargetLifetimeNode = dependencyNode;
             }
