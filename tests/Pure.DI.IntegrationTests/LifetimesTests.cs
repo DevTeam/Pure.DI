@@ -2505,7 +2505,7 @@ namespace Sample
     }
     
     [Fact]
-    public async Task ShouldShowWarningWhenSingletonInjectsScoped()
+    public async Task ShouldShowErrorWhenSingletonInjectsScoped()
     {
         // Given
 
@@ -2661,13 +2661,12 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeFalse(result);
-        result.StdOut.ShouldBe(["True", "True", "True", "True", "True", "True", "True", "True", "True"], result);
-        result.Warnings.Count.ShouldBe(1, result);
-        result.Warnings.Count(i => i.Id == Core.LogId.WarningLifetimeDefect).ShouldBe(1, result);
+        result.Errors.Count.ShouldBe(1, result);
+        result.Errors.Count(i => i.Id == Core.LogId.ErrorLifetimeDefect).ShouldBe(1, result);
     }
     
     [Fact]
-    public async Task ShouldShowWarningWhenSingletonIndirectInjectsScoped()
+    public async Task ShouldShowErrorWhenSingletonIndirectInjectsScoped()
     {
         // Given
 
@@ -2823,8 +2822,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeFalse(result);
-        result.StdOut.ShouldBe(["True", "True", "True", "True", "True", "True", "True", "True", "True"], result);
-        result.Warnings.Count.ShouldBe(1, result);
-        result.Warnings.Count(i => i.Id == Core.LogId.WarningLifetimeDefect).ShouldBe(1, result);
+        result.Errors.Count.ShouldBe(1, result);
+        result.Errors.Count(i => i.Id == Core.LogId.ErrorLifetimeDefect).ShouldBe(1, result);
     }
 }

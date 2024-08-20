@@ -14,18 +14,18 @@ internal sealed class LifetimesValidator(
             return false;
         }
 
-        var warnings = new HashSet<object>();
+        var errors = new HashSet<object>();
         var graph = dependencyGraph.Graph;
         foreach (var root in dependencyGraph.Roots)
         {
             pathsWalker.Walk(
-                warnings,
+                errors,
                 graph,
                 root.Value.Node,
                 visitor,
                 cancellationToken);
         }
 
-        return true;
+        return errors.Count == 0;
     }
 }

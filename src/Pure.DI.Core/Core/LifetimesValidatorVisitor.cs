@@ -23,9 +23,9 @@ internal class LifetimesValidatorVisitor(
             var dependencyNode = path[i];
             if (!ValidateLifetimes(actualTargetLifetimeNode.Lifetime, dependencyNode.Lifetime))
             {
-                if (errors.Add(new WarningKey(actualTargetLifetimeNode, dependencyNode)))
+                if (errors.Add(new ErrorKey(actualTargetLifetimeNode, dependencyNode)))
                 {
-                    logger.CompileWarning($"Type {actualTargetLifetimeNode.Type} with lifetime {actualTargetLifetimeNode.Lifetime} requires direct or transitive dependency injection of type {dependencyNode.Type} with lifetime {dependencyNode.Lifetime}, which can lead to data leakage and inconsistent behavior.", dependencyNode.Binding.Source.GetLocation(), LogId.WarningLifetimeDefect);
+                    logger.CompileError($"Type {actualTargetLifetimeNode.Type} with lifetime {actualTargetLifetimeNode.Lifetime} requires direct or transitive dependency injectionion of type {dependencyNode.Type} with lifetime {dependencyNode.Lifetime}, which can lead to data leakage and inconsistent behavior.", dependencyNode.Binding.Source.GetLocation(), LogId.ErrorLifetimeDefect);
                 }
             }
 
@@ -42,5 +42,5 @@ internal class LifetimesValidatorVisitor(
         !(actualTargetLifetime == Lifetime.Singleton && dependencyLifetime == Lifetime.Scoped);
 
     [SuppressMessage("ReSharper", "NotAccessedPositionalProperty.Local")]
-    private record WarningKey(DependencyNode TargetNode, DependencyNode SourceNode);
+    private record ErrorKey(DependencyNode TargetNode, DependencyNode SourceNode);
 }
