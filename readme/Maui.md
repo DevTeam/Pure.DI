@@ -208,7 +208,7 @@ The [project file](/samples/MAUIApp/MAUIApp.csproj) looks like this:
         <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)"/>
         <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)"/>
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0"/>
-        <PackageReference Include="Pure.DI" Version="2.1.31">
+        <PackageReference Include="Pure.DI" Version="2.1.32">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>

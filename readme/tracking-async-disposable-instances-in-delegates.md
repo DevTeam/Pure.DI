@@ -97,6 +97,7 @@ partial class Composition
     get
     {
       var perResolveFunc42 = default(Func<Owned<IDependency>>);
+      var accumulator41 = new Owned();
       if (perResolveFunc42 == null)
       {
         lock (_lock)
@@ -126,7 +127,12 @@ partial class Composition
         }
       }
 
-      return new Service(perResolveFunc42!);
+      Service transientService0 = new Service(perResolveFunc42!);
+      lock (_lock)
+      {
+        accumulator41.Add(transientService0);
+      }
+      return transientService0;
     }
   }
 
