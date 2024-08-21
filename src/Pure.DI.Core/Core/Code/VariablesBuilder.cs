@@ -14,14 +14,22 @@ internal class VariablesBuilder(
     {
         var graph = dependencyGraph.Graph;
         var blockId = 0;
+        var transientId = 0;
         var blockMap = new Dictionary<(MdBinding, int), Variable>();
         var rootBlock = new Block(blockId++,default, []);
-        var transientId = 0;
-        var rootVar = GetVariable(dependencyGraph.Source, rootBlock, map, blockMap, rootNode, rootInjection, ref transientId, false);
-        rootBlock.Statements.AddFirst(rootVar);
+        rootBlock.Statements.AddFirst(
+            GetVariable(
+                dependencyGraph.Source,
+                rootBlock,
+                map,
+                blockMap,
+                rootNode,
+                rootInjection,
+                ref transientId,
+                false));
+
         var blocks = new Stack<Block>();
         blocks.Push(rootBlock);
-        var counter = 0;
         while (blocks.TryPop(out var currentBlock))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -32,11 +40,6 @@ internal class VariablesBuilder(
             var stack = new Stack<IStatement>(currentBlock.Statements);
             while (stack.TryPop(out var currentStatement))
             {
-                if (counter++ > Const.MaxIterationsCount)
-                {
-                    throw new CompileErrorException($"The composition is too large. Stopped on the #{counter} instance.", rootNode.Binding.Source.GetLocation(), LogId.ErrorInvalidMetadata);
-                }
-                
                 switch (currentStatement)
                 {
                     case Block block:
@@ -108,7 +111,16 @@ internal class VariablesBuilder(
                                 isAlreadyCreated = nodeInfo.IsLazy(depNode);
                             }
 
-                            var depVariable = GetVariable(dependencyGraph.Source, currentBlock, map, blockMap, depNode, depInjection, ref transientId, hasCycle);
+                            var depVariable = GetVariable(
+                                dependencyGraph.Source,
+                                currentBlock,
+                                map,
+                                blockMap,
+                                depNode with { Accumulators = accumulators },
+                                depInjection,
+                                ref transientId,
+                                hasCycle);
+
                             var isBlock = depNode.Lifetime is not Lifetime.Transient and not Lifetime.PerBlock
                                           || nodeInfo.IsDelegate(variable.Node)
                                           || nodeInfo.IsDelegate(depNode);

@@ -5,11 +5,12 @@ internal record DependencyNode(
     in MdBinding Binding,
     ITypeSymbol Type,
     ICollection<Accumulator> Accumulators,
-    in DpRoot? Root = default,
-    in DpImplementation? Implementation = default,
-    in DpFactory? Factory = default,
-    in DpArg? Arg = default,
-    in DpConstruct? Construct = default)
+    in DpRoot? Root,
+    in DpImplementation? Implementation,
+    in DpFactory? Factory,
+    in DpArg? Arg,
+    in DpConstruct? Construct,
+    Lifetime Lifetime)
 {
     public DependencyNode(
         int Variation,
@@ -23,14 +24,14 @@ internal record DependencyNode(
             Variation,
             binding,
             Root?.Source.RootType ?? Implementation?.Source.Type ?? Factory?.Source.Type ?? Arg?.Source.Type ?? Construct?.Source.Type!,
-            new List<Accumulator>(),
+            [],
             Root,
             Implementation,
             Factory,
             Arg,
-            Construct)
-    {
-    }
+            Construct,
+            binding.Lifetime?.Value ?? Lifetime.Transient)
+    { }
         
     private IEnumerable<string> ToStrings(int indent) =>
         Root?.ToStrings(indent)
@@ -39,8 +40,6 @@ internal record DependencyNode(
         ?? Arg?.ToStrings(indent)
         ?? Construct?.ToStrings(indent)
         ?? Enumerable.Repeat("unresolved", 1);
-
-    public Lifetime Lifetime => Binding.Lifetime?.Value ?? Lifetime.Transient;
 
     public override string ToString() => string.Join(Environment.NewLine, ToStrings(0));
 

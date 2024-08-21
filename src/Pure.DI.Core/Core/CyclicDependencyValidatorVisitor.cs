@@ -3,9 +3,20 @@
 internal class CyclicDependencyValidatorVisitor(
     ILogger<CyclicDependencyValidatorVisitor> logger,
     INodeInfo nodeInfo)
-    : IPathVisitor<HashSet<object>>
+    : IGraphVisitor<HashSet<object>, ImmutableArray<DependencyNode>>
 {
-    public bool Visit(HashSet<object> errors, in ImmutableArray<DependencyNode> path)
+    public ImmutableArray<DependencyNode> Create(
+        IGraph<DependencyNode, Dependency> graph,
+        DependencyNode currentNode,
+        ImmutableArray<DependencyNode> parent) =>
+        parent.IsDefaultOrEmpty
+            ? ImmutableArray.Create(currentNode)
+            : parent.Add(currentNode);
+    
+    public bool Visit(
+        HashSet<object> errors,
+        IGraph<DependencyNode, Dependency> graph,
+        in ImmutableArray<DependencyNode> path)
     {
         if (path.Length < 2)
         {

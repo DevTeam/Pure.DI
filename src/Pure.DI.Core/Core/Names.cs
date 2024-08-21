@@ -10,7 +10,7 @@ internal static class Names
     public static readonly string InjectionMarker = "injection" + Salt;
     
     // Namespaces
-    public const string GlobalNamespacePrefix = $"global::";
+    public const string GlobalNamespacePrefix = "global::";
     public const string ApiNamespace = $"{GlobalNamespacePrefix}{GeneratorName}.";
     public const string SystemNamespace = $"{GlobalNamespacePrefix}{nameof(System)}.";
     

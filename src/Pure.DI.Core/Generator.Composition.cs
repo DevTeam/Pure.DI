@@ -64,9 +64,10 @@ public partial class Generator
             .Bind().To<Semantic>()
             .Bind().To<Attributes>()
             .Bind().To<Compilations>()
-            .Bind().To<PathsWalker<TT>>()
+            .Bind().To<GraphWalker<TT, TT1>>()
             .Bind(Tag.Type).To<LifetimesValidatorVisitor>()
             .Bind(Tag.Type).To<CyclicDependencyValidatorVisitor>()
+            .Bind().To<LifetimeAnalyzer>()
 
             // Validators
             .Bind(Tag.Type).To<MetadataValidator>()

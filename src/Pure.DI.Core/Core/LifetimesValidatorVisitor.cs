@@ -1,27 +1,28 @@
 ﻿namespace Pure.DI.Core;
 
 internal class LifetimesValidatorVisitor(
-    ILogger<LifetimesValidatorVisitor> logger)
-    : IPathVisitor<HashSet<object>>
+    ILogger<LifetimesValidatorVisitor> logger,
+    ILifetimeAnalyzer lifetimeAnalyzer)
+    : IGraphVisitor<HashSet<object>, ImmutableArray<DependencyNode>>
 {
-    private static readonly List<Lifetime> LifetimesByPriority = [Lifetime.Transient, Lifetime.PerBlock, Lifetime.PerResolve, Lifetime.Scoped, Lifetime.Singleton];
-    private static readonly int[] LifetimePriorities = new int[(int)LifetimesByPriority.Max() + 1];
+    public ImmutableArray<DependencyNode> Create(
+        IGraph<DependencyNode, Dependency> graph,
+        DependencyNode currentNode,
+        ImmutableArray<DependencyNode> parent) =>
+        parent.IsDefaultOrEmpty
+            ? ImmutableArray.Create(currentNode)
+            : parent.Add(currentNode);
 
-    static LifetimesValidatorVisitor()
-    {
-        for (var priority = 0; priority < LifetimesByPriority.Count; priority++)
-        {
-            LifetimePriorities[(int)LifetimesByPriority[priority]] = priority;
-        }
-    }
-    
-    public bool Visit(HashSet<object> errors, in ImmutableArray<DependencyNode> path)
+    public bool Visit(
+        HashSet<object> errors,
+        IGraph<DependencyNode, Dependency> graph,
+        in ImmutableArray<DependencyNode> path)
     {
         var actualTargetLifetimeNode = path[0];
         for (var i = 1; i < path.Length; i++)
         {
             var dependencyNode = path[i];
-            if (!ValidateLifetimes(actualTargetLifetimeNode.Lifetime, dependencyNode.Lifetime))
+            if (!lifetimeAnalyzer.ValidateLifetimes(actualTargetLifetimeNode.Lifetime, dependencyNode.Lifetime))
             {
                 if (errors.Add(new ErrorKey(actualTargetLifetimeNode, dependencyNode)))
                 {
@@ -29,7 +30,7 @@ internal class LifetimesValidatorVisitor(
                 }
             }
 
-            if (LifetimePriorities[(int)dependencyNode.Lifetime] >= LifetimePriorities[(int)actualTargetLifetimeNode.Lifetime])
+            if (lifetimeAnalyzer.GetActualDependencyLifetime(actualTargetLifetimeNode.Lifetime, dependencyNode.Lifetime) == dependencyNode.Lifetime)
             {
                 actualTargetLifetimeNode = dependencyNode;
             }
@@ -37,9 +38,6 @@ internal class LifetimesValidatorVisitor(
 
         return true;
     }
-    
-    private static bool ValidateLifetimes(Lifetime actualTargetLifetime, Lifetime dependencyLifetime) => 
-        !(actualTargetLifetime == Lifetime.Singleton && dependencyLifetime == Lifetime.Scoped);
 
     [SuppressMessage("ReSharper", "NotAccessedPositionalProperty.Local")]
     private record ErrorKey(DependencyNode TargetNode, DependencyNode SourceNode);

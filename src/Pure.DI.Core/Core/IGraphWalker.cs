@@ -1,11 +1,11 @@
 ﻿namespace Pure.DI.Core;
 
-internal interface IPathsWalker<TContext>
+internal interface IGraphWalker<TContext, T>
 {
     void Walk(
         TContext ctx,
         IGraph<DependencyNode, Dependency> graph,
         DependencyNode root,
-        IPathVisitor<TContext> visitor,
+        IGraphVisitor<TContext, T> visitor,
         CancellationToken cancellationToken);
 }
