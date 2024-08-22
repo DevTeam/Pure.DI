@@ -13,7 +13,7 @@ using static Lifetime;
 public partial class Generator
 {
     [Conditional("DI")]
-    private void Setup() => DI.Setup(nameof(Generator))
+    private void Setup() => DI.Setup()
         .Hint(Hint.Resolve, "Off")
         
         // Roots
