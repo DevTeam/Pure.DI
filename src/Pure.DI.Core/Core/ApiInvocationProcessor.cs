@@ -18,10 +18,12 @@ internal class ApiInvocationProcessor(
         InvocationExpressionSyntax invocation,
         string @namespace)
     {
-        if (invocation.Expression is not MemberAccessExpressionSyntax memberAccess)
+        var name = invocation.Expression switch
         {
-            return;
-        }
+            MemberAccessExpressionSyntax memberAccess when memberAccess.Kind() == SyntaxKind.SimpleMemberAccessExpression => memberAccess.Name,
+            IdentifierNameSyntax { Identifier.Text: nameof(DI.Setup) } identifierName => identifierName,
+            _ => default
+        };
 
         var prevInvocation = invocation.DescendantNodes().FirstOrDefault(i => i is InvocationExpressionSyntax);
         List<string> invocationComments;
@@ -38,7 +40,7 @@ internal class ApiInvocationProcessor(
                         .Where(trivia => trivia.IsKind(SyntaxKind.SingleLineCommentTrivia))).ToList();
         }
         
-        switch (memberAccess.Name)
+        switch (name)
         {
             case IdentifierNameSyntax identifierName:
                 switch (identifierName.Identifier.Text)

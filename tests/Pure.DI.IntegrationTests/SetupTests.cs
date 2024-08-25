@@ -1918,4 +1918,45 @@ namespace Sample
         result.Warnings.Count.ShouldBe(1);
         result.Warnings.Count(i => i.Id == LogId.WarningMetadataDefect).ShouldBe(1);
     }
+    
+    [Fact]
+    public async Task ShouldSupportStaticSetupMethod()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+using static Pure.DI.DI;
+
+namespace Sample
+{
+    interface IService {}
+    class Service: IService {}
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            Setup(nameof(Composition))
+                .Bind<IService>().To<Service>()
+                .Root<IService>("Service");
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();
+            Console.WriteLine(composition.Service != composition.Service);
+        }
+    }
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
 }

@@ -14,14 +14,15 @@ internal sealed class MetadataSyntaxWalker(
     CancellationToken cancellationToken)
     : CSharpSyntaxWalker, IMetadataSyntaxWalker
 {
-    private const string DISetup = $"{nameof(DI)}.{nameof(DI.Setup)}";
     private readonly Stack<InvocationExpressionSyntax> _invocations = new();
     private string _namespace = string.Empty;
     private bool _isMetadata;
-
+    private SemanticModel? _semanticModel;
+    
     [SuppressMessage("MicrosoftCodeAnalysisCorrectness", "RS1024:Symbols should be compared for equality")]
     public void Visit(IMetadataVisitor metadataVisitor, in SyntaxUpdate update)
     {
+        _semanticModel = update.SemanticModel;
         Visit(update.Node);
         var visitors = new List<InvocationVisitor>();
         while (_invocations.TryPop(out var invocation))
@@ -82,36 +83,31 @@ internal sealed class MetadataSyntaxWalker(
         base.VisitNamespaceDeclaration(namespaceDeclaration);
     }
 
-    private static string GetInvocationName(InvocationExpressionSyntax invocation) => GetName(invocation.Expression, 2);
-
-    private static string GetName(ExpressionSyntax expression, int deepness = int.MaxValue)
-    {
-        switch (expression)
-        {
-            case IdentifierNameSyntax identifierNameSyntax:
-                return identifierNameSyntax.Identifier.Text;
-
-            case MemberAccessExpressionSyntax memberAccess when memberAccess.IsKind(SyntaxKind.SimpleMemberAccessExpression):
-            {
-                var name = memberAccess.Name.Identifier.Text;
-                if (--deepness > 0)
-                {
-                    var prefix = GetName(memberAccess.Expression, deepness);
-                    return prefix == string.Empty ? name : $"{prefix}.{name}";
-                }
-
-                return name;
-            }
-
-            default:
-                return string.Empty;
-        }
-    }
-
     [SuppressMessage("ReSharper", "SuggestBaseTypeForParameter")]
-    private static bool IsMetadata(InvocationExpressionSyntax invocation) =>
-        invocation
-            .DescendantNodesAndSelf()
-            .OfType<InvocationExpressionSyntax>()
-            .FirstOrDefault(i => GetInvocationName(i) == DISetup) is not null;
+    private bool IsMetadata(InvocationExpressionSyntax invocation)
+    {
+        foreach (var curInvocation in invocation.DescendantNodesAndSelf().OfType<InvocationExpressionSyntax>().Reverse())
+        {
+            switch (curInvocation.Expression)
+            {
+                case IdentifierNameSyntax { Identifier.Text: nameof(DI.Setup) }:
+                case MemberAccessExpressionSyntax memberAccess 
+                    when memberAccess.Kind() == SyntaxKind.SimpleMemberAccessExpression
+                    && memberAccess.Name.Identifier.Text == nameof(DI.Setup)
+                    && (memberAccess.Expression is IdentifierNameSyntax { Identifier.Text: nameof(DI) } 
+                        || memberAccess.Expression is MemberAccessExpressionSyntax firstMemberAccess && firstMemberAccess.Kind() == SyntaxKind.SimpleMemberAccessExpression && firstMemberAccess.Name.Identifier.Text == nameof(DI)):
+                    
+                    if (_semanticModel?.GetTypeInfo(curInvocation) is { } typeInfo
+                        && (typeInfo.Type ?? typeInfo.ConvertedType) is { } type
+                        && type.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat) == Names.ConfigurationInterfaceName)
+                    {
+                        return true;
+                    }
+                    
+                    break;
+            }
+        }
+
+        return false;
+    }
 }

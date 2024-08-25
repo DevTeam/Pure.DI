@@ -37,6 +37,7 @@ internal static class Names
     public const string IAsyncDisposableInterfaceShortName = $"{nameof(System)}.IAsyncDisposable";
     public const string ResolverInterfaceName = $"{ApiNamespace}{nameof(IResolver<object, object>)}";
     public const string ContextInterfaceName = $"{ApiNamespace}{nameof(IContext)}";
+    public const string ConfigurationInterfaceName = $"{ApiNamespace}{nameof(IConfiguration)}";
     
     // Attributes
     public const string OrdinalAttributeName = $"{ApiNamespace}{nameof(OrdinalAttribute)}";
