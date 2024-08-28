@@ -14,7 +14,7 @@ using Model;
 public partial class Transient : BenchmarkBase
 {
     private static void SetupDI() =>
-        DI.Setup(nameof(Transient))
+        DI.Setup()
             .Bind().To<Service1>()
             .Bind().To<Service2>()
             .Bind().To<Service3>()

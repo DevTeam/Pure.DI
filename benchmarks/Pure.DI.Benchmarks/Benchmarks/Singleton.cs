@@ -17,7 +17,7 @@ using Model;
 public partial class Singleton : BenchmarkBase
 {
     private static void SetupDI() =>
-        DI.Setup(nameof(Singleton))
+        DI.Setup()
             .Bind().As(Lifetime.Scoped).To<Service1>()
             .Bind().To<Service2>()
             .Bind().To<Service3>()

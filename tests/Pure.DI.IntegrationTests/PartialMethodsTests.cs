@@ -189,7 +189,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["System.Func`1[Sample.IDependency] '' PerResolve created", "Sample.Dependency '' Singleton created", "Sample.Service '' Transient created"], result);
+        result.StdOut.ShouldBe(["System.Func`1[Sample.IDependency] '' PerBlock created", "Sample.Dependency '' Singleton created", "Sample.Service '' Transient created"], result);
     }
     
     [Fact]
@@ -345,7 +345,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["Sample.IDependency '' Singleton injected", "System.Func`1[Sample.IDependency] '' PerResolve injected", "Sample.IDependency '' Singleton injected", "Sample.IService '' Transient injected"], result);
+        result.StdOut.ShouldBe(["Sample.IDependency '' Singleton injected", "System.Func`1[Sample.IDependency] '' PerBlock injected", "Sample.IDependency '' Singleton injected", "Sample.IService '' Transient injected"], result);
     }
     
     [Fact]

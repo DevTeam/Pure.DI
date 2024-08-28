@@ -161,6 +161,12 @@ internal class FactoryCodeBuilder(
         new FactoryValidator(factory).Validate(lambda); 
         SyntaxNode syntaxNode = lambda.Block is not null ? lambda.Block : SyntaxFactory.ExpressionStatement((ExpressionSyntax)lambda.Body);
         var lines = new List<TextLine>();
+        if (!variable.IsDeclared && variable.IsLazy)
+        {
+            ctx.Code.AppendLine($"var {variable.VariableName} = default({ctx.BuildTools.GetDeclaration(variable)});");
+            variable.IsDeclared = true;
+        }
+
         if (syntaxNode is BlockSyntax curBlock)
         {
             if (!variable.IsDeclared)

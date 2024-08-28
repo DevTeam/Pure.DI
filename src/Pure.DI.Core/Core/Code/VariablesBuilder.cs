@@ -25,8 +25,7 @@ internal class VariablesBuilder(
                 blockMap,
                 rootNode,
                 rootInjection,
-                ref transientId,
-                false));
+                ref transientId));
 
         var blocks = new Stack<Block>();
         blocks.Push(rootBlock);
@@ -59,13 +58,13 @@ internal class VariablesBuilder(
                             }
                         }
 
-                        var pathIds = new HashSet<int>();
+                        var path = new Dictionary<int, Variable>();
                         ICollection<Accumulator>? accumulators = default;
                         var isRoot = true;
                         foreach (var pathItem in currentStatement.GetPath())
                         {
                             var pathVar = pathItem.Current;
-                            pathIds.Add(pathVar.Node.Binding.Id);
+                            path[pathVar.Node.Binding.Id] = pathItem.Current;
                             if (!pathVar.IsLazy)
                             {
                                 continue;
@@ -103,8 +102,8 @@ internal class VariablesBuilder(
                             {
                                 continue;
                             }
-                            
-                            var hasCycle = pathIds.Contains(depNode.Binding.Id);
+
+                            var hasCycle = path.TryGetValue(depNode.Binding.Id, out var cycleVariable);
                             var isAlreadyCreated = false;
                             if (hasCycle)
                             {
@@ -119,7 +118,7 @@ internal class VariablesBuilder(
                                 depNode with { Accumulators = accumulators },
                                 depInjection,
                                 ref transientId,
-                                hasCycle);
+                                cycleVariable);
 
                             var isBlock = depNode.Lifetime is not Lifetime.Transient and not Lifetime.PerBlock
                                           || nodeInfo.IsDelegate(variable.Node)
@@ -190,8 +189,19 @@ internal class VariablesBuilder(
         DependencyNode node,
         in Injection injection,
         ref int transientId,
-        bool hasCycle)
+        Variable? cycleVariable = default)
     {
+        if (cycleVariable is not null)
+        {
+            return cycleVariable with
+            {
+                Parent = parentBlock,
+                Injection = injection,
+                Args = new List<IStatement>(),
+                HasCycle = true
+            };
+        }
+        
         if (node.Arg is null)
         {
             // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
@@ -199,7 +209,7 @@ internal class VariablesBuilder(
             {
                 case Lifetime.Transient:
                 {
-                    var transientVariable = new Variable(setup, parentBlock, transientId++, node, injection, new List<IStatement>(), new VariableInfo(), nodeInfo.IsLazy(node), hasCycle);
+                    var transientVariable = new Variable(setup, parentBlock, transientId++, node, injection, new List<IStatement>(), new VariableInfo(), nodeInfo.IsLazy(node), false);
                     if (node.Construct?.Source.Kind == MdConstructKind.Accumulator)
                     {
                         transientVariable.VariableCode = GetAccumulatorName(transientVariable);
@@ -217,12 +227,11 @@ internal class VariablesBuilder(
                         {
                             Parent = parentBlock,
                             Injection = injection,
-                            Args = new List<IStatement>(),
-                            HasCycle = hasCycle
+                            Args = new List<IStatement>()
                         };
                     }
                 
-                    blockVariable = new Variable(setup, parentBlock, transientId++, node, injection, new List<IStatement>(), new VariableInfo(), nodeInfo.IsLazy(node), hasCycle);
+                    blockVariable = new Variable(setup, parentBlock, transientId++, node, injection, new List<IStatement>(), new VariableInfo(), nodeInfo.IsLazy(node), false);
                     blockMap.Add(perBlockKey, blockVariable);
                     return blockVariable;
                 }
@@ -236,12 +245,11 @@ internal class VariablesBuilder(
             {
                 Parent = parentBlock,
                 Injection = injection,
-                Args = new List<IStatement>(),
-                HasCycle = hasCycle
+                Args = new List<IStatement>()
             };
         }
 
-        variable = new Variable(setup, parentBlock, node.Binding.Id, node, injection, new List<IStatement>(), new VariableInfo(), nodeInfo.IsLazy(node), hasCycle);
+        variable = new Variable(setup, parentBlock, node.Binding.Id, node, injection, new List<IStatement>(), new VariableInfo(), nodeInfo.IsLazy(node), false);
         map.Add(node.Binding, variable);
         return variable;
     }

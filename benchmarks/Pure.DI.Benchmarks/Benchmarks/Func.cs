@@ -15,7 +15,7 @@ using Model;
 public partial class Func : BenchmarkBase
 {
     private static void SetupDI() =>
-        DI.Setup(nameof(Func))
+        DI.Setup()
             .Bind().To<Service1>()
             .Bind().To<Service2Func>()
             .Bind().To<Service3>()

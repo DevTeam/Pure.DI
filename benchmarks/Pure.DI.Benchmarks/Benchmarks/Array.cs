@@ -15,7 +15,7 @@ using Model;
 public partial class Array : BenchmarkBase
 {
     private static void SetupDI() =>
-        DI.Setup(nameof(Array))
+        DI.Setup()
             .Bind().To<Service1>()
             .Bind().To<Service2Array>()
             .Bind().To<Service3>()

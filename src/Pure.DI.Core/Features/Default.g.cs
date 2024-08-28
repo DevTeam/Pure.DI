@@ -33,7 +33,7 @@ namespace Pure.DI
                         return new Owned<TT>(value, owned);
                     })
                 .Bind<global::System.Func<TT>>()
-                    .As(Lifetime.PerResolve)
+                    .As(Lifetime.PerBlock)
                     .To(ctx => new global::System.Func<TT>(() =>
                     {
                         ctx.Inject<TT>(ctx.Tag, out var value);
@@ -180,8 +180,8 @@ namespace Pure.DI
 #if NETCOREAPP2_0 || NET || NETSTANDARD2_0_OR_GREATER
                 .Bind<global::System.Text.Encoding>().To(_ => global::System.Text.Encoding.Default)
 #endif
-                .Bind<global::System.Text.Decoder>().To((global::System.Text.Encoding encoding) => encoding.GetDecoder())
-                .Bind<global::System.Text.Encoder>().To((global::System.Text.Encoding encoding) => encoding.GetEncoder())
+                .Bind<global::System.Text.Decoder>().As(Lifetime.PerBlock).To((global::System.Text.Encoding encoding) => encoding.GetDecoder())
+                .Bind<global::System.Text.Encoder>().As(Lifetime.PerBlock).To((global::System.Text.Encoding encoding) => encoding.GetEncoder())
 ;
         }
     }

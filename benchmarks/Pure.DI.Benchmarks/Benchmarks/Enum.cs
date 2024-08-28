@@ -15,7 +15,7 @@ using Model;
 public partial class Enum : BenchmarkBase
 {
     private static void SetupDI() =>
-        DI.Setup(nameof(Enum))
+        DI.Setup()
             .Bind().To<Service1>()
             .Bind().To<Service2Enum>()
             .Bind().To<Service3>()

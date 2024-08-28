@@ -28,13 +28,9 @@ internal class BuildTools(
                 && ctx.DependencyGraph.Source.SemanticModel.Compilation.Options.NullableContextOptions != NullableContextOptions.Disable
                 && (variable.HasCycle || variable.Node.Lifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve);
 
-            if (skipNotNullCheck)
+            if (skipNotNullCheck && (variable.HasCycle || variable.Node.Lifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve))
             {
-                variableCode = variable.Node.Lifetime switch
-                {
-                    Lifetime.Singleton or Lifetime.PerResolve or Lifetime.Scoped => $"{variableCode}!",
-                    _ => variableCode
-                };
+                variableCode =  $"{variableCode}!";
             }
         }
 
