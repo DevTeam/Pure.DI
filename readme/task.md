@@ -88,7 +88,7 @@ partial class Composition
     TaskContinuationOptions localTaskContinuationOptions40 = transientTaskContinuationOptions5;
     TaskScheduler localTaskScheduler41 = transientTaskScheduler6;
     perBlockTaskFactory3 = new TaskFactory<IDependency>(localCancellationToken38, localTaskCreationOptions39, localTaskContinuationOptions40, localTaskScheduler41);
-    var perBlockFunc2 = default(Func<IDependency> );
+    var perBlockFunc2 = default(Func<IDependency>);
     perBlockFunc2 = new Func<IDependency>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
     {
       IDependency localValue42 = new Dependency();

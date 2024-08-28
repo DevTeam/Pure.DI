@@ -95,7 +95,7 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var perBlockFunc1 = default(Func<IService> );
+      var perBlockFunc1 = default(Func<IService>);
       perBlockFunc1 = new Func<IService>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
       {
         Composition transientComposition3 = this;

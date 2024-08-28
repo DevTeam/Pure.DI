@@ -15,8 +15,8 @@ internal class BuildTools(
         code.AppendLine("#endif");
     }
 
-    public string GetDeclaration(Variable variable) =>
-        variable.IsDeclared ? "" : $"{typeResolver.Resolve(variable.Setup, variable.InstanceType)} ";
+    public string GetDeclaration(Variable variable, string separator = " ") =>
+        variable.IsDeclared ? "" : $"{typeResolver.Resolve(variable.Setup, variable.InstanceType)}{separator}";
     
     public string OnInjected(BuildContext ctx, Variable variable)
     {

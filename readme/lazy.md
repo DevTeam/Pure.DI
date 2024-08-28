@@ -53,7 +53,7 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var perBlockFunc2 = default(Func<IDependency> );
+      var perBlockFunc2 = default(Func<IDependency>);
       perBlockFunc2 = new Func<IDependency>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
       {
         IDependency localValue33 = new Dependency();

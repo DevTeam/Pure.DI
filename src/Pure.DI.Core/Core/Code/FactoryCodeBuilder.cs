@@ -163,7 +163,7 @@ internal class FactoryCodeBuilder(
         var lines = new List<TextLine>();
         if (!variable.IsDeclared && variable.IsLazy)
         {
-            ctx.Code.AppendLine($"var {variable.VariableName} = default({ctx.BuildTools.GetDeclaration(variable)});");
+            ctx.Code.AppendLine($"var {variable.VariableName} = default({ctx.BuildTools.GetDeclaration(variable, "")});");
             variable.IsDeclared = true;
         }
 

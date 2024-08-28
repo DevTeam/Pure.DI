@@ -4,7 +4,7 @@ internal interface IBuildTools
 {
     void AddPureHeader(LinesBuilder code);
     
-    string GetDeclaration(Variable variable);
+    string GetDeclaration(Variable variable, string separator = " ");
 
     string OnInjected(BuildContext ctx, Variable variable);
     
