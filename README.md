@@ -65,18 +65,14 @@ enum State { Alive, Dead }
 ### Here's our implementation
 
 ```c#
-class CardboardBox<T>(T content) : IBox<T>
-{
-    public T Content { get; } = content;    
-}
+record CardboardBox<T>(T Content): IBox<T>;
 
-class ShroedingersCat(Lazy<State> superposition) : ICat
+class ShroedingersCat(Lazy<State> superposition): ICat
 {
     // The decoherence of the superposition
     // at the time of observation via an irreversible process
-    public State State => superposition.Value;    
+    public State State => superposition.Value;
 }
-
 ```
 
 > [!IMPORTANT]

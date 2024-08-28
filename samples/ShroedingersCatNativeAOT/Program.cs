@@ -44,14 +44,9 @@ public enum State
     Dead
 }
 
-public class CardboardBox<T>(T content) : IBox<T>
-{
-    public T Content { get; } = content;
+public record CardboardBox<T>(T Content) : IBox<T>;
 
-    public override string ToString() => $"[{Content}]";
-}
-
-public class ShroedingersCat(Lazy<State> superposition) : ICat
+public class ShroedingersCat(Lazy<State> superposition): ICat
 {
     // The decoherence of the superposition
     // at the time of observation via an irreversible process
