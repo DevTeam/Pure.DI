@@ -134,24 +134,14 @@ partial class Composition: IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var perResolveFunc47 = default(Func<Session>);
-      if (perResolveFunc47 == null)
+      var perBlockFunc1 = default(Func<Session> );
+      perBlockFunc1 = new Func<Session>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
       {
-        lock (_lock)
-        {
-          if (perResolveFunc47 == null)
-          {
-            perResolveFunc47 = new Func<Session>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
-            {
-              Composition transientComposition2 = this;
-              Session localValue67 = new Session(transientComposition2);
-              return localValue67;
-            });
-          }
-        }
-      }
-
-      return new Program(perResolveFunc47!);
+        Composition transientComposition3 = this;
+        Session localValue67 = new Session(transientComposition3);
+        return localValue67;
+      });
+      return new Program(perBlockFunc1);
     }
   }
 
@@ -223,7 +213,7 @@ classDiagram
 		<<interface>>
 	}
 	Session *--  Composition : Composition
-	Program o-- "PerResolve" FuncᐸSessionᐳ : FuncᐸSessionᐳ
+	Program o-- "PerBlock" FuncᐸSessionᐳ : FuncᐸSessionᐳ
 	Composition ..> Program : Program ProgramRoot
 	Composition ..> Service : IService SessionRoot
 	Service o-- "Scoped" Dependency : IDependency

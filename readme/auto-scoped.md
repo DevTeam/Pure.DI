@@ -95,29 +95,19 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var perResolveFunc46 = default(Func<IService>);
-      if (perResolveFunc46 == null)
+      var perBlockFunc1 = default(Func<IService> );
+      perBlockFunc1 = new Func<IService>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
       {
-        lock (_lock)
-        {
-          if (perResolveFunc46 == null)
-          {
-            perResolveFunc46 = new Func<IService>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
-            {
-              Composition transientComposition2 = this;
-              IService transientIService1;
-              Composition localBaseComposition65 = transientComposition2;
-              // Creates a session
-              var localSession66= new Composition(localBaseComposition65);
-               transientIService1 = localSession66.SessionRoot;
-              IService localValue64 = transientIService1;
-              return localValue64;
-            });
-          }
-        }
-      }
-
-      return new Program(perResolveFunc46!);
+        Composition transientComposition3 = this;
+        IService transientIService2;
+        Composition localBaseComposition65 = transientComposition3;
+        // Creates a session
+        var localSession66= new Composition(localBaseComposition65);
+         transientIService2 = localSession66.SessionRoot;
+        IService localValue64 = transientIService2;
+        return localValue64;
+      });
+      return new Program(perBlockFunc1);
     }
   }
 
@@ -169,7 +159,7 @@ classDiagram
 		<<interface>>
 	}
 	Service o-- "Scoped" Dependency : IDependency
-	Program o-- "PerResolve" FuncᐸIServiceᐳ : FuncᐸIServiceᐳ
+	Program o-- "PerBlock" FuncᐸIServiceᐳ : FuncᐸIServiceᐳ
 	Composition ..> Program : Program ProgramRoot
 	Composition ..> Service : Service SessionRoot
 	IService *--  Composition : Composition

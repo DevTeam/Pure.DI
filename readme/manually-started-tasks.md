@@ -76,42 +76,29 @@ The following partial class will be generated:
 partial class Composition
 {
   private readonly Composition _root;
-  private readonly object _lock;
 
   [OrdinalAttribute(10)]
   public Composition()
   {
     _root = this;
-    _lock = new object();
   }
 
   internal Composition(Composition parentScope)
   {
     _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = _root._lock;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public IService GetRoot(CancellationToken cancellationToken)
   {
-    var perResolveFunc45 = default(Func<IDependency>);
-    if (perResolveFunc45 == null)
+    var perBlockFunc2 = default(Func<IDependency> );
+    perBlockFunc2 = new Func<IDependency>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
     {
-      lock (_lock)
-      {
-        if (perResolveFunc45 == null)
-        {
-          perResolveFunc45 = new Func<IDependency>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
-          {
-            IDependency localValue35 = new Dependency();
-            return localValue35;
-          });
-        }
-      }
-    }
-
+      IDependency localValue35 = new Dependency();
+      return localValue35;
+    });
     Task<IDependency> transientTask1;
-    Func<IDependency> localFactory36 = perResolveFunc45!;
+    Func<IDependency> localFactory36 = perBlockFunc2;
     CancellationToken localCancellationToken37 = cancellationToken;
     transientTask1 = new Task<IDependency>(localFactory36, localCancellationToken37);
     return new Service(transientTask1);
@@ -151,7 +138,7 @@ classDiagram
 	TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions
 	TaskFactory *--  TaskScheduler : TaskScheduler
 	Service *--  TaskᐸIDependencyᐳ : TaskᐸIDependencyᐳ
-	TaskᐸIDependencyᐳ o-- "PerResolve" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
+	TaskᐸIDependencyᐳ o-- "PerBlock" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
 	TaskᐸIDependencyᐳ o-- CancellationToken : Argument "cancellationToken"
 	FuncᐸIDependencyᐳ *--  Dependency : IDependency
 ```

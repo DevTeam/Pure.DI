@@ -64,52 +64,39 @@ The following partial class will be generated:
 partial class Composition
 {
   private readonly Composition _root;
-  private readonly object _lock;
 
   [OrdinalAttribute(10)]
   public Composition()
   {
     _root = this;
-    _lock = new object();
   }
 
   internal Composition(Composition parentScope)
   {
     _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = _root._lock;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public IService GetRoot(CancellationToken cancellationToken)
   {
-    var perResolveFunc45 = default(Func<IDependency>);
-    TaskScheduler transientTaskScheduler5 = TaskScheduler.Current;
-    TaskContinuationOptions transientTaskContinuationOptions4 = TaskContinuationOptions.None;
-    TaskCreationOptions transientTaskCreationOptions3 = TaskCreationOptions.None;
-    TaskFactory<IDependency> perBlockTaskFactory2;
+    TaskScheduler transientTaskScheduler6 = TaskScheduler.Current;
+    TaskContinuationOptions transientTaskContinuationOptions5 = TaskContinuationOptions.None;
+    TaskCreationOptions transientTaskCreationOptions4 = TaskCreationOptions.None;
+    TaskFactory<IDependency> perBlockTaskFactory3;
     CancellationToken localCancellationToken38 = cancellationToken;
-    TaskCreationOptions localTaskCreationOptions39 = transientTaskCreationOptions3;
-    TaskContinuationOptions localTaskContinuationOptions40 = transientTaskContinuationOptions4;
-    TaskScheduler localTaskScheduler41 = transientTaskScheduler5;
-    perBlockTaskFactory2 = new TaskFactory<IDependency>(localCancellationToken38, localTaskCreationOptions39, localTaskContinuationOptions40, localTaskScheduler41);
-    if (perResolveFunc45 == null)
+    TaskCreationOptions localTaskCreationOptions39 = transientTaskCreationOptions4;
+    TaskContinuationOptions localTaskContinuationOptions40 = transientTaskContinuationOptions5;
+    TaskScheduler localTaskScheduler41 = transientTaskScheduler6;
+    perBlockTaskFactory3 = new TaskFactory<IDependency>(localCancellationToken38, localTaskCreationOptions39, localTaskContinuationOptions40, localTaskScheduler41);
+    var perBlockFunc2 = default(Func<IDependency> );
+    perBlockFunc2 = new Func<IDependency>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
     {
-      lock (_lock)
-      {
-        if (perResolveFunc45 == null)
-        {
-          perResolveFunc45 = new Func<IDependency>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
-          {
-            IDependency localValue42 = new Dependency();
-            return localValue42;
-          });
-        }
-      }
-    }
-
+      IDependency localValue42 = new Dependency();
+      return localValue42;
+    });
     Task<IDependency> transientTask1;
-    Func<IDependency> localFactory43 = perResolveFunc45!;
-    TaskFactory<IDependency> localTaskFactory44 = perBlockTaskFactory2;
+    Func<IDependency> localFactory43 = perBlockFunc2;
+    TaskFactory<IDependency> localTaskFactory44 = perBlockTaskFactory3;
     transientTask1 = localTaskFactory44.StartNew(localFactory43);
     return new Service(transientTask1);
   }
@@ -152,7 +139,7 @@ classDiagram
 	TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions
 	TaskFactory *--  TaskScheduler : TaskScheduler
 	Service *--  TaskᐸIDependencyᐳ : TaskᐸIDependencyᐳ
-	TaskᐸIDependencyᐳ o-- "PerResolve" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
+	TaskᐸIDependencyᐳ o-- "PerBlock" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
 	TaskᐸIDependencyᐳ o-- "PerBlock" TaskFactoryᐸIDependencyᐳ : TaskFactoryᐸIDependencyᐳ
 	FuncᐸIDependencyᐳ *--  Dependency : IDependency
 	TaskFactoryᐸIDependencyᐳ o-- CancellationToken : Argument "cancellationToken"

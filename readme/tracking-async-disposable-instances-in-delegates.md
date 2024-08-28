@@ -96,38 +96,28 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var perResolveFunc42 = default(Func<Owned<IDependency>>);
       var accumulator41 = new Owned();
-      if (perResolveFunc42 == null)
+      var perBlockFunc1 = default(Func<Owned<IDependency>> );
+      perBlockFunc1 = new Func<Owned<IDependency>>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
       {
+        var accumulator41 = new Owned();
+        Dependency transientDependency4 = new Dependency();
         lock (_lock)
         {
-          if (perResolveFunc42 == null)
-          {
-            perResolveFunc42 = new Func<Owned<IDependency>>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
-            {
-              var accumulator41 = new Owned();
-              Dependency transientDependency3 = new Dependency();
-              lock (_lock)
-              {
-                accumulator41.Add(transientDependency3);
-              }
-              Owned<IDependency> perBlockOwned1;
-              Owned localOwned8 = accumulator41;
-              IDependency localValue9 = transientDependency3;
-              perBlockOwned1 = new Owned<IDependency>(localValue9, localOwned8);
-              lock (_lock)
-              {
-                accumulator41.Add(perBlockOwned1);
-              }
-              Owned<IDependency> localValue7 = perBlockOwned1;
-              return localValue7;
-            });
-          }
+          accumulator41.Add(transientDependency4);
         }
-      }
-
-      Service transientService0 = new Service(perResolveFunc42!);
+        Owned<IDependency> perBlockOwned2;
+        Owned localOwned8 = accumulator41;
+        IDependency localValue9 = transientDependency4;
+        perBlockOwned2 = new Owned<IDependency>(localValue9, localOwned8);
+        lock (_lock)
+        {
+          accumulator41.Add(perBlockOwned2);
+        }
+        Owned<IDependency> localValue7 = perBlockOwned2;
+        return localValue7;
+      });
+      Service transientService0 = new Service(perBlockFunc1);
       lock (_lock)
       {
         accumulator41.Add(transientService0);
@@ -275,7 +265,7 @@ classDiagram
 		<<interface>>
 	}
 	Composition ..> Service : Service Root
-	Service o-- "PerResolve" FuncᐸOwnedᐸIDependencyᐳᐳ : FuncᐸOwnedᐸIDependencyᐳᐳ
+	Service o-- "PerBlock" FuncᐸOwnedᐸIDependencyᐳᐳ : FuncᐸOwnedᐸIDependencyᐳᐳ
 	FuncᐸOwnedᐸIDependencyᐳᐳ o-- "PerBlock" OwnedᐸIDependencyᐳ : OwnedᐸIDependencyᐳ
 	OwnedᐸIDependencyᐳ *--  Owned : Owned
 	OwnedᐸIDependencyᐳ *--  Dependency : IDependency

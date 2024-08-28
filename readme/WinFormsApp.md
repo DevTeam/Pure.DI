@@ -57,7 +57,7 @@ The [project file](/samples/WinFormsApp/WinFormsApp.csproj) looks like this:
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.1.33">
+        <PackageReference Include="Pure.DI" Version="2.1.34">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>

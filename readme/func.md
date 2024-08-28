@@ -45,19 +45,16 @@ The following partial class will be generated:
 partial class Composition
 {
   private readonly Composition _root;
-  private readonly object _lock;
 
   [OrdinalAttribute(20)]
   public Composition()
   {
     _root = this;
-    _lock = new object();
   }
 
   internal Composition(Composition parentScope)
   {
     _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = _root._lock;
   }
 
   public IService Root
@@ -65,23 +62,13 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var perResolveFunc42 = default(Func<IDependency>);
-      if (perResolveFunc42 == null)
+      var perBlockFunc1 = default(Func<IDependency> );
+      perBlockFunc1 = new Func<IDependency>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
       {
-        lock (_lock)
-        {
-          if (perResolveFunc42 == null)
-          {
-            perResolveFunc42 = new Func<IDependency>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
-            {
-              IDependency localValue30 = new Dependency();
-              return localValue30;
-            });
-          }
-        }
-      }
-
-      return new Service(perResolveFunc42!);
+        IDependency localValue30 = new Dependency();
+        return localValue30;
+      });
+      return new Service(perBlockFunc1);
     }
   }
 
@@ -229,7 +216,7 @@ classDiagram
 		<<interface>>
 	}
 	Composition ..> Service : IService Root
-	Service o-- "PerResolve" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
+	Service o-- "PerBlock" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
 	FuncᐸIDependencyᐳ *--  Dependency : IDependency
 ```
 

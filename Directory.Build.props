@@ -1,7 +1,7 @@
 <Project>
 
     <PropertyGroup>
-        <InternalVersion>2.1.33</InternalVersion>
+        <InternalVersion>2.1.34</InternalVersion>
         <BasePackageId>Pure.DI</BasePackageId>
         <LangVersion>latest</LangVersion>
         <BaseTargetFramework>net8.0</BaseTargetFramework>

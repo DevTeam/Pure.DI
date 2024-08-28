@@ -36,19 +36,16 @@ The following partial class will be generated:
 partial class Composition
 {
   private readonly Composition _root;
-  private readonly object _lock;
 
   [OrdinalAttribute(20)]
   public Composition()
   {
     _root = this;
-    _lock = new object();
   }
 
   internal Composition(Composition parentScope)
   {
     _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = _root._lock;
   }
 
   public IService Root
@@ -56,24 +53,14 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var perResolveFunc43 = default(Func<IDependency>);
-      if (perResolveFunc43 == null)
+      var perBlockFunc2 = default(Func<IDependency> );
+      perBlockFunc2 = new Func<IDependency>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
       {
-        lock (_lock)
-        {
-          if (perResolveFunc43 == null)
-          {
-            perResolveFunc43 = new Func<IDependency>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
-            {
-              IDependency localValue33 = new Dependency();
-              return localValue33;
-            });
-          }
-        }
-      }
-
+        IDependency localValue33 = new Dependency();
+        return localValue33;
+      });
       Lazy<IDependency> transientLazy1;
-      Func<IDependency> localFactory34 = perResolveFunc43!;
+      Func<IDependency> localFactory34 = perBlockFunc2;
       transientLazy1 = new Lazy<IDependency>(localFactory34, true);
       return new Service(transientLazy1);
     }
@@ -225,7 +212,7 @@ classDiagram
 	}
 	Composition ..> Service : IService Root
 	Service *--  LazyᐸIDependencyᐳ : LazyᐸIDependencyᐳ
-	LazyᐸIDependencyᐳ o-- "PerResolve" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
+	LazyᐸIDependencyᐳ o-- "PerBlock" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
 	FuncᐸIDependencyᐳ *--  Dependency : IDependency
 ```
 
