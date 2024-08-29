@@ -34,9 +34,5 @@
         <CompilerVisibleProperty Include="ImmutypeAPI" />
     </ItemGroup>
 
-    <Target Name="Info" BeforeTargets="Build">
-        <Message Text="Roslyn $(AnalyzerRoslynPackageVersion)" Importance="high"/>
-    </Target>
-
 </Project>
 
