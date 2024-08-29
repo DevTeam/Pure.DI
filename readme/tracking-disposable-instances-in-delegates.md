@@ -90,8 +90,7 @@ partial class Composition
     get
     {
       var accumulator41 = new Owned();
-      var perBlockFunc1 = default(Func<Owned<IDependency>>);
-      perBlockFunc1 = new Func<Owned<IDependency>>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
+      Func<Owned<IDependency>> perBlockFunc1 = new Func<Owned<IDependency>>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
       {
         var accumulator41 = new Owned();
         Dependency transientDependency4 = new Dependency();

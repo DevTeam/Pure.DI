@@ -109,8 +109,7 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var transientFunc1 = default(Func<int, int, IDependency>);
-      transientFunc1 =
+      Func<int, int, IDependency> transientFunc1 =
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       (dependencyId, subId) =>
       {

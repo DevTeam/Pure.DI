@@ -79,8 +79,7 @@ partial class Func
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public partial CompositionRoot TestPureDIByCR()
   {
-    var perBlockFunc10 = default(Func<IService3>);
-    perBlockFunc10 = new Func<IService3>(
+    Func<IService3> perBlockFunc10 = new Func<IService3>(
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     () =>
     {
