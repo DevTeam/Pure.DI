@@ -20,7 +20,9 @@ internal record Variable(
     public Block ParentBlock => this.GetPath().OfType<Block>().First();
     
     public bool IsDeclared { get; set; } = Node.Lifetime is not Lifetime.Transient and not Lifetime.PerBlock || Node.Arg is not null;
-    
+
+    public bool HasCycledReference { get; set; }
+
     public string VariableDeclarationName => 
         string.IsNullOrEmpty(NameOverride)
             ? Node.GetVariableName(PerLifetimeId)

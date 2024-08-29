@@ -108,6 +108,13 @@ internal class VariablesBuilder(
                             if (hasCycle)
                             {
                                 isAlreadyCreated = nodeInfo.IsLazy(depNode);
+                                if (isAlreadyCreated)
+                                {
+                                    foreach (var pathVariable in path)
+                                    {
+                                        pathVariable.Value.HasCycledReference = true;
+                                    }
+                                }
                             }
 
                             var depVariable = GetVariable(
