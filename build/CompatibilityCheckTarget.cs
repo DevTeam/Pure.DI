@@ -56,20 +56,18 @@ internal class CompatibilityCheckTarget(
             "net20"
         ];
 
-        foreach (var framework in frameworks.Reverse())
-        {
-            await CompatibilityCheckAsync(generatorPackage.Path, framework, cancellationToken);
-        }
-
-        var packages = new List<Package> { generatorPackage };
-
+        var tasks = new List<Task>();
+        tasks.AddRange(frameworks.Reverse().Select(framework => CompatibilityCheckAsync(generatorPackage.Path, framework, cancellationToken)));
+        
         // Libraries
+        var packages = new List<Package> { generatorPackage };
         foreach (var library in libraries)
         {
-            await CompatibilityCheckAsync(generatorPackage.Path, library, cancellationToken);
+            tasks.Add(CompatibilityCheckAsync(generatorPackage.Path, library, cancellationToken));
             packages.Add(library.Package);
         }
 
+        await Task.WhenAll(tasks);
         return packages;
     }
 
@@ -119,7 +117,7 @@ internal class CompatibilityCheckTarget(
                     settings.NextVersion.ToString(),
                     "-s",
                     Path.GetDirectoryName(generatorPackage)!)
-                .WithShortName($"add the package {generatorPackage} for {framework}")
+                .WithShortName($"add the package {Path.GetFileName(generatorPackage)} for {framework}")
                 .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
             await new DotNetBuild().WithWorkingDirectory(tempDirectory)
@@ -169,7 +167,7 @@ internal class CompatibilityCheckTarget(
                         framework,
                         "-s",
                         Path.GetDirectoryName(generatorPackage)!)
-                    .WithShortName($"add package Pure.DI for the {templateName} template for {framework}")
+                    .WithShortName($"add package {Path.GetFileName(generatorPackage)} for the {templateName} template for {framework}")
                     .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
                 var libraryPackageDir = Path.GetDirectoryName(library.Package.Path)!;
