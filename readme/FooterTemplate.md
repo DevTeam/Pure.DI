@@ -689,7 +689,7 @@ alt="DotNext Pure.DI" width="640" border="10"/></a>
 > [C# interactive](https://github.com/DevTeam/csharp-interactive) build automation system for .NET
 
 Examples of how to set up a composition
-- [Pure.DI](https://github.com/DevTeam/Pure.DI/blob/master/src/Pure.DI.Core/Generator.Composition.cs)
+- [Pure.DI](https://github.com/DevTeam/Pure.DI/blob/master/src/Pure.DI.Core/Generator.cs)
 - [C# interactive](https://github.com/DevTeam/csharp-interactive/blob/master/CSharpInteractive/Composition.cs)
 - [Immutype](https://github.com/DevTeam/Immutype/blob/master/Immutype/Composition.cs)
 - [MSBuild logger](https://github.com/JetBrains/teamcity-msbuild-logger/blob/master/TeamCity.MSBuild.Logger/Composition.cs)
