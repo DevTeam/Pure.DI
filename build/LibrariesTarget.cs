@@ -51,6 +51,7 @@ internal class LibrariesTarget(
                     ("version", settings.NextVersion.ToString()))
                 .WithConfiguration(settings.Configuration).WithNoBuild(true).WithNoLogo(true)
                 .WithProject(Path.Combine(Path.GetFullPath(Path.Combine("src", library.Name)), $"{library.Name}.csproj"))
+                .WithShortName($"packing {library.Name}")
                 .BuildAsync(cancellationToken: cancellationToken).EnsureSuccess();
         }
 

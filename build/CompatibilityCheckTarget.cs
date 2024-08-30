@@ -91,9 +91,13 @@ internal class CompatibilityCheckTarget(
                     tempDirectory,
                     "--force",
                     "-f", framework)
+                .WithShortName($"create project from the dilib template for {framework}")
                 .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
-            await new DotNetRestore().WithWorkingDirectory(tempDirectory).RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
+            await new DotNetRestore()
+                .WithShortName($"restore project for {framework}")
+                .WithWorkingDirectory(tempDirectory)
+                .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
             if (!framework.Contains('.'))
             {
@@ -102,6 +106,7 @@ internal class CompatibilityCheckTarget(
                         Path.Combine(tempDirectory),
                         "package",
                         "Microsoft.NETFramework.ReferenceAssemblies")
+                    .WithShortName($"add package Microsoft.NETFramework.ReferenceAssemblies for {framework}")
                     .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
             }
 
@@ -114,9 +119,11 @@ internal class CompatibilityCheckTarget(
                     settings.NextVersion.ToString(),
                     "-s",
                     Path.GetDirectoryName(generatorPackage)!)
+                .WithShortName($"add the package {generatorPackage} for {framework}")
                 .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
             await new DotNetBuild().WithWorkingDirectory(tempDirectory)
+                .WithShortName($"build sample project for {framework}")
                 .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
         }
         finally
@@ -147,6 +154,7 @@ internal class CompatibilityCheckTarget(
                         tempDirForFramework,
                         "--force",
                         "-f", framework)
+                    .WithShortName($"create project from the {templateName} template for {framework}")
                     .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
                 await new DotNetCustom(
@@ -161,6 +169,7 @@ internal class CompatibilityCheckTarget(
                         framework,
                         "-s",
                         Path.GetDirectoryName(generatorPackage)!)
+                    .WithShortName($"add package Pure.DI for the {templateName} template for {framework}")
                     .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
                 var libraryPackageDir = Path.GetDirectoryName(library.Package.Path)!;
@@ -178,6 +187,7 @@ internal class CompatibilityCheckTarget(
                         libraryPackageDir,
                         "-f",
                         framework)
+                    .WithShortName($"add package {library.Name} for the {templateName} template for {framework}")
                     .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
                 await new DotNetRestore()
@@ -188,9 +198,9 @@ internal class CompatibilityCheckTarget(
                     .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
                 await new DotNetBuild()
-                    .WithShortName($"Build for compatibility check of {framework} for template {templateName}")
                     .WithWorkingDirectory(tempDirForFramework)
                     .WithNoRestore(true)
+                    .WithShortName($"build for the {templateName} template for {framework}")
                     .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
             }
         }

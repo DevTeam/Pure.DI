@@ -25,6 +25,7 @@ internal class DeployTarget(
             await new DotNetNuGetPush()
                 .WithSources("https://api.nuget.org/v3/index.json")
                 .WithPackage(package.Path).WithApiKey(settings.NuGetKey)
+                .WithShortName($"pushing {package.Path}")
                 .BuildAsync(cancellationToken: cancellationToken).EnsureSuccess();
         }
 

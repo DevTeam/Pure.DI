@@ -72,12 +72,12 @@ internal class GeneratorTarget(
         }
 
         await new DotNetBuild()
-            .WithShortName($"Building {codeAnalysis.AnalyzerRoslynPackageVersion}")
+            .WithShortName($"building {codeAnalysis.AnalyzerRoslynPackageVersion}")
             .WithProps(props)
             .BuildAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
         await new DotNetTest()
-            .WithShortName($"Testing {codeAnalysis.AnalyzerRoslynPackageVersion}")
+            .WithShortName($"testing {codeAnalysis.AnalyzerRoslynPackageVersion}")
             .WithProps(props)
             .WithConfiguration(settings.Configuration)
             .WithNoBuild(true).WithNoLogo(true)
@@ -86,7 +86,7 @@ internal class GeneratorTarget(
         var packagePath = Path.Combine(PackagesDir, analyzerRoslynVersion.ToString());
 
         await new DotNetPack()
-            .WithShortName($"Packing {codeAnalysis.AnalyzerRoslynPackageVersion}")
+            .WithShortName($"packing {codeAnalysis.AnalyzerRoslynPackageVersion}")
             .WithProps(props)
             .WithConfiguration(settings.Configuration)
             .WithNoBuild(true)
