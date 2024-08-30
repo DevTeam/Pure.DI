@@ -10,7 +10,7 @@ internal class Semantic(
     : ISemantic
 {
     public bool IsAccessible(ISymbol symbol) => 
-        symbol is { IsStatic: false, DeclaredAccessibility: Accessibility.Internal or Accessibility.Public or Accessibility.Friend };
+        symbol is { IsStatic: false, DeclaredAccessibility: Accessibility.Internal or Accessibility.Public };
 
     public T? TryGetTypeSymbol<T>(SemanticModel semanticModel, SyntaxNode node)
         where T : ITypeSymbol

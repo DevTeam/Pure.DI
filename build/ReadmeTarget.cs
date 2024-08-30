@@ -422,7 +422,7 @@ internal class ReadmeTarget(
             }
         }
 
-        var benchmarks = new (string name, string description, string classDiagram)[]
+        var benchmarks = new (string name, string description, string? classDiagram)[]
         {
             (nameof(Transient), "Creating an object graph of 22 transient objects.", new Transient().ToString()),
             (nameof(Singleton), "Creating an object graph of 20 transition objects plus 1 singleton with an additional 6 transition objects .", new Singleton().ToString()),
@@ -458,13 +458,9 @@ internal class ReadmeTarget(
             if (!isFirst && char.IsUpper(ch))
             {
                 yield return ' ';
-                yield return ch;
-            }
-            else
-            {
-                yield return ch;
             }
 
+            yield return ch;
             isFirst = false;
         }
     }

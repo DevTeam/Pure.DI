@@ -3,9 +3,10 @@ namespace Pure.DI.Core;
 
 using System.Diagnostics;
 
-internal class Profiler(CancellationToken cancellationToken)
-    : IProfiler
+internal class Profiler(CancellationToken cancellationToken): IProfiler
 {
+    private CancellationToken _cancellationToken = cancellationToken;
+
     public void Profiling(string path)
     {
         Directory.CreateDirectory(path);
@@ -23,7 +24,7 @@ internal class Profiler(CancellationToken cancellationToken)
             }
         };
 
-        cancellationToken.Register(state =>
+        _cancellationToken.Register(state =>
         {
             var process = (Process)state;
             if (!process.HasExited)

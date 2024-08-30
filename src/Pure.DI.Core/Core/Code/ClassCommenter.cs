@@ -93,16 +93,15 @@ internal class ClassCommenter(
                         term.Append(formatter.FormatRef($"{hints.ResolveMethodName}{{T}}()"));
                         term.Append(" method: <c>");
                         term.Append(hints.ResolveMethodName);
-                        term.Append("&lt;");
                     }
                     else
                     {
                         term.Append(formatter.FormatRef($"{hints.ResolveByTagMethodName}{{T}}(object)"));
                         term.Append(" method: <c>");
                         term.Append(hints.ResolveByTagMethodName);
-                        term.Append("&lt;");
                     }
 
+                    term.Append("&lt;");
                     term.Append(comments.Escape(root.TypeDescription.Name));
                     term.Append("&gt;(");
                     term.Append(root.Injection.Tag != null ? root.Injection.Tag.ValueToString() : "");

@@ -1,7 +1,7 @@
 // ReSharper disable MemberCanBePrivate.Global
 namespace Pure.DI.Core;
 
-internal readonly struct ProcessingNode
+internal readonly struct ProcessingNode : IEquatable<ProcessingNode>
 {
     public readonly bool HasNode = false;
     public readonly DependencyNode Node;

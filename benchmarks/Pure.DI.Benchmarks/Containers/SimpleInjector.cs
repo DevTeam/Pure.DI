@@ -40,11 +40,7 @@ internal sealed class SimpleInjector : BaseAbstractContainer<Container>
             case AbstractLifetime.Transient:
                 if (!_collections.TryGetValue(contractType, out var implementations))
                 {
-                    implementations = new List<Type>
-                    {
-                        implementationType
-                    };
-
+                    implementations = [implementationType];
                     _collections.Add(contractType, implementations);
                     _container.Register(contractType, implementationType);
                 }

@@ -45,13 +45,13 @@ internal sealed class FieldsBuilder(ITypeResolver typeResolver)
                     membersCounter++;
 
                     code.AppendLine($"private bool {singletonField.VariableDeclarationName}Created;");
-                    membersCounter++;
                 }
                 else
                 {
                     code.AppendLine($"private {typeResolver.Resolve(composition.Source.Source, singletonField.InstanceType)}{nullable} {singletonField.VariableDeclarationName};");
-                    membersCounter++;
                 }
+
+                membersCounter++;
             }
         }
         

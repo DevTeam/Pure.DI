@@ -113,6 +113,7 @@ public class WildcardMatcher : IWildcardMatcher
         var nameChar = '\0';
 
         // ReSharper disable once RedundantAssignment
+        // ReSharper disable once UseCollectionExpression
         Span<int> temp = stackalloc int[0];
         Span<int> currentMatches = stackalloc int[16];
         Span<int> priorMatches = stackalloc int[16];

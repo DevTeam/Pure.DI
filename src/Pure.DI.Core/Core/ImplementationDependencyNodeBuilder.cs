@@ -43,7 +43,7 @@ internal sealed class ImplementationDependencyNodeBuilder(
                     continue;
                 }
                 
-                if (constructor.DeclaredAccessibility is not (Accessibility.Internal or Accessibility.Public or Accessibility.Friend))
+                if (constructor.DeclaredAccessibility is not (Accessibility.Internal or Accessibility.Public))
                 {
                     continue;
                 }

@@ -20,14 +20,13 @@ internal readonly record struct Result(
         {
             text.AppendLine("Code:");
             text.AppendLine(GeneratedCode);
-            text.AppendLine();
         }
         else
         {
             text.AppendLine("The code was not generated.");
-            text.AppendLine();
         }
 
+        text.AppendLine();
         foreach (var error in Errors)
         {
             text.AppendLine(error.Message);
