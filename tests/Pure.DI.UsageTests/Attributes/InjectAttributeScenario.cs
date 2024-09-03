@@ -4,12 +4,12 @@ $p=5
 $d=Inject attribute
 $h=If you want to use attributes in your libraries but don't want to create your own, you can add this package to your projects:
 $h=
-$h=[![NuGet](https://buildstats.info/nuget/Pure.DI.Abstractions)](https://www.nuget.org/packages/Pure.DI.Abstractions)
+$h=[![NuGet](https://img.shields.io/nuget/v/Pure.DI.Abstractions)](https://www.nuget.org/packages/Pure.DI.Abstractions)
 $h=
 $h=It contains attributes like `Inject` and `Inject<T>` that work for constructors and their arguments, methods and their arguments, properties and fields. They allow you to setup all injection parameters.
 $f=This package should also be included in a project:
 $f=
-$f=[![NuGet](https://buildstats.info/nuget/Pure.DI)](https://www.nuget.org/packages/Pure.DI)
+$f=[![NuGet](https://img.shields.io/nuget/v/Pure.DI)](https://www.nuget.org/packages/Pure.DI)
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

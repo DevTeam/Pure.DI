@@ -1,7 +1,7 @@
 # Pure DI for .NET
 
 <a href="https://t.me/pure_di"><img src="https://github.com/DevTeam/Pure.DI/blob/master/readme/telegram.png" align="left" height="20" width="20" ></a>
-[![NuGet](https://buildstats.info/nuget/Pure.DI)](https://www.nuget.org/packages/Pure.DI)
+[![NuGet](https://img.shields.io/nuget/v/Pure.DI)](https://www.nuget.org/packages/Pure.DI)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Build](https://teamcity.jetbrains.com/app/rest/builds/buildType:(id:OpenSourceProjects_DevTeam_PureDi_BuildAndTestBuildType)/statusIcon)](https://teamcity.jetbrains.com/viewType.html?buildTypeId=OpenSourceProjects_DevTeam_PureDi_BuildAndTestBuildType&guest=1)
 [![Performance Build](https://teamcity.jetbrains.com/app/rest/builds/buildType:(id:OpenSourceProjects_DevTeam_PureDi_PerformanceTests)/statusIcon)](https://teamcity.jetbrains.com/viewType.html?buildTypeId=OpenSourceProjects_DevTeam_PureDi_PerformanceTests&guest=1)
@@ -82,7 +82,7 @@ class ShroedingersCat(Lazy<State> superposition): ICat
 
 Add the _Pure.DI_ package to your project:
 
-[![NuGet](https://buildstats.info/nuget/Pure.DI)](https://www.nuget.org/packages/Pure.DI)
+[![NuGet](https://img.shields.io/nuget/v/Pure.DI)](https://www.nuget.org/packages/Pure.DI)
 
 Let's bind the abstractions to their implementations and set up the creation of the object graph:
 
@@ -851,10 +851,10 @@ Then documentation for the composition root:
 
 |                      |                                                                                                                     |                                                            |
 |----------------------|---------------------------------------------------------------------------------------------------------------------|:-----------------------------------------------------------|
-| Pure.DI              | [![NuGet](https://buildstats.info/nuget/Pure.DI)](https://www.nuget.org/packages/Pure.DI)                           | DI Source code generator                                   |
-| Pure.DI.Abstractions | [![NuGet](https://buildstats.info/nuget/Pure.DI.Abstractions)](https://www.nuget.org/packages/Pure.DI.Abstractions) | Abstractions for Pure.DI                                   |
-| Pure.DI.Templates    | [![NuGet](https://buildstats.info/nuget/Pure.DI.Templates)](https://www.nuget.org/packages/Pure.DI.Templates)       | Template Package you can call from the shell/command line. |
-| Pure.DI.MS           | [![NuGet](https://buildstats.info/nuget/Pure.DI.MS)](https://www.nuget.org/packages/Pure.DI.MS)                     | Tools for working with Microsoft DI                        |
+| Pure.DI              | [![NuGet](https://img.shields.io/nuget/v/Pure.DI)](https://www.nuget.org/packages/Pure.DI)                           | DI Source code generator                                   |
+| Pure.DI.Abstractions | [![NuGet](https://img.shields.io/nuget/v/Pure.DI.Abstractions)](https://www.nuget.org/packages/Pure.DI.Abstractions) | Abstractions for Pure.DI                                   |
+| Pure.DI.Templates    | [![NuGet](https://img.shields.io/nuget/v/Pure.DI.Templates)](https://www.nuget.org/packages/Pure.DI.Templates)       | Template Package you can call from the shell/command line. |
+| Pure.DI.MS           | [![NuGet](https://img.shields.io/nuget/v/Pure.DI.MS)](https://www.nuget.org/packages/Pure.DI.MS)                     | Tools for working with Microsoft DI                        |
 
 ## Project template
 

@@ -4,7 +4,7 @@
 
 If you want to use attributes in your libraries but don't want to create your own, you can add this package to your projects:
 
-[![NuGet](https://buildstats.info/nuget/Pure.DI.Abstractions)](https://www.nuget.org/packages/Pure.DI.Abstractions)
+[![NuGet](https://img.shields.io/nuget/v/Pure.DI.Abstractions)](https://www.nuget.org/packages/Pure.DI.Abstractions)
 
 It contains attributes like `Inject` and `Inject<T>` that work for constructors and their arguments, methods and their arguments, properties and fields. They allow you to setup all injection parameters.
 
@@ -43,7 +43,7 @@ person.ToString().ShouldBe("123 Nik https://github.com/DevTeam/Pure.DI");
 
 This package should also be included in a project:
 
-[![NuGet](https://buildstats.info/nuget/Pure.DI)](https://www.nuget.org/packages/Pure.DI)
+[![NuGet](https://img.shields.io/nuget/v/Pure.DI)](https://www.nuget.org/packages/Pure.DI)
 
 The following partial class will be generated:
 

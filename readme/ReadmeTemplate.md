@@ -42,7 +42,7 @@ class ShroedingersCat(Lazy<State> superposition): ICat
 
 Add the _Pure.DI_ package to your project:
 
-[![NuGet](https://buildstats.info/nuget/Pure.DI)](https://www.nuget.org/packages/Pure.DI)
+[![NuGet](https://img.shields.io/nuget/v/Pure.DI)](https://www.nuget.org/packages/Pure.DI)
 
 Let's bind the abstractions to their implementations and set up the creation of the object graph:
 
