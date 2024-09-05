@@ -4,6 +4,7 @@
         <TargetFramework>$(BaseTargetFramework)</TargetFramework>
         <OutputType>Exe</OutputType>
         <RootNamespace>Sample</RootNamespace>
+        <NoWarn>CS8321;CA1050</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>

@@ -38,8 +38,8 @@ internal class Settings(Properties properties, Versions versions)
 
     public ImmutableArray<CodeAnalysis> CodeAnalysis { get; } =
     [
-        new CodeAnalysis(new Version(4, 8, 0)),
-        new CodeAnalysis(new Version(4, 3, 1))
+        new(new Version(4, 8, 0)),
+        new(new Version(4, 3, 1))
     ];
 
     private static NuGetVersion GetVersion(Versions versions) => 

@@ -1,11 +1,8 @@
-﻿#pragma warning disable CA1050
-#pragma warning disable CS8321
-// ReSharper disable UnusedMember.Global
-// ReSharper disable UnusedMemberInSuper.Global
-
-using Pure.DI;
+﻿using Pure.DI;
 using System.Diagnostics;
 using static Pure.DI.Lifetime;
+// ReSharper disable UnusedMemberInSuper.Global
+// ReSharper disable UnusedMember.Global
 
 // Composition root
 new Composition().Root.Run();
@@ -59,5 +56,3 @@ public partial class Program(IBox<ICat> box)
 {
     private void Run() => Console.WriteLine(box);
 }
-
-#pragma warning restore CA1050

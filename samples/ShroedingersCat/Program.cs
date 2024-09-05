@@ -1,13 +1,9 @@
 ﻿using Pure.DI;
 using static Pure.DI.Lifetime;
-
 // ReSharper disable ArrangeTypeMemberModifiers
-
-// ReSharper disable InconsistentNaming
-// ReSharper disable UnusedMember.Local
-// ReSharper disable ClassNeverInstantiated.Global
-// ReSharper disable UnusedMemberInSuper.Global
 // ReSharper disable UnusedMember.Global
+// ReSharper disable UnusedMember.Local
+// ReSharper disable UnusedMemberInSuper.Global
 
 namespace Sample;
 

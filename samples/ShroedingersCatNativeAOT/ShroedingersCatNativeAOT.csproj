@@ -7,6 +7,7 @@
         <OutputType>Exe</OutputType>
         <RootNamespace>Sample</RootNamespace>
         <IsPackable>false</IsPackable>
+        <NoWarn>CS8321;CA1050</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>

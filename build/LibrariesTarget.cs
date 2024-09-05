@@ -24,8 +24,7 @@ internal class LibrariesTarget(
         // Libraries
         List<Library> libraries =
         [
-            new Library(
-                "Pure.DI.MS",
+            new("Pure.DI.MS",
                 new Package(GetPackagePath("Pure.DI.MS", settings.NextVersion), false),
                 sdk.Versions
                     .Where(i => i.Version.Major >= 7)
@@ -33,8 +32,7 @@ internal class LibrariesTarget(
                     .ToArray(),
                 ["webapi"]),
             
-            new Library(
-                "Pure.DI.Abstractions",
+            new("Pure.DI.Abstractions",
                 new Package(GetPackagePath("Pure.DI.Abstractions", settings.NextVersion), false),
                 sdk.Versions
                     .Where(i => i.Version.Major >= 7)
