@@ -10,7 +10,8 @@ internal record Variable(
         VariableInfo Info,
         bool IsLazy,
         bool HasCycle,
-        string NameOverride = "")
+        string NameOverride = "",
+        RefKind RefKind = RefKind.None)
         : IStatement
 {
     private string? _variableCode;

@@ -5,7 +5,8 @@ namespace Pure.DI.Core.Code;
 internal class BuildTools(
     IFilter filter,
     ITypeResolver typeResolver,
-    IBaseSymbolsProvider baseSymbolsProvider)
+    IBaseSymbolsProvider baseSymbolsProvider,
+    [Tag("Injection")] IIdGenerator idGenerator)
     : IBuildTools
 {
     public void AddPureHeader(LinesBuilder code)
@@ -17,8 +18,28 @@ internal class BuildTools(
 
     public string GetDeclaration(Variable variable, string separator = " ") =>
         variable.IsDeclared ? "" : $"{typeResolver.Resolve(variable.Setup, variable.InstanceType)}{separator}";
-    
+
     public string OnInjected(BuildContext ctx, Variable variable)
+    {
+        var injection = OnInjectedInternal(ctx, variable);
+        var refKind = variable.RefKind switch
+        {
+            RefKind.Ref or RefKind.RefReadOnlyParameter => "ref",
+            RefKind.Out => "out",
+            _ => ""
+        };
+
+        if (!string.IsNullOrEmpty(refKind))
+        {
+            var localVarName = $"{variable.VariableDeclarationName}_{refKind}{idGenerator.Generate()}";
+            ctx.Code.AppendLine($"{variable.InstanceType} {localVarName} = {injection};");
+            injection = $"{refKind} {localVarName}";
+        }
+
+        return injection;
+    }
+
+    private string OnInjectedInternal(BuildContext ctx, Variable variable)
     {
         var variableCode = variable.VariableCode;
         if (variableCode == variable.VariableName)

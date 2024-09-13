@@ -139,6 +139,7 @@ public sealed partial class Generator
                 .Bind().To<Filter>()
                 .Bind("UniqueTags").To<IdGenerator>()
                 .Bind("GenericType").To<IdGenerator>()
+                .Bind("Injection").To<IdGenerator>()
                 .Bind().To<IdGenerator>()
                 .Bind().To<Registry<TT>>();
 }
