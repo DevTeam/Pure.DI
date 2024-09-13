@@ -1,6 +1,6 @@
 namespace Pure.DI.Core;
 
-internal sealed class DependenciesToVariablesWalker: DependenciesWalker<Unit>
+internal sealed class DependenciesToVariablesWalker : DependenciesWalker<Unit>
 {
     private readonly ICollection<Variable> _variables;
     private readonly Dictionary<Injection, LinkedList<Variable>> _variablesMap;
@@ -37,10 +37,10 @@ internal sealed class DependenciesToVariablesWalker: DependenciesWalker<Unit>
             {
                 _variablesMap.Remove(injection);
             }
-            
+
             _resultBuilder.Add(variable);
         }
-        
+
         base.VisitInjection(ctx, in injection, hasExplicitDefaultValue, explicitDefaultValue, locations);
     }
 }

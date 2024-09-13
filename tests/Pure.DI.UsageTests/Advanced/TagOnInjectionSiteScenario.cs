@@ -22,12 +22,12 @@ $f=> Each potentially injectable argument, property, or field contains an additi
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable UnusedTypeParameter
+
 #pragma warning disable CS9113 // Parameter is unread.
 // {
 namespace MyNamespace;
 
 // }
-
 using Pure.DI;
 using Pure.DI.UsageTests;
 using Xunit;
@@ -36,22 +36,22 @@ using Xunit;
 interface IDependency;
 
 class AbcDependency : IDependency;
-        
+
 class XyzDependency : IDependency;
 
 class Consumer<T>(IDependency myDep)
 {
     public IDependency Dependency { get; } = myDep;
 }
-        
+
 interface IService
 {
     IDependency Dependency1 { get; }
 
     IDependency Dependency2 { get; }
-    
+
     IDependency Dependency3 { get; }
-    
+
     IDependency Dependency4 { get; }
 }
 
@@ -83,15 +83,15 @@ public class Scenario
                 Tag.On("MyNamespace.Service.Service:dependency1"),
                 // Tag on injection site for generic type
                 Tag.On("MyNamespace.Consumer`1.Consumer:myDep"))
-                .To<AbcDependency>()
+            .To<AbcDependency>()
             .Bind(
                 // Combined tag
                 Tag.On(
                     "MyNamespace.Service.Service:dependency2",
                     "MyNamespace.Service:Dependency3"))
-                .To<XyzDependency>()
+            .To<XyzDependency>()
             .Bind<IService>().To<Service>()
-            
+
             // Specifies to create the composition root named "Root"
             .Root<IService>("Root");
 

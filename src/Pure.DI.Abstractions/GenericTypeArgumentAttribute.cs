@@ -1,6 +1,7 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable RedundantNameQualifier
 // ReSharper disable InvalidXmlDocComment
+
 namespace Pure.DI.Abstractions;
 
 /// <summary>

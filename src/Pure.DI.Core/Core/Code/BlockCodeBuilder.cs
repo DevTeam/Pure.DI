@@ -1,4 +1,5 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core.Code;
 
 internal class BlockCodeBuilder(
@@ -13,7 +14,7 @@ internal class BlockCodeBuilder(
         {
             return;
         }
-        
+
         var localMethodName = $"{Names.EnsureExistsMethodNamePrefix}_{variable.VariableDeclarationName}".Replace("__", "_");
         var info = block.Current.Info;
         var code = new LinesBuilder();
@@ -28,7 +29,7 @@ internal class BlockCodeBuilder(
                 .Where(accumulator => !accumulator.IsDeclared)
                 .GroupBy(i => i.Name)
                 .Select(i => i.First());
-            
+
             foreach (var accumulator in uniqueAccumulators)
             {
                 code.AppendLine($"var {accumulator.Name} = new {accumulator.AccumulatorType}();");
@@ -74,21 +75,21 @@ internal class BlockCodeBuilder(
                 isEmpty = true;
                 return;
             }
-            
+
             if (info.HasLocalMethod)
             {
                 ctx.Code.AppendLine($"{localMethodName}();");
                 isEmpty = true;
                 return;
             }
-            
+
             code.AppendLines(content.Lines);
-            
+
             if (!toCheckExistence)
             {
                 return;
             }
-            
+
             if (variable.Node.Lifetime is Lifetime.Singleton or Lifetime.Scoped && nodeInfo.IsDisposable(variable.Node))
             {
                 var parent = "";
@@ -99,7 +100,7 @@ internal class BlockCodeBuilder(
 
                 code.AppendLine($"{parent}{Names.DisposablesFieldName}[{parent}{Names.DisposeIndexFieldName}++] = {variable.VariableName};");
             }
-            
+
             if (variable.InstanceType.IsValueType)
             {
                 if (variable.Node.Lifetime is not Lifetime.Transient and not Lifetime.PerBlock && isThreadSafe)
@@ -155,8 +156,8 @@ internal class BlockCodeBuilder(
             }
         }
     }
-    
-    private static bool IsNewInstanceRequired(Variable variable) => 
+
+    private static bool IsNewInstanceRequired(Variable variable) =>
         variable.Node.Lifetime == Lifetime.Transient
         || !variable.Current.HasCycle;
 }

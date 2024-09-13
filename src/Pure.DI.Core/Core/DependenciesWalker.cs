@@ -4,6 +4,7 @@
 // ReSharper disable VirtualMemberNeverOverridden.Global
 // ReSharper disable MemberCanBeProtected.Global
 // ReSharper disable UnusedParameter.Global
+
 namespace Pure.DI.Core;
 
 internal class DependenciesWalker<TContext>
@@ -14,22 +15,22 @@ internal class DependenciesWalker<TContext>
         {
             VisitRoot(ctx, root);
         }
-        
+
         if (node.Implementation is { } implementation)
         {
             VisitImplementation(ctx, implementation);
         }
-                
+
         if (node.Factory is { } factory)
         {
             VisitFactory(ctx, factory);
         }
-        
+
         if (node.Arg is { } arg)
         {
             VisitArg(ctx, arg);
         }
-        
+
         if (node.Construct is { } construction)
         {
             VisitConstruct(ctx, construction);
@@ -47,7 +48,7 @@ internal class DependenciesWalker<TContext>
         {
             VisitConstructor(ctx, constructor);
         }
-        
+
         foreach (var field in implementation.Fields)
         {
             VisitField(ctx, field);
@@ -86,7 +87,7 @@ internal class DependenciesWalker<TContext>
 
     public virtual void VisitMethod(in TContext ctx, in DpMethod method)
     {
-        foreach (var parameter in method.Parameters) 
+        foreach (var parameter in method.Parameters)
         {
             VisitParameter(ctx, parameter);
         }
@@ -103,7 +104,7 @@ internal class DependenciesWalker<TContext>
         {
             return;
         }
-        
+
         VisitInjection(
             ctx,
             property.Injection,
@@ -117,7 +118,7 @@ internal class DependenciesWalker<TContext>
         VisitInjection(
             ctx,
             field.Injection,
-            field.Field.HasConstantValue, 
+            field.Field.HasConstantValue,
             field.Field.HasConstantValue ? field.Field.ConstantValue : default,
             field.Field.Locations);
     }

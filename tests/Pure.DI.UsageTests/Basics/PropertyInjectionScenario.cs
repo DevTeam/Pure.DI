@@ -9,6 +9,7 @@ $h=To use dependency injection on a property, make sure the property is writable
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable ArrangeTypeModifiers
+
 namespace Pure.DI.UsageTests.Basics.PropertyInjectionScenario;
 
 using Shouldly;
@@ -44,7 +45,7 @@ public class Scenario
         DI.Setup(nameof(Composition))
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>()
-            
+
             // Composition root
             .Root<IService>("MyService");
 

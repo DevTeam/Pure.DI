@@ -12,7 +12,7 @@ internal class CyclicDependencyValidatorVisitor(
         parent.IsDefaultOrEmpty
             ? ImmutableArray.Create(currentNode)
             : parent.Add(currentNode);
-    
+
     public bool Visit(
         HashSet<object> errors,
         IGraph<DependencyNode, Dependency> graph,
@@ -22,7 +22,7 @@ internal class CyclicDependencyValidatorVisitor(
         {
             return true;
         }
-        
+
         var nodes = new HashSet<DependencyNode>();
         var result = true;
         foreach (var node in path)

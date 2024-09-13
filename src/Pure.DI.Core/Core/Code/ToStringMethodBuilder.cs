@@ -1,4 +1,5 @@
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core.Code;
 
 internal sealed class ToStringMethodBuilder
@@ -37,6 +38,7 @@ internal sealed class ToStringMethodBuilder
                 }
             }
         }
+
         code.AppendLine("}");
         membersCounter++;
         return composition with { MembersCount = membersCounter };

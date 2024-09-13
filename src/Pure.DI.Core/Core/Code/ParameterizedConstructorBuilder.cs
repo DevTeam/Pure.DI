@@ -1,9 +1,11 @@
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core.Code;
 
 internal sealed class ParameterizedConstructorBuilder(
     ITypeResolver typeResolver,
-    [Tag(typeof(ParameterizedConstructorCommenter))] ICommenter<Unit> constructorCommenter)
+    [Tag(typeof(ParameterizedConstructorCommenter))]
+    ICommenter<Unit> constructorCommenter)
     : IBuilder<CompositionCode, CompositionCode>
 {
     public CompositionCode Build(CompositionCode composition)
@@ -21,7 +23,7 @@ internal sealed class ParameterizedConstructorBuilder(
         }
 
         constructorCommenter.AddComments(composition, Unit.Shared);
-        
+
         code.AppendLine($"[{Names.OrdinalAttributeName}(10)]");
         var classArgs = composition.Args.GetArgsOfKind(ArgKind.Class).ToArray();
         code.AppendLine($"public {composition.Source.Source.Name.ClassName}({string.Join(", ", classArgs.Select(arg => $"{typeResolver.Resolve(composition.Source.Source, arg.InstanceType)} {arg.Node.Arg?.Source.ArgName}"))})");
@@ -35,7 +37,7 @@ internal sealed class ParameterizedConstructorBuilder(
                 {
                     nullCheck = $" ?? throw new {Names.SystemNamespace}ArgumentNullException(nameof({arg.Node.Arg?.Source.ArgName}))";
                 }
-                
+
                 code.AppendLine($"{arg.VariableDeclarationName} = {arg.Node.Arg?.Source.ArgName}{nullCheck};");
             }
 
@@ -44,7 +46,7 @@ internal sealed class ParameterizedConstructorBuilder(
             {
                 code.AppendLine($"{Names.LockFieldName} = new object();");
             }
-            
+
             if (composition.TotalDisposablesCount > 0)
             {
                 code.AppendLine($"{Names.DisposablesFieldName} = new object[{composition.TotalDisposablesCount.ToString()}];");

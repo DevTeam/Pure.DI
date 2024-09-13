@@ -15,6 +15,7 @@ $f=For more hints, see [this](README.md#setup-hints) page.
 // ReSharper disable UnusedMemberInSuper.Global
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable UnusedMember.Global
+
 namespace Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario;
 
 using System.Collections.Immutable;
@@ -75,7 +76,7 @@ public class Scenario
         var composition = new Composition(log);
         var service1 = composition.Root;
         var service2 = composition.Root;
-        
+
         log.ShouldBe(ImmutableArray.Create("Dependency", "Service", "Service"));
 // }
         composition.SaveClassDiagram();

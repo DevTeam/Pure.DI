@@ -13,11 +13,12 @@ $f=> The method `Inject()`cannot be used outside of the binding setup.
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable UnusedMember.Local
 // ReSharper disable ArrangeTypeMemberModifiers
+
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Lifetimes.AutoScopedScenario;
 
 using Xunit;
-using static Lifetime; 
+using static Lifetime;
 
 // {
 interface IDependency;
@@ -54,13 +55,13 @@ partial class Composition
             {
                 // Injects a base composition
                 ctx.Inject(out Composition baseComposition);
-                
+
                 // Creates a session
                 var session = new Composition(baseComposition);
-                
+
                 return session.SessionRoot;
             })
-            
+
             // Program composition root
             .Root<Program>("ProgramRoot");
 }
@@ -74,13 +75,13 @@ public class Scenario
 // {            
         var composition = new Composition();
         var program = composition.ProgramRoot;
-        
+
         // Creates service in session #1
         var service1 = program.CreateService();
-        
+
         // Creates service in session #2
         var service2 = program.CreateService();
-        
+
         // Checks that the scoped instances are not identical in different sessions
         service1.Dependency.ShouldNotBe(service2.Dependency);
 // }

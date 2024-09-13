@@ -1,4 +1,5 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core;
 
 using System.Reflection;
@@ -25,19 +26,19 @@ internal class InjectionSiteFactory : IInjectionSiteFactory
         var qualifiedNameArityFormat = NameTagQualifiedFormat.GetType().GetField("QualifiedNameArityFormat", BindingFlags.Static | BindingFlags.NonPublic);
         var format = (SymbolDisplayFormat?)qualifiedNameArityFormat?.GetValue(null)
                      ?? new SymbolDisplayFormat(typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces);
-        
-        NameTagQualifiedFormat = 
+
+        NameTagQualifiedFormat =
             format
                 .WithGenericsOptions(SymbolDisplayGenericsOptions.IncludeTypeParameters)
                 .WithMemberOptions(SymbolDisplayMemberOptions.IncludeType | SymbolDisplayMemberOptions.IncludeContainingType)
                 .WithMiscellaneousOptions(SymbolDisplayMiscellaneousOptions.UseSpecialTypes | SymbolDisplayMiscellaneousOptions.CollapseTupleTypes);
     }
-    
+
     public string CreateInjectionSite(ISymbol containingSymbol, string name)
     {
         var memberName = containingSymbol.ToDisplayString(NameTagQualifiedFormat);
         return $"{memberName}:{name}";
     }
-    
+
     public MdInjectionSite CreateInjectionSite(SyntaxNode source, ISymbol containingSymbol, string name) => new(source, CreateInjectionSite(containingSymbol, name));
 }

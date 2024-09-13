@@ -5,8 +5,8 @@
         FontFamily="Consolas"
         FontWeight="Bold">
     <StackPanel Name="Clock" Opacity=".4" HorizontalAlignment="Center" VerticalAlignment="Center" DataContext="{Binding ClockViewModel}">
-        <TextBlock Text="{Binding Date}" FontSize="64" HorizontalAlignment="Center"/>
-        <TextBlock Text="{Binding Time}" FontSize="128" HorizontalAlignment="Center"/>
+        <TextBlock Text="{Binding Date}" FontSize="64" HorizontalAlignment="Center" />
+        <TextBlock Text="{Binding Time}" FontSize="128" HorizontalAlignment="Center" />
         <StackPanel.Effect>
             <DropShadowEffect Color="Black" Direction="20" ShadowDepth="0" Opacity="0" RenderingBias="Performance" />
         </StackPanel.Effect>

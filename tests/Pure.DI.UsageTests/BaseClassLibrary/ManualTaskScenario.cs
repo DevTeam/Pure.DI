@@ -11,6 +11,7 @@ $f=> The method `Inject()`cannot be used outside of the binding setup.
 // ReSharper disable CheckNamespace
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable UnusedParameter.Global
+
 namespace Pure.DI.UsageTests.BCL.ManualTaskScenario;
 
 using Xunit;
@@ -72,13 +73,13 @@ public class Scenario
             .RootArg<CancellationToken>("cancellationToken")
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>()
-            
+
             // Composition root
             .Root<IService>("GetRoot");
 
         var composition = new Composition();
         using var cancellationTokenSource = new CancellationTokenSource();
-        
+
         // Creates a composition root with the CancellationToken passed to it
         var service = composition.GetRoot(cancellationTokenSource.Token);
         await service.RunAsync(cancellationTokenSource.Token);

@@ -1,5 +1,6 @@
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable IdentifierTypo
+
 namespace Pure.DI.Core;
 
 internal sealed class Variator<T> : IVariator<T>
@@ -24,7 +25,7 @@ internal sealed class Variator<T> : IVariator<T>
             {
                 enumerator.MoveNext();
             }
-            
+
             curVariants.Add(enumerator.Current);
         }
 

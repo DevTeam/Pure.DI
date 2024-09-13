@@ -8,13 +8,13 @@ You can use the `Bind(...)` method without type parameters. In this case binding
 ```c#
 interface IDependencyBase;
 
-class DependencyBase: IDependencyBase;
+class DependencyBase : IDependencyBase;
 
 interface IDependency;
 
 interface IOtherDependency;
 
-class Dependency:
+class Dependency :
     DependencyBase,
     IDependency,
     IOtherDependency,
@@ -50,7 +50,7 @@ DI.Setup(nameof(Composition))
 
     // Specifies to create a property "MyService"
     .Root<IService>("MyService");
-        
+
 var composition = new Composition();
 var service = composition.MyService;
 ```

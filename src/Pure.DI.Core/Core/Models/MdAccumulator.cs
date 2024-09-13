@@ -1,5 +1,6 @@
 // ReSharper disable HeapView.ObjectAllocation
 // ReSharper disable NotAccessedPositionalProperty.Global
+
 namespace Pure.DI.Core.Models;
 
 internal readonly record struct MdAccumulator(
@@ -9,7 +10,7 @@ internal readonly record struct MdAccumulator(
     ITypeSymbol AccumulatorType,
     Lifetime Lifetime)
 {
-    public bool Equals(MdAccumulator other) => 
+    public bool Equals(MdAccumulator other) =>
         SymbolEqualityComparer.Default.Equals(Type, other.Type)
         && SymbolEqualityComparer.Default.Equals(AccumulatorType, other.AccumulatorType)
         && Lifetime == other.Lifetime;

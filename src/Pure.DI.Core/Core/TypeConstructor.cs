@@ -2,6 +2,7 @@
 // ReSharper disable once ClassNeverInstantiated.Global
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+
 namespace Pure.DI.Core;
 
 [SuppressMessage("MicrosoftCodeAnalysisCorrectness", "RS1024:Symbols should be compared for equality")]
@@ -73,11 +74,11 @@ internal sealed class TypeConstructor(IMarker marker) : ITypeConstructor
 
                 break;
             }
-            
+
             case IArrayTypeSymbol sourceArrayType when target is IArrayTypeSymbol targetArrayType:
                 result &= result && TryBind(setup, sourceArrayType.ElementType, targetArrayType.ElementType);
                 break;
-            
+
             default:
                 result &= result && SymbolEqualityComparer.Default.Equals(source.OriginalDefinition, target.OriginalDefinition);
                 break;
@@ -94,7 +95,7 @@ internal sealed class TypeConstructor(IMarker marker) : ITypeConstructor
             {
                 continue;
             }
-            
+
             result &= TryBind(setup, source, implementationInterfaceType);
             if (!result)
             {
@@ -108,7 +109,7 @@ internal sealed class TypeConstructor(IMarker marker) : ITypeConstructor
             {
                 continue;
             }
-            
+
             result &= TryBind(setup, dependencyInterfaceType, target);
             if (!result)
             {

@@ -1,5 +1,6 @@
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable IdentifierTypo
+
 namespace Pure.DI.Core;
 
 internal sealed class ImplementationVariantsBuilder(
@@ -12,9 +13,9 @@ internal sealed class ImplementationVariantsBuilder(
     {
         var variants =
             implementation.Methods.Select(method => CreateVariants(method, ImplementationVariantKind.Method))
-            .Concat(Enumerable.Repeat(CreateVariants(implementation.Constructor, ImplementationVariantKind.Ctor), 1))
-            .Select(i => i.GetEnumerator())
-            .ToArray();
+                .Concat(Enumerable.Repeat(CreateVariants(implementation.Constructor, ImplementationVariantKind.Ctor), 1))
+                .Select(i => i.GetEnumerator())
+                .ToArray();
 
         try
         {
@@ -23,7 +24,7 @@ internal sealed class ImplementationVariantsBuilder(
                 cancellationToken.ThrowIfCancellationRequested();
                 yield return curVariants.Aggregate(
                     implementation with { Methods = ImmutableArray<DpMethod>.Empty },
-                    (current, variant) => variant.Kind switch 
+                    (current, variant) => variant.Kind switch
                     {
                         ImplementationVariantKind.Ctor => current with { Constructor = variant.Method },
                         ImplementationVariantKind.Method => current with { Methods = current.Methods.Add(variant.Method) },
@@ -39,7 +40,7 @@ internal sealed class ImplementationVariantsBuilder(
             }
         }
     }
-    
+
     private static IEnumerable<ImplementationVariant> CreateVariants(DpMethod method, ImplementationVariantKind kind)
     {
         yield return new ImplementationVariant(kind, method);

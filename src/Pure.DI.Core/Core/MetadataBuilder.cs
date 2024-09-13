@@ -6,6 +6,7 @@
 // ReSharper disable HeapView.DelegateAllocation
 // ReSharper disable HeapView.ClosureAllocation
 // ReSharper disable LoopCanBeConvertedToQuery
+
 namespace Pure.DI.Core;
 
 internal sealed class MetadataBuilder(
@@ -17,12 +18,12 @@ internal sealed class MetadataBuilder(
 {
     public IEnumerable<MdSetup> Build(IEnumerable<SyntaxUpdate> updates)
     {
-        var actualUpdates = 
+        var actualUpdates =
             updates
                 .GroupBy(i => i.Node.SyntaxTree.GetRoot())
                 .Select(i => new SyntaxUpdate(i.Key, i.First().SemanticModel))
                 .ToList();
-        
+
         var setups = new List<MdSetup>();
         foreach (var update in actualUpdates)
         {
@@ -31,21 +32,21 @@ internal sealed class MetadataBuilder(
             {
                 throw new CompileErrorException($"{Names.GeneratorName} does not support C# {languageVersion.ToDisplayString()}. Please use language version {LanguageVersion.CSharp8.ToDisplayString()} or greater.", update.Node.GetLocation(), LogId.ErrorNotSupportedLanguageVersion);
             }
-            
+
             var setupsBuilder = setupsBuilderFactory();
             foreach (var newSetup in setupsBuilder.Build(update))
             {
                 setups.Add(newSetup);
             }
-            
+
             cancellationToken.ThrowIfCancellationRequested();
         }
-        
+
         if (setups.Count == 0)
         {
             yield break;
         }
-        
+
         var setupMap = setups
             .Where(i => i.Kind != CompositionKind.Global)
             .GroupBy(i => i.Name)
@@ -54,15 +55,15 @@ internal sealed class MetadataBuilder(
                 MergeSetups(setupGroup, out var mergedSetup, false);
                 return mergedSetup;
             })
-            .ToDictionary(i =>  i.Name, i => i);
-        
+            .ToDictionary(i => i.Name, i => i);
+
         var globalSetups = setups.Where(i => i.Kind == CompositionKind.Global).OrderBy(i => i.Name.ClassName).ToList();
         foreach (var setup in setupMap.Values.Where(i => i.Kind == CompositionKind.Public).OrderBy(i => i.Name))
         {
             var setupsChain = globalSetups
                 .Concat(ResolveDependencies(setup, setupMap, new HashSet<CompositionName>()))
                 .Concat(Enumerable.Repeat(setup, 1));
-            
+
             MergeSetups(setupsChain, out var mergedSetup, true);
             var setupFinalizer = setupFinalizerFactory();
             yield return setupFinalizer.Finalize(mergedSetup);
@@ -92,7 +93,7 @@ internal sealed class MetadataBuilder(
                 foreach (var result in ResolveDependencies(dependsOnSetup, map, processed))
                 {
                     yield return result;
-                }   
+                }
             }
         }
     }
@@ -131,9 +132,9 @@ internal sealed class MetadataBuilder(
             }
             else
             {
-                bindingsBuilder.AddRange(setup.Bindings);    
+                bindingsBuilder.AddRange(setup.Bindings);
             }
-            
+
             rootsBuilder.AddRange(setup.Roots);
             dependsOnBuilder.AddRange(setup.DependsOn);
             genericTypeArgumentBuilder.AddRange(setup.GenericTypeArguments);
@@ -144,7 +145,7 @@ internal sealed class MetadataBuilder(
             accumulators.AddRange(setup.Accumulators);
             foreach (var usingDirective in setup.UsingDirectives)
             {
-                usingDirectives.Add(usingDirective);   
+                usingDirectives.Add(usingDirective);
             }
 
             if (setup.Kind == CompositionKind.Public)
@@ -156,7 +157,7 @@ internal sealed class MetadataBuilder(
         }
 
         var bindings = bindingsBuilder.ToImmutable();
-        
+
         var tagOn = bindings
             .OrderBy(i => i.Id)
             .SelectMany(i => i.Contracts)

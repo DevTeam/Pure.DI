@@ -39,8 +39,8 @@ class Service(
 DI.Setup(nameof(Composition))
     .Bind<IDependency>("Abc", default).To<AbcDependency>()
     .Bind<IDependency>("Xyz")
-        .As(Lifetime.Singleton)
-        .To<XyzDependency>()
+    .As(Lifetime.Singleton)
+    .To<XyzDependency>()
     .Bind<IService>().To<Service>()
 
     // "XyzRoot" is root name, "Xyz" is tag

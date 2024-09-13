@@ -39,13 +39,13 @@ DI.Setup(nameof(Composition))
     .Root<IService>("MyOtherService", "Other");
 
 var composition = new Composition();
-        
+
 // service = new Service(new Dependency());
 var service = composition.MyService;
-        
+
 // someOtherService = new OtherService();
 var someOtherService = composition.MyOtherService;
-        
+
 // All and only the roots of the composition
 // can be obtained by Resolve method
 var dependency = composition.Resolve<IDependency>();

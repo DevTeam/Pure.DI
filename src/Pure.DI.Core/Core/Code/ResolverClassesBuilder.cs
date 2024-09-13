@@ -147,7 +147,7 @@ internal sealed class ResolverClassesBuilder(IBuilder<RootContext, IEnumerable<R
                     {
                         code.AppendLine($"return {GetRoot(composition, taggedRoot)};");
                     }
-                    
+
                     code.AppendLine();
                 }
 

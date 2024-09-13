@@ -13,6 +13,7 @@ $f=For more hints, see [this](README.md#setup-hints) page.
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable UnusedMemberInSuper.Global
 // ReSharper disable ArrangeTypeMemberModifiers
+
 namespace Pure.DI.UsageTests.Hints.CheckForRootScenario;
 
 using Shouldly;
@@ -25,7 +26,7 @@ class Dependency : IDependency;
 
 interface IService
 {
-    IDependency Dependency { get;}
+    IDependency Dependency { get; }
 }
 
 class Service : IService
@@ -47,10 +48,9 @@ partial class Composition
             // Specifies to use the partial OnNewRoot method
             // to register each root
             .Hint(Hint.OnNewRoot, "On")
-            
             .Bind("MyDep").To<Dependency>()
             .Bind().To<Service>()
-            
+
             // Composition roots
             .Root<IDependency>(tag: "MyDep")
             .Root<IService>("Root");
@@ -60,7 +60,7 @@ partial class Composition
         IResolver<Composition, TContract> resolver,
         string name,
         object? tag,
-        Lifetime lifetime) => 
+        Lifetime lifetime) =>
         Roots.Add((typeof(TContract), tag));
 }
 // }
@@ -73,10 +73,10 @@ public class Scenario
 // {            
         Composition.HasRoot(typeof(IService)).ShouldBeTrue();
         Composition.HasRoot(typeof(IDependency), "MyDep").ShouldBeTrue();
-        
+
         Composition.HasRoot(typeof(IDependency)).ShouldBeFalse();
         Composition.HasRoot(typeof(IComparable)).ShouldBeFalse();
-        
+
 // }            
         new Composition().SaveClassDiagram();
     }

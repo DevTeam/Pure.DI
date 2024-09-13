@@ -12,6 +12,7 @@ $f=The attribute `Ordinal` is part of the API, but you can use your own attribut
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedMember.Global
 // ReSharper disable ArrangeTypeModifiers
+
 namespace Pure.DI.UsageTests.Attributes.ConstructorOrdinalAttributeScenario;
 
 using Shouldly;
@@ -33,10 +34,10 @@ class Service : IService
     [Ordinal(1)]
     public Service(IDependency dependency) =>
         _name = "with dependency";
-    
+
     [Ordinal(0)]
     internal Service(string name) => _name = name;
-    
+
     public Service() => _name = "default";
 
     public override string ToString() => _name;
@@ -54,7 +55,7 @@ public class Scenario
             .Arg<string>("serviceName")
             .Bind().To<Dependency>()
             .Bind().To<Service>()
-            
+
             // Composition root
             .Root<IService>("Root");
 

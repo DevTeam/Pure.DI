@@ -1,4 +1,5 @@
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core;
 
 internal sealed class DependencyGraphValidator(
@@ -16,7 +17,7 @@ internal sealed class DependencyGraphValidator(
         {
             return true;
         }
-        
+
         var isErrorReported = false;
         foreach (var (_, dependencyNode, unresolvedInjection, target) in graph.Edges.Where(i => !i.IsResolved))
         {
@@ -42,7 +43,7 @@ internal sealed class DependencyGraphValidator(
                 isErrorReported = true;
             }
         }
-        
+
         if (!isResolved && !isErrorReported)
         {
             logger.CompileError("Cannot build a dependency graph.", dependencyGraph.Source.Source.GetLocation(), LogId.ErrorUnableToResolve);

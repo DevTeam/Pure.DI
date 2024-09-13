@@ -2,6 +2,6 @@
 
 internal class MyService(IMyDependency dependency) : IMyService
 {
-    public void DoSomething() => 
+    public void DoSomething() =>
         dependency.DoSomething();
 }

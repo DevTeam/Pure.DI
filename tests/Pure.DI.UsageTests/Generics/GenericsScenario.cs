@@ -40,7 +40,7 @@ $f=internal abstract class TT2 { }
 $f=```
 $f=This way you can easily create your own, including making them fit the constraints on the type parameter, for example:
 $f=```c#
-$f=[GenericTypeArgument]    
+$f=[GenericTypeArgument]
 $f=internal struct TTS { }
 $f=
 $f=[GenericTypeArgument]
@@ -55,6 +55,7 @@ $f=```
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedTypeParameter
 // ReSharper disable ArrangeTypeModifiers
+
 namespace Pure.DI.UsageTests.Generics.GenericsScenario;
 
 using Shouldly;
@@ -68,7 +69,7 @@ class Dependency<T> : IDependency<T>;
 interface IService
 {
     IDependency<int> IntDependency { get; }
-    
+
     IDependency<string> StringDependency { get; }
 }
 
@@ -94,7 +95,7 @@ public class Scenario
             .Hint(Hint.Resolve, "Off")
             .Bind<IDependency<TT>>().To<Dependency<TT>>()
             .Bind<IService>().To<Service>()
-            
+
             // Composition root
             .Root<IService>("Root");
 

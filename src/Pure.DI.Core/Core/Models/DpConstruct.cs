@@ -1,6 +1,6 @@
 namespace Pure.DI.Core.Models;
 
-internal record  DpConstruct(
+internal record DpConstruct(
     in MdConstruct Source,
     in MdBinding Binding,
     in ImmutableArray<Injection> Injections)

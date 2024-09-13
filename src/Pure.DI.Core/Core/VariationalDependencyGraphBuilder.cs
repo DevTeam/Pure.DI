@@ -4,6 +4,7 @@
 // ReSharper disable HeapView.ObjectAllocation.Possible
 // ReSharper disable IdentifierTypo
 // ReSharper disable LoopCanBeConvertedToQuery
+
 namespace Pure.DI.Core;
 
 using Variation = IEnumerator<ProcessingNode>;
@@ -83,7 +84,7 @@ internal sealed class VariationalDependencyGraphBuilder(
                 {
                     logger.CompileError($"The maximum number of iterations {globalOptions.MaxIterations.ToString()} was exceeded when building the optimal dependency graph. Try to specify the dependency graph more accurately.", setup.Source.GetLocation(), LogId.ErrorInvalidMetadata);
                 }
-                
+
                 cancellationToken.ThrowIfCancellationRequested();
 
                 var newNodes = SortByPriority(graphBuilder.TryBuild(setup, nodes, out var dependencyGraph))

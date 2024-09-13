@@ -13,6 +13,7 @@ $h=- _CompositionKind.Global_ - the composition class will also not be created, 
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable RedundantAssignment
 // ReSharper disable ArrangeTypeModifiers
+
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Advanced.DependentCompositionsScenario;
 
@@ -46,20 +47,20 @@ public class Scenario
         // and requires the use of the "DependsOn" call to add it as a dependency
         DI.Setup("BaseComposition", CompositionKind.Internal)
             .Bind<IDependency>().To<Dependency>();
-        
+
         // This setup generates code and can also be used as a dependency
         DI.Setup(nameof(Composition))
             // Uses "BaseComposition" setup
             .DependsOn("BaseComposition")
             .Bind<IService>().To<Service>()
             .Root<IService>("Root");
-        
+
         // As in the previous case, this setup generates code and can also be used as a dependency
         DI.Setup(nameof(OtherComposition))
             // Uses "Composition" setup
             .DependsOn(nameof(Composition))
             .Root<Program>("Program");
-        
+
         var composition = new Composition();
         var service = composition.Root;
 

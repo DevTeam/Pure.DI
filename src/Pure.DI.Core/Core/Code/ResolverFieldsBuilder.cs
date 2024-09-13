@@ -1,4 +1,5 @@
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core.Code;
 
 internal sealed class ResolversFieldsBuilder(IBuilder<RootContext, IEnumerable<ResolverInfo>> resolversBuilder)
@@ -10,7 +11,7 @@ internal sealed class ResolversFieldsBuilder(IBuilder<RootContext, IEnumerable<R
         {
             return composition;
         }
-        
+
         var resolvers = resolversBuilder.Build(new RootContext(composition.Source.Source, composition.Roots)).ToArray();
         if (!resolvers.Any())
         {
@@ -22,7 +23,7 @@ internal sealed class ResolversFieldsBuilder(IBuilder<RootContext, IEnumerable<R
         var pairs = $"{Names.SystemNamespace}Type, {Names.ResolverInterfaceName}<{composition.Source.Source.Name.ClassName}, object>";
         var pairTypeName = $"{Names.ApiNamespace}Pair<{pairs}>";
         code.AppendLine($"private readonly static {pairTypeName}[] {Names.BucketsFieldName};");
-        
+
         return composition with { MembersCount = composition.MembersCount + 2 };
     }
 }

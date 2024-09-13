@@ -8,21 +8,21 @@
 
 ```c#
 interface IDependency<T>
-    where T: IDisposable;
+    where T : IDisposable;
 
 class Dependency<T> : IDependency<T>
-    where T: IDisposable;
+    where T : IDisposable;
 
 interface IService<T, TStruct>
-    where T: IDisposable
-    where TStruct: struct;
+    where T : IDisposable
+    where TStruct : struct;
 
 class Service<T, TStruct>(IDependency<T> dependency) : IService<T, TStruct>
-    where T: IDisposable
-    where TStruct: struct;
+    where T : IDisposable
+    where TStruct : struct;
 
 class OtherService<T>(IDependency<T> dependency) : IService<T, bool>
-    where T: IDisposable;
+    where T : IDisposable;
 
 DI.Setup(nameof(Composition))
     // This hint indicates to not generate methods such as Resolve
@@ -49,10 +49,10 @@ DI.Setup(nameof(Composition))
     .Root<IService<TTDisposable, bool>>("GetOtherService", "Other");
 
 var composition = new Composition();
-        
+
 // service = new Service<Stream, double>(new Dependency<Stream>());
 var service = composition.GetMyRoot<Stream, double>();
-        
+
 // someOtherService = new OtherService<BinaryReader>(new Dependency<BinaryReader>());
 var someOtherService = composition.GetOtherService<BinaryReader>();
 ```

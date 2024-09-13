@@ -1,5 +1,6 @@
 ﻿// ReSharper disable ConvertIfStatementToReturnStatement
 // ReSharper disable NotAccessedPositionalProperty.Global
+
 namespace Pure.DI.Core.Models;
 
 internal record MdTagOnSites(

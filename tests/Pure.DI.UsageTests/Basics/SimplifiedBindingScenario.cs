@@ -47,6 +47,7 @@ $f=| ❌ | `IDependencyBase`     | is not directly implemented by class Dependen
 // ReSharper disable UnusedMember.Local
 // ReSharper disable ArrangeTypeMemberModifiers
 // ReSharper disable ClassNeverInstantiated.Global
+
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Basics.SimplifiedBindingScenario;
 
@@ -56,13 +57,13 @@ using Xunit;
 // {
 interface IDependencyBase;
 
-class DependencyBase: IDependencyBase;
+class DependencyBase : IDependencyBase;
 
 interface IDependency;
 
 interface IOtherDependency;
 
-class Dependency:
+class Dependency :
     DependencyBase,
     IDependency,
     IOtherDependency,
@@ -103,10 +104,10 @@ public class Scenario
             //  .To<Dependency>()
             .Bind().As(Lifetime.PerBlock).To<Dependency>()
             .Bind().To<Service>()
-            
+
             // Specifies to create a property "MyService"
             .Root<IService>("MyService");
-        
+
         var composition = new Composition();
         var service = composition.MyService;
 // }

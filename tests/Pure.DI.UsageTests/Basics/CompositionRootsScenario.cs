@@ -16,11 +16,11 @@ $f=  {
 $f=    return new Service(new Dependency());
 $f=  }
 $f=}
-$f=``` 
+$f=```
 $f=To avoid generating _Resolve_ methods just add a comment `// Resolve = Off` before a _Setup_ method:
 $f=```c#
 $f=// Resolve = Off
-$f=DI.Setup("Composition")            
+$f=DI.Setup("Composition")
 $f=  .Bind<IDependency>().To<Dependency>()
 $f=  ...
 $f=```
@@ -33,6 +33,7 @@ $f=This can be done if these methods are not needed, in case only certain compos
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedVariable
+
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Basics.CompositionRootsScenario;
 
@@ -61,28 +62,28 @@ public class Scenario
             .Bind<IService>().To<Service>()
             .Bind<IService>("Other").To<OtherService>()
             .Bind<IDependency>().To<Dependency>()
-            
+
             // Specifies to create a regular public composition root
             // of type "IService" with the name "MyService"
             .Root<IService>("MyService")
-            
+
             // Specifies to create a private composition root
             // that is only accessible from "Resolve()" methods
             .Root<IDependency>()
-            
+
             // Specifies to create a regular public composition root
             // of type "IService" with the name "MyOtherService"
             // using the "Other" tag
             .Root<IService>("MyOtherService", "Other");
 
         var composition = new Composition();
-        
+
         // service = new Service(new Dependency());
         var service = composition.MyService;
-        
+
         // someOtherService = new OtherService();
         var someOtherService = composition.MyOtherService;
-        
+
         // All and only the roots of the composition
         // can be obtained by Resolve method
         var dependency = composition.Resolve<IDependency>();

@@ -1,7 +1,8 @@
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core.Code;
 
-internal sealed class DefaultConstructorBuilder: IBuilder<CompositionCode, CompositionCode>
+internal sealed class DefaultConstructorBuilder : IBuilder<CompositionCode, CompositionCode>
 {
     public CompositionCode Build(CompositionCode composition)
     {
@@ -31,7 +32,7 @@ internal sealed class DefaultConstructorBuilder: IBuilder<CompositionCode, Compo
             {
                 code.AppendLine($"{Names.LockFieldName} = new object();");
             }
-            
+
             if (composition.TotalDisposablesCount > 0)
             {
                 code.AppendLine($"{Names.DisposablesFieldName} = new object[{composition.TotalDisposablesCount.ToString()}];");

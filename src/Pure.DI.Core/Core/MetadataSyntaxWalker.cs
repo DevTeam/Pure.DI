@@ -18,7 +18,7 @@ internal sealed class MetadataSyntaxWalker(
     private string _namespace = string.Empty;
     private bool _isMetadata;
     private SemanticModel? _semanticModel;
-    
+
     [SuppressMessage("MicrosoftCodeAnalysisCorrectness", "RS1024:Symbols should be compared for equality")]
     public void Visit(IMetadataVisitor metadataVisitor, in SyntaxUpdate update)
     {
@@ -43,7 +43,7 @@ internal sealed class MetadataSyntaxWalker(
         {
             return;
         }
-        
+
         visitors.Reverse();
 #if DEBUG
         visitors.ForEach(i => ProcessInvocation(i));
@@ -54,11 +54,11 @@ internal sealed class MetadataSyntaxWalker(
         {
             visitor.Apply();
         }
-        
+
         metadataVisitor.VisitFinish();
     }
 
-    private void ProcessInvocation(in InvocationVisitor visitor) => 
+    private void ProcessInvocation(in InvocationVisitor visitor) =>
         invocationProcessor.ProcessInvocation(visitor, visitor.SemanticModel, visitor.Invocation, _namespace);
 
     // ReSharper disable once CognitiveComplexity
@@ -91,19 +91,19 @@ internal sealed class MetadataSyntaxWalker(
             switch (curInvocation.Expression)
             {
                 case IdentifierNameSyntax { Identifier.Text: nameof(DI.Setup) }:
-                case MemberAccessExpressionSyntax memberAccess 
+                case MemberAccessExpressionSyntax memberAccess
                     when memberAccess.Kind() == SyntaxKind.SimpleMemberAccessExpression
-                    && memberAccess.Name.Identifier.Text == nameof(DI.Setup)
-                    && (memberAccess.Expression is IdentifierNameSyntax { Identifier.Text: nameof(DI) } 
-                        || memberAccess.Expression is MemberAccessExpressionSyntax firstMemberAccess && firstMemberAccess.Kind() == SyntaxKind.SimpleMemberAccessExpression && firstMemberAccess.Name.Identifier.Text == nameof(DI)):
-                    
+                         && memberAccess.Name.Identifier.Text == nameof(DI.Setup)
+                         && (memberAccess.Expression is IdentifierNameSyntax { Identifier.Text: nameof(DI) }
+                             || memberAccess.Expression is MemberAccessExpressionSyntax firstMemberAccess && firstMemberAccess.Kind() == SyntaxKind.SimpleMemberAccessExpression && firstMemberAccess.Name.Identifier.Text == nameof(DI)):
+
                     if (_semanticModel?.GetTypeInfo(curInvocation) is { } typeInfo
                         && (typeInfo.Type ?? typeInfo.ConvertedType) is { } type
                         && type.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat) == Names.ConfigurationInterfaceName)
                     {
                         return true;
                     }
-                    
+
                     break;
             }
         }

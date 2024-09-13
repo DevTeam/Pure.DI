@@ -1,6 +1,7 @@
 // ReSharper disable SuggestBaseTypeForParameter
 // ReSharper disable SuggestVarOrType_BuiltInTypes
 // ReSharper disable HeapView.PossibleBoxingAllocation
+
 namespace Pure.DI.Tests;
 
 using System.Runtime.CompilerServices;
@@ -28,7 +29,7 @@ public class BucketsTests
         // Then
         foreach (var pair in data)
         {
-            Get(pairs, divisor, bucketSize, pair.Key).ShouldBe(pair.Value); 
+            Get(pairs, divisor, bucketSize, pair.Key).ShouldBe(pair.Value);
         }
 
         for (var i = count; i < count + 2; i++)
@@ -37,7 +38,7 @@ public class BucketsTests
         }
     }
 
-    private static Pair<string, int>[] CreatePairs(uint count) => 
+    private static Pair<string, int>[] CreatePairs(uint count) =>
         Enumerable.Range(0, (int)count)
             .Select(i => new Pair<string, int>((100 + i).ToString(), i))
             .ToArray();
@@ -78,7 +79,7 @@ public class BucketsTests
         {
             return pair.Value;
         }
-        
+
         int maxIndex = index + bucketSize;
         for (int i = index + 1; i < maxIndex; i++)
         {

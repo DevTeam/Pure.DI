@@ -10,6 +10,7 @@ $h=When the `Setup(name, kind)` method is called, the second optional parameter 
 // ReSharper disable UnusedType.Global
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable ArrangeTypeMemberModifiers
+
 namespace Pure.DI.UsageTests.Advanced.GlobalCompositionsScenario;
 
 // {

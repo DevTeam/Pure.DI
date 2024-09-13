@@ -1,9 +1,10 @@
 // ReSharper disable StringLiteralTypo
+
 namespace Pure.DI.Core.Code;
 
 internal static class CodeExtensions
 {
-    public static string ValueToString(this object? tag, string defaultValue = "null") => 
+    public static string ValueToString(this object? tag, string defaultValue = "null") =>
         tag switch
         {
             string => $"\"{tag}\"",

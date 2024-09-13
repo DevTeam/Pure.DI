@@ -1,4 +1,5 @@
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core.Code;
 
 internal sealed class ApiMembersBuilder(
@@ -80,7 +81,7 @@ internal sealed class ApiMembersBuilder(
                 "this",
                 false,
                 apiCode);
-            
+
             membersCounter++;
 
             if (resolvers.Length > 0)
@@ -144,7 +145,7 @@ internal sealed class ApiMembersBuilder(
             apiCode.AppendLine($"private partial T {Names.OnDependencyInjectionMethodName}<T>(in T value, object{nullable} tag, {Names.ApiNamespace}{nameof(Lifetime)} lifetime);");
             membersCounter++;
         }
-        
+
         if (composition.Source.Source.Hints is { IsOnCannotResolveEnabled: true, IsOnCannotResolvePartial: true })
         {
             apiCode.AppendLine();
@@ -191,10 +192,10 @@ internal sealed class ApiMembersBuilder(
                 code.AppendLine($"throw new {Names.SystemNamespace}InvalidOperationException($\"{{{Names.CannotResolveFieldName}}} {(byTag ? "\\\"{tag}\\\" " : "")}{{{Names.OfTypeFieldName}}} {{type}}.\");");
             }
         }
-        
+
         code.AppendLine("}");
     }
-    
+
     private static void CreateObjectConflictsResolverMethod(
         string methodArgs,
         string resolveMethodName,
@@ -219,15 +220,16 @@ internal sealed class ApiMembersBuilder(
                 {
                     code.AppendLine($"return pair.Value.{resolveMethodName}({resolveMethodArgs});");
                 }
+
                 code.AppendLine("}");
             }
-                
+
             code.AppendLine("}");
             code.AppendLine();
 
             code.AppendLine($"throw new {Names.SystemNamespace}InvalidOperationException($\"{{{Names.CannotResolveFieldName}}} {(byTag ? "\\\"{tag}\\\" " : "")}{{{Names.OfTypeFieldName}}} {{type}}.\");");
         }
-        
+
         code.AppendLine("}");
     }
 }

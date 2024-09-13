@@ -31,7 +31,7 @@ internal class LibrariesTarget(
                     .Select(v => $"net{v.Version.Major}.{v.Version.Minor}")
                     .ToArray(),
                 ["webapi"]),
-            
+
             new("Pure.DI.Abstractions",
                 new Package(GetPackagePath("Pure.DI.Abstractions", settings.NextVersion), false),
                 sdk.Versions

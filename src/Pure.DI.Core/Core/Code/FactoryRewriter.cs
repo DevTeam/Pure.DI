@@ -1,5 +1,6 @@
 ﻿// ReSharper disable ConvertIfStatementToReturnStatement
 // ReSharper disable InvertIf
+
 namespace Pure.DI.Core.Code;
 
 internal sealed class FactoryRewriter(
@@ -18,14 +19,14 @@ internal sealed class FactoryRewriter(
                     SyntaxFactory.AttributeArgument(
                         SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.ParseTypeName(Names.MethodImplOptionsName), SyntaxFactory.IdentifierName(Names.MethodImplAggressiveInliningOptionsName))))))
         .WithTrailingTrivia(SyntaxTriviaList.Create(SyntaxFactory.SyntaxTrivia(SyntaxKind.WhitespaceTrivia, " ")));
-    
+
     private static readonly IdentifierNameSyntax InjectionMarkerExpression = SyntaxFactory.IdentifierName(Names.InjectionMarker);
     private int _nestedLambdaCounter;
     private int _nestedBlockCounter;
 
     public bool IsFinishMarkRequired { get; private set; }
 
-    public LambdaExpressionSyntax Rewrite(LambdaExpressionSyntax lambda) => 
+    public LambdaExpressionSyntax Rewrite(LambdaExpressionSyntax lambda) =>
         (LambdaExpressionSyntax)Visit(lambda);
 
     public override SyntaxNode? VisitSimpleLambdaExpression(SimpleLambdaExpressionSyntax node)
@@ -69,11 +70,11 @@ internal sealed class FactoryRewriter(
         {
             if (_nestedLambdaCounter == 1 && _nestedBlockCounter == 1)
             {
-                var statements = new List<StatementSyntax>(); 
+                var statements = new List<StatementSyntax>();
                 foreach (var statement in block.Statements)
                 {
                     var curStatement = statement;
-                    if (curStatement is ReturnStatementSyntax { Expression: {} returnBody })
+                    if (curStatement is ReturnStatementSyntax { Expression: { } returnBody })
                     {
                         curStatement = CreateAssignmentExpression(returnBody);
                     }
@@ -81,7 +82,7 @@ internal sealed class FactoryRewriter(
                     {
                         curStatement = (StatementSyntax)Visit(curStatement);
                     }
-                    
+
                     statements.Add(curStatement);
                 }
 
@@ -89,7 +90,7 @@ internal sealed class FactoryRewriter(
             }
             else
             {
-                return base.VisitBlock(block);   
+                return base.VisitBlock(block);
             }
         }
         finally
@@ -100,7 +101,7 @@ internal sealed class FactoryRewriter(
 
     public override SyntaxNode? VisitReturnStatement(ReturnStatementSyntax node)
     {
-        if (_nestedLambdaCounter == 1 && node.Expression is {} returnBody)
+        if (_nestedLambdaCounter == 1 && node.Expression is { } returnBody)
         {
             IsFinishMarkRequired = true;
             return SyntaxFactory.Block(
@@ -110,7 +111,7 @@ internal sealed class FactoryRewriter(
                     SyntaxFactory.IdentifierName(finishLabel).WithLeadingTrivia(SyntaxFactory.Space)).WithLeadingTrivia(SyntaxFactory.Space).WithTrailingTrivia(SyntaxFactory.Space)
             ).WithLeadingTrivia(node.GetLeadingTrivia());
         }
-        
+
         return base.VisitReturnStatement(node);
     }
 
@@ -118,7 +119,7 @@ internal sealed class FactoryRewriter(
         SyntaxFactory.ExpressionStatement(
             SyntaxFactory.AssignmentExpression(
                 SyntaxKind.SimpleAssignmentExpression,
-                SyntaxFactory.IdentifierName(variable.VariableName).WithLeadingTrivia(SyntaxFactory.Space).WithTrailingTrivia(SyntaxFactory.Space), 
+                SyntaxFactory.IdentifierName(variable.VariableName).WithLeadingTrivia(SyntaxFactory.Space).WithTrailingTrivia(SyntaxFactory.Space),
                 (ExpressionSyntax)Visit(returnBody).WithLeadingTrivia(SyntaxFactory.Space)));
 
     public override SyntaxNode? VisitInvocationExpression(InvocationExpressionSyntax invocation)
@@ -139,7 +140,7 @@ internal sealed class FactoryRewriter(
             {
                 return visitInvocationExpression;
             }
-            
+
             if (invocation.Expression is MemberAccessExpressionSyntax
                 {
                     Name: IdentifierNameSyntax
@@ -207,7 +208,7 @@ internal sealed class FactoryRewriter(
     public override SyntaxNode? VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
     {
         if (node.IsKind(SyntaxKind.SimpleMemberAccessExpression)
-            && node is { Expression: IdentifierNameSyntax identifierName, Name.Identifier.Text: nameof(IContext.Tag) } 
+            && node is { Expression: IdentifierNameSyntax identifierName, Name.Identifier.Text: nameof(IContext.Tag) }
             && identifierName.Identifier.Text == factory.Source.Context.Identifier.Text)
         {
             var token = SyntaxFactory.ParseToken(variable.Injection.Tag.ValueToString());
@@ -215,23 +216,23 @@ internal sealed class FactoryRewriter(
             {
                 return SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, token);
             }
-            
+
             if (token.IsKind(SyntaxKind.CharacterLiteralToken))
             {
                 return SyntaxFactory.LiteralExpression(SyntaxKind.CharacterLiteralExpression, token);
             }
-            
+
             if (token.IsKind(SyntaxKind.StringLiteralToken))
             {
                 return SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, token);
             }
-            
+
             if (token.IsKind(SyntaxKind.NullKeyword))
             {
                 return SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, token);
             }
         }
-        
+
         return base.VisitMemberAccessExpression(node);
     }
 

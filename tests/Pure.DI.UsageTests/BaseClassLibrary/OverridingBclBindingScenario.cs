@@ -8,6 +8,7 @@ $h=At any time, the default binding to the BCL type can be changed to your own:
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
 // ReSharper disable ArrangeTypeModifiers
+
 namespace Pure.DI.UsageTests.BCL.OverridingBclBindingScenario;
 
 using Shouldly;
@@ -45,7 +46,7 @@ public class Scenario
                 new AbcDependency()
             })
             .Bind<IService>().To<Service>()
-            
+
             // Composition root
             .Root<IService>("Root");
 

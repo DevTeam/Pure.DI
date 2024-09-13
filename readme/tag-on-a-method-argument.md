@@ -32,7 +32,7 @@ class Service : IService
 DI.Setup(nameof(Composition))
     .Bind().To<AbcDependency>()
     .Bind(Tag.OnMethodArg<Service>(nameof(Service.Initialize), "dep"))
-        .To<XyzDependency>()
+    .To<XyzDependency>()
     .Bind<IService>().To<Service>()
 
     // Specifies to create the composition root named "Root"

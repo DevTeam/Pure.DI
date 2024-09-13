@@ -1,6 +1,7 @@
 ﻿// ReSharper disable RedundantJumpStatement
 // ReSharper disable InvertIf
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core.Code;
 
 internal class StatementCodeBuilder(
@@ -31,7 +32,7 @@ internal class StatementCodeBuilder(
                 {
                     break;
                 }
-                
+
                 blockBuilder.Build(ctx, block);
                 break;
         }

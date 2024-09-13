@@ -37,9 +37,9 @@ internal sealed class FactoryResolversSyntaxWalker : CSharpSyntaxWalker, IEnumer
 
                         break;
                 }
-                
+
                 break;
-            
+
             case IdentifierNameSyntax identifierName:
                 switch (identifierName.Identifier.Text)
                 {
@@ -62,10 +62,9 @@ internal sealed class FactoryResolversSyntaxWalker : CSharpSyntaxWalker, IEnumer
 
                         break;
                 }
-                
+
                 break;
         }
-
     }
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

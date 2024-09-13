@@ -14,6 +14,7 @@ $f=
 // ReSharper disable UnusedMember.Local
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable ArrangeTypeMemberModifiers
+
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Basics.InjectionsOfAbstractionsScenario;
 
@@ -31,7 +32,9 @@ interface IService
 
 class Service(IDependency dependency) : IService
 {
-    public void DoSomething() { }
+    public void DoSomething()
+    {
+    }
 }
 
 class Program(IService service)
@@ -51,11 +54,11 @@ public class Scenario
             // Binding abstractions to their implementations
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>()
-            
+
             // Specifies to create a composition root
             // of type "Program" with the name "Root"
             .Root<Program>("Root");
-        
+
         var composition = new Composition();
 
         // var root = new Program(new Service(new Dependency()));

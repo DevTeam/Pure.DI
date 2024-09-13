@@ -18,7 +18,7 @@ class Service([Tag("Dependency Key")] IDependency dependency) : IService
     public IDependency Dependency { get; } = dependency;
 }
 
-partial class Composition: IKeyedServiceProvider
+partial class Composition : IKeyedServiceProvider
 {
     static void Setup() =>
         DI.Setup()

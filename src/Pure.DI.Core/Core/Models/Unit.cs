@@ -1,4 +1,5 @@
 // ReSharper disable HeapView.ObjectAllocation.Evident
+
 namespace Pure.DI.Core.Models;
 
 internal readonly struct Unit

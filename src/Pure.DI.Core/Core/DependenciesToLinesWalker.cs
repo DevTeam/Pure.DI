@@ -23,7 +23,7 @@ internal sealed class DependenciesToLinesWalker(int indent)
             base.VisitFactory(ctx, in factory);
         }
     }
-    
+
     public override void VisitArg(in Unit ctx, in DpArg arg)
     {
         using (_lb.Indent())
@@ -55,7 +55,7 @@ internal sealed class DependenciesToLinesWalker(int indent)
         {
             typeArgs = $"<{string.Join(", ", method.Method.ContainingType.TypeArguments)}>";
         }
-        
+
         _lb.Append($"{method.Method.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)}{typeArgs}(");
         var isFirst = true;
         foreach (var parameter in method.Parameters)
@@ -71,7 +71,7 @@ internal sealed class DependenciesToLinesWalker(int indent)
 
             VisitParameter(ctx, parameter);
         }
-        
+
         _lb.Append(")");
     }
 

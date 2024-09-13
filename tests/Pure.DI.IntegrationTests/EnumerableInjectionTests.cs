@@ -12,65 +12,65 @@ public class EnumerableInjectionTests
 
         // When
         var result = await """
-using System;
-using Pure.DI;
+                           using System;
+                           using Pure.DI;
 
-namespace Sample
-{
-    interface IDependency {}
-
-    class Dependency: IDependency
-    {        
-        public Dependency()
-        {
-            Console.WriteLine("Dependency created");
-        }
-    }
-
-    interface IService
-    {                    
-    }
-
-    class Service: IService 
-    {
-        public Service(System.Collections.Generic.IEnumerable<IDependency> deps)
-        { 
-            Console.WriteLine("Service creating");
-            foreach (var dep in deps)
-            {
-            }
-        }    
-    }
-
-    static class Setup
-    {
-        private static void SetupComposition()
-        {
-            DI.Setup("Composition")
-                .Bind<IDependency>(1).To<Dependency>()
-                .Bind<IDependency>(2).To<Dependency>()
-                .Bind<IDependency>(3).To<Dependency>()
-                .Bind<IService>().To<Service>()
-                .Root<IService>("Service");
-        }
-    }
-
-    public class Program
-    {
-        public static void Main()
-        {
-            var composition = new Composition();
-            var service = composition.Service;                              
-        }
-    }
-}
-""".RunAsync(new Options(languageVersion));
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                           
+                               class Dependency: IDependency
+                               {        
+                                   public Dependency()
+                                   {
+                                       Console.WriteLine("Dependency created");
+                                   }
+                               }
+                           
+                               interface IService
+                               {                    
+                               }
+                           
+                               class Service: IService 
+                               {
+                                   public Service(System.Collections.Generic.IEnumerable<IDependency> deps)
+                                   { 
+                                       Console.WriteLine("Service creating");
+                                       foreach (var dep in deps)
+                                       {
+                                       }
+                                   }    
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>(1).To<Dependency>()
+                                           .Bind<IDependency>(2).To<Dependency>()
+                                           .Bind<IDependency>(3).To<Dependency>()
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;                              
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(languageVersion));
 
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Service creating", "Dependency created", "Dependency created", "Dependency created"], result);
     }
-    
+
     [Fact]
     public async Task ShouldSupportEnumerableInjectionWhenGeneric()
     {
@@ -78,65 +78,65 @@ namespace Sample
 
         // When
         var result = await """
-using System;
-using Pure.DI;
+                           using System;
+                           using Pure.DI;
 
-namespace Sample
-{
-    interface IDependency<T> {}
-
-    class Dependency<T>: IDependency<T>
-    {        
-        public Dependency()
-        {
-            Console.WriteLine("Dependency created");
-        }
-    }
-
-    interface IService
-    {                    
-    }
-
-    class Service: IService 
-    {
-        public Service(System.Collections.Generic.IEnumerable<IDependency<string>> deps)
-        { 
-            Console.WriteLine("Service creating");
-            foreach (var dep in deps)
-            {
-            }
-        }    
-    }
-
-    static class Setup
-    {
-        private static void SetupComposition()
-        {
-            DI.Setup("Composition")
-                .Bind<IDependency<TT>>(1).To<Dependency<TT>>()
-                .Bind<IDependency<TT>>(2).To<Dependency<TT>>()
-                .Bind<IDependency<TT>>(3).To<Dependency<TT>>()
-                .Bind<IService>().To<Service>()
-                .Root<IService>("Service");
-        }
-    }
-
-    public class Program
-    {
-        public static void Main()
-        {
-            var composition = new Composition();
-            var service = composition.Service;                              
-        }
-    }
-}
-""".RunAsync();
+                           namespace Sample
+                           {
+                               interface IDependency<T> {}
+                           
+                               class Dependency<T>: IDependency<T>
+                               {        
+                                   public Dependency()
+                                   {
+                                       Console.WriteLine("Dependency created");
+                                   }
+                               }
+                           
+                               interface IService
+                               {                    
+                               }
+                           
+                               class Service: IService 
+                               {
+                                   public Service(System.Collections.Generic.IEnumerable<IDependency<string>> deps)
+                                   { 
+                                       Console.WriteLine("Service creating");
+                                       foreach (var dep in deps)
+                                       {
+                                       }
+                                   }    
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency<TT>>(1).To<Dependency<TT>>()
+                                           .Bind<IDependency<TT>>(2).To<Dependency<TT>>()
+                                           .Bind<IDependency<TT>>(3).To<Dependency<TT>>()
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;                              
+                                   }
+                               }
+                           }
+                           """.RunAsync();
 
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Service creating", "Dependency created", "Dependency created", "Dependency created"], result);
     }
-    
+
     [Fact]
     public async Task ShouldOverrideDefaultEnumerableInjection()
     {
@@ -144,74 +144,74 @@ namespace Sample
 
         // When
         var result = await """
-using System;
-using Pure.DI;
-using System.Collections.Generic;
+                           using System;
+                           using Pure.DI;
+                           using System.Collections.Generic;
 
-namespace Sample
-{
-    interface IDependency {}
-
-    class Dependency: IDependency
-    {        
-        public Dependency()
-        {
-            Console.WriteLine("Dependency created");
-        }
-    }
-
-    interface IService
-    {                    
-    }
-
-    class Service: IService 
-    {
-        public Service(IEnumerable<IDependency> deps)
-        { 
-            Console.WriteLine("Service creating");
-            foreach (var dep in deps)
-            {
-            }
-        }    
-    }
-
-    static class Setup
-    {
-        private static void SetupComposition()
-        {
-            // FormatCode = On;
-            DI.Setup("Composition")
-                .Bind<IDependency>(1).To<Dependency>()
-                .Bind<IDependency>(2).To<Dependency>()
-                .Bind<IDependency>(3).To<Dependency>()
-                .Bind<IService>().To<Service>()
-                .Bind<IEnumerable<IDependency>>().To(ctx => 
-                {
-                    ctx.Inject<IDependency>(1, out var dep1);
-                    ctx.Inject<IDependency>(2, out var dep2);
-                    ctx.Inject<IDependency>(3, out var dep3);
-                    return new List<IDependency> { dep1, dep3 };
-                })
-                .Root<IService>("Service");
-        }
-    }
-
-    public class Program
-    {
-        public static void Main()
-        {
-            var composition = new Composition();
-            var service = composition.Service;                              
-        }
-    }
-}
-""".RunAsync();
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                           
+                               class Dependency: IDependency
+                               {        
+                                   public Dependency()
+                                   {
+                                       Console.WriteLine("Dependency created");
+                                   }
+                               }
+                           
+                               interface IService
+                               {                    
+                               }
+                           
+                               class Service: IService 
+                               {
+                                   public Service(IEnumerable<IDependency> deps)
+                                   { 
+                                       Console.WriteLine("Service creating");
+                                       foreach (var dep in deps)
+                                       {
+                                       }
+                                   }    
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       // FormatCode = On;
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>(1).To<Dependency>()
+                                           .Bind<IDependency>(2).To<Dependency>()
+                                           .Bind<IDependency>(3).To<Dependency>()
+                                           .Bind<IService>().To<Service>()
+                                           .Bind<IEnumerable<IDependency>>().To(ctx => 
+                                           {
+                                               ctx.Inject<IDependency>(1, out var dep1);
+                                               ctx.Inject<IDependency>(2, out var dep2);
+                                               ctx.Inject<IDependency>(3, out var dep3);
+                                               return new List<IDependency> { dep1, dep3 };
+                                           })
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;                              
+                                   }
+                               }
+                           }
+                           """.RunAsync();
 
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Dependency created", "Dependency created", "Dependency created", "Service creating"], result);
     }
-    
+
     [Fact]
     public async Task ShouldProvideEmptyEnumerableWhenHasNoBindings()
     {
@@ -219,62 +219,62 @@ namespace Sample
 
         // When
         var result = await """
-using System;
-using Pure.DI;
+                           using System;
+                           using Pure.DI;
 
-namespace Sample
-{
-    interface IDependency {}
-
-    class Dependency: IDependency
-    {        
-        public Dependency()
-        {
-            Console.WriteLine("Dependency created");
-        }
-    }
-
-    interface IService
-    {                    
-    }
-
-    class Service: IService 
-    {
-        public Service(System.Collections.Generic.IEnumerable<IDependency> deps)
-        { 
-            Console.WriteLine("Service creating");
-            foreach (var dep in deps)
-            {
-            }
-        }    
-    }
-
-    static class Setup
-    {
-        private static void SetupComposition()
-        {
-            DI.Setup("Composition")
-                .Bind<IService>().To<Service>()
-                .Root<IService>("Service");
-        }
-    }
-
-    public class Program
-    {
-        public static void Main()
-        {
-            var composition = new Composition();
-            var service = composition.Service;                              
-        }
-    }
-}
-""".RunAsync();
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                           
+                               class Dependency: IDependency
+                               {        
+                                   public Dependency()
+                                   {
+                                       Console.WriteLine("Dependency created");
+                                   }
+                               }
+                           
+                               interface IService
+                               {                    
+                               }
+                           
+                               class Service: IService 
+                               {
+                                   public Service(System.Collections.Generic.IEnumerable<IDependency> deps)
+                                   { 
+                                       Console.WriteLine("Service creating");
+                                       foreach (var dep in deps)
+                                       {
+                                       }
+                                   }    
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;                              
+                                   }
+                               }
+                           }
+                           """.RunAsync();
 
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Service creating"], result);
     }
-    
+
     [Fact]
     public async Task ShouldSupportEnumerableWhenPerResolve()
     {
@@ -282,65 +282,65 @@ namespace Sample
 
         // When
         var result = await """
-using System;
-using Pure.DI;
+                           using System;
+                           using Pure.DI;
 
-namespace Sample
-{
-    interface IDependency {}
-
-    class Dependency: IDependency
-    {        
-        public Dependency()
-        {
-            Console.WriteLine("Dependency created");
-        }
-    }
-
-    interface IService
-    {                    
-    }
-
-    class Service: IService 
-    {
-        public Service(System.Collections.Generic.IEnumerable<IDependency> deps)
-        { 
-            Console.WriteLine("Service creating");
-            foreach (var dep in deps)
-            {
-            }
-        }    
-    }
-
-    static class Setup
-    {
-        private static void SetupComposition()
-        {
-            DI.Setup("Composition")
-                .Bind<IDependency>(1).To<Dependency>()
-                .Bind<IDependency>(2).As(Lifetime.PerResolve).To<Dependency>()
-                .Bind<IDependency>(3).To<Dependency>()
-                .Bind<IService>().To<Service>()
-                .Root<IService>("Service");
-        }
-    }
-
-    public class Program
-    {
-        public static void Main()
-        {
-            var composition = new Composition();
-            var service = composition.Service;                              
-        }
-    }
-}
-""".RunAsync();
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                           
+                               class Dependency: IDependency
+                               {        
+                                   public Dependency()
+                                   {
+                                       Console.WriteLine("Dependency created");
+                                   }
+                               }
+                           
+                               interface IService
+                               {                    
+                               }
+                           
+                               class Service: IService 
+                               {
+                                   public Service(System.Collections.Generic.IEnumerable<IDependency> deps)
+                                   { 
+                                       Console.WriteLine("Service creating");
+                                       foreach (var dep in deps)
+                                       {
+                                       }
+                                   }    
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>(1).To<Dependency>()
+                                           .Bind<IDependency>(2).As(Lifetime.PerResolve).To<Dependency>()
+                                           .Bind<IDependency>(3).To<Dependency>()
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;                              
+                                   }
+                               }
+                           }
+                           """.RunAsync();
 
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Service creating", "Dependency created", "Dependency created", "Dependency created"], result);
     }
-    
+
     [Fact]
     public async Task ShouldSupportEnumerableWhenPerResolveInFunc()
     {

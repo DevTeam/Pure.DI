@@ -20,8 +20,7 @@ class Service : IService
     // The Ordinal attribute specifies to perform an injection,
     // the integer value in the argument specifies
     // the ordinal of injection
-    [Ordinal(0)]
-    internal IDependency? DependencyVal;
+    [Ordinal(0)] internal IDependency? DependencyVal;
 
     public IDependency? Dependency => DependencyVal;
 }

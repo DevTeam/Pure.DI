@@ -1,5 +1,6 @@
 // ReSharper disable HeapView.ObjectAllocation
 // ReSharper disable NotAccessedPositionalProperty.Global
+
 namespace Pure.DI.Core.Models;
 
 internal readonly record struct MdResolver(
@@ -9,7 +10,7 @@ internal readonly record struct MdResolver(
     ITypeSymbol ContractType,
     MdTag? Tag,
     ExpressionSyntax TargetValue,
-    TypeSyntax? ArgumentType= default,
+    TypeSyntax? ArgumentType = default,
     ParameterSyntax? Parameter = default,
     ImmutableArray<AttributeSyntax> Attributes = default,
     ISymbol? Member = default,

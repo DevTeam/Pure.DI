@@ -1,12 +1,13 @@
 // ReSharper disable ConvertIfStatementToReturnStatement
 // ReSharper disable ReturnTypeCanBeEnumerable.Global
+
 namespace Pure.DI.Core;
 
 using System.Buffers;
 
-internal sealed class LinesBuilder: IEnumerable<string>
+internal sealed class LinesBuilder : IEnumerable<string>
 {
-    private readonly StringBuilder _sb = new(); 
+    private readonly StringBuilder _sb = new();
     private readonly List<Line> _lines = [];
     private Indent _indent;
 
@@ -101,7 +102,7 @@ internal sealed class LinesBuilder: IEnumerable<string>
             position += encoding.GetBytes(line.Text, 0, line.Text.Length, buffer, position);
             position += encoding.GetBytes(newLine, 0, newLine.Length, buffer, position);
         }
-        
+
         size = position;
         return Disposables.Create(() => ArrayPool<byte>.Shared.Return(rent));
     }
@@ -116,6 +117,6 @@ internal sealed class LinesBuilder: IEnumerable<string>
         }
     }
 
-    private static string GetIndent(int indent) => 
+    private static string GetIndent(int indent) =>
         new Indent(indent).ToString();
 }

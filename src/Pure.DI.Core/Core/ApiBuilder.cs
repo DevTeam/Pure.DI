@@ -1,5 +1,6 @@
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable HeapView.DelegateAllocation
+
 namespace Pure.DI.Core;
 
 internal sealed class ApiBuilder(IResources resources)
@@ -19,7 +20,7 @@ internal sealed class ApiBuilder(IResources resources)
                     false,
                     true);
             }
-            
+
             yield return new Source(resource.Name, source);
         }
     }

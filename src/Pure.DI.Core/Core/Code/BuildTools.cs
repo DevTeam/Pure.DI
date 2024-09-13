@@ -1,5 +1,6 @@
 ﻿// ReSharper disable InvertIf
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core.Code;
 
 internal class BuildTools(
@@ -55,7 +56,7 @@ internal class BuildTools(
 
             if (skipNotNullCheck && (variable.HasCycle || variable.Node.Lifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve))
             {
-                variableCode =  $"{variableCode}!";
+                variableCode = $"{variableCode}!";
             }
         }
 
@@ -73,11 +74,11 @@ internal class BuildTools(
         {
             return variableCode;
         }
-        
+
         var tag = GetTag(ctx, variable);
         return $"{Names.OnDependencyInjectionMethodName}<{typeResolver.Resolve(variable.Setup, variable.ContractType)}>({variableCode}, {tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()})";
     }
-    
+
     public IEnumerable<Line> OnCreated(BuildContext ctx, Variable variable)
     {
         if (variable.Node.Arg is not null)
@@ -85,7 +86,7 @@ internal class BuildTools(
             return Array.Empty<Line>();
         }
 
-        var baseTypes = 
+        var baseTypes =
             baseSymbolsProvider.GetBaseSymbols(variable.InstanceType, (_, _) => true)
                 .ToImmutableHashSet(SymbolEqualityComparer.Default);
 
@@ -99,7 +100,7 @@ internal class BuildTools(
             .OrderBy(i => i.Name)
             .Select(i => new Line(0, $"{i.Name}.Add({variable.VariableName});"))
             .ToList();
-        
+
         if (lockIsRequired && accLines.Count > 0)
         {
             code.AppendLine($"lock ({Names.LockFieldName})");
@@ -134,7 +135,7 @@ internal class BuildTools(
         {
             new(0, $"{Names.OnNewInstanceMethodName}<{typeResolver.Resolve(variable.Setup, variable.InstanceType)}>(ref {variable.VariableName}, {tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()});")
         };
-        
+
         lines.AddRange(code.Lines);
         return lines;
     }
@@ -145,12 +146,12 @@ internal class BuildTools(
         {
             return false;
         }
-        
+
         if (accumulator.IsRoot)
         {
             return true;
         }
-        
+
         return lifetime is not (Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve);
     }
 

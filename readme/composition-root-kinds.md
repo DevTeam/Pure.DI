@@ -12,7 +12,9 @@ interface IService;
 
 class Service : IService
 {
-    public Service(IDependency dependency) { }
+    public Service(IDependency dependency)
+    {
+    }
 }
 
 class OtherService : IService;

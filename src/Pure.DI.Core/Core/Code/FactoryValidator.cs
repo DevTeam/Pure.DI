@@ -15,7 +15,7 @@ internal class FactoryValidator(DpFactory factory) : CSharpSyntaxWalker
                 throw new CompileErrorException($"It is not possible to use \"{_contextParameterName}\" directly. Only its methods or properties can be used.", node.GetLocation(), LogId.ErrorInvalidMetadata);
             }
         }
-        
+
         base.VisitIdentifierName(node);
     }
 }

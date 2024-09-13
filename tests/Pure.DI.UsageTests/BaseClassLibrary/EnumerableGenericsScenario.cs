@@ -9,6 +9,7 @@ $d=Enumerable generics
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedTypeParameter
+
 namespace Pure.DI.UsageTests.BCL.EnumerableGenericsScenario;
 
 using System.Collections.Immutable;
@@ -44,18 +45,18 @@ public class Scenario
             .Bind<IDependency<TT>>().To<AbcDependency<TT>>()
             .Bind<IDependency<TT>>("Xyz").To<XyzDependency<TT>>()
             .Bind<IService<TT>>().To<Service<TT>>()
-            
+
             // Composition roots
             .Root<IService<int>>("IntRoot")
             .Root<IService<string>>("StringRoot");
 
         var composition = new Composition();
-        
+
         var intService = composition.IntRoot;
         intService.Dependencies.Length.ShouldBe(2);
         intService.Dependencies[0].ShouldBeOfType<AbcDependency<int>>();
         intService.Dependencies[1].ShouldBeOfType<XyzDependency<int>>();
-        
+
         var stringService = composition.StringRoot;
         stringService.Dependencies.Length.ShouldBe(2);
         stringService.Dependencies[0].ShouldBeOfType<AbcDependency<string>>();

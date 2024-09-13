@@ -1,8 +1,9 @@
 // ReSharper disable InvertIf
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core;
 
-internal sealed class LogInfoBuilder: IBuilder<LogEntry, LogInfo>
+internal sealed class LogInfoBuilder : IBuilder<LogEntry, LogInfo>
 {
     public LogInfo Build(LogEntry logEntry)
     {
@@ -14,7 +15,7 @@ internal sealed class LogInfoBuilder: IBuilder<LogEntry, LogInfo>
             DiagnosticSeverity.Hidden => "TRC",
             _ => throw new ArgumentOutOfRangeException(nameof(logEntry.Severity), logEntry.Severity, null)
         };
-        
+
         DiagnosticDescriptor? descriptor = default;
         if (!string.IsNullOrWhiteSpace(logEntry.Id))
         {

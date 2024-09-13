@@ -1,4 +1,5 @@
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core;
 
 internal sealed class FactoryTypeRewriter(
@@ -21,9 +22,9 @@ internal sealed class FactoryTypeRewriter(
                 .Select(resolver => resolver with
                 {
                     ContractType = context.TypeConstructor.Construct(context.Setup, factory.SemanticModel.Compilation, resolver.ContractType),
-                    Tag = CreateTag(context.Injection, resolver.Tag) 
+                    Tag = CreateTag(context.Injection, resolver.Tag)
                 })
-                .ToImmutableArray() 
+                .ToImmutableArray()
         };
     }
 
@@ -33,7 +34,7 @@ internal sealed class FactoryTypeRewriter(
         {
             return tag;
         }
-        
+
         if (injection.Tag is { } newTag)
         {
             return new MdTag(0, newTag);
@@ -42,10 +43,10 @@ internal sealed class FactoryTypeRewriter(
         return default;
     }
 
-    public override SyntaxNode? VisitIdentifierName(IdentifierNameSyntax node) => 
+    public override SyntaxNode? VisitIdentifierName(IdentifierNameSyntax node) =>
         TryCreateTypeSyntax(node) ?? base.VisitIdentifierName(node);
 
-    public override SyntaxNode? VisitQualifiedName(QualifiedNameSyntax node) => 
+    public override SyntaxNode? VisitQualifiedName(QualifiedNameSyntax node) =>
         TryCreateTypeSyntax(node) ?? base.VisitQualifiedName(node);
 
     private SyntaxNode? TryCreateTypeSyntax(SyntaxNode node) =>
@@ -62,7 +63,7 @@ internal sealed class FactoryTypeRewriter(
         {
             return false;
         }
-        
+
         var semanticModel = _context.State.SemanticModel;
         if (semanticModel.GetSymbolInfo(node).Symbol is ITypeSymbol type)
         {
@@ -71,7 +72,7 @@ internal sealed class FactoryTypeRewriter(
 
         return false;
     }
-    
+
     private bool TryGetNewTypeName(ITypeSymbol type, bool inTree, [NotNullWhen(true)] out string? newTypeName)
     {
         newTypeName = default;
@@ -85,7 +86,7 @@ internal sealed class FactoryTypeRewriter(
         {
             return false;
         }
-        
+
         newTypeName = typeResolver.Resolve(_context.Setup, newType).Name;
         return true;
     }

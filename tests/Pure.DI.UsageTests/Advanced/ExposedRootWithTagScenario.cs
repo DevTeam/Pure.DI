@@ -6,7 +6,7 @@ $h=Composition roots from other assemblies or projects can be used as a source o
 $h=```c#
 $h=public partial class CompositionWithTagsInOtherProject
 $h={
-$h=    private static void Setup() => 
+$h=    private static void Setup() =>
 $h=        DI.Setup()
 $h=            .Bind().As(Lifetime.Singleton).To<MyDependency>()
 $h=            .Bind("Some tag").To<MyService>()
@@ -20,6 +20,7 @@ $h=```
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable RedundantAssignment
 // ReSharper disable ArrangeTypeModifiers
+
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Advanced.ExposedRootWithTagScenario;
 

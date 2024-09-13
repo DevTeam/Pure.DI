@@ -1,5 +1,6 @@
 ﻿// ReSharper disable InvertIf
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core;
 
 internal class BindingBuilder(
@@ -17,14 +18,14 @@ internal class BindingBuilder(
     private readonly List<MdContract> _contracts = [];
     private readonly List<MdTag> _tags = [];
 
-    public void AddDefaultLifetime(MdDefaultLifetime defaultLifetime) => 
+    public void AddDefaultLifetime(MdDefaultLifetime defaultLifetime) =>
         _defaultLifetimes.AddFirst(defaultLifetime);
 
     public MdLifetime Lifetime
     {
         set => _lifetime = value;
     }
-    
+
     public MdImplementation Implementation
     {
         set
@@ -55,15 +56,15 @@ internal class BindingBuilder(
         }
     }
 
-    public void AddContract(in MdContract contract) => 
+    public void AddContract(in MdContract contract) =>
         _contracts.Add(contract);
-    
+
     public void AddTag(in MdTag tag) =>
         _tags.Add(tag);
 
     public MdBinding Build(MdSetup setup)
     {
-        var implementationType = _implementation?.Type ?? _factory?.Type ??_arg?.Type;
+        var implementationType = _implementation?.Type ?? _factory?.Type ?? _arg?.Type;
         var contractsSource = _implementation?.Source ?? _factory?.Source;
         try
         {
@@ -77,7 +78,7 @@ internal class BindingBuilder(
                     {
                         _contracts.Remove(contract);
                     }
-                    
+
                     if (implementationType is not null && contractsSource is not null)
                     {
                         var baseSymbols = Enumerable.Empty<ITypeSymbol>();
@@ -87,21 +88,21 @@ internal class BindingBuilder(
                                 .GetBaseSymbols(implementationType, (i, deepness) => deepness switch
                                 {
                                     0 => true,
-                                    1 when 
+                                    1 when
                                         implementationType.TypeKind != TypeKind.Interface
                                         && !implementationType.IsAbstract
                                         && (i.TypeKind == TypeKind.Interface || i.IsAbstract)
-                                        && i.SpecialType == SpecialType.None 
+                                        && i.SpecialType == SpecialType.None
                                         => true,
                                     _ => false
                                 }, 1);
                         }
-                        
+
                         var contracts = new HashSet<ITypeSymbol>(baseSymbols, SymbolEqualityComparer.Default)
                         {
                             implementationType
                         };
-                        
+
                         var tags = autoContracts
                             .SelectMany(i => i.Tags)
                             .GroupBy(i => i.Value)
@@ -128,7 +129,7 @@ internal class BindingBuilder(
                     source,
                     setup,
                     semanticModel,
-                    _contracts.Select(i => i with { Tags = i.Tags.Select(tag => BuildTag(tag, implementationType, id)).ToImmutableArray()}).ToImmutableArray(),
+                    _contracts.Select(i => i with { Tags = i.Tags.Select(tag => BuildTag(tag, implementationType, id)).ToImmutableArray() }).ToImmutableArray(),
                     implementationTags,
                     GetLifetime(implementationType, implementationTags),
                     _implementation,
@@ -165,7 +166,7 @@ internal class BindingBuilder(
             {
                 return MdTag.CreateTypeTag(tag, type);
             }
-            
+
             if (tagVal == Tag.Unique)
             {
                 return MdTag.CreateUniqueTag(tag, id.Value);
@@ -186,7 +187,7 @@ internal class BindingBuilder(
         {
             foreach (var defaultLifetime in _defaultLifetimes.Where(i => i.Type is not null))
             {
-                var tags = defaultLifetime.Tags.IsDefaultOrEmpty 
+                var tags = defaultLifetime.Tags.IsDefaultOrEmpty
                     ? ImmutableHashSet<MdTag>.Empty
                     : defaultLifetime.Tags.ToImmutableHashSet();
 
@@ -209,7 +210,7 @@ internal class BindingBuilder(
 
                     return SymbolEqualityComparer.Default.Equals(defaultLifetime.Type, i);
                 });
-                
+
                 if (baseSymbols.Any())
                 {
                     return defaultLifetime.Lifetime;

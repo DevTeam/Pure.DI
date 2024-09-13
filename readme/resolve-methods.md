@@ -35,11 +35,11 @@ var composition = new Composition();
 var service1 = composition.Resolve<IService>();
 var service2 = composition.Resolve(typeof(IService));
 var service3 = composition.Resolve(typeof(IService), null);
-        
+
 // Resolve by "My Tag" tag
 // The next 3 lines of code do the same thing too:
 var otherService1 = composition.Resolve<IService>("My Tag");
-var otherService2 = composition.Resolve(typeof(IService),"My Tag");
+var otherService2 = composition.Resolve(typeof(IService), "My Tag");
 var otherService3 = composition.OtherService; // Gets the composition through the public root
 ```
 

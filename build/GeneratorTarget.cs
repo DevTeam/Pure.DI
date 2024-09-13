@@ -9,7 +9,7 @@ internal class GeneratorTarget(
     : IInitializable, ITarget<Package>
 {
     private const string PackagesDir = ".packages";
-    
+
     private string PackageName => $"Pure.DI.{settings.NextVersion}.nupkg";
 
     public Task InitializeAsync(CancellationToken cancellationToken) => commands.RegisterAsync(
@@ -64,7 +64,7 @@ internal class GeneratorTarget(
         {
             Directory.Delete(bin, true);
         }
-        
+
         var obj = Path.Combine(projectDirectory, "obj");
         if (Directory.Exists(obj))
         {

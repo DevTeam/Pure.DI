@@ -13,6 +13,7 @@ $f=For more hints, see [this](README.md#setup-hints) page.
 // ReSharper disable UnusedParameterInPartialMethod
 // ReSharper disable UnusedVariable
 // ReSharper disable ArrangeTypeModifiers
+
 namespace Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario;
 
 using System.Diagnostics.CodeAnalysis;
@@ -73,7 +74,7 @@ public class Scenario
         var composition = new Composition();
         var service = composition.Root;
         service.Dependency.ToString().ShouldBe("Dependency with name");
-        
+
 // }
         composition.SaveClassDiagram();
     }

@@ -6,14 +6,17 @@ Interception allows you to enrich or change the behavior of a certain set of obj
 
 
 ```c#
-public interface IService { string GetMessage(); }
+public interface IService
+{
+    string GetMessage();
+}
 
 class Service : IService
 {
     public string GetMessage() => "Hello World";
 }
 
-partial class Composition: IInterceptor
+partial class Composition : IInterceptor
 {
     private static readonly ProxyGenerator ProxyGenerator = new();
 

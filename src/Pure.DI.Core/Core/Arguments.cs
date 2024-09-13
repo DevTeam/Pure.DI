@@ -1,4 +1,5 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core;
 
 internal class Arguments : IArguments
@@ -43,7 +44,7 @@ internal class Arguments : IArguments
         {
             size = attributeConstructorArguments.Length;
         }
-        
+
         var args = new TypedConstant[size];
         for (var argIndex = 0; argIndex < attributeConstructorArguments.Length; argIndex++)
         {

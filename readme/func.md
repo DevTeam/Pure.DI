@@ -15,14 +15,14 @@ interface IService
     ImmutableArray<IDependency> Dependencies { get; }
 }
 
-class Service(Func<IDependency> dependencyFactory): IService
+class Service(Func<IDependency> dependencyFactory) : IService
 {
     public ImmutableArray<IDependency> Dependencies { get; } =
-        [
-            ..Enumerable
-                .Range(0, 10)
-                .Select(_ => dependencyFactory())
-        ];
+    [
+        ..Enumerable
+            .Range(0, 10)
+            .Select(_ => dependencyFactory())
+    ];
 }
 
 DI.Setup(nameof(Composition))

@@ -1,6 +1,7 @@
 // ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable InvertIf
+
 namespace Pure.DI.Core;
 
 internal sealed class MetadataValidator(
@@ -18,14 +19,14 @@ internal sealed class MetadataValidator(
 
         var isValid = setup.Bindings
             .Aggregate(
-                true, 
+                true,
                 (current, binding) => current & Validate(setup, binding));
 
         if (!isValid)
         {
             return false;
         }
-        
+
         if (setup.Kind == CompositionKind.Public
             && (!SyntaxFacts.IsValidIdentifier(setup.Name.ClassName)
                 || !IsValidOrEmptyIdentifier(setup.Name.Namespace.Replace('.', '_'))))
@@ -66,7 +67,7 @@ internal sealed class MetadataValidator(
             {
                 logger.CompileError("The accumulator type cannot be based on a generic type marker.", accumulator.Source.GetLocation(), LogId.ErrorInvalidMetadata);
             }
-            
+
             if (marker.IsMarkerBased(setup, accumulator.Type))
             {
                 logger.CompileError("The accumulator cannot accumulate instances based on a generic type marker.", accumulator.Source.GetLocation(), LogId.ErrorInvalidMetadata);
@@ -80,12 +81,12 @@ internal sealed class MetadataValidator(
 
         return true;
     }
-    
-    private static bool IsValidIdentifier(string identifier) => 
+
+    private static bool IsValidIdentifier(string identifier) =>
         !string.IsNullOrEmpty(identifier)
         && SyntaxFacts.IsValidIdentifier(identifier);
 
-    private static bool IsValidOrEmptyIdentifier(string identifier) => 
+    private static bool IsValidOrEmptyIdentifier(string identifier) =>
         string.IsNullOrEmpty(identifier)
         || SyntaxFacts.IsValidIdentifier(identifier);
 
@@ -96,7 +97,7 @@ internal sealed class MetadataValidator(
         ITypeSymbol? implementationType = default;
         SemanticModel? semanticModel = default;
         var location = binding.Source.GetLocation();
-        if (binding.Implementation is {} implementation)
+        if (binding.Implementation is { } implementation)
         {
             semanticModel = implementation.SemanticModel;
             implementationType = implementation.Type;
@@ -104,7 +105,7 @@ internal sealed class MetadataValidator(
         }
         else
         {
-            if (binding.Factory is {} factory)
+            if (binding.Factory is { } factory)
             {
                 semanticModel = factory.SemanticModel;
                 implementationType = factory.Type;
@@ -112,7 +113,7 @@ internal sealed class MetadataValidator(
             }
             else
             {
-                if (binding.Arg is {} arg)
+                if (binding.Arg is { } arg)
                 {
                     semanticModel = arg.SemanticModel;
                     implementationType = arg.Type;
@@ -122,7 +123,7 @@ internal sealed class MetadataValidator(
                         logger.CompileError($"Invalid argument name \"{arg.ArgName}\".", location, LogId.ErrorInvalidMetadata);
                         isValid = false;
                     }
-                    
+
                     if (marker.IsMarkerBased(setup, arg.Type))
                     {
                         logger.CompileError("The argument type cannot be based on a generic type marker.", location, LogId.ErrorInvalidMetadata);
@@ -130,7 +131,7 @@ internal sealed class MetadataValidator(
                 }
             }
         }
-        
+
         if (implementationType == default || implementationType is IErrorTypeSymbol || semanticModel == default)
         {
             logger.CompileError("Invalid binding due to construction failure.", location, LogId.ErrorInvalidMetadata);
@@ -144,7 +145,7 @@ internal sealed class MetadataValidator(
             {
                 implementationType
             };
-            
+
             var notSupportedContracts = binding.Contracts
                 .Where(contract => contract.ContractType != null && !supportedContracts.Contains(contract.ContractType))
                 .Select(i => i.ContractType!)

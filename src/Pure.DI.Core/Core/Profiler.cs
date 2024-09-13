@@ -1,9 +1,10 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core;
 
 using System.Diagnostics;
 
-internal class Profiler(CancellationToken cancellationToken): IProfiler
+internal class Profiler(CancellationToken cancellationToken) : IProfiler
 {
     private CancellationToken _cancellationToken = cancellationToken;
 
@@ -32,7 +33,7 @@ internal class Profiler(CancellationToken cancellationToken): IProfiler
                 process.Kill();
             }
         }, traceProcess);
-        
+
         traceProcess.Start();
         Thread.Sleep(TimeSpan.FromSeconds(2));
     }

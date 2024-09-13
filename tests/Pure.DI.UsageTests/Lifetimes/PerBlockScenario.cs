@@ -8,6 +8,7 @@ $h=The _PreBlock_ lifetime does not guarantee that there will be a single depend
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
 // ReSharper disable ArrangeTypeModifiers
+
 namespace Pure.DI.UsageTests.Lifetimes.PerBlockScenario;
 
 using Xunit;
@@ -43,7 +44,7 @@ public class Scenario
             .Hint(Hint.Resolve, "Off")
             .Bind().As(Lifetime.PerBlock).To<Dependency>()
             .Bind().As(Lifetime.Singleton).To<(IDependency dep3, IDependency dep4)>()
-            
+
             // Composition root
             .Root<Service>("Root");
 
@@ -53,7 +54,7 @@ public class Scenario
         service1.Dep1.ShouldBe(service1.Dep2);
         service1.Dep3.ShouldBe(service1.Dep4);
         service1.Dep1.ShouldNotBe(service1.Dep3);
-        
+
         var service2 = composition.Root;
         service2.Dep1.ShouldNotBe(service1.Dep1);
 // }

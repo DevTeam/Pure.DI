@@ -2,6 +2,7 @@
 // ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 // ReSharper disable ConvertToAutoPropertyWhenPossible
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core;
 
 internal sealed class ImplementationDependencyNodeBuilder(
@@ -42,7 +43,7 @@ internal sealed class ImplementationDependencyNodeBuilder(
                 {
                     continue;
                 }
-                
+
                 if (constructor.DeclaredAccessibility is not (Accessibility.Internal or Accessibility.Public))
                 {
                     continue;
@@ -89,7 +90,7 @@ internal sealed class ImplementationDependencyNodeBuilder(
                                           ?? method.Parameters
                                               .Select(param => attributes.GetAttribute(allAttributes, param, default(int?)))
                                               .FirstOrDefault(i => i.HasValue);
-                            
+
                             if (ordinal.HasValue)
                             {
                                 methods.Add(new DpMethod(method, ordinal, GetParameters(setup, method.Parameters, compilation, setup.TypeConstructor)));
@@ -142,7 +143,7 @@ internal sealed class ImplementationDependencyNodeBuilder(
             var propertiesArray = properties.ToImmutableArray();
             var fieldsArray = fields.ToImmutableArray();
             var implementations = constructors
-                .Select(constructor => 
+                .Select(constructor =>
                     new DpImplementation(
                         implementation,
                         binding,
@@ -162,7 +163,7 @@ internal sealed class ImplementationDependencyNodeBuilder(
                 {
                     yield return node;
                 }
-                
+
                 continue;
             }
 
@@ -172,7 +173,7 @@ internal sealed class ImplementationDependencyNodeBuilder(
             }
         }
     }
-    
+
     private IEnumerable<DependencyNode> CreateNodes(DependenciesToInjectionsCountWalker walker, IEnumerable<DpImplementation> implementations) =>
         implementations
             .OrderByDescending(i => GetInjectionsCount(walker, i.Constructor))
@@ -214,7 +215,7 @@ internal sealed class ImplementationDependencyNodeBuilder(
         {
             return ImmutableArray<DpParameter>.Empty;
         }
-        
+
         var dependenciesBuilder = ImmutableArray.CreateBuilder<DpParameter>(parameters.Length);
         foreach (var parameter in parameters)
         {
@@ -229,7 +230,7 @@ internal sealed class ImplementationDependencyNodeBuilder(
 
         return dependenciesBuilder.MoveToImmutable();
     }
-    
+
     private object? GetTagAttribute(
         MdSetup setup,
         ISymbol member) =>
@@ -258,8 +259,8 @@ internal sealed class ImplementationDependencyNodeBuilder(
 
         return default;
     }
-    
-    private sealed class DependenciesToInjectionsCountWalker: DependenciesWalker<Unit>
+
+    private sealed class DependenciesToInjectionsCountWalker : DependenciesWalker<Unit>
     {
         public int Count { get; private set; }
 

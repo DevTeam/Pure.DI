@@ -12,7 +12,7 @@ class Dependency : IDependency;
 
 interface IService
 {
-    IDependency Dependency { get;}
+    IDependency Dependency { get; }
 }
 
 class Service : IService
@@ -34,7 +34,6 @@ partial class Composition
             // Specifies to use the partial OnNewRoot method
             // to register each root
             .Hint(Hint.OnNewRoot, "On")
-
             .Bind("MyDep").To<Dependency>()
             .Bind().To<Service>()
 
@@ -53,10 +52,10 @@ partial class Composition
 
 Composition.HasRoot(typeof(IService)).ShouldBeTrue();
 Composition.HasRoot(typeof(IDependency), "MyDep").ShouldBeTrue();
-        
+
 Composition.HasRoot(typeof(IDependency)).ShouldBeFalse();
 Composition.HasRoot(typeof(IComparable)).ShouldBeFalse();
-        
+
 ```
 
 For more hints, see [this](README.md#setup-hints) page.

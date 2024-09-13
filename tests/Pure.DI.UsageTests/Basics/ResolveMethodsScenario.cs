@@ -17,6 +17,7 @@ $f=- Lead to performance degradation because they search for the root of a compo
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable UnusedVariable
+
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Basics.ResolveMethodsScenario;
 
@@ -45,11 +46,11 @@ public class Scenario
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>()
             .Bind<IService>("My Tag").To<OtherService>()
-            
+
             // Specifies to create a private root
             // that is only accessible from _Resolve_ methods
             .Root<IService>()
-            
+
             // Specifies to create a public root named _OtherService_
             // using the "My Tag" tag
             .Root<IService>("OtherService", "My Tag");
@@ -60,11 +61,11 @@ public class Scenario
         var service1 = composition.Resolve<IService>();
         var service2 = composition.Resolve(typeof(IService));
         var service3 = composition.Resolve(typeof(IService), null);
-        
+
         // Resolve by "My Tag" tag
         // The next 3 lines of code do the same thing too:
         var otherService1 = composition.Resolve<IService>("My Tag");
-        var otherService2 = composition.Resolve(typeof(IService),"My Tag");
+        var otherService2 = composition.Resolve(typeof(IService), "My Tag");
         var otherService3 = composition.OtherService; // Gets the composition through the public root
 // }            
         service1.ShouldBeOfType<Service>();

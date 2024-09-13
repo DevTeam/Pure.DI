@@ -1,10 +1,11 @@
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core;
 
 internal sealed class ObserversRegistry : IObserversRegistry, IObserversProvider
 {
     private readonly Dictionary<Type, ICollection<object>> _observers = new();
-    
+
     public IDisposable Register<T>(IObserver<T> observer)
     {
         var observers = GetOfType<T>();

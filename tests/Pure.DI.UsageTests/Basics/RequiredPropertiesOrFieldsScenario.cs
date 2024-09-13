@@ -9,6 +9,7 @@ $h=All properties or fields marked with the _required_ keyword automatically bec
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable ArrangeTypeModifiers
+
 namespace Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario;
 
 using Shouldly;
@@ -21,9 +22,9 @@ class Dependency : IDependency;
 
 interface IService
 {
-    string Name { get;}
-    
-    IDependency Dependency { get;}
+    string Name { get; }
+
+    IDependency Dependency { get; }
 }
 
 class Service : IService
@@ -49,7 +50,7 @@ public class Scenario
             .Arg<string>("name")
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>()
-            
+
             // Composition root
             .Root<IService>("Root");
 

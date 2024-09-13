@@ -1,4 +1,5 @@
 ﻿// ReSharper disable ConvertIfStatementToConditionalTernaryExpression
+
 namespace Pure.DI.Core.Code;
 
 internal class ClassCommenter(
@@ -15,14 +16,14 @@ internal class ClassCommenter(
         {
             return;
         }
-        
+
         var classComments = composition.Source.Source.Comments;
         var code = composition.Code;
         if (classComments.Count <= 0 && composition.Roots.Length <= 0)
         {
             return;
         }
-        
+
         code.AppendLine("/// <summary>");
         try
         {

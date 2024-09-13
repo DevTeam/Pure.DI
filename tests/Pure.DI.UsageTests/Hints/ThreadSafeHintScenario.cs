@@ -13,6 +13,7 @@ $f=For more hints, see [this](README.md#setup-hints) page.
 // ReSharper disable UnusedVariable
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable ArrangeTypeModifiers
+
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Hints.ThreadSafeHintScenario;
 

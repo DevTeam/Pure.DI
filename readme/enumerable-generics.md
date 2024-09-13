@@ -31,12 +31,12 @@ DI.Setup(nameof(Composition))
     .Root<IService<string>>("StringRoot");
 
 var composition = new Composition();
-        
+
 var intService = composition.IntRoot;
 intService.Dependencies.Length.ShouldBe(2);
 intService.Dependencies[0].ShouldBeOfType<AbcDependency<int>>();
 intService.Dependencies[1].ShouldBeOfType<XyzDependency<int>>();
-        
+
 var stringService = composition.StringRoot;
 stringService.Dependencies.Length.ShouldBe(2);
 stringService.Dependencies[0].ShouldBeOfType<AbcDependency<string>>();

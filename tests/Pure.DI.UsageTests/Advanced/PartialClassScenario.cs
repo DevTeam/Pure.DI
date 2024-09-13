@@ -12,6 +12,7 @@ $f=The partial class is also useful for specifying access modifiers to the gener
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable ArrangeTypeMemberModifiers
+
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Advanced.PartialClassScenario;
 
@@ -38,7 +39,7 @@ class Service(
     public string Name { get; } = name;
 
     public IDependency Dependency1 { get; } = dependency1;
-    
+
     public IDependency Dependency2 { get; } = dependency2;
 }
 
@@ -56,7 +57,7 @@ public partial class Composition
     }
 
     private long GenerateId() => Interlocked.Increment(ref _id);
-    
+
     // In fact, this method will not be called at runtime
     [Conditional("DI")]
     void Setup() =>
@@ -79,7 +80,7 @@ public class Scenario
 // {            
         var composition = new Composition("Abc");
         var service = composition.Root;
-        
+
         service.Dependency1.Id.ShouldBe(1);
         service.Dependency2.Id.ShouldBe(2);
         service.Name.ShouldBe("Abc_3");

@@ -10,6 +10,7 @@ $h=`Tag.Type` in bindings replaces the expression `typeof(T)`, where `T` is the 
 // ReSharper disable UnusedType.Global
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.UsageTests.Advanced.TagTypeScenario;
 
 using Shouldly;
@@ -19,7 +20,7 @@ using Xunit;
 interface IDependency;
 
 class AbcDependency : IDependency;
-        
+
 class XyzDependency : IDependency;
 
 interface IService
@@ -27,7 +28,7 @@ interface IService
     IDependency Dependency1 { get; }
 
     IDependency Dependency2 { get; }
-    
+
     IDependency Dependency3 { get; }
 }
 
@@ -57,10 +58,10 @@ public class Scenario
             // Tag.Type here is the same as typeof(XyzDependency)
             .Bind<IDependency>(Tag.Type).As(Lifetime.Singleton).To<XyzDependency>()
             .Bind<IService>().To<Service>()
-            
+
             // Composition root
             .Root<IService>("Root")
-            
+
             // "XyzRoot" is root name, typeof(XyzDependency) is tag
             .Root<IDependency>("XyzRoot", typeof(XyzDependency));
 

@@ -5,6 +5,7 @@
 // ReSharper disable ArgumentsStyleLiteral
 
 // ReSharper disable HeapView.ObjectAllocation.Evident
+
 namespace Pure.DI.Core;
 
 [ExcludeFromCodeCoverage]
@@ -19,7 +20,7 @@ internal static class Disposables
 
     public static IDisposable Create(in ImmutableArray<IDisposable> disposables) =>
         new CompositeDisposable(disposables);
-    
+
     public static IDisposable Create(IEnumerable<IDisposable> disposables) =>
         new CompositeDisposable(disposables.ToImmutableArray());
 

@@ -1,7 +1,8 @@
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core.Code;
 
-internal sealed class ScopeConstructorBuilder: IBuilder<CompositionCode, CompositionCode>
+internal sealed class ScopeConstructorBuilder : IBuilder<CompositionCode, CompositionCode>
 {
     public CompositionCode Build(CompositionCode composition)
     {
@@ -30,12 +31,12 @@ internal sealed class ScopeConstructorBuilder: IBuilder<CompositionCode, Composi
                     code.AppendLine($"{argsField.VariableDeclarationName} = {Names.RootFieldName}.{argsField.VariableDeclarationName};");
                 }
             }
-            
+
             if (composition.IsThreadSafe)
             {
                 code.AppendLine($"{Names.LockFieldName} = {Names.RootFieldName}.{Names.LockFieldName};");
             }
-            
+
             if (composition.DisposablesScopedCount > 0)
             {
                 code.AppendLine($"{Names.DisposablesFieldName} = new object[{composition.DisposablesScopedCount.ToString()}];");
@@ -48,7 +49,7 @@ internal sealed class ScopeConstructorBuilder: IBuilder<CompositionCode, Composi
                 }
             }
         }
-        
+
         code.AppendLine("}");
         membersCounter++;
         return composition with { MembersCount = membersCounter };

@@ -18,8 +18,7 @@ class Person([Inject("NikName")] string name) : IPerson
 {
     private object? _state;
 
-    [Inject<int>]
-    internal object Id = "";
+    [Inject<int>] internal object Id = "";
 
     public void Initialize([Inject<Uri>("Person Uri", 1)] object state) =>
         _state = state;

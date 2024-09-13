@@ -18,6 +18,7 @@ $f=> The following very important rule, in my opinion, will help in the last poi
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
 // ReSharper disable ArrangeTypeModifiers
+
 namespace Pure.DI.UsageTests.Lifetimes.TransientScenario;
 
 using Xunit;
@@ -30,7 +31,7 @@ class Dependency : IDependency;
 interface IService
 {
     public IDependency Dependency1 { get; }
-            
+
     public IDependency Dependency2 { get; }
 }
 

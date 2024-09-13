@@ -9,5 +9,5 @@ internal readonly record struct MdRoot(
     RootKinds Kind,
     IReadOnlyCollection<string> Comments)
 {
-    public override string ToString() => $"Root<{RootType}>(\"{Name}\", {Tag.ToString()})";   
+    public override string ToString() => $"Root<{RootType}>(\"{Name}\", {Tag.ToString()})";
 }

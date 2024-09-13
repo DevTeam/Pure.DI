@@ -1,5 +1,6 @@
 // ReSharper disable ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core;
 
 internal sealed class ConstructDependencyNodeBuilder : IBuilder<MdSetup, IEnumerable<DependencyNode>>
@@ -8,7 +9,7 @@ internal sealed class ConstructDependencyNodeBuilder : IBuilder<MdSetup, IEnumer
     {
         foreach (var binding in setup.Bindings)
         {
-            if (binding.Construct is not {} construct)
+            if (binding.Construct is not { } construct)
             {
                 continue;
             }
@@ -20,11 +21,11 @@ internal sealed class ConstructDependencyNodeBuilder : IBuilder<MdSetup, IEnumer
                 {
                     continue;
                 }
-                
+
                 var tag = contract.Tags.Select(i => i.Value).FirstOrDefault();
                 injections.Add(new Injection(contract.ContractType.WithNullableAnnotation(NullableAnnotation.NotAnnotated), tag));
             }
-            
+
             yield return new DependencyNode(0, binding, Construct: new DpConstruct(construct, binding, injections.ToImmutableArray()));
         }
     }

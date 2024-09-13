@@ -7,6 +7,7 @@ $d=ValueTask
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
 // ReSharper disable ArrangeTypeModifiers
+
 namespace Pure.DI.UsageTests.BCL.ValueTaskScenario;
 
 using Xunit;
@@ -46,7 +47,7 @@ public class Scenario
         DI.Setup(nameof(Composition))
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>()
-            
+
             // Composition root
             .Root<IService>("Root");
 

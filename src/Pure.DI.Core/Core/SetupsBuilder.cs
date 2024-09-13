@@ -1,4 +1,5 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core;
 
 internal sealed class SetupsBuilder(
@@ -31,13 +32,13 @@ internal sealed class SetupsBuilder(
         {
             return Array.Empty<MdSetup>();
         }
-        
+
         metadataSyntaxWalkerFactory().Visit(this, update);
         if (!_setups.Any())
         {
             setupCache.Set(checkSum, false);
         }
-        
+
         return _setups;
     }
 
@@ -80,11 +81,11 @@ internal sealed class SetupsBuilder(
     }
 
     public void VisitRoot(in MdRoot root) => _roots.Add(root);
-    
-    public void VisitGenericTypeArgument(in MdGenericTypeArgument genericTypeArgument) => 
+
+    public void VisitGenericTypeArgument(in MdGenericTypeArgument genericTypeArgument) =>
         _genericTypeArguments.Add(genericTypeArgument);
 
-    public void VisitGenericTypeArgumentAttribute(in MdGenericTypeArgumentAttribute genericTypeArgumentAttribute) => 
+    public void VisitGenericTypeArgumentAttribute(in MdGenericTypeArgumentAttribute genericTypeArgumentAttribute) =>
         _genericTypeArgumentAttributes.Add(genericTypeArgumentAttribute);
 
     public void VisitDefaultLifetime(in MdDefaultLifetime defaultLifetime) =>
@@ -102,12 +103,12 @@ internal sealed class SetupsBuilder(
     public void VisitOrdinalAttribute(in MdOrdinalAttribute ordinalAttribute) =>
         _ordinalAttributes.Add(ordinalAttribute);
 
-    public void VisitLifetime(in MdLifetime lifetime) => 
+    public void VisitLifetime(in MdLifetime lifetime) =>
         _bindingBuilder.Lifetime = lifetime;
 
     public void VisitTag(in MdTag tag) => _bindingBuilder.AddTag(tag);
 
-    public void VisitAccumulator(in MdAccumulator accumulator) => 
+    public void VisitAccumulator(in MdAccumulator accumulator) =>
         _accumulators.Add(accumulator);
 
     public void VisitHint(in MdHint hint) =>
@@ -115,7 +116,7 @@ internal sealed class SetupsBuilder(
 
     public void VisitFinish() => FinishSetup(_setup);
 
-    private void FinishBinding() => 
+    private void FinishBinding() =>
         _bindings.Add(_bindingBuilder.Build(_setup!));
 
     public MdSetup Finalize(MdSetup setup)
@@ -170,7 +171,7 @@ internal sealed class SetupsBuilder(
                 }
             }
         }
-        
+
         var source = binding.Source;
         var semanticModel = binding.SemanticModel;
         if (binding.Contracts.IsDefaultOrEmpty)
@@ -185,7 +186,7 @@ internal sealed class SetupsBuilder(
         }
 
         var contract = contacts.First();
-        
+
         var membersToBind =
             from member in type.GetMembers()
             where member.DeclaredAccessibility >= Accessibility.Internal && member.CanBeReferencedByName && member is IFieldSymbol or IPropertySymbol or IMethodSymbol
@@ -202,7 +203,7 @@ internal sealed class SetupsBuilder(
             {
                 contractType = newContractType;
             }
-            
+
             var position = 0;
             var namespaces = new HashSet<string>();
             var resolvers = new List<MdResolver>();
@@ -238,9 +239,9 @@ internal sealed class SetupsBuilder(
                             resolvers.Add(CreateResolver(typeConstructor, parameter.Name, parameter.Type, MdTag.ContextTag, ref position));
                         }
                     }
-                    
+
                     break;
-                
+
                 default:
                     continue;
             }
@@ -282,7 +283,7 @@ internal sealed class SetupsBuilder(
             {
                 valueTag = contract.Tags.First().Value;
             }
-            
+
             if (!member.IsStatic)
             {
                 resolvers.Add(CreateResolver(typeConstructor, FactoryCodeBuilder.DefaultInstanceValueName, contract.ContractType!, valueTag, ref position));

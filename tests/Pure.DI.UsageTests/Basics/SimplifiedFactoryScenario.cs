@@ -11,6 +11,7 @@ $h=This example shows how to create and initialize an instance manually in a sim
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable UnusedMember.Global
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.UsageTests.Basics.SimplifiedFactoryScenario;
 
 using Shouldly;
@@ -68,7 +69,7 @@ public class Scenario
                 return dependency;
             })
             .Bind().To<Service>()
-            
+
             // Composition root
             .Root<IService>("MyService");
 

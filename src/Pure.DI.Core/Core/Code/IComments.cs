@@ -9,9 +9,9 @@ internal interface IComments
     IHints GetHints(IEnumerable<string> comments);
 
     string Escape(string text);
-    
+
     IEnumerable<string> Format(IEnumerable<string> comments, bool escape);
-    
+
     IEnumerable<string> FormatList(
         string title,
         IEnumerable<(IReadOnlyCollection<string> terms, IReadOnlyCollection<string> decriptions)> items,

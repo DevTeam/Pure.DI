@@ -20,8 +20,7 @@ class Person([Inject<string>("NikName")] string name) : IPerson
 {
     private object? _state;
 
-    [Inject<int>(ordinal: 1)]
-    internal object Id = "";
+    [Inject<int>(ordinal: 1)] internal object Id = "";
 
     public void Initialize([Inject<Uri>] object state) =>
         _state = state;

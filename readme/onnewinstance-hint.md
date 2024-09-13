@@ -52,7 +52,7 @@ var log = new List<string>();
 var composition = new Composition(log);
 var service1 = composition.Root;
 var service2 = composition.Root;
-        
+
 log.ShouldBe(ImmutableArray.Create("Dependency", "Service", "Service"));
 ```
 

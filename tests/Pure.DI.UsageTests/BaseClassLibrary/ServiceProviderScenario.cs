@@ -11,6 +11,7 @@ $h=The `// ObjectResolveMethodName = GetService` hint overrides the _object Reso
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable UnusedMember.Local
 // ReSharper disable ArrangeTypeMemberModifiers
+
 namespace Pure.DI.UsageTests.BCL.ServiceProviderScenario;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -32,7 +33,7 @@ class Service(IDependency dependency) : IService
     public IDependency Dependency { get; } = dependency;
 }
 
-partial class Composition: IServiceProvider
+partial class Composition : IServiceProvider
 {
     static void Setup() =>
         DI.Setup()

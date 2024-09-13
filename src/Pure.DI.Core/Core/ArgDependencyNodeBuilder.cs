@@ -1,4 +1,5 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core;
 
 internal sealed class ArgDependencyNodeBuilder : IBuilder<MdSetup, IEnumerable<DependencyNode>>
@@ -7,7 +8,7 @@ internal sealed class ArgDependencyNodeBuilder : IBuilder<MdSetup, IEnumerable<D
     {
         foreach (var binding in setup.Bindings)
         {
-            if (binding.Arg is not {} arg)
+            if (binding.Arg is not { } arg)
             {
                 continue;
             }

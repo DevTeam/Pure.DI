@@ -11,20 +11,24 @@ $f=Here an instance of the _Service_ type, labeled _"base"_, is injected in the 
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable ArrangeTypeModifiers
+
 namespace Pure.DI.UsageTests.Interception.DecoratorScenario;
 
 using Shouldly;
 using Xunit;
 
 // {
-interface IService { string GetMessage(); }
+interface IService
+{
+    string GetMessage();
+}
 
-class Service : IService 
+class Service : IService
 {
     public string GetMessage() => "Hello World";
 }
 
-class GreetingService([Tag("base")] IService baseService): IService
+class GreetingService([Tag("base")] IService baseService) : IService
 {
     public string GetMessage() => $"{baseService.GetMessage()} !!!";
 }

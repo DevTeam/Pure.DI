@@ -9,6 +9,7 @@ $h=To use dependency injection for a field, make sure the field is writable and 
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable ArrangeTypeModifiers
+
 namespace Pure.DI.UsageTests.Basics.FieldInjectionScenario;
 
 using Shouldly;
@@ -29,9 +30,8 @@ class Service : IService
     // The Ordinal attribute specifies to perform an injection,
     // the integer value in the argument specifies
     // the ordinal of injection
-    [Ordinal(0)]
-    internal IDependency? DependencyVal;
-    
+    [Ordinal(0)] internal IDependency? DependencyVal;
+
     public IDependency? Dependency => DependencyVal;
 }
 // }
@@ -46,7 +46,7 @@ public class Scenario
         DI.Setup(nameof(Composition))
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>()
-            
+
             // Composition root
             .Root<IService>("MyService");
 

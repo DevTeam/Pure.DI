@@ -10,6 +10,7 @@ $f=The tag can be a constant, a type, or a value of an enumerated type. This att
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedType.Global
 // ReSharper disable ArrangeTypeModifiers
+
 namespace Pure.DI.UsageTests.Basics.TagAttributeScenario;
 
 using Shouldly;
@@ -19,9 +20,9 @@ using Xunit;
 interface IDependency;
 
 class AbcDependency : IDependency;
-        
+
 class XyzDependency : IDependency;
-        
+
 class Dependency : IDependency;
 
 interface IService
@@ -53,7 +54,7 @@ public class Scenario
             .Bind("Abc").To<AbcDependency>()
             .Bind("Xyz").To<XyzDependency>()
             .Bind().To<Service>()
-            
+
             // Composition root
             .Root<IService>("Root");
 

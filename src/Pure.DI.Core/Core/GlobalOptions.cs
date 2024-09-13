@@ -1,4 +1,5 @@
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core;
 
 internal sealed class GlobalOptions : IGlobalOptions
@@ -20,8 +21,8 @@ internal sealed class GlobalOptions : IGlobalOptions
 
             return 1024;
         });
-        
-        _profilePath = new Lazy<string>(() => 
+
+        _profilePath = new Lazy<string>(() =>
             options.GlobalOptions.TryGetValue(GlobalSettings.ProfilePath, out var profilePath)
                 ? profilePath
                 : string.Empty);
@@ -29,6 +30,6 @@ internal sealed class GlobalOptions : IGlobalOptions
 
     public int MaxIterations => _maxIterations.Value;
 
-    public bool TryGetProfilePath(out string path) => 
+    public bool TryGetProfilePath(out string path) =>
         !string.IsNullOrWhiteSpace(path = _profilePath.Value);
 }

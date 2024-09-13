@@ -1,10 +1,10 @@
 namespace Pure.DI.Core.Models;
 
-public readonly record struct CompositionName(string ClassName, string Namespace, SyntaxNode? Source): IComparable<CompositionName>
+public readonly record struct CompositionName(string ClassName, string Namespace, SyntaxNode? Source) : IComparable<CompositionName>
 {
     public bool Equals(CompositionName other) => ClassName == other.ClassName && Namespace == other.Namespace;
 
-    public int CompareTo(CompositionName other) => 
+    public int CompareTo(CompositionName other) =>
         Comparer.DefaultInvariant.Compare(FullName, other.FullName);
 
     public override int GetHashCode()
@@ -15,7 +15,7 @@ public readonly record struct CompositionName(string ClassName, string Namespace
         }
     }
 
-    public string FullName => 
+    public string FullName =>
         string.IsNullOrWhiteSpace(Namespace) ? ClassName : Namespace + "." + ClassName;
 
     public override string ToString() => FullName;

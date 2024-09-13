@@ -10,7 +10,7 @@ internal readonly record struct InvocationVisitor(
     : IMetadataVisitor
 {
     private readonly List<IRunnable> _actions = [];
-        
+
     public void Apply()
     {
         foreach (var action in _actions)
@@ -53,10 +53,10 @@ internal readonly record struct InvocationVisitor(
     public void VisitRoot(in MdRoot root) =>
         AddAction((visitor, i) => visitor.VisitRoot(i), BaseVisitor, root);
 
-    public void VisitGenericTypeArgument(in MdGenericTypeArgument genericTypeArgument) => 
+    public void VisitGenericTypeArgument(in MdGenericTypeArgument genericTypeArgument) =>
         AddAction((visitor, i) => visitor.VisitGenericTypeArgument(i), BaseVisitor, genericTypeArgument);
 
-    public void VisitGenericTypeArgumentAttribute(in MdGenericTypeArgumentAttribute genericTypeArgumentAttribute) => 
+    public void VisitGenericTypeArgumentAttribute(in MdGenericTypeArgumentAttribute genericTypeArgumentAttribute) =>
         AddAction((visitor, i) => visitor.VisitGenericTypeArgumentAttribute(i), BaseVisitor, genericTypeArgumentAttribute);
 
     public void VisitTypeAttribute(in MdTypeAttribute typeAttribute) =>
@@ -84,14 +84,14 @@ internal readonly record struct InvocationVisitor(
         AddAction((visitor, _) => visitor.VisitFinish(), BaseVisitor, 0);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void AddAction<T>(Action<IMetadataVisitor, T> action, IMetadataVisitor visitor, in T state) => 
+    private void AddAction<T>(Action<IMetadataVisitor, T> action, IMetadataVisitor visitor, in T state) =>
         _actions.Add(new VisitorAction<T>(action, visitor, state));
 
     private interface IRunnable
     {
         void Run();
     }
-        
+
     private class VisitorAction<T>(
         Action<IMetadataVisitor, T> action,
         IMetadataVisitor visitor,

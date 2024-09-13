@@ -1,4 +1,5 @@
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core;
 
 using Microsoft.CodeAnalysis.Operations;
@@ -9,7 +10,7 @@ internal class Semantic(
     CancellationToken cancellationToken)
     : ISemantic
 {
-    public bool IsAccessible(ISymbol symbol) => 
+    public bool IsAccessible(ISymbol symbol) =>
         symbol is { IsStatic: false, DeclaredAccessibility: Accessibility.Internal or Accessibility.Public };
 
     public T? TryGetTypeSymbol<T>(SemanticModel semanticModel, SyntaxNode node)
@@ -24,7 +25,7 @@ internal class Semantic(
 
         return default;
     }
-    
+
     public T GetTypeSymbol<T>(SemanticModel semanticModel, SyntaxNode node)
         where T : ITypeSymbol
     {
@@ -36,7 +37,7 @@ internal class Semantic(
 
         throw new CompileErrorException($"The type {node} is not supported.", node.GetLocation(), LogId.ErrorInvalidMetadata);
     }
-    
+
     public T GetRequiredConstantValue<T>(SemanticModel semanticModel, SyntaxNode node)
     {
         var value = GetConstantValue<T>(semanticModel, node);
@@ -44,7 +45,7 @@ internal class Semantic(
         {
             return value;
         }
-        
+
         throw new CompileErrorException($"{node} must be a non-null value of type {typeof(T)}.", node.GetLocation(), LogId.ErrorInvalidMetadata);
     }
 
@@ -54,11 +55,11 @@ internal class Semantic(
         if (node is CollectionExpressionSyntax collectionExpression)
         {
             return collectionExpression.Elements
-                    .SelectMany(e => e.ChildNodes())
-                    .Select(e => GetConstantValue<T>(semanticModel, e))
-                    .ToArray();
+                .SelectMany(e => e.ChildNodes())
+                .Select(e => GetConstantValue<T>(semanticModel, e))
+                .ToArray();
         }
-#endif        
+#endif
 
         return [GetConstantValue<T>(semanticModel, node)];
     }
@@ -106,16 +107,16 @@ internal class Semantic(
                             switch (valueStr)
                             {
                                 case nameof(Tag.Type):
-                                    return (T)(object)Tag.Type; 
-                                
+                                    return (T)(object)Tag.Type;
+
                                 case nameof(Tag.Unique):
                                     return (T)(object)Tag.Unique;
                             }
-                            
+
                             break;
                     }
                 }
-                
+
                 break;
             }
 
@@ -131,21 +132,21 @@ internal class Semantic(
                                 .Where(i => !string.IsNullOrWhiteSpace(i.Value))
                                 .Select(i => new MdInjectionSite(i.Source, i.Value!))
                                 .ToImmutableArray();
-                            
+
                             return (T)MdTag.CreateTagOnValue(invocationExpressionSyntax, injectionSites);
                         }
-                        
+
                         // ReSharper disable once HeuristicUnreachableCode
                         break;
-                    
-                    case MemberAccessExpressionSyntax { Name: GenericNameSyntax { TypeArgumentList.Arguments: [{} typeArg]}, Name.Identifier.Text: nameof(Tag.OnConstructorArg), Expression: IdentifierNameSyntax { Identifier.Text: nameof(Tag) } }:
-                        if (invocationExpressionSyntax.ArgumentList.Arguments is [{} ctorArgName] )
+
+                    case MemberAccessExpressionSyntax { Name: GenericNameSyntax { TypeArgumentList.Arguments: [{ } typeArg] }, Name.Identifier.Text: nameof(Tag.OnConstructorArg), Expression: IdentifierNameSyntax { Identifier.Text: nameof(Tag) } }:
+                        if (invocationExpressionSyntax.ArgumentList.Arguments is [{ } ctorArgName])
                         {
                             var name = GetRequiredConstantValue<string>(semanticModel, ctorArgName.Expression);
                             var ctor = GetTypeSymbol<ITypeSymbol>(semanticModel, typeArg)
                                 .GetMembers()
                                 .OfType<IMethodSymbol>()
-                                .FirstOrDefault(i => 
+                                .FirstOrDefault(i =>
                                     IsAccessible(i)
                                     && !i.IsStatic
                                     && i.Parameters.Any(p => wildcardMatcher.Match(name.AsSpan(), p.Name.AsSpan())));
@@ -154,22 +155,22 @@ internal class Semantic(
                             {
                                 throw new CompileErrorException($"There is no accessible non-static constructor of type {typeArg} with an argument matching \"{name}\".", invocationExpressionSyntax.GetLocation(), LogId.ErrorInvalidMetadata);
                             }
-                            
+
                             var injectionSite = injectionSiteFactory.CreateInjectionSite(ctorArgName.Expression, ctor, name);
                             return (T)MdTag.CreateTagOnValue(invocationExpressionSyntax, ImmutableArray.Create(injectionSite));
                         }
-                        
+
                         break;
-                        
-                    case MemberAccessExpressionSyntax { Name: GenericNameSyntax { TypeArgumentList.Arguments: [{} typeArg]}, Name.Identifier.Text: nameof(Tag.OnMethodArg), Expression: IdentifierNameSyntax { Identifier.Text: nameof(Tag) } }:
-                        if (invocationExpressionSyntax.ArgumentList.Arguments is [{} methodNameArg, {} methodArgName] )
+
+                    case MemberAccessExpressionSyntax { Name: GenericNameSyntax { TypeArgumentList.Arguments: [{ } typeArg] }, Name.Identifier.Text: nameof(Tag.OnMethodArg), Expression: IdentifierNameSyntax { Identifier.Text: nameof(Tag) } }:
+                        if (invocationExpressionSyntax.ArgumentList.Arguments is [{ } methodNameArg, { } methodArgName])
                         {
                             var methodName = GetRequiredConstantValue<string>(semanticModel, methodNameArg.Expression);
                             var methodArg = GetRequiredConstantValue<string>(semanticModel, methodArgName.Expression);
                             var method = GetTypeSymbol<ITypeSymbol>(semanticModel, typeArg)
                                 .GetMembers()
                                 .OfType<IMethodSymbol>()
-                                .FirstOrDefault(i => 
+                                .FirstOrDefault(i =>
                                     i.MethodKind == MethodKind.Ordinary
                                     && IsAccessible(i)
                                     && wildcardMatcher.Match(methodName.AsSpan(), i.Name.AsSpan())
@@ -179,41 +180,41 @@ internal class Semantic(
                             {
                                 throw new CompileErrorException($"There is no accessible non-static method of type {typeArg} with a name matching \"{methodName}\" an argument matching \"{methodArg}\".", invocationExpressionSyntax.GetLocation(), LogId.ErrorInvalidMetadata);
                             }
-                            
+
                             var injectionSite = injectionSiteFactory.CreateInjectionSite(methodArgName.Expression, method, methodArg);
                             return (T)MdTag.CreateTagOnValue(invocationExpressionSyntax, ImmutableArray.Create(injectionSite));
                         }
-                        
+
                         break;
-                    
-                    case MemberAccessExpressionSyntax { Name: GenericNameSyntax { TypeArgumentList.Arguments: [{} typeArg]}, Name.Identifier.Text: nameof(Tag.OnMember), Expression: IdentifierNameSyntax { Identifier.Text: nameof(Tag) } }:
-                        if (invocationExpressionSyntax.ArgumentList.Arguments is [{} memberNameArg] )
+
+                    case MemberAccessExpressionSyntax { Name: GenericNameSyntax { TypeArgumentList.Arguments: [{ } typeArg] }, Name.Identifier.Text: nameof(Tag.OnMember), Expression: IdentifierNameSyntax { Identifier.Text: nameof(Tag) } }:
+                        if (invocationExpressionSyntax.ArgumentList.Arguments is [{ } memberNameArg])
                         {
                             var name = GetRequiredConstantValue<string>(semanticModel, memberNameArg.Expression);
                             var type = GetTypeSymbol<ITypeSymbol>(semanticModel, typeArg);
                             var member = type
                                 .GetMembers()
-                                .FirstOrDefault(i => 
+                                .FirstOrDefault(i =>
                                     IsAccessible(i)
                                     && i is IFieldSymbol { IsReadOnly: false, IsConst: false } or IPropertySymbol { IsReadOnly: false, SetMethod: not null }
                                     && wildcardMatcher.Match(name.AsSpan(), i.Name.AsSpan()));
-                            
+
                             if (member is null)
                             {
                                 throw new CompileErrorException($"There is no accessible non-static writable field or property matched with \"{name}\" of {typeArg}.", invocationExpressionSyntax.GetLocation(), LogId.ErrorInvalidMetadata);
                             }
-                            
+
                             var injectionSite = injectionSiteFactory.CreateInjectionSite(memberNameArg, type, name);
                             return (T)MdTag.CreateTagOnValue(invocationExpressionSyntax, ImmutableArray.Create(injectionSite));
                         }
-                        
+
                         break;
                 }
 
                 break;
             }
         }
-        
+
         var optionalValue = semanticModel.GetConstantValue(node);
         if (optionalValue.Value is not null)
         {
@@ -225,7 +226,7 @@ internal class Semantic(
         {
             return (T)operation.ConstantValue.Value!;
         }
-        
+
         if (typeof(T) == typeof(object) && operation is ITypeOfOperation typeOfOperation)
         {
             return (T)typeOfOperation.TypeOperand;

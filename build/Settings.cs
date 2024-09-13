@@ -18,7 +18,7 @@ internal class Settings(Properties properties, Versions versions)
     public string Configuration => "Release";
 
     public NuGetVersion CurrentVersion => _currentVersion.Value;
-    
+
     public NuGetVersion NextVersion
     {
         get
@@ -29,7 +29,7 @@ internal class Settings(Properties properties, Versions versions)
                 return version;
             }
 
-            var currentVersion =  _currentVersion.Value;
+            var currentVersion = _currentVersion.Value;
             return new NuGetVersion(currentVersion.Major, currentVersion.Minor, currentVersion.Patch + 1);
         }
     }
@@ -42,6 +42,6 @@ internal class Settings(Properties properties, Versions versions)
         new(new Version(4, 3, 1))
     ];
 
-    private static NuGetVersion GetVersion(Versions versions) => 
+    private static NuGetVersion GetVersion(Versions versions) =>
         versions.GetNext(new NuGetRestoreSettings("Pure.DI"), VersionRange, 0);
 }

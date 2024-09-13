@@ -43,10 +43,10 @@ DI.Setup(nameof(Composition))
     .Root<IService<TT>>("GetOtherService", "Other");
 
 var composition = new Composition();
-        
+
 // service = new Service<int>(new Dependency<int>());
 var service = composition.GetMyRoot<int>();
-        
+
 // someOtherService = new OtherService<int>(new Dependency<int>());
 var someOtherService = composition.GetOtherService<string>();
 ```

@@ -34,7 +34,6 @@ DI.Setup(nameof(Composition))
     // to all bindings until the end of the chain
     // or the next call to the DefaultLifetime method
     .DefaultLifetime(Lifetime.Singleton)
-
     .Bind().To<Dependency>()
     .Bind().To<Service>()
     .Root<IService>("Root");

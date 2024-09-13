@@ -26,11 +26,11 @@ internal class LifetimeAnalyzer : ILifetimeAnalyzer
         }
     }
 
-    public Lifetime GetActualDependencyLifetime(Lifetime targetLifetime, Lifetime dependencyLifetime) => 
+    public Lifetime GetActualDependencyLifetime(Lifetime targetLifetime, Lifetime dependencyLifetime) =>
         LifetimePriorities[(int)targetLifetime] >= LifetimePriorities[(int)dependencyLifetime]
             ? targetLifetime
             : dependencyLifetime;
-    
-    public bool ValidateLifetimes(Lifetime actualTargetLifetime, Lifetime dependencyLifetime) => 
+
+    public bool ValidateLifetimes(Lifetime actualTargetLifetime, Lifetime dependencyLifetime) =>
         !(actualTargetLifetime == Lifetime.Singleton && dependencyLifetime == Lifetime.Scoped);
 }

@@ -1,5 +1,6 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable InvertIf
+
 namespace Pure.DI.Core.Code;
 
 internal class ImplementationCodeBuilder(
@@ -19,14 +20,14 @@ internal class ImplementationCodeBuilder(
             argsWalker.VisitField(Unit.Shared, requiredField);
             requiredFields.Add((argsWalker.GetResult().Single(), requiredField));
         }
-            
+
         var requiredProperties = ImmutableArray.CreateBuilder<(Variable RequiredVariable, DpProperty RequiredProperty)>();
         foreach (var requiredProperty in implementation.Properties.Where(i => i.Property.IsRequired || i.Property.SetMethod?.IsInitOnly == true).OrderBy(i => i.Ordinal ?? int.MaxValue))
         {
             argsWalker.VisitProperty(Unit.Shared, requiredProperty);
             requiredProperties.Add((argsWalker.GetResult().Single(), requiredProperty));
         }
-        
+
         var visits = new List<(Action<BuildContext> Run, int? Ordinal)>();
         foreach (var field in implementation.Fields.Where(i => i.Field.IsRequired != true))
         {
@@ -37,7 +38,7 @@ internal class ImplementationCodeBuilder(
 
             void VisitFieldAction(BuildContext context) => FieldInjection(context, field, fieldVariable);
         }
-        
+
         foreach (var property in implementation.Properties.Where(i => !i.Property.IsRequired && i.Property.SetMethod?.IsInitOnly != true))
         {
             argsWalker.VisitProperty(Unit.Shared, property);
@@ -47,7 +48,7 @@ internal class ImplementationCodeBuilder(
 
             void VisitFieldAction(BuildContext context) => PropertyInjection(context, property, propertyVariable);
         }
-        
+
         foreach (var method in implementation.Methods)
         {
             argsWalker.VisitMethod(Unit.Shared, method);
@@ -104,11 +105,11 @@ internal class ImplementationCodeBuilder(
             ctx.Code.AppendLine($"{variable.VariableName} = {ctx.Variable.VariableName};");
         }
     }
-    
+
     private string CreateInstantiation(
         BuildContext ctx,
         ImmutableArray<Variable> constructorArgs,
-        ImmutableArray<(Variable RequiredVariable,DpField RequiredField)>.Builder requiredFields,
+        ImmutableArray<(Variable RequiredVariable, DpField RequiredField)>.Builder requiredFields,
         ImmutableArray<(Variable RequiredVariable, DpProperty RequiredProperty)>.Builder requiredProperties)
     {
         var code = new StringBuilder();
@@ -127,13 +128,13 @@ internal class ImplementationCodeBuilder(
                 var (v, name) = required[index];
                 code.Append($"{name} = {ctx.BuildTools.OnInjected(ctx, v)}{(index < required.Length - 1 ? ", " : "")}");
             }
-            
+
             code.Append(" }");
         }
-        
+
         return code.ToString();
     }
-    
+
     private static void FieldInjection(BuildContext ctx, DpField field, Variable fieldVariable)
     {
         ctx.Code.AppendLine($"{ctx.Variable.VariableName}.{field.Field.Name} = {ctx.BuildTools.OnInjected(ctx, fieldVariable)};");

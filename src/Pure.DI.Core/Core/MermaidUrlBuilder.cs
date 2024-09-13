@@ -1,11 +1,12 @@
 ﻿// ReSharper disable InconsistentNaming
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core;
 
 using System.IO.Compression;
 
-internal class MermaidUrlBuilder: IBuilder<IEnumerable<string>, Uri>
+internal class MermaidUrlBuilder : IBuilder<IEnumerable<string>, Uri>
 {
     public Uri Build(IEnumerable<string> lines)
     {
@@ -16,7 +17,7 @@ internal class MermaidUrlBuilder: IBuilder<IEnumerable<string>, Uri>
         }
 
         var encoded = JsonEncode(code.Replace("\\", "").ToString());
-        var json = $"{{\"code\":\"{encoded}\",\"mermaid\":\"{{\\\"theme\\\":\\\"dark\\\"}}\"}}"; 
+        var json = $"{{\"code\":\"{encoded}\",\"mermaid\":\"{{\\\"theme\\\":\\\"dark\\\"}}\"}}";
         var jsonBytes = Encoding.UTF8.GetBytes(json);
         var compressedBytes = Compress(jsonBytes);
         var pako = Convert.ToBase64String(compressedBytes)
@@ -25,10 +26,10 @@ internal class MermaidUrlBuilder: IBuilder<IEnumerable<string>, Uri>
             .Replace("=", "");
         return new Uri($"https://mermaid.live/view#pako:{pako}", UriKind.Absolute);
     }
-    
+
     private static string JsonEncode(string text)
     {
-        if (string.IsNullOrWhiteSpace(text)) 
+        if (string.IsNullOrWhiteSpace(text))
         {
             return text;
         }
@@ -36,7 +37,8 @@ internal class MermaidUrlBuilder: IBuilder<IEnumerable<string>, Uri>
         var sb = new StringBuilder(text.Length + 4);
         foreach (var ch in text)
         {
-            switch (ch) {
+            switch (ch)
+            {
                 case ' ':
                     sb.Append(" ");
                     break;
@@ -46,32 +48,32 @@ internal class MermaidUrlBuilder: IBuilder<IEnumerable<string>, Uri>
                     sb.Append('\\');
                     sb.Append(ch);
                     break;
-                
+
                 case '/':
                     sb.Append('\\');
                     sb.Append(ch);
                     break;
-                
+
                 case '\b':
                     sb.Append("\\b");
                     break;
-                
+
                 case '\t':
                     sb.Append("\\t");
                     break;
-                
+
                 case '\n':
                     sb.Append("\\n");
                     break;
-                
+
                 case '\f':
                     sb.Append("\\f");
                     break;
-                
+
                 case '\r':
                     sb.Append("\\r");
                     break;
-                
+
                 default:
                     if (char.IsLetterOrDigit(ch))
                     {
@@ -85,7 +87,7 @@ internal class MermaidUrlBuilder: IBuilder<IEnumerable<string>, Uri>
                     break;
             }
         }
-        
+
         return sb.ToString();
     }
 
@@ -98,19 +100,19 @@ internal class MermaidUrlBuilder: IBuilder<IEnumerable<string>, Uri>
             adler1 = (adler1 + bt) % 65521;
             adler2 = (adler2 + adler1) % 65521;
         }
-        
+
         using var resultStream = new MemoryStream();
-        
+
         // Write header
         resultStream.WriteByte(0x78);
         resultStream.WriteByte(0xDA);
-        
+
         // Write compressed data
         using (var stream = new DeflateStream(resultStream, CompressionLevel.Optimal))
         {
             stream.Write(data, 0, data.Length);
         }
-            
+
         data = resultStream.ToArray();
 
         // append the checksum-trailer:

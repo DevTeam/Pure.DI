@@ -11,6 +11,7 @@ $h=Accumulators allow you to accumulate instances of certain types and lifetimes
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedVariable
+
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Advanced.AccumulatorScenario;
 
@@ -57,7 +58,7 @@ public class Scenario
         accumulator[0].ShouldBeOfType<XyzDependency>();
         accumulator[1].ShouldBeOfType<AbcDependency>();
         accumulator[2].ShouldBeOfType<Service>();
-        
+
 // }            
         composition.SaveClassDiagram();
     }

@@ -40,7 +40,8 @@ interface IService
 class Service : IService
 {
     public Service(Func<int, int, IDependency> dependencyFactory) =>
-        Dependencies = [
+        Dependencies =
+        [
             ..Enumerable
                 .Range(0, 10)
                 .Select((_, index) => dependencyFactory(index, 99))
@@ -58,15 +59,15 @@ DI.Setup(nameof(Composition))
     // to the source code statement "subId"
     .Bind<int>("sub").To<int>("subId")
     .Bind<Func<int, int, IDependency>>()
-        .To<Func<int, int, IDependency>>(ctx =>
-            (dependencyId, subId) =>
-            {
-                // Builds up an instance of type Dependency
-                // referring source code statements "dependencyId"
-                // and source code statements "subId"
-                ctx.Inject<Dependency>(out var dependency);
-                return dependency;
-            })
+    .To<Func<int, int, IDependency>>(ctx =>
+        (dependencyId, subId) =>
+        {
+            // Builds up an instance of type Dependency
+            // referring source code statements "dependencyId"
+            // and source code statements "subId"
+            ctx.Inject<Dependency>(out var dependency);
+            return dependency;
+        })
     .Bind<IService>().To<Service>()
 
     // Composition root

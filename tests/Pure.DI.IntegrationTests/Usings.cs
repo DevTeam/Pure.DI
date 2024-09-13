@@ -1,4 +1,5 @@
 // ReSharper disable RedundantUsingDirective.Global
+
 global using Xunit;
 global using Shouldly;
 global using System.Collections.Generic;

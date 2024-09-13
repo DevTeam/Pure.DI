@@ -10,6 +10,7 @@ $h=This approach of interception maximizes performance by precompiling the proxy
 // ReSharper disable UnusedParameterInPartialMethod
 // ReSharper disable ConvertIfStatementToReturnStatement
 // ReSharper disable ArrangeTypeModifiers
+
 namespace Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario;
 
 using System.Collections.Immutable;
@@ -26,7 +27,9 @@ public interface IDependency
 
 class Dependency : IDependency
 {
-    public void DependencyCall() { }
+    public void DependencyCall()
+    {
+    }
 }
 
 public interface IService
@@ -40,10 +43,12 @@ class Service(IDependency dependency) : IService
 {
     public IDependency Dependency { get; } = dependency;
 
-    public void ServiceCall() { }
+    public void ServiceCall()
+    {
+    }
 }
 
-internal partial class Composition: IInterceptor
+internal partial class Composition : IInterceptor
 {
     private readonly List<string> _log = [];
     private static readonly IProxyBuilder ProxyBuilder = new DefaultProxyBuilder();
@@ -76,12 +81,12 @@ internal partial class Composition: IInterceptor
         _log.Add(invocation.Method.Name);
         invocation.Proceed();
     }
-    
+
     private static class ProxyFactory<T>
     {
         private static Func<T, IInterceptor[], T>? _factory;
-        
-        public static Func<T, IInterceptor[], T> GetFactory(IProxyBuilder proxyBuilder) => 
+
+        public static Func<T, IInterceptor[], T> GetFactory(IProxyBuilder proxyBuilder) =>
             _factory ?? CreateFactory(proxyBuilder);
 
         private static Func<T, IInterceptor[], T> CreateFactory(IProxyBuilder proxyBuilder)
@@ -97,9 +102,9 @@ internal partial class Composition: IInterceptor
             var interceptors = Expression.Parameter(typeof(IInterceptor[]));
             var newProxyExpression = Expression.New(ctor, interceptors, instance);
             return _factory = Expression.Lambda<Func<T, IInterceptor[], T>>(
-                newProxyExpression,
-                instance,
-                interceptors)
+                    newProxyExpression,
+                    instance,
+                    interceptors)
                 .Compile();
         }
     }

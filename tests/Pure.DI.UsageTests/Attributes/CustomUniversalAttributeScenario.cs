@@ -13,6 +13,7 @@ $h=You can use a combined attribute, and each method in the list above has an op
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedTypeParameter
 // ReSharper disable UnusedMember.Global
+
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Attributes.CustomUniversalAttributeScenario;
 
@@ -32,11 +33,10 @@ interface IPerson;
 class Person([Inject<string>("NikName")] string name) : IPerson
 {
     private object? _state;
-    
-    [Inject<int>(ordinal: 1)]
-    internal object Id = "";
 
-    public void Initialize([Inject<Uri>] object state) => 
+    [Inject<int>(ordinal: 1)] internal object Id = "";
+
+    public void Initialize([Inject<Uri>] object state) =>
         _state = state;
 
     public override string ToString() => $"{Id} {name} {_state}";
@@ -58,7 +58,7 @@ public class Scenario
             .Bind().To(_ => new Uri("https://github.com/DevTeam/Pure.DI"))
             .Bind("NikName").To(_ => "Nik")
             .Bind().To<Person>()
-            
+
             // Composition root
             .Root<IPerson>("Person");
 

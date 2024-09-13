@@ -8,7 +8,7 @@ interface IDependency;
 
 class Dependency : IDependency;
 
-interface IService: IDisposable
+interface IService : IDisposable
 {
     IDependency Dependency { get; }
 }
@@ -17,7 +17,9 @@ class Service(IDependency dependency) : IService
 {
     public IDependency Dependency { get; } = dependency;
 
-    public void Dispose() { }
+    public void Dispose()
+    {
+    }
 }
 
 partial class Composition
@@ -27,7 +29,6 @@ partial class Composition
         // The following hint overrides the name of the
         // "object Resolve(Type type)" method in "GetService",
         // which implements the "IServiceProvider" interface:
-
         DI.Setup()
             // The following hint overrides the name of the
             // "object Resolve(Type type)" method in "GetService",
@@ -53,19 +54,19 @@ partial class Composition
 }
 
 using var composition = new Composition();
-        
+
 using var scope1 = composition.CreateScope();
 var service1 = scope1.ServiceProvider.GetRequiredService<IService>();
 var dependency1 = composition.GetRequiredService<IDependency>();
 service1.Dependency.ShouldBe(dependency1);
 service1.ShouldBe(scope1.ServiceProvider.GetRequiredService<IService>());
-        
+
 using var scope2 = composition.CreateScope();
 var service2 = scope2.ServiceProvider.GetRequiredService<IService>();
 var dependency2 = composition.GetRequiredService<IDependency>();
 service2.Dependency.ShouldBe(dependency2);
 service2.ShouldBe(scope2.ServiceProvider.GetRequiredService<IService>());
-        
+
 service1.ShouldNotBe(service2);
 dependency1.ShouldBe(dependency2);
 ```

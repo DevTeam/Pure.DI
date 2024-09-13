@@ -11,8 +11,8 @@ internal interface ISemantic
         where T : ITypeSymbol;
 
     T GetRequiredConstantValue<T>(SemanticModel semanticModel, SyntaxNode node);
-    
+
     T?[] GetConstantValues<T>(SemanticModel semanticModel, SyntaxNode node);
-    
+
     T? GetConstantValue<T>(SemanticModel semanticModel, SyntaxNode node);
 }

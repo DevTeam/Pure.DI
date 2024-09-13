@@ -14,12 +14,12 @@ $f=> Each potentially injectable argument, property, or field contains an additi
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable UnusedTypeParameter
+
 #pragma warning disable CS9113 // Parameter is unread.
 // {
 namespace Pure.DI.UsageTests.Advanced.TagOnInjectionSiteWithWildcardsScenario;
 
 // }
-
 using Pure.DI;
 using UsageTests;
 using Xunit;
@@ -35,15 +35,15 @@ class Consumer<T>(IDependency myDep)
 {
     public IDependency Dependency { get; } = myDep;
 }
-        
+
 interface IService
 {
     IDependency Dependency1 { get; }
 
     IDependency Dependency2 { get; }
-    
+
     IDependency Dependency3 { get; }
-    
+
     IDependency Dependency4 { get; }
 }
 
@@ -72,11 +72,11 @@ public class Scenario
 // {            
         DI.Setup(nameof(Composition))
             .Bind(Tag.On("*Service:Dependency3", "*Consumer:myDep"))
-                .To<AbcDependency>()
+            .To<AbcDependency>()
             .Bind(Tag.On("*Service:dependency?"))
-                .To<XyzDependency>()
+            .To<XyzDependency>()
             .Bind<IService>().To<Service>()
-            
+
             // Specifies to create the composition root named "Root"
             .Root<IService>("Root");
 

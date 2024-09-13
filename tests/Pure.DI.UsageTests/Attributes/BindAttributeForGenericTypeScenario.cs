@@ -10,6 +10,7 @@ $d=Bind attribute for a generic type
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable MemberCanBeMadeStatic.Global
 // ReSharper disable UnusedTypeParameter
+
 #pragma warning disable CA1822
 namespace Pure.DI.UsageTests.Basics.BindAttributeForGenericTypeScenario;
 
@@ -23,7 +24,9 @@ interface IDependency<T>
 
 class Dependency<T> : IDependency<T>
 {
-    public void DoSomething() { }
+    public void DoSomething()
+    {
+    }
 }
 
 class Facade
@@ -53,7 +56,7 @@ public class Scenario
         DI.Setup(nameof(Composition))
             .Bind().As(Lifetime.Singleton).To<Facade>()
             .Bind().To<Service>()
-            
+
             // Composition root
             .Root<IService>("Root");
 

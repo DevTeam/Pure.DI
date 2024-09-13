@@ -1,4 +1,5 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core;
 
 internal class ExceptionHandler(ILogger<ExceptionHandler> logger)
@@ -41,11 +42,11 @@ internal class ExceptionHandler(ILogger<ExceptionHandler> logger)
                 case CompileErrorException compileError:
                     OnCompileException(compileError);
                     break;
-                
+
                 case HandledException handledException:
                     OnHandledException(handledException);
                     break;
-                
+
                 default:
                     OnException(exception);
                     break;
@@ -53,7 +54,7 @@ internal class ExceptionHandler(ILogger<ExceptionHandler> logger)
         }
     }
 
-    private void OnCompileException(CompileErrorException exception) => 
+    private void OnCompileException(CompileErrorException exception) =>
         logger.CompileError(exception.ErrorMessage, exception.Location, exception.Id);
 
     private void OnHandledException(HandledException handledException) =>

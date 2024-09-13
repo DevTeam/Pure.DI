@@ -4,7 +4,7 @@ internal sealed class Hints : Dictionary<Hint, string>, IHints
 {
     public bool IsCommentsEnabled =>
         IsEnabled(Hint.Comments, SettingState.On);
-    
+
     public bool IsOnDependencyInjectionEnabled =>
         IsEnabled(Hint.OnDependencyInjection, SettingState.Off);
 
@@ -25,13 +25,13 @@ internal sealed class Hints : Dictionary<Hint, string>, IHints
 
     public bool IsOnNewRootEnabled =>
         IsEnabled(Hint.OnNewRoot, SettingState.Off);
-    
+
     public bool IsOnNewRootPartial =>
         IsEnabled(Hint.OnNewRootPartial, SettingState.On);
 
     public bool IsThreadSafeEnabled =>
         IsEnabled(Hint.ThreadSafe, SettingState.On);
-    
+
     public bool IsToStringEnabled =>
         IsEnabled(Hint.ToString, SettingState.Off);
 
@@ -67,22 +67,22 @@ internal sealed class Hints : Dictionary<Hint, string>, IHints
 
     public string DisposeMethodModifiers =>
         GetValueOrDefault(Hint.DisposeMethodModifiers, Names.DefaultApiMethodModifiers);
-    
+
     public string DisposeAsyncMethodModifiers =>
         GetValueOrDefault(Hint.DisposeAsyncMethodModifiers, Names.DefaultApiMethodModifiers);
 
     public DiagnosticSeverity SeverityOfNotImplementedContract =>
         GetHint(Hint.SeverityOfNotImplementedContract, DiagnosticSeverity.Error);
-    
-    private bool IsEnabled(Hint hint, SettingState defaultValue) => 
+
+    private bool IsEnabled(Hint hint, SettingState defaultValue) =>
         GetHint(hint, defaultValue) == SettingState.On;
 
-    private T GetHint<T>(Hint hint, T defaultValue = default) 
+    private T GetHint<T>(Hint hint, T defaultValue = default)
         where T : struct =>
         TryGetValue(hint, out var valueStr) && Enum.TryParse<T>(valueStr, true, out var value)
             ? value
             : defaultValue;
-    
+
     private string GetValueOrDefault(Hint hint, string defaultValue) =>
         TryGetValue(hint, out var value) && !string.IsNullOrWhiteSpace(value)
             ? value

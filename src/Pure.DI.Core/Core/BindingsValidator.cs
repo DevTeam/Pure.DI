@@ -10,10 +10,10 @@ internal class BindingsValidator(ILogger<TagOnSitesValidator> logger, IRegistry<
         {
             if (!registry.IsRegistered(data.Source, binding))
             {
-                logger.CompileWarning("The binding was not used.", binding.Source.GetLocation(), LogId.WarningMetadataDefect);   
+                logger.CompileWarning("The binding was not used.", binding.Source.GetLocation(), LogId.WarningMetadataDefect);
             }
         }
- 
+
         return true;
     }
 }

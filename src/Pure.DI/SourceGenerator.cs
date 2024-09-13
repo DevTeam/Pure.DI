@@ -1,8 +1,9 @@
 // ReSharper disable InvocationIsSkipped
+
 namespace Pure.DI;
 
 [Generator(LanguageNames.CSharp)]
-public class SourceGenerator: IIncrementalGenerator
+public class SourceGenerator : IIncrementalGenerator
 {
     private readonly Generator _generator = new();
 
@@ -11,7 +12,7 @@ public class SourceGenerator: IIncrementalGenerator
         // ReSharper disable once InvocationIsSkipped
         // Run Rider as administrator
         DebugHelper.Debug();
-        
+
         context.RegisterPostInitializationOutput(initializationContext =>
         {
             foreach (var apiSource in _generator.Api)

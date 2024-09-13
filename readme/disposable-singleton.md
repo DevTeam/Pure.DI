@@ -23,7 +23,7 @@ interface IService
     public IDependency Dependency { get; }
 }
 
-class Service(IDependency dependency): IService
+class Service(IDependency dependency) : IService
 {
     public IDependency Dependency { get; } = dependency;
 }

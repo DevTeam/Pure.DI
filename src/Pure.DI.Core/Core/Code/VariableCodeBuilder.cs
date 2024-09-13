@@ -1,6 +1,7 @@
 // ReSharper disable InvertIf
 // ReSharper disable RedundantJumpStatement
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core.Code;
 
 internal class VariableCodeBuilder(
@@ -9,7 +10,7 @@ internal class VariableCodeBuilder(
     ICodeBuilder<DpConstruct> constructBuilder)
     : DependenciesWalker<BuildContext>, ICodeBuilder<Variable>
 {
-    public void Build(BuildContext ctx, in Variable variable) => 
+    public void Build(BuildContext ctx, in Variable variable) =>
         VisitDependencyNode(ctx, variable.Node);
 
     public override void VisitImplementation(in BuildContext ctx, in DpImplementation implementation)

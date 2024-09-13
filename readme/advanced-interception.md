@@ -13,7 +13,9 @@ public interface IDependency
 
 class Dependency : IDependency
 {
-    public void DependencyCall() { }
+    public void DependencyCall()
+    {
+    }
 }
 
 public interface IService
@@ -27,10 +29,12 @@ class Service(IDependency dependency) : IService
 {
     public IDependency Dependency { get; } = dependency;
 
-    public void ServiceCall() { }
+    public void ServiceCall()
+    {
+    }
 }
 
-internal partial class Composition: IInterceptor
+internal partial class Composition : IInterceptor
 {
     private readonly List<string> _log = [];
     private static readonly IProxyBuilder ProxyBuilder = new DefaultProxyBuilder();
@@ -84,9 +88,9 @@ internal partial class Composition: IInterceptor
             var interceptors = Expression.Parameter(typeof(IInterceptor[]));
             var newProxyExpression = Expression.New(ctor, interceptors, instance);
             return _factory = Expression.Lambda<Func<T, IInterceptor[], T>>(
-                newProxyExpression,
-                instance,
-                interceptors)
+                    newProxyExpression,
+                    instance,
+                    interceptors)
                 .Compile();
         }
     }

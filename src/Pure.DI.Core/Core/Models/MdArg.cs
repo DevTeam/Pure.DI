@@ -1,5 +1,6 @@
 // ReSharper disable HeapView.ObjectAllocation
 // ReSharper disable HeapView.ObjectAllocation.Evident
+
 namespace Pure.DI.Core.Models;
 
 internal readonly record struct MdArg(

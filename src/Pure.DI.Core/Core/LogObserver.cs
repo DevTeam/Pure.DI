@@ -1,5 +1,6 @@
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable InvertIf
+
 namespace Pure.DI.Core;
 
 internal sealed class LogObserver(
@@ -37,7 +38,7 @@ internal sealed class LogObserver(
             _diagnostics.Clear();
         }
     }
-    
+
     private record DiagnosticInfo(
         DiagnosticDescriptor Descriptor,
         Location? Location);

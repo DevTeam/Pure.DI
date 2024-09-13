@@ -1,4 +1,5 @@
 // ReSharper disable MemberCanBePrivate.Global
+
 namespace Pure.DI.Core;
 
 internal readonly struct ProcessingNode : IEquatable<ProcessingNode>
@@ -34,7 +35,7 @@ internal readonly struct ProcessingNode : IEquatable<ProcessingNode>
     }
 
     public bool IsMarkerBased => _isMarkerBased.Value;
-        
+
     public ISet<Injection> Contracts { get; }
 
     public ImmutableArray<InjectionInfo> Injections => _injections.Value;

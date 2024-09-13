@@ -12,6 +12,7 @@ $f=This attribute is part of the API, but you can use your own attribute at any 
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedMember.Global
 // ReSharper disable ArrangeTypeModifiers
+
 namespace Pure.DI.UsageTests.Attributes.TypeAttributeScenario;
 
 using Shouldly;
@@ -27,7 +28,7 @@ class XyzDependency : IDependency;
 interface IService
 {
     IDependency Dependency1 { get; }
-    
+
     IDependency Dependency2 { get; }
 }
 
@@ -51,7 +52,7 @@ public class Scenario
 // {            
         DI.Setup(nameof(Composition))
             .Bind().To<Service>()
-            
+
             // Composition root
             .Root<IService>("Root");
 

@@ -28,7 +28,7 @@ class Service : IService
 DI.Setup(nameof(Composition))
     .Bind().To<AbcDependency>()
     .Bind(Tag.OnMember<Service>(nameof(Service.Dependency)))
-        .To<XyzDependency>()
+    .To<XyzDependency>()
     .Bind<IService>().To<Service>()
 
     // Specifies to create the composition root named "Root"

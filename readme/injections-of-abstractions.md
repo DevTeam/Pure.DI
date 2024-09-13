@@ -17,7 +17,9 @@ interface IService
 
 class Service(IDependency dependency) : IService
 {
-    public void DoSomething() { }
+    public void DoSomething()
+    {
+    }
 }
 
 class Program(IService service)
@@ -33,7 +35,7 @@ DI.Setup(nameof(Composition))
     // Specifies to create a composition root
     // of type "Program" with the name "Root"
     .Root<Program>("Root");
-        
+
 var composition = new Composition();
 
 // var root = new Program(new Service(new Dependency()));

@@ -8,6 +8,7 @@ $h=For example, if a certain lifetime is used more often than others, you can ma
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
 // ReSharper disable ArrangeTypeModifiers
+
 namespace Pure.DI.UsageTests.Lifetimes.DefaultLifetimeForTypeScenario;
 
 using Xunit;
@@ -20,7 +21,7 @@ class Dependency : IDependency;
 interface IService
 {
     public IDependency Dependency1 { get; }
-            
+
     public IDependency Dependency2 { get; }
 }
 
@@ -46,7 +47,6 @@ public class Scenario
             .Hint(Hint.Resolve, "Off")
             // Default lifetime applied to a specific type
             .DefaultLifetime<IDependency>(Lifetime.Singleton)
-
             .Bind().To<Dependency>()
             .Bind().To<Service>()
             .Root<IService>("Root");

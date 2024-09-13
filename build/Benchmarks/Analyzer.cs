@@ -1,4 +1,5 @@
 ﻿// ReSharper disable MemberCanBeMadeStatic.Global
+
 namespace Build.Benchmarks;
 
 [SuppressMessage("Performance", "CA1822:Mark members as static")]
@@ -19,7 +20,7 @@ internal class Analyzer
                     Error($"Cannot find baseline method \"{threshold.BenchmarkMethod}\" in \"{benchmarkType}\".");
                     return false;
                 }
-                
+
                 if (!methods.TryGetValue(threshold.BaselineMethod, out var baselineBenchmark))
                 {
                     Error($"Cannot find baseline method \"{threshold.BaselineMethod}\" in \"{benchmarkType}\".");
@@ -34,7 +35,7 @@ internal class Analyzer
                     benchmark.Statistics.Mean,
                     benchmarkType,
                     threshold.BenchmarkMethod);
-                
+
                 status |= CheckThreshold(
                     "bytes allocated per operation",
                     threshold.WarningBytesAllocatedPerOperationRatio,
@@ -45,10 +46,10 @@ internal class Analyzer
                     threshold.BenchmarkMethod);
             }
         }
-        
+
         return status;
     }
-    
+
     private static bool CheckThreshold(string name, double? warningThreshold, double? errorThreshold, double baseline, double value, string benchmarkType, string benchmarkMethod)
     {
         var ratio = value / baseline;
@@ -57,14 +58,14 @@ internal class Analyzer
             Error(CreateMessage(name, errorThreshold, ratio, benchmarkType, benchmarkMethod, "must"));
             return false;
         }
-        
+
         // ReSharper disable once InvertIf
         if (warningThreshold > double.Epsilon && ratio > warningThreshold)
         {
             Warning(CreateMessage(name, warningThreshold, ratio, benchmarkType, benchmarkMethod, "could"));
             return true;
         }
-        
+
         return true;
     }
 
@@ -74,6 +75,6 @@ internal class Analyzer
         double ratio,
         string benchmarkType,
         string benchmarkMethod,
-        string verb) => 
+        string verb) =>
         $"The {benchmarkType} {benchmarkMethod} method {verb} meet a {name} ratio threshold of {thresholdRatio}, but it is currently {ratio:0.##}.";
 }

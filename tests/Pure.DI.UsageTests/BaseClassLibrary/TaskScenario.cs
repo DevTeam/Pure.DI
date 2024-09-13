@@ -16,6 +16,7 @@ $h=But you can always override them, as in the example below for <c>TaskSchedule
 // ReSharper disable CheckNamespace
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable UnusedParameter.Global
+
 namespace Pure.DI.UsageTests.BCL.TaskScenario;
 
 using Xunit;
@@ -61,7 +62,7 @@ public class Scenario
             .RootArg<CancellationToken>("cancellationToken")
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>()
-            
+
             // Composition root
             .Root<IService>("GetRoot");
 

@@ -50,7 +50,7 @@ DI.Setup(nameof(Composition))
 var log = new List<string>();
 var composition = new Composition(log);
 var service = composition.Root;
-        
+
 log.ShouldBe(ImmutableArray.Create("Dependency injected"));
 ```
 

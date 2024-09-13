@@ -1,4 +1,5 @@
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core.Code;
 
 internal sealed class DisposeMethodBuilder
@@ -12,7 +13,7 @@ internal sealed class DisposeMethodBuilder
         {
             return composition with { MembersCount = membersCounter };
         }
-        
+
         var hasDisposable = composition.TotalDisposablesCount > composition.AsyncDisposableCount;
         var hasAsyncDisposable = composition.AsyncDisposableCount > 0;
         var hints = composition.Source.Source.Hints;
@@ -53,7 +54,7 @@ internal sealed class DisposeMethodBuilder
                         AddDisposeAsyncPart(code, false);
                     }
                 }
-                
+
                 code.AppendLine("}");
             }
 
@@ -113,6 +114,7 @@ internal sealed class DisposeMethodBuilder
                             AddDisposePart(code);
                         }
                     }
+
                     code.AppendLine("}");
                 }
 
@@ -121,7 +123,7 @@ internal sealed class DisposeMethodBuilder
 
             code.AppendLine("}");
             membersCounter++;
-            
+
             code.AppendLine();
             code.AppendLine("/// <summary>");
             code.AppendLine("/// Implement this partial method to handle the exception on async disposing.");
@@ -132,7 +134,7 @@ internal sealed class DisposeMethodBuilder
             code.AppendLine($"partial void {Names.OnDisposeAsyncExceptionMethodName}<T>(T asyncDisposableInstance, Exception exception) where T : {Names.IAsyncDisposableInterfaceName};");
             membersCounter++;
         }
-        
+
         return composition with { MembersCount = membersCounter };
     }
 
@@ -158,7 +160,8 @@ internal sealed class DisposeMethodBuilder
                     {
                         code.AppendLine("valueTask.AsTask().Wait();");
                     }
-                    code.AppendLine("}");   
+
+                    code.AppendLine("}");
                 }
             }
 
@@ -169,7 +172,7 @@ internal sealed class DisposeMethodBuilder
             {
                 code.AppendLine($"{Names.OnDisposeAsyncExceptionMethodName}(asyncDisposableInstance, exception);");
             }
-            
+
             code.AppendLine("}");
             code.AppendLine("break;");
         }

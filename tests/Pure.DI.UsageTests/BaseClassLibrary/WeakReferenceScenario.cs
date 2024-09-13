@@ -1,7 +1,7 @@
 ﻿/*
 $v=true
 $p=6
-$d=Weak Reference 
+$d=Weak Reference
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -9,6 +9,7 @@ $d=Weak Reference
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable UnusedVariable
 // ReSharper disable UnusedMember.Global
+
 namespace Pure.DI.UsageTests.BCL.WeakReferenceScenario;
 
 using Xunit;
@@ -22,7 +23,7 @@ interface IService;
 
 class Service(WeakReference<IDependency> dependency) : IService
 {
-    public IDependency? Dependency => 
+    public IDependency? Dependency =>
         dependency.TryGetTarget(out var value)
             ? value
             : default;
@@ -38,7 +39,7 @@ public class Scenario
         DI.Setup(nameof(Composition))
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>()
-            
+
             // Composition root
             .Root<IService>("Root");
 

@@ -6,7 +6,7 @@ $h=Composition roots from other assemblies or projects can be used as a source o
 $h=```c#
 $h=public partial class CompositionWithGenericRootsAndArgsInOtherProject
 $h={
-$h=    private static void Setup() => 
+$h=    private static void Setup() =>
 $h=        DI.Setup()
 $h=            .Hint(Hint.Resolve, "Off")
 $h=            .RootArg<int>("id")
@@ -22,6 +22,7 @@ $h=```
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable RedundantAssignment
 // ReSharper disable ArrangeTypeModifiers
+
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Advanced.ExposedGenericRootsWithArgsScenario;
 

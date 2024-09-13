@@ -2,6 +2,7 @@
 // ReSharper disable UnusedMember.Global
 // ReSharper disable RedundantNameQualifier
 // ReSharper disable ArrangeTypeMemberModifiers
+
 namespace AvaloniaApp;
 
 using Clock.Models;
@@ -14,9 +15,8 @@ internal partial class Composition
     void Setup() => DI.Setup()
         // Single composition root for the application
         .Root<Root>(nameof(Root))
-
         .Bind().As(Singleton).To<Root>()
-        
+
         // View Models
         .Bind().To<ClockViewModel>()
 

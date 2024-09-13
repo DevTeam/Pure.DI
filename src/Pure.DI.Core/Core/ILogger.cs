@@ -1,4 +1,5 @@
 // ReSharper disable UnusedTypeParameter
+
 namespace Pure.DI.Core;
 
 internal interface ILogger<T>

@@ -7,6 +7,7 @@ $d=Func with tag
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
 // ReSharper disable ArrangeTypeModifiers
+
 namespace Pure.DI.UsageTests.BCL.FuncWithTagScenario;
 
 using System.Collections.Immutable;
@@ -27,11 +28,11 @@ class Service([Tag("my tag")] Func<IDependency> dependencyFactory)
     : IService
 {
     public ImmutableArray<IDependency> Dependencies { get; } =
-        [
-            ..Enumerable
-                .Range(0, 10)
-                .Select(_ => dependencyFactory())
-        ];
+    [
+        ..Enumerable
+            .Range(0, 10)
+            .Select(_ => dependencyFactory())
+    ];
 }
 // }
 
@@ -44,7 +45,7 @@ public class Scenario
         DI.Setup(nameof(Composition))
             .Bind<IDependency>("my tag").To<Dependency>()
             .Bind<IService>().To<Service>()
-            
+
             // Composition root
             .Root<IService>("Root");
 

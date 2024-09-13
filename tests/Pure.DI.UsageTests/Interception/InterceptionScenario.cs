@@ -25,6 +25,7 @@ $f=- Providing resistance to failures, etc.
 // ReSharper disable UnusedParameterInPartialMethod
 // ReSharper disable HeapView.PossibleBoxingAllocation
 // ReSharper disable ArrangeTypeModifiers
+
 namespace Pure.DI.UsageTests.Interception.InterceptionScenario;
 
 using Castle.DynamicProxy;
@@ -32,14 +33,17 @@ using Shouldly;
 using Xunit;
 
 // {
-public interface IService { string GetMessage(); }
+public interface IService
+{
+    string GetMessage();
+}
 
-class Service : IService 
+class Service : IService
 {
     public string GetMessage() => "Hello World";
 }
 
-partial class Composition: IInterceptor
+partial class Composition : IInterceptor
 {
     private static readonly ProxyGenerator ProxyGenerator = new();
 

@@ -10,6 +10,7 @@ $h=`Tag.Unique` is useful to register a binding with a unique tag. It will not b
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedTypeParameter
+
 namespace Pure.DI.UsageTests.Advanced.TagUniqueScenario;
 
 using System.Collections.Immutable;
@@ -45,7 +46,7 @@ public class Scenario
             .Bind<IDependency<TT>>(Tag.Unique).To<AbcDependency<TT>>()
             .Bind<IDependency<TT>>(Tag.Unique).To<XyzDependency<TT>>()
             .Bind<IService<TT>>().To<Service<TT>>()
-            
+
             // Composition root
             .Root<IService<string>>("Root");
 

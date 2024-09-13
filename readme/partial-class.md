@@ -58,7 +58,7 @@ public partial class Composition
 
 var composition = new Composition("Abc");
 var service = composition.Root;
-        
+
 service.Dependency1.Id.ShouldBe(1);
 service.Dependency2.Id.ShouldBe(2);
 service.Name.ShouldBe("Abc_3");

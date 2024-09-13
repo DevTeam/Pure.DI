@@ -1,7 +1,8 @@
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core;
 
-internal sealed class ContractsBuilder: IBuilder<ContractsBuildContext, ISet<Injection>>
+internal sealed class ContractsBuilder : IBuilder<ContractsBuildContext, ISet<Injection>>
 {
     public ISet<Injection> Build(ContractsBuildContext context)
     {
@@ -26,7 +27,7 @@ internal sealed class ContractsBuilder: IBuilder<ContractsBuildContext, ISet<Inj
             {
                 contractTags.Add(tag.Value);
             }
-            
+
             if (hasContextTag)
             {
                 contractTags.Add(context.ContextTag);

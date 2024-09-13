@@ -1,9 +1,11 @@
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core;
 
 internal sealed class LifetimesValidator(
     IGraphWalker<HashSet<object>, ImmutableArray<DependencyNode>> graphWalker,
-    [Tag(typeof(LifetimesValidatorVisitor))] IGraphVisitor<HashSet<object>, ImmutableArray<DependencyNode>> visitor,
+    [Tag(typeof(LifetimesValidatorVisitor))]
+    IGraphVisitor<HashSet<object>, ImmutableArray<DependencyNode>> visitor,
     CancellationToken cancellationToken)
     : IValidator<DependencyGraph>
 {

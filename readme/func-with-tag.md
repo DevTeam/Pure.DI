@@ -17,11 +17,11 @@ class Service([Tag("my tag")] Func<IDependency> dependencyFactory)
     : IService
 {
     public ImmutableArray<IDependency> Dependencies { get; } =
-        [
-            ..Enumerable
-                .Range(0, 10)
-                .Select(_ => dependencyFactory())
-        ];
+    [
+        ..Enumerable
+            .Range(0, 10)
+            .Select(_ => dependencyFactory())
+    ];
 }
 
 DI.Setup(nameof(Composition))

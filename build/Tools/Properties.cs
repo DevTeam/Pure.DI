@@ -1,5 +1,6 @@
 // ReSharper disable MemberCanBeMadeStatic.Global
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Build.Tools;
 
 internal class Properties
@@ -14,7 +15,7 @@ internal class Properties
             }
 
             WriteLine($"The property \"{name}\" was not defined, empty value was used.", Color.Details);
-            return "";    
+            return "";
         }
     }
 }

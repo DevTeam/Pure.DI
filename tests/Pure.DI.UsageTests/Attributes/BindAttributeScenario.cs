@@ -10,6 +10,7 @@ $f=This attribute `BindAttribute` applies to field properties and methods, to re
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedType.Global
 // ReSharper disable ArrangeTypeModifiers
+
 namespace Pure.DI.UsageTests.Basics.BindAttributeScenario;
 
 using Xunit;
@@ -22,13 +23,15 @@ interface IDependency
 
 class Dependency : IDependency
 {
-    public void DoSomething() { }
+    public void DoSomething()
+    {
+    }
 }
 
 class Facade
 {
     [Bind]
-    public IDependency Dependency { get; }= new Dependency();
+    public IDependency Dependency { get; } = new Dependency();
 }
 
 interface IService
@@ -52,7 +55,7 @@ public class Scenario
         DI.Setup(nameof(Composition))
             .Bind().As(Lifetime.Singleton).To<Facade>()
             .Bind().To<Service>()
-            
+
             // Composition root
             .Root<IService>("Root");
 

@@ -15,6 +15,7 @@ $f=For more hints, see [this](README.md#setup-hints) page.
 // ReSharper disable UnusedMemberInSuper.Global
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable UnusedMember.Global
+
 namespace Pure.DI.UsageTests.Hints.OnDependencyInjectionHintScenario;
 
 using System.Collections.Immutable;
@@ -73,7 +74,7 @@ public class Scenario
         var log = new List<string>();
         var composition = new Composition(log);
         var service = composition.Root;
-        
+
         log.ShouldBe(ImmutableArray.Create("Dependency injected"));
 // }
         composition.SaveClassDiagram();

@@ -18,7 +18,7 @@ internal class GraphWalker<TContext, T> : IGraphWalker<TContext, T>
             {
                 break;
             }
-            
+
             if (!graph.TryGetInEdges(nodeInfo.Node, out var dependencies))
             {
                 continue;

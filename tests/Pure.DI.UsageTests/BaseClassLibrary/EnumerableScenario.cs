@@ -8,6 +8,7 @@ $h=Specifying `IEnumerable<T>` as the injection type allows you to inject instan
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
 // ReSharper disable ArrangeTypeModifiers
+
 namespace Pure.DI.UsageTests.BCL.EnumerableScenario;
 
 using System.Collections.Immutable;
@@ -43,7 +44,7 @@ public class Scenario
             .Bind<IDependency>().To<AbcDependency>()
             .Bind<IDependency>(2).To<XyzDependency>()
             .Bind<IService>().To<Service>()
-            
+
             // Composition root
             .Root<IService>("Root");
 

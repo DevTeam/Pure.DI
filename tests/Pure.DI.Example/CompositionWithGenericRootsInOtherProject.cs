@@ -1,10 +1,12 @@
 ﻿// ReSharper disable UnusedMember.Local
+
 namespace Pure.DI.Integration;
+
 using Pure.DI;
 
 public partial class CompositionWithGenericRootsInOtherProject
 {
-    private static void Setup() => 
+    private static void Setup() =>
         DI.Setup()
             .Hint(Hint.Resolve, "Off")
             .Bind().To(_ => 99)

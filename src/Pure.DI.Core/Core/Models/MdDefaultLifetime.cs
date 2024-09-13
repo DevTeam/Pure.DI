@@ -1,4 +1,5 @@
 // ReSharper disable HeapView.ObjectAllocation
+
 namespace Pure.DI.Core.Models;
 
 internal readonly record struct MdDefaultLifetime(
@@ -6,6 +7,6 @@ internal readonly record struct MdDefaultLifetime(
     ITypeSymbol? Type = default,
     ImmutableArray<MdTag> Tags = default)
 {
-    public override string ToString() => 
+    public override string ToString() =>
         $"DefaultLifetime{(Type is null ? "" : $"<{Type}>")}({Lifetime.Value}{(Tags.IsDefaultOrEmpty ? "" : string.Join(", ", Tags.Select(i => i.ValueToString())))})";
 }

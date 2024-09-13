@@ -7,14 +7,17 @@ _Decorator_ is a well-known and useful design pattern. It is convenient to use t
 
 
 ```c#
-interface IService { string GetMessage(); }
+interface IService
+{
+    string GetMessage();
+}
 
 class Service : IService
 {
     public string GetMessage() => "Hello World";
 }
 
-class GreetingService([Tag("base")] IService baseService): IService
+class GreetingService([Tag("base")] IService baseService) : IService
 {
     public string GetMessage() => $"{baseService.GetMessage()} !!!";
 }

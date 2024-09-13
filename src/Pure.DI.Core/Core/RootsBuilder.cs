@@ -1,4 +1,5 @@
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core;
 
 internal sealed class RootsBuilder(IBuilder<ContractsBuildContext, ISet<Injection>> contractsBuilder)
@@ -64,7 +65,10 @@ internal sealed class RootsBuilder(IBuilder<ContractsBuildContext, ISet<Injectio
 
     private static Root CreateRoot(IEnumerable<KeyValuePair<Injection, Root>> routesGroup, ref int index) =>
         routesGroup
-            .OrderByDescending(j => j.Value.IsPublic)
-            .Select(j => j.Value)
-            .First() with { Index = index++ };
+                .OrderByDescending(j => j.Value.IsPublic)
+                .Select(j => j.Value)
+                .First() with
+            {
+                Index = index++
+            };
 }

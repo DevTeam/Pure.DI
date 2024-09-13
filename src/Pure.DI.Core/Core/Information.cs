@@ -5,7 +5,7 @@ using System.Reflection;
 internal sealed class Information : IInformation
 {
     private static readonly string CurrentDescription = Names.GeneratorName;
-    
+
     static Information()
     {
         var assembly = typeof(Information).Assembly;

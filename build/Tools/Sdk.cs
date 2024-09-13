@@ -1,6 +1,7 @@
 ﻿// ReSharper disable MemberCanBeMadeStatic.Global
 // ReSharper disable ReturnTypeCanBeEnumerable.Global
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Build.Tools;
 
 using NuGet.Versioning;
@@ -46,13 +47,13 @@ internal class Sdk
             }
         });
 
-        var sdks= versions
+        var sdks = versions
             .GroupBy(i => (i.Version.Major, i.Version.Minor))
             .Select(i => i.First())
             .OrderBy(i => i.Major)
             .ThenBy(i => i.Minor)
             .ToArray();
-        
+
         WriteLine("Installed the .NET SDK packages:", Color.Details);
         foreach (var sdk in sdks)
         {
@@ -61,6 +62,4 @@ internal class Sdk
 
         return sdks;
     }
-
-
 }

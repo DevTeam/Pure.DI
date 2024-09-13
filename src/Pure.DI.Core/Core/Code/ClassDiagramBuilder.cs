@@ -1,6 +1,7 @@
 // ReSharper disable ConvertIfStatementToReturnStatement
 // ReSharper disable HeapView.BoxingAllocation
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core.Code;
 
 internal sealed class ClassDiagramBuilder(
@@ -14,7 +15,7 @@ internal sealed class ClassDiagramBuilder(
 
     public LinesBuilder Build(CompositionCode composition)
     {
-        var setup = composition.Source.Source; 
+        var setup = composition.Source.Source;
         var nullable = composition.Source.Source.SemanticModel.Compilation.Options.NullableContextOptions == NullableContextOptions.Disable ? "" : "?";
         var lines = new LinesBuilder();
         lines.AppendLine("classDiagram");
@@ -32,7 +33,7 @@ internal sealed class ClassDiagramBuilder(
                     {
                         lines.AppendLine($"{(root.IsPublic ? "+" : "-")}{FormatRoot(setup, root)}");
                     }
-                    
+
                     if (hasResolveMethods)
                     {
                         var hints = composition.Source.Source.Hints;
@@ -55,7 +56,7 @@ internal sealed class ClassDiagramBuilder(
             {
                 lines.AppendLine($"{composition.Source.Source.Name.ClassName} --|> IDisposable");
             }
-            
+
             if (composition.AsyncDisposableCount > 0)
             {
                 lines.AppendLine($"{composition.Source.Source.Name.ClassName} --|> IAsyncDisposable");
@@ -70,7 +71,7 @@ internal sealed class ClassDiagramBuilder(
                 {
                     continue;
                 }
-                
+
                 var contracts = injectionsBuilder.Build(new ContractsBuildContext(node.Binding, MdTag.ContextTag));
                 foreach (var contract in contracts)
                 {
@@ -95,12 +96,12 @@ internal sealed class ClassDiagramBuilder(
                 {
                     typeKind = "record";
                 }
-                
+
                 if (type.IsTupleType)
                 {
                     typeKind = "tuple";
                 }
-                
+
                 if (type.IsAbstract)
                 {
                     typeKind = "abstract";
@@ -120,11 +121,12 @@ internal sealed class ClassDiagramBuilder(
                 lines.AppendLine($"class {FormatType(setup, type, DefaultFormatOptions)} {{");
                 using (lines.Indent())
                 {
-                    lines.AppendLine($"<<{typeKind}>>");    
+                    lines.AppendLine($"<<{typeKind}>>");
                 }
+
                 lines.AppendLine("}");
             }
-            
+
             foreach (var (dependency, count) in graph.Edges.GroupBy(i => i).Select(i => (dependency: i.First(), count: i.Count())))
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -147,12 +149,12 @@ internal sealed class ClassDiagramBuilder(
                         }
 
                         var relationship = dependency.Source.Lifetime == Lifetime.Transient ? "*--" : "o--";
-                        lines.AppendLine($"{FormatType(setup, dependency.Target.Type, DefaultFormatOptions)} {relationship} {FormatCardinality(count, dependency.Source.Lifetime)} {FormatType(setup, dependency.Source.Type, DefaultFormatOptions)} : {FormatDependency(setup, dependency, DefaultFormatOptions)}");   
+                        lines.AppendLine($"{FormatType(setup, dependency.Target.Type, DefaultFormatOptions)} {relationship} {FormatCardinality(count, dependency.Source.Lifetime)} {FormatType(setup, dependency.Source.Type, DefaultFormatOptions)} : {FormatDependency(setup, dependency, DefaultFormatOptions)}");
                     }
                 }
             }
         }
-        
+
         return lines;
     }
 
@@ -164,7 +166,7 @@ internal sealed class ClassDiagramBuilder(
         {
             typeArgsStr = $"{DefaultFormatOptions.StartGenericArgsSymbol}{string.Join(DefaultFormatOptions.TypeArgsSeparator, typeArgs.Select(arg => $"{arg}"))}{DefaultFormatOptions.FinishGenericArgsSymbol}";
         }
-                        
+
         var rootArgsStr = "";
         if (root.IsMethod)
         {
@@ -195,11 +197,11 @@ internal sealed class ClassDiagramBuilder(
             cardinality.Insert(0, "\\\"");
             cardinality.Append("\\\"");
         }
-        
+
         return cardinality.ToString();
     }
 
-    private string FormatDependency(MdSetup setup, Dependency dependency, FormatOptions options) => 
+    private string FormatDependency(MdSetup setup, Dependency dependency, FormatOptions options) =>
         $"{(dependency.Injection.Tag is null or MdTagOnSites ? "" : FormatTag(dependency.Injection.Tag) + " ")}{FormatSymbol(setup, dependency.Injection.Type, options)}";
 
     private static string FormatTag(object? tag) =>
@@ -207,7 +209,7 @@ internal sealed class ClassDiagramBuilder(
             ? ""
             : EscapeTag(tag) + " ";
 
-    private static string EscapeTag(object tag) => 
+    private static string EscapeTag(object tag) =>
         tag.ValueToString("")
             .Replace("\"", "\\\"")
             .Replace(':', '﹕');
@@ -250,7 +252,7 @@ internal sealed class ClassDiagramBuilder(
 
     private string FormatField(MdSetup setup, IFieldSymbol field, FormatOptions options) =>
         $"{Format(field.DeclaredAccessibility)}{FormatType(setup, field.Type, options)} {field.Name}";
-    
+
     private string FormatParameter(MdSetup setup, IParameterSymbol parameter, FormatOptions options) =>
         $"{FormatType(setup, parameter.Type, options)} {parameter.Name}";
 
@@ -260,14 +262,14 @@ internal sealed class ClassDiagramBuilder(
         {
             return ResolveTypeName(setup, typeSymbol);
         }
-        
+
         return symbol switch
         {
             INamedTypeSymbol { IsGenericType: true } namedTypeSymbol => $"{namedTypeSymbol.Name}{options.StartGenericArgsSymbol}{string.Join(options.TypeArgsSeparator, namedTypeSymbol.TypeArguments.Select(FormatSymbolLocal))}{options.FinishGenericArgsSymbol}",
             IArrayTypeSymbol array => $"Array{options.StartGenericArgsSymbol}{FormatType(setup, array.ElementType, options)}{options.FinishGenericArgsSymbol}",
             _ => symbol?.Name ?? "Unresolved"
         };
-        
+
         string FormatSymbolLocal(ITypeSymbol i) => FormatSymbol(setup, i, options);
     }
 
@@ -294,7 +296,7 @@ internal sealed class ClassDiagramBuilder(
         string StartGenericArgsSymbol = "ᐸ",
         string FinishGenericArgsSymbol = "ᐳ",
         string TypeArgsSeparator = "ˏ");
-    
+
     private class ClassDiagramWalker(
         MdSetup setup,
         ClassDiagramBuilder builder,
@@ -303,7 +305,7 @@ internal sealed class ClassDiagramBuilder(
         : DependenciesWalker<Unit>
     {
         private readonly LinesBuilder _nodeLines = new();
-        
+
         public override void VisitDependencyNode(in Unit ctx, DependencyNode node)
         {
             base.VisitDependencyNode(ctx, node);
@@ -318,7 +320,7 @@ internal sealed class ClassDiagramBuilder(
             {
                 lines.AppendLines(_nodeLines.Lines);
             }
-            
+
             lines.AppendLine("}");
         }
 

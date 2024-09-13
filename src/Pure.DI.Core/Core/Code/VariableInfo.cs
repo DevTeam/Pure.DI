@@ -6,7 +6,7 @@ internal class VariableInfo
     private readonly HashSet<int> _variableParentBlocks = [];
     private readonly HashSet<int> _blockParentBlocks = [];
     public bool HasLocalMethod;
-    
+
     public int RefCount { get; private set; } = 1;
 
     public int PerBlockRefCount => _perBlockRefCounts.Count + 1;
@@ -19,7 +19,7 @@ internal class VariableInfo
 
     public bool CreateVariable(Block parentBlock) =>
         _variableParentBlocks.Add(parentBlock.Id);
-    
+
     public bool CreateBlock(Block parentBlock) =>
         _blockParentBlocks.Add(parentBlock.Id);
 

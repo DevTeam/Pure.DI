@@ -1,4 +1,5 @@
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core.Code;
 
 internal sealed class RootMethodsBuilder(
@@ -15,7 +16,7 @@ internal sealed class RootMethodsBuilder(
         {
             return composition;
         }
-        
+
         var code = composition.Code;
         var generatePrivateRoots = composition.Source.Source.Hints.IsResolveEnabled;
         var membersCounter = composition.MembersCount;
@@ -39,7 +40,7 @@ internal sealed class RootMethodsBuilder(
         code.AppendLine("#endregion");
         return composition with { MembersCount = membersCounter };
     }
-    
+
     private void BuildRoot(CompositionCode composition, Root root)
     {
         rootCommenter.AddComments(composition, root);
@@ -50,7 +51,7 @@ internal sealed class RootMethodsBuilder(
             rootArgsStr = $"({string.Join(", ", root.Args.Select(arg => $"{typeResolver.Resolve(composition.Source.Source, arg.InstanceType)} {arg.VariableDeclarationName}"))})";
             buildTools.AddPureHeader(code);
         }
-        
+
         var modifier = !root.IsPublic || (root.Kind & RootKinds.Private) == RootKinds.Private
             ? "private"
             : (root.Kind & RootKinds.Internal) == RootKinds.Internal
@@ -68,10 +69,10 @@ internal sealed class RootMethodsBuilder(
         {
             name.Append(" partial");
         }
-        
+
         name.Append(' ');
         name.Append(root.TypeDescription.Name);
-        
+
         name.Append(' ');
         name.Append(root.DisplayName);
 
@@ -82,7 +83,7 @@ internal sealed class RootMethodsBuilder(
             name.Append(string.Join(", ", typeArgs));
             name.Append('>');
         }
-        
+
         name.Append(rootArgsStr);
 
         if ((root.Kind & RootKinds.Exposed) == RootKinds.Exposed)
@@ -109,7 +110,7 @@ internal sealed class RootMethodsBuilder(
                 }
             }
         }
-        
+
         if (root.IsMethod)
         {
             code.AppendLine($"[{Names.MethodImplAttributeName}({Names.MethodImplAggressiveInlining})]");

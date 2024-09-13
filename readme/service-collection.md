@@ -20,7 +20,7 @@ class Service([Tag("Dependency Key")] IDependency dependency) : IService
     public IDependency Dependency { get; } = dependency;
 }
 
-partial class Composition: ServiceProviderFactory<Composition>
+partial class Composition : ServiceProviderFactory<Composition>
 {
     public IServiceCollection ServiceCollection =>
         CreateServiceCollection(this);

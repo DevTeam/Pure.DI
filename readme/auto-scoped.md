@@ -53,13 +53,13 @@ partial class Composition
 
 var composition = new Composition();
 var program = composition.ProgramRoot;
-        
+
 // Creates service in session #1
 var service1 = program.CreateService();
-        
+
 // Creates service in session #2
 var service2 = program.CreateService();
-        
+
 // Checks that the scoped instances are not identical in different sessions
 service1.Dependency.ShouldNotBe(service2.Dependency);
 ```

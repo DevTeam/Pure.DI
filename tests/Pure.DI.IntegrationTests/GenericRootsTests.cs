@@ -11,54 +11,54 @@ public class GenericRootsTests
 
         // When
         var result = await """
-using System;
-using Pure.DI;
-using static Pure.DI.Lifetime;
+                           using System;
+                           using Pure.DI;
+                           using static Pure.DI.Lifetime;
 
-namespace Sample
-{
-    class Dep<T> { }
-
-    interface IBox<T> { T? Content { get; set; } }
-
-    class CardboardBox<T> : IBox<T>
-    {
-        public CardboardBox(Dep<T> dep)
-        {
-        }
-        
-        public T? Content { get; set; }
-    }
-
-    internal partial class Composition
-    {
-        void Setup()
-        {
-            DI.Setup(nameof(Composition))
-                .Hint(Hint.Resolve, "Off")
-                .Bind<IBox<TT>>().To<CardboardBox<TT>>() 
-                // Composition Root
-                .Root<IBox<TT>>("GetRoot");
-        }
-    }
-
-    public class Program
-    {
-        public static void Main()
-        {
-            var composition = new Composition();
-            var root = composition.GetRoot<int>();
-            Console.WriteLine(root);
-        }
-    }
-}
-""".RunAsync(new Options(LanguageVersion.CSharp9));
+                           namespace Sample
+                           {
+                               class Dep<T> { }
+                           
+                               interface IBox<T> { T? Content { get; set; } }
+                           
+                               class CardboardBox<T> : IBox<T>
+                               {
+                                   public CardboardBox(Dep<T> dep)
+                                   {
+                                   }
+                                   
+                                   public T? Content { get; set; }
+                               }
+                           
+                               internal partial class Composition
+                               {
+                                   void Setup()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Hint(Hint.Resolve, "Off")
+                                           .Bind<IBox<TT>>().To<CardboardBox<TT>>() 
+                                           // Composition Root
+                                           .Root<IBox<TT>>("GetRoot");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root = composition.GetRoot<int>();
+                                       Console.WriteLine(root);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp9));
 
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Sample.CardboardBox`1[System.Int32]"], result);
     }
-    
+
     [Fact]
     public async Task ShouldShowWarningsForGenericRootWhenResolveMethods()
     {
@@ -66,47 +66,47 @@ namespace Sample
 
         // When
         var result = await """
-using System;
-using Pure.DI;
-using static Pure.DI.Lifetime;
+                           using System;
+                           using Pure.DI;
+                           using static Pure.DI.Lifetime;
 
-namespace Sample
-{
-    class Dep<T> { }
-
-    interface IBox<T> { T? Content { get; set; } }
-
-    class CardboardBox<T> : IBox<T>
-    {
-        public CardboardBox(Dep<T> dep)
-        {
-        }
-        
-        public T? Content { get; set; }
-    }
-
-    internal partial class Composition
-    {
-        void Setup()
-        {
-            DI.Setup(nameof(Composition))
-                .Bind<IBox<TT>>().To<CardboardBox<TT>>() 
-                // Composition Root
-                .Root<IBox<TT>>("GetRoot");
-        }
-    }
-
-    public class Program
-    {
-        public static void Main()
-        {
-            var composition = new Composition();
-            var root = composition.GetRoot<int>();
-            Console.WriteLine(root);
-        }
-    }
-}
-""".RunAsync(new Options(LanguageVersion.CSharp9));
+                           namespace Sample
+                           {
+                               class Dep<T> { }
+                           
+                               interface IBox<T> { T? Content { get; set; } }
+                           
+                               class CardboardBox<T> : IBox<T>
+                               {
+                                   public CardboardBox(Dep<T> dep)
+                                   {
+                                   }
+                                   
+                                   public T? Content { get; set; }
+                               }
+                           
+                               internal partial class Composition
+                               {
+                                   void Setup()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Bind<IBox<TT>>().To<CardboardBox<TT>>() 
+                                           // Composition Root
+                                           .Root<IBox<TT>>("GetRoot");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root = composition.GetRoot<int>();
+                                       Console.WriteLine(root);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp9));
 
         // Then
         result.Success.ShouldBeFalse(result);
@@ -115,7 +115,7 @@ namespace Sample
         result.Warnings.Count(i => i.Id == LogId.WarningTypeArgInResolveMethod).ShouldBe(1);
         result.StdOut.ShouldBe(["Sample.CardboardBox`1[System.Int32]"], result);
     }
-    
+
     [Fact]
     public async Task ShouldSupportGenericRootWhenFewTypeArgs()
     {
@@ -123,59 +123,59 @@ namespace Sample
 
         // When
         var result = await """
-using System;
-using Pure.DI;
-using static Pure.DI.Lifetime;
+                           using System;
+                           using Pure.DI;
+                           using static Pure.DI.Lifetime;
 
-namespace Sample
-{
-    interface IDependency<T, TVal> { }
-
-    class Dependency<T, TVal> : IDependency<T, TVal> { }
-
-    interface IService<TVal, T> { }
-
-    class Service<TVal, T> : IService<TVal, T>
-    {
-        public Service(IDependency<T,TVal> dependency) { }
-    }
-
-    class OtherService<T> : IService<bool, T>
-    {
-        public OtherService(IDependency<T, double> dependency) { }
-    }
-
-    internal partial class Composition
-    {
-        void Setup()
-        {
-            DI.Setup(nameof(Composition))
-                .Hint(Hint.Resolve, "Off")
-                .Bind().To<Dependency<TT, TT1>>()
-                .Bind().To<Service<TT, TT1>>()
-                .Root<IService<TT, TT1>>("GetMyRoot")
-                .Bind("Other").To(ctx =>
-                {
-                    ctx.Inject(out IDependency<TT, double> dependency);
-                    return new OtherService<TT>(dependency);
-                })
-                .Root<IService<bool, TT>>("GetOtherService", "Other");
-        }
-    }
-
-    public class Program
-    {
-        public static void Main()
-        {
-            var composition = new Composition();
-            var service = composition.GetMyRoot<int, DateTime>();
-            Console.WriteLine(service);
-            var someOtherService = composition.GetOtherService<string>();
-            Console.WriteLine(someOtherService);
-        }
-    }
-}
-""".RunAsync(new Options(LanguageVersion.CSharp9));
+                           namespace Sample
+                           {
+                               interface IDependency<T, TVal> { }
+                           
+                               class Dependency<T, TVal> : IDependency<T, TVal> { }
+                           
+                               interface IService<TVal, T> { }
+                           
+                               class Service<TVal, T> : IService<TVal, T>
+                               {
+                                   public Service(IDependency<T,TVal> dependency) { }
+                               }
+                           
+                               class OtherService<T> : IService<bool, T>
+                               {
+                                   public OtherService(IDependency<T, double> dependency) { }
+                               }
+                           
+                               internal partial class Composition
+                               {
+                                   void Setup()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Hint(Hint.Resolve, "Off")
+                                           .Bind().To<Dependency<TT, TT1>>()
+                                           .Bind().To<Service<TT, TT1>>()
+                                           .Root<IService<TT, TT1>>("GetMyRoot")
+                                           .Bind("Other").To(ctx =>
+                                           {
+                                               ctx.Inject(out IDependency<TT, double> dependency);
+                                               return new OtherService<TT>(dependency);
+                                           })
+                                           .Root<IService<bool, TT>>("GetOtherService", "Other");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.GetMyRoot<int, DateTime>();
+                                       Console.WriteLine(service);
+                                       var someOtherService = composition.GetOtherService<string>();
+                                       Console.WriteLine(someOtherService);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp9));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -185,7 +185,7 @@ namespace Sample
             "Sample.OtherService`1[System.String]"
         ], result);
     }
-    
+
     [Fact]
     public async Task ShouldSupportGenericRootWhenFactory()
     {
@@ -193,59 +193,59 @@ namespace Sample
 
         // When
         var result = await """
-using System;
-using Pure.DI;
-using static Pure.DI.Lifetime;
+                           using System;
+                           using Pure.DI;
+                           using static Pure.DI.Lifetime;
 
-namespace Sample
-{
-    interface IBox<T> { T? Content { get; set; } }
-
-    class CardboardBox<T> : IBox<T>
-    {
-        public T? Content { get; set; }
-    }
-    
-    class Consumer<T>
-    {
-        public Consumer(IBox<T> box)
-        {
-        }
-    }
-
-    internal partial class Composition
-    {
-        void Setup()
-        {
-            DI.Setup(nameof(Composition))
-                .Hint(Hint.Resolve, "Off")
-                .Bind<IBox<TT>>().To<CardboardBox<TT>>()
-                .Bind<Consumer<TT>>().To<Consumer<TT>>(ctx => {
-                    ctx.Inject<IBox<TT>>(out var box);
-                    return new Consumer<TT>(box);
-                })
-                // Composition Root
-                .Root<Consumer<TT>>("GetRoot");
-        }
-    }
-
-    public class Program
-    {
-        public static void Main()
-        {
-            var composition = new Composition();
-            var root = composition.GetRoot<int>();
-            Console.WriteLine(root);
-        }
-    }
-}
-""".RunAsync(new Options(LanguageVersion.CSharp9));
+                           namespace Sample
+                           {
+                               interface IBox<T> { T? Content { get; set; } }
+                           
+                               class CardboardBox<T> : IBox<T>
+                               {
+                                   public T? Content { get; set; }
+                               }
+                               
+                               class Consumer<T>
+                               {
+                                   public Consumer(IBox<T> box)
+                                   {
+                                   }
+                               }
+                           
+                               internal partial class Composition
+                               {
+                                   void Setup()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Hint(Hint.Resolve, "Off")
+                                           .Bind<IBox<TT>>().To<CardboardBox<TT>>()
+                                           .Bind<Consumer<TT>>().To<Consumer<TT>>(ctx => {
+                                               ctx.Inject<IBox<TT>>(out var box);
+                                               return new Consumer<TT>(box);
+                                           })
+                                           // Composition Root
+                                           .Root<Consumer<TT>>("GetRoot");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root = composition.GetRoot<int>();
+                                       Console.WriteLine(root);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp9));
 
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Sample.Consumer`1[System.Int32]"], result);
     }
-    
+
     [Fact]
     public async Task ShouldSupportGenericRootWhenTypeConstraint()
     {
@@ -253,71 +253,71 @@ namespace Sample
 
         // When
         var result = await """
-using System;
-using Pure.DI;
-using static Pure.DI.Lifetime;
+                           using System;
+                           using Pure.DI;
+                           using static Pure.DI.Lifetime;
 
-namespace Sample
-{
-    class Disposable: IDisposable
-    {
-        public void Dispose()
-        {
-        }
-    }
-    
-    class Dep<T>
-        where T: IDisposable
-    {
-    }
-
-    interface IBox<T, TStruct>
-        where T: IDisposable
-        where TStruct: struct 
-    { 
-        T? Content { get; set; } 
-    }
-
-    class CardboardBox<T, TStruct> : IBox<T, TStruct>
-        where T: IDisposable
-        where TStruct: struct
-    {
-        public CardboardBox(Dep<T> dep)
-        {
-        }
-        
-        public T? Content { get; set; }
-    }
-
-    internal partial class Composition
-    {
-        void Setup()
-        {
-            DI.Setup(nameof(Composition))
-                .Hint(Hint.Resolve, "Off")
-                .Bind<IBox<TTDisposable, TTS>>().To<CardboardBox<TTDisposable, TTS>>() 
-                // Composition Root
-                .Root<IBox<TTDisposable, TTS>>("GetRoot");
-        }
-    }
-
-    public class Program
-    {
-        public static void Main()
-        {
-            var composition = new Composition();
-            var root = composition.GetRoot<Disposable, int>();
-            Console.WriteLine(root);
-        }
-    }
-}
-""".RunAsync(new Options(LanguageVersion.CSharp9));
+                           namespace Sample
+                           {
+                               class Disposable: IDisposable
+                               {
+                                   public void Dispose()
+                                   {
+                                   }
+                               }
+                               
+                               class Dep<T>
+                                   where T: IDisposable
+                               {
+                               }
+                           
+                               interface IBox<T, TStruct>
+                                   where T: IDisposable
+                                   where TStruct: struct 
+                               { 
+                                   T? Content { get; set; } 
+                               }
+                           
+                               class CardboardBox<T, TStruct> : IBox<T, TStruct>
+                                   where T: IDisposable
+                                   where TStruct: struct
+                               {
+                                   public CardboardBox(Dep<T> dep)
+                                   {
+                                   }
+                                   
+                                   public T? Content { get; set; }
+                               }
+                           
+                               internal partial class Composition
+                               {
+                                   void Setup()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Hint(Hint.Resolve, "Off")
+                                           .Bind<IBox<TTDisposable, TTS>>().To<CardboardBox<TTDisposable, TTS>>() 
+                                           // Composition Root
+                                           .Root<IBox<TTDisposable, TTS>>("GetRoot");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root = composition.GetRoot<Disposable, int>();
+                                       Console.WriteLine(root);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp9));
 
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Sample.CardboardBox`2[Sample.Disposable,System.Int32]"], result);
     }
-    
+
     [Fact]
     public async Task ShouldSupportGenericRootWhenStructConstraint()
     {
@@ -325,72 +325,72 @@ namespace Sample
 
         // When
         var result = await """
-using System;
-using Pure.DI;
-using static Pure.DI.Lifetime;
+                           using System;
+                           using Pure.DI;
+                           using static Pure.DI.Lifetime;
 
-namespace Sample
-{
-    interface IDependency<T> { }
-
-    class Dependency<T> : IDependency<T> { }
-
-    interface IService<T, TStruct>
-        where TStruct: struct
-    {
-    }
-
-    class Service<T, TStruct>: IService<T, TStruct>
-        where TStruct: struct
-    {
-        public Service(IDependency<T> dependency)
-        {
-        }
-    }
-
-    class OtherService<T, TStruct>: IService<T, TStruct>
-        where TStruct: struct
-    {
-        public OtherService(IDependency<T> dependency)
-        {
-        }
-    }
-    
-    internal partial class Composition
-    {
-        void Setup()
-        {
-            DI.Setup(nameof(Composition))
-                .Hint(Hint.Resolve, "Off")
-                .Bind().To<Dependency<TT>>()
-                .Bind().To<Service<TT, TTS>>()
-                .Bind("Other").To(ctx =>
-                {
-                    ctx.Inject(out IDependency<TT> dependency);
-                    return new OtherService<TT, TTS>(dependency);
-                })
-                .Root<IService<TT, TTS>>("GetMyRoot")
-                .Root<IService<TT, TTS>>("GetOtherService", "Other");
-        }
-    }
-
-    public class Program
-    {
-        public static void Main()
-        {
-            var composition = new Composition();
-            var service = composition.GetMyRoot<int, double>();
-            Console.WriteLine(service);
-        }
-    }
-}
-""".RunAsync(new Options(LanguageVersion.CSharp9));
+                           namespace Sample
+                           {
+                               interface IDependency<T> { }
+                           
+                               class Dependency<T> : IDependency<T> { }
+                           
+                               interface IService<T, TStruct>
+                                   where TStruct: struct
+                               {
+                               }
+                           
+                               class Service<T, TStruct>: IService<T, TStruct>
+                                   where TStruct: struct
+                               {
+                                   public Service(IDependency<T> dependency)
+                                   {
+                                   }
+                               }
+                           
+                               class OtherService<T, TStruct>: IService<T, TStruct>
+                                   where TStruct: struct
+                               {
+                                   public OtherService(IDependency<T> dependency)
+                                   {
+                                   }
+                               }
+                               
+                               internal partial class Composition
+                               {
+                                   void Setup()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Hint(Hint.Resolve, "Off")
+                                           .Bind().To<Dependency<TT>>()
+                                           .Bind().To<Service<TT, TTS>>()
+                                           .Bind("Other").To(ctx =>
+                                           {
+                                               ctx.Inject(out IDependency<TT> dependency);
+                                               return new OtherService<TT, TTS>(dependency);
+                                           })
+                                           .Root<IService<TT, TTS>>("GetMyRoot")
+                                           .Root<IService<TT, TTS>>("GetOtherService", "Other");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.GetMyRoot<int, double>();
+                                       Console.WriteLine(service);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp9));
 
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Sample.Service`2[System.Int32,System.Double]"], result);
     }
-    
+
     [Fact]
     public async Task ShouldSupportGenericRootWhenArray()
     {
@@ -398,62 +398,62 @@ namespace Sample
 
         // When
         var result = await """
-using System;
-using Pure.DI;
-using System.Collections.Generic;
-using static Pure.DI.Lifetime;
+                           using System;
+                           using Pure.DI;
+                           using System.Collections.Generic;
+                           using static Pure.DI.Lifetime;
 
-namespace Sample
-{
-    interface IRecipient<T>
-    {
-    }
-
-    interface IPost<T>
-    {
-    }
-
-    class Post<T> : IPost<T>
-    {
-        public Post(IRecipient<T>[] recipients)
-        {
-        Console.WriteLine(recipients.Length);
-        }
-    }
-    
-    class Recipient<TT> : IRecipient<TT>
-    {
-    }
-
-    internal partial class Composition
-    {
-        void Setup()
-        {
-            DI.Setup(nameof(Composition))
-                .Hint(Hint.Resolve, "Off")
-                .Bind<IRecipient<TT>>(1).To<Recipient<TT>>()
-                .Bind<IRecipient<TT>>(2).To<Recipient<TT>>()
-                .RootBind<IPost<TT>>("GetRoot").To<Post<TT>>();
-        }
-    }
-
-    public class Program
-    {
-        public static void Main()
-        {
-            var composition = new Composition();
-            var root = composition.GetRoot<string>();
-            Console.WriteLine(root);
-        }
-    }
-}
-""".RunAsync(new Options(LanguageVersion.CSharp9));
+                           namespace Sample
+                           {
+                               interface IRecipient<T>
+                               {
+                               }
+                           
+                               interface IPost<T>
+                               {
+                               }
+                           
+                               class Post<T> : IPost<T>
+                               {
+                                   public Post(IRecipient<T>[] recipients)
+                                   {
+                                   Console.WriteLine(recipients.Length);
+                                   }
+                               }
+                               
+                               class Recipient<TT> : IRecipient<TT>
+                               {
+                               }
+                           
+                               internal partial class Composition
+                               {
+                                   void Setup()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Hint(Hint.Resolve, "Off")
+                                           .Bind<IRecipient<TT>>(1).To<Recipient<TT>>()
+                                           .Bind<IRecipient<TT>>(2).To<Recipient<TT>>()
+                                           .RootBind<IPost<TT>>("GetRoot").To<Post<TT>>();
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root = composition.GetRoot<string>();
+                                       Console.WriteLine(root);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp9));
 
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["2", "Sample.Post`1[System.String]"], result);
     }
-    
+
     [Theory]
     [InlineData("System.Collections.Generic.IEnumerable")]
     [InlineData("System.Collections.Generic.IList")]
@@ -486,70 +486,70 @@ namespace Sample
 
         // When
         var result = await """
-using System;
-using Pure.DI;
-using System.Collections.Generic;
-using System.Linq;
-using static Pure.DI.Lifetime;
+            using System;
+            using Pure.DI;
+            using System.Collections.Generic;
+            using System.Linq;
+            using static Pure.DI.Lifetime;
 
-namespace Sample
-{
-    interface IRecipient<T>
-    {
-    }
-
-    interface IPost<T>
-    {
-    }
-
-    class Post<T> : IPost<T>
-    {
-        public Post(###CollectionType###<IRecipient<T>> recipients)
-        {
-            Console.WriteLine(recipients.###Counter###);
-        }
-    }
-    
-    class Recipient<TT> : IRecipient<TT>
-    {
-    }
-
-    internal partial class Composition
-    {
-        void Setup()
-        {
-            DI.Setup(nameof(Composition))
-                .Hint(Hint.Resolve, "Off")
-                .Bind<IRecipient<TT>>(1).To<Recipient<TT>>()
-                .Bind<IRecipient<TT>>(2).To<Recipient<TT>>()
-                .RootBind<IPost<TT>>("GetRoot").To<Post<TT>>();
-        }
-    }
-
-    public class Program
-    {
-        public static void Main()
-        {
-            var composition = new Composition();
-            var root = composition.GetRoot<string>();
-        }
-    }
-}
-"""
+            namespace Sample
+            {
+                interface IRecipient<T>
+                {
+                }
+            
+                interface IPost<T>
+                {
+                }
+            
+                class Post<T> : IPost<T>
+                {
+                    public Post(###CollectionType###<IRecipient<T>> recipients)
+                    {
+                        Console.WriteLine(recipients.###Counter###);
+                    }
+                }
+                
+                class Recipient<TT> : IRecipient<TT>
+                {
+                }
+            
+                internal partial class Composition
+                {
+                    void Setup()
+                    {
+                        DI.Setup(nameof(Composition))
+                            .Hint(Hint.Resolve, "Off")
+                            .Bind<IRecipient<TT>>(1).To<Recipient<TT>>()
+                            .Bind<IRecipient<TT>>(2).To<Recipient<TT>>()
+                            .RootBind<IPost<TT>>("GetRoot").To<Post<TT>>();
+                    }
+                }
+            
+                public class Program
+                {
+                    public static void Main()
+                    {
+                        var composition = new Composition();
+                        var root = composition.GetRoot<string>();
+                    }
+                }
+            }
+            """
             .Replace("###CollectionType###", collectionType)
             .Replace("###Counter###", counter)
             .RunAsync(
-            new Options
-            {
-                LanguageVersion = languageVersion,
-                NullableContextOptions = NullableContextOptions.Disable
-            });
+                new Options
+                {
+                    LanguageVersion = languageVersion,
+                    NullableContextOptions = NullableContextOptions.Disable
+                });
 
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["2"], result);
     }
-    
+
     [Fact]
     public async Task ShouldSupportGenericRootWithTags()
     {
@@ -557,74 +557,74 @@ namespace Sample
 
         // When
         var result = await """
-using System;
-using System.Linq;
-using Pure.DI;
-using static Pure.DI.Lifetime;
+                           using System;
+                           using System.Linq;
+                           using Pure.DI;
+                           using static Pure.DI.Lifetime;
 
-namespace Sample
-{
-    interface IRunner<T>
-    {
-        T Run(T value);
-    }
-
-    interface IPipeline<T> : IRunner<T>
-    {
-    }
-
-    class Pipeline<T> : IPipeline<T>
-    {
-        private readonly IRunner<T>[] _runners;
-
-        public Pipeline(params IRunner<T>[] runners)
-        {
-            _runners = runners;
-        }
-
-        public T Run(T value) => 
-            _runners.Aggregate(
-                value,
-                (current, handler) => handler.Run(current));
-    }
-
-    class Tracer<T>: IRunner<T>
-    {
-        public T Run(T value)
-        {
-            Console.WriteLine(value);
-            return value;
-        }
-    }
-
-    class SquareRootCalculator: IRunner<decimal>
-    {
-        public decimal Run(decimal value) => 
-            value * value;
-    }
-
-    internal partial class Composition
-    {
-        void Setup()
-        {
-            DI.Setup(nameof(Composition))
-                .Bind(0).To<Tracer<TT>>()
-                .Bind(1).To<SquareRootCalculator>()
-                .Bind(2).To<Tracer<TT>>()
-                .Bind().To<Pipeline<TT>>()
-                .Root<Pipeline<decimal>>("Pipeline");
-        }
-    }
-
-    public class Program
-    {
-        public static void Main()
-        {
-            new Composition().Pipeline.Run(7);
-        }
-    }
-}
-""".RunAsync(new Options(LanguageVersion.CSharp9));
+                           namespace Sample
+                           {
+                               interface IRunner<T>
+                               {
+                                   T Run(T value);
+                               }
+                           
+                               interface IPipeline<T> : IRunner<T>
+                               {
+                               }
+                           
+                               class Pipeline<T> : IPipeline<T>
+                               {
+                                   private readonly IRunner<T>[] _runners;
+                           
+                                   public Pipeline(params IRunner<T>[] runners)
+                                   {
+                                       _runners = runners;
+                                   }
+                           
+                                   public T Run(T value) => 
+                                       _runners.Aggregate(
+                                           value,
+                                           (current, handler) => handler.Run(current));
+                               }
+                           
+                               class Tracer<T>: IRunner<T>
+                               {
+                                   public T Run(T value)
+                                   {
+                                       Console.WriteLine(value);
+                                       return value;
+                                   }
+                               }
+                           
+                               class SquareRootCalculator: IRunner<decimal>
+                               {
+                                   public decimal Run(decimal value) => 
+                                       value * value;
+                               }
+                           
+                               internal partial class Composition
+                               {
+                                   void Setup()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Bind(0).To<Tracer<TT>>()
+                                           .Bind(1).To<SquareRootCalculator>()
+                                           .Bind(2).To<Tracer<TT>>()
+                                           .Bind().To<Pipeline<TT>>()
+                                           .Root<Pipeline<decimal>>("Pipeline");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       new Composition().Pipeline.Run(7);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp9));
 
         // Then
         result.Success.ShouldBeTrue(result);

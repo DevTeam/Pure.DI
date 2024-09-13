@@ -1,16 +1,17 @@
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core.Code;
 
 internal class NodeInfo(IAsyncDisposableSettings asyncDisposableSettings) : INodeInfo
 {
     public bool IsDelegate(DependencyNode node) =>
         node.Type.TypeKind == TypeKind.Delegate;
-    
+
     public bool IsLazy(DependencyNode node) =>
         IsDelegate(node) || IsEnumerable(node) || IsAsyncEnumerable(node);
-    
-    public bool IsDisposable(DependencyNode node) => 
-        node.Type.AllInterfaces.Any(i => 
+
+    public bool IsDisposable(DependencyNode node) =>
+        node.Type.AllInterfaces.Any(i =>
             i.SpecialType == SpecialType.System_IDisposable
             || IsAsyncDisposable(node.Binding.SemanticModel.Compilation, i));
 
@@ -22,8 +23,8 @@ internal class NodeInfo(IAsyncDisposableSettings asyncDisposableSettings) : INod
 
     private static bool IsAsyncEnumerable(DependencyNode node) =>
         node.Construct is { Source.Kind: MdConstructKind.AsyncEnumerable };
-    
-    private bool IsAsyncDisposable(Compilation compilation, ISymbol type) => 
-        asyncDisposableSettings.TryGetAsyncDisposableType(compilation) is {} asyncDisposableType
+
+    private bool IsAsyncDisposable(Compilation compilation, ISymbol type) =>
+        asyncDisposableSettings.TryGetAsyncDisposableType(compilation) is { } asyncDisposableType
         && SymbolEqualityComparer.Default.Equals(type, asyncDisposableType);
 }

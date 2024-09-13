@@ -11,6 +11,7 @@ $f=The tag can be a constant, a type, or a value of an enumerated type. The _def
 // ReSharper disable UnusedType.Global
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.UsageTests.Basics.TagsScenario;
 
 using Shouldly;
@@ -20,9 +21,9 @@ using Xunit;
 interface IDependency;
 
 class AbcDependency : IDependency;
-        
+
 class XyzDependency : IDependency;
-        
+
 class Dependency : IDependency;
 
 interface IService
@@ -30,7 +31,7 @@ interface IService
     IDependency Dependency1 { get; }
 
     IDependency Dependency2 { get; }
-    
+
     IDependency Dependency3 { get; }
 }
 
@@ -58,13 +59,13 @@ public class Scenario
         DI.Setup(nameof(Composition))
             .Bind<IDependency>("Abc", default).To<AbcDependency>()
             .Bind<IDependency>("Xyz")
-                .As(Lifetime.Singleton)
-                .To<XyzDependency>()
+            .As(Lifetime.Singleton)
+            .To<XyzDependency>()
             .Bind<IService>().To<Service>()
-            
+
             // "XyzRoot" is root name, "Xyz" is tag
             .Root<IDependency>("XyzRoot", "Xyz")
-            
+
             // Specifies to create the composition root named "Root"
             .Root<IService>("Root");
 

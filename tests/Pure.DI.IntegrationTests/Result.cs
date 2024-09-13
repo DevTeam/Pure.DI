@@ -1,4 +1,5 @@
 // ReSharper disable NotAccessedPositionalProperty.Global
+
 namespace Pure.DI.IntegrationTests;
 
 using System.Text;
@@ -31,7 +32,7 @@ internal readonly record struct Result(
         {
             text.AppendLine(error.Message);
         }
-        
+
         return text.ToString();
     }
 

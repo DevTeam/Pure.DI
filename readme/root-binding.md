@@ -8,7 +8,7 @@ In general, it is recommended to define one composition root for the entire appl
 ```c#
 interface IDependency;
 
-class Dependency: IDependency;
+class Dependency : IDependency;
 
 interface IService;
 
@@ -17,9 +17,9 @@ class Service(IDependency dependency) : IService;
 DI.Setup(nameof(Composition))
     .Bind().As(Lifetime.Singleton).To<Dependency>()
     .RootBind<IService>("MyRoot").To<Service>();
-    // It's the same as:
-    //   .Bind<IService>().To<Service>()
-    //   .Root<IService>("MyRoot")
+// It's the same as:
+//   .Bind<IService>().To<Service>()
+//   .Root<IService>("MyRoot")
 
 var composition = new Composition();
 composition.MyRoot.ShouldBeOfType<Service>();

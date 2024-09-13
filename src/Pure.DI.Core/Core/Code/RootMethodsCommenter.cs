@@ -11,7 +11,7 @@ internal class RootMethodsCommenter(
         {
             return;
         }
-        
+
         var rootComments = root.Source.Comments;
         var code = composition.Code;
         code.AppendLine("/// <summary>");
@@ -36,7 +36,7 @@ internal class RootMethodsCommenter(
             {
                 code.AppendLine("/// </para>");
             }
-            
+
             if (!root.IsPublic)
             {
                 return;

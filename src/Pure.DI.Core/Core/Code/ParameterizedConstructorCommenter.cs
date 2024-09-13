@@ -10,7 +10,7 @@ internal class ParameterizedConstructorCommenter(
         {
             return;
         }
-        
+
         var code = composition.Code;
         code.AppendLine("/// <summary>");
         code.AppendLine($"/// This parameterized constructor creates a new instance of <see cref=\"{composition.Source.Source.Name.ClassName}\"/> with arguments.");

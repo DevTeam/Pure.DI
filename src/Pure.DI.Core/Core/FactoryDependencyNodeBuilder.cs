@@ -1,5 +1,6 @@
 ﻿// ReSharper disable ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core;
 
 internal sealed class FactoryDependencyNodeBuilder(IAttributes attributes)
@@ -9,7 +10,7 @@ internal sealed class FactoryDependencyNodeBuilder(IAttributes attributes)
     {
         foreach (var binding in setup.Bindings)
         {
-            if (binding.Factory is not {} factory)
+            if (binding.Factory is not { } factory)
             {
                 continue;
             }

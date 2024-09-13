@@ -13,13 +13,15 @@ interface IDependency
 
 class Dependency : IDependency
 {
-    public void DoSomething() { }
+    public void DoSomething()
+    {
+    }
 }
 
 class Facade
 {
     [Bind]
-    public IDependency Dependency { get; }= new Dependency();
+    public IDependency Dependency { get; } = new Dependency();
 }
 
 interface IService

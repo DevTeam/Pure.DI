@@ -11,12 +11,12 @@ interface IDependency<T>;
 class Dependency<T> : IDependency<T>;
 
 readonly record struct DependencyStruct<T> : IDependency<T>
-    where T: struct;
+    where T : struct;
 
 interface IService<T1, T2, TList, TDictionary>
-    where T2: struct
-    where TList: IList<T1>
-    where TDictionary: IDictionary<T1, T2>
+    where T2 : struct
+    where TList : IList<T1>
+    where TDictionary : IDictionary<T1, T2>
 {
     IDependency<T1> Dependency1 { get; }
 
@@ -48,7 +48,7 @@ DI.Setup(nameof(Composition))
     .Bind<IDependency<TT>>().To<Dependency<TT>>()
     .Bind<IDependency<TTS>>("value type").To<DependencyStruct<TTS>>()
     .Bind<IService<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>()
-        .To<Service<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>()
+    .To<Service<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>()
 
     // Composition root
     .Root<Program<string>>("Root");

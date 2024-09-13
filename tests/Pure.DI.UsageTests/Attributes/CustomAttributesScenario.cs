@@ -16,6 +16,7 @@ $h=You can also use combined attributes, and each method in the list above has a
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedTypeParameter
+
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Attributes.CustomAttributesScenario;
 
@@ -52,13 +53,11 @@ interface IPerson;
 class Person([MyTag("NikName")] string name) : IPerson
 {
     private object? _state;
-    
-    [MyOrdinal(1)]
-    [MyType(typeof(int))]
-    internal object Id = "";
+
+    [MyOrdinal(1)] [MyType(typeof(int))] internal object Id = "";
 
     [MyOrdinal(2)]
-    public void Initialize([MyGenericType<Uri>] object state) => 
+    public void Initialize([MyGenericType<Uri>] object state) =>
         _state = state;
 
     public override string ToString() => $"{Id} {name} {_state}";
@@ -81,7 +80,7 @@ public class Scenario
             .Bind().To(_ => new Uri("https://github.com/DevTeam/Pure.DI"))
             .Bind("NikName").To(_ => "Nik")
             .Bind().To<Person>()
-            
+
             // Composition root
             .Root<IPerson>("Person");
 

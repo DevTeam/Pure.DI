@@ -16,6 +16,7 @@ $f=> The method `Inject()`cannot be used outside of the binding setup.
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedVariable
 // ReSharper disable UnusedTypeParameter
+
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Generics.GenericsCompositionRootsScenario;
 
@@ -52,12 +53,12 @@ public class Scenario
                 ctx.Inject(out IDependency<TT> dependency);
                 return new OtherService<TT>(dependency);
             })
-            
+
             // Specifies to create a regular public method
             // to get a composition root of type Service<T>
             // with the name "GetMyRoot"
             .Root<IService<TT>>("GetMyRoot")
-            
+
             // Specifies to create a regular public method
             // to get a composition root of type OtherService<T>
             // with the name "GetOtherService"
@@ -65,10 +66,10 @@ public class Scenario
             .Root<IService<TT>>("GetOtherService", "Other");
 
         var composition = new Composition();
-        
+
         // service = new Service<int>(new Dependency<int>());
         var service = composition.GetMyRoot<int>();
-        
+
         // someOtherService = new OtherService<int>(new Dependency<int>());
         var someOtherService = composition.GetOtherService<string>();
 // }            

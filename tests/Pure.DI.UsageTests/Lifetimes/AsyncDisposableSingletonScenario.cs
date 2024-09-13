@@ -2,12 +2,13 @@
 $v=true
 $p=8
 $d=Async disposable singleton
-$h=If at least one of these objects implements the `IAsyncDisposable` interface, then the composition implements `IAsyncDisposable` as well. To dispose of all created singleton instances in an asynchronous manner, simply dispose of the composition instance in an asynchronous manner: 
+$h=If at least one of these objects implements the `IAsyncDisposable` interface, then the composition implements `IAsyncDisposable` as well. To dispose of all created singleton instances in an asynchronous manner, simply dispose of the composition instance in an asynchronous manner:
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
 // ReSharper disable ArrangeTypeModifiers
+
 namespace Pure.DI.UsageTests.Lifetimes.AsyncDisposableSingletonScenario;
 
 using Xunit;
@@ -34,7 +35,7 @@ interface IService
     public IDependency Dependency { get; }
 }
 
-class Service(IDependency dependency): IService
+class Service(IDependency dependency) : IService
 {
     public IDependency Dependency { get; } = dependency;
 }
@@ -59,7 +60,7 @@ public class Scenario
             var service = composition.Root;
             dependency = service.Dependency;
         }
-            
+
         dependency.IsDisposed.ShouldBeTrue();
 // }
         new Composition().SaveClassDiagram();

@@ -1,4 +1,5 @@
 ﻿// ReSharper disable HeapView.ObjectAllocation
+
 namespace Pure.DI.Core.Models;
 
 internal record DpImplementation(

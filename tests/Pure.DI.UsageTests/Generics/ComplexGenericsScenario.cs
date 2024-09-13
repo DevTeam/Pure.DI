@@ -10,6 +10,7 @@ $f=It can also be useful in a very simple scenario where, for example, the seque
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedTypeParameter
 // ReSharper disable ArrangeTypeModifiers
+
 namespace Pure.DI.UsageTests.Generics.ComplexGenericsScenario;
 
 using Shouldly;
@@ -20,16 +21,16 @@ interface IDependency<T>;
 
 class Dependency<T> : IDependency<T>;
 
-readonly record struct DependencyStruct<T> : IDependency<T> 
-    where T: struct;
+readonly record struct DependencyStruct<T> : IDependency<T>
+    where T : struct;
 
 interface IService<T1, T2, TList, TDictionary>
-    where T2: struct
-    where TList: IList<T1>
-    where TDictionary: IDictionary<T1, T2>
+    where T2 : struct
+    where TList : IList<T1>
+    where TDictionary : IDictionary<T1, T2>
 {
     IDependency<T1> Dependency1 { get; }
-    
+
     IDependency<T2> Dependency2 { get; }
 }
 
@@ -65,8 +66,8 @@ public class Scenario
             .Bind<IDependency<TT>>().To<Dependency<TT>>()
             .Bind<IDependency<TTS>>("value type").To<DependencyStruct<TTS>>()
             .Bind<IService<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>()
-                .To<Service<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>()
-            
+            .To<Service<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>()
+
             // Composition root
             .Root<Program<string>>("Root");
 

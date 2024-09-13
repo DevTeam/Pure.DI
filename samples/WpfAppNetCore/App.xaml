@@ -5,6 +5,6 @@
              StartupUri="/Views/MainWindow.xaml"
              Exit="OnExit">
     <Application.Resources>
-        <wpfAppNetCore:Composition x:Key="Composition"/>
+        <wpfAppNetCore:Composition x:Key="Composition" />
     </Application.Resources>
 </Application>

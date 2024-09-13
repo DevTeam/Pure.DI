@@ -20,7 +20,7 @@ class Service(IDependency dependency) : IService
     public IDependency Dependency { get; } = dependency;
 }
 
-partial class Composition: IServiceProvider
+partial class Composition : IServiceProvider
 {
     static void Setup() =>
         DI.Setup()

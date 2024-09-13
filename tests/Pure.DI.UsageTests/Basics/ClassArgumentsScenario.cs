@@ -12,6 +12,7 @@ $h=
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable ArrangeTypeModifiers
+
 namespace Pure.DI.UsageTests.Basics.ClassArgumentsScenario;
 
 using Shouldly;
@@ -21,7 +22,7 @@ using Xunit;
 interface IDependency
 {
     int Id { get; }
-    
+
     string Name { get; }
 }
 
@@ -35,7 +36,7 @@ class Dependency(int id, string name) : IDependency
 interface IService
 {
     string Name { get; }
-    
+
     IDependency Dependency { get; }
 }
 
@@ -61,24 +62,23 @@ public class Scenario
         DI.Setup(nameof(Composition))
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>()
-            
+
             // Composition root "MyRoot"
             .Root<IService>("MyService")
-            
+
             // Some kind of identifier
             .Arg<int>("id")
-            
+
             // An argument can be tagged (e.g., tag "my service name")
             // to be injectable by type and this tag
             .Arg<string>("serviceName", "my service name")
-            
             .Arg<string>("dependencyName");
 
         var composition = new Composition(id: 123, serviceName: "Abc", dependencyName: "Xyz");
-        
+
         // service = new Service("Abc", new Dependency(123, "Xyz"));
         var service = composition.MyService;
-        
+
         service.Name.ShouldBe("Abc");
         service.Dependency.Id.ShouldBe(123);
         service.Dependency.Name.ShouldBe("Xyz");

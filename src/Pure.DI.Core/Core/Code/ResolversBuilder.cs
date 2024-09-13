@@ -1,11 +1,12 @@
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core.Code;
 
 internal sealed class ResolversBuilder(ITypeResolver typeResolver)
     : IBuilder<RootContext, IEnumerable<ResolverInfo>>
 {
     public IEnumerable<ResolverInfo> Build(RootContext ctx) =>
-        ctx.Roots         
+        ctx.Roots
             .Where(i => i.Args.IsEmpty)
             .Where(i => !i.Injection.Type.IsRefLikeType)
             .Where(i => !ReferenceEquals(i.Injection.Tag, MdTag.ContextTag))

@@ -1,10 +1,11 @@
-
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core;
 
 internal sealed class CyclicDependenciesValidator(
     IGraphWalker<HashSet<object>, ImmutableArray<DependencyNode>> graphWalker,
-    [Tag(typeof(CyclicDependencyValidatorVisitor))] IGraphVisitor<HashSet<object>, ImmutableArray<DependencyNode>> visitor,
+    [Tag(typeof(CyclicDependencyValidatorVisitor))]
+    IGraphVisitor<HashSet<object>, ImmutableArray<DependencyNode>> visitor,
     CancellationToken cancellationToken)
     : IValidator<DependencyGraph>
 {

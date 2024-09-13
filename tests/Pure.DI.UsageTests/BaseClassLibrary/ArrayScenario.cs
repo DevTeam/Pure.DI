@@ -33,6 +33,7 @@ $f=And of course this list can easily be supplemented on its own.
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
 // ReSharper disable ArrangeTypeModifiers
+
 namespace Pure.DI.UsageTests.BCL.ArrayScenario;
 
 using Shouldly;
@@ -66,7 +67,7 @@ public class Scenario
             .Bind<IDependency>().To<AbcDependency>()
             .Bind<IDependency>(2).To<XyzDependency>()
             .Bind<IService>().To<Service>()
-            
+
             // Composition root
             .Root<IService>("Root");
 

@@ -39,9 +39,9 @@ class Service(
 
 DI.Setup(nameof(Composition))
     .Bind(Tag.OnConstructorArg<Service>("dependency1"))
-        .To<AbcDependency>()
+    .To<AbcDependency>()
     .Bind(Tag.OnConstructorArg<Consumer<TT>>("myDep"))
-        .To<XyzDependency>()
+    .To<XyzDependency>()
     .Bind<IService>().To<Service>()
 
     // Specifies to create the composition root named "Root"

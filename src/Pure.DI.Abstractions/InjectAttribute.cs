@@ -1,6 +1,7 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable RedundantNameQualifier
 // ReSharper disable InvalidXmlDocComment
+
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.Abstractions;
 

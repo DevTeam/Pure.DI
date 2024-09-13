@@ -2,6 +2,7 @@
 // ReSharper disable HeapView.DelegateAllocation
 // ReSharper disable HeapView.ClosureAllocation
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Build;
 
 using NuGet.Versioning;
@@ -33,13 +34,13 @@ internal class UpdateTarget(
             {
                 line = $"{new string(' ', index)}<InternalVersion>{currentVersion}</InternalVersion>";
             }
-            
+
             contents.Add(line);
         }
-        
+
         await File.WriteAllLinesAsync(propsFile, contents, cancellationToken);
         WriteLine($"The internal version of Pure.DI has been updated to {currentVersion}.", Color.Details);
-        
+
         var projectDir = Path.Combine(solutionDirectory, "src", "Pure.DI.Core");
         var files =
             Directory.EnumerateFiles(projectDir, "*.cs", SearchOption.AllDirectories)
@@ -62,14 +63,14 @@ internal class UpdateTarget(
                             newLine = newLine.Replace(VersionPrefix + "1", VersionPrefix + "2");
                             hasVersion = true;
                             break;
-                        
+
                         case '2':
                             newLine = newLine.Replace(VersionPrefix + "2", VersionPrefix + "1");
                             hasVersion = true;
                             break;
                     }
                 }
-                
+
                 contents.Add(newLine);
             }
 

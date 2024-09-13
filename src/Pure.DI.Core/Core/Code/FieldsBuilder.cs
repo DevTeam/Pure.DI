@@ -1,5 +1,6 @@
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable InvertIf
+
 namespace Pure.DI.Core.Code;
 
 internal sealed class FieldsBuilder(ITypeResolver typeResolver)
@@ -10,7 +11,7 @@ internal sealed class FieldsBuilder(ITypeResolver typeResolver)
         var code = composition.Code;
         var membersCounter = composition.MembersCount;
         var nullable = composition.Source.Source.SemanticModel.Compilation.Options.NullableContextOptions == NullableContextOptions.Disable ? "" : "?";
-        
+
         // _parent filed
         code.AppendLine($"private readonly {composition.Source.Source.Name.ClassName} {Names.RootFieldName};");
         membersCounter++;
@@ -27,12 +28,12 @@ internal sealed class FieldsBuilder(ITypeResolver typeResolver)
             // _disposables field
             code.AppendLine($"private object[] {Names.DisposablesFieldName};");
             membersCounter++;
-            
+
             // _disposeIndex field
             code.AppendLine($"private int {Names.DisposeIndexFieldName};");
             membersCounter++;
         }
-        
+
         // Singleton fields
         if (composition.Singletons.Length > 0)
         {
@@ -54,7 +55,7 @@ internal sealed class FieldsBuilder(ITypeResolver typeResolver)
                 membersCounter++;
             }
         }
-        
+
         return composition with { MembersCount = membersCounter };
     }
 }

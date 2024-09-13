@@ -1,4 +1,5 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core;
 
 internal class RootValidator(
@@ -12,7 +13,7 @@ internal class RootValidator(
         {
             return true;
         }
-        
+
         var rootArgs = composition.Roots
             .Select(root => (root, args: root.Args.GetArgsOfKind(ArgKind.Root).ToList()))
             .Where(i => i.args.Count > 0)
@@ -26,12 +27,12 @@ internal class RootValidator(
                 root.root.Node.Arg?.Source.Source.GetLocation() ?? composition.Source.Source.Source.GetLocation(),
                 LogId.WarningRootArgInResolveMethod);
         }
-            
+
         var genericRoots = composition.Roots
             .Where(i => i.TypeDescription.TypeArgs.Count > 0)
             .GroupBy(i => i.Node.Binding.Id)
             .Select(i => i.First());
-            
+
         foreach (var root in genericRoots)
         {
             logger.CompileWarning(
@@ -42,7 +43,7 @@ internal class RootValidator(
 
         return true;
     }
-    
+
     private static string Format(Root root)
     {
         var sb = new StringBuilder();
@@ -57,15 +58,15 @@ internal class RootValidator(
         {
             return sb.ToString();
         }
-        
-        var typeArgs= root.TypeDescription.TypeArgs;
+
+        var typeArgs = root.TypeDescription.TypeArgs;
         if (typeArgs.Count > 0)
         {
             sb.Append("<");
             sb.Append(string.Join(", ", typeArgs.Select(i => i.Name)));
-            sb.Append(">");    
+            sb.Append(">");
         }
-            
+
         sb.Append('(');
         sb.Append(string.Join(", ", root.Args.Select(i => i.VariableDeclarationName)));
         sb.Append(')');

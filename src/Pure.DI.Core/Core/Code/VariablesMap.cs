@@ -1,6 +1,6 @@
 namespace Pure.DI.Core.Code;
 
-internal class VariablesMap: Dictionary<MdBinding, Variable>
+internal class VariablesMap : Dictionary<MdBinding, Variable>
 {
     public void Reset()
     {
@@ -23,10 +23,10 @@ internal class VariablesMap: Dictionary<MdBinding, Variable>
     public IEnumerable<Variable> GetSingletons() => this
         .Where(i => i.Key.Lifetime?.Value is Lifetime.Singleton or Lifetime.Scoped)
         .Select(i => i.Value);
-    
+
     public bool IsThreadSafe() =>
         this.Any(i => i.Key.Lifetime?.Value is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve);
-    
+
     public IEnumerable<Variable> GetPerResolves() => this
         .Where(i => i.Key.Lifetime?.Value == Lifetime.PerResolve)
         .Select(i => i.Value);

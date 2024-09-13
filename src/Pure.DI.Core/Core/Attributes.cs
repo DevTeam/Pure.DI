@@ -1,4 +1,5 @@
 ﻿// ReSharper disable HeapView.DelegateAllocation
+
 namespace Pure.DI.Core;
 
 internal class Attributes(ISemantic semantic)
@@ -8,13 +9,13 @@ internal class Attributes(ISemantic semantic)
         in ImmutableArray<TMdAttribute> metadata,
         ISymbol member,
         T defaultValue)
-        where TMdAttribute: IMdAttribute
+        where TMdAttribute : IMdAttribute
     {
         if (metadata.IsDefaultOrEmpty)
         {
             return defaultValue;
         }
-        
+
         foreach (var attributeMetadata in metadata)
         {
             var attributeData = GetAttributes(member, attributeMetadata.AttributeType);
@@ -30,7 +31,7 @@ internal class Attributes(ISemantic semantic)
                             return (T)typeSymbol;
                         }
                     }
-                    
+
                     var args = attr.ConstructorArguments;
                     if (attributeMetadata.ArgumentPosition >= args.Length)
                     {
@@ -46,7 +47,7 @@ internal class Attributes(ISemantic semantic)
                     break;
 
                 case > 1:
-                    throw new CompileErrorException($"{member} of the type {member.ContainingType} cannot be processed because it is marked with multiple mutually exclusive attributes.", attributeMetadata.Source.GetLocation(), LogId.ErrorInvalidMetadata);                 
+                    throw new CompileErrorException($"{member} of the type {member.ContainingType} cannot be processed because it is marked with multiple mutually exclusive attributes.", attributeMetadata.Source.GetLocation(), LogId.ErrorInvalidMetadata);
             }
         }
 
@@ -91,14 +92,15 @@ internal class Attributes(ISemantic semantic)
     private static IReadOnlyList<AttributeData> GetAttributes(ISymbol member, INamedTypeSymbol attributeType) =>
         member
             .GetAttributes()
-            .Where(attr => 
+            .Where(attr =>
                 attr.AttributeClass != null
                 && GetUnboundTypeSymbol(attr.AttributeClass)?.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat) == attributeType.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat))
             .ToArray();
 
-    private static INamedTypeSymbol? GetUnboundTypeSymbol(INamedTypeSymbol? typeSymbol) => 
+    private static INamedTypeSymbol? GetUnboundTypeSymbol(INamedTypeSymbol? typeSymbol) =>
         typeSymbol is null
-            ? typeSymbol : typeSymbol.IsGenericType
+            ? typeSymbol
+            : typeSymbol.IsGenericType
                 ? typeSymbol.ConstructUnboundGenericType()
                 : typeSymbol;
 }

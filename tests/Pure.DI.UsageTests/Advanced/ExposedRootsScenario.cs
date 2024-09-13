@@ -6,7 +6,7 @@ $h=Composition roots from other assemblies or projects can be used as a source o
 $h=```c#
 $h=public partial class CompositionInOtherProject
 $h={
-$h=    private static void Setup() => 
+$h=    private static void Setup() =>
 $h=        DI.Setup()
 $h=            .Bind().As(Lifetime.Singleton).To<MyDependency>()
 $h=            .Bind().To<MyService>()
@@ -22,6 +22,7 @@ $f=> At this point, a composition from another assembly or another project can b
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable RedundantAssignment
 // ReSharper disable ArrangeTypeModifiers
+
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Advanced.ExposedRootsScenario;
 

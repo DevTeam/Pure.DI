@@ -19,6 +19,7 @@ $f=```
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
 // ReSharper disable ArrangeTypeModifiers
+
 namespace Pure.DI.UsageTests.BCL.SpanScenario;
 
 using Shouldly;
@@ -49,7 +50,7 @@ public class Scenario
             .Bind<Dependency>('b').To<Dependency>()
             .Bind<Dependency>('c').To<Dependency>()
             .Bind<IService>().To<Service>()
-            
+
             // Composition root
             .Root<IService>("Root");
 

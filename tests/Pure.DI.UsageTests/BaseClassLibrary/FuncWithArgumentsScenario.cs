@@ -12,6 +12,7 @@ $f=Using a binding of the form `.Bind<T>().To<T>("some statement")` is a kind of
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable UnusedMember.Global
 // ReSharper disable VariableHidesOuterVariable
+
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario;
 
@@ -33,7 +34,7 @@ class Clock : IClock
 interface IDependency
 {
     int Id { get; }
-    
+
     int SubId { get; }
 }
 
@@ -44,7 +45,7 @@ class Dependency(
     : IDependency
 {
     public int Id => id;
-    
+
     public int SubId => subId;
 }
 
@@ -56,7 +57,8 @@ interface IService
 class Service : IService
 {
     public Service(Func<int, int, IDependency> dependencyFactory) =>
-        Dependencies = [
+        Dependencies =
+        [
             ..Enumerable
                 .Range(0, 10)
                 .Select((_, index) => dependencyFactory(index, 99))
@@ -82,17 +84,17 @@ public class Scenario
             // to the source code statement "subId"
             .Bind<int>("sub").To<int>("subId")
             .Bind<Func<int, int, IDependency>>()
-                .To<Func<int, int, IDependency>>(ctx =>
-                    (dependencyId, subId) =>
-                    {
-                        // Builds up an instance of type Dependency
-                        // referring source code statements "dependencyId"
-                        // and source code statements "subId"
-                        ctx.Inject<Dependency>(out var dependency);
-                        return dependency;
-                    })
+            .To<Func<int, int, IDependency>>(ctx =>
+                (dependencyId, subId) =>
+                {
+                    // Builds up an instance of type Dependency
+                    // referring source code statements "dependencyId"
+                    // and source code statements "subId"
+                    ctx.Inject<Dependency>(out var dependency);
+                    return dependency;
+                })
             .Bind<IService>().To<Service>()
-            
+
             // Composition root
             .Root<IService>("Root");
 

@@ -11,13 +11,15 @@ interface IDependency
 
 class Dependency : IDependency
 {
-    public void DoSomething() { }
+    public void DoSomething()
+    {
+    }
 }
 
 class Facade
 {
     [Bind(lifetime: Lifetime.Singleton, tags: ["my tag"])]
-    public IDependency Dependency { get; }= new Dependency();
+    public IDependency Dependency { get; } = new Dependency();
 }
 
 interface IService

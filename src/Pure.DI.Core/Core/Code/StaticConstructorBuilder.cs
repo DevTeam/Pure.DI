@@ -1,4 +1,5 @@
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core.Code;
 
 internal sealed class StaticConstructorBuilder(
@@ -12,7 +13,7 @@ internal sealed class StaticConstructorBuilder(
         {
             return composition;
         }
-        
+
         var code = composition.Code;
         var membersCounter = 0;
         var hasOnNewRoot = composition.Source.Source.Hints.IsOnNewRootEnabled;
@@ -29,7 +30,7 @@ internal sealed class StaticConstructorBuilder(
         {
             return composition;
         }
-        
+
         code.AppendLine($"static {composition.Source.Source.Name.ClassName}()");
         code.AppendLine("{");
         using (code.Indent())
@@ -45,10 +46,10 @@ internal sealed class StaticConstructorBuilder(
                         code.AppendLine($"{Names.OnNewRootMethodName}<{typeResolver.Resolve(composition.Source.Source, root.Injection.Type)}, {typeResolver.Resolve(composition.Source.Source, root.Node.Type)}>(val{className}, \"{root.DisplayName}\", {root.Injection.Tag.ValueToString()}, {root.Node.Lifetime.ValueToString()});");
                     }
                 }
-                
+
                 code.AppendLine($"{Names.ResolverClassName}<{typeResolver.Resolve(composition.Source.Source, resolver.Type)}>.{Names.ResolverPropertyName} = val{className};");
             }
-            
+
             var divisor = Buckets<object, object>.GetDivisor((uint)resolvers.Length);
             var pairs = $"{Names.SystemNamespace}Type, {Names.ResolverInterfaceName}<{composition.Source.Source.Name.ClassName}, object>";
             var bucketsTypeName = $"{Names.ApiNamespace}Buckets<{pairs}>";
@@ -74,10 +75,10 @@ internal sealed class StaticConstructorBuilder(
                 code.AppendLine("});");
             }
         }
-        
+
         code.AppendLine("}");
         membersCounter++;
-        
+
         return composition with { MembersCount = composition.MembersCount + membersCounter };
     }
 }

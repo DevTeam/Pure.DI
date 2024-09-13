@@ -61,7 +61,7 @@ DI.Setup(nameof(Composition))
 
 var composition = new Composition();
 using var cancellationTokenSource = new CancellationTokenSource();
-        
+
 // Creates a composition root with the CancellationToken passed to it
 var service = composition.GetRoot(cancellationTokenSource.Token);
 await service.RunAsync(cancellationTokenSource.Token);

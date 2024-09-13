@@ -30,7 +30,7 @@ internal class CompatibilityCheckTarget(
         DeleteNuGetPackageFromCache("Pure.DI", settings.NextVersion, Path.GetDirectoryName(generatorPackage.Path)!);
         await new DotNetCustom("new", "install", "Pure.DI.Templates")
             .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
-        
+
         string[] frameworks =
         [
             "net8.0",
@@ -58,7 +58,7 @@ internal class CompatibilityCheckTarget(
 
         var tasks = new List<Task>();
         tasks.AddRange(frameworks.Reverse().Select(framework => CompatibilityCheckAsync(generatorPackage.Path, framework, cancellationToken)));
-        
+
         // Libraries
         var packages = new List<Package> { generatorPackage };
         foreach (var library in libraries)

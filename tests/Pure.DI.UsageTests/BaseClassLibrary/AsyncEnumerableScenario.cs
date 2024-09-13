@@ -8,6 +8,7 @@ $h=Specifying `IAsyncEnumerable<T>` as the injection type allows instances of al
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
 // ReSharper disable ArrangeTypeModifiers
+
 namespace Pure.DI.UsageTests.BCL.AsyncEnumerableScenario;
 
 using Shouldly;
@@ -50,7 +51,7 @@ public class Scenario
             .Bind<IDependency>().To<AbcDependency>()
             .Bind<IDependency>(2).To<XyzDependency>()
             .Bind<IService>().To<Service>()
-            
+
             // Composition root
             .Root<IService>("Root");
 

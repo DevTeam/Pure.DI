@@ -9,6 +9,7 @@ $h=In general, it is recommended to define one composition root for the entire a
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable ArrangeTypeModifiers
+
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Basics.RootBindScenario;
 
@@ -18,7 +19,7 @@ using Xunit;
 // {
 interface IDependency;
 
-class Dependency: IDependency;
+class Dependency : IDependency;
 
 interface IService;
 
@@ -35,9 +36,9 @@ public class Scenario
         DI.Setup(nameof(Composition))
             .Bind().As(Lifetime.Singleton).To<Dependency>()
             .RootBind<IService>("MyRoot").To<Service>();
-            // It's the same as:
-            //   .Bind<IService>().To<Service>()
-            //   .Root<IService>("MyRoot")
+        // It's the same as:
+        //   .Bind<IService>().To<Service>()
+        //   .Root<IService>("MyRoot")
 
         var composition = new Composition();
         composition.MyRoot.ShouldBeOfType<Service>();

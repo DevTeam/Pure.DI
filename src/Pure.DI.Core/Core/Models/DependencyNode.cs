@@ -20,7 +20,7 @@ internal record DependencyNode(
         in DpFactory? Factory = default,
         in DpArg? Arg = default,
         in DpConstruct? Construct = default)
-        :this(
+        : this(
             Variation,
             binding,
             Root?.Source.RootType ?? Implementation?.Source.Type ?? Factory?.Source.Type ?? Arg?.Source.Type ?? Construct?.Source.Type!,
@@ -31,8 +31,9 @@ internal record DependencyNode(
             Arg,
             Construct,
             binding.Lifetime?.Value ?? Lifetime.Transient)
-    { }
-        
+    {
+    }
+
     private IEnumerable<string> ToStrings(int indent) =>
         Root?.ToStrings(indent)
         ?? Implementation?.ToStrings(indent)

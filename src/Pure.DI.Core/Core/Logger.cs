@@ -1,4 +1,5 @@
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core;
 
 internal sealed class Logger<T>(IObserversProvider observersProvider) : ILogger<T>

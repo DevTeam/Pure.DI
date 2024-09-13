@@ -28,16 +28,16 @@ internal class PublishBlazorTarget(
             .WithConfiguration("Release")
             .WithOutput(publishPath)
             .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
-        
+
         // Change the base-tag in index.html from '/' to 'BlazorWebAssemblyApp' to match GitHub Pages repository subdirectory
         var indexFile = Path.Combine(rootPath, "index.html");
         var indexContent = await File.ReadAllTextAsync(indexFile, cancellationToken);
         indexContent = indexContent.Replace("""<base href="/" />""", """<base href="/Pure.DI/" />""");
         await File.WriteAllTextAsync(indexFile, indexContent, cancellationToken);
-        
+
         // Copy index.html to 404.html to serve the same file when a file is not found
         File.Copy(indexFile, Path.Combine(rootPath, "404.html"));
-        
+
         // Add .nojekyll file to tell GitHub pages to not treat this as a Jekyll project. (Allow files and folders starting with an underscore)
         await File.AppendAllTextAsync(Path.Combine(rootPath, ".nojekyll"), "", cancellationToken);
 

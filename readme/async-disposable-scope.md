@@ -56,27 +56,27 @@ partial class Composition
 
 var composition = new Composition();
 var program = composition.ProgramRoot;
-        
+
 // Creates session #1
 var session1 = program.CreateSession();
 var dependency1 = session1.SessionRoot.Dependency;
 var dependency12 = session1.SessionRoot.Dependency;
-        
+
 // Checks the identity of scoped instances in the same session
 dependency1.ShouldBe(dependency12);
-        
+
 // Creates session #2
 var session2 = program.CreateSession();
 var dependency2 = session2.SessionRoot.Dependency;
-        
+
 // Checks that the scoped instances are not identical in different sessions
 dependency1.ShouldNotBe(dependency2);
-        
+
 // Disposes of session #1
 await session1.DisposeAsync();
 // Checks that the scoped instance is finalized
 dependency1.IsDisposed.ShouldBeTrue();
-        
+
 // Disposes of session #2
 await session2.DisposeAsync();
 // Checks that the scoped instance is finalized

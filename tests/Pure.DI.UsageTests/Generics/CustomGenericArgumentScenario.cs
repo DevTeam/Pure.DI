@@ -9,13 +9,14 @@ $d=Custom generic argument
 // ReSharper disable UnusedTypeParameter
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable InconsistentNaming
+
 namespace Pure.DI.UsageTests.Generics.CustomGenericArgumentScenario;
 
 using Shouldly;
 using Xunit;
 
 // {
-interface TTMy; 
+interface TTMy;
 
 interface IDependency<T>;
 
@@ -24,7 +25,7 @@ class Dependency<T> : IDependency<T>;
 interface IService
 {
     IDependency<int> IntDependency { get; }
-    
+
     IDependency<string> StringDependency { get; }
 }
 
@@ -50,7 +51,7 @@ public class Scenario
             .GenericTypeArgument<TTMy>()
             .Bind<IDependency<TTMy>>().To<Dependency<TTMy>>()
             .Bind<IService>().To<Service>()
-            
+
             // Composition root
             .Root<IService>("Root");
 

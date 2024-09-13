@@ -24,7 +24,7 @@ DI.Setup(nameof(Composition))
     .Root<Task<IService>>("GetMyServiceAsync");
 
 var composition = new Composition();
-        
+
 // Resolves composition roots asynchronously
 var service = await composition.GetMyServiceAsync(CancellationToken.None);
 ```

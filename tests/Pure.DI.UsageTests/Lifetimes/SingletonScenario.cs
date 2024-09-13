@@ -21,6 +21,7 @@ $f=- Sometimes additional logic is required to dispose of _Singleton_.
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
 // ReSharper disable ArrangeTypeModifiers
+
 namespace Pure.DI.UsageTests.Lifetimes.SingletonScenario;
 
 using Xunit;
@@ -33,7 +34,7 @@ class Dependency : IDependency;
 interface IService
 {
     public IDependency Dependency1 { get; }
-            
+
     public IDependency Dependency2 { get; }
 }
 

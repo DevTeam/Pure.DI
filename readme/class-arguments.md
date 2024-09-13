@@ -54,14 +54,13 @@ DI.Setup(nameof(Composition))
     // An argument can be tagged (e.g., tag "my service name")
     // to be injectable by type and this tag
     .Arg<string>("serviceName", "my service name")
-
     .Arg<string>("dependencyName");
 
 var composition = new Composition(id: 123, serviceName: "Abc", dependencyName: "Xyz");
-        
+
 // service = new Service("Abc", new Dependency(123, "Xyz"));
 var service = composition.MyService;
-        
+
 service.Name.ShouldBe("Abc");
 service.Dependency.Id.ShouldBe(123);
 service.Dependency.Name.ShouldBe("Xyz");

@@ -1,4 +1,5 @@
 ﻿// ReSharper disable NotAccessedPositionalProperty.Global
+
 namespace Pure.DI.Core.Models;
 
 internal record DpFactory(
@@ -12,6 +13,6 @@ internal record DpFactory(
         walker.VisitFactory(Unit.Shared, this);
         return walker;
     }
-    
+
     public override string ToString() => string.Join(Environment.NewLine, ToStrings(0));
 }

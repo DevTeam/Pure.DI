@@ -1,4 +1,5 @@
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core;
 
 internal static class Formatting
@@ -16,7 +17,7 @@ internal static class Formatting
 
         Indents = indentsBuilder.ToArray();
     }
-    
+
     public static string IndentPrefix(Indent indent) =>
         indent.Value switch
         {

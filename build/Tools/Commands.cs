@@ -1,5 +1,6 @@
 ﻿// ReSharper disable SuggestBaseTypeForParameterInConstructor
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Build.Tools;
 
 [SuppressMessage("Reliability", "CA2012:Use ValueTasks correctly")]
@@ -17,12 +18,12 @@ internal class Commands(RootCommand rootCommand)
             WriteLine($"---------- {description} ----------", Color.Highlighted);
             return target.RunAsync(ctx.GetCancellationToken());
         });
-        
+
         foreach (var alias in aliases)
         {
-            command.AddAlias(alias);   
+            command.AddAlias(alias);
         }
-        
+
         rootCommand.AddCommand(command);
         return Task.CompletedTask;
     }

@@ -1,4 +1,5 @@
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core;
 
 using System.Text.RegularExpressions;
@@ -8,10 +9,10 @@ internal sealed class Filter(
     ICache<string, Regex> regexCache)
     : IFilter
 {
-    public static Regex RegexFactory(string filter) => 
+    public static Regex RegexFactory(string filter) =>
         new(filter, RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline | RegexOptions.IgnoreCase);
-    
-    public bool IsMeetRegularExpression(MdSetup setup, params (Hint setting, string value)[] settings) => 
+
+    public bool IsMeetRegularExpression(MdSetup setup, params (Hint setting, string value)[] settings) =>
         settings.All(i => IsMeetRegularExpression(setup, i.setting, i.value));
 
     private bool IsMeetRegularExpression(

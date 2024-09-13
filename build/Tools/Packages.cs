@@ -1,4 +1,5 @@
 ﻿// ReSharper disable MemberCanBeMadeStatic.Global
+
 namespace Build.Tools;
 
 using System.IO.Compression;
@@ -33,7 +34,7 @@ public class Packages
             {
                 if (entry.Length <= 0 || !paths.Add(entry.FullName))
                 {
-                    WriteLine($"{entry.FullName, -100} - skipped", Color.Details);
+                    WriteLine($"{entry.FullName,-100} - skipped", Color.Details);
                     continue;
                 }
 
@@ -51,7 +52,7 @@ public class Packages
                 } while (size > 0);
 
                 await newStream.FlushAsync(cancellationToken);
-                WriteLine($"{entry.FullName, -100} - merged", Color.Details);
+                WriteLine($"{entry.FullName,-100} - merged", Color.Details);
             }
         }
 

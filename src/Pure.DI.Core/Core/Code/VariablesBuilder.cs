@@ -1,4 +1,5 @@
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core.Code;
 
 internal class VariablesBuilder(
@@ -16,7 +17,7 @@ internal class VariablesBuilder(
         var blockId = 0;
         var transientId = 0;
         var blockMap = new Dictionary<(MdBinding, int), Variable>();
-        var rootBlock = new Block(blockId++,default, []);
+        var rootBlock = new Block(blockId++, default, []);
         rootBlock.Statements.AddFirst(
             GetVariable(
                 dependencyGraph.Source,
@@ -44,7 +45,7 @@ internal class VariablesBuilder(
                     case Block block:
                         blocks.Push(block);
                         break;
-                    
+
                     case Variable variable:
                     {
                         var isAccumulator = IsAccumulator(variable, out var mdAccumulators);
@@ -69,7 +70,7 @@ internal class VariablesBuilder(
                             {
                                 continue;
                             }
-                            
+
                             if (accumulators != default)
                             {
                                 continue;
@@ -177,7 +178,7 @@ internal class VariablesBuilder(
     {
         if (variable.Node.Construct?.Source is { Kind: MdConstructKind.Accumulator } construct)
         {
-            accumulators = construct.State as IReadOnlyCollection<MdAccumulator> ?? ImmutableArray<MdAccumulator>.Empty; 
+            accumulators = construct.State as IReadOnlyCollection<MdAccumulator> ?? ImmutableArray<MdAccumulator>.Empty;
             return true;
         }
 
@@ -185,7 +186,7 @@ internal class VariablesBuilder(
         return false;
     }
 
-    private static string GetAccumulatorName(Variable variable) => 
+    private static string GetAccumulatorName(Variable variable) =>
         $"accumulator{Names.Salt}{variable.Node.Binding.Id}";
 
     private Variable GetVariable(
@@ -208,7 +209,7 @@ internal class VariablesBuilder(
                 HasCycle = true
             };
         }
-        
+
         if (node.Arg is null)
         {
             // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
@@ -237,7 +238,7 @@ internal class VariablesBuilder(
                             Args = new List<IStatement>()
                         };
                     }
-                
+
                     blockVariable = new Variable(setup, parentBlock, transientId++, node, injection, new List<IStatement>(), new VariableInfo(), nodeInfo.IsLazy(node), false);
                     blockMap.Add(perBlockKey, blockVariable);
                     return blockVariable;

@@ -39,7 +39,7 @@ var service1 = composition.Root;
 service1.Dep1.ShouldBe(service1.Dep2);
 service1.Dep3.ShouldBe(service1.Dep4);
 service1.Dep1.ShouldNotBe(service1.Dep3);
-        
+
 var service2 = composition.Root;
 service2.Dep1.ShouldNotBe(service1.Dep1);
 ```

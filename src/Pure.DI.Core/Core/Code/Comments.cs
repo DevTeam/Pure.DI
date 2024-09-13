@@ -1,4 +1,5 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core.Code;
 
 using System.Text.RegularExpressions;
@@ -19,7 +20,7 @@ internal class Comments : IComments
         where commentValue.Any(char.IsLetterOrDigit)
         select commentValue;
 
-    public IEnumerable<string> FilterHints(IEnumerable<string> comments) => 
+    public IEnumerable<string> FilterHints(IEnumerable<string> comments) =>
         comments.Where(i => !HintCommentRegex.IsMatch(i));
 
     public IHints GetHints(IEnumerable<string> comments)
@@ -45,7 +46,7 @@ internal class Comments : IComments
 
         return result;
     }
-    
+
     public IEnumerable<string> Format(IEnumerable<string> comments, bool escape)
     {
         var allComments = comments.ToArray();
@@ -68,7 +69,7 @@ internal class Comments : IComments
             }
         }
     }
-    
+
     public string Escape(string text) => new System.Xml.Linq.XText(text).ToString();
 
     public IEnumerable<string> FormatList(
@@ -82,23 +83,25 @@ internal class Comments : IComments
         foreach (var (terms, descriptions) in items)
         {
             yield return "/// <item>";
-            
+
             yield return "/// <term>";
             foreach (var term in Format(terms, escape))
             {
                 yield return term;
             }
+
             yield return "/// </term>";
-            
+
             yield return "/// <description>";
             foreach (var description in Format(descriptions, escape))
             {
                 yield return description;
             }
+
             yield return "/// </description>";
             yield return "/// </item>";
         }
-                
+
         yield return "/// </list>";
         yield return "/// </para>";
     }

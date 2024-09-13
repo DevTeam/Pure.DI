@@ -32,7 +32,6 @@ DI.Setup(nameof(Composition))
     .Hint(Hint.Resolve, "Off")
     // Default lifetime applied to a specific type
     .DefaultLifetime<IDependency>(Lifetime.Singleton, "some tag")
-
     .Bind("some tag").To<Dependency>()
     .Bind().To<Dependency>()
     .Bind().To<Service>()

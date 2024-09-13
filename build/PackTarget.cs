@@ -10,7 +10,8 @@ namespace Build;
 internal class PackTarget(
     Commands commands,
     ITeamCityArtifactsWriter artifactsWriter,
-    [Tag(typeof(CompatibilityCheckTarget))] ITarget<IReadOnlyCollection<Package>> compatibilityCheckTarget)
+    [Tag(typeof(CompatibilityCheckTarget))]
+    ITarget<IReadOnlyCollection<Package>> compatibilityCheckTarget)
     : IInitializable, ITarget<IReadOnlyCollection<Package>>
 {
     public Task InitializeAsync(CancellationToken cancellationToken) => commands.RegisterAsync(

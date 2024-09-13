@@ -15,6 +15,7 @@ $f=> The method `Inject()`cannot be used outside of the binding setup.
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedVariable
 // ReSharper disable UnusedTypeParameter
+
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Generics.GenericCompositionRootsWithConstraintsScenario;
 
@@ -23,21 +24,21 @@ using Xunit;
 
 // {
 interface IDependency<T>
-    where T: IDisposable;
+    where T : IDisposable;
 
 class Dependency<T> : IDependency<T>
-    where T: IDisposable;
+    where T : IDisposable;
 
 interface IService<T, TStruct>
-    where T: IDisposable
-    where TStruct: struct;
+    where T : IDisposable
+    where TStruct : struct;
 
 class Service<T, TStruct>(IDependency<T> dependency) : IService<T, TStruct>
-    where T: IDisposable
-    where TStruct: struct;
+    where T : IDisposable
+    where TStruct : struct;
 
 class OtherService<T>(IDependency<T> dependency) : IService<T, bool>
-    where T: IDisposable;
+    where T : IDisposable;
 // }
 
 public class Scenario
@@ -58,12 +59,12 @@ public class Scenario
                 ctx.Inject(out IDependency<TTDisposable> dependency);
                 return new OtherService<TTDisposable>(dependency);
             })
-            
+
             // Specifies to create a regular public method
             // to get a composition root of type Service<T, TStruct>
             // with the name "GetMyRoot"
             .Root<IService<TTDisposable, TTS>>("GetMyRoot")
-            
+
             // Specifies to create a regular public method
             // to get a composition root of type OtherService<T>
             // with the name "GetOtherService"
@@ -71,10 +72,10 @@ public class Scenario
             .Root<IService<TTDisposable, bool>>("GetOtherService", "Other");
 
         var composition = new Composition();
-        
+
         // service = new Service<Stream, double>(new Dependency<Stream>());
         var service = composition.GetMyRoot<Stream, double>();
-        
+
         // someOtherService = new OtherService<BinaryReader>(new Dependency<BinaryReader>());
         var someOtherService = composition.GetOtherService<BinaryReader>();
 // }            

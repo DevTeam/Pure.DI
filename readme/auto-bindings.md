@@ -14,7 +14,7 @@ class Service(Dependency dependency);
 DI.Setup("Composition")
     // Specifies to create a property "MyService"
     .Root<Service>("MyService");
-        
+
 var composition = new Composition();
 
 // service = new Service(new Dependency())

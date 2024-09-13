@@ -1,6 +1,7 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 // ReSharper disable MergeIntoPattern
+
 namespace Pure.DI.Core.Code;
 
 internal class FactoryCodeBuilder(
@@ -27,7 +28,7 @@ internal class FactoryCodeBuilder(
             level++;
             lockIsRequired = default;
         }
-        
+
         var originalLambda = factory.Source.Factory;
         // Simple factory
         if (originalLambda is ParenthesizedLambdaExpressionSyntax parenthesizedLambda)
@@ -35,11 +36,11 @@ internal class FactoryCodeBuilder(
             var block = new List<StatementSyntax>();
             foreach (var resolver in factory.Source.Resolvers)
             {
-                if (resolver.ArgumentType is not { } argumentType || resolver.Parameter is not {} parameter)
+                if (resolver.ArgumentType is not { } argumentType || resolver.Parameter is not { } parameter)
                 {
                     continue;
                 }
-                
+
                 var valueDeclaration = SyntaxFactory.DeclarationExpression(
                     argumentType,
                     SyntaxFactory.SingleVariableDesignation(parameter.Identifier));
@@ -58,13 +59,13 @@ internal class FactoryCodeBuilder(
                 block.Add(SyntaxFactory.ExpressionStatement(injection));
             }
 
-            if (factory.Source.MemberResolver is {} memberResolver
-                && memberResolver.Member is {} member
-                && memberResolver.TypeConstructor is {} typeConstructor)
+            if (factory.Source.MemberResolver is { } memberResolver
+                && memberResolver.Member is { } member
+                && memberResolver.TypeConstructor is { } typeConstructor)
             {
                 ExpressionSyntax? value = default;
                 var type = memberResolver.ContractType;
-                ExpressionSyntax instance = member.IsStatic 
+                ExpressionSyntax instance = member.IsStatic
                     ? SyntaxFactory.ParseTypeName(type.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat))
                     : SyntaxFactory.IdentifierName(DefaultInstanceValueName);
 
@@ -88,7 +89,7 @@ internal class FactoryCodeBuilder(
                         var args = methodSymbol.Parameters
                             .Select(i => SyntaxFactory.Argument(SyntaxFactory.IdentifierName(i.Name)))
                             .ToArray();
-                        
+
                         if (methodSymbol.IsGenericMethod)
                         {
                             var setup = variable.Setup;
@@ -106,7 +107,7 @@ internal class FactoryCodeBuilder(
                                 var typeName = argType.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat);
                                 typeArgs.Add(SyntaxFactory.ParseTypeName(typeName));
                             }
-                            
+
                             value = SyntaxFactory.MemberAccessExpression(
                                 SyntaxKind.SimpleMemberAccessExpression,
                                 instance,
@@ -134,7 +135,7 @@ internal class FactoryCodeBuilder(
             }
             else
             {
-                if (parenthesizedLambda.Block is {} lambdaBlock)
+                if (parenthesizedLambda.Block is { } lambdaBlock)
                 {
                     block.AddRange(lambdaBlock.Statements);
                 }
@@ -158,7 +159,7 @@ internal class FactoryCodeBuilder(
         var factoryExpression = localVariableRenamingRewriter.Rewrite(originalLambda);
         var factoryRewriter = new FactoryRewriter(arguments, compilations, factory, variable, finishLabel, injections);
         var lambda = factoryRewriter.Rewrite(factoryExpression);
-        new FactoryValidator(factory).Validate(lambda); 
+        new FactoryValidator(factory).Validate(lambda);
         SyntaxNode syntaxNode = lambda.Block is not null ? lambda.Block : SyntaxFactory.ExpressionStatement((ExpressionSyntax)lambda.Body);
         var lines = new List<TextLine>();
         if (!variable.IsDeclared && variable.HasCycledReference)
@@ -195,7 +196,7 @@ internal class FactoryCodeBuilder(
                 factory.Source.Source.GetLocation(),
                 LogId.ErrorInvalidMetadata);
         }
-        
+
         using var resolvers = injections
             .Zip(variable.Args, (injection, argument) => (injection, argument))
             .GetEnumerator();
@@ -274,7 +275,7 @@ internal class FactoryCodeBuilder(
         {
             code.AppendLine($"{finishLabel}:;");
         }
-        
+
         ctx.Code.AppendLines(ctx.BuildTools.OnCreated(ctx, variable));
     }
 }

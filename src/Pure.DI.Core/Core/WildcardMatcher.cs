@@ -1,4 +1,5 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core;
 
 /// <summary>
@@ -9,9 +10,9 @@ public class WildcardMatcher : IWildcardMatcher
     // [MS - FSA] 2.1.4.4 Algorithm for Determining if a FileName Is in an Expression
     // https://msdn.microsoft.com/en-us/library/ff469270.aspx
     private static readonly char[] WildcardChars = ['\"', '<', '>', '*', '?'];
-    
+
     private static readonly char[] SimpleWildcardChars = ['*', '?'];
-    
+
     // Matching routine description
     // ============================
     // (copied from native impl)
@@ -95,7 +96,7 @@ public class WildcardMatcher : IWildcardMatcher
             if (expressionEnd.IndexOfAny(useExtendedWildcards ? WildcardChars : SimpleWildcardChars) == -1)
             {
                 // Handle the special case of a single starting *, which essentially means "ends with"
-                
+
                 // If the name doesn't have enough characters to match the remaining expression, it can't be a match.
                 // ReSharper disable once ConvertIfStatementToReturnStatement
                 if (name.Length < expressionEnd.Length)
@@ -245,7 +246,7 @@ public class WildcardMatcher : IWildcardMatcher
                             currentMatches[currentMatch++] = currentState;
                             goto ExpressionFinished;
                         }
-                                
+
                         case true when expressionChar == '"':
                         {
                             // A '"' (DOS_DOT) can match either a period, or zero characters
@@ -259,9 +260,10 @@ public class WildcardMatcher : IWildcardMatcher
                             {
                                 currentMatches[currentMatch++] = currentState;
                             }
+
                             goto ExpressionFinished;
                         }
-                                
+
                         default:
                         {
                             if (expressionChar == '\\')
@@ -289,7 +291,8 @@ public class WildcardMatcher : IWildcardMatcher
                                 // If this expression was a '?' we can match it once.
                                 currentMatches[currentMatch++] = currentState;
                             }
-                            else {
+                            else
+                            {
                                 if (ignoreCase
                                         ? char.ToUpperInvariant(expressionChar) == char.ToUpperInvariant(nameChar)
                                         : expressionChar == nameChar)
@@ -332,6 +335,7 @@ public class WildcardMatcher : IWildcardMatcher
                         {
                             priorMatch++;
                         }
+
                         priorMatchCount++;
                     }
                 }

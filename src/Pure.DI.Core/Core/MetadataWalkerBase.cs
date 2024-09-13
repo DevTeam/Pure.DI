@@ -1,7 +1,8 @@
 // ReSharper disable MemberCanBeProtected.Global
+
 namespace Pure.DI.Core;
 
-internal class MetadataWalkerBase: IMetadataVisitor
+internal class MetadataWalkerBase : IMetadataVisitor
 {
     public virtual void VisitSetup(in MdSetup setup)
     {
@@ -9,27 +10,27 @@ internal class MetadataWalkerBase: IMetadataVisitor
         {
             VisitBinding(md);
         }
-        
+
         foreach (var md in setup.Roots)
         {
             VisitRoot(md);
         }
-        
+
         foreach (var md in setup.DependsOn)
         {
             VisitDependsOn(md);
         }
-        
+
         foreach (var md in setup.TypeAttributes)
         {
             VisitTypeAttribute(md);
         }
-        
+
         foreach (var md in setup.TagAttributes)
         {
             VisitTagAttribute(md);
         }
-        
+
         foreach (var md in setup.OrdinalAttributes)
         {
             VisitOrdinalAttribute(md);
@@ -47,7 +48,7 @@ internal class MetadataWalkerBase: IMetadataVisitor
             VisitContract(md);
         }
 
-        if (binding.Lifetime is {} lifetime)
+        if (binding.Lifetime is { } lifetime)
         {
             VisitLifetime(lifetime);
         }
@@ -57,22 +58,22 @@ internal class MetadataWalkerBase: IMetadataVisitor
             VisitTag(tag);
         }
 
-        if (binding.Implementation is {} implementation)
+        if (binding.Implementation is { } implementation)
         {
             VisitImplementation(implementation);
         }
-        
-        if (binding.Factory is {} factory)
+
+        if (binding.Factory is { } factory)
         {
             VisitFactory(factory);
         }
-        
-        if (binding.Arg is {} arg)
+
+        if (binding.Arg is { } arg)
         {
             VisitArg(arg);
         }
-        
-        if (binding.Construct is {} construction)
+
+        if (binding.Construct is { } construction)
         {
             VisitConstruction(construction);
         }
@@ -100,7 +101,7 @@ internal class MetadataWalkerBase: IMetadataVisitor
 
     public virtual void VisitRoot(in MdRoot root)
     {
-        if (root.Tag is {} tag)
+        if (root.Tag is { } tag)
         {
             VisitTag(tag);
         }
@@ -116,7 +117,7 @@ internal class MetadataWalkerBase: IMetadataVisitor
 
     public virtual void VisitResolve(in MdResolver resolver)
     {
-        if (resolver.Tag is {} tag)
+        if (resolver.Tag is { } tag)
         {
             VisitTag(tag);
         }
@@ -153,11 +154,11 @@ internal class MetadataWalkerBase: IMetadataVisitor
     public virtual void VisitLifetime(in MdLifetime lifetime)
     {
     }
-    
+
     public virtual void VisitTag(in MdTag tag)
     {
     }
-    
+
     public virtual void VisitAccumulator(in MdAccumulator accumulator)
     {
     }

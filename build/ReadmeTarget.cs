@@ -78,7 +78,7 @@ internal class ReadmeTarget(
         await new DotNetTest(usageTestsProjects).RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
         await using var readmeWriter = File.CreateText(ReadmeFile);
-        
+
         await AddContentAsync(HeaderTemplateFile, readmeWriter);
 
         await AddContentAsync(CommonReadmeFile, readmeWriter, "docs");
@@ -290,13 +290,13 @@ internal class ReadmeTarget(
                 }
 
                 var exampleName = Path.GetFileNameWithoutExtension(vars[SourceKey]);
-                
+
                 await AddExample(logsDirectory, $"Pure.DI.UsageTests.*.{exampleName}.*.g.cs", examplesWriter);
                 await examplesWriter.WriteLineAsync("");
-                
+
                 await AddClassDiagram(logsDirectory, exampleName, examplesWriter);
                 await examplesWriter.WriteLineAsync("");
-                
+
                 await examplesWriter.FlushAsync();
             }
         }

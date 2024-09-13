@@ -1,5 +1,6 @@
 // ReSharper disable InvertIf
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core.Code;
 
 internal class CompositionBuilder(
@@ -44,11 +45,11 @@ internal class CompositionBuilder(
                     ctx.Code.AppendLine($"var {perResolveVar.VariableName}Created = false;");
                 }
             }
-            
+
             blockBuilder.Build(ctx, rootBlock);
             ctx.Code.AppendLine($"return {buildTools.OnInjected(ctx, rootBlock.Current)};");
             ctx.Code.AppendLines(ctx.LocalFunctionsCode.Lines);
-            
+
             var args = GetRootArgs(map.Values).ToImmutableArray();
             var processedRoot = root with
             {
@@ -60,9 +61,9 @@ internal class CompositionBuilder(
             {
                 allArgs.Add(rootArg);
             }
-            
+
             var typeDescription = typeResolver.Resolve(graph.Source, processedRoot.Injection.Type);
-            var isMethod = (processedRoot.Kind & RootKinds.Method) == RootKinds.Method 
+            var isMethod = (processedRoot.Kind & RootKinds.Method) == RootKinds.Method
                            || processedRoot.Args.Length > 0
                            || typeDescription.TypeArgs.Count > 0;
 
@@ -71,7 +72,7 @@ internal class CompositionBuilder(
                 TypeDescription = typeDescription,
                 IsMethod = isMethod
             };
-            
+
             roots.Add(processedRoot);
             isThreadSafe |= isThreadSafeEnabled && root.Node.Accumulators.Count > 0;
             isThreadSafe |= isThreadSafeEnabled && map.IsThreadSafe();
@@ -79,14 +80,14 @@ internal class CompositionBuilder(
         }
 
         var singletons = map.GetSingletons().ToImmutableArray();
-        var totalDisposables =  singletons.Where(i => nodeInfo.IsDisposable(i.Node)).ToArray();
-        var asyncDisposables =  singletons.Where(i => nodeInfo.IsAsyncDisposable(i.Node)).ToArray();
+        var totalDisposables = singletons.Where(i => nodeInfo.IsDisposable(i.Node)).ToArray();
+        var asyncDisposables = singletons.Where(i => nodeInfo.IsAsyncDisposable(i.Node)).ToArray();
         var publicRoots = roots
             .OrderByDescending(i => i.IsPublic)
             .ThenBy(i => i.Node.Binding.Id)
             .ThenBy(i => i.DisplayName)
             .ToImmutableArray();
-        
+
         var composition = new CompositionCode(
             graph,
             new LinesBuilder(),
@@ -98,7 +99,7 @@ internal class CompositionBuilder(
             totalDisposables.Count(i => i.Node.Lifetime == Lifetime.Scoped),
             isThreadSafe,
             ImmutableArray<Line>.Empty);
-        
+
         if (graph.Source.Hints.IsToStringEnabled)
         {
             var diagram = classDiagramBuilder.Build(composition);
@@ -107,8 +108,8 @@ internal class CompositionBuilder(
 
         return composition;
     }
-    
-    private static IEnumerable<Variable> GetRootArgs(IEnumerable<Variable> argVars) => 
+
+    private static IEnumerable<Variable> GetRootArgs(IEnumerable<Variable> argVars) =>
         argVars
             .Where(arg => arg.Node.Arg is not null)
             .GroupBy(i => i.Node.Binding.Id)

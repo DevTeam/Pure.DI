@@ -41,9 +41,7 @@ class Person([MyTag("NikName")] string name) : IPerson
 {
     private object? _state;
 
-    [MyOrdinal(1)]
-    [MyType(typeof(int))]
-    internal object Id = "";
+    [MyOrdinal(1)] [MyType(typeof(int))] internal object Id = "";
 
     [MyOrdinal(2)]
     public void Initialize([MyGenericType<Uri>] object state) =>

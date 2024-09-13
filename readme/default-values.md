@@ -10,9 +10,9 @@ class Dependency : IDependency;
 
 interface IService
 {
-    string Name { get;}
+    string Name { get; }
 
-    IDependency Dependency { get;}
+    IDependency Dependency { get; }
 }
 
 // If injection cannot be performed explicitly,

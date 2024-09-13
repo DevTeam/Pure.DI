@@ -46,7 +46,7 @@ public static class TestExtensions
             .WithOptions(new CSharpCompilationOptions(OutputKind.ConsoleApplication).WithNullableContextOptions(runOptions.NullableContextOptions))
             .AddSyntaxTrees(generatedApiSources.Select(api => CSharpSyntaxTree.ParseText(api.SourceText, parseOptions)))
             .AddSyntaxTrees(CSharpSyntaxTree.ParseText(setupCode, parseOptions));
-            // .Check(stdOut, options);
+        // .Check(stdOut, options);
 
         var globalOptions = new TestAnalyzerConfigOptions(new Dictionary<string, string>
         {

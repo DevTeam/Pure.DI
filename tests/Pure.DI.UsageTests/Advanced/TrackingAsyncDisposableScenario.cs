@@ -9,6 +9,7 @@ $d=Tracking async disposable instances per a composition root
 // ReSharper disable UnusedParameterInPartialMethod
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable ArrangeTypeMemberModifiers
+
 namespace Pure.DI.UsageTests.Advanced.TrackingAsyncDisposableScenario;
 
 using Xunit;
@@ -46,7 +47,7 @@ partial class Composition
         DI.Setup()
             .Bind().To<Dependency>()
             .Bind().To<Service>()
-            
+
             // A special composition root
             // that allows to manage disposable dependencies
             .Root<Owned<IService>>("Root");
@@ -62,19 +63,19 @@ public class Scenario
         var composition = new Composition();
         var root1 = composition.Root;
         var root2 = composition.Root;
-        
+
         await root2.DisposeAsync();
-        
+
         // Checks that the disposable instances
         // associated with root1 have been disposed of
         root2.Value.Dependency.IsDisposed.ShouldBeTrue();
-        
+
         // Checks that the disposable instances
         // associated with root2 have not been disposed of
         root1.Value.Dependency.IsDisposed.ShouldBeFalse();
-        
+
         await root1.DisposeAsync();
-        
+
         // Checks that the disposable instances
         // associated with root2 have been disposed of
         root1.Value.Dependency.IsDisposed.ShouldBeTrue();

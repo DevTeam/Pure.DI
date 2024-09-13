@@ -10,6 +10,7 @@ $d=Keyed service provider
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable UnusedMember.Local
 // ReSharper disable ArrangeTypeMemberModifiers
+
 namespace Pure.DI.UsageTests.BCL.KeyedServiceProviderScenario;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -31,7 +32,7 @@ class Service([Tag("Dependency Key")] IDependency dependency) : IService
     public IDependency Dependency { get; } = dependency;
 }
 
-partial class Composition: IKeyedServiceProvider
+partial class Composition : IKeyedServiceProvider
 {
     static void Setup() =>
         DI.Setup()
@@ -48,7 +49,7 @@ partial class Composition: IKeyedServiceProvider
             .Root<IDependency>(tag: "Dependency Key")
             .Root<IService>(tag: "Service Key");
 
-    public object GetKeyedService(Type serviceType, object? serviceKey) => 
+    public object GetKeyedService(Type serviceType, object? serviceKey) =>
         GetRequiredKeyedService(serviceType, serviceKey);
 }
 // }

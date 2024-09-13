@@ -1,4 +1,5 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
+
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.Core.Code;
 
@@ -8,19 +9,19 @@ internal class Formatter(IComments comments)
 #if ROSLYN4_8_OR_GREATER
     private static readonly SymbolDisplayFormat RefFormat = new(
         genericsOptions:
-            SymbolDisplayGenericsOptions.IncludeTypeParameters,
+        SymbolDisplayGenericsOptions.IncludeTypeParameters,
         typeQualificationStyle:
-            SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
+        SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
         memberOptions:
-            SymbolDisplayMemberOptions.IncludeType |
-            SymbolDisplayMemberOptions.IncludeContainingType,
+        SymbolDisplayMemberOptions.IncludeType |
+        SymbolDisplayMemberOptions.IncludeContainingType,
         miscellaneousOptions:
-            SymbolDisplayMiscellaneousOptions.ExpandValueTuple |
-            SymbolDisplayMiscellaneousOptions.UseSpecialTypes |
-            SymbolDisplayMiscellaneousOptions.ExpandNullable
+        SymbolDisplayMiscellaneousOptions.ExpandValueTuple |
+        SymbolDisplayMiscellaneousOptions.UseSpecialTypes |
+        SymbolDisplayMiscellaneousOptions.ExpandNullable
     );
 #endif
-    
+
     public string Format(Root root)
     {
         var sb = new StringBuilder();
@@ -29,21 +30,21 @@ internal class Formatter(IComments comments)
         {
             return sb.ToString();
         }
-        
-        var typeArgs= root.TypeDescription.TypeArgs;
+
+        var typeArgs = root.TypeDescription.TypeArgs;
         if (typeArgs.Count > 0)
         {
             sb.Append("&lt;");
             sb.Append(string.Join(", ", typeArgs.Select(i => i.Name)));
-            sb.Append("&gt;");    
+            sb.Append("&gt;");
         }
-            
+
         sb.Append('(');
         sb.Append(string.Join(", ", root.Args.Select(i => i.VariableDeclarationName)));
         sb.Append(')');
         return sb.ToString();
     }
-    
+
     public string FormatRef(Root root)
     {
         var sb = new StringBuilder();
@@ -52,21 +53,21 @@ internal class Formatter(IComments comments)
         {
             return FormatRef(sb.ToString());
         }
-        
-        var typeArgs= root.TypeDescription.TypeArgs;
+
+        var typeArgs = root.TypeDescription.TypeArgs;
         if (typeArgs.Count > 0)
         {
             sb.Append('{');
             sb.Append(string.Join(", ", typeArgs.Select(i => i.Name)));
             sb.Append('}');
         }
-            
+
         sb.Append('(');
         sb.Append(string.Join(", ", root.Args.Select(i => i.ContractType)));
         sb.Append(')');
         return FormatRef(sb.ToString());
     }
-    
+
     public string FormatRef(string text)
     {
         return $"<see cref=\"{text}\"/>";

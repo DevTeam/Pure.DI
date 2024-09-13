@@ -38,7 +38,7 @@ accumulator.Count.ShouldBe(3);
 accumulator[0].ShouldBeOfType<XyzDependency>();
 accumulator[1].ShouldBeOfType<AbcDependency>();
 accumulator[2].ShouldBeOfType<Service>();
-        
+
 ```
 
 The following partial class will be generated:

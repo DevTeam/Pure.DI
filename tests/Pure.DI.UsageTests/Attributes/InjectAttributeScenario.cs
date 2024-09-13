@@ -22,6 +22,7 @@ $f=[![NuGet](https://img.shields.io/nuget/v/Pure.DI)](https://www.nuget.org/pack
 // ReSharper disable UnusedMember.Global
 // ReSharper disable FieldCanBeMadeReadOnly.Global
 // ReSharper disable RedundantNameQualifier
+
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Attributes.InjectAttributeScenario;
 
@@ -35,11 +36,10 @@ interface IPerson;
 class Person([Inject("NikName")] string name) : IPerson
 {
     private object? _state;
-    
-    [Inject<int>]
-    internal object Id = "";
 
-    public void Initialize([Inject<Uri>("Person Uri", 1)] object state) => 
+    [Inject<int>] internal object Id = "";
+
+    public void Initialize([Inject<Uri>("Person Uri", 1)] object state) =>
         _state = state;
 
     public override string ToString() => $"{Id} {name} {_state}";
@@ -58,7 +58,7 @@ public class Scenario
             .Bind<Uri>("Person Uri").To(_ => new Uri("https://github.com/DevTeam/Pure.DI"))
             .Bind("NikName").To(_ => "Nik")
             .Bind().To<Person>()
-            
+
             // Composition root
             .Root<IPerson>("Person");
 

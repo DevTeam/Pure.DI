@@ -1,6 +1,6 @@
 namespace Pure.DI.Core;
 
-internal sealed class DependenciesToInjectionsWalker: DependenciesWalker<Unit>, IEnumerable<InjectionInfo>
+internal sealed class DependenciesToInjectionsWalker : DependenciesWalker<Unit>, IEnumerable<InjectionInfo>
 {
     private readonly List<InjectionInfo> _injections = [];
 

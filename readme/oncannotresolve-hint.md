@@ -52,7 +52,7 @@ DI.Setup(nameof(Composition))
 var composition = new Composition();
 var service = composition.Root;
 service.Dependency.ToString().ShouldBe("Dependency with name");
-        
+
 ```
 
 The `OnCannotResolveContractTypeNameRegularExpression` hint helps define the set of types that require manual dependency resolution. You can use it to specify a regular expression to filter the full type name.

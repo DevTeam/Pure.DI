@@ -1,5 +1,6 @@
 // ReSharper disable HeapView.ObjectAllocation
 // ReSharper disable UnusedMember.Global
+
 namespace Pure.DI.Core.Models;
 
 internal readonly record struct MdTagAttribute(

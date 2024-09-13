@@ -8,6 +8,7 @@ $d=Default values
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable ArrangeTypeModifiers
+
 namespace Pure.DI.UsageTests.Basics.DefaultValuesScenario;
 
 using Shouldly;
@@ -20,9 +21,9 @@ class Dependency : IDependency;
 
 interface IService
 {
-    string Name { get;}
-    
-    IDependency Dependency { get;}
+    string Name { get; }
+
+    IDependency Dependency { get; }
 }
 
 // If injection cannot be performed explicitly,

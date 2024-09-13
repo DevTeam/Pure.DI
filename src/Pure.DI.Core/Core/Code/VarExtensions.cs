@@ -12,6 +12,6 @@ internal static class VarExtensions
         }
     }
 
-    public static IEnumerable<Variable> GetArgsOfKind(this IEnumerable<Variable> args, ArgKind kind) => 
+    public static IEnumerable<Variable> GetArgsOfKind(this IEnumerable<Variable> args, ArgKind kind) =>
         args.Where(arg => arg.Node.Arg?.Source.Kind == kind);
 }

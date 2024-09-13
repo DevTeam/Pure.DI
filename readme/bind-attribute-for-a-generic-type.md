@@ -11,7 +11,9 @@ interface IDependency<T>
 
 class Dependency<T> : IDependency<T>
 {
-    public void DoSomething() { }
+    public void DoSomething()
+    {
+    }
 }
 
 class Facade

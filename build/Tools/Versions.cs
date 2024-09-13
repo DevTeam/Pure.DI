@@ -1,5 +1,6 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable MemberCanBeMadeStatic.Global
+
 namespace Build.Tools;
 
 using System.Text.RegularExpressions;
@@ -14,7 +15,7 @@ internal partial class Versions(INuGet nuGet)
             .Restore(restoreSettings.WithHideWarningsAndErrors(true).WithVersionRange(versionRange).WithNoCache(true))
             .Where(i => i.Name == restoreSettings.PackageId)
             .Select(i => i.NuGetVersion)
-            .Select(i => i.Release != string.Empty 
+            .Select(i => i.Release != string.Empty
                 ? GetNextRelease(versionRange, i)
                 : new NuGetVersion(i.Major, i.Minor, i.Patch + patchIncrement))
             .Max()
@@ -29,7 +30,7 @@ internal partial class Versions(INuGet nuGet)
         {
             return versionRange.MinVersion;
         }
-        
+
         var match = ReleaseRegex.Match(version.Release);
         if (!match.Success)
         {
@@ -41,10 +42,10 @@ internal partial class Versions(INuGet nuGet)
         {
             return version;
         }
-        
+
         return new NuGetVersion(version.Major, version.Minor, version.Patch, match.Groups[1].Value + (index + 1));
     }
- 
+
     [GeneratedRegex("""([^\d]+)([\d]*)""")]
     private static partial Regex CreateReleaseRegex();
 }

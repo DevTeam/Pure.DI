@@ -11,6 +11,7 @@ $h=The setting code for one Composition can be located in several methods and/or
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable ArrangeTypeMemberModifiers
+
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Advanced.SeveralPartialClassesScenario;
 

@@ -1,4 +1,5 @@
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core;
 
 internal sealed class Generator(
@@ -23,8 +24,8 @@ internal sealed class Generator(
         {
             profiler.Profiling(profilePath);
         }
-        
-        using var logObserverToken= observersRegistry.Register(logObserver);
+
+        using var logObserverToken = observersRegistry.Register(logObserver);
         try
         {
             exceptionHandler.SafeRun(updates, ProcessUpdates);
@@ -36,7 +37,7 @@ internal sealed class Generator(
 
         return new Generation();
     }
-    
+
     private void ProcessUpdates(ImmutableArray<SyntaxUpdate> updates)
     {
         foreach (var setup in metadataBuilder.Build(updates))
@@ -49,7 +50,7 @@ internal sealed class Generator(
             exceptionHandler.SafeRun(setup, BuildCode);
         }
     }
-    
+
     private void BuildCode(MdSetup setup) =>
         codeBuilderFactory().Build(setup);
 }

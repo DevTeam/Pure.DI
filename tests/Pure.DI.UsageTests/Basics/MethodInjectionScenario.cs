@@ -9,6 +9,7 @@ $h=To use dependency implementation for a method, simply add the _Ordinal_ attri
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable ArrangeTypeModifiers
+
 namespace Pure.DI.UsageTests.Basics.MethodInjectionScenario;
 
 using Shouldly;
@@ -47,7 +48,7 @@ public class Scenario
         DI.Setup(nameof(Composition))
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>()
-            
+
             // Composition root
             .Root<IService>("MyService");
 

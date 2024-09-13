@@ -10,6 +10,7 @@ $f=The attribute `Ordinal` is part of the API, but you can use your own attribut
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable ArrangeTypeModifiers
+
 namespace Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario;
 
 using System.Text;
@@ -31,8 +32,7 @@ class Person : IPerson
     // The Ordinal attribute specifies to perform an injection,
     // the integer value in the argument specifies
     // the ordinal of injection
-    [Ordinal(0)]
-    public int Id;
+    [Ordinal(0)] public int Id;
 
     [Ordinal(1)]
     public string FirstName
@@ -44,7 +44,7 @@ class Person : IPerson
             _name.Append(value);
         }
     }
-    
+
     [Ordinal(2)]
     public DateTime Birthday
     {
@@ -69,7 +69,7 @@ public class Scenario
             .Arg<string>("personName")
             .Arg<DateTime>("personBirthday")
             .Bind().To<Person>()
-            
+
             // Composition root
             .Root<IPerson>("Person");
 

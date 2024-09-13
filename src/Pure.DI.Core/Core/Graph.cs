@@ -1,4 +1,5 @@
 // ReSharper disable LoopCanBeConvertedToQuery
+
 namespace Pure.DI.Core;
 
 internal sealed class Graph<TVertex, TEdge> : IGraph<TVertex, TEdge>
@@ -65,9 +66,9 @@ internal sealed class Graph<TVertex, TEdge> : IGraph<TVertex, TEdge>
         return false;
     }
 
-    public IGraph<TVertex, TEdge> Consolidate(ISet<TVertex> vertices) => 
+    public IGraph<TVertex, TEdge> Consolidate(ISet<TVertex> vertices) =>
         new Graph<TVertex, TEdge>(
-            _entries.Where(i => 
+            _entries.Where(i =>
                 vertices.Contains(i.Target)
                 || vertices.Intersect(i.Edges.Select(j => j.Source)).Any()));
 }

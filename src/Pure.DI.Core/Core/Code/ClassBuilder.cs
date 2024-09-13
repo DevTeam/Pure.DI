@@ -1,18 +1,23 @@
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core.Code;
 
 internal sealed class ClassBuilder(
-    [Tag(typeof(UsingDeclarationsBuilder))] IBuilder<CompositionCode, CompositionCode> usingDeclarations,
+    [Tag(typeof(UsingDeclarationsBuilder))]
+    IBuilder<CompositionCode, CompositionCode> usingDeclarations,
     [Tag(typeof(FieldsBuilder))] IBuilder<CompositionCode, CompositionCode> fields,
     [Tag(typeof(ArgFieldsBuilder))] IBuilder<CompositionCode, CompositionCode> argFields,
-    [Tag(typeof(ParameterizedConstructorBuilder))] IBuilder<CompositionCode, CompositionCode> parameterizedConstructor,
-    [Tag(typeof(DefaultConstructorBuilder))] IBuilder<CompositionCode, CompositionCode> defaultConstructor,
+    [Tag(typeof(ParameterizedConstructorBuilder))]
+    IBuilder<CompositionCode, CompositionCode> parameterizedConstructor,
+    [Tag(typeof(DefaultConstructorBuilder))]
+    IBuilder<CompositionCode, CompositionCode> defaultConstructor,
     [Tag(typeof(ScopeConstructorBuilder))] IBuilder<CompositionCode, CompositionCode> scopeConstructor,
     [Tag(typeof(RootMethodsBuilder))] IBuilder<CompositionCode, CompositionCode> rootProperties,
     [Tag(typeof(ApiMembersBuilder))] IBuilder<CompositionCode, CompositionCode> apiMembers,
     [Tag(typeof(DisposeMethodBuilder))] IBuilder<CompositionCode, CompositionCode> disposeMethod,
     [Tag(typeof(ResolversFieldsBuilder))] IBuilder<CompositionCode, CompositionCode> resolversFields,
-    [Tag(typeof(StaticConstructorBuilder))] IBuilder<CompositionCode, CompositionCode> staticConstructor,
+    [Tag(typeof(StaticConstructorBuilder))]
+    IBuilder<CompositionCode, CompositionCode> staticConstructor,
     [Tag(typeof(ResolverClassesBuilder))] IBuilder<CompositionCode, CompositionCode> resolversClasses,
     [Tag(typeof(ToStringMethodBuilder))] IBuilder<CompositionCode, CompositionCode> toString,
     [Tag(typeof(ClassCommenter))] ICommenter<Unit> classCommenter,
@@ -20,7 +25,7 @@ internal sealed class ClassBuilder(
     CancellationToken cancellationToken)
     : IBuilder<CompositionCode, CompositionCode>
 {
-    private readonly IBuilder<CompositionCode, CompositionCode>[] _codeBuilders = 
+    private readonly IBuilder<CompositionCode, CompositionCode>[] _codeBuilders =
     [
         fields,
         argFields,
@@ -45,10 +50,10 @@ internal sealed class ClassBuilder(
         {
             code.AppendLine("#nullable enable");
         }
-        
+
         code.AppendLine();
         composition = usingDeclarations.Build(composition);
-        
+
         var nsIndent = Disposables.Empty;
         var name = composition.Source.Source.Name;
         if (!string.IsNullOrWhiteSpace(name.Namespace))
@@ -57,7 +62,7 @@ internal sealed class ClassBuilder(
             code.AppendLine("{");
             nsIndent = code.Indent();
         }
-        
+
         classCommenter.AddComments(composition, Unit.Shared);
         code.AppendLine("#if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1");
         code.AppendLine($"[{Names.SystemNamespace}Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]");
@@ -67,12 +72,12 @@ internal sealed class ClassBuilder(
         {
             implementingInterfaces.Add(Names.IDisposableInterfaceName);
         }
-        
+
         if (composition.AsyncDisposableCount > 0)
         {
             implementingInterfaces.Add(Names.IAsyncDisposableInterfaceName);
         }
-        
+
         code.AppendLine($"partial class {name.ClassName}{(implementingInterfaces.Count > 0 ? ": " + string.Join(", ", implementingInterfaces) : "")}");
         code.AppendLine("{");
 
@@ -88,7 +93,7 @@ internal sealed class ClassBuilder(
                     code.AppendLine();
                     prevCount = composition.MembersCount;
                 }
-                
+
                 composition = builder.Build(composition);
             }
         }
@@ -102,7 +107,7 @@ internal sealed class ClassBuilder(
             nsIndent.Dispose();
             code.AppendLine("}");
         }
-        
+
         return composition;
     }
 }

@@ -1,4 +1,5 @@
 ﻿// ReSharper disable InvertIf
+
 namespace Pure.DI.Core.Code;
 
 using System.Collections.Generic;
@@ -10,13 +11,13 @@ internal class LocalVariableRenamingRewriter(
 {
     private readonly Dictionary<string, string> _identifierNames = new();
 
-    public LambdaExpressionSyntax Rewrite(LambdaExpressionSyntax lambda) => 
+    public LambdaExpressionSyntax Rewrite(LambdaExpressionSyntax lambda) =>
         (LambdaExpressionSyntax)Visit(lambda);
 
-    public override SyntaxNode? VisitVariableDeclarator(VariableDeclaratorSyntax node) => 
+    public override SyntaxNode? VisitVariableDeclarator(VariableDeclaratorSyntax node) =>
         base.VisitVariableDeclarator(node.WithIdentifier(SyntaxFactory.Identifier(GetUniqueName(node.Identifier.Text))));
 
-    public override SyntaxNode? VisitSingleVariableDesignation(SingleVariableDesignationSyntax node) => 
+    public override SyntaxNode? VisitSingleVariableDesignation(SingleVariableDesignationSyntax node) =>
         base.VisitSingleVariableDesignation(node.WithIdentifier(SyntaxFactory.Identifier(GetUniqueName(node.Identifier.Text))));
 
     public override SyntaxToken VisitToken(SyntaxToken token)
@@ -28,7 +29,7 @@ internal class LocalVariableRenamingRewriter(
         {
             token = SyntaxFactory.Identifier(newName);
         }
-        
+
         return base.VisitToken(token);
     }
 

@@ -8,21 +8,21 @@
 
 ```c#
 interface IDependency<T>
-    where T: IDisposable;
+    where T : IDisposable;
 
 class Dependency<T> : IDependency<T>
-    where T: IDisposable;
+    where T : IDisposable;
 
 interface IService<T, TStruct>
-    where T: IDisposable
-    where TStruct: struct;
+    where T : IDisposable
+    where TStruct : struct;
 
 class Service<T, TStruct>(IDependency<T> dependency) : IService<T, TStruct>
-    where T: IDisposable
-    where TStruct: struct;
+    where T : IDisposable
+    where TStruct : struct;
 
 class OtherService<T>(IDependency<T> dependency) : IService<T, bool>
-    where T: IDisposable;
+    where T : IDisposable;
 
 DI.Setup(nameof(Composition))
     // This hint indicates to not generate methods such as Resolve
@@ -53,7 +53,7 @@ DI.Setup(nameof(Composition))
     .Root<Task<IService<TTDisposable, bool>>>("GetOtherServiceAsync", "Other");
 
 var composition = new Composition();
-        
+
 // Resolves composition roots asynchronously
 var service = await composition.GetMyRootAsync<Stream, double>(CancellationToken.None);
 var someOtherService = await composition.GetOtherServiceAsync<BinaryReader>(CancellationToken.None);

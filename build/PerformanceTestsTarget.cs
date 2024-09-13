@@ -42,11 +42,11 @@ internal class PerformanceTestsTarget(
                     "--", "--filter")
                 .AddArgs(Filters.Select(filter => filter).ToArray())
                 .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
-            
+
             foreach (var reportName in fileSystem.EnumerateFiles(tempDirectory, "*.json", SearchOption.AllDirectories))
             {
                 await using var benchmarksJsonStream = fileSystem.OpenRead(reportName);
-                if (json.TryDeserialize<BenchmarksDto>(benchmarksJsonStream) is {} dto)
+                if (json.TryDeserialize<BenchmarksDto>(benchmarksJsonStream) is { } dto)
                 {
                     benchmarks.AddRange(dto.Benchmarks);
                 }
@@ -56,7 +56,7 @@ internal class PerformanceTestsTarget(
         {
             Directory.Delete(tempDirectory, true);
         }
-        
+
         var baseThreshold = new Thresholds()
             .WithWarningTimeRatio(1.4)
             .WithWarningBytesAllocatedPerOperationRatio(1.00)
@@ -66,18 +66,18 @@ internal class PerformanceTestsTarget(
         var rootThreshold = baseThreshold
             .WithBaselineMethod("TestHandCoded")
             .WithBenchmarkMethod("TestPureDIByCR");
-        
+
         var resolveThreshold = baseThreshold
             .WithBaselineMethod("TestHandCoded")
             .WithBenchmarkMethod("TestPureDI");
-        
+
         var objectResolveThreshold = baseThreshold
             .WithBaselineMethod("TestHandCoded")
             .WithBenchmarkMethod("TestPureDINonGeneric");
 
         return analyzer.Analyze(
             benchmarks,
-            
+
             // AddDisposable
             new Thresholds(
                     "Pure.DI.Benchmarks.Tests.AddDisposableBenchmark",
@@ -85,7 +85,7 @@ internal class PerformanceTestsTarget(
                     "AddDisposable")
                 .WithWarningBytesAllocatedPerOperationRatio(1.1)
                 .WithErrorBytesAllocatedPerOperationRatio(1.1),
-            
+
             // Resolve
             new Thresholds(
                     "Pure.DI.Benchmarks.Tests.ResolveBenchmark",
@@ -93,54 +93,44 @@ internal class PerformanceTestsTarget(
                     "Resolve")
                 .WithWarningTimeRatio(0.48)
                 .WithErrorTimeRatio(0.53),
-            
+
             // Transient
             rootThreshold
                 .WithType("Pure.DI.Benchmarks.Benchmarks.Transient"),
-            
             resolveThreshold
                 .WithType("Pure.DI.Benchmarks.Benchmarks.Transient"),
-            
             objectResolveThreshold
                 .WithType("Pure.DI.Benchmarks.Benchmarks.Transient"),
-            
+
             // Singleton
             rootThreshold
                 .WithType("Pure.DI.Benchmarks.Benchmarks.Singleton"),
-            
             resolveThreshold
                 .WithType("Pure.DI.Benchmarks.Benchmarks.Singleton"),
-            
             objectResolveThreshold
                 .WithType("Pure.DI.Benchmarks.Benchmarks.Singleton"),
-            
+
             // Func
             rootThreshold
                 .WithType("Pure.DI.Benchmarks.Benchmarks.Func"),
-            
             resolveThreshold
                 .WithType("Pure.DI.Benchmarks.Benchmarks.Func"),
-            
             objectResolveThreshold
                 .WithType("Pure.DI.Benchmarks.Benchmarks.Func"),
-            
+
             // Enum
             rootThreshold
                 .WithType("Pure.DI.Benchmarks.Benchmarks.Enum"),
-            
             resolveThreshold
                 .WithType("Pure.DI.Benchmarks.Benchmarks.Enum"),
-            
             objectResolveThreshold
                 .WithType("Pure.DI.Benchmarks.Benchmarks.Enum"),
-            
+
             // Array
             rootThreshold
                 .WithType("Pure.DI.Benchmarks.Benchmarks.Array"),
-            
             resolveThreshold
                 .WithType("Pure.DI.Benchmarks.Benchmarks.Array"),
-            
             objectResolveThreshold
                 .WithType("Pure.DI.Benchmarks.Benchmarks.Array"));
     }
