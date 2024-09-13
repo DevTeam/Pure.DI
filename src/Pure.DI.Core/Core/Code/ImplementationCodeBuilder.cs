@@ -146,7 +146,21 @@ internal class ImplementationCodeBuilder(
 
     private static void MethodInjection(BuildContext ctx, DpMethod method, ImmutableArray<Variable> methodArgs)
     {
-        var args = string.Join(", ", methodArgs.Select(i => ctx.BuildTools.OnInjected(ctx, i)));
-        ctx.Code.AppendLine($"{ctx.Variable.VariableName}.{method.Method.Name}({args});");
+        var args = new List<string>();
+        for (var index = 0; index < methodArgs.Length; index++)
+        {
+            var variable = methodArgs[index];
+            if (index < method.Parameters.Length)
+            {
+                variable = variable with
+                {
+                    RefKind = method.Parameters[index].ParameterSymbol.RefKind
+                };
+            }
+
+            args.Add(ctx.BuildTools.OnInjected(ctx, variable));
+        }
+
+        ctx.Code.AppendLine($"{ctx.Variable.VariableName}.{method.Method.Name}({string.Join(", ", args)});");
     }
 }
