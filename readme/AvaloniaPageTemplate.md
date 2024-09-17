@@ -47,20 +47,20 @@ A single instance of the _Composition_ class is defined as a static resource in 
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="AvaloniaApp.App"
-             xmlns:local="using:AvaloniaApp"
+             xmlns:app="using:AvaloniaApp"
              RequestedThemeVariant="Default">
 
-    <!-- "Default" ThemeVariant follows system theme variant.
-    "Dark" or "Light" are other available options. -->
-    <Application.Styles>
-        <FluentTheme />
-    </Application.Styles>
-    
-    <!--Creates a shared resource of type `Composition` and with key _‘Composition’_,
-    which will be further used as a data context in the views.-->
-    <Application.Resources>
-        <local:Composition x:Key="Composition" />
-    </Application.Resources>
+  <!-- "Default" ThemeVariant follows system theme variant.
+  "Dark" or "Light" are other available options. -->
+  <Application.Styles>
+    <FluentTheme />
+  </Application.Styles>
+
+  <!--Creates a shared resource of type `Composition` and with key _‘Composition’_,
+  which will be further used as a data context in the views.-->
+  <Application.Resources>
+    <app:Composition x:Key="Composition" />
+  </Application.Resources>
 
 </Application>
 ```
@@ -69,7 +69,7 @@ This markup fragment
 
 ```xml
 <Application.Resources>
-    <local:Composition x:Key="Composition" />
+    <app:Composition x:Key="Composition" />
 </Application.Resources>
 ```
 

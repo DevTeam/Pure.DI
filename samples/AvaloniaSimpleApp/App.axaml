@@ -1,6 +1,6 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:avaloniaSimpleApp="clr-namespace:AvaloniaSimpleApp"
+             xmlns:app="clr-namespace:AvaloniaSimpleApp"
              x:Class="AvaloniaSimpleApp.App"
              RequestedThemeVariant="Default">
 
@@ -11,7 +11,7 @@
     </Application.Styles>
 
     <Application.Resources>
-        <avaloniaSimpleApp:Composition x:Key="Composition" />
+        <app:Composition x:Key="Composition" />
     </Application.Resources>
 
 </Application>
