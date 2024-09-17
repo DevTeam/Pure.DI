@@ -5,7 +5,11 @@
 This example demonstrates the creation of a simple console application in the pure DI paradigm using the _Pure.DI_ code generator. All code is in [one file](/samples/ShroedingersCat/Program.cs) for easy perception:
 
 ```c#
+using Pure.DI;
+using static Pure.DI.Lifetime;
+
 namespace Sample;
+
 // Let's create an abstraction
 
 public interface IBox<out T>

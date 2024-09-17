@@ -7,6 +7,9 @@ This example demonstrates the creation of a Minimal Web API application in the p
 Composition setup file is [Composition.cs](/samples/MinimalWebAPI/Composition.cs):
 
 ```c#
+using Pure.DI;
+using static Pure.DI.Lifetime;
+
 internal partial class Composition: ServiceProviderFactory<Composition>
 {
     void Setup() => DI.Setup()

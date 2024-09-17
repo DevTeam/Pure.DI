@@ -7,6 +7,9 @@ This example demonstrates the creation of a [Blazor server](https://learn.micros
 Composition setup file is [Composition.cs](/samples/BlazorServerApp/Composition.cs):
 
 ```c#
+using Pure.DI;
+using static Pure.DI.Lifetime;
+
 internal partial class Composition: ServiceProviderFactory<Composition>
 {
     void Setup() => DI.Setup()

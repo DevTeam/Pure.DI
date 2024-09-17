@@ -7,6 +7,9 @@ This example demonstrates the creation of a [MAUI application](https://learn.mic
 The definition of the composition is in [Composition.cs](/samples/MAUIApp/Composition.cs). You must not forget to define any necessary composition roots, for example, these can be view models such as _ClockViewModel_:
 
 ```csharp
+using Pure.DI;
+using static Pure.DI.Lifetime;
+
 internal partial class Composition: ServiceProviderFactory<Composition>
 {
     void Setup() => DI.Setup()
@@ -212,7 +215,7 @@ The [project file](/samples/MAUIApp/MAUIApp.csproj) looks like this:
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.1.35" />
+        <PackageReference Include="Pure.DI.MS" Version="2.1.36" />
     </ItemGroup>
 
 </Project>

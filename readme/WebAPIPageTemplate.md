@@ -7,6 +7,9 @@ This example demonstrates the creation of a Web API application in the pure DI p
 Composition setup file is [Composition.cs](/samples/WebAPI/Composition.cs):
 
 ```c#
+using Pure.DI;
+using static Pure.DI.Lifetime;
+
 internal partial class Composition: ServiceProviderFactory<Composition>
 {
     void Setup() => DI.Setup()

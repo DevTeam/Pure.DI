@@ -3,11 +3,16 @@
              x:Class="AvaloniaApp.App"
              xmlns:local="using:AvaloniaApp"
              RequestedThemeVariant="Default">
-    <Application.Resources>
-        <local:Composition x:Key="Composition" />
-    </Application.Resources>
+
     <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
     <Application.Styles>
         <FluentTheme />
     </Application.Styles>
+    
+    <!--Creates a shared resource of type `Composition` and with key _‘Composition’_,
+    which will be further used as a data context in the views.-->
+    <Application.Resources>
+        <local:Composition x:Key="Composition" />
+    </Application.Resources>
+
 </Application>

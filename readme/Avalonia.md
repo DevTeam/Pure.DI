@@ -7,9 +7,12 @@ This example demonstrates the creation of a [Avalonia](https://avaloniaui.net/) 
 > [!NOTE]
 > [Another example](samples/SingleRootAvaloniaApp) with Avalonia shows how to create an application with a single composition root.
 
-The definition of the composition is in [Composition.cs](/samples/AvaloniaApp/Composition.cs). You must not forget to define any necessary composition roots, for example, these can be view models such as _ClockViewModel_:
+The definition of the composition is in [Composition.cs](/samples/AvaloniaApp/Composition.cs). This class setups how the composition of objects will be created for the application. You must not forget to define any necessary composition roots, for example, these can be view models such as _ClockViewModel_:
 
 ```csharp
+using Pure.DI;
+using static Pure.DI.Lifetime;
+
 internal partial class Composition
 {
     void Setup() => DI.Setup()
@@ -32,23 +35,45 @@ internal partial class Composition
 }
 ```
 
+Advantages over classical DI container libraries:
+- No performance impact or side effects when creating composition of objects.
+- All logic for analyzing the graph of objects, constructors and methods takes place at compile time. Pure.DI notifies the developer at compile time of missing or cyclic dependencies, cases when some dependencies are not suitable for injection, etc.
+- Does not add dependencies to any additional assembly.
+- Since the generated code uses primitive language constructs to create object compositions and does not use any libraries, you can easily debug the object composition code as regular code in your application.
+
 A single instance of the _Composition_ class is defined as a static resource in [App.xaml](/samples/AvaloniaApp/App.axaml) for later use within the _xaml_ markup everywhere:
 
-```xaml
+```xml
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="AvaloniaApp.App"
              xmlns:local="using:AvaloniaApp"
              RequestedThemeVariant="Default">
-    <Application.Resources>
-        <local:Composition x:Key="Composition" />
-    </Application.Resources>
-    <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+    <!-- "Default" ThemeVariant follows system theme variant.
+    "Dark" or "Light" are other available options. -->
     <Application.Styles>
         <FluentTheme />
     </Application.Styles>
+    
+    <!--Creates a shared resource of type `Composition` and with key _‘Composition’_,
+    which will be further used as a data context in the views.-->
+    <Application.Resources>
+        <local:Composition x:Key="Composition" />
+    </Application.Resources>
+
 </Application>
 ```
+
+This markup fragment
+
+```xml
+<Application.Resources>
+    <local:Composition x:Key="Composition" />
+</Application.Resources>
+```
+
+creates a shared resource of type `Composition` and with key _‘Composition’_, which will be further used as a data context in the views.
 
 The associated application [App.axaml.cs](/samples/AvaloniaApp/App.axaml.cs) class is looking like:
 
@@ -85,20 +110,27 @@ public class App : Application
 }
 ```
 
-All previously defined composition roots are now accessible from [markup](/samples/AvaloniaApp/Views/MainWindow.xaml) without any effort, such as _ClockViewModel_:
+Advantages over classical DI container libraries:
+- No explicit initialisation of data contexts is required. Data contexts are configured directly in `.axaml` files according to the MVVM approach.
+- The code is simpler, more compact, and requires less maintenance effort.
+- The main window is created in a pure DI paradigm, and it can be easily supplied with all necessary dependencies via DI as regular types.
 
-```xaml
+You can now use bindings to model views without even editing the views `.cs` code files. All previously defined composition roots are now accessible from [markup](/samples/AvaloniaApp/Views/MainWindow.xaml) without any effort, such as _ClockViewModel_:
+
+```xml
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:avaloniaApp="clr-namespace:AvaloniaApp"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="AvaloniaApp.Views.MainWindow"
-        x:DataType="avaloniaApp:Composition"
         DataContext="{StaticResource Composition}"
+        xmlns:app="clr-namespace:AvaloniaApp"
+        x:DataType="app:Composition"
         Title="{Binding ClockViewModel.Time}"
-        Icon="/Assets/avalonia-logo.ico">
+        Icon="/Assets/avalonia-logo.ico"
+        FontFamily="Consolas"
+        FontWeight="Bold">
 
     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" DataContext="{Binding ClockViewModel}">
         <TextBlock Text="{Binding Date}" FontSize="64" HorizontalAlignment="Center" />
@@ -107,6 +139,28 @@ All previously defined composition roots are now accessible from [markup](/sampl
 
 </Window>
 ```
+
+To use bindings in views:
+
+- You can set a shared resource as a data context
+
+  `DataContext="{StaticResource Composition}"`
+
+- Specify the data type in the context:
+
+  `xmlns:app="clr-namespace:AvaloniaApp"`
+
+  `x:DataType="app:Composition"`
+
+- Use the bindings as usual:
+
+  `Title="{Binding ClockViewModel.Time}"`
+
+Advantages over classical DI container libraries:
+- The code-behind `.cs` files for views are free of any logic.
+- This approach works just as well during design time.
+- You can easily use different view models in a single view.
+- Bindings depend on properties through abstractions, which additionally ensures weak coupling of types in application. This is in line with the basic principles of DI.
 
 The [project file](/samples/AvaloniaApp/AvaloniaApp.csproj) looks like this:
 

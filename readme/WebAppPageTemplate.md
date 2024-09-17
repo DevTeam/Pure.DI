@@ -7,6 +7,9 @@ This example demonstrates the creation of a Web application in the pure DI parad
 Composition setup file is [Composition.cs](/samples/WebApp/Composition.cs):
 
 ```c#
+using Pure.DI;
+using static Pure.DI.Lifetime;
+
 internal partial class Composition: ServiceProviderFactory<Composition>
 {
     void Setup() => DI.Setup()

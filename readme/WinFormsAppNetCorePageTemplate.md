@@ -7,6 +7,9 @@ This example demonstrates the creation of a WinForms application in the pure DI 
 The composition definition is in the file [Composition.cs](/samples/WinFormsAppNetCore/Composition.cs). Remember to define all the necessary roots of the composition, for example, this could be a main form such as _FormMain_:
 
 ```csharp
+using Pure.DI;
+using static Pure.DI.Lifetime;
+
 internal partial class Composition
 {
     void Setup() => DI.Setup()

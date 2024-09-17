@@ -7,6 +7,9 @@ This example demonstrates the creation of a WPF application in the pure DI parad
 The definition of the composition is in [Composition.cs](/samples/WpfAppNetCore/Composition.cs). You must not forget to define any necessary composition roots, for example, these can be view models such as _ClockViewModel_:
 
 ```csharp
+using Pure.DI;
+using static Pure.DI.Lifetime;
+
 internal partial class Composition
 {
     void Setup() => DI.Setup()
