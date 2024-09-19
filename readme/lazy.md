@@ -59,7 +59,9 @@ partial class Composition
         return localValue33;
       });
       Lazy<IDependency> transientLazy1;
+      // Injects an instance factory
       Func<IDependency> localFactory34 = perBlockFunc2;
+      // Creates an instance that supports lazy initialization
       transientLazy1 = new Lazy<IDependency>(localFactory34, true);
       return new Service(transientLazy1);
     }

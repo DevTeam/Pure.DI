@@ -65,6 +65,7 @@ partial class Composition
     {
       ValueTask<IDependency> transientValueTask1;
       IDependency localValue45 = new Dependency();
+      // Initializes a new instance of the ValueTask class using the supplied instance
       transientValueTask1 = new ValueTask<IDependency>(localValue45);
       return new Service(transientValueTask1);
     }

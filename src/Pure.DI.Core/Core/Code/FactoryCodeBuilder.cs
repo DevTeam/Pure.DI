@@ -184,8 +184,14 @@ internal class FactoryCodeBuilder(
         }
         else
         {
+            var leadingTrivia = syntaxNode.GetLeadingTrivia().ToFullString().Trim();
+            if (!string.IsNullOrEmpty(leadingTrivia))
+            {
+                code.AppendLine(leadingTrivia);
+            }
+
             code.Append($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VariableName} = ");
-            var text = syntaxNode.GetText();
+            var text = syntaxNode.WithoutTrivia().GetText();
             lines.AddRange(text.Lines);
         }
 

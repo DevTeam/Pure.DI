@@ -94,8 +94,11 @@ partial class Composition
       return localValue42;
     });
     Task<IDependency> transientTask1;
+    // Injects an instance factory
     Func<IDependency> localFactory43 = perBlockFunc2;
+    // Injects a task factory creating and scheduling task objects
     TaskFactory<IDependency> localTaskFactory44 = perBlockTaskFactory3;
+    // Creates and starts a task using the instance factory
     transientTask1 = localTaskFactory44.StartNew(localFactory43);
     return new Service(transientTask1);
   }

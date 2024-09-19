@@ -28,6 +28,7 @@ namespace Pure.DI
                 .Bind<Owned<TT>>()
                     .As(Lifetime.PerBlock)
                     .To(ctx => {
+                        // Creates the owner of an instance
                         ctx.Inject<Owned>(out var owned);
                         ctx.Inject<TT>(ctx.Tag, out var value);
                         return new Owned<TT>(value, owned);
@@ -49,7 +50,9 @@ namespace Pure.DI
                 .Bind<global::System.Lazy<TT>>()
                     .To(ctx =>
                     {
+                        // Injects an instance factory
                         ctx.Inject<global::System.Func<TT>>(ctx.Tag, out var factory);
+                        // Creates an instance that supports lazy initialization
                         return new global::System.Lazy<TT>(factory, true);
                     })
                 .Bind<global::System.Threading.CancellationToken>().To(_ => global::System.Threading.CancellationToken.None)
@@ -68,8 +71,11 @@ namespace Pure.DI
                 .Bind<global::System.Threading.Tasks.Task<TT>>()
                     .To(ctx =>
                     {
+                        // Injects an instance factory
                         ctx.Inject(ctx.Tag, out global::System.Func<TT> factory);
+                        // Injects a task factory creating and scheduling task objects
                         ctx.Inject(out global::System.Threading.Tasks.TaskFactory<TT> taskFactory);
+                        // Creates and starts a task using the instance factory
                         return taskFactory.StartNew(factory);
                     })
 #endif                
@@ -78,6 +84,7 @@ namespace Pure.DI
                     .To(ctx =>
                     {
                         ctx.Inject(ctx.Tag, out TT value);
+                        // Initializes a new instance of the ValueTask class using the supplied instance
                         return new global::System.Threading.Tasks.ValueTask<TT>(value);
                     })
 #endif                
@@ -85,7 +92,9 @@ namespace Pure.DI
                 .Bind<global::System.Lazy<TT, TT1>>()
                     .To(ctx =>
                     {
+                        // Injects an instance factory
                         ctx.Inject<global::System.Func<TT>>(ctx.Tag, out var factory);
+                        // Injects a metadata
                         ctx.Inject<TT1>(ctx.Tag, out var metadata);
                         return new global::System.Lazy<TT, TT1>(factory, metadata, true);
                     })
@@ -175,13 +184,29 @@ namespace Pure.DI
 #endif
 #endif
 #if NET6_0_OR_GREATER
-                .Bind<global::System.Random>().To(_ => global::System.Random.Shared)
+                .Bind<global::System.Random>().To(_ =>
+                {
+                    // Provides a thread-safe Random instance that may be used concurrently from any thread
+                    return global::System.Random.Shared;
+                })
 #endif
 #if NETCOREAPP2_0 || NET || NETSTANDARD2_0_OR_GREATER
-                .Bind<global::System.Text.Encoding>().To(_ => global::System.Text.Encoding.Default)
+                .Bind<global::System.Text.Encoding>().To(_ =>
+                {
+                    // Gets an encoding for the operating system's current ANSI code page
+                    return global::System.Text.Encoding.Default;
+                })
 #endif
-                .Bind<global::System.Text.Decoder>().As(Lifetime.PerBlock).To((global::System.Text.Encoding encoding) => encoding.GetDecoder())
-                .Bind<global::System.Text.Encoder>().As(Lifetime.PerBlock).To((global::System.Text.Encoding encoding) => encoding.GetEncoder())
+                .Bind<global::System.Text.Decoder>().As(Lifetime.PerBlock).To((global::System.Text.Encoding encoding) =>
+                {
+                    // Gets a decoder that converts an encoded sequence of bytes into a sequence of characters
+                    return encoding.GetDecoder();
+                })
+                .Bind<global::System.Text.Encoder>().As(Lifetime.PerBlock).To((global::System.Text.Encoding encoding) =>
+                {
+                    // Gets an encoder that converts a sequence of Unicode characters into an encoded sequence of bytes
+                    return encoding.GetEncoder();
+                })
 ;
         }
     }

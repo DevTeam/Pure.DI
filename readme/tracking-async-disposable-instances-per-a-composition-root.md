@@ -96,6 +96,7 @@ partial class Composition
         accumulator42.Add(transientDependency3);
       }
       Owned<IService> perBlockOwned0;
+      // Creates the owner of an instance
       Owned localOwned10 = accumulator42;
       IService localValue11 = new Service(transientDependency3);
       perBlockOwned0 = new Owned<IService>(localValue11, localOwned10);

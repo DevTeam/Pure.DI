@@ -40,7 +40,9 @@ public class FactoryTests
                                    private static void SetupComposition()
                                    {
                                        DI.Setup("Composition")
-                                           .Bind<IDependency>().To(ctx => new Dependency())
+                                           .Bind<IDependency>().To(ctx =>
+                                                // My Comment 
+                                                new Dependency())
                                            .Bind<IService>().To<Service>()
                                            .Root<IService>("Service");
                                    }
@@ -62,6 +64,7 @@ public class FactoryTests
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["True"], result);
+        result.GeneratedCode.Contains("// My Comment").ShouldBeTrue(result);
     }
 
     [Fact]
