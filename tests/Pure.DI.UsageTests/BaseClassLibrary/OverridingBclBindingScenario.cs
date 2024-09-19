@@ -37,7 +37,7 @@ public class Scenario
     [Fact]
     public void Run()
     {
-// {            
+// {
         DI.Setup(nameof(Composition))
             .Bind<IDependency[]>().To(_ => new IDependency[]
             {
@@ -56,7 +56,7 @@ public class Scenario
         service.Dependencies[0].ShouldBeOfType<AbcDependency>();
         service.Dependencies[1].ShouldBeOfType<XyzDependency>();
         service.Dependencies[2].ShouldBeOfType<AbcDependency>();
-// }            
+// }
         composition.SaveClassDiagram();
     }
 }

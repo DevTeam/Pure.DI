@@ -41,7 +41,7 @@ public class Scenario
     public void Run()
     {
         // Resolve = Off
-// {            
+// {
         DI.Setup(nameof(Composition))
             .Bind("base").To<Service>()
             .Bind().To<GreetingService>()

@@ -59,7 +59,7 @@ public class Scenario
     [Fact]
     public async Task Run()
     {
-// {            
+// {
         var composition = new Composition();
         var root1 = composition.Root;
         var root2 = composition.Root;

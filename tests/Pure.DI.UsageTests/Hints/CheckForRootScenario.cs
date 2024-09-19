@@ -70,14 +70,14 @@ public class Scenario
     [Fact]
     public void Run()
     {
-// {            
+// {
         Composition.HasRoot(typeof(IService)).ShouldBeTrue();
         Composition.HasRoot(typeof(IDependency), "MyDep").ShouldBeTrue();
 
         Composition.HasRoot(typeof(IDependency)).ShouldBeFalse();
         Composition.HasRoot(typeof(IComparable)).ShouldBeFalse();
 
-// }            
+// }
         new Composition().SaveClassDiagram();
     }
 }

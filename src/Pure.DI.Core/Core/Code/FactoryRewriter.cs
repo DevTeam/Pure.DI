@@ -9,7 +9,8 @@ internal sealed class FactoryRewriter(
     DpFactory factory,
     Variable variable,
     string finishLabel,
-    ICollection<FactoryRewriter.Injection> injections)
+    ICollection<FactoryRewriter.Injection> injections,
+    ITriviaTools triviaTools)
     : CSharpSyntaxRewriter
 {
     private static readonly AttributeListSyntax MethodImplAttribute = SyntaxFactory.AttributeList().AddAttributes(
@@ -76,7 +77,7 @@ internal sealed class FactoryRewriter(
                     var curStatement = statement;
                     if (curStatement is ReturnStatementSyntax { Expression: { } returnBody })
                     {
-                        curStatement = CreateAssignmentExpression(returnBody);
+                        curStatement = CreateAssignmentExpression(returnBody, statement);
                     }
                     else
                     {
@@ -105,22 +106,26 @@ internal sealed class FactoryRewriter(
         {
             IsFinishMarkRequired = true;
             return SyntaxFactory.Block(
-                CreateAssignmentExpression(returnBody),
+                CreateAssignmentExpression(returnBody, node),
                 SyntaxFactory.GotoStatement(
                     SyntaxKind.GotoStatement,
                     SyntaxFactory.IdentifierName(finishLabel).WithLeadingTrivia(SyntaxFactory.Space)).WithLeadingTrivia(SyntaxFactory.Space).WithTrailingTrivia(SyntaxFactory.Space)
-            ).WithLeadingTrivia(node.GetLeadingTrivia());
+            )
+                .WithLeadingTrivia(node.GetLeadingTrivia())
+                .WithTrailingTrivia(node.GetTrailingTrivia());
         }
 
         return base.VisitReturnStatement(node);
     }
 
-    private ExpressionStatementSyntax CreateAssignmentExpression(SyntaxNode returnBody) =>
-        SyntaxFactory.ExpressionStatement(
-            SyntaxFactory.AssignmentExpression(
-                SyntaxKind.SimpleAssignmentExpression,
-                SyntaxFactory.IdentifierName(variable.VariableName).WithLeadingTrivia(SyntaxFactory.Space).WithTrailingTrivia(SyntaxFactory.Space),
-                (ExpressionSyntax)Visit(returnBody).WithLeadingTrivia(SyntaxFactory.Space)));
+    private ExpressionStatementSyntax CreateAssignmentExpression(SyntaxNode returnBody, StatementSyntax owner) =>
+        triviaTools.PreserveTrivia(
+            SyntaxFactory.ExpressionStatement(
+                SyntaxFactory.AssignmentExpression(
+                    SyntaxKind.SimpleAssignmentExpression,
+                    SyntaxFactory.IdentifierName(variable.VariableName).WithLeadingTrivia(SyntaxFactory.Space).WithTrailingTrivia(SyntaxFactory.Space),
+                    (ExpressionSyntax)Visit(returnBody).WithLeadingTrivia(SyntaxFactory.Space))),
+            owner);
 
     public override SyntaxNode? VisitInvocationExpression(InvocationExpressionSyntax invocation)
     {
@@ -175,14 +180,14 @@ internal sealed class FactoryRewriter(
             case IdentifierNameSyntax identifierName:
                 injections.Add(new Injection(identifierName.Identifier.Text, false));
             {
-                visitInvocationExpression = InjectionMarkerExpression;
+                visitInvocationExpression = triviaTools.PreserveTrivia(InjectionMarkerExpression, invocation);
                 return true;
             }
 
             case DeclarationExpressionSyntax { Designation: SingleVariableDesignationSyntax singleVariableDesignationSyntax }:
                 injections.Add(new Injection(singleVariableDesignationSyntax.Identifier.Text, true));
             {
-                visitInvocationExpression = InjectionMarkerExpression;
+                visitInvocationExpression = triviaTools.PreserveTrivia(InjectionMarkerExpression, invocation);
                 return true;
             }
         }
@@ -196,10 +201,7 @@ internal sealed class FactoryRewriter(
         var newNode = (ExpressionStatementSyntax)base.VisitExpressionStatement(node)!;
         if (newNode.Expression.IsEquivalentTo(InjectionMarkerExpression))
         {
-            return newNode
-                .WithoutLeadingTrivia()
-                .WithLeadingTrivia(SyntaxFactory.LineFeed)
-                .WithTrailingTrivia(SyntaxFactory.LineFeed);
+            return triviaTools.PreserveTrivia(newNode, node);
         }
 
         return newNode;

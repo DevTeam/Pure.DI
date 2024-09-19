@@ -46,7 +46,7 @@ public class Scenario
     [Fact]
     public async Task Run()
     {
-// {            
+// {
         DI.Setup(nameof(Composition))
             .Bind<IDependency>().To<AbcDependency>()
             .Bind<IDependency>(2).To<XyzDependency>()
@@ -60,7 +60,7 @@ public class Scenario
         var dependencies = await service.GetDependenciesAsync();
         dependencies[0].ShouldBeOfType<AbcDependency>();
         dependencies[1].ShouldBeOfType<XyzDependency>();
-// }            
+// }
         composition.SaveClassDiagram();
     }
 }

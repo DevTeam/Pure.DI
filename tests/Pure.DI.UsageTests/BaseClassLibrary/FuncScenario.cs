@@ -42,7 +42,7 @@ public class Scenario
     [Fact]
     public void Run()
     {
-// {            
+// {
         DI.Setup(nameof(Composition))
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>()
@@ -53,7 +53,7 @@ public class Scenario
         var composition = new Composition();
         var service = composition.Root;
         service.Dependencies.Length.ShouldBe(10);
-// }            
+// }
         composition.SaveClassDiagram();
     }
 }

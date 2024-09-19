@@ -41,7 +41,7 @@ public class Scenario
     [Fact]
     public void Run()
     {
-// {            
+// {
         DI.Setup(nameof(Composition))
             .Bind<IDependency<TT>>(Tag.Unique).To<AbcDependency<TT>>()
             .Bind<IDependency<TT>>(Tag.Unique).To<XyzDependency<TT>>()
@@ -53,7 +53,7 @@ public class Scenario
         var composition = new Composition();
         var stringService = composition.Root;
         stringService.Dependencies.Length.ShouldBe(2);
-// }            
+// }
         composition.SaveClassDiagram();
     }
 }

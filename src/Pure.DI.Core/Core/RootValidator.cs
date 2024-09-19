@@ -23,7 +23,7 @@ internal class RootValidator(
         foreach (var root in rootArgs)
         {
             logger.CompileWarning(
-                $"The root {Format(root.root)} cannot be resolved using Resolve methods due it has arguments {string.Join(", ", root.args.Select(i => i.VariableName))} , so an exception will be thrown when trying to do it.",
+                $"The root {Format(root.root)} cannot be resolved using Resolve methods due it has arguments {string.Join(", ", root.args.Select(i => i.VariableName))}, so an exception will be thrown when trying to do it.",
                 root.root.Node.Arg?.Source.Source.GetLocation() ?? composition.Source.Source.Source.GetLocation(),
                 LogId.WarningRootArgInResolveMethod);
         }
@@ -36,7 +36,7 @@ internal class RootValidator(
         foreach (var root in genericRoots)
         {
             logger.CompileWarning(
-                $"The root {Format(root)} cannot be resolved using Resolve methods due it has type arguments {string.Join(", ", root.TypeDescription.TypeArgs)} , so an exception will be thrown when trying to do it.",
+                $"The root {Format(root)} cannot be resolved using Resolve methods due it has type arguments {string.Join(", ", root.TypeDescription.TypeArgs)}, so an exception will be thrown when trying to do it.",
                 root.Node.Arg?.Source.Source.GetLocation() ?? composition.Source.Source.Source.GetLocation(),
                 LogId.WarningTypeArgInResolveMethod);
         }

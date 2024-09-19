@@ -77,7 +77,7 @@ public class Scenario
     public void Run()
     {
         // Resolve = Off
-// {            
+// {
         DI.Setup(nameof(Composition))
             .Bind(
                 Tag.On("MyNamespace.Service.Service:dependency1"),
@@ -101,7 +101,7 @@ public class Scenario
         service.Dependency2.ShouldBeOfType<XyzDependency>();
         service.Dependency3.ShouldBeOfType<XyzDependency>();
         service.Dependency4.ShouldBeOfType<AbcDependency>();
-// }            
+// }
         composition.SaveClassDiagram("TagOnInjectionSiteScenario");
     }
 }

@@ -73,7 +73,7 @@ public class Scenario
     [Fact]
     public void Run()
     {
-// {            
+// {
         using var composition = new Composition();
 
         using var scope1 = composition.CreateScope();
@@ -90,7 +90,7 @@ public class Scenario
 
         service1.ShouldNotBe(service2);
         dependency1.ShouldBe(dependency2);
-// }            
+// }
         composition.SaveClassDiagram();
     }
 }

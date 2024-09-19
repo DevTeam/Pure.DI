@@ -74,7 +74,7 @@ public class Scenario
     [Fact]
     public async Task Run()
     {
-// {            
+// {
         var composition = new Composition();
         var program = composition.ProgramRoot;
 

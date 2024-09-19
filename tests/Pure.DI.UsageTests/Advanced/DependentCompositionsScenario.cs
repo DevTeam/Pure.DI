@@ -66,7 +66,7 @@ public class Scenario
 
         var otherComposition = new OtherComposition();
         service = otherComposition.Program.Service;
-// }            
+// }
         service.ShouldBeOfType<Service>();
         otherComposition.SaveClassDiagram();
     }

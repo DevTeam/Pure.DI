@@ -6,7 +6,8 @@ using System.Collections.Generic;
 
 internal class LocalVariableRenamingRewriter(
     IIdGenerator idGenerator,
-    SemanticModel semanticModel)
+    SemanticModel semanticModel,
+    ITriviaTools triviaTools)
     : CSharpSyntaxRewriter
 {
     private readonly Dictionary<string, string> _identifierNames = new();
@@ -27,7 +28,7 @@ internal class LocalVariableRenamingRewriter(
             && token.Parent is { } parent
             && (semanticModel.SyntaxTree != parent.SyntaxTree || semanticModel.GetSymbolInfo(parent).Symbol is ILocalSymbol))
         {
-            token = SyntaxFactory.Identifier(newName);
+            token = triviaTools.PreserveTrivia(SyntaxFactory.Identifier(newName), token);
         }
 
         return base.VisitToken(token);

@@ -117,7 +117,7 @@ public class Scenario
     public void Run()
     {
         // Resolve = Off
-// {            
+// {
         // OnDependencyInjection = On
         DI.Setup(nameof(Composition))
             .Bind().To<Dependency>()

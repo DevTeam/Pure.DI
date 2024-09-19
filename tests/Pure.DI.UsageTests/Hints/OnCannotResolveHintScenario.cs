@@ -63,7 +63,7 @@ public class Scenario
     public void Run()
     {
         // Resolve = Off
-// {            
+// {
         // OnCannotResolveContractTypeNameRegularExpression = string
         DI.Setup(nameof(Composition))
             .Hint(OnCannotResolve, "On")

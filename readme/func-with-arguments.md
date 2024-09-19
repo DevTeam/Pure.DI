@@ -114,6 +114,9 @@ partial class Composition
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       (dependencyId, subId) =>
       {
+        // Builds up an instance of type Dependency
+        // referring source code statements "dependencyId"
+        // and source code statements "subId"
         int transientInt324 = subId;
         int transientInt323 = dependencyId;
         if (_root._singletonClock39 == null)

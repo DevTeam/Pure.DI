@@ -40,7 +40,7 @@ public class Scenario
     [Fact]
     public void Run()
     {
-// {            
+// {
         DI.Setup(nameof(Composition))
             // This hint indicates to not generate methods such as Resolve
             .Hint(Hint.Resolve, "Off")
@@ -72,7 +72,7 @@ public class Scenario
 
         // someOtherService = new OtherService<int>(new Dependency<int>());
         var someOtherService = composition.GetOtherService<string>();
-// }            
+// }
         service.ShouldBeOfType<Service<int>>();
         someOtherService.ShouldBeOfType<OtherService<string>>();
         composition.SaveClassDiagram();

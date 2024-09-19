@@ -55,7 +55,7 @@ public class Scenario
     public void Run()
     {
         // Resolve = Off
-// {            
+// {
         DI.Setup(nameof(Composition))
             .Bind("now datetime").To(_ => DateTimeOffset.Now)
             // Injects Dependency and DateTimeOffset instances

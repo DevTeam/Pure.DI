@@ -70,7 +70,7 @@ public class Scenario
     public void Run()
     {
         // Resolve = Off
-// {            
+// {
         DI.Setup(nameof(PersonComposition))
             .TagAttribute<MyTagAttribute>()
             .OrdinalAttribute<MyOrdinalAttribute>()
@@ -87,7 +87,7 @@ public class Scenario
         var composition = new PersonComposition(personId: 123);
         var person = composition.Person;
         person.ToString().ShouldBe("123 Nik https://github.com/DevTeam/Pure.DI");
-// }            
+// }
         composition.SaveClassDiagram();
     }
 }

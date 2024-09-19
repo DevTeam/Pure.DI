@@ -72,7 +72,7 @@ public class Scenario
     [Fact]
     public void Run()
     {
-// {            
+// {
         var composition = new Composition();
         var program = composition.ProgramRoot;
 

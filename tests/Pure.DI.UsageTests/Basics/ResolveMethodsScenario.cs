@@ -67,7 +67,7 @@ public class Scenario
         var otherService1 = composition.Resolve<IService>("My Tag");
         var otherService2 = composition.Resolve(typeof(IService), "My Tag");
         var otherService3 = composition.OtherService; // Gets the composition through the public root
-// }            
+// }
         service1.ShouldBeOfType<Service>();
         service2.ShouldBeOfType<Service>();
         service3.ShouldBeOfType<Service>();

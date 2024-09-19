@@ -103,7 +103,7 @@ public class Scenario
         service.Dependencies.Length.ShouldBe(10);
         service.Dependencies[3].Id.ShouldBe(3);
         service.Dependencies[3].SubId.ShouldBe(99);
-// }            
+// }
         composition.SaveClassDiagram();
     }
 }

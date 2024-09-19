@@ -56,14 +56,14 @@ public class Scenario
     [Fact]
     public void Run()
     {
-// {            
+// {
         var composition = new Composition();
         var serviceCollection = composition.ServiceCollection;
         var serviceProvider = serviceCollection.BuildServiceProvider();
         var service = serviceProvider.GetRequiredService<IService>();
         var dependency = serviceProvider.GetRequiredKeyedService<IDependency>("Dependency Key");
         service.Dependency.ShouldBe(dependency);
-// }            
+// }
         composition.SaveClassDiagram();
     }
 }

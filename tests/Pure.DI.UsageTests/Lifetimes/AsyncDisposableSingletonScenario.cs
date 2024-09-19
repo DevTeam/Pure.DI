@@ -46,7 +46,7 @@ public class Scenario
     [Fact]
     public async Task Run()
     {
-// {            
+// {
         DI.Setup(nameof(Composition))
             // This hint indicates to not generate methods such as Resolve
             .Hint(Hint.Resolve, "Off")

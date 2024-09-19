@@ -57,7 +57,7 @@ public class Scenario
     [Fact]
     public void Run()
     {
-// {            
+// {
         DI.Setup(nameof(Composition))
             .Bind<IService>().To<Service>()
             .Bind<IService>("Other").To<OtherService>()
@@ -87,8 +87,12 @@ public class Scenario
         // All and only the roots of the composition
         // can be obtained by Resolve method
         var dependency = composition.Resolve<IDependency>();
-// }            
+        
+        // including tagged ones
+        var tagged = composition.Resolve<IService>("Other");
+// }
         service.ShouldBeOfType<Service>();
+        tagged.ShouldBeOfType<OtherService>();
         composition.SaveClassDiagram();
     }
 }

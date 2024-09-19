@@ -50,7 +50,7 @@ public class Scenario
     public void Run()
     {
         // Resolve = Off
-// {            
+// {
         DI.Setup(nameof(Composition))
             .Arg<string>("serviceName")
             .Bind().To<Dependency>()
@@ -62,7 +62,7 @@ public class Scenario
         var composition = new Composition(serviceName: "Xyz");
         var service = composition.Root;
         service.ToString().ShouldBe("Xyz");
-// }            
+// }
         composition.SaveClassDiagram();
     }
 }

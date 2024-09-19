@@ -48,7 +48,7 @@ public class Scenario
     public void Run()
     {
         // Resolve = Off
-// {            
+// {
         DI.Setup(nameof(Composition))
             .Bind().To<AbcDependency>()
             .Bind(Tag.OnMember<Service>(nameof(Service.Dependency)))
@@ -61,7 +61,7 @@ public class Scenario
         var composition = new Composition();
         var service = composition.Root;
         service.Dependency.ShouldBeOfType<XyzDependency>();
-// }            
+// }
         composition.SaveClassDiagram();
     }
 }

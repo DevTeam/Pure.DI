@@ -54,7 +54,7 @@ public class Scenario
     public void Run()
     {
         // Resolve = Off
-// {            
+// {
         DI.Setup(nameof(Composition))
             .Bind().To(_ => DateTimeOffset.Now)
             .Bind<IDependency>().To(ctx =>

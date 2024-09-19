@@ -44,7 +44,7 @@ public class Scenario
     [Fact]
     public void Run()
     {
-// {            
+// {
         DI.Setup(nameof(Composition))
             .Bind<Dependency>('a').To<Dependency>()
             .Bind<Dependency>('b').To<Dependency>()
@@ -57,7 +57,7 @@ public class Scenario
         var composition = new Composition();
         var service = composition.Root;
         service.Count.ShouldBe(3);
-// }            
+// }
         composition.SaveClassDiagram();
     }
 }

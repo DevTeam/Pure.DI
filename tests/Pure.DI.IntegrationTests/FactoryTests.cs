@@ -222,6 +222,7 @@ public class FactoryTests
                                        DI.Setup("Composition")
                                            .Bind<IDependency>().To(ctx => 
                                                { 
+                                                   // My comment
                                                    return new Dependency(); 
                                                }
                                            )
@@ -246,6 +247,7 @@ public class FactoryTests
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["True"], result);
+        result.GeneratedCode.Contains("// My comment").ShouldBeTrue(result);
     }
 
     [Fact]

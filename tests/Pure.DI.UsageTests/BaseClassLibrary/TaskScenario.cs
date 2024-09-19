@@ -52,7 +52,7 @@ public class Scenario
     [Fact]
     public async Task Run()
     {
-// {            
+// {
         DI.Setup(nameof(Composition))
             .Hint(Hint.Resolve, "Off")
             // Overrides TaskScheduler.Default if necessary
@@ -72,7 +72,7 @@ public class Scenario
         // Creates a composition root with the CancellationToken passed to it
         var service = composition.GetRoot(cancellationTokenSource.Token);
         await service.RunAsync(cancellationTokenSource.Token);
-// }            
+// }
         composition.SaveClassDiagram();
     }
 }

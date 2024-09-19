@@ -46,7 +46,7 @@ public class Scenario
     [Fact]
     public void Run()
     {
-// {            
+// {
         DI.Setup(nameof(Composition))
             // This hint indicates to not generate methods such as Resolve
             .Hint(Hint.Resolve, "Off")
@@ -78,7 +78,7 @@ public class Scenario
 
         // someOtherService = new OtherService<BinaryReader>(new Dependency<BinaryReader>());
         var someOtherService = composition.GetOtherService<BinaryReader>();
-// }            
+// }
         service.ShouldBeOfType<Service<Stream, double>>();
         someOtherService.ShouldBeOfType<OtherService<BinaryReader>>();
         composition.SaveClassDiagram();

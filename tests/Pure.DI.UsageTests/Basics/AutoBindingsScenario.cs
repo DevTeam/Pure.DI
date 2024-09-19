@@ -33,9 +33,9 @@ public class Scenario
     {
         // Resolve = Off
 // {        
-        // Specifies to create a partial class "Composition"
+        // Specifies to create a partial class with name "Composition"
         DI.Setup("Composition")
-            // Specifies to create a property "MyService"
+            // with the root "MyService"
             .Root<Service>("MyService");
 
         var composition = new Composition();

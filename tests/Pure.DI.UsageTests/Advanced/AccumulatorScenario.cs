@@ -43,7 +43,7 @@ public class Scenario
     [Fact]
     public void Run()
     {
-// {            
+// {
         DI.Setup(nameof(Composition))
             .Accumulate<IAccumulating, MyAccumulator>(Lifetime.Transient, Lifetime.Singleton)
             .Bind<IDependency>().As(Lifetime.PerBlock).To<AbcDependency>()
@@ -59,7 +59,7 @@ public class Scenario
         accumulator[1].ShouldBeOfType<AbcDependency>();
         accumulator[2].ShouldBeOfType<Service>();
 
-// }            
+// }
         composition.SaveClassDiagram();
     }
 }

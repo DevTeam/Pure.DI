@@ -49,7 +49,7 @@ public class Scenario
     public void Run()
     {
         // Resolve = Off
-// {            
+// {
         DI.Setup(nameof(Composition))
             // Binding abstractions to their implementations
             .Bind<IDependency>().To<Dependency>()
@@ -65,7 +65,7 @@ public class Scenario
         var root = composition.Root;
 
         root.Run();
-// }            
+// }
         composition.SaveClassDiagram();
     }
 }

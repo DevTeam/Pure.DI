@@ -49,7 +49,7 @@ public class Scenario
     [Fact]
     public void Run()
     {
-// {            
+// {
         DI.Setup(nameof(Composition))
             // Registers custom generic argument
             .GenericTypeArgumentAttribute<MyGenericTypeArgumentAttribute>()

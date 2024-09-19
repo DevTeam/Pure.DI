@@ -77,14 +77,14 @@ public class Scenario
     [Fact]
     public void Run()
     {
-// {            
+// {
         var composition = new Composition("Abc");
         var service = composition.Root;
 
         service.Dependency1.Id.ShouldBe(1);
         service.Dependency2.Id.ShouldBe(2);
         service.Name.ShouldBe("Abc_3");
-// }            
+// }
         service.ShouldBeOfType<Service>();
         composition.SaveClassDiagram();
     }

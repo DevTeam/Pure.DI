@@ -49,6 +49,9 @@ var someOtherService = composition.MyOtherService;
 // All and only the roots of the composition
 // can be obtained by Resolve method
 var dependency = composition.Resolve<IDependency>();
+        
+// including tagged ones
+var tagged = composition.Resolve<IService>("Other");
 ```
 
 The name of the root of a composition is arbitrarily chosen depending on its purpose, but should be restricted by the property naming conventions in C# since it is the same name as a property in the composition class. In reality, the _Root_ property has the form:

@@ -51,7 +51,7 @@ public class Scenario
     [Fact]
     public void Run()
     {
-// {            
+// {
         DI.Setup(nameof(Composition))
             // Tag.Type here is the same as typeof(AbcDependency) 
             .Bind<IDependency>(Tag.Type, default).To<AbcDependency>()
@@ -71,7 +71,7 @@ public class Scenario
         service.Dependency2.ShouldBeOfType<XyzDependency>();
         service.Dependency2.ShouldBe(composition.XyzRoot);
         service.Dependency3.ShouldBeOfType<AbcDependency>();
-// }            
+// }
         composition.SaveClassDiagram();
     }
 }

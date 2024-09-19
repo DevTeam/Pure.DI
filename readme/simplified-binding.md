@@ -21,9 +21,10 @@ class Dependency :
     IDisposable,
     IEnumerable<string>
 {
-    public void Dispose() => throw new NotImplementedException();
+    public void Dispose() { }
 
-    public IEnumerator<string> GetEnumerator() => throw new NotImplementedException();
+    public IEnumerator<string> GetEnumerator() =>
+        new List<string> { "abc" }.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

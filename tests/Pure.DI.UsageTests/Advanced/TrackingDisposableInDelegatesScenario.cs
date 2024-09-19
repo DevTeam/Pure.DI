@@ -60,7 +60,7 @@ public class Scenario
     [Fact]
     public void Run()
     {
-// {            
+// {
         var composition = new Composition();
         var root1 = composition.Root;
         var root2 = composition.Root;

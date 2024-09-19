@@ -9,7 +9,8 @@ internal class FactoryCodeBuilder(
     INodeInfo nodeInfo,
     IArguments arguments,
     ITypeResolver typeResolver,
-    ICompilations compilations)
+    ICompilations compilations,
+    ITriviaTools triviaTools)
     : ICodeBuilder<DpFactory>
 {
     public static readonly ParenthesizedLambdaExpressionSyntax DefaultBindAttrParenthesizedLambda = SyntaxFactory.ParenthesizedLambdaExpression();
@@ -155,9 +156,9 @@ internal class FactoryCodeBuilder(
         // Rewrites syntax tree
         var finishLabel = $"{variable.VariableDeclarationName}Finish";
         var injections = new List<FactoryRewriter.Injection>();
-        var localVariableRenamingRewriter = new LocalVariableRenamingRewriter(idGenerator, factory.Source.SemanticModel);
+        var localVariableRenamingRewriter = new LocalVariableRenamingRewriter(idGenerator, factory.Source.SemanticModel, triviaTools);
         var factoryExpression = localVariableRenamingRewriter.Rewrite(originalLambda);
-        var factoryRewriter = new FactoryRewriter(arguments, compilations, factory, variable, finishLabel, injections);
+        var factoryRewriter = new FactoryRewriter(arguments, compilations, factory, variable, finishLabel, injections, triviaTools);
         var lambda = factoryRewriter.Rewrite(factoryExpression);
         new FactoryValidator(factory).Validate(lambda);
         SyntaxNode syntaxNode = lambda.Block is not null ? lambda.Block : SyntaxFactory.ExpressionStatement((ExpressionSyntax)lambda.Body);
@@ -213,7 +214,6 @@ internal class FactoryCodeBuilder(
         }
 
         var prefixes = new Stack<string>();
-        prefixes.Push("");
         foreach (var textLine in lines)
         {
             var line = textLine.ToString();
@@ -225,34 +225,29 @@ internal class FactoryCodeBuilder(
             var prefix = new string(line.TakeWhile(char.IsWhiteSpace).ToArray());
             if (prefix.Length > 0)
             {
-                if (prefix.Length > prefixes.Peek().Length)
+                if (prefixes.Count == 0 || prefix.Length > prefixes.Peek().Length)
                 {
                     prefixes.Push(prefix);
                 }
                 else
                 {
-                    if (prefixes.Count > 1 && prefix.Length < prefixes.Peek().Length)
+                    if (prefixes.Count > 0 && prefix.Length < prefixes.Peek().Length)
                     {
                         prefixes.Pop();
                     }
                 }
             }
 
-            if (prefix.Length > 0 && prefixes.Count > 1 && line.StartsWith(prefix))
+            if (prefix.Length > 0 && prefixes.Count > 0 && line.StartsWith(prefix))
             {
-                line = Formatting.IndentPrefix(new Indent(prefixes.Count - 2)) + line[prefix.Length..];
+                line = Formatting.IndentPrefix(new Indent(prefixes.Count - 1)) + line[prefix.Length..];
             }
 
             if (line.Contains(InjectionStatement) && resolvers.MoveNext())
             {
                 // When an injection marker
                 var (injection, argument) = resolvers.Current;
-                var indent = prefixes.Count - 1;
-                if (indent < 0)
-                {
-                    indent = 0;
-                }
-
+                var indent = prefixes.Count;
                 using (code.Indent(indent))
                 {
                     ctx.StatementBuilder.Build(injectionsCtx with { Level = level, Variable = argument.Current, LockIsRequired = lockIsRequired }, argument);

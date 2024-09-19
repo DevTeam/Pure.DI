@@ -53,12 +53,12 @@ public class Scenario
     [Fact]
     public void Run()
     {
-// {            
+// {
         var serviceProvider = new Composition();
         var service = serviceProvider.GetRequiredService<IService>();
         var dependency = serviceProvider.GetRequiredService<IDependency>();
         service.Dependency.ShouldBe(dependency);
-// }            
+// }
         serviceProvider.SaveClassDiagram();
     }
 }

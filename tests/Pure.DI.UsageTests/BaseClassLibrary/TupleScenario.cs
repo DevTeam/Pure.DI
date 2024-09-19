@@ -40,7 +40,7 @@ public class Scenario
     [Fact]
     public void Run()
     {
-// {            
+// {
         DI.Setup(nameof(Composition))
             .Bind<IDependency>().To<Dependency>()
             .Bind<Point>().To(_ => new Point(7, 9))
@@ -51,7 +51,7 @@ public class Scenario
 
         var composition = new Composition();
         var root = composition.Root;
-// }            
+// }
         composition.SaveClassDiagram();
     }
 }

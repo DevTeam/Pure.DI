@@ -99,10 +99,11 @@ partial class Composition
       {
         Composition transientComposition3 = this;
         IService transientIService2;
+        // Injects a base composition
         Composition localBaseComposition65 = transientComposition3;
         // Creates a session
         var localSession66= new Composition(localBaseComposition65);
-         transientIService2 = localSession66.SessionRoot;
+        transientIService2 = localSession66.SessionRoot;
         IService localValue64 = transientIService2;
         return localValue64;
       });

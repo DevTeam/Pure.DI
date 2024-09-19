@@ -32,7 +32,7 @@ public class Scenario
     public void Run()
     {
         // Resolve = Off
-// {            
+// {
         DI.Setup(nameof(Composition))
             .Bind().As(Lifetime.Singleton).To<Dependency>()
             .RootBind<IService>("MyRoot").To<Service>();

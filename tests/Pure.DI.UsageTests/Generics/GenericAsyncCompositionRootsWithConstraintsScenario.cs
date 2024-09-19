@@ -46,7 +46,7 @@ public class Scenario
     [Fact]
     public async Task Run()
     {
-// {            
+// {
         DI.Setup(nameof(Composition))
             // This hint indicates to not generate methods such as Resolve
             .Hint(Hint.Resolve, "Off")
@@ -80,7 +80,7 @@ public class Scenario
         // Resolves composition roots asynchronously
         var service = await composition.GetMyRootAsync<Stream, double>(CancellationToken.None);
         var someOtherService = await composition.GetOtherServiceAsync<BinaryReader>(CancellationToken.None);
-// }            
+// }
         service.ShouldBeOfType<Service<Stream, double>>();
         someOtherService.ShouldBeOfType<OtherService<BinaryReader>>();
         composition.SaveClassDiagram();

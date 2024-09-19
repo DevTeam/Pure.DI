@@ -72,6 +72,7 @@ public sealed partial class Generator
                 .Bind(Tag.Type).To<LifetimesValidatorVisitor>()
                 .Bind(Tag.Type).To<CyclicDependencyValidatorVisitor>()
                 .Bind().To<LifetimeAnalyzer>()
+                .Bind().To<TriviaTools>()
 
                 // Validators
                 .Bind(Tag.Type).To<MetadataValidator>()

@@ -37,7 +37,7 @@ public class Scenario
     public void Run()
     {
         // Resolve = Off
-// {            
+// {
         DI.Setup(nameof(Composition))
             .Hint(Hint.ToString, "On")
             .Bind().To<Dependency>()

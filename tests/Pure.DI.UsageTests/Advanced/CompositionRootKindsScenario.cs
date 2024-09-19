@@ -62,12 +62,12 @@ public class Scenario
     [Fact]
     public void Run()
     {
-// {            
+// {
         var composition = new Composition();
         var service = composition.Root;
         var otherService = composition.GetOtherService();
         var dependency = Composition.Dependency;
-// }            
+// }
         service.ShouldBeOfType<Service>();
         composition.SaveClassDiagram();
     }

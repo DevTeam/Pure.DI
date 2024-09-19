@@ -63,7 +63,7 @@ public class Scenario
     public void Run()
     {
         // Resolve = Off
-// {            
+// {
         DI.Setup(nameof(PersonComposition))
             .Arg<int>("personId")
             .Arg<string>("personName")
@@ -80,7 +80,7 @@ public class Scenario
 
         var person = composition.Person;
         person.Name.ShouldBe("123 Nik 1977-11-16");
-// }            
+// }
         composition.SaveClassDiagram();
     }
 }
