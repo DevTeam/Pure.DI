@@ -23,9 +23,9 @@ internal class DeployTarget(
         foreach (var package in packages.Where(i => i.Deploy))
         {
             await new DotNetNuGetPush()
-                .WithSources("https://api.nuget.org/v3/index.json")
+                .WithSource("https://api.nuget.org/v3/index.json")
                 .WithPackage(package.Path).WithApiKey(settings.NuGetKey)
-                .WithShortName($"pushing {package.Path}")
+                .WithShortName($"pushing the package {package.Path}")
                 .BuildAsync(cancellationToken: cancellationToken).EnsureSuccess();
         }
 

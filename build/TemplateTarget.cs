@@ -52,7 +52,7 @@ internal class TemplateTarget(
 
         await new DotNetNuGetPush()
             .WithPackage(targetPackage)
-            .WithSources("https://api.nuget.org/v3/index.json")
+            .WithSource("https://api.nuget.org/v3/index.json")
             .WithApiKey(settings.NuGetKey)
             .BuildAsync(cancellationToken: cancellationToken).EnsureSuccess();
 

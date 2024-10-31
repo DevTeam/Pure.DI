@@ -28,7 +28,8 @@ internal class CompatibilityCheckTarget(
         var libraries = await librariesTarget.RunAsync(cancellationToken);
 
         DeleteNuGetPackageFromCache("Pure.DI", settings.NextVersion, Path.GetDirectoryName(generatorPackage.Path)!);
-        await new DotNetCustom("new", "install", "Pure.DI.Templates")
+        await new DotNetNewInstall()
+            .WithPackage("Pure.DI.Templates")
             .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
         string[] frameworks =
@@ -81,47 +82,39 @@ internal class CompatibilityCheckTarget(
         try
         {
             tempDirectory = Path.Combine(tempDirectory, "src", framework);
-            await new DotNetNew(
-                    "dilib",
-                    "-n",
-                    "MyApp",
-                    "-o",
-                    tempDirectory,
-                    "--force",
-                    "-f", framework)
-                .WithShortName($"create project from the dilib template for {framework}")
+            await new DotNetNew()
+                .WithTemplateName("dilib")
+                .WithName("MyApp")
+                .WithOutput(tempDirectory)
+                .WithForce(true)
+                .WithFramework(framework)
+                .WithShortName($"creating the project from the dilib template for {framework}")
                 .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
             await new DotNetRestore()
-                .WithShortName($"restore project for {framework}")
+                .WithShortName($"restoring the project for {framework}")
                 .WithWorkingDirectory(tempDirectory)
                 .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
             if (!framework.Contains('.'))
             {
-                await new DotNetCustom(
-                        "add",
-                        Path.Combine(tempDirectory),
-                        "package",
-                        "Microsoft.NETFramework.ReferenceAssemblies")
-                    .WithShortName($"add package Microsoft.NETFramework.ReferenceAssemblies for {framework}")
+                await new DotNetAddPackage()
+                    .WithProject(tempDirectory)
+                    .WithPackage("Microsoft.NETFramework.ReferenceAssemblies")
+                    .WithShortName($"adding the package Microsoft.NETFramework.ReferenceAssemblies for {framework}")
                     .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
             }
-
-            await new DotNetCustom(
-                    "add",
-                    Path.Combine(tempDirectory),
-                    "package",
-                    "Pure.DI",
-                    "-v",
-                    settings.NextVersion.ToString(),
-                    "-s",
-                    Path.GetDirectoryName(generatorPackage)!)
-                .WithShortName($"add the package {Path.GetFileName(generatorPackage)} for {framework}")
+            
+            await new DotNetAddPackage()
+                .WithProject(tempDirectory)
+                .WithPackage("Pure.DI")
+                .WithVersion(settings.NextVersion.ToString())
+                .AddSources(Path.GetDirectoryName(generatorPackage)!)
+                .WithShortName($"adding the the package {Path.GetFileName(generatorPackage)} for {framework}")
                 .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
             await new DotNetBuild().WithWorkingDirectory(tempDirectory)
-                .WithShortName($"build sample project for {framework}")
+                .WithShortName($"building the sample project for {framework}")
                 .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
         }
         finally
@@ -144,48 +137,35 @@ internal class CompatibilityCheckTarget(
                 Info($"Testing {library.Name} library under {framework}.");
                 var tempDirForFramework = tempDirectory + "_" + framework;
                 Directory.CreateDirectory(tempDirForFramework);
-                await new DotNetNew(
-                        templateName,
-                        "-n",
-                        "MyApp",
-                        "-o",
-                        tempDirForFramework,
-                        "--force",
-                        "-f", framework)
-                    .WithShortName($"create project from the {templateName} template for {framework}")
+                await new DotNetNew()
+                    .WithTemplateName(templateName)
+                    .WithName("MyApp")
+                    .WithOutput(tempDirForFramework)
+                    .WithFramework(framework)
+                    .WithShortName($"creating the project from the {templateName} template for {framework}")
                     .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
-                await new DotNetCustom(
-                        "add",
-                        Path.Combine(tempDirForFramework),
-                        "package",
-                        "Pure.DI",
-                        "-n",
-                        "-v",
-                        settings.NextVersion.ToString(),
-                        "-f",
-                        framework,
-                        "-s",
-                        Path.GetDirectoryName(generatorPackage)!)
-                    .WithShortName($"add package {Path.GetFileName(generatorPackage)} for the {templateName} template for {framework}")
+                await new DotNetAddPackage()
+                    .WithProject(tempDirForFramework)
+                    .WithPackage("Pure.DI")
+                    .WithNoRestore(true)
+                    .WithVersion(settings.NextVersion.ToString())
+                    .AddSources(Path.GetDirectoryName(generatorPackage)!)
+                    .WithFramework(framework)
+                    .WithShortName($"addong the package {Path.GetFileName(generatorPackage)} for the {templateName} template for {framework}")
                     .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
                 var libraryPackageDir = Path.GetDirectoryName(library.Package.Path)!;
                 DeleteNuGetPackageFromCache(library.Name, settings.NextVersion, libraryPackageDir);
-
-                await new DotNetCustom(
-                        "add",
-                        Path.Combine(tempDirForFramework),
-                        "package",
-                        library.Name,
-                        "-n",
-                        "-v",
-                        settings.NextVersion.ToString(),
-                        "-s",
-                        libraryPackageDir,
-                        "-f",
-                        framework)
-                    .WithShortName($"add package {library.Name} for the {templateName} template for {framework}")
+                
+                await new DotNetAddPackage()
+                    .WithProject(tempDirForFramework)
+                    .WithPackage(library.Name)
+                    .WithNoRestore(true)
+                    .WithVersion(settings.NextVersion.ToString())
+                    .AddSources(libraryPackageDir)
+                    .WithFramework(framework)
+                    .WithShortName($"adding the package {library.Name} for the {templateName} template for {framework}")
                     .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
                 await new DotNetRestore()
@@ -198,7 +178,7 @@ internal class CompatibilityCheckTarget(
                 await new DotNetBuild()
                     .WithWorkingDirectory(tempDirForFramework)
                     .WithNoRestore(true)
-                    .WithShortName($"build for the {templateName} template for {framework}")
+                    .WithShortName($"building the {templateName} template for {framework}")
                     .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
             }
         }
