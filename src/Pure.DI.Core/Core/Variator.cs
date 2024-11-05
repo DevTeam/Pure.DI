@@ -4,26 +4,32 @@
 namespace Pure.DI.Core;
 
 internal sealed class Variator<T> : IVariator<T>
+    where T: class
 {
     public bool TryGetNextVariants(
         IEnumerable<IEnumerator<T>> variations,
-        Predicate<T> hasVariantsPredicate,
         [NotNullWhen(true)] out IReadOnlyCollection<T>? variants)
     {
         var hasNext = false;
         var curVariants = new List<T>();
         foreach (var enumerator in variations)
         {
-            if (!hasNext && enumerator.MoveNext())
+            if (enumerator.Current is null)
             {
-                hasNext = true;
-                curVariants.Add(enumerator.Current);
+                enumerator.MoveNext();
+                var current = enumerator.Current;
+                if (current is not null)
+                {
+                    curVariants.Add(current);
+                    hasNext = true;
+                }
+
                 continue;
             }
 
-            if (hasVariantsPredicate(enumerator.Current))
+            if (!hasNext)
             {
-                enumerator.MoveNext();
+                hasNext = enumerator.MoveNext();
             }
 
             curVariants.Add(enumerator.Current);

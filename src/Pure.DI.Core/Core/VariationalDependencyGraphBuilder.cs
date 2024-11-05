@@ -73,7 +73,7 @@ internal sealed class VariationalDependencyGraphBuilder(
             var maxIterations = globalOptions.MaxIterations;
             DependencyGraph? first = default;
             var maxAttempts = 0x2000;
-            while (variator.TryGetNextVariants(variants, node => !node.HasNode, out var nodes))
+            while (variator.TryGetNextVariants(variants, out var nodes))
             {
                 if (maxAttempts-- == 0)
                 {
@@ -131,7 +131,7 @@ internal sealed class VariationalDependencyGraphBuilder(
     [SuppressMessage("ReSharper", "NotDisposedResourceIsReturned")]
     private static IEnumerable<Variation> CreateVariants(IEnumerable<ProcessingNode> nodes) =>
         nodes.GroupBy(i => i.Node.Binding)
-            .Select(i => i.GetEnumerator());
+            .Select(i => new SafeEnumerator<ProcessingNode>(i.GetEnumerator()));
 
     private static IEnumerable<DependencyNode> SortByPriority(IEnumerable<DependencyNode> nodes) =>
         nodes.GroupBy(i => i.Binding)

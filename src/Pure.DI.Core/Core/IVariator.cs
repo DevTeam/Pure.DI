@@ -2,9 +2,9 @@ namespace Pure.DI.Core;
 
 // ReSharper disable once IdentifierTypo
 internal interface IVariator<T>
+    where T: class
 {
     bool TryGetNextVariants(
         IEnumerable<IEnumerator<T>> variations,
-        Predicate<T> hasVariantsPredicate,
         [NotNullWhen(true)] out IReadOnlyCollection<T>? variants);
 }

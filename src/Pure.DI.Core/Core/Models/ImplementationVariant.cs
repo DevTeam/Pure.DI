@@ -1,3 +1,3 @@
 namespace Pure.DI.Core.Models;
 
-internal readonly record struct ImplementationVariant(ImplementationVariantKind Kind, DpMethod Method);
+internal record ImplementationVariant(ImplementationVariantKind Kind, DpMethod Method);

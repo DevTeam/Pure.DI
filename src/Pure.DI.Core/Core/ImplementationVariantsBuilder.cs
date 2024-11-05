@@ -14,12 +14,12 @@ internal sealed class ImplementationVariantsBuilder(
         var variants =
             implementation.Methods.Select(method => CreateVariants(method, ImplementationVariantKind.Method))
                 .Concat(Enumerable.Repeat(CreateVariants(implementation.Constructor, ImplementationVariantKind.Ctor), 1))
-                .Select(i => i.GetEnumerator())
+                .Select(i => new SafeEnumerator<ImplementationVariant>(i.GetEnumerator()))
                 .ToArray();
 
         try
         {
-            while (implementationVariator.TryGetNextVariants(variants, _ => true, out var curVariants))
+            while (implementationVariator.TryGetNextVariants(variants, out var curVariants))
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 yield return curVariants.Aggregate(

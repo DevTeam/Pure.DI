@@ -2,9 +2,8 @@
 
 namespace Pure.DI.Core;
 
-internal readonly struct ProcessingNode : IEquatable<ProcessingNode>
+internal class ProcessingNode : IEquatable<ProcessingNode>
 {
-    public readonly bool HasNode = false;
     public readonly DependencyNode Node;
     private readonly Lazy<bool> _isMarkerBased;
     private readonly Lazy<ImmutableArray<InjectionInfo>> _injections;
@@ -15,7 +14,6 @@ internal readonly struct ProcessingNode : IEquatable<ProcessingNode>
         ISet<Injection> contracts,
         IMarker marker)
     {
-        HasNode = true;
         Node = node;
         Contracts = contracts;
 
