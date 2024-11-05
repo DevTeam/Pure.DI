@@ -8,6 +8,7 @@ using Pure.DI.Benchmarks.Benchmarks;
 
 internal class ReadmeTarget(
     Commands commands,
+    Settings settings,
     Env env,
     Versions versions,
     [Tag(typeof(BenchmarksTarget))] ITarget<int> benchmarksTarget)
@@ -60,22 +61,29 @@ internal class ReadmeTarget(
             Directory.Delete(generatedFiles, true);
         }
 
-        var usageTestsProjects = Path.Combine(solutionDirectory, "tests", "Pure.DI.UsageTests", "Pure.DI.UsageTests.csproj");
+        var usageTestsProject = Path.Combine(solutionDirectory, "tests", "Pure.DI.UsageTests", "Pure.DI.UsageTests.csproj");
         var projects = new[]
         {
-            usageTestsProjects,
+            usageTestsProject,
             Path.Combine(solutionDirectory, "benchmarks", "Pure.DI.Benchmarks", "Pure.DI.Benchmarks.csproj")
         };
 
+        var msbuild = new MSBuild()
+            .WithTarget("clean;rebuild")
+            .WithProps(("Configuration", settings.Configuration));
+
         foreach (var project in projects)
         {
-            await new MSBuild()
+            await msbuild
                 .WithProject(project)
-                .WithTarget("clean;rebuild")
                 .BuildAsync(cancellationToken: cancellationToken).EnsureSuccess();
         }
 
-        await new DotNetTest(usageTestsProjects).RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
+        await new DotNetTest()
+            .WithProject(usageTestsProject)
+            .WithNoBuild(true)
+            .WithConfiguration(settings.Configuration)
+            .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
         await using var readmeWriter = File.CreateText(ReadmeFile);
 

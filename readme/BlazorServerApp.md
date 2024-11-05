@@ -70,7 +70,7 @@ The [project file](/samples/BlazorServerApp/BlazorServerApp.csproj) looks like t
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.1.36">
+        <PackageReference Include="Pure.DI" Version="2.1.37">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>

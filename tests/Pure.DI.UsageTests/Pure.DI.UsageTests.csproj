@@ -4,7 +4,6 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
         <CompilerGeneratedFilesOutputPath>../../.logs</CompilerGeneratedFilesOutputPath>
-        <NoWarn>CS1591</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>

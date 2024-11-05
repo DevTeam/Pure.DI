@@ -7,7 +7,6 @@
         <PackageId>$(BasePackageId).Abstractions</PackageId>
         <Description>Abstractions of $(BasePackageId). $(Description)</Description>
         <DefineConstants>$(DefineConstants);PUREDI_NET_ANY</DefineConstants>
-        <NoWarn>NU1902;NU1903;NU3005</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>

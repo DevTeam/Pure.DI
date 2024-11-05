@@ -7,7 +7,6 @@
         <Title>Pure DI project templates</Title>
         <Description>Pure DI Templates</Description>
         <PackageTags>di;pure;ioc;templates;dotnet-new</PackageTags>
-        <NoWarn>NU5128</NoWarn>
 
         <IncludeContentInPack>true</IncludeContentInPack>
         <IncludeBuildOutput>false</IncludeBuildOutput>

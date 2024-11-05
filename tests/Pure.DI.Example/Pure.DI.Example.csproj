@@ -2,7 +2,6 @@
 
     <PropertyGroup>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <NoWarn>CS1591</NoWarn>
         <RootNamespace>Pure.DI.Integration</RootNamespace>
     </PropertyGroup>
 
