@@ -126,7 +126,7 @@ partial class Composition
         return new Program(
           new CardboardBox<ICat>(
             new ShroedingersCat(
-              new Lazy<Sample.State>(
+              new Lazy<State>(
                 stateFunc))));    
       }
     }
