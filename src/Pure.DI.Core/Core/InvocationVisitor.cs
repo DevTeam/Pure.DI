@@ -38,8 +38,11 @@ internal readonly record struct InvocationVisitor(
     public void VisitFactory(in MdFactory factory) =>
         AddAction((visitor, i) => visitor.VisitFactory(i), BaseVisitor, factory);
 
-    public void VisitResolve(in MdResolver resolver) =>
-        AddAction((visitor, i) => visitor.VisitResolve(i), BaseVisitor, resolver);
+    public void VisitResolver(in MdResolver resolver) =>
+        AddAction((visitor, i) => visitor.VisitResolver(i), BaseVisitor, resolver);
+
+    public void VisitInitializer(MdInitializer initializer) =>
+        AddAction((visitor, i) => visitor.VisitInitializer(i), BaseVisitor, initializer);
 
     public void VisitDefaultLifetime(in MdDefaultLifetime defaultLifetime) =>
         AddAction((visitor, i) => visitor.VisitDefaultLifetime(i), BaseVisitor, defaultLifetime);

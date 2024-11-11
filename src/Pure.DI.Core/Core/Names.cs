@@ -9,6 +9,7 @@ internal static class Names
     public static readonly string Salt = $"M{DateTime.Now.Month:00}D{DateTime.Now.Day:00}di";
     public const string GeneratorName = $"{nameof(Pure)}.{nameof(DI)}";
     public static readonly string InjectionMarker = "injection" + Salt;
+    public static readonly string InitializationMarker = "initialization" + Salt;
 
     // Namespaces
     public const string GlobalNamespacePrefix = "global::";

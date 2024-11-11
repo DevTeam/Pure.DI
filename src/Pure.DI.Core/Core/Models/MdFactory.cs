@@ -9,6 +9,7 @@ internal readonly record struct MdFactory(
     LambdaExpressionSyntax Factory,
     ParameterSyntax Context,
     in ImmutableArray<MdResolver> Resolvers,
+    in ImmutableArray<MdInitializer> Initializers,
     bool HasContextTag,
     in MdResolver? MemberResolver = default)
 {

@@ -46,7 +46,7 @@ internal sealed class MetadataValidator(
             isValid = false;
         }
 
-        foreach (var routeGroups in setup.Roots.GroupBy(root => new Injection(root.RootType, root.Tag?.Value)))
+        foreach (var routeGroups in setup.Roots.GroupBy(root => new Injection(InjectionKind.Root, root.RootType, root.Tag?.Value)))
         {
             var roots = routeGroups.ToArray();
             if (roots.Length <= 1)

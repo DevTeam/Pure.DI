@@ -23,7 +23,7 @@ internal sealed class ConstructDependencyNodeBuilder : IBuilder<MdSetup, IEnumer
                 }
 
                 var tag = contract.Tags.Select(i => i.Value).FirstOrDefault();
-                injections.Add(new Injection(contract.ContractType.WithNullableAnnotation(NullableAnnotation.NotAnnotated), tag));
+                injections.Add(new Injection(InjectionKind.Contract, contract.ContractType.WithNullableAnnotation(NullableAnnotation.NotAnnotated), tag));
             }
 
             yield return new DependencyNode(0, binding, Construct: new DpConstruct(construct, binding, injections.ToImmutableArray()));

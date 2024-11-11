@@ -2445,6 +2445,28 @@ namespace Pure.DI
         /// <typeparam name="T">Instance type.</typeparam>
         /// <seealso cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
         void Inject<T>(object tag, out T value);
+
+        /// <summary>
+        /// Perform injection for fields, properties, and methods for an existing object. Cannot be used outside of the binding setup.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;()
+        ///     To(ctx =&gt;
+        ///     {
+        ///         var service = new Service();
+        ///         // Initialize an instance with all necessary dependencies
+        ///         ctx.Initialize(service);
+        ///
+        /// 
+        ///         return service;
+        ///     })
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <param name="value">An existing object for which the injection(s) is to be performed.</param>
+        /// <typeparam name="T">Object type.</typeparam>
+        void Initialize<T>(T value);
     }
     
     /// <summary>

@@ -16,7 +16,9 @@ internal interface IMetadataVisitor
 
     void VisitFactory(in MdFactory factory);
 
-    void VisitResolve(in MdResolver resolver);
+    void VisitResolver(in MdResolver resolver);
+
+    void VisitInitializer(MdInitializer initializer);
 
     void VisitDefaultLifetime(in MdDefaultLifetime defaultLifetime);
 

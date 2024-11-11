@@ -5,7 +5,8 @@ namespace Pure.DI.Core.Models;
 internal record DpFactory(
     in MdFactory Source,
     in MdBinding Binding,
-    in ImmutableArray<Injection> Injections)
+    in ImmutableArray<Injection> ResolversInjections,
+    in ImmutableArray<DpInitializer> Initializers)
 {
     public IEnumerable<string> ToStrings(int indent)
     {

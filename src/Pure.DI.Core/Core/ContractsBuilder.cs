@@ -40,7 +40,7 @@ internal sealed class ContractsBuilder : IBuilder<ContractsBuildContext, ISet<In
 
             foreach (var tag in contractTags)
             {
-                contracts.Add(new Injection(contractType, tag));
+                contracts.Add(new Injection(InjectionKind.Contract, contractType, tag));
             }
         }
 

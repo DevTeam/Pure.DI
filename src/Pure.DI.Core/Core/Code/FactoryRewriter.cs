@@ -10,6 +10,7 @@ internal sealed class FactoryRewriter(
     Variable variable,
     string finishLabel,
     ICollection<FactoryRewriter.Injection> injections,
+    ICollection<FactoryRewriter.Initializer> initializers,
     ITriviaTools triviaTools)
     : CSharpSyntaxRewriter
 {
@@ -22,6 +23,7 @@ internal sealed class FactoryRewriter(
         .WithTrailingTrivia(SyntaxTriviaList.Create(SyntaxFactory.SyntaxTrivia(SyntaxKind.WhitespaceTrivia, " ")));
 
     private static readonly IdentifierNameSyntax InjectionMarkerExpression = SyntaxFactory.IdentifierName(Names.InjectionMarker);
+    private static readonly IdentifierNameSyntax InitializationMarkerExpression = SyntaxFactory.IdentifierName(Names.InitializationMarker);
     private int _nestedLambdaCounter;
     private int _nestedBlockCounter;
 
@@ -159,6 +161,35 @@ internal sealed class FactoryRewriter(
             {
                 return visitInvocationExpression;
             }
+            
+            if (invocation.Expression is MemberAccessExpressionSyntax
+                {
+                    Name: GenericNameSyntax
+                    {
+                        Identifier.Text: nameof(IContext.Initialize),
+                        TypeArgumentList.Arguments: [not null]
+                    },
+                    Expression: IdentifierNameSyntax ctx3
+                }
+                && ctx3.Identifier.Text == factory.Source.Context.Identifier.Text
+                && TryInitialize(invocation, out visitInvocationExpression))
+            {
+                return visitInvocationExpression;
+            }
+
+            if (invocation.Expression is MemberAccessExpressionSyntax
+                {
+                    Name: IdentifierNameSyntax
+                    {
+                        Identifier.Text: nameof(IContext.Initialize)
+                    },
+                    Expression: IdentifierNameSyntax ctx4
+                }
+                && ctx4.Identifier.Text == factory.Source.Context.Identifier.Text
+                && TryInitialize(invocation, out visitInvocationExpression))
+            {
+                return visitInvocationExpression;
+            }
         }
 
         return base.VisitInvocationExpression(invocation);
@@ -188,6 +219,37 @@ internal sealed class FactoryRewriter(
                 injections.Add(new Injection(singleVariableDesignationSyntax.Identifier.Text, true));
             {
                 visitInvocationExpression = triviaTools.PreserveTrivia(InjectionMarkerExpression, invocation);
+                return true;
+            }
+        }
+
+        visitInvocationExpression = default;
+        return false;
+    }
+    
+    private bool TryInitialize(
+        InvocationExpressionSyntax invocation,
+        [NotNullWhen(true)] out SyntaxNode? visitInvocationExpression)
+    {
+        var value = invocation.ArgumentList.Arguments.Count switch
+        {
+            1 => invocation.ArgumentList.Arguments[0].Expression,
+            _ => default
+        };
+
+        switch (value)
+        {
+            case IdentifierNameSyntax identifierName:
+                initializers.Add(new Initializer(identifierName.Identifier.Text, false));
+            {
+                visitInvocationExpression = triviaTools.PreserveTrivia(InitializationMarkerExpression, invocation);
+                return true;
+            }
+
+            case DeclarationExpressionSyntax { Designation: SingleVariableDesignationSyntax singleVariableDesignationSyntax }:
+                initializers.Add(new Initializer(singleVariableDesignationSyntax.Identifier.Text, true));
+            {
+                visitInvocationExpression = triviaTools.PreserveTrivia(InitializationMarkerExpression, invocation);
                 return true;
             }
         }
@@ -239,4 +301,6 @@ internal sealed class FactoryRewriter(
     }
 
     internal record Injection(string VariableName, bool DeclarationRequired);
+    
+    internal record Initializer(string VariableName, bool DeclarationRequired);
 }

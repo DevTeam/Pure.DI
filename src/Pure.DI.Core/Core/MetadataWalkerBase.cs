@@ -95,8 +95,17 @@ internal class MetadataWalkerBase : IMetadataVisitor
     {
         foreach (var md in factory.Resolvers)
         {
-            VisitResolve(md);
+            VisitResolver(md);
         }
+        
+        foreach (var md in factory.Initializers)
+        {
+            VisitInitializer(md);
+        }
+    }
+
+    public virtual void VisitInitializer(MdInitializer md)
+    {
     }
 
     public virtual void VisitRoot(in MdRoot root)
@@ -115,7 +124,7 @@ internal class MetadataWalkerBase : IMetadataVisitor
     {
     }
 
-    public virtual void VisitResolve(in MdResolver resolver)
+    public virtual void VisitResolver(in MdResolver resolver)
     {
         if (resolver.Tag is { } tag)
         {

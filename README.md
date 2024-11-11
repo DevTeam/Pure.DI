@@ -196,6 +196,7 @@ dotnet run
 - [Root arguments](readme/root-arguments.md)
 - [Tags](readme/tags.md)
 - [Field injection](readme/field-injection.md)
+- [Initialization](readme/initialization.md)
 - [Method injection](readme/method-injection.md)
 - [Property injection](readme/property-injection.md)
 - [Default values](readme/default-values.md)

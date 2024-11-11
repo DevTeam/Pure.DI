@@ -146,7 +146,7 @@ internal sealed class DependencyGraphBuilder(
                             {
                                 foreach (var tag in contract.Tags.Select(i => i.Value).DefaultIfEmpty(default))
                                 {
-                                    var newInjection = new Injection(contract.ContractType!, tag);
+                                    var newInjection = new Injection(InjectionKind.Contract, contract.ContractType!, tag);
                                     if (!map.ContainsKey(newInjection))
                                     {
                                         map[newInjection] = genericNode;
@@ -578,7 +578,7 @@ internal sealed class DependencyGraphBuilder(
             {
                 foreach (var mdTag in tags.DefaultIfEmpty(new MdTag(0, default)))
                 {
-                    if (!contracts.Add(new Injection(elementType, mdTag)))
+                    if (!contracts.Add(new Injection(InjectionKind.Construct, elementType, mdTag)))
                     {
                         isDuplicate = true;
                     }

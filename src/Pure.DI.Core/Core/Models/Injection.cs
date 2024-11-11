@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using Code;
 
 internal readonly record struct Injection(
+    InjectionKind Kind,
     ITypeSymbol Type,
     object? Tag)
 {

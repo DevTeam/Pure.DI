@@ -100,12 +100,12 @@ partial class Composition
         Composition transientComposition3 = this;
         IService transientIService2;
         // Injects a base composition
-        Composition localBaseComposition65 = transientComposition3;
+        Composition localBaseComposition66 = transientComposition3;
         // Creates a session
-        var localSession66= new Composition(localBaseComposition65);
-        transientIService2 = localSession66.SessionRoot;
-        IService localValue64 = transientIService2;
-        return localValue64;
+        var localSession67= new Composition(localBaseComposition66);
+        transientIService2 = localSession67.SessionRoot;
+        IService localValue65 = transientIService2;
+        return localValue65;
       });
       return new Program(perBlockFunc1);
     }

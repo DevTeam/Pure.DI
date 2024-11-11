@@ -10,13 +10,15 @@ internal class FactoryCodeBuilder(
     IArguments arguments,
     ITypeResolver typeResolver,
     ICompilations compilations,
-    ITriviaTools triviaTools)
+    ITriviaTools triviaTools,
+    IInjections injectionsTool)
     : ICodeBuilder<DpFactory>
 {
     public static readonly ParenthesizedLambdaExpressionSyntax DefaultBindAttrParenthesizedLambda = SyntaxFactory.ParenthesizedLambdaExpression();
     public static readonly ParameterSyntax DefaultCtxParameter = SyntaxFactory.Parameter(SyntaxFactory.Identifier("ctx_1182D127"));
     public const string DefaultInstanceValueName = "instance_1182D127";
     private static readonly string InjectionStatement = $"{Names.InjectionMarker};";
+    private static readonly string InitializationStatement = $"{Names.InitializationMarker};";
 
     public void Build(BuildContext ctx, in DpFactory factory)
     {
@@ -155,10 +157,11 @@ internal class FactoryCodeBuilder(
 
         // Rewrites syntax tree
         var finishLabel = $"{variable.VariableDeclarationName}Finish";
-        var injections = new List<FactoryRewriter.Injection>();
         var localVariableRenamingRewriter = new LocalVariableRenamingRewriter(idGenerator, factory.Source.SemanticModel, triviaTools);
         var factoryExpression = localVariableRenamingRewriter.Rewrite(originalLambda);
-        var factoryRewriter = new FactoryRewriter(arguments, compilations, factory, variable, finishLabel, injections, triviaTools);
+        var injections = new List<FactoryRewriter.Injection>();
+        var inits = new List<FactoryRewriter.Initializer>();
+        var factoryRewriter = new FactoryRewriter(arguments, compilations, factory, variable, finishLabel, injections, inits, triviaTools);
         var lambda = factoryRewriter.Rewrite(factoryExpression);
         new FactoryValidator(factory).Validate(lambda);
         SyntaxNode syntaxNode = lambda.Block is not null ? lambda.Block : SyntaxFactory.ExpressionStatement((ExpressionSyntax)lambda.Body);
@@ -195,19 +198,36 @@ internal class FactoryCodeBuilder(
             lines.AddRange(text.Lines);
         }
 
+        var injectionArgs = variable.Args.Where(i => i.Current.Injection.Kind == InjectionKind.Injection).ToList();
+        var initializationArgs = variable.Args.Where(i => i.Current.Injection.Kind != InjectionKind.Injection).ToList();
+
         // Replaces injection markers by injection code
-        if (variable.Args.Count != injections.Count)
+        if (injectionArgs.Count != injections.Count)
         {
             throw new CompileErrorException(
                 $"{variable.Node.Lifetime} lifetime does not support cyclic dependencies.",
                 factory.Source.Source.GetLocation(),
                 LogId.ErrorInvalidMetadata);
         }
+        
+        if (factory.Initializers.Length != inits.Count)
+        {
+            throw new CompileErrorException(
+                "Invalid number of initializers.",
+                factory.Source.Source.GetLocation(),
+                LogId.ErrorInvalidMetadata);
+        }
 
         using var resolvers = injections
-            .Zip(variable.Args, (injection, argument) => (injection, argument))
+            .Zip(injectionArgs, (injection, argument) => (injection, argument))
             .GetEnumerator();
 
+        using var initializers = inits
+            .Zip(factory.Initializers, (initialization, initializer) => (initialization, initializer))
+            .GetEnumerator();
+
+        var  initializationArgsEnum = initializationArgs.OfType<Variable>().GetEnumerator();
+        
         var injectionsCtx = ctx;
         if (variable.IsLazy && variable.Node.Accumulators.Count > 0)
         {
@@ -252,24 +272,32 @@ internal class FactoryCodeBuilder(
             if (line.Contains(InjectionStatement) && resolvers.MoveNext())
             {
                 // When an injection marker
-                var (injection, argument) = resolvers.Current;
+                var (resolver, argument) = resolvers.Current;
                 var indent = prefixes.Count;
                 using (code.Indent(indent))
                 {
                     ctx.StatementBuilder.Build(injectionsCtx with { Level = level, Variable = argument.Current, LockIsRequired = lockIsRequired }, argument);
-                    code.AppendLine($"{(injection.DeclarationRequired ? $"{typeResolver.Resolve(ctx.DependencyGraph.Source, argument.Current.Injection.Type)} " : "")}{injection.VariableName} = {ctx.BuildTools.OnInjected(ctx, argument.Current)};");
+                    code.AppendLine($"{(resolver.DeclarationRequired ? $"{typeResolver.Resolve(ctx.DependencyGraph.Source, argument.Current.Injection.Type)} " : "")}{resolver.VariableName} = {ctx.BuildTools.OnInjected(ctx, argument.Current)};");
                 }
+                
+                continue;
             }
-            else
-            {
-                // When a code
-                var len = 0;
-                for (; len < line.Length && line[len] == ' '; len++)
-                {
-                }
 
-                code.AppendLine(line);
+            if (line.Contains(InitializationStatement) && initializers.MoveNext())
+            {
+                var (initialization, initializer) = initializers.Current;
+                var initializersWalker = new InitializersWalker(initialization.VariableName, initializationArgsEnum, injectionsTool);
+                initializersWalker.VisitInitializer(injectionsCtx, initializer);
+                continue;
             }
+
+            // When a code
+            var len = 0;
+            for (; len < line.Length && line[len] == ' '; len++)
+            {
+            }
+
+            code.AppendLine(line);
         }
 
         if (factoryRewriter.IsFinishMarkRequired)

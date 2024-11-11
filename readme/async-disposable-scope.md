@@ -139,8 +139,8 @@ partial class Composition: IDisposable, IAsyncDisposable
       Func<Session> perBlockFunc1 = new Func<Session>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
       {
         Composition transientComposition3 = this;
-        Session localValue63 = new Session(transientComposition3);
-        return localValue63;
+        Session localValue64 = new Session(transientComposition3);
+        return localValue64;
       });
       return new Program(perBlockFunc1);
     }

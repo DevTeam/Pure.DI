@@ -5,6 +5,7 @@ namespace Pure.DI.Core.Code;
 
 internal class ImplementationCodeBuilder(
     ITypeResolver typeResolver,
+    IInjections injections,
     CancellationToken cancellationToken)
     : ICodeBuilder<DpImplementation>
 {
@@ -36,7 +37,7 @@ internal class ImplementationCodeBuilder(
             visits.Add((VisitFieldAction, field.Ordinal));
             continue;
 
-            void VisitFieldAction(BuildContext context) => FieldInjection(context, field, fieldVariable);
+            void VisitFieldAction(BuildContext context) => injections.FieldInjection(variable.VariableName, context, field, fieldVariable);
         }
 
         foreach (var property in implementation.Properties.Where(i => !i.Property.IsRequired && i.Property.SetMethod?.IsInitOnly != true))
@@ -46,7 +47,7 @@ internal class ImplementationCodeBuilder(
             visits.Add((VisitFieldAction, property.Ordinal));
             continue;
 
-            void VisitFieldAction(BuildContext context) => PropertyInjection(context, property, propertyVariable);
+            void VisitFieldAction(BuildContext context) => injections.PropertyInjection(variable.VariableName, context, property, propertyVariable);
         }
 
         foreach (var method in implementation.Methods)
@@ -56,7 +57,7 @@ internal class ImplementationCodeBuilder(
             visits.Add((VisitMethodAction, method.Ordinal));
             continue;
 
-            void VisitMethodAction(BuildContext context) => MethodInjection(context, method, methodArgs);
+            void VisitMethodAction(BuildContext context) => injections.MethodInjection(variable.VariableName, context, method, methodArgs);
         }
 
         var onCreatedStatements = ctx.BuildTools.OnCreated(ctx, ctx.Variable).ToArray();
@@ -133,35 +134,5 @@ internal class ImplementationCodeBuilder(
         }
 
         return code.ToString();
-    }
-
-    private static void FieldInjection(BuildContext ctx, DpField field, Variable fieldVariable)
-    {
-        ctx.Code.AppendLine($"{ctx.Variable.VariableName}.{field.Field.Name} = {ctx.BuildTools.OnInjected(ctx, fieldVariable)};");
-    }
-
-    private static void PropertyInjection(BuildContext ctx, DpProperty property, Variable propertyVariable)
-    {
-        ctx.Code.AppendLine($"{ctx.Variable.VariableName}.{property.Property.Name} = {ctx.BuildTools.OnInjected(ctx, propertyVariable)};");
-    }
-
-    private static void MethodInjection(BuildContext ctx, DpMethod method, ImmutableArray<Variable> methodArgs)
-    {
-        var args = new List<string>();
-        for (var index = 0; index < methodArgs.Length; index++)
-        {
-            var variable = methodArgs[index];
-            if (index < method.Parameters.Length)
-            {
-                variable = variable with
-                {
-                    RefKind = method.Parameters[index].ParameterSymbol.RefKind
-                };
-            }
-
-            args.Add(ctx.BuildTools.OnInjected(ctx, variable));
-        }
-
-        ctx.Code.AppendLine($"{ctx.Variable.VariableName}.{method.Method.Name}({string.Join(", ", args)});");
     }
 }

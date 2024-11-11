@@ -67,9 +67,14 @@ internal class DependenciesWalker<TContext>
 
     public virtual void VisitFactory(in TContext ctx, in DpFactory factory)
     {
-        foreach (var injection in factory.Injections)
+        foreach (var injection in factory.ResolversInjections)
         {
             VisitInjection(ctx, injection, false, default, ImmutableArray.Create(factory.Source.Source.GetLocation()));
+        }
+        
+        foreach (var initializer in factory.Initializers)
+        {
+            VisitInitializer(ctx, initializer);
         }
     }
 
@@ -148,5 +153,23 @@ internal class DependenciesWalker<TContext>
         object? explicitDefaultValue,
         in ImmutableArray<Location> locations)
     {
+    }
+    
+    public virtual void VisitInitializer(in TContext ctx, DpInitializer initializer)
+    {
+        foreach (var field in initializer.Fields)
+        {
+            VisitField(ctx, field);
+        }
+
+        foreach (var property in initializer.Properties)
+        {
+            VisitProperty(ctx, property);
+        }
+
+        foreach (var method in initializer.Methods)
+        {
+            VisitMethod(ctx, method);
+        }
     }
 }

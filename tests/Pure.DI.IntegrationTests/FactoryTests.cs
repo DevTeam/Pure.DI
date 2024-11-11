@@ -1308,4 +1308,359 @@ public class FactoryTests
             .Count(i => i is { Id: LogId.ErrorInvalidMetadata, Message: "Asynchronous factory with the async keyword is not supported." })
             .ShouldBe(1, result);
     }
+    
+    [Fact]
+    public async Task ShouldSupportFactoryWhenMethodInjection()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                           
+                               class Dependency: IDependency
+                               {
+                                   [Ordinal(1)]
+                                   internal void Initialize([Tag(374)] string depName)
+                                   {
+                                       Console.WriteLine($"Initialize {depName}");
+                                   }
+                               }
+                           
+                               interface IService
+                               {
+                                   IDependency Dep { get; }
+                               }
+                           
+                               class Service: IService 
+                               {
+                                   public Service(IDependency dep)
+                                   { 
+                                       Dep = dep;
+                                   }
+                           
+                                   public IDependency Dep { get; }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Arg<string>("depName", 374)
+                                           .Bind<IDependency>().To(ctx => {
+                                               ctx.Inject<Dependency>(out var dep);
+                                               return dep;
+                                           })
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition("dep");
+                                       var service = composition.Service;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Initialize dep"], result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportInitializationWhenMethod()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                           
+                               class Dependency: IDependency
+                               {
+                                   [Ordinal(1)]
+                                   internal void Initialize([Tag(374)] string depName)
+                                   {
+                                       Console.WriteLine($"Initialize {depName}");
+                                   }
+                               }
+                           
+                               interface IService
+                               {
+                                   IDependency Dep { get; }
+                               }
+                           
+                               class Service: IService 
+                               {
+                                   public Service(IDependency dep)
+                                   { 
+                                       Dep = dep;
+                                   }
+                           
+                                   public IDependency Dep { get; }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind(374).To(_ => "Abc")
+                                           .Bind<IDependency>().To(ctx => {
+                                               var dep = new Dependency();
+                                               ctx.Initialize(dep);
+                                               return dep;
+                                           })
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Initialize Abc"], result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportInitializationWhenGeneric()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency<T> {}
+                           
+                               class Dependency<T>: IDependency<T>
+                               {
+                                   [Ordinal(1)]
+                                   internal void Initialize([Tag(374)] T depName)
+                                   {
+                                       Console.WriteLine($"Initialize {depName}");
+                                   }
+                               }
+                           
+                               interface IService
+                               {
+                                   IDependency<string> Dep { get; }
+                               }
+                           
+                               class Service: IService 
+                               {
+                                   public Service(IDependency<string> dep)
+                                   { 
+                                       Dep = dep;
+                                   }
+                           
+                                   public IDependency<string> Dep { get; }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind(374).To(_ => "Abc")
+                                           .Bind<IDependency<string>>().To(ctx => {
+                                               var dep = new Dependency<string>();
+                                               ctx.Initialize(dep);
+                                               return dep;
+                                           })
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Initialize Abc"], result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportInitializationWhenMethodAndProperty()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Dependency
+                               {
+                                   [Ordinal(1)]
+                                   internal void Initialize([Tag(374)] string depName)
+                                   {
+                                       Console.WriteLine($"Initialize {depName}");
+                                   }
+                                   
+                                   [Ordinal(2)]
+                                   public int Id { get; set; }
+                               }
+                           
+                               interface IService
+                               {
+                                   Dependency Dep { get; }
+                               }
+                           
+                               class Service: IService 
+                               {
+                                   public Service(Dependency dep)
+                                   { 
+                                       Dep = dep;
+                                   }
+                           
+                                   public Dependency Dep { get; }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind(374).To(_ => "Abc")
+                                           .Bind().To(_ => 33)
+                                           .Bind().To(ctx => {
+                                               var dep = new Dependency();
+                                               ctx.Initialize(dep);
+                                               return dep;
+                                           })
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                       Console.WriteLine($"Id: {service.Dep.Id}");
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Initialize Abc", "Id: 33"], result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportInitializationWhenMethodAndField()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Dependency
+                               {
+                                   [Ordinal(1)]
+                                   internal void Initialize([Tag(374)] string depName)
+                                   {
+                                       Console.WriteLine($"Initialize {depName}");
+                                   }
+                                   
+                                   [Ordinal(2)]
+                                   public int Id;
+                               }
+                           
+                               interface IService
+                               {
+                                   Dependency Dep { get; }
+                               }
+                           
+                               class Service: IService 
+                               {
+                                   public Service(Dependency dep)
+                                   { 
+                                       Dep = dep;
+                                   }
+                           
+                                   public Dependency Dep { get; }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind(374).To(_ => "Abc")
+                                           .Bind().To(_ => 33)
+                                           .Bind().To(ctx => {
+                                               var dep = new Dependency();
+                                               ctx.Initialize(dep);
+                                               return dep;
+                                           })
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                       Console.WriteLine($"Id: {service.Dep.Id}");
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Initialize Abc", "Id: 33"], result);
+    }
 }

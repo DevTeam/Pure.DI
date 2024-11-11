@@ -76,7 +76,11 @@ internal sealed class SetupsBuilder(
         FinishBinding();
     }
 
-    public void VisitResolve(in MdResolver resolver)
+    public void VisitResolver(in MdResolver resolver)
+    {
+    }
+
+    public void VisitInitializer(MdInitializer initializer)
     {
     }
 
@@ -323,6 +327,7 @@ internal sealed class SetupsBuilder(
                     FactoryCodeBuilder.DefaultBindAttrParenthesizedLambda,
                     FactoryCodeBuilder.DefaultCtxParameter,
                     resolvers.ToImmutableArray(),
+                    ImmutableArray<MdInitializer>.Empty,
                     false,
                     memberResolver));
 

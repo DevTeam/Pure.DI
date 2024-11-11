@@ -426,6 +426,7 @@ internal class ApiInvocationProcessor(
                 lambdaExpression,
                 SyntaxFactory.Parameter(SyntaxFactory.Identifier("ctx_1182D127")),
                 resolvers.ToImmutableArray(),
+                ImmutableArray<MdInitializer>.Empty,
                 false));
 
         metadataVisitor.VisitUsingDirectives(new MdUsingDirectives(namespaces.ToImmutableArray(), ImmutableArray<string>.Empty));
@@ -553,11 +554,11 @@ internal class ApiInvocationProcessor(
                 return;
         }
 
-        var resolversWalker = new FactoryResolversSyntaxWalker();
-        resolversWalker.Visit(lambdaExpression);
+        var walker = new FactoryResolversAndInitializersSyntaxWalker();
+        walker.Visit(lambdaExpression);
         var position = 0;
         var hasContextTag = false;
-        var resolvers = resolversWalker.Select(invocation =>
+        var resolvers = walker.Resolvers.Select(invocation =>
             {
                 if (invocation.ArgumentList.Arguments is not { Count: > 0 } invArguments)
                 {
@@ -618,6 +619,23 @@ internal class ApiInvocationProcessor(
             })
             .Where(i => i != default)
             .ToImmutableArray();
+        
+        var initializers = walker.Initializers.Select(invocation =>
+            {
+                if (invocation.ArgumentList.Arguments is not [{} targetArg]
+                    || semanticModel.GetOperation(targetArg) is not IArgumentOperation targetOperation)
+                {
+                    return default;
+                }
+                
+                return new MdInitializer(
+                    semanticModel,
+                    invocation,
+                    targetOperation.Value.Type!,
+                    targetArg.Expression);
+            })
+            .Where(i => i != default)
+            .ToImmutableArray();
 
         if (!isManual)
         {
@@ -632,6 +650,7 @@ internal class ApiInvocationProcessor(
                 lambdaExpression,
                 contextParameter,
                 resolvers,
+                initializers,
                 hasContextTag));
     }
 
