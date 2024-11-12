@@ -26,7 +26,7 @@ interface IDependency
 class Dependency : IDependency
 {
     // The Ordinal attribute specifies to perform an injection and its order
-    [Ordinal(3)]
+    [Ordinal(1)]
     public string Name { get; set; } = "";
     
     public Guid Id { get; private set; } = Guid.Empty;
