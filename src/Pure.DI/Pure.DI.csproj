@@ -13,6 +13,7 @@
         <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
         <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
         <PackageReadmeFile>README.md</PackageReadmeFile>
+        <AvoidCycleErrorOnSelfReference>true</AvoidCycleErrorOnSelfReference>
     </PropertyGroup>
 
     <!--<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -24,5 +25,21 @@
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="$(AnalyzerRoslynPackageVersion)" PrivateAssets="all" />
         <None Include="$(OutDir)\*.dll" Pack="true" PackagePath="analyzers/dotnet/roslyn$(AnalyzerRoslynVersion)/cs" Visible="false"/>
     </ItemGroup>
+
+    <Choose>
+        <When Condition="$(AvoidCycleErrorOnSelfReference) == 'true'">
+            <PropertyGroup>
+                <PackageId Condition="'$(PackageId)' == ''">$(MSBuildProjectName)</PackageId>
+                <PackageIdTemp>$(PackageId)</PackageIdTemp>
+                <PackageId>$(PackageId)_temp</PackageId>
+            </PropertyGroup>
+        </When>
+    </Choose>
+
+    <Target Name="_UpdatePackageId" BeforeTargets="$(PackDependsOn)" Condition="$(AvoidCycleErrorOnSelfReference) == 'true'" >
+        <PropertyGroup>
+            <PackageId>$(PackageIdTemp)</PackageId>
+        </PropertyGroup>
+    </Target>
 
 </Project>
