@@ -2447,7 +2447,7 @@ namespace Pure.DI
         void Inject<T>(object tag, out T value);
 
         /// <summary>
-        /// Perform injection for fields, properties, and methods for an existing object. Cannot be used outside of the binding setup.
+        /// Builds up of an existing object. In other words, injects the necessary dependencies via methods, properties, or fields into an existing object. Cannot be used outside of the binding setup.
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
@@ -2456,7 +2456,7 @@ namespace Pure.DI
         ///     {
         ///         var service = new Service();
         ///         // Initialize an instance with all necessary dependencies
-        ///         ctx.Initialize(service);
+        ///         ctx.BuildUp(service);
         ///
         /// 
         ///         return service;
@@ -2466,7 +2466,7 @@ namespace Pure.DI
         /// </summary>
         /// <param name="value">An existing object for which the injection(s) is to be performed.</param>
         /// <typeparam name="T">Object type.</typeparam>
-        void Initialize<T>(T value);
+        void BuildUp<T>(T value);
     }
     
     /// <summary>

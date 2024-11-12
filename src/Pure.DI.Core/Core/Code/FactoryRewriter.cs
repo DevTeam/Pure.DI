@@ -166,7 +166,7 @@ internal sealed class FactoryRewriter(
                 {
                     Name: GenericNameSyntax
                     {
-                        Identifier.Text: nameof(IContext.Initialize),
+                        Identifier.Text: nameof(IContext.BuildUp),
                         TypeArgumentList.Arguments: [not null]
                     },
                     Expression: IdentifierNameSyntax ctx3
@@ -181,7 +181,7 @@ internal sealed class FactoryRewriter(
                 {
                     Name: IdentifierNameSyntax
                     {
-                        Identifier.Text: nameof(IContext.Initialize)
+                        Identifier.Text: nameof(IContext.BuildUp)
                     },
                     Expression: IdentifierNameSyntax ctx4
                 }

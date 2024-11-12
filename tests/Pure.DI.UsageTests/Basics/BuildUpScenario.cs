@@ -1,8 +1,8 @@
 ﻿/*
 $v=true
 $p=9
-$d=Initialization
-$h=It is possible to create an object yourself and then inject the required dependencies via methods, properties or fields.
+$d=Build up of an existing object
+$h=In other words, injecting the necessary dependencies via methods, properties, or fields into an existing object.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -10,7 +10,7 @@ $h=It is possible to create an object yourself and then inject the required depe
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable ArrangeTypeModifiers
 
-namespace Pure.DI.UsageTests.Basics.InitializationScenario;
+namespace Pure.DI.UsageTests.Basics.BuildUpScenario;
 
 using Shouldly;
 using Xunit;
@@ -59,7 +59,7 @@ public class Scenario
             .Bind<IDependency>().To(ctx =>
             {
                 var dependency = new Dependency();
-                ctx.Initialize(dependency);
+                ctx.BuildUp(dependency);
                 return dependency;
             })
             .Bind<IService>().To<Service>()

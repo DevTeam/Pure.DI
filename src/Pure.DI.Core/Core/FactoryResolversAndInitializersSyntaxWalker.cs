@@ -26,7 +26,7 @@ internal sealed class FactoryResolversAndInitializersSyntaxWalker : CSharpSyntax
                         Resolvers.Add(invocation);
                         break;
                     
-                    case nameof(IContext.Initialize)
+                    case nameof(IContext.BuildUp)
                         when invocation.ArgumentList.Arguments.Count is 1:
                         Initializers.Add(invocation);
                         break;
@@ -44,7 +44,7 @@ internal sealed class FactoryResolversAndInitializersSyntaxWalker : CSharpSyntax
                         Resolvers.Add(invocation);
                         break;
                     
-                    case nameof(IContext.Initialize)
+                    case nameof(IContext.BuildUp)
                         when invocation.ArgumentList.Arguments.Count is 1:
                         Initializers.Add(invocation);
                         break;

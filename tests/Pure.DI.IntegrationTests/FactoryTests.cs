@@ -1424,7 +1424,7 @@ public class FactoryTests
                                            .Bind(374).To(_ => "Abc")
                                            .Bind<IDependency>().To(ctx => {
                                                var dep = new Dependency();
-                                               ctx.Initialize(dep);
+                                               ctx.BuildUp(dep);
                                                return dep;
                                            })
                                            .Bind<IService>().To<Service>()
@@ -1494,7 +1494,7 @@ public class FactoryTests
                                            .Bind(374).To(_ => "Abc")
                                            .Bind<IDependency<string>>().To(ctx => {
                                                var dep = new Dependency<string>();
-                                               ctx.Initialize(dep);
+                                               ctx.BuildUp(dep);
                                                return dep;
                                            })
                                            .Bind<IService>().To<Service>()
@@ -1566,7 +1566,7 @@ public class FactoryTests
                                            .Bind().To(_ => 33)
                                            .Bind().To(ctx => {
                                                var dep = new Dependency();
-                                               ctx.Initialize(dep);
+                                               ctx.BuildUp(dep);
                                                return dep;
                                            })
                                            .Bind<IService>().To<Service>()
@@ -1639,7 +1639,7 @@ public class FactoryTests
                                            .Bind().To(_ => 33)
                                            .Bind().To(ctx => {
                                                var dep = new Dependency();
-                                               ctx.Initialize(dep);
+                                               ctx.BuildUp(dep);
                                                return dep;
                                            })
                                            .Bind<IService>().To<Service>()

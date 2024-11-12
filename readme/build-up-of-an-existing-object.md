@@ -1,8 +1,8 @@
-#### Initialization
+#### Build up of an existing object
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/InitializationScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/BuildUpScenario.cs)
 
-It is possible to create an object yourself and then inject the required dependencies via methods, properties or fields.
+In other words, injecting the necessary dependencies via methods, properties, or fields into an existing object.
 
 
 ```c#
@@ -41,7 +41,7 @@ DI.Setup(nameof(Composition))
     .Bind<IDependency>().To(ctx =>
     {
         var dependency = new Dependency();
-        ctx.Initialize(dependency);
+        ctx.BuildUp(dependency);
         return dependency;
     })
     .Bind<IService>().To<Service>()
@@ -78,10 +78,10 @@ partial class Composition
   {
     Guid transientGuid2 = Guid.NewGuid();
     Dependency transientDependency1;
-    var localDependency28= new Dependency();
-    localDependency28.SetId(transientGuid2);
-    localDependency28.Name = name;
-    transientDependency1 = localDependency28;
+    var localDependency27= new Dependency();
+    localDependency27.SetId(transientGuid2);
+    localDependency27.Name = name;
+    transientDependency1 = localDependency27;
     return new Service(transientDependency1);
   }
 }
