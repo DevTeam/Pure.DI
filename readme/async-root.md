@@ -50,13 +50,13 @@ partial class Composition
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Task<IService> GetMyServiceAsync(CancellationToken cancellationToken)
   {
-    TaskScheduler transientTaskScheduler5 = TaskScheduler.Default;
-    TaskContinuationOptions transientTaskContinuationOptions4 = TaskContinuationOptions.None;
-    TaskCreationOptions transientTaskCreationOptions3 = TaskCreationOptions.None;
     TaskFactory<IService> perBlockTaskFactory2;
     CancellationToken localCancellationToken17 = cancellationToken;
+    TaskCreationOptions transientTaskCreationOptions3 = TaskCreationOptions.None;
     TaskCreationOptions localTaskCreationOptions18 = transientTaskCreationOptions3;
+    TaskContinuationOptions transientTaskContinuationOptions4 = TaskContinuationOptions.None;
     TaskContinuationOptions localTaskContinuationOptions19 = transientTaskContinuationOptions4;
+    TaskScheduler transientTaskScheduler5 = TaskScheduler.Default;
     TaskScheduler localTaskScheduler20 = transientTaskScheduler5;
     perBlockTaskFactory2 = new TaskFactory<IService>(localCancellationToken17, localTaskCreationOptions18, localTaskContinuationOptions19, localTaskScheduler20);
     Func<IService> perBlockFunc1 = new Func<IService>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>

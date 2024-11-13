@@ -453,7 +453,12 @@ public class FactoryTests
                            {
                               interface IDependency {}
                            
-                              class Dependency: IDependency {}
+                              class Dependency: IDependency
+                              {
+                                  public Dependency(int id, string str)
+                                  {
+                                  }
+                              }
                            
                               interface IService
                               {
@@ -475,14 +480,15 @@ public class FactoryTests
                                   private static void SetupComposition()
                                   {
                                       DI.Setup("Composition")
-                                          .Bind<IDependency>().To(ctx => new Dependency())
+                                          .Bind<string>().To(_ => "Abc")
+                                          .Bind<int>().To(_ => 33)
+                                          .Bind<IDependency>(22).To<Dependency>()
+                                          .Bind<IDependency>().To(ctx => new Dependency(0, "xyz"))
                                           .Bind<IService>().To(ctx => {
                                               IDependency dependency1;
                                               var rnd = new Random(1).Next(3);
                                               if (rnd == 0)
-                                              {
-                                                   ctx.Inject(out dependency1);
-                                              }
+                                                   ctx.Inject(22, out dependency1);
                                               else
                                               {
                                                   if (rnd == 1)
@@ -1567,6 +1573,82 @@ public class FactoryTests
                                            .Bind().To(ctx => {
                                                var dep = new Dependency();
                                                ctx.BuildUp(dep);
+                                               return dep;
+                                           })
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                       Console.WriteLine($"Id: {service.Dep.Id}");
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Initialize Abc", "Id: 33"], result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportInitializationWhenMethodAndPropertyInIf()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Dependency
+                               {
+                                   [Ordinal(1)]
+                                   internal void Initialize([Tag(374)] string depName)
+                                   {
+                                       Console.WriteLine($"Initialize {depName}");
+                                   }
+                                   
+                                   [Ordinal(2)]
+                                   public int Id { get; set; }
+                               }
+                           
+                               interface IService
+                               {
+                                   Dependency Dep { get; }
+                               }
+                           
+                               class Service: IService 
+                               {
+                                   public Service(Dependency dep)
+                                   { 
+                                       Dep = dep;
+                                   }
+                           
+                                   public Dependency Dep { get; }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind(374).To(_ => "Abc")
+                                           .Bind().To(_ => 33)
+                                           .Bind().To(ctx => {
+                                               var dep = new Dependency();
+                                               if (true)
+                                               {
+                                                    ctx.BuildUp(dep);
+                                               }
                                                return dep;
                                            })
                                            .Bind<IService>().To<Service>()

@@ -79,13 +79,13 @@ partial class Composition
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public IService GetRoot(CancellationToken cancellationToken)
   {
-    TaskScheduler transientTaskScheduler6 = TaskScheduler.Current;
-    TaskContinuationOptions transientTaskContinuationOptions5 = TaskContinuationOptions.None;
-    TaskCreationOptions transientTaskCreationOptions4 = TaskCreationOptions.None;
     TaskFactory<IDependency> perBlockTaskFactory3;
     CancellationToken localCancellationToken39 = cancellationToken;
+    TaskCreationOptions transientTaskCreationOptions4 = TaskCreationOptions.None;
     TaskCreationOptions localTaskCreationOptions40 = transientTaskCreationOptions4;
+    TaskContinuationOptions transientTaskContinuationOptions5 = TaskContinuationOptions.None;
     TaskContinuationOptions localTaskContinuationOptions41 = transientTaskContinuationOptions5;
+    TaskScheduler transientTaskScheduler6 = TaskScheduler.Current;
     TaskScheduler localTaskScheduler42 = transientTaskScheduler6;
     perBlockTaskFactory3 = new TaskFactory<IDependency>(localCancellationToken39, localTaskCreationOptions40, localTaskContinuationOptions41, localTaskScheduler42);
     Func<IDependency> perBlockFunc2 = new Func<IDependency>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>

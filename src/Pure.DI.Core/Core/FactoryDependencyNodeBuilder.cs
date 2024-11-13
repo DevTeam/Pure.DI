@@ -19,7 +19,7 @@ internal sealed class FactoryDependencyNodeBuilder(IAttributes attributes, IInst
             foreach (var resolver in factory.Resolvers)
             {
                 var tag = attributes.GetAttribute(resolver.SemanticModel, setup.TagAttributes, resolver.Attributes, default(object?)) ?? resolver.Tag?.Value;
-                injections.Add(new Injection(InjectionKind.Injection, resolver.ContractType.WithNullableAnnotation(NullableAnnotation.NotAnnotated), tag));
+                injections.Add(new Injection(InjectionKind.FactoryInjection, resolver.ContractType.WithNullableAnnotation(NullableAnnotation.NotAnnotated), tag));
             }
 
             var compilation = binding.SemanticModel.Compilation;

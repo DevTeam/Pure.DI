@@ -128,76 +128,61 @@ internal sealed class FactoryRewriter(
                     SyntaxFactory.IdentifierName(variable.VariableName).WithLeadingTrivia(SyntaxFactory.Space).WithTrailingTrivia(SyntaxFactory.Space),
                     (ExpressionSyntax)Visit(returnBody).WithLeadingTrivia(SyntaxFactory.Space))),
             owner);
-
-    public override SyntaxNode? VisitInvocationExpression(InvocationExpressionSyntax invocation)
+    
+    public override SyntaxNode VisitExpressionStatement(ExpressionStatementSyntax node)
     {
-        if (invocation.ArgumentList.Arguments.Count > 0)
+        node = (ExpressionStatementSyntax)base.VisitExpressionStatement(node)!;
+        if (node.Expression is not InvocationExpressionSyntax
+            {
+                ArgumentList.Arguments.Count: > 0,
+                Expression: MemberAccessExpressionSyntax { Expression: IdentifierNameSyntax ctx } memberAccessExpression
+            } invocation
+            || ctx.Identifier.Text != factory.Source.Context.Identifier.Text)
         {
-            if (invocation.Expression is MemberAccessExpressionSyntax
-                {
-                    Name: GenericNameSyntax
-                    {
-                        Identifier.Text: nameof(IContext.Inject),
-                        TypeArgumentList.Arguments: [not null]
-                    },
-                    Expression: IdentifierNameSyntax ctx
-                }
-                && ctx.Identifier.Text == factory.Source.Context.Identifier.Text
-                && TryInject(invocation, out var visitInvocationExpression))
-            {
-                return visitInvocationExpression;
-            }
-
-            if (invocation.Expression is MemberAccessExpressionSyntax
-                {
-                    Name: IdentifierNameSyntax
-                    {
-                        Identifier.Text: nameof(IContext.Inject)
-                    },
-                    Expression: IdentifierNameSyntax ctx2
-                }
-                && ctx2.Identifier.Text == factory.Source.Context.Identifier.Text
-                && TryInject(invocation, out visitInvocationExpression))
-            {
-                return visitInvocationExpression;
-            }
-            
-            if (invocation.Expression is MemberAccessExpressionSyntax
-                {
-                    Name: GenericNameSyntax
-                    {
-                        Identifier.Text: nameof(IContext.BuildUp),
-                        TypeArgumentList.Arguments: [not null]
-                    },
-                    Expression: IdentifierNameSyntax ctx3
-                }
-                && ctx3.Identifier.Text == factory.Source.Context.Identifier.Text
-                && TryInitialize(invocation, out visitInvocationExpression))
-            {
-                return visitInvocationExpression;
-            }
-
-            if (invocation.Expression is MemberAccessExpressionSyntax
-                {
-                    Name: IdentifierNameSyntax
-                    {
-                        Identifier.Text: nameof(IContext.BuildUp)
-                    },
-                    Expression: IdentifierNameSyntax ctx4
-                }
-                && ctx4.Identifier.Text == factory.Source.Context.Identifier.Text
-                && TryInitialize(invocation, out visitInvocationExpression))
-            {
-                return visitInvocationExpression;
-            }
+            return node;
         }
 
-        return base.VisitInvocationExpression(invocation);
+        var name = "";
+        switch (memberAccessExpression.Name)
+        {
+            case GenericNameSyntax { TypeArgumentList.Arguments.Count: 1 } genericName:
+                name = genericName.Identifier.Text;
+                break;
+            
+            case IdentifierNameSyntax identifierName:
+                name = identifierName.Identifier.Text;
+                break;
+        }
+
+        ExpressionSyntax? expressionSyntax = default;
+        var processed = name switch
+        {
+            nameof(IContext.Inject) => TryInject(invocation, out expressionSyntax),
+            nameof(IContext.BuildUp) => TryInitialize(invocation, out expressionSyntax),
+            _ => false
+        };
+
+        if (!processed || expressionSyntax is null)
+        {
+            return node;
+        }
+
+        SyntaxNode newNode;
+        if (node.Parent is null or BlockSyntax)
+        {
+            newNode = SyntaxFactory.ExpressionStatement(expressionSyntax).WithLeadingTrivia(SyntaxFactory.LineFeed).WithTrailingTrivia(SyntaxFactory.LineFeed);
+        }
+        else
+        {
+            newNode = SyntaxFactory.Block().AddStatements(SyntaxFactory.ExpressionStatement(expressionSyntax).WithLeadingTrivia(SyntaxFactory.LineFeed).WithTrailingTrivia(SyntaxFactory.LineFeed));
+        }
+
+        return triviaTools.PreserveTrivia(newNode, node);
     }
 
     private bool TryInject(
         InvocationExpressionSyntax invocation,
-        [NotNullWhen(true)] out SyntaxNode? visitInvocationExpression)
+        [NotNullWhen(true)] out ExpressionSyntax? expressionSyntax)
     {
         var value = invocation.ArgumentList.Arguments.Count switch
         {
@@ -211,25 +196,25 @@ internal sealed class FactoryRewriter(
             case IdentifierNameSyntax identifierName:
                 injections.Add(new Injection(identifierName.Identifier.Text, false));
             {
-                visitInvocationExpression = triviaTools.PreserveTrivia(InjectionMarkerExpression, invocation);
+                expressionSyntax = triviaTools.PreserveTrivia(InjectionMarkerExpression, invocation);
                 return true;
             }
 
             case DeclarationExpressionSyntax { Designation: SingleVariableDesignationSyntax singleVariableDesignationSyntax }:
                 injections.Add(new Injection(singleVariableDesignationSyntax.Identifier.Text, true));
             {
-                visitInvocationExpression = triviaTools.PreserveTrivia(InjectionMarkerExpression, invocation);
+                expressionSyntax = triviaTools.PreserveTrivia(InjectionMarkerExpression, invocation);
                 return true;
             }
         }
 
-        visitInvocationExpression = default;
+        expressionSyntax = default;
         return false;
     }
     
     private bool TryInitialize(
         InvocationExpressionSyntax invocation,
-        [NotNullWhen(true)] out SyntaxNode? visitInvocationExpression)
+        [NotNullWhen(true)] out ExpressionSyntax? expressionSyntax)
     {
         var value = invocation.ArgumentList.Arguments.Count switch
         {
@@ -242,31 +227,20 @@ internal sealed class FactoryRewriter(
             case IdentifierNameSyntax identifierName:
                 initializers.Add(new Initializer(identifierName.Identifier.Text, false));
             {
-                visitInvocationExpression = triviaTools.PreserveTrivia(InitializationMarkerExpression, invocation);
+                expressionSyntax = triviaTools.PreserveTrivia(InitializationMarkerExpression, invocation);
                 return true;
             }
 
             case DeclarationExpressionSyntax { Designation: SingleVariableDesignationSyntax singleVariableDesignationSyntax }:
                 initializers.Add(new Initializer(singleVariableDesignationSyntax.Identifier.Text, true));
             {
-                visitInvocationExpression = triviaTools.PreserveTrivia(InitializationMarkerExpression, invocation);
+                expressionSyntax = triviaTools.PreserveTrivia(InitializationMarkerExpression, invocation);
                 return true;
             }
         }
 
-        visitInvocationExpression = default;
+        expressionSyntax = default;
         return false;
-    }
-
-    public override SyntaxNode VisitExpressionStatement(ExpressionStatementSyntax node)
-    {
-        var newNode = (ExpressionStatementSyntax)base.VisitExpressionStatement(node)!;
-        if (newNode.Expression.IsEquivalentTo(InjectionMarkerExpression))
-        {
-            return triviaTools.PreserveTrivia(newNode, node);
-        }
-
-        return newNode;
     }
 
     public override SyntaxNode? VisitMemberAccessExpression(MemberAccessExpressionSyntax node)

@@ -67,7 +67,11 @@ internal class BlockCodeBuilder(
             var content = new LinesBuilder();
             foreach (var statement in block.Statements)
             {
-                ctx.StatementBuilder.Build(ctx with { Variable = statement.Current, Code = content }, statement);
+                var curVar = statement.Current;
+                if (ctx.IsFactory || curVar.Injection.Kind != InjectionKind.FactoryInjection || curVar.Node.Lifetime != Lifetime.Transient)
+                {
+                    ctx.StatementBuilder.Build(ctx with { Variable = curVar, Code = content, IsFactory = false }, statement);
+                }
             }
 
             if (content.Count == 0)

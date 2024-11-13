@@ -10,4 +10,5 @@ internal record BuildContext(
     LinesBuilder LocalFunctionsCode,
     object? ContextTag,
     bool? LockIsRequired,
-    ImmutableArray<Accumulator> Accumulators);
+    ImmutableArray<Accumulator> Accumulators,
+    bool IsFactory = false);

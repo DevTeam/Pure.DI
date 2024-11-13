@@ -198,8 +198,8 @@ internal class FactoryCodeBuilder(
             lines.AddRange(text.Lines);
         }
 
-        var injectionArgs = variable.Args.Where(i => i.Current.Injection.Kind == InjectionKind.Injection).ToList();
-        var initializationArgs = variable.Args.Where(i => i.Current.Injection.Kind != InjectionKind.Injection).ToList();
+        var injectionArgs = variable.Args.Where(i => i.Current.Injection.Kind is InjectionKind.FactoryInjection).ToList();
+        var initializationArgs = variable.Args.Where(i => i.Current.Injection.Kind != InjectionKind.FactoryInjection).ToList();
 
         // Replaces injection markers by injection code
         if (injectionArgs.Count != injections.Count)
@@ -276,7 +276,7 @@ internal class FactoryCodeBuilder(
                 var indent = prefixes.Count;
                 using (code.Indent(indent))
                 {
-                    ctx.StatementBuilder.Build(injectionsCtx with { Level = level, Variable = argument.Current, LockIsRequired = lockIsRequired }, argument);
+                    ctx.StatementBuilder.Build(injectionsCtx with { Level = level, Variable = argument.Current, LockIsRequired = lockIsRequired, IsFactory = true }, argument);
                     code.AppendLine($"{(resolver.DeclarationRequired ? $"{typeResolver.Resolve(ctx.DependencyGraph.Source, argument.Current.Injection.Type)} " : "")}{resolver.VariableName} = {ctx.BuildTools.OnInjected(ctx, argument.Current)};");
                 }
                 

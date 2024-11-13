@@ -84,13 +84,13 @@ partial class Composition
   public Task<IService<T, bool>> GetOtherServiceAsync<T>(CancellationToken cancellationToken)
     where T: IDisposable
   {
-    TaskScheduler transientTaskScheduler5 = TaskScheduler.Default;
-    TaskContinuationOptions transientTaskContinuationOptions4 = TaskContinuationOptions.None;
-    TaskCreationOptions transientTaskCreationOptions3 = TaskCreationOptions.None;
     TaskFactory<IService<T, bool>> perBlockTaskFactory2;
     CancellationToken localCancellationToken47 = cancellationToken;
+    TaskCreationOptions transientTaskCreationOptions3 = TaskCreationOptions.None;
     TaskCreationOptions localTaskCreationOptions48 = transientTaskCreationOptions3;
+    TaskContinuationOptions transientTaskContinuationOptions4 = TaskContinuationOptions.None;
     TaskContinuationOptions localTaskContinuationOptions49 = transientTaskContinuationOptions4;
+    TaskScheduler transientTaskScheduler5 = TaskScheduler.Default;
     TaskScheduler localTaskScheduler50 = transientTaskScheduler5;
     perBlockTaskFactory2 = new TaskFactory<IService<T, bool>>(localCancellationToken47, localTaskCreationOptions48, localTaskContinuationOptions49, localTaskScheduler50);
     Func<IService<T, bool>> perBlockFunc1 = new Func<IService<T, bool>>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
@@ -116,13 +116,13 @@ partial class Composition
     where T: IDisposable
     where T1: struct
   {
-    TaskScheduler transientTaskScheduler5 = TaskScheduler.Default;
-    TaskContinuationOptions transientTaskContinuationOptions4 = TaskContinuationOptions.None;
-    TaskCreationOptions transientTaskCreationOptions3 = TaskCreationOptions.None;
     TaskFactory<IService<T, T1>> perBlockTaskFactory2;
     CancellationToken localCancellationToken55 = cancellationToken;
+    TaskCreationOptions transientTaskCreationOptions3 = TaskCreationOptions.None;
     TaskCreationOptions localTaskCreationOptions56 = transientTaskCreationOptions3;
+    TaskContinuationOptions transientTaskContinuationOptions4 = TaskContinuationOptions.None;
     TaskContinuationOptions localTaskContinuationOptions57 = transientTaskContinuationOptions4;
+    TaskScheduler transientTaskScheduler5 = TaskScheduler.Default;
     TaskScheduler localTaskScheduler58 = transientTaskScheduler5;
     perBlockTaskFactory2 = new TaskFactory<IService<T, T1>>(localCancellationToken55, localTaskCreationOptions56, localTaskContinuationOptions57, localTaskScheduler58);
     Func<IService<T, T1>> perBlockFunc1 = new Func<IService<T, T1>>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>

@@ -3,10 +3,16 @@
 internal enum InjectionKind
 {
     Field,
+    
     Property,
+    
     Parameter,
+    
     Root,
-    Injection,
+    
+    FactoryInjection,
+    
     Contract,
+    
     Construct
 }
