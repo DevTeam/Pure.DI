@@ -37,6 +37,13 @@ class Dependency(DateTimeOffset time) : IDependency
     public void Initialize() => IsInitialized = true;
 }
 
+class FakeDependency : IDependency
+{
+    public DateTimeOffset Time => DateTimeOffset.MinValue;
+
+    public bool IsInitialized => true;
+}
+
 interface IService
 {
     IDependency Dependency { get; }
@@ -57,14 +64,21 @@ public class Scenario
 // {
         DI.Setup(nameof(Composition))
             .Bind().To(_ => DateTimeOffset.Now)
-            .Bind<IDependency>().To(ctx =>
+            .RootArg<bool>("isFake", "FakeArgTag")
+            .Bind<IDependency>().To<IDependency>(ctx =>
             {
                 // When building a composition of objects,
-                // all of this code will be outside the lambda function:
+                // all of this code will be outside the lambda function.
 
                 // Some custom logic for creating an instance.
-                // For example, here's how you can inject
-                // an instance of a particular type
+                // For example, here's how you can inject and initialize
+                // an instance of a particular type:
+                ctx.Inject<bool>("FakeArgTag", out var isFake);
+                if (isFake)
+                {
+                    return new FakeDependency();
+                }
+
                 ctx.Inject(out Dependency dependency);
 
                 // And do something about it.
@@ -72,15 +86,21 @@ public class Scenario
 
                 // And at the end return an instance
                 return dependency;
+
             })
             .Bind<IService>().To<Service>()
 
             // Composition root
-            .Root<IService>("MyService");
+            .Root<IService>("GetMyService");
 
         var composition = new Composition();
-        var service = composition.MyService;
+
+        var service = composition.GetMyService(isFake: false);
+        service.Dependency.ShouldBeOfType<Dependency>();
         service.Dependency.IsInitialized.ShouldBeTrue();
+        
+        var serviceWithFakeDependency = composition.GetMyService(isFake: true);
+        serviceWithFakeDependency.Dependency.ShouldBeOfType<FakeDependency>();
 // }
         composition.SaveClassDiagram();
     }

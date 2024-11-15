@@ -93,13 +93,13 @@ partial class Composition
   {
     Func<IDependency> perBlockFunc2 = new Func<IDependency>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
     {
-      IDependency localValue36 = new Dependency();
-      return localValue36;
+      IDependency localValue37 = new Dependency();
+      return localValue37;
     });
     Task<IDependency> transientTask1;
-    Func<IDependency> localFactory37 = perBlockFunc2;
-    CancellationToken localCancellationToken38 = cancellationToken;
-    transientTask1 = new Task<IDependency>(localFactory37, localCancellationToken38);
+    Func<IDependency> localFactory38 = perBlockFunc2;
+    CancellationToken localCancellationToken39 = cancellationToken;
+    transientTask1 = new Task<IDependency>(localFactory38, localCancellationToken39);
     return new Service(transientTask1);
   }
 }

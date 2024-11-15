@@ -36,8 +36,8 @@ interface IService
 }
 
 class Service(
-    [Tag("Abc")] IDependency dependency1,
-    [Tag("Xyz")] IDependency dependency2,
+    [Tag("AbcTag")] IDependency dependency1,
+    [Tag("XyzTag")] IDependency dependency2,
     IDependency dependency3)
     : IService
 {
@@ -57,14 +57,14 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Bind<IDependency>("Abc", default).To<AbcDependency>()
-            .Bind<IDependency>("Xyz")
+            .Bind<IDependency>("AbcTag", default).To<AbcDependency>()
+            .Bind<IDependency>("XyzTag")
             .As(Lifetime.Singleton)
             .To<XyzDependency>()
             .Bind<IService>().To<Service>()
 
-            // "XyzRoot" is root name, "Xyz" is tag
-            .Root<IDependency>("XyzRoot", "Xyz")
+            // "XyzRoot" is root name, "XyzTag" is tag
+            .Root<IDependency>("XyzRoot", "XyzTag")
 
             // Specifies to create the composition root named "Root"
             .Root<IService>("Root");

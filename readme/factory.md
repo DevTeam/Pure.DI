@@ -23,6 +23,13 @@ class Dependency(DateTimeOffset time) : IDependency
     public void Initialize() => IsInitialized = true;
 }
 
+class FakeDependency : IDependency
+{
+    public DateTimeOffset Time => DateTimeOffset.MinValue;
+
+    public bool IsInitialized => true;
+}
+
 interface IService
 {
     IDependency Dependency { get; }
@@ -35,14 +42,21 @@ class Service(IDependency dependency) : IService
 
 DI.Setup(nameof(Composition))
     .Bind().To(_ => DateTimeOffset.Now)
-    .Bind<IDependency>().To(ctx =>
+    .RootArg<bool>("isFake", "FakeArgTag")
+    .Bind<IDependency>().To<IDependency>(ctx =>
     {
         // When building a composition of objects,
-        // all of this code will be outside the lambda function:
+        // all of this code will be outside the lambda function.
 
         // Some custom logic for creating an instance.
-        // For example, here's how you can inject
-        // an instance of a particular type
+        // For example, here's how you can inject and initialize
+        // an instance of a particular type:
+        ctx.Inject<bool>("FakeArgTag", out var isFake);
+        if (isFake)
+        {
+            return new FakeDependency();
+        }
+
         ctx.Inject(out Dependency dependency);
 
         // And do something about it.
@@ -50,15 +64,21 @@ DI.Setup(nameof(Composition))
 
         // And at the end return an instance
         return dependency;
+
     })
     .Bind<IService>().To<Service>()
 
     // Composition root
-    .Root<IService>("MyService");
+    .Root<IService>("GetMyService");
 
 var composition = new Composition();
-var service = composition.MyService;
+
+var service = composition.GetMyService(isFake: false);
+service.Dependency.ShouldBeOfType<Dependency>();
 service.Dependency.IsInitialized.ShouldBeTrue();
+        
+var serviceWithFakeDependency = composition.GetMyService(isFake: true);
+serviceWithFakeDependency.Dependency.ShouldBeOfType<FakeDependency>();
 ```
 
 This approach is more expensive to maintain, but allows you to create objects more flexibly by passing them some state and introducing dependencies. As in the case of automatic dependency injecting, objects give up control on embedding, and the whole process takes place when the object graph is created.
@@ -72,7 +92,7 @@ partial class Composition
 {
   private readonly Composition _root;
 
-  [OrdinalAttribute(20)]
+  [OrdinalAttribute(10)]
   public Composition()
   {
     _root = this;
@@ -83,25 +103,29 @@ partial class Composition
     _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
   }
 
-  public IService MyService
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public IService GetMyService(bool isFake)
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    get
+    DateTimeOffset transientDateTimeOffset3 = DateTimeOffset.Now;
+    IDependency transientIDependency1;
+    // When building a composition of objects,
+    // all of this code will be outside the lambda function.
+    // Some custom logic for creating an instance.
+    // For example, here's how you can inject and initialize
+    // an instance of a particular type:
+      bool localIsFake28 = isFake;
+    if (localIsFake28)
     {
-      DateTimeOffset transientDateTimeOffset3 = DateTimeOffset.Now;
-      Dependency transientDependency1;
-      // When building a composition of objects,
-      // all of this code will be outside the lambda function:
-      // Some custom logic for creating an instance.
-      // For example, here's how you can inject
-      // an instance of a particular type
-        Dependency localDependency28 = new Dependency(transientDateTimeOffset3);
-      // And do something about it.
-      localDependency28.Initialize();
-      // And at the end return an instance
-      transientDependency1 = localDependency28;
-      return new Service(transientDependency1);
+      {transientIDependency1 = new FakeDependency();
+    goto transientIDependency1Finish; }
     }
+      Dependency localDependency29 = new Dependency(transientDateTimeOffset3);
+    // And do something about it.
+    localDependency29.Initialize();
+    // And at the end return an instance
+    transientIDependency1 = localDependency29;
+    transientIDependency1Finish:;
+    return new Service(transientIDependency1);
   }
 }
 ```
@@ -112,12 +136,14 @@ Class diagram:
 classDiagram
 	class Composition {
 		<<partial>>
-		+IService MyService
+		+IService GetMyService(bool isFake)
 	}
 	class Dependency {
 		+Dependency(DateTimeOffset time)
 	}
 	class DateTimeOffset
+	class Boolean
+	class IDependency
 	Service --|> IService
 	class Service {
 		+Service(IDependency dependency)
@@ -126,7 +152,9 @@ classDiagram
 		<<interface>>
 	}
 	Dependency *--  DateTimeOffset : DateTimeOffset
-	Composition ..> Service : IService MyService
-	Service *--  Dependency : IDependency
+	Composition ..> Service : IService GetMyService(bool isFake)
+	IDependency o-- Boolean : "FakeArgTag"  Argument "isFake"
+	IDependency *--  Dependency : Dependency
+	Service *--  IDependency : IDependency
 ```
 
