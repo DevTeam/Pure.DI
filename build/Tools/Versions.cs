@@ -20,12 +20,17 @@ internal partial class Versions(INuGet nuGet)
                 : new NuGetVersion(i.Major, i.Minor, i.Patch + patchIncrement))
             .Max()
         ?? new NuGetVersion(
-            versionRange.MinVersion.Major,
-            versionRange.MinVersion.Minor,
-            versionRange.MinVersion.Patch);
+            versionRange.MinVersion?.Major ?? 1,
+            versionRange.MinVersion?.Minor ?? 0,
+            versionRange.MinVersion?.Patch ?? 0);
 
     private static NuGetVersion GetNextRelease(VersionRangeBase versionRange, NuGetVersion version)
     {
+        if (versionRange.MinVersion is null)
+        {
+            return version;
+        }
+
         if (versionRange.MinVersion.Release != "0" && versionRange.MinVersion.Release != version.Release)
         {
             return versionRange.MinVersion;
