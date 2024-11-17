@@ -130,8 +130,8 @@ partial class Composition
           }
         }
 
-        Dependency localDependency33 = new Dependency(_root._singletonClock39!, transientInt323, transientInt324);
-        return localDependency33;
+        Dependency localDependency39 = new Dependency(_root._singletonClock39!, transientInt323, transientInt324);
+        return localDependency39;
       };
       return new Service(transientFunc1);
     }

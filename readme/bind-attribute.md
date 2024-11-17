@@ -88,8 +88,8 @@ partial class Composition
       }
 
       IDependency transientIDependency1;
-      Facade localInstance_1182D12725 = _root._singletonFacade39!;
-      transientIDependency1 = localInstance_1182D12725.Dependency;
+      Facade localInstance_1182D12731 = _root._singletonFacade39!;
+      transientIDependency1 = localInstance_1182D12731.Dependency;
       return new Service(transientIDependency1);
     }
   }

@@ -283,6 +283,7 @@ dotnet run
 - [A few partial classes](readme/a-few-partial-classes.md)
 - [Tracking disposable instances per a composition root](readme/tracking-disposable-instances-per-a-composition-root.md)
 - [Tracking disposable instances in delegates](readme/tracking-disposable-instances-in-delegates.md)
+- [Tracking disposable instances with different lifetimes](readme/tracking-disposable-instances-with-different-lifetimes.md)
 - [Tracking async disposable instances per a composition root](readme/tracking-async-disposable-instances-per-a-composition-root.md)
 - [Tracking async disposable instances in delegates](readme/tracking-async-disposable-instances-in-delegates.md)
 - [Exposed roots](readme/exposed-roots.md)

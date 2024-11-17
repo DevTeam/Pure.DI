@@ -113,17 +113,17 @@ partial class Composition
     // Some custom logic for creating an instance.
     // For example, here's how you can inject and initialize
     // an instance of a particular type:
-      bool localIsFake28 = isFake;
-    if (localIsFake28)
+      bool localIsFake34 = isFake;
+    if (localIsFake34)
     {
       {transientIDependency1 = new FakeDependency();
     goto transientIDependency1Finish; }
     }
-      Dependency localDependency29 = new Dependency(transientDateTimeOffset3);
+      Dependency localDependency35 = new Dependency(transientDateTimeOffset3);
     // And do something about it.
-    localDependency29.Initialize();
+    localDependency35.Initialize();
     // And at the end return an instance
-    transientIDependency1 = localDependency29;
+    transientIDependency1 = localDependency35;
     transientIDependency1Finish:;
     return new Service(transientIDependency1);
   }
