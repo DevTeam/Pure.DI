@@ -1,5 +1,5 @@
 ﻿// ReSharper disable HeapView.ObjectAllocation
-
+// ReSharper disable NotAccessedPositionalProperty.Global
 namespace Pure.DI.Core.Models;
 
 internal record DpInitializer(
@@ -8,7 +8,7 @@ internal record DpInitializer(
     in ImmutableArray<DpProperty> Properties,
     in ImmutableArray<DpField> Fields)
 {
-    public IEnumerable<string> ToStrings(int indent)
+    private IEnumerable<string> ToStrings(int indent)
     {
         var walker = new DependenciesToLinesWalker(indent);
         walker.VisitInitializer(Unit.Shared, this);

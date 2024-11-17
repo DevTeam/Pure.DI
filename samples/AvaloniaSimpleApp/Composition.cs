@@ -1,4 +1,5 @@
-﻿namespace AvaloniaSimpleApp;
+﻿// ReSharper disable UnusedMember.Local
+namespace AvaloniaSimpleApp;
 
 using Pure.DI;
 using static Pure.DI.Lifetime;

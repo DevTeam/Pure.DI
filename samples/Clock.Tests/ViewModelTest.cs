@@ -1,5 +1,6 @@
 ﻿namespace Clock.Tests;
 
+using System.Collections.ObjectModel;
 using Models;
 
 public class ViewModelTest
@@ -36,7 +37,7 @@ public class ViewModelTest
         public TestViewModel() =>
             PropertyChanged += (_, args) => { _propertyNames.Add(args.PropertyName); };
 
-        public IReadOnlyList<string?> PropertyNames => _propertyNames.AsReadOnly();
+        public ReadOnlyCollection<string?> PropertyNames => _propertyNames.AsReadOnly();
 
         public void RaiseOnPropertyChanged(string? propertyName = null) =>
             OnPropertyChanged(propertyName);

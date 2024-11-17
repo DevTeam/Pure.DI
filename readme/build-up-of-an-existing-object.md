@@ -31,20 +31,18 @@ interface IService
     IDependency Dependency { get; }
 }
 
-record Service(IDependency Dependency) : IService
-{
-}
+record Service(IDependency Dependency) : IService;
 
 DI.Setup(nameof(Composition))
     .RootArg<string>("name")
     .Bind().To(_ => Guid.NewGuid())
-    .Bind<IDependency>().To(ctx =>
+    .Bind().To(ctx =>
     {
         var dependency = new Dependency();
         ctx.BuildUp(dependency);
         return dependency;
     })
-    .Bind<IService>().To<Service>()
+    .Bind().To<Service>()
 
     // Composition root
     .Root<IService>("GetMyService");
@@ -103,6 +101,7 @@ classDiagram
 		+SetId(Guid id) : Void
 	}
 	Service --|> IService
+	Service --|> IEquatableᐸServiceᐳ
 	class Service {
 		+Service(IDependency Dependency)
 	}
@@ -110,6 +109,9 @@ classDiagram
 		<<interface>>
 	}
 	class IService {
+		<<interface>>
+	}
+	class IEquatableᐸServiceᐳ {
 		<<interface>>
 	}
 	Composition ..> Service : IService GetMyService(string name)

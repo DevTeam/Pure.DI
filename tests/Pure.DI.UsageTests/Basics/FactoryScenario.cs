@@ -73,6 +73,7 @@ public class Scenario
                 // Some custom logic for creating an instance.
                 // For example, here's how you can inject and initialize
                 // an instance of a particular type:
+
                 ctx.Inject<bool>("FakeArgTag", out var isFake);
                 if (isFake)
                 {
@@ -80,11 +81,7 @@ public class Scenario
                 }
 
                 ctx.Inject(out Dependency dependency);
-
-                // And do something about it.
                 dependency.Initialize();
-
-                // And at the end return an instance
                 return dependency;
 
             })

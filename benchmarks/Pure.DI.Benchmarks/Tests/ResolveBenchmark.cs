@@ -2,6 +2,7 @@
 // ReSharper disable MemberCanBeMadeStatic.Local
 // ReSharper disable RedundantNameQualifier
 // ReSharper disable UnusedMethodReturnValue.Local
+// ReSharper disable ReturnValueOfPureMethodIsNotUsed
 #pragma warning disable CS8500
 namespace Pure.DI.Benchmarks.Tests;
 

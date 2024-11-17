@@ -51,6 +51,7 @@ DI.Setup(nameof(Composition))
         // Some custom logic for creating an instance.
         // For example, here's how you can inject and initialize
         // an instance of a particular type:
+
         ctx.Inject<bool>("FakeArgTag", out var isFake);
         if (isFake)
         {
@@ -58,11 +59,7 @@ DI.Setup(nameof(Composition))
         }
 
         ctx.Inject(out Dependency dependency);
-
-        // And do something about it.
         dependency.Initialize();
-
-        // And at the end return an instance
         return dependency;
 
     })
@@ -120,9 +117,7 @@ partial class Composition
     goto transientIDependency1Finish; }
     }
       Dependency localDependency35 = new Dependency(transientDateTimeOffset3);
-    // And do something about it.
     localDependency35.Initialize();
-    // And at the end return an instance
     transientIDependency1 = localDependency35;
     transientIDependency1Finish:;
     return new Service(transientIDependency1);

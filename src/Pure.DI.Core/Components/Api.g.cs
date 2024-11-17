@@ -1335,10 +1335,10 @@ namespace Pure.DI
         /// <summary>
         /// Implement this partial method to handle the exception on disposing.
         /// </summary>
-        /// <param name="asynDisposableInstance">The disposable instance.</param>
+        /// <param name="asyncDisposableInstance">The disposable instance.</param>
         /// <param name="exception">Exception occurring during disposal.</param>
         /// <typeparam name="T">The actual type of instance being disposed of.</typeparam>
-        partial void OnDisposeAsyncException<T>(T asynDisposableInstance, global::System.Exception exception)
+        partial void OnDisposeAsyncException<T>(T asyncDisposableInstance, global::System.Exception exception)
             where T : global::System.IAsyncDisposable;
 #endif
     }
@@ -1361,7 +1361,7 @@ namespace Pure.DI
             Value = value;
             _owned = owned;
         }
-
+        
         /// <inheritdoc />
         public void Dispose()
         {

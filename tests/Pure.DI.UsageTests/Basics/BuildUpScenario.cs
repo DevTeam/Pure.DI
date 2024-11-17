@@ -41,9 +41,7 @@ interface IService
     IDependency Dependency { get; }
 }
 
-record Service(IDependency Dependency) : IService
-{
-}
+record Service(IDependency Dependency) : IService;
 // }
 
 public class Scenario
@@ -56,13 +54,13 @@ public class Scenario
         DI.Setup(nameof(Composition))
             .RootArg<string>("name")
             .Bind().To(_ => Guid.NewGuid())
-            .Bind<IDependency>().To(ctx =>
+            .Bind().To(ctx =>
             {
                 var dependency = new Dependency();
                 ctx.BuildUp(dependency);
                 return dependency;
             })
-            .Bind<IService>().To<Service>()
+            .Bind().To<Service>()
 
             // Composition root
             .Root<IService>("GetMyService");

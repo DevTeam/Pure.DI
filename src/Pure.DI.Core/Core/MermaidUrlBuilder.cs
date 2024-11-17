@@ -45,10 +45,6 @@ internal class MermaidUrlBuilder : IBuilder<IEnumerable<string>, Uri>
 
                 case '\\':
                 case '"':
-                    sb.Append('\\');
-                    sb.Append(ch);
-                    break;
-
                 case '/':
                     sb.Append('\\');
                     sb.Append(ch);

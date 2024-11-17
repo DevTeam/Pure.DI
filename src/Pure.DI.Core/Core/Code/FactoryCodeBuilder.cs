@@ -75,12 +75,6 @@ internal class FactoryCodeBuilder(
                 switch (member)
                 {
                     case IFieldSymbol:
-                        value = SyntaxFactory.MemberAccessExpression(
-                            SyntaxKind.SimpleMemberAccessExpression,
-                            instance,
-                            SyntaxFactory.IdentifierName(member.Name));
-                        break;
-
                     case IPropertySymbol:
                         value = SyntaxFactory.MemberAccessExpression(
                             SyntaxKind.SimpleMemberAccessExpression,

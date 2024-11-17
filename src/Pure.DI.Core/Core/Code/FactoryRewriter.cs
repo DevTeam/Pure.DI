@@ -142,17 +142,12 @@ internal sealed class FactoryRewriter(
             return node;
         }
 
-        var name = "";
-        switch (memberAccessExpression.Name)
+        var name = memberAccessExpression.Name switch
         {
-            case GenericNameSyntax { TypeArgumentList.Arguments.Count: 1 } genericName:
-                name = genericName.Identifier.Text;
-                break;
-            
-            case IdentifierNameSyntax identifierName:
-                name = identifierName.Identifier.Text;
-                break;
-        }
+            GenericNameSyntax { TypeArgumentList.Arguments.Count: 1 } genericName => genericName.Identifier.Text,
+            IdentifierNameSyntax identifierName => identifierName.Identifier.Text,
+            _ => ""
+        };
 
         ExpressionSyntax? expressionSyntax = default;
         var processed = name switch
@@ -225,14 +220,14 @@ internal sealed class FactoryRewriter(
         switch (value)
         {
             case IdentifierNameSyntax identifierName:
-                initializers.Add(new Initializer(identifierName.Identifier.Text, false));
+                initializers.Add(new Initializer(identifierName.Identifier.Text));
             {
                 expressionSyntax = triviaTools.PreserveTrivia(InitializationMarkerExpression, invocation);
                 return true;
             }
 
             case DeclarationExpressionSyntax { Designation: SingleVariableDesignationSyntax singleVariableDesignationSyntax }:
-                initializers.Add(new Initializer(singleVariableDesignationSyntax.Identifier.Text, true));
+                initializers.Add(new Initializer(singleVariableDesignationSyntax.Identifier.Text));
             {
                 expressionSyntax = triviaTools.PreserveTrivia(InitializationMarkerExpression, invocation);
                 return true;
@@ -276,5 +271,5 @@ internal sealed class FactoryRewriter(
 
     internal record Injection(string VariableName, bool DeclarationRequired);
     
-    internal record Initializer(string VariableName, bool DeclarationRequired);
+    internal record Initializer(string VariableName);
 }

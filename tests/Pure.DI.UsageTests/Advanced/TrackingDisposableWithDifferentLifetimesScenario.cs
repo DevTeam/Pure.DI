@@ -76,12 +76,15 @@ public class Scenario
         var composition = new Composition();
         var root1 = composition.Root;
         var root2 = composition.Root;
+        root1.Dependency.ShouldNotBe(root2.Dependency);
+        root1.SingleDependency.ShouldBe(root2.SingleDependency);
 
         root2.Dispose();
 
         // Checks that the disposable instances
         // associated with root1 have been disposed of
         root2.Dependency.IsDisposed.ShouldBeTrue();
+
         // But the singleton is still not disposed of
         root2.SingleDependency.IsDisposed.ShouldBeFalse();
 
@@ -95,11 +98,11 @@ public class Scenario
         // Checks that the disposable instances
         // associated with root2 have been disposed of
         root1.Dependency.IsDisposed.ShouldBeTrue();
+
         // But the singleton is still not disposed of
         root1.SingleDependency.IsDisposed.ShouldBeFalse();
         
         composition.Dispose();
-        root2.SingleDependency.IsDisposed.ShouldBeTrue();
         root1.SingleDependency.IsDisposed.ShouldBeTrue();
 // }
         new Composition().SaveClassDiagram();
