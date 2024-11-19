@@ -5,20 +5,14 @@ namespace Pure.DI.Core;
 internal class ProcessingNode : IEquatable<ProcessingNode>
 {
     public readonly DependencyNode Node;
-    private readonly Lazy<bool> _isMarkerBased;
     private readonly Lazy<ImmutableArray<InjectionInfo>> _injections;
 
     public ProcessingNode(
-        MdSetup setup,
         DependencyNode node,
-        ISet<Injection> contracts,
-        IMarker marker)
+        ISet<Injection> contracts)
     {
         Node = node;
         Contracts = contracts;
-
-        _isMarkerBased = new Lazy<bool>(IsMarkerBased);
-
         _injections = new Lazy<ImmutableArray<InjectionInfo>>(GetInjections);
         return;
 
@@ -28,11 +22,7 @@ internal class ProcessingNode : IEquatable<ProcessingNode>
             injectionsWalker.VisitDependencyNode(Unit.Shared, node);
             return injectionsWalker.ToImmutableArray();
         }
-
-        bool IsMarkerBased() => marker.IsMarkerBased(setup, node.Type);
     }
-
-    public bool IsMarkerBased => _isMarkerBased.Value;
 
     public ISet<Injection> Contracts { get; }
 

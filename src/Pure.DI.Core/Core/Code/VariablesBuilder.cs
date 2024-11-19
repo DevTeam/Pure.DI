@@ -16,7 +16,7 @@ internal class VariablesBuilder(
         var graph = dependencyGraph.Graph;
         var blockId = 0;
         var transientId = 0;
-        var blockMap = new Dictionary<(MdBinding, int), Variable>();
+        var blockMap = new Dictionary<(MdBinding, object?, int), Variable>();
         var rootBlock = new Block(blockId++, default, []);
         rootBlock.Statements.AddFirst(
             GetVariable(
@@ -193,7 +193,7 @@ internal class VariablesBuilder(
         MdSetup setup,
         Block parentBlock,
         IDictionary<MdBinding, Variable> map,
-        IDictionary<(MdBinding, int), Variable> blockMap,
+        IDictionary<(MdBinding, object?, int), Variable> blockMap,
         DependencyNode node,
         in Injection injection,
         ref int transientId,
@@ -228,7 +228,7 @@ internal class VariablesBuilder(
 
                 case Lifetime.PerBlock:
                 {
-                    var perBlockKey = (node.Binding, parentBlock.Id);
+                    var perBlockKey = (node.Binding, injection.Tag, parentBlock.Id);
                     if (blockMap.TryGetValue(perBlockKey, out var blockVariable))
                     {
                         return blockVariable with
@@ -246,7 +246,8 @@ internal class VariablesBuilder(
             }
         }
 
-        if (map.TryGetValue(node.Binding, out var variable))
+        var key = node.Binding;
+        if (map.TryGetValue(key, out var variable))
         {
             variable.Info.AddRef(parentBlock);
             return variable with
@@ -258,7 +259,7 @@ internal class VariablesBuilder(
         }
 
         variable = new Variable(setup, parentBlock, node.Binding.Id, node, injection, new List<IStatement>(), new VariableInfo(), nodeInfo.IsLazy(node), false);
-        map.Add(node.Binding, variable);
+        map.Add(key, variable);
         return variable;
     }
 }

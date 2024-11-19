@@ -65,17 +65,18 @@ internal class BuildTools(
             return variableCode;
         }
 
+        var tag = GetTag(ctx, variable);
+        // ReSharper disable once ConvertIfStatementToReturnStatement
         if (!filter.IsMeetRegularExpression(
                 ctx.DependencyGraph.Source,
                 (Hint.OnDependencyInjectionImplementationTypeNameRegularExpression, typeResolver.Resolve(variable.Setup, variable.InstanceType).Name),
                 (Hint.OnDependencyInjectionContractTypeNameRegularExpression, variable.ContractType.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat)),
-                (Hint.OnDependencyInjectionTagRegularExpression, variable.Injection.Tag.ValueToString()),
+                (Hint.OnDependencyInjectionTagRegularExpression, tag.ValueToString()),
                 (Hint.OnDependencyInjectionLifetimeRegularExpression, variable.Node.Lifetime.ValueToString())))
         {
             return variableCode;
         }
-
-        var tag = GetTag(ctx, variable);
+        
         return $"{Names.OnDependencyInjectionMethodName}<{typeResolver.Resolve(variable.Setup, variable.ContractType)}>({variableCode}, {tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()})";
     }
 
@@ -121,16 +122,16 @@ internal class BuildTools(
             return code.Lines;
         }
 
+        var tag = GetTag(ctx, variable);
         if (!filter.IsMeetRegularExpression(
                 ctx.DependencyGraph.Source,
                 (Hint.OnNewInstanceImplementationTypeNameRegularExpression, variable.Node.Type.ToString()),
-                (Hint.OnNewInstanceTagRegularExpression, variable.Injection.Tag.ValueToString()),
+                (Hint.OnNewInstanceTagRegularExpression, tag.ValueToString()),
                 (Hint.OnNewInstanceLifetimeRegularExpression, variable.Node.Lifetime.ValueToString())))
         {
             return code.Lines;
         }
-
-        var tag = GetTag(ctx, variable);
+        
         var lines = new List<Line>
         {
             new(0, $"{Names.OnNewInstanceMethodName}<{typeResolver.Resolve(variable.Setup, variable.InstanceType)}>(ref {variable.VariableName}, {tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()});")
