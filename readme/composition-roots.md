@@ -274,10 +274,6 @@ classDiagram
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
 	}
-	Service --|> IService
-	class Service {
-		+Service(IDependency dependency)
-	}
 	OtherService --|> IService : "Other" 
 	class OtherService {
 		+OtherService()
@@ -285,6 +281,10 @@ classDiagram
 	Dependency --|> IDependency
 	class Dependency {
 		+Dependency()
+	}
+	Service --|> IService
+	class Service {
+		+Service(IDependency dependency)
 	}
 	class IService {
 		<<interface>>

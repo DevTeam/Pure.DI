@@ -104,6 +104,15 @@ classDiagram
 		<<partial>>
 		+IService Root
 	}
+	Service --|> IService
+	class Service {
+		+Service(IDependency dependency1, IDependency dependency2, ConsumerᐸStringᐳ consumer)
+		+IDependency Dependency3
+	}
+	XyzDependency --|> IDependency
+	class XyzDependency {
+		+XyzDependency()
+	}
 	class ConsumerᐸStringᐳ {
 		+Consumer(IDependency myDep)
 	}
@@ -111,25 +120,16 @@ classDiagram
 	class AbcDependency {
 		+AbcDependency()
 	}
-	XyzDependency --|> IDependency
-	class XyzDependency {
-		+XyzDependency()
-	}
-	Service --|> IService
-	class Service {
-		+Service(IDependency dependency1, IDependency dependency2, ConsumerᐸStringᐳ consumer)
-		+IDependency Dependency3
+	class IService {
+		<<interface>>
 	}
 	class IDependency {
 		<<interface>>
 	}
-	class IService {
-		<<interface>>
-	}
-	ConsumerᐸStringᐳ *--  AbcDependency : IDependency
 	Composition ..> Service : IService Root
 	Service *-- "2 " XyzDependency : IDependency
 	Service *--  ConsumerᐸStringᐳ : ConsumerᐸStringᐳ
 	Service *--  AbcDependency : IDependency
+	ConsumerᐸStringᐳ *--  AbcDependency : IDependency
 ```
 

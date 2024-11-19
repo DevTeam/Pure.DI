@@ -155,18 +155,18 @@ classDiagram
 		<<partial>>
 		+IService Root
 	}
-	Dependency --|> IDependency
-	class Dependency {
-		+Dependency()
-	}
 	Service --|> IService
 	class Service {
 		+Service(IDependency dependency)
 	}
-	class IDependency {
-		<<interface>>
+	Dependency --|> IDependency
+	class Dependency {
+		+Dependency()
 	}
 	class IService {
+		<<interface>>
+	}
+	class IDependency {
 		<<interface>>
 	}
 	Composition ..> Service : IService Root

@@ -237,11 +237,12 @@ classDiagram
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
 	}
-	class MyAccumulator
-	class ValueTupleᐸIServiceˏMyAccumulatorᐳ {
-		+ValueTuple(IService item1, MyAccumulator item2)
+	Service --|> IService
+	class Service {
+		+Service(IDependency dependency1, IDependency dependency2, IDependency dependency3)
 	}
-	AbcDependency --|> IDependency
+	class MyAccumulator
+	AbcDependency --|> IDependency : typeof(Pure.DI.UsageTests.Advanced.AccumulatorScenario.AbcDependency) 
 	class AbcDependency {
 		+AbcDependency()
 	}
@@ -249,19 +250,15 @@ classDiagram
 	class XyzDependency {
 		+XyzDependency()
 	}
-	Service --|> IService
-	class Service {
-		+Service(IDependency dependency1, IDependency dependency2, IDependency dependency3)
+	class IService {
+		<<interface>>
 	}
 	class IDependency {
 		<<interface>>
 	}
-	class IService {
-		<<interface>>
-	}
+	Composition ..> ValueTupleᐸIServiceˏMyAccumulatorᐳ : ValueTupleᐸIServiceˏMyAccumulatorᐳ Root
 	ValueTupleᐸIServiceˏMyAccumulatorᐳ *--  Service : IService
 	ValueTupleᐸIServiceˏMyAccumulatorᐳ *--  MyAccumulator : MyAccumulator
-	Composition ..> ValueTupleᐸIServiceˏMyAccumulatorᐳ : ValueTupleᐸIServiceˏMyAccumulatorᐳ Root
 	Service *--  AbcDependency : typeof(Pure.DI.UsageTests.Advanced.AccumulatorScenario.AbcDependency)  IDependency
 	Service o-- "Singleton" XyzDependency : typeof(Pure.DI.UsageTests.Advanced.AccumulatorScenario.XyzDependency)  IDependency
 	Service o-- "PerBlock" AbcDependency : IDependency

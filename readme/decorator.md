@@ -72,13 +72,13 @@ classDiagram
 		<<partial>>
 		+IService Root
 	}
-	Service --|> IService : "base" 
-	class Service {
-		+Service()
-	}
 	GreetingService --|> IService
 	class GreetingService {
 		+GreetingService(IService baseService)
+	}
+	Service --|> IService : "base" 
+	class Service {
+		+Service()
 	}
 	class IService {
 		<<interface>>

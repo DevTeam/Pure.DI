@@ -179,22 +179,22 @@ classDiagram
 	}
 	Composition --|> IDisposable
 	Composition --|> IAsyncDisposable
+	Service --|> IService
+	class Service {
+		+Service(IDependency dependency)
+	}
 	Dependency --|> IDependency
 	Dependency --|> IAsyncDisposable
 	class Dependency {
 		+Dependency()
 	}
-	Service --|> IService
-	class Service {
-		+Service(IDependency dependency)
+	class IService {
+		<<interface>>
 	}
 	class IDependency {
 		<<interface>>
 	}
 	class IAsyncDisposable {
-		<<interface>>
-	}
-	class IService {
 		<<interface>>
 	}
 	Composition ..> Service : IService Root

@@ -91,17 +91,20 @@ classDiagram
 		<<partial>>
 		+IPerson Person
 	}
-	class Int32
-	Uri --|> ISpanFormattable
-	Uri --|> IFormattable
-	Uri --|> ISerializable
-	class Uri
-	class String
 	Person --|> IPerson
 	class Person {
 		+Person(String name)
 		~Object Id
 		+Initialize(Object state) : Void
+	}
+	class String
+	class Int32
+	Uri --|> ISpanFormattable
+	Uri --|> IFormattable
+	Uri --|> ISerializable
+	class Uri
+	class IPerson {
+		<<interface>>
 	}
 	class ISpanFormattable {
 		<<interface>>
@@ -110,9 +113,6 @@ classDiagram
 		<<interface>>
 	}
 	class ISerializable {
-		<<interface>>
-	}
-	class IPerson {
 		<<interface>>
 	}
 	PersonComposition ..> Person : IPerson Person

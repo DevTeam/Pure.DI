@@ -199,19 +199,19 @@ classDiagram
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
 	}
-	Dependency --|> IDependency
-	class Dependency {
-		+Dependency()
-	}
 	Service --|> IService
 	class Service {
 		+Service(ValueTaskᐸIDependencyᐳ dependencyTask)
 	}
 	class ValueTaskᐸIDependencyᐳ
-	class IDependency {
-		<<interface>>
+	Dependency --|> IDependency
+	class Dependency {
+		+Dependency()
 	}
 	class IService {
+		<<interface>>
+	}
+	class IDependency {
 		<<interface>>
 	}
 	Composition ..> Service : IService Root

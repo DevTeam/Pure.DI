@@ -101,19 +101,21 @@ classDiagram
 		<<partial>>
 		+IService MyService
 	}
-	class Dependency {
-		+Dependency()
-	}
-	class DateTimeOffset
 	Service --|> IService
 	class Service {
 		+Service(IDependency dependency)
 	}
+	Dependency --|> IDependency
+	class Dependency
+	class DateTimeOffset
 	class IService {
 		<<interface>>
 	}
+	class IDependency {
+		<<interface>>
+	}
 	Composition ..> Service : IService MyService
-	Dependency *--  DateTimeOffset : "now datetime"  DateTimeOffset
 	Service *--  Dependency : IDependency
+	Dependency *--  DateTimeOffset : "now datetime"  DateTimeOffset
 ```
 

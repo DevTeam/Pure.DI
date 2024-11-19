@@ -113,29 +113,24 @@ classDiagram
 		<<partial>>
 		+IService GetRoot(System.Threading.CancellationToken cancellationToken)
 	}
-	class TaskFactory
-	class CancellationToken
-	Dependency --|> IDependency
-	class Dependency {
-		+Dependency()
-	}
 	Service --|> IService
 	class Service {
 		+Service(TaskᐸIDependencyᐳ dependencyTask)
 	}
 	class TaskᐸIDependencyᐳ
 	class FuncᐸIDependencyᐳ
-	class IDependency {
-		<<interface>>
+	class CancellationToken
+	Dependency --|> IDependency
+	class Dependency {
+		+Dependency()
 	}
 	class IService {
 		<<interface>>
 	}
+	class IDependency {
+		<<interface>>
+	}
 	Composition ..> Service : IService GetRoot(System.Threading.CancellationToken cancellationToken)
-	TaskFactory o-- CancellationToken : Argument "cancellationToken"
-	TaskFactory *--  TaskCreationOptions : TaskCreationOptions
-	TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions
-	TaskFactory *--  TaskScheduler : TaskScheduler
 	Service *--  TaskᐸIDependencyᐳ : TaskᐸIDependencyᐳ
 	TaskᐸIDependencyᐳ o-- "PerBlock" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
 	TaskᐸIDependencyᐳ o-- CancellationToken : Argument "cancellationToken"

@@ -15,12 +15,12 @@ class Dependency : IDependency;
 
 interface IService;
 
-class Service(IDependency dependency) : IService;
+class Service(Func<IDependency> dependencyFactory) : IService;
 
 DI.Setup(nameof(Composition))
     .Hint(ThreadSafe, "Off")
     .Bind().To<Dependency>()
-    .Bind().To<Service>()
+    .Bind().As(Lifetime.Scoped).To<Service>()
     .Root<IService>("Root");
 
 var composition = new Composition();
@@ -35,6 +35,8 @@ The following partial class will be generated:
 partial class Composition
 {
   private readonly Composition _root;
+
+  private Service? _scopedService40;
 
   [OrdinalAttribute(20)]
   public Composition()
@@ -52,7 +54,17 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new Service(new Dependency());
+      if (_scopedService40 == null)
+      {
+        Func<IDependency> perBlockFunc0 = new Func<IDependency>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
+        {
+          IDependency localValue71 = new Dependency();
+          return localValue71;
+        });
+        _scopedService40 = new Service(perBlockFunc0);
+      }
+
+      return _scopedService40!;
     }
   }
 }
@@ -66,21 +78,23 @@ classDiagram
 		<<partial>>
 		+IService Root
 	}
+	Service --|> IService
+	class Service {
+		+Service(FuncᐸIDependencyᐳ dependencyFactory)
+	}
+	class FuncᐸIDependencyᐳ
 	Dependency --|> IDependency
 	class Dependency {
 		+Dependency()
 	}
-	Service --|> IService
-	class Service {
-		+Service(IDependency dependency)
+	class IService {
+		<<interface>>
 	}
 	class IDependency {
 		<<interface>>
 	}
-	class IService {
-		<<interface>>
-	}
 	Composition ..> Service : IService Root
-	Service *--  Dependency : IDependency
+	Service o-- "PerBlock" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
+	FuncᐸIDependencyᐳ *--  Dependency : IDependency
 ```
 

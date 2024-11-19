@@ -78,19 +78,19 @@ classDiagram
 		<<partial>>
 		+IService MyService
 	}
-	Dependency --|> IDependency
-	class Dependency {
-		+Dependency()
-	}
 	Service --|> IService
 	class Service {
 		+Service()
 		+SetDependency(IDependency dependency) : Void
 	}
-	class IDependency {
-		<<interface>>
+	Dependency --|> IDependency
+	class Dependency {
+		+Dependency()
 	}
 	class IService {
+		<<interface>>
+	}
+	class IDependency {
 		<<interface>>
 	}
 	Composition ..> Service : IService MyService

@@ -131,15 +131,18 @@ classDiagram
 		<<partial>>
 		+IService MyService
 	}
+	Service --|> IService
+	class Service {
+		+Service(Dependency dependencyImpl, IDependency dependency, IOtherDependency otherDependency)
+	}
 	Dependency --|> IDependency
 	Dependency --|> IOtherDependency
 	Dependency --|> IEnumerableᐸStringᐳ
 	class Dependency {
 		+Dependency()
 	}
-	Service --|> IService
-	class Service {
-		+Service(Dependency dependencyImpl, IDependency dependency, IOtherDependency otherDependency)
+	class IService {
+		<<interface>>
 	}
 	class IDependency {
 		<<interface>>
@@ -148,9 +151,6 @@ classDiagram
 		<<interface>>
 	}
 	class IEnumerableᐸStringᐳ {
-		<<interface>>
-	}
-	class IService {
 		<<interface>>
 	}
 	Composition ..> Service : IService MyService

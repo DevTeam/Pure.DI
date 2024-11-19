@@ -190,27 +190,27 @@ classDiagram
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
 	}
-	class ValueTupleᐸPointˏIDependencyᐳ {
-		+ValueTuple(Point item1, IDependency item2)
-	}
-	Dependency --|> IDependency
-	class Dependency {
-		+Dependency()
-	}
-	class Point
 	Service --|> IService
 	class Service {
 		+Service(ValueTupleᐸPointˏIDependencyᐳ tuple)
 	}
-	class IDependency {
-		<<interface>>
+	class ValueTupleᐸPointˏIDependencyᐳ {
+		+ValueTuple(Point item1, IDependency item2)
+	}
+	class Point
+	Dependency --|> IDependency
+	class Dependency {
+		+Dependency()
 	}
 	class IService {
 		<<interface>>
 	}
-	ValueTupleᐸPointˏIDependencyᐳ *--  Point : Point
-	ValueTupleᐸPointˏIDependencyᐳ *--  Dependency : IDependency
+	class IDependency {
+		<<interface>>
+	}
 	Composition ..> Service : IService Root
 	Service *--  ValueTupleᐸPointˏIDependencyᐳ : ValueTupleᐸPointˏIDependencyᐳ
+	ValueTupleᐸPointˏIDependencyᐳ *--  Point : Point
+	ValueTupleᐸPointˏIDependencyᐳ *--  Dependency : IDependency
 ```
 

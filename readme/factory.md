@@ -133,23 +133,23 @@ classDiagram
 		<<partial>>
 		+IService GetMyService(bool isFake)
 	}
-	class Dependency {
-		+Dependency(DateTimeOffset time)
-	}
-	class DateTimeOffset
-	class Boolean
-	class IDependency
 	Service --|> IService
 	class Service {
 		+Service(IDependency dependency)
 	}
+	class IDependency
+	class Boolean
+	class Dependency {
+		+Dependency(DateTimeOffset time)
+	}
+	class DateTimeOffset
 	class IService {
 		<<interface>>
 	}
-	Dependency *--  DateTimeOffset : DateTimeOffset
 	Composition ..> Service : IService GetMyService(bool isFake)
+	Service *--  IDependency : IDependency
 	IDependency o-- Boolean : "FakeArgTag"  Argument "isFake"
 	IDependency *--  Dependency : Dependency
-	Service *--  IDependency : IDependency
+	Dependency *--  DateTimeOffset : DateTimeOffset
 ```
 

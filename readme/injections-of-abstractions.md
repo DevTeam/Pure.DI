@@ -86,25 +86,22 @@ classDiagram
 		<<partial>>
 		+Program Root
 	}
-	class Program {
-		+Program(IService service)
+	Service --|> IService
+	class Service {
+		+Service(IDependency dependency)
 	}
 	Dependency --|> IDependency
 	class Dependency {
 		+Dependency()
 	}
-	Service --|> IService
-	class Service {
-		+Service(IDependency dependency)
+	class IService {
+		<<interface>>
 	}
 	class IDependency {
 		<<interface>>
 	}
-	class IService {
-		<<interface>>
-	}
-	Program *--  Service : IService
 	Composition ..> Program : Program Root
+	Program *--  Service : IService
 	Service *--  Dependency : IDependency
 ```
 

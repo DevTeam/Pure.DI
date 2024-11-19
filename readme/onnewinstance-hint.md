@@ -13,7 +13,7 @@ interface IDependency;
 
 class Dependency : IDependency
 {
-    public override string ToString() => "Dependency";
+    public override string ToString() => nameof(Dependency);
 }
 
 interface IService
@@ -25,7 +25,7 @@ class Service(IDependency dependency) : IService
 {
     public IDependency Dependency { get; } = dependency;
 
-    public override string ToString() => "Service";
+    public override string ToString() => nameof(Service);
 }
 
 internal partial class Composition
@@ -53,7 +53,7 @@ var composition = new Composition(log);
 var service1 = composition.Root;
 var service2 = composition.Root;
 
-log.ShouldBe(ImmutableArray.Create("Dependency", "Service", "Service"));
+log.ShouldBe([nameof(Dependency), nameof(Service), nameof(Service)]);
 ```
 
 The `OnNewInstanceLifetimeRegularExpression` hint helps you define a set of lifetimes that require instance creation control. You can use it to specify a regular expression to filter bindings by lifetime name.
@@ -121,18 +121,18 @@ classDiagram
 		<<partial>>
 		+IService Root
 	}
-	Dependency --|> IDependency
-	class Dependency {
-		+Dependency()
-	}
 	Service --|> IService
 	class Service {
 		+Service(IDependency dependency)
 	}
-	class IDependency {
-		<<interface>>
+	Dependency --|> IDependency
+	class Dependency {
+		+Dependency()
 	}
 	class IService {
+		<<interface>>
+	}
+	class IDependency {
 		<<interface>>
 	}
 	Composition ..> Service : IService Root

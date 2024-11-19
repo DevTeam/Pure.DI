@@ -377,9 +377,6 @@ classDiagram
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
 	}
-	class Program {
-		+Program(IService service)
-	}
 	Service --|> IService
 	class Service {
 		+Service(IDependency dependency)
@@ -394,9 +391,9 @@ classDiagram
 	class IDependency {
 		<<interface>>
 	}
-	Program *--  Service : IService
 	OtherComposition ..> Program : Program Program
 	OtherComposition ..> Service : IService Root
+	Program *--  Service : IService
 	Service *--  Dependency : IDependency
 ```
 

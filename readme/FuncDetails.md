@@ -13,9 +13,6 @@ classDiagram
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
 	}
-	class CompositionRoot {
-		+CompositionRoot(IService1 service1, IService2 service21, IService2 service22, IService2 service23, IService3 service3, IService4 service41, IService4 service42)
-	}
 	Service1 --|> IService1
 	class Service1 {
 		+Service1(IService2 service2)
@@ -45,11 +42,11 @@ classDiagram
 	class IService4 {
 		<<interface>>
 	}
+	Func ..> CompositionRoot : CompositionRoot TestPureDIByCR()
 	CompositionRoot *--  Service1 : IService1
 	CompositionRoot *-- "3 " Service2Func : IService2
 	CompositionRoot *--  Service3 : IService3
 	CompositionRoot *-- "2 " Service4 : IService4
-	Func ..> CompositionRoot : CompositionRoot TestPureDIByCR()
 	Service1 *--  Service2Func : IService2
 	Service2Func o-- "PerBlock" FuncᐸIService3ᐳ : FuncᐸIService3ᐳ
 	Service3 *-- "2 " Service4 : IService4

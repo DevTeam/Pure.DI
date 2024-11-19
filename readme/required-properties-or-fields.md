@@ -83,21 +83,21 @@ classDiagram
 		<<partial>>
 		+IService Root
 	}
-	class String
-	Dependency --|> IDependency
-	class Dependency {
-		+Dependency()
-	}
 	Service --|> IService
 	class Service {
 		+Service()
 		+String ServiceNameField
 		+IDependency Dependency
 	}
-	class IDependency {
-		<<interface>>
+	class String
+	Dependency --|> IDependency
+	class Dependency {
+		+Dependency()
 	}
 	class IService {
+		<<interface>>
+	}
+	class IDependency {
 		<<interface>>
 	}
 	Composition ..> Service : IService Root

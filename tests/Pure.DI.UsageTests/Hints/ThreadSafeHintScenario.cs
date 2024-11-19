@@ -28,7 +28,7 @@ class Dependency : IDependency;
 
 interface IService;
 
-class Service(IDependency dependency) : IService;
+class Service(Func<IDependency> dependencyFactory) : IService;
 // }
 
 public class Scenario
@@ -41,7 +41,7 @@ public class Scenario
         DI.Setup(nameof(Composition))
             .Hint(ThreadSafe, "Off")
             .Bind().To<Dependency>()
-            .Bind().To<Service>()
+            .Bind().As(Lifetime.Scoped).To<Service>()
             .Root<IService>("Root");
 
         var composition = new Composition();

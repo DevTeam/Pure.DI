@@ -224,21 +224,18 @@ classDiagram
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
 	}
-	class Service {
-		+Service(String name, IDependency dependency1, IDependency dependency2)
-	}
+	class String
 	Dependency --|> IDependency
 	class Dependency {
 		+Dependency(Int64 id)
 	}
 	class Int64
-	class String
 	class IDependency {
 		<<interface>>
 	}
+	Composition ..> Service : Service Root
 	Service *--  String : "name with id"  String
 	Service *-- "2 " Dependency : IDependency
-	Composition ..> Service : Service Root
 	Dependency *--  Int64 : Int64
 ```
 

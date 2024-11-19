@@ -115,9 +115,6 @@ classDiagram
 		<<partial>>
 		+IPerson Person
 	}
-	class Int32
-	class String
-	class DateTime
 	Person --|> IPerson
 	class Person {
 		+Person()
@@ -125,6 +122,9 @@ classDiagram
 		+String FirstName
 		+DateTime Birthday
 	}
+	class Int32
+	class String
+	class DateTime
 	class IPerson {
 		<<interface>>
 	}

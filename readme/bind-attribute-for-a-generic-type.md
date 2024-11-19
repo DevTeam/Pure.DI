@@ -100,14 +100,14 @@ classDiagram
 		<<partial>>
 		+IService Root
 	}
-	class Facade {
-		+Facade()
-	}
 	Service --|> IService
 	class Service {
 		+Service(IDependencyᐸInt32ᐳ dep)
 	}
 	class IDependencyᐸInt32ᐳ
+	class Facade {
+		+Facade()
+	}
 	class IService {
 		<<interface>>
 	}

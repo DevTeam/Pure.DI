@@ -201,6 +201,11 @@ classDiagram
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
 	}
+	Service --|> IService
+	class Service {
+		+Service(IEnumerableᐸIDependencyᐳ dependencies)
+	}
+	class IEnumerableᐸIDependencyᐳ
 	AbcDependency --|> IDependency
 	class AbcDependency {
 		+AbcDependency()
@@ -209,15 +214,10 @@ classDiagram
 	class XyzDependency {
 		+XyzDependency()
 	}
-	Service --|> IService
-	class Service {
-		+Service(IEnumerableᐸIDependencyᐳ dependencies)
-	}
-	class IEnumerableᐸIDependencyᐳ
-	class IDependency {
+	class IService {
 		<<interface>>
 	}
-	class IService {
+	class IDependency {
 		<<interface>>
 	}
 	Composition ..> Service : IService Root

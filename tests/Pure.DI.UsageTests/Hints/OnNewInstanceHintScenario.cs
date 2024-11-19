@@ -29,7 +29,7 @@ interface IDependency;
 
 class Dependency : IDependency
 {
-    public override string ToString() => "Dependency";
+    public override string ToString() => nameof(Dependency);
 }
 
 interface IService
@@ -41,7 +41,7 @@ class Service(IDependency dependency) : IService
 {
     public IDependency Dependency { get; } = dependency;
 
-    public override string ToString() => "Service";
+    public override string ToString() => nameof(Service);
 }
 
 internal partial class Composition
@@ -77,7 +77,7 @@ public class Scenario
         var service1 = composition.Root;
         var service2 = composition.Root;
 
-        log.ShouldBe(ImmutableArray.Create("Dependency", "Service", "Service"));
+        log.ShouldBe([nameof(Dependency), nameof(Service), nameof(Service)]);
 // }
         composition.SaveClassDiagram();
     }

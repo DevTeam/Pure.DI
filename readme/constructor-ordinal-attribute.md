@@ -86,11 +86,11 @@ classDiagram
 		<<partial>>
 		+IService Root
 	}
-	class String
 	Service --|> IService
 	class Service {
 		~Service(String name)
 	}
+	class String
 	class IService {
 		<<interface>>
 	}

@@ -196,19 +196,19 @@ classDiagram
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
 	}
-	Dependency --|> IDependency : "my tag" 
-	class Dependency {
-		+Dependency()
-	}
 	Service --|> IService
 	class Service {
 		+Service(FuncᐸIDependencyᐳ dependencyFactory)
 	}
 	class FuncᐸIDependencyᐳ
-	class IDependency {
-		<<interface>>
+	Dependency --|> IDependency : "my tag" 
+	class Dependency {
+		+Dependency()
 	}
 	class IService {
+		<<interface>>
+	}
+	class IDependency {
 		<<interface>>
 	}
 	Composition ..> Service : IService Root

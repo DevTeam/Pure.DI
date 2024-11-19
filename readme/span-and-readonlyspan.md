@@ -200,14 +200,14 @@ classDiagram
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
 	}
-	class Dependency {
-		+Dependency()
-	}
 	Service --|> IService
 	class Service {
 		+Service(ReadOnlySpanᐸDependencyᐳ dependencies)
 	}
 	class ReadOnlySpanᐸDependencyᐳ
+	class Dependency {
+		+Dependency()
+	}
 	class IService {
 		<<interface>>
 	}

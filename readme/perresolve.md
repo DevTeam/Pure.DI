@@ -117,9 +117,6 @@ classDiagram
 		<<partial>>
 		+Service Root
 	}
-	class Service {
-		+Service(IDependency dep1, IDependency dep2, ValueTupleᐸIDependencyˏIDependencyᐳ deps)
-	}
 	Dependency --|> IDependency
 	class Dependency {
 		+Dependency()
@@ -130,9 +127,9 @@ classDiagram
 	class IDependency {
 		<<interface>>
 	}
+	Composition ..> Service : Service Root
 	Service o-- "2 PerResolve" Dependency : IDependency
 	Service o-- "Singleton" ValueTupleᐸIDependencyˏIDependencyᐳ : ValueTupleᐸIDependencyˏIDependencyᐳ
-	Composition ..> Service : Service Root
 	ValueTupleᐸIDependencyˏIDependencyᐳ o-- "2 PerResolve" Dependency : IDependency
 ```
 

@@ -165,14 +165,17 @@ classDiagram
 		+ object Resolve(Type type, object? tag)
 	}
 	class Owned
+	Service --|> IService
+	class Service {
+		+Service(IDependency dependency)
+	}
 	Dependency --|> IDependency
 	Dependency --|> IAsyncDisposable
 	class Dependency {
 		+Dependency()
 	}
-	Service --|> IService
-	class Service {
-		+Service(IDependency dependency)
+	class IService {
+		<<interface>>
 	}
 	class IDependency {
 		<<interface>>
@@ -180,12 +183,9 @@ classDiagram
 	class IAsyncDisposable {
 		<<interface>>
 	}
-	class IService {
-		<<interface>>
-	}
 	Composition ..> OwnedᐸIServiceᐳ : OwnedᐸIServiceᐳ Root
-	Service *--  Dependency : IDependency
 	OwnedᐸIServiceᐳ *--  Owned : Owned
 	OwnedᐸIServiceᐳ *--  Service : IService
+	Service *--  Dependency : IDependency
 ```
 

@@ -100,12 +100,12 @@ partial class Composition
         Composition transientComposition3 = this;
         IService transientIService2;
         // Injects a base composition
-        Composition localBaseComposition73 = transientComposition3;
+        Composition localBaseComposition74 = transientComposition3;
         // Creates a session
-        var localSession74= new Composition(localBaseComposition73);
-        transientIService2 = localSession74.SessionRoot;
-        IService localValue72 = transientIService2;
-        return localValue72;
+        var localSession75= new Composition(localBaseComposition74);
+        transientIService2 = localSession75.SessionRoot;
+        IService localValue73 = transientIService2;
+        return localValue73;
       });
       return new Program(perBlockFunc1);
     }
@@ -142,27 +142,21 @@ classDiagram
 		+Program ProgramRoot
 		+Service SessionRoot
 	}
-	class Service {
-		+Service(IDependency dependency)
-	}
-	class Program {
-		+Program(FuncᐸIServiceᐳ serviceFactory)
-	}
+	class FuncᐸIServiceᐳ
 	Dependency --|> IDependency
 	class Dependency {
 		+Dependency()
 	}
 	class IService
-	class FuncᐸIServiceᐳ
 	class Composition
 	class IDependency {
 		<<interface>>
 	}
-	Service o-- "Scoped" Dependency : IDependency
-	Program o-- "PerBlock" FuncᐸIServiceᐳ : FuncᐸIServiceᐳ
 	Composition ..> Program : Program ProgramRoot
 	Composition ..> Service : Service SessionRoot
-	IService *--  Composition : Composition
+	Program o-- "PerBlock" FuncᐸIServiceᐳ : FuncᐸIServiceᐳ
+	Service o-- "Scoped" Dependency : IDependency
 	FuncᐸIServiceᐳ *--  IService : IService
+	IService *--  Composition : Composition
 ```
 

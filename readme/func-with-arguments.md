@@ -265,6 +265,11 @@ classDiagram
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
 	}
+	Service --|> IService
+	class Service {
+		+Service(FuncᐸInt32ˏInt32ˏIDependencyᐳ dependencyFactory)
+	}
+	class FuncᐸInt32ˏInt32ˏIDependencyᐳ
 	class Dependency {
 		+Dependency(IClock clock, Int32 id, Int32 subId)
 	}
@@ -273,22 +278,17 @@ classDiagram
 		+Clock()
 	}
 	class Int32
-	class FuncᐸInt32ˏInt32ˏIDependencyᐳ
-	Service --|> IService
-	class Service {
-		+Service(FuncᐸInt32ˏInt32ˏIDependencyᐳ dependencyFactory)
+	class IService {
+		<<interface>>
 	}
 	class IClock {
 		<<interface>>
 	}
-	class IService {
-		<<interface>>
-	}
+	Composition ..> Service : IService Root
+	Service *--  FuncᐸInt32ˏInt32ˏIDependencyᐳ : FuncᐸInt32ˏInt32ˏIDependencyᐳ
+	FuncᐸInt32ˏInt32ˏIDependencyᐳ *--  Dependency : Dependency
 	Dependency o-- "Singleton" Clock : IClock
 	Dependency *--  Int32 : Int32
 	Dependency *--  Int32 : "sub"  Int32
-	Composition ..> Service : IService Root
-	FuncᐸInt32ˏInt32ˏIDependencyᐳ *--  Dependency : Dependency
-	Service *--  FuncᐸInt32ˏInt32ˏIDependencyᐳ : FuncᐸInt32ˏInt32ˏIDependencyᐳ
 ```
 

@@ -269,11 +269,6 @@ classDiagram
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
 	}
-	AbcDependency --|> IDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.AbcDependency) 
-	AbcDependency --|> IDependency
-	class AbcDependency {
-		+AbcDependency()
-	}
 	XyzDependency --|> IDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.XyzDependency) 
 	class XyzDependency {
 		+XyzDependency()
@@ -281,6 +276,11 @@ classDiagram
 	Service --|> IService
 	class Service {
 		+Service(IDependency dependency1, IDependency dependency2, IDependency dependency3)
+	}
+	AbcDependency --|> IDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.AbcDependency) 
+	AbcDependency --|> IDependency
+	class AbcDependency {
+		+AbcDependency()
 	}
 	class IDependency {
 		<<interface>>

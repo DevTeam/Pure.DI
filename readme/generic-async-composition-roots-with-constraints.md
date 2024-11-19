@@ -151,17 +151,16 @@ classDiagram
 		+TaskᐸIServiceᐸTˏT1ᐳᐳ GetMyRootAsyncᐸTˏT1ᐳ(System.Threading.CancellationToken cancellationToken)
 		+TaskᐸIServiceᐸTˏBooleanᐳᐳ GetOtherServiceAsyncᐸTᐳ(System.Threading.CancellationToken cancellationToken)
 	}
-	class TaskScheduler
-	class TaskCreationOptions
-	class TaskContinuationOptions
-	class TaskFactory
-	class CancellationToken
 	class FuncᐸIServiceᐸTˏBooleanᐳᐳ
 	class TaskFactoryᐸIServiceᐸTˏBooleanᐳᐳ
 	class FuncᐸIServiceᐸTˏT1ᐳᐳ
 	class TaskFactoryᐸIServiceᐸTˏT1ᐳᐳ
 	OtherServiceᐸTᐳ --|> IServiceᐸTˏBooleanᐳ : "Other" 
 	class OtherServiceᐸTᐳ
+	class CancellationToken
+	class TaskCreationOptions
+	class TaskContinuationOptions
+	class TaskScheduler
 	ServiceᐸTˏT1ᐳ --|> IServiceᐸTˏT1ᐳ
 	class ServiceᐸTˏT1ᐳ {
 		+Service(IDependencyᐸTᐳ dependency)
@@ -181,10 +180,6 @@ classDiagram
 	}
 	Composition ..> TaskᐸIServiceᐸTˏBooleanᐳᐳ : TaskᐸIServiceᐸTˏBooleanᐳᐳ GetOtherServiceAsyncᐸTᐳ(System.Threading.CancellationToken cancellationToken)
 	Composition ..> TaskᐸIServiceᐸTˏT1ᐳᐳ : TaskᐸIServiceᐸTˏT1ᐳᐳ GetMyRootAsyncᐸTˏT1ᐳ(System.Threading.CancellationToken cancellationToken)
-	TaskFactory o-- CancellationToken : Argument "cancellationToken"
-	TaskFactory *--  TaskCreationOptions : TaskCreationOptions
-	TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions
-	TaskFactory *--  TaskScheduler : TaskScheduler
 	TaskᐸIServiceᐸTˏBooleanᐳᐳ o-- "PerBlock" FuncᐸIServiceᐸTˏBooleanᐳᐳ : "Other"  FuncᐸIServiceᐸTˏBooleanᐳᐳ
 	TaskᐸIServiceᐸTˏBooleanᐳᐳ o-- "PerBlock" TaskFactoryᐸIServiceᐸTˏBooleanᐳᐳ : TaskFactoryᐸIServiceᐸTˏBooleanᐳᐳ
 	TaskᐸIServiceᐸTˏT1ᐳᐳ o-- "PerBlock" FuncᐸIServiceᐸTˏT1ᐳᐳ : FuncᐸIServiceᐸTˏT1ᐳᐳ

@@ -90,15 +90,15 @@ classDiagram
 		<<partial>>
 		+IPerson Person
 	}
-	class Int32
-	class Uri
-	class String
 	Person --|> IPerson
 	class Person {
 		+Person(String name)
 		~Object Id
 		+Initialize(Object state) : Void
 	}
+	class String
+	class Int32
+	class Uri
 	class IPerson {
 		<<interface>>
 	}

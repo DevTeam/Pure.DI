@@ -93,30 +93,30 @@ classDiagram
 		<<partial>>
 		+IService GetMyService(string name)
 	}
-	class String
-	class Guid
-	Dependency --|> IDependency
-	class Dependency {
-		+String Name
-		+SetId(Guid id) : Void
-	}
 	Service --|> IService
 	Service --|> IEquatableᐸServiceᐳ
 	class Service {
 		+Service(IDependency Dependency)
 	}
-	class IDependency {
-		<<interface>>
+	Dependency --|> IDependency
+	class Dependency {
+		+String Name
+		+SetId(Guid id) : Void
 	}
+	class String
+	class Guid
 	class IService {
 		<<interface>>
 	}
 	class IEquatableᐸServiceᐳ {
 		<<interface>>
 	}
+	class IDependency {
+		<<interface>>
+	}
 	Composition ..> Service : IService GetMyService(string name)
+	Service *--  Dependency : IDependency
 	Dependency o-- String : Argument "name"
 	Dependency *--  Guid : Guid
-	Service *--  Dependency : IDependency
 ```
 

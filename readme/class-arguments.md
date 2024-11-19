@@ -113,26 +113,26 @@ classDiagram
 		<<partial>>
 		+IService MyService
 	}
-	Dependency --|> IDependency
-	class Dependency {
-		+Dependency(Int32 id, String name)
-	}
 	Service --|> IService
 	class Service {
 		+Service(String name, IDependency dependency)
 	}
-	class Int32
 	class String
-	class IDependency {
-		<<interface>>
+	Dependency --|> IDependency
+	class Dependency {
+		+Dependency(Int32 id, String name)
 	}
+	class Int32
 	class IService {
 		<<interface>>
 	}
+	class IDependency {
+		<<interface>>
+	}
 	Composition ..> Service : IService MyService
-	Dependency o-- Int32 : Argument "id"
-	Dependency o-- String : Argument "dependencyName"
 	Service o-- String : "my service name"  Argument "serviceName"
 	Service *--  Dependency : IDependency
+	Dependency o-- Int32 : Argument "id"
+	Dependency o-- String : Argument "dependencyName"
 ```
 

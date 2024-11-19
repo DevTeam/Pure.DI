@@ -17,7 +17,7 @@ interface IService
 
 class Service : IService
 {
-    [Tag("MyDep")]
+    [Tag("MyDepTag")]
     public required IDependency Dependency { get; init; }
 }
 
@@ -34,11 +34,11 @@ partial class Composition
             // Specifies to use the partial OnNewRoot method
             // to register each root
             .Hint(Hint.OnNewRoot, "On")
-            .Bind("MyDep").To<Dependency>()
+            .Bind("MyDepTag").To<Dependency>()
             .Bind().To<Service>()
 
             // Composition roots
-            .Root<IDependency>(tag: "MyDep")
+            .Root<IDependency>(tag: "MyDepTag")
             .Root<IService>("Root");
 
     // Adds a new root to the hash set
@@ -51,7 +51,7 @@ partial class Composition
 }
 
 Composition.HasRoot(typeof(IService)).ShouldBeTrue();
-Composition.HasRoot(typeof(IDependency), "MyDep").ShouldBeTrue();
+Composition.HasRoot(typeof(IDependency), "MyDepTag").ShouldBeTrue();
 
 Composition.HasRoot(typeof(IDependency)).ShouldBeFalse();
 Composition.HasRoot(typeof(IComparable)).ShouldBeFalse();
@@ -167,7 +167,7 @@ partial class Composition
     OnNewRoot<IService, Service>(valResolver_0000, "Root", null, Lifetime.Transient);
     Resolver<IService>.Value = valResolver_0000;
     var valResolver_0001 = new Resolver_0001();
-    OnNewRoot<IDependency, Dependency>(valResolver_0001, "Root2", "MyDep", Lifetime.Transient);
+    OnNewRoot<IDependency, Dependency>(valResolver_0001, "Root2", "MyDepTag", Lifetime.Transient);
     Resolver<IDependency>.Value = valResolver_0001;
     _buckets = Buckets<Type, IResolver<Composition, object>>.Create(
       4,
@@ -228,7 +228,7 @@ partial class Composition
     {
       switch (tag)
       {
-        case "MyDep":
+        case "MyDepTag":
           return composition.Root2;
 
         default:
@@ -252,23 +252,23 @@ classDiagram
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
 	}
-	Dependency --|> IDependency : "MyDep" 
-	class Dependency {
-		+Dependency()
-	}
 	Service --|> IService
 	class Service {
 		+Service()
 		+IDependency Dependency
 	}
-	class IDependency {
-		<<interface>>
+	Dependency --|> IDependency : "MyDepTag" 
+	class Dependency {
+		+Dependency()
 	}
 	class IService {
 		<<interface>>
 	}
+	class IDependency {
+		<<interface>>
+	}
 	Composition ..> Service : IService Root
 	Composition ..> Dependency : IDependency _
-	Service *--  Dependency : "MyDep"  IDependency
+	Service *--  Dependency : "MyDepTag"  IDependency
 ```
 

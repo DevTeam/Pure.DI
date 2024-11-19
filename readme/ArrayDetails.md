@@ -13,9 +13,6 @@ classDiagram
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
 	}
-	class CompositionRoot {
-		+CompositionRoot(IService1 service1, IService2 service21, IService2 service22, IService2 service23, IService3 service3, IService4 service41, IService4 service42)
-	}
 	Service1 --|> IService1
 	class Service1 {
 		+Service1(IService2 service2)
@@ -28,6 +25,11 @@ classDiagram
 	class Service3 {
 		+Service3(IService4 service41, IService4 service42)
 	}
+	Service4 --|> IService4
+	class Service4 {
+		+Service4()
+	}
+	class ArrayᐸIService3ᐳ
 	Service3v2 --|> IService3 : 2 
 	class Service3v2 {
 		+Service3v2(IService4 service41, IService4 service42)
@@ -40,11 +42,6 @@ classDiagram
 	class Service3v4 {
 		+Service3v4(IService4 service41, IService4 service42)
 	}
-	Service4 --|> IService4
-	class Service4 {
-		+Service4()
-	}
-	class ArrayᐸIService3ᐳ
 	class IService1 {
 		<<interface>>
 	}
@@ -57,21 +54,21 @@ classDiagram
 	class IService4 {
 		<<interface>>
 	}
+	Array ..> CompositionRoot : CompositionRoot TestPureDIByCR()
 	CompositionRoot *--  Service1 : IService1
 	CompositionRoot *-- "3 " Service2Array : IService2
 	CompositionRoot *--  Service3 : IService3
 	CompositionRoot *-- "2 " Service4 : IService4
-	Array ..> CompositionRoot : CompositionRoot TestPureDIByCR()
 	Service1 *--  Service2Array : IService2
 	Service2Array *--  ArrayᐸIService3ᐳ : ArrayᐸIService3ᐳ
 	Service3 *-- "2 " Service4 : IService4
-	Service3v2 *-- "2 " Service4 : IService4
-	Service3v3 *-- "2 " Service4 : IService4
-	Service3v4 *-- "2 " Service4 : IService4
 	ArrayᐸIService3ᐳ *--  Service3 : IService3
 	ArrayᐸIService3ᐳ *--  Service3v2 : 2  IService3
 	ArrayᐸIService3ᐳ *--  Service3v3 : 3  IService3
 	ArrayᐸIService3ᐳ *--  Service3v4 : 4  IService3
+	Service3v2 *-- "2 " Service4 : IService4
+	Service3v3 *-- "2 " Service4 : IService4
+	Service3v4 *-- "2 " Service4 : IService4
 ```
 
 ### Generated code

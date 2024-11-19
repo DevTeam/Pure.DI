@@ -133,23 +133,23 @@ classDiagram
 		+IService Root
 		+IDependency XyzRoot
 	}
-	AbcDependency --|> IDependency : "AbcTag" 
-	AbcDependency --|> IDependency
-	class AbcDependency {
-		+AbcDependency()
+	Service --|> IService
+	class Service {
+		+Service(IDependency dependency1, IDependency dependency2, IDependency dependency3)
 	}
 	XyzDependency --|> IDependency : "XyzTag" 
 	class XyzDependency {
 		+XyzDependency()
 	}
-	Service --|> IService
-	class Service {
-		+Service(IDependency dependency1, IDependency dependency2, IDependency dependency3)
-	}
-	class IDependency {
-		<<interface>>
+	AbcDependency --|> IDependency : "AbcTag" 
+	AbcDependency --|> IDependency
+	class AbcDependency {
+		+AbcDependency()
 	}
 	class IService {
+		<<interface>>
+	}
+	class IDependency {
 		<<interface>>
 	}
 	Composition ..> Service : IService Root

@@ -80,15 +80,15 @@ classDiagram
 		<<partial>>
 		+IService Root
 	}
-	class XyzDependency {
-		+XyzDependency()
+	Service --|> IService
+	class Service {
+		+Service(IDependency dependency1, IDependency dependency2)
 	}
 	class AbcDependency {
 		+AbcDependency()
 	}
-	Service --|> IService
-	class Service {
-		+Service(IDependency dependency1, IDependency dependency2)
+	class XyzDependency {
+		+XyzDependency()
 	}
 	class IService {
 		<<interface>>

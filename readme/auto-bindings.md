@@ -66,10 +66,7 @@ classDiagram
 	class Dependency {
 		+Dependency()
 	}
-	class Service {
-		+Service(Dependency dependency)
-	}
-	Service *--  Dependency : Dependency
 	Composition ..> Service : Service MyService
+	Service *--  Dependency : Dependency
 ```
 

@@ -203,11 +203,11 @@ classDiagram
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
 	}
-	class ArrayᐸIDependencyᐳ
 	Service --|> IService
 	class Service {
 		+Service(ArrayᐸIDependencyᐳ dependencies)
 	}
+	class ArrayᐸIDependencyᐳ
 	class IService {
 		<<interface>>
 	}

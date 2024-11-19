@@ -13,9 +13,6 @@ classDiagram
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
 	}
-	class CompositionRoot {
-		+CompositionRoot(IService1 service1, IService2 service21, IService2 service22, IService2 service23, IService3 service3, IService4 service41, IService4 service42)
-	}
 	Service1 --|> IService1
 	class Service1 {
 		+Service1(IService2 service2)
@@ -44,11 +41,11 @@ classDiagram
 	class IService4 {
 		<<interface>>
 	}
+	Singleton ..> CompositionRoot : CompositionRoot TestPureDIByCR()
 	CompositionRoot o-- "Scoped" Service1 : IService1
 	CompositionRoot *-- "3 " Service2 : IService2
 	CompositionRoot *--  Service3 : IService3
 	CompositionRoot o-- "2 Scoped" Service4 : IService4
-	Singleton ..> CompositionRoot : CompositionRoot TestPureDIByCR()
 	Service1 *--  Service2 : IService2
 	Service2 *-- "5 " Service3 : IService3
 	Service3 o-- "2 Scoped" Service4 : IService4

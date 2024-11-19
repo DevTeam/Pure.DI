@@ -137,8 +137,8 @@ partial class Composition: IDisposable
       Func<Session> perBlockFunc1 = new Func<Session>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
       {
         Composition transientComposition3 = this;
-        Session localValue75 = new Session(transientComposition3);
-        return localValue75;
+        Session localValue76 = new Session(transientComposition3);
+        return localValue76;
       });
       return new Program(perBlockFunc1);
     }
@@ -189,33 +189,30 @@ classDiagram
 		+IService SessionRoot
 	}
 	Composition --|> IDisposable
-	class Session {
-		+Session(Composition composition)
-	}
-	class Program {
-		+Program(FuncᐸSessionᐳ sessionFactory)
-	}
-	Dependency --|> IDependency
-	class Dependency {
-		+Dependency()
-	}
 	Service --|> IService
 	class Service {
 		+Service(IDependency dependency)
 	}
-	class Composition
 	class FuncᐸSessionᐳ
-	class IDependency {
-		<<interface>>
+	Dependency --|> IDependency
+	class Dependency {
+		+Dependency()
 	}
+	class Session {
+		+Session(Composition composition)
+	}
+	class Composition
 	class IService {
 		<<interface>>
 	}
-	Session *--  Composition : Composition
-	Program o-- "PerBlock" FuncᐸSessionᐳ : FuncᐸSessionᐳ
+	class IDependency {
+		<<interface>>
+	}
 	Composition ..> Program : Program ProgramRoot
 	Composition ..> Service : IService SessionRoot
+	Program o-- "PerBlock" FuncᐸSessionᐳ : FuncᐸSessionᐳ
 	Service o-- "Scoped" Dependency : IDependency
 	FuncᐸSessionᐳ *--  Session : Session
+	Session *--  Composition : Composition
 ```
 

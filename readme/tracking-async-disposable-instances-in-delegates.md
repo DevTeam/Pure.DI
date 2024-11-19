@@ -96,23 +96,23 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var accumulator41 = new Owned();
+      var accumulator43 = new Owned();
       Func<Owned<IDependency>> perBlockFunc1 = new Func<Owned<IDependency>>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
       {
-        var accumulator41 = new Owned();
+        var accumulator43 = new Owned();
         Dependency transientDependency4 = new Dependency();
         lock (_lock)
         {
-          accumulator41.Add(transientDependency4);
+          accumulator43.Add(transientDependency4);
         }
         Owned<IDependency> perBlockOwned2;
         // Creates the owner of an instance
-        Owned localOwned8 = accumulator41;
+        Owned localOwned8 = accumulator43;
         IDependency localValue9 = transientDependency4;
         perBlockOwned2 = new Owned<IDependency>(localValue9, localOwned8);
         lock (_lock)
         {
-          accumulator41.Add(perBlockOwned2);
+          accumulator43.Add(perBlockOwned2);
         }
         Owned<IDependency> localValue7 = perBlockOwned2;
         return localValue7;
@@ -120,7 +120,7 @@ partial class Composition
       Service transientService0 = new Service(perBlockFunc1);
       lock (_lock)
       {
-        accumulator41.Add(transientService0);
+        accumulator43.Add(transientService0);
       }
       return transientService0;
     }
@@ -254,13 +254,13 @@ classDiagram
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
 	}
+	class FuncᐸOwnedᐸIDependencyᐳᐳ
+	class OwnedᐸIDependencyᐳ
 	class Owned
 	Dependency --|> IDependency
 	class Dependency {
 		+Dependency()
 	}
-	class FuncᐸOwnedᐸIDependencyᐳᐳ
-	class OwnedᐸIDependencyᐳ
 	class IDependency {
 		<<interface>>
 	}

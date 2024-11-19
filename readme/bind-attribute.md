@@ -104,19 +104,19 @@ classDiagram
 		<<partial>>
 		+IService Root
 	}
-	class IDependency
-	class Facade {
-		+Facade()
-	}
 	Service --|> IService
 	class Service {
 		+Service(IDependency dep)
+	}
+	class IDependency
+	class Facade {
+		+Facade()
 	}
 	class IService {
 		<<interface>>
 	}
 	Composition ..> Service : IService Root
-	IDependency o-- "Singleton" Facade : Facade
 	Service *--  IDependency : IDependency
+	IDependency o-- "Singleton" Facade : Facade
 ```
 

@@ -161,23 +161,23 @@ classDiagram
 		+ object Resolve(Type type, object? tag)
 	}
 	class Owned
-	Dependency --|> IDependency
-	class Dependency {
-		+Dependency()
-	}
 	Service --|> IService
 	class Service {
 		+Service(IDependency dependency)
 	}
-	class IDependency {
-		<<interface>>
+	Dependency --|> IDependency
+	class Dependency {
+		+Dependency()
 	}
 	class IService {
 		<<interface>>
 	}
+	class IDependency {
+		<<interface>>
+	}
 	Composition ..> OwnedᐸIServiceᐳ : OwnedᐸIServiceᐳ Root
-	Service *--  Dependency : IDependency
 	OwnedᐸIServiceᐳ *--  Owned : Owned
 	OwnedᐸIServiceᐳ *--  Service : IService
+	Service *--  Dependency : IDependency
 ```
 

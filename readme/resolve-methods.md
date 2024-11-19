@@ -219,22 +219,22 @@ classDiagram
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
 	}
-	Dependency --|> IDependency
-	class Dependency {
-		+Dependency()
+	OtherService --|> IService : "My Tag" 
+	class OtherService {
+		+OtherService()
 	}
 	Service --|> IService
 	class Service {
 		+Service(IDependency dependency)
 	}
-	OtherService --|> IService : "My Tag" 
-	class OtherService {
-		+OtherService()
-	}
-	class IDependency {
-		<<interface>>
+	Dependency --|> IDependency
+	class Dependency {
+		+Dependency()
 	}
 	class IService {
+		<<interface>>
+	}
+	class IDependency {
 		<<interface>>
 	}
 	Composition ..> OtherService : IService OtherService

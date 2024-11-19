@@ -84,6 +84,10 @@ classDiagram
 		<<partial>>
 		+IService Root
 	}
+	Service --|> IService
+	class Service {
+		+Service(IDependency dependency1, IDependency dependency2)
+	}
 	AbcDependency --|> IDependency : "Abc" 
 	class AbcDependency {
 		+AbcDependency()
@@ -92,14 +96,10 @@ classDiagram
 	class XyzDependency {
 		+XyzDependency()
 	}
-	Service --|> IService
-	class Service {
-		+Service(IDependency dependency1, IDependency dependency2)
-	}
-	class IDependency {
+	class IService {
 		<<interface>>
 	}
-	class IService {
+	class IDependency {
 		<<interface>>
 	}
 	Composition ..> Service : IService Root

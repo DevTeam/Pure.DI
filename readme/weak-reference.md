@@ -184,6 +184,10 @@ classDiagram
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
 	}
+	Service --|> IService
+	class Service {
+		+Service(WeakReferenceᐸIDependencyᐳ dependency)
+	}
 	class WeakReferenceᐸIDependencyᐳ {
 		+WeakReference(IDependency target)
 	}
@@ -191,18 +195,14 @@ classDiagram
 	class Dependency {
 		+Dependency()
 	}
-	Service --|> IService
-	class Service {
-		+Service(WeakReferenceᐸIDependencyᐳ dependency)
+	class IService {
+		<<interface>>
 	}
 	class IDependency {
 		<<interface>>
 	}
-	class IService {
-		<<interface>>
-	}
-	WeakReferenceᐸIDependencyᐳ *--  Dependency : IDependency
 	Composition ..> Service : IService Root
 	Service *--  WeakReferenceᐸIDependencyᐳ : WeakReferenceᐸIDependencyᐳ
+	WeakReferenceᐸIDependencyᐳ *--  Dependency : IDependency
 ```
 
