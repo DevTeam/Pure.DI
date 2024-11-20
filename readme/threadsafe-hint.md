@@ -20,7 +20,7 @@ class Service(Func<IDependency> dependencyFactory) : IService;
 DI.Setup(nameof(Composition))
     .Hint(ThreadSafe, "Off")
     .Bind().To<Dependency>()
-    .Bind().As(Lifetime.Scoped).To<Service>()
+    .Bind().As(Lifetime.Singleton).To<Service>()
     .Root<IService>("Root");
 
 var composition = new Composition();
@@ -36,7 +36,7 @@ partial class Composition
 {
   private readonly Composition _root;
 
-  private Service? _scopedService40;
+  private Service? _singletonService40;
 
   [OrdinalAttribute(20)]
   public Composition()
@@ -54,17 +54,17 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_scopedService40 == null)
+      if (_root._singletonService40 == null)
       {
         Func<IDependency> perBlockFunc0 = new Func<IDependency>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
         {
           IDependency localValue71 = new Dependency();
           return localValue71;
         });
-        _scopedService40 = new Service(perBlockFunc0);
+        _root._singletonService40 = new Service(perBlockFunc0);
       }
 
-      return _scopedService40!;
+      return _root._singletonService40!;
     }
   }
 }

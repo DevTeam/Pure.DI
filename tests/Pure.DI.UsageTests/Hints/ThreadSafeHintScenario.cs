@@ -41,7 +41,7 @@ public class Scenario
         DI.Setup(nameof(Composition))
             .Hint(ThreadSafe, "Off")
             .Bind().To<Dependency>()
-            .Bind().As(Lifetime.Scoped).To<Service>()
+            .Bind().As(Lifetime.Singleton).To<Service>()
             .Root<IService>("Root");
 
         var composition = new Composition();
