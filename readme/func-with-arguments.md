@@ -119,11 +119,11 @@ partial class Composition
         // and source code statements "subId"
         int transientInt324 = subId;
         int transientInt323 = dependencyId;
-        if (_root._singletonClock39 == null)
+        if (_root._singletonClock39 is null)
         {
           lock (_lock)
           {
-            if (_root._singletonClock39 == null)
+            if (_root._singletonClock39 is null)
             {
               _root._singletonClock39 = new Clock();
             }

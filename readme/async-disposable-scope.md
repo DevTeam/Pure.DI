@@ -115,11 +115,11 @@ partial class Composition: IDisposable, IAsyncDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_scopedDependency39 == null)
+      if (_scopedDependency39 is null)
       {
         lock (_lock)
         {
-          if (_scopedDependency39 == null)
+          if (_scopedDependency39 is null)
           {
             _scopedDependency39 = new Dependency();
             _disposables[_disposeIndex++] = _scopedDependency39;

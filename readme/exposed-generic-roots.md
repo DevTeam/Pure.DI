@@ -64,11 +64,11 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonCompositionWithGenericRootsInOtherProject39 == null)
+      if (_root._singletonCompositionWithGenericRootsInOtherProject39 is null)
       {
         lock (_lock)
         {
-          if (_root._singletonCompositionWithGenericRootsInOtherProject39 == null)
+          if (_root._singletonCompositionWithGenericRootsInOtherProject39 is null)
           {
             _root._singletonCompositionWithGenericRootsInOtherProject39 = new Integration.CompositionWithGenericRootsInOtherProject();
           }

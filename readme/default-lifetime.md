@@ -75,13 +75,13 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonService40 == null)
+      if (_root._singletonService40 is null)
       {
         lock (_lock)
         {
-          if (_root._singletonService40 == null)
+          if (_root._singletonService40 is null)
           {
-            if (_root._singletonDependency39 == null)
+            if (_root._singletonDependency39 is null)
             {
               _root._singletonDependency39 = new Dependency();
             }

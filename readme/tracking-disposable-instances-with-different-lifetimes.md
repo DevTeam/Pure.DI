@@ -123,11 +123,11 @@ partial class Composition: IDisposable
       Func<Owned<IDependency>> perBlockFunc2 = new Func<Owned<IDependency>>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
       {
         var accumulator46 = new Owned();
-        if (_root._singletonDependency40 == null)
+        if (_root._singletonDependency40 is null)
         {
           lock (_lock)
           {
-            if (_root._singletonDependency40 == null)
+            if (_root._singletonDependency40 is null)
             {
               _root._singletonDependency40 = new Dependency();
               _root._disposables[_root._disposeIndex++] = _root._singletonDependency40;

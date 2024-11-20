@@ -71,11 +71,11 @@ partial class Composition
     {
       var accumulator44 = new MyAccumulator();
       AbcDependency perBlockAbcDependency4 = new AbcDependency();
-      if (_root._singletonXyzDependency41 == null)
+      if (_root._singletonXyzDependency41 is null)
       {
         lock (_lock)
         {
-          if (_root._singletonXyzDependency41 == null)
+          if (_root._singletonXyzDependency41 is null)
           {
             XyzDependency _singletonXyzDependency41Temp;
             _singletonXyzDependency41Temp = new XyzDependency();

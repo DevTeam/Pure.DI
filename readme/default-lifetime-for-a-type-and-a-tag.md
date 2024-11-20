@@ -74,22 +74,22 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonDependency40 == null)
+      if (_root._singletonDependency40 is null)
       {
         lock (_lock)
         {
-          if (_root._singletonDependency40 == null)
+          if (_root._singletonDependency40 is null)
           {
             _root._singletonDependency40 = new Dependency();
           }
         }
       }
 
-      if (_root._singletonDependency39 == null)
+      if (_root._singletonDependency39 is null)
       {
         lock (_lock)
         {
-          if (_root._singletonDependency39 == null)
+          if (_root._singletonDependency39 is null)
           {
             _root._singletonDependency39 = new Dependency();
           }

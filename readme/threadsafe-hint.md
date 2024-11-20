@@ -54,7 +54,7 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonService40 == null)
+      if (_root._singletonService40 is null)
       {
         Func<IDependency> perBlockFunc0 = new Func<IDependency>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
         {

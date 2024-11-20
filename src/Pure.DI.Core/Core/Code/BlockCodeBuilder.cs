@@ -10,6 +10,7 @@ internal class BlockCodeBuilder(
     public void Build(BuildContext ctx, in Block block)
     {
         var variable = ctx.Variable;
+        var languageVersion = compilations.GetLanguageVersion(variable.Node.Binding.SemanticModel.Compilation);
         if (!IsNewInstanceRequired(variable))
         {
             return;
@@ -45,7 +46,9 @@ internal class BlockCodeBuilder(
             {
                 var checkExpression = variable.InstanceType.IsValueType
                     ? $"!{variable.VariableName}Created"
-                    : $"{variable.VariableName} == null";
+                    : languageVersion >= LanguageVersion.CSharp9
+                        ? $"{variable.VariableName} is null"
+                        : $"{Names.SystemNamespace}Object.ReferenceEquals({variable.VariableName}, null)";
 
                 if (lockIsRequired)
                 {
@@ -138,7 +141,7 @@ internal class BlockCodeBuilder(
                     && code.Count > 11)
                 {
                     var localMethodCode = ctx.LocalFunctionsCode;
-                    if (compilations.GetLanguageVersion(variable.Node.Binding.SemanticModel.Compilation) >= LanguageVersion.CSharp9)
+                    if (languageVersion >= LanguageVersion.CSharp9)
                     {
                         localMethodCode.AppendLine($"[{Names.MethodImplAttributeName}({Names.MethodImplAggressiveInlining})]");
                     }

@@ -80,7 +80,7 @@ partial class Composition
         {
           if (!_root._singletonValueTuple40Created)
           {
-            if (perResolveDependency39 == null)
+            if (perResolveDependency39 is null)
             {
               perResolveDependency39 = new Dependency();
             }
@@ -92,11 +92,11 @@ partial class Composition
         }
       }
 
-      if (perResolveDependency39 == null)
+      if (perResolveDependency39 is null)
       {
         lock (_lock)
         {
-          if (perResolveDependency39 == null)
+          if (perResolveDependency39 is null)
           {
             perResolveDependency39 = new Dependency();
           }

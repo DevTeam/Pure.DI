@@ -77,14 +77,14 @@ partial class Singleton
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public partial CompositionRoot TestPureDIByCR()
   {
-    if (_scopedService442 == null)
+    if (_scopedService442 is null)
     {
       _scopedService442 = new Service4();
     }
 
-    if (_scopedService139 == null)
+    if (_scopedService139 is null)
     {
-      if (_scopedService442 == null)
+      if (_scopedService442 is null)
       {
         _scopedService442 = new Service4();
       }

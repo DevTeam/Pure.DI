@@ -61,11 +61,11 @@ partial class Composition
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Program GetProgram(int id)
   {
-    if (_root._singletonCompositionWithGenericRootsAndArgsInOtherProject40 == null)
+    if (_root._singletonCompositionWithGenericRootsAndArgsInOtherProject40 is null)
     {
       lock (_lock)
       {
-        if (_root._singletonCompositionWithGenericRootsAndArgsInOtherProject40 == null)
+        if (_root._singletonCompositionWithGenericRootsAndArgsInOtherProject40 is null)
         {
           _root._singletonCompositionWithGenericRootsAndArgsInOtherProject40 = new Integration.CompositionWithGenericRootsAndArgsInOtherProject();
         }

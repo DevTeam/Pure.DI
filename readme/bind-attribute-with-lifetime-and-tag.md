@@ -73,13 +73,13 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonIDependency0 == null)
+      if (_root._singletonIDependency0 is null)
       {
         lock (_lock)
         {
-          if (_root._singletonIDependency0 == null)
+          if (_root._singletonIDependency0 is null)
           {
-            if (_root._singletonFacade39 == null)
+            if (_root._singletonFacade39 is null)
             {
               _root._singletonFacade39 = new Facade();
             }
