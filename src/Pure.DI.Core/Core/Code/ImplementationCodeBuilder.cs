@@ -109,9 +109,9 @@ internal class ImplementationCodeBuilder(
 
     private string CreateInstantiation(
         BuildContext ctx,
-        ImmutableArray<Variable> constructorArgs,
-        ImmutableArray<(Variable RequiredVariable, DpField RequiredField)>.Builder requiredFields,
-        ImmutableArray<(Variable RequiredVariable, DpProperty RequiredProperty)>.Builder requiredProperties)
+        IReadOnlyCollection<Variable> constructorArgs,
+        IReadOnlyCollection<(Variable RequiredVariable, DpField RequiredField)> requiredFields,
+        IReadOnlyCollection<(Variable RequiredVariable, DpProperty RequiredProperty)> requiredProperties)
     {
         var code = new StringBuilder();
         var variable = ctx.Variable;

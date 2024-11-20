@@ -16,9 +16,9 @@ internal static class Disposables
     public static IDisposable Create(Action action) => new DisposableAction(action);
 
     public static IDisposable Create(params IDisposable[] disposables) =>
-        Create(disposables.ToImmutableArray());
+        Create(disposables.ToList());
 
-    public static IDisposable Create(in ImmutableArray<IDisposable> disposables) =>
+    public static IDisposable Create(in IReadOnlyCollection<IDisposable> disposables) =>
         new CompositeDisposable(disposables);
 
     public static IDisposable Create(IEnumerable<IDisposable> disposables) =>
@@ -64,9 +64,9 @@ internal static class Disposables
             _key != null ? _key.GetHashCode() : 0;
     }
 
-    private class CompositeDisposable(in ImmutableArray<IDisposable> disposables) : IDisposable
+    private class CompositeDisposable(in IReadOnlyCollection<IDisposable> disposables) : IDisposable
     {
-        private readonly ImmutableArray<IDisposable> _disposables = disposables;
+        private readonly IReadOnlyCollection<IDisposable> _disposables = disposables;
         private int _counter;
 
         public void Dispose()

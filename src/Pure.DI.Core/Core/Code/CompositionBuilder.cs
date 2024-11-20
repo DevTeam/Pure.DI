@@ -50,7 +50,7 @@ internal class CompositionBuilder(
             ctx.Code.AppendLine($"return {buildTools.OnInjected(ctx, rootBlock.Current)};");
             ctx.Code.AppendLines(ctx.LocalFunctionsCode.Lines);
 
-            var args = GetRootArgs(map.Values).ToImmutableArray();
+            var args = GetRootArgs(map.Values).ToList();
             var processedRoot = root with
             {
                 Lines = ctx.Code.Lines.ToImmutableArray(),

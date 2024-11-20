@@ -125,8 +125,8 @@ public class TuplesTests
 
         // Then
         result.Success.ShouldBeFalse(result);
-        var errors = result.Logs.Where(i => i.Id == LogId.ErrorUnableToResolve).ToImmutableArray();
-        errors.Length.ShouldBe(1, result);
+        var errors = result.Logs.Where(i => i.Id == LogId.ErrorUnableToResolve).ToList();
+        errors.Count.ShouldBe(1, result);
     }
 
     [Fact]

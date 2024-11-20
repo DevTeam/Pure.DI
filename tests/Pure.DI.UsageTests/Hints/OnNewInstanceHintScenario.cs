@@ -18,7 +18,6 @@ $f=For more hints, see [this](README.md#setup-hints) page.
 
 namespace Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario;
 
-using System.Collections.Immutable;
 using Shouldly;
 using Xunit;
 

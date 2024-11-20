@@ -6,5 +6,5 @@ internal interface IInjections
     
     void PropertyInjection(string targetName, BuildContext ctx, DpProperty property, Variable propertyVariable);
     
-    void MethodInjection(string targetName, BuildContext ctx, DpMethod method, ImmutableArray<Variable> methodArgs);
+    void MethodInjection(string targetName, BuildContext ctx, DpMethod method, IReadOnlyList<Variable> methodArgs);
 }

@@ -85,7 +85,7 @@ public static class TestExtensions
                 logs,
                 errors,
                 warnings,
-                dependencyGraphObserver.Values.ToImmutableArray(),
+                dependencyGraphObserver.Values,
                 string.Empty);
         }
 
@@ -129,7 +129,7 @@ public static class TestExtensions
                     logs,
                     errors,
                     warnings,
-                    dependencyGraphObserver.Values.ToImmutableArray(),
+                    dependencyGraphObserver.Values,
                     generatedCode);
             }
 
@@ -166,7 +166,7 @@ public static class TestExtensions
                 logs,
                 errors,
                 warnings,
-                dependencyGraphObserver.Values.ToImmutableArray(),
+                dependencyGraphObserver.Values,
                 generatedCode);
 
             void StdOutReceived(object sender, DataReceivedEventArgs args)

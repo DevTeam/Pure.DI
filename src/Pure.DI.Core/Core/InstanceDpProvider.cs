@@ -20,7 +20,6 @@ internal class InstanceDpProvider(
         setupAttributesBuilder.AddRange(setup.TagAttributes);
         setupAttributesBuilder.AddRange(setup.TypeAttributes);
         var setupAttributes = setupAttributesBuilder.MoveToImmutable();
-        
         var methods = new List<DpMethod>();
         var fields = new List<DpField>();
         var properties = new List<DpProperty>();

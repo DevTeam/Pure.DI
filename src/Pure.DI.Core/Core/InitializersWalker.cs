@@ -33,7 +33,7 @@ internal sealed class InitializersWalker(
         base.VisitMethod(in ctx, in method);
         var curCtx = ctx;
         var curMethod = method;
-        var curVariables = _variables.ToImmutableArray();
+        var curVariables = _variables.ToList();
         _actions.Add(new (() => injections.MethodInjection(variableName, curCtx, curMethod, curVariables), curMethod.Ordinal));
         _variables.Clear();
     }

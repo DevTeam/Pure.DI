@@ -6,7 +6,7 @@ internal sealed class DependencyGraphLocationsWalker(in Injection injection)
     private readonly Injection _injection = injection;
     private readonly ImmutableArray<Location>.Builder _locationsBuilder = ImmutableArray.CreateBuilder<Location>();
 
-    public ImmutableArray<Location> Locations => _locationsBuilder.ToImmutableArray();
+    public IReadOnlyCollection<Location> Locations => _locationsBuilder.ToList();
 
     public override void VisitInjection(
         in Unit ctx,

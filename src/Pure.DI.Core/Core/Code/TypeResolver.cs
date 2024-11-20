@@ -45,7 +45,7 @@ internal class TypeResolver(
                     args.AddRange(item.description.TypeArgs);
                 }
 
-                description = new TypeDescription($"({string.Join(", ", elements)})", args.Distinct().ToImmutableArray(), typeParam);
+                description = new TypeDescription($"({string.Join(", ", elements)})", args.Distinct().ToList(), typeParam);
             }
                 break;
 
@@ -60,7 +60,7 @@ internal class TypeResolver(
                 }
 
                 var name = string.Join("", namedTypeSymbol.ToDisplayParts().TakeWhile(i => i.ToString() != "<"));
-                description = new TypeDescription($"{name}<{string.Join(", ", types)}>", args.Distinct().ToImmutableArray(), typeParam);
+                description = new TypeDescription($"{name}<{string.Join(", ", types)}>", args.Distinct().ToList(), typeParam);
             }
                 break;
 

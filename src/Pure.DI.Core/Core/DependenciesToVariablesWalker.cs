@@ -14,9 +14,9 @@ internal sealed class DependenciesToVariablesWalker : DependenciesWalker<Unit>
             .ToDictionary(i => i.Key, i => new LinkedList<Variable>(i));
     }
 
-    public ImmutableArray<Variable> GetResult()
+    public IReadOnlyList<Variable> GetResult()
     {
-        var result = _resultBuilder.ToImmutable();
+        var result = _resultBuilder.ToList();
         _resultBuilder.Clear();
         return result;
     }

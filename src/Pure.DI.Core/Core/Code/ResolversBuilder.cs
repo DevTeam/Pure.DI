@@ -12,5 +12,5 @@ internal sealed class ResolversBuilder(ITypeResolver typeResolver)
             .Where(i => !ReferenceEquals(i.Injection.Tag, MdTag.ContextTag))
             .Where(i => typeResolver.Resolve(ctx.Setup, i.Injection.Type).TypeArgs.Count == 0)
             .GroupBy(i => i.Injection.Type, SymbolEqualityComparer.Default)
-            .Select((i, id) => new ResolverInfo(id, (ITypeSymbol)i.Key!, i.ToImmutableArray()));
+            .Select((i, id) => new ResolverInfo(id, (ITypeSymbol)i.Key!, i.ToList()));
 }

@@ -6,7 +6,6 @@ internal sealed class Graph<TVertex, TEdge> : IGraph<TVertex, TEdge>
     where TEdge : IEdge<TVertex>
     where TVertex : notnull
 {
-    private readonly List<GraphEntry<TVertex, TEdge>> _entries = [];
     private readonly Dictionary<TVertex, GraphEntry<TVertex, TEdge>> _inOutEdges;
     private readonly Dictionary<TVertex, GraphEntry<TVertex, TEdge>> _outInEdges;
     private readonly List<TEdge> _edges = [];
@@ -20,7 +19,6 @@ internal sealed class Graph<TVertex, TEdge> : IGraph<TVertex, TEdge>
         var outInEdges = new Dictionary<TVertex, List<TEdge>>(comparer);
         foreach (var entry in entries)
         {
-            _entries.Add(entry);
             _inOutEdges.Add(entry.Target, entry);
             foreach (var edge in entry.Edges)
             {
@@ -35,7 +33,9 @@ internal sealed class Graph<TVertex, TEdge> : IGraph<TVertex, TEdge>
             }
         }
 
-        _outInEdges = outInEdges.ToDictionary(i => i.Key, i => new GraphEntry<TVertex, TEdge>(i.Key, i.Value));
+        _outInEdges = outInEdges.ToDictionary(
+            i => i.Key,
+            i => new GraphEntry<TVertex, TEdge>(i.Key, i.Value));
     }
 
     public IEnumerable<TVertex> Vertices => _inOutEdges.Keys;
@@ -65,10 +65,4 @@ internal sealed class Graph<TVertex, TEdge> : IGraph<TVertex, TEdge>
         edges = ImmutableArray<TEdge>.Empty;
         return false;
     }
-
-    public IGraph<TVertex, TEdge> Consolidate(ISet<TVertex> vertices) =>
-        new Graph<TVertex, TEdge>(
-            _entries.Where(i =>
-                vertices.Contains(i.Target)
-                || vertices.Intersect(i.Edges.Select(j => j.Source)).Any()));
 }

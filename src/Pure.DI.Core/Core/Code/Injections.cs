@@ -12,10 +12,10 @@ internal class Injections : IInjections
         ctx.Code.AppendLine($"{targetName}.{property.Property.Name} = {ctx.BuildTools.OnInjected(ctx, propertyVariable)};");
     }
 
-    public  void MethodInjection(string targetName, BuildContext ctx, DpMethod method, ImmutableArray<Variable> methodArgs)
+    public  void MethodInjection(string targetName, BuildContext ctx, DpMethod method, IReadOnlyList<Variable> methodArgs)
     {
         var args = new List<string>();
-        for (var index = 0; index < methodArgs.Length; index++)
+        for (var index = 0; index < methodArgs.Count; index++)
         {
             var variable = methodArgs[index];
             if (index < method.Parameters.Length)

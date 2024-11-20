@@ -6,7 +6,7 @@
 
 namespace Pure.DI.Core;
 
-using Injection = Models.Injection;
+using Injection = Injection;
 
 internal sealed class DependencyGraphBuilder(
     IEnumerable<IBuilder<MdSetup, IEnumerable<DependencyNode>>> dependencyNodeBuilders,
@@ -341,7 +341,7 @@ internal sealed class DependencyGraphBuilder(
                 edges.Add(dependency);
             }
 
-            entries.Add(new GraphEntry<DependencyNode, Dependency>(node.Node, edges.ToImmutableArray()));
+            entries.Add(new GraphEntry<DependencyNode, Dependency>(node.Node, edges));
         }
 
         var graph = new Graph<DependencyNode, Dependency>(entries);
