@@ -18,7 +18,26 @@ namespace Pure.DI.Abstractions
                 .OrdinalAttribute<global::Pure.DI.Abstractions.InjectAttribute<TT>>(1)
                 .TypeAttribute<global::Pure.DI.Abstractions.InjectAttribute<TT>>()
                 .TagAttribute<global::Pure.DI.Abstractions.InjectAttribute>()
-                .OrdinalAttribute<global::Pure.DI.Abstractions.InjectAttribute>(1);
+                .OrdinalAttribute<global::Pure.DI.Abstractions.InjectAttribute>(1)
+                .Accumulate<global::System.IDisposable, global::Pure.DI.Abstractions.Own>(
+                    Lifetime.Transient,
+                    Lifetime.PerResolve,
+                    Lifetime.PerBlock)
+#if NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+                .Accumulate<global::System.IAsyncDisposable, global::Pure.DI.Abstractions.Own>(
+                    Lifetime.Transient,
+                    Lifetime.PerResolve,
+                    Lifetime.PerBlock)
+#endif
+                .Bind<global::Pure.DI.Abstractions.IOwn>().To((global::Pure.DI.Abstractions.Own own) => own)
+                    .Bind<global::Pure.DI.Abstractions.Own<TT>>()
+                    .As(Lifetime.PerBlock)
+                    .To(ctx => {
+                        // Creates the owner of an instance
+                        ctx.Inject<global::Pure.DI.Abstractions.Own>(out var own);
+                        ctx.Inject<TT>(ctx.Tag, out var value);
+                        return new global::Pure.DI.Abstractions.Own<TT>(value, own);
+                    });
         }
     }
 }

@@ -93,7 +93,7 @@ partial class Composition: IDisposable, IAsyncDisposable
   private object[] _disposables;
   private int _disposeIndex;
 
-  private Dependency? _scopedDependency39;
+  private Dependency? _scopedDependency41;
 
   [OrdinalAttribute(20)]
   public Composition()
@@ -115,19 +115,19 @@ partial class Composition: IDisposable, IAsyncDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_scopedDependency39 is null)
+      if (_scopedDependency41 is null)
       {
         using (_lock.EnterScope())
         {
-          if (_scopedDependency39 is null)
+          if (_scopedDependency41 is null)
           {
-            _scopedDependency39 = new Dependency();
-            _disposables[_disposeIndex++] = _scopedDependency39;
+            _scopedDependency41 = new Dependency();
+            _disposables[_disposeIndex++] = _scopedDependency41;
           }
         }
       }
 
-      return new Service(_scopedDependency39!);
+      return new Service(_scopedDependency41!);
     }
   }
 
@@ -139,8 +139,8 @@ partial class Composition: IDisposable, IAsyncDisposable
       Func<Session> perBlockFunc1 = new Func<Session>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
       {
         Composition transientComposition3 = this;
-        Session localValue72 = new Session(transientComposition3);
-        return localValue72;
+        Session localValue78 = new Session(transientComposition3);
+        return localValue78;
       });
       return new Program(perBlockFunc1);
     }
@@ -156,7 +156,7 @@ partial class Composition: IDisposable, IAsyncDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _scopedDependency39 = null;
+      _scopedDependency41 = null;
     }
 
     while (disposeIndex-- > 0)
@@ -194,7 +194,7 @@ partial class Composition: IDisposable, IAsyncDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _scopedDependency39 = null;
+      _scopedDependency41 = null;
     }
     finally
     {

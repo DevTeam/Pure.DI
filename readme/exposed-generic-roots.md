@@ -44,7 +44,7 @@ partial class Composition
   private readonly Composition _root;
   private readonly Lock _lock;
 
-  private Integration.CompositionWithGenericRootsInOtherProject? _singletonCompositionWithGenericRootsInOtherProject39;
+  private Integration.CompositionWithGenericRootsInOtherProject? _singletonCompositionWithGenericRootsInOtherProject41;
 
   [OrdinalAttribute(20)]
   public Composition()
@@ -64,19 +64,19 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonCompositionWithGenericRootsInOtherProject39 is null)
+      if (_root._singletonCompositionWithGenericRootsInOtherProject41 is null)
       {
         using (_lock.EnterScope())
         {
-          if (_root._singletonCompositionWithGenericRootsInOtherProject39 is null)
+          if (_root._singletonCompositionWithGenericRootsInOtherProject41 is null)
           {
-            _root._singletonCompositionWithGenericRootsInOtherProject39 = new Integration.CompositionWithGenericRootsInOtherProject();
+            _root._singletonCompositionWithGenericRootsInOtherProject41 = new Integration.CompositionWithGenericRootsInOtherProject();
           }
         }
       }
 
       Integration.IMyGenericService<int> transientIMyGenericService1;
-      Integration.CompositionWithGenericRootsInOtherProject localInstance_1182D1270 = _root._singletonCompositionWithGenericRootsInOtherProject39!;
+      Integration.CompositionWithGenericRootsInOtherProject localInstance_1182D1270 = _root._singletonCompositionWithGenericRootsInOtherProject41!;
       transientIMyGenericService1 = localInstance_1182D1270.GetMyService<int>();
       return new Program(transientIMyGenericService1);
     }

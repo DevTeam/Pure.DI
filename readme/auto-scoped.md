@@ -75,7 +75,7 @@ partial class Composition
   private readonly Composition _root;
   private readonly Lock _lock;
 
-  private Dependency? _scopedDependency39;
+  private Dependency? _scopedDependency41;
 
   [OrdinalAttribute(20)]
   public Composition()
@@ -100,12 +100,12 @@ partial class Composition
         Composition transientComposition3 = this;
         IService transientIService2;
         // Injects a base composition
-        Composition localBaseComposition74 = transientComposition3;
+        Composition localBaseComposition80 = transientComposition3;
         // Creates a session
-        var localSession75= new Composition(localBaseComposition74);
-        transientIService2 = localSession75.SessionRoot;
-        IService localValue73 = transientIService2;
-        return localValue73;
+        var localSession81= new Composition(localBaseComposition80);
+        transientIService2 = localSession81.SessionRoot;
+        IService localValue79 = transientIService2;
+        return localValue79;
       });
       return new Program(perBlockFunc1);
     }
@@ -116,18 +116,18 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_scopedDependency39 is null)
+      if (_scopedDependency41 is null)
       {
         using (_lock.EnterScope())
         {
-          if (_scopedDependency39 is null)
+          if (_scopedDependency41 is null)
           {
-            _scopedDependency39 = new Dependency();
+            _scopedDependency41 = new Dependency();
           }
         }
       }
 
-      return new Service(_scopedDependency39!);
+      return new Service(_scopedDependency41!);
     }
   }
 }

@@ -67,7 +67,7 @@ partial class Composition
   private readonly Composition _root;
   private readonly Lock _lock;
 
-  private Dependency? _singletonDependency39;
+  private Dependency? _singletonDependency41;
 
   [OrdinalAttribute(20)]
   public Composition()
@@ -87,22 +87,22 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonDependency39 is null)
+      if (_root._singletonDependency41 is null)
       {
         using (_lock.EnterScope())
         {
-          if (_root._singletonDependency39 is null)
+          if (_root._singletonDependency41 is null)
           {
-            Dependency _singletonDependency39Temp;
-            _singletonDependency39Temp = new Dependency();
-            OnNewInstance<Dependency>(ref _singletonDependency39Temp, null, Lifetime.Singleton);
+            Dependency _singletonDependency41Temp;
+            _singletonDependency41Temp = new Dependency();
+            OnNewInstance<Dependency>(ref _singletonDependency41Temp, null, Lifetime.Singleton);
             Thread.MemoryBarrier();
-            _root._singletonDependency39 = _singletonDependency39Temp;
+            _root._singletonDependency41 = _singletonDependency41Temp;
           }
         }
       }
 
-      Service transientService0 = new Service(_root._singletonDependency39!);
+      Service transientService0 = new Service(_root._singletonDependency41!);
       OnNewInstance<Service>(ref transientService0, null, Lifetime.Transient);
       return transientService0;
     }

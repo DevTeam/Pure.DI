@@ -1225,7 +1225,7 @@ namespace Pure.DI
     }
 
     /// <summary>
-    /// Gives the ability to manage disposable objects.
+    /// This abstraction allows a disposable object to be disposed of.
     /// </summary>
     internal interface IOwned
         : global::System.IDisposable
@@ -1236,12 +1236,12 @@ namespace Pure.DI
     }
 
     /// <summary>
-    /// Gives the ability to manage disposable objects.
+    /// Performs accumulation and disposal of disposable objects.
     /// </summary>
 #if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 #endif
-    internal sealed partial class Owned : global::System.Collections.Generic.List<object>, global::Pure.DI.IOwned
+    internal sealed partial class Owned: global::System.Collections.Generic.List<object>, global::Pure.DI.IOwned
     {
         private volatile bool _isDisposed;
 
@@ -1373,18 +1373,24 @@ namespace Pure.DI
     }
     
     /// <summary>
-    /// Contains a value and gives the ability to manage disposable objects.
+    /// Contains a value and gives the ability to dispose of that value.
     /// </summary>
+    /// <typeparam name="T">Type of value owned.</typeparam>
     [global::System.Diagnostics.DebuggerDisplay("{Value}")]
     [global::System.Diagnostics.DebuggerTypeProxy(typeof(global::Pure.DI.Owned<>.DebugView))]
-    internal readonly struct Owned<T> : global::Pure.DI.IOwned
+    internal readonly struct Owned<T>: global::Pure.DI.IOwned
     {
         /// <summary>
-        /// The value.
+        /// Own value.
         /// </summary>
         public readonly T Value;
         private readonly global::Pure.DI.IOwned _owned;
-        
+
+        /// <summary>
+        /// Creates a new instance.
+        /// </summary>
+        /// <param name="value">Own value.</param>
+        /// <param name="owned">The abstraction allows a disposable object to be disposed of.</param>
         public Owned(T value, global::Pure.DI.IOwned owned)
         {
             Value = value;

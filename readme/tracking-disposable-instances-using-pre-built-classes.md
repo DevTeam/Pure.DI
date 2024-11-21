@@ -1,6 +1,12 @@
-#### Tracking disposable instances with different lifetimes
+#### Tracking disposable instances using pre-built classes
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Advanced/TrackingDisposableWithDifferentLifetimesScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Advanced/TrackingDisposableWithAbstractionsScenario.cs)
+
+If you want ready-made classes for tracking disposable objects in your libraries but don't want to create your own, you can add this package to your projects:
+
+[![NuGet](https://img.shields.io/nuget/v/Pure.DI.Abstractions)](https://www.nuget.org/packages/Pure.DI.Abstractions)
+
+It contains attributes like `Inject` and `Inject<T>` that work for constructors and their arguments, methods and their arguments, properties and fields. They allow you to setup all injection parameters.
 
 
 ```c#
@@ -24,12 +30,12 @@ interface IService
 }
 
 class Service(
-    Func<Owned<IDependency>> dependencyFactory,
-    [Tag("single")] Func<Owned<IDependency>> singleDependencyFactory)
+    Func<Own<IDependency>> dependencyFactory,
+    [Tag("single")] Func<Own<IDependency>> singleDependencyFactory)
     : IService, IDisposable
 {
-    private readonly Owned<IDependency> _dependency = dependencyFactory();
-    private readonly Owned<IDependency> _singleDependency = singleDependencyFactory();
+    private readonly Own<IDependency> _dependency = dependencyFactory();
+    private readonly Own<IDependency> _singleDependency = singleDependencyFactory();
 
     public IDependency Dependency => _dependency.Value;
 
@@ -87,6 +93,10 @@ composition.Dispose();
 root1.SingleDependency.IsDisposed.ShouldBeTrue();
 ```
 
+This package should also be included in a project:
+
+[![NuGet](https://img.shields.io/nuget/v/Pure.DI)](https://www.nuget.org/packages/Pure.DI)
+
 The following partial class will be generated:
 
 ```c#
@@ -119,10 +129,10 @@ partial class Composition: IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var accumulator48 = new Owned();
-      Func<Owned<IDependency>> perBlockFunc2 = new Func<Owned<IDependency>>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
+      var accumulator48 = new Abstractions.Own();
+      Func<Abstractions.Own<IDependency>> perBlockFunc2 = new Func<Abstractions.Own<IDependency>>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
       {
-        var accumulator48 = new Owned();
+        var accumulator48 = new Abstractions.Own();
         if (_root._singletonDependency42 is null)
         {
           using (_lock.EnterScope())
@@ -135,37 +145,37 @@ partial class Composition: IDisposable
           }
         }
 
-        Owned<IDependency> perBlockOwned3;
+        Abstractions.Own<IDependency> perBlockOwn3;
         // Creates the owner of an instance
-        Owned localOwned24 = accumulator48;
-        IDependency localValue25 = _root._singletonDependency42!;
-        perBlockOwned3 = new Owned<IDependency>(localValue25, localOwned24);
+        Abstractions.Own localOwn18 = accumulator48;
+        IDependency localValue19 = _root._singletonDependency42!;
+        perBlockOwn3 = new Abstractions.Own<IDependency>(localValue19, localOwn18);
         using (_lock.EnterScope())
         {
-          accumulator48.Add(perBlockOwned3);
+          accumulator48.Add(perBlockOwn3);
         }
-        Owned<IDependency> localValue23 = perBlockOwned3;
-        return localValue23;
+        Abstractions.Own<IDependency> localValue17 = perBlockOwn3;
+        return localValue17;
       });
-      Func<Owned<IDependency>> perBlockFunc1 = new Func<Owned<IDependency>>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
+      Func<Abstractions.Own<IDependency>> perBlockFunc1 = new Func<Abstractions.Own<IDependency>>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
       {
-        var accumulator48 = new Owned();
+        var accumulator48 = new Abstractions.Own();
         Dependency transientDependency7 = new Dependency();
         using (_lock.EnterScope())
         {
           accumulator48.Add(transientDependency7);
         }
-        Owned<IDependency> perBlockOwned5;
+        Abstractions.Own<IDependency> perBlockOwn5;
         // Creates the owner of an instance
-        Owned localOwned27 = accumulator48;
-        IDependency localValue28 = transientDependency7;
-        perBlockOwned5 = new Owned<IDependency>(localValue28, localOwned27);
+        Abstractions.Own localOwn21 = accumulator48;
+        IDependency localValue22 = transientDependency7;
+        perBlockOwn5 = new Abstractions.Own<IDependency>(localValue22, localOwn21);
         using (_lock.EnterScope())
         {
-          accumulator48.Add(perBlockOwned5);
+          accumulator48.Add(perBlockOwn5);
         }
-        Owned<IDependency> localValue26 = perBlockOwned5;
-        return localValue26;
+        Abstractions.Own<IDependency> localValue20 = perBlockOwn5;
+        return localValue20;
       });
       Service transientService0 = new Service(perBlockFunc1, perBlockFunc2);
       using (_lock.EnterScope())
@@ -338,9 +348,9 @@ classDiagram
 		+ object Resolve(Type type, object? tag)
 	}
 	Composition --|> IDisposable
-	class FuncᐸOwnedᐸIDependencyᐳᐳ
-	class OwnedᐸIDependencyᐳ
-	class Owned
+	class FuncᐸOwnᐸIDependencyᐳᐳ
+	class OwnᐸIDependencyᐳ
+	class Own
 	Dependency --|> IDependency
 	class Dependency {
 		+Dependency()
@@ -349,13 +359,13 @@ classDiagram
 		<<interface>>
 	}
 	Composition ..> Service : Service Root
-	Service o-- "PerBlock" FuncᐸOwnedᐸIDependencyᐳᐳ : FuncᐸOwnedᐸIDependencyᐳᐳ
-	Service o-- "PerBlock" FuncᐸOwnedᐸIDependencyᐳᐳ : "single"  FuncᐸOwnedᐸIDependencyᐳᐳ
-	FuncᐸOwnedᐸIDependencyᐳᐳ o-- "PerBlock" OwnedᐸIDependencyᐳ : OwnedᐸIDependencyᐳ
-	FuncᐸOwnedᐸIDependencyᐳᐳ o-- "PerBlock" OwnedᐸIDependencyᐳ : "single"  OwnedᐸIDependencyᐳ
-	OwnedᐸIDependencyᐳ *--  Owned : Owned
-	OwnedᐸIDependencyᐳ *--  Dependency : IDependency
-	OwnedᐸIDependencyᐳ *--  Owned : Owned
-	OwnedᐸIDependencyᐳ o-- "Singleton" Dependency : "single"  IDependency
+	Service o-- "PerBlock" FuncᐸOwnᐸIDependencyᐳᐳ : FuncᐸOwnᐸIDependencyᐳᐳ
+	Service o-- "PerBlock" FuncᐸOwnᐸIDependencyᐳᐳ : "single"  FuncᐸOwnᐸIDependencyᐳᐳ
+	FuncᐸOwnᐸIDependencyᐳᐳ o-- "PerBlock" OwnᐸIDependencyᐳ : OwnᐸIDependencyᐳ
+	FuncᐸOwnᐸIDependencyᐳᐳ o-- "PerBlock" OwnᐸIDependencyᐳ : "single"  OwnᐸIDependencyᐳ
+	OwnᐸIDependencyᐳ *--  Own : Own
+	OwnᐸIDependencyᐳ *--  Dependency : IDependency
+	OwnᐸIDependencyᐳ *--  Own : Own
+	OwnᐸIDependencyᐳ o-- "Singleton" Dependency : "single"  IDependency
 ```
 

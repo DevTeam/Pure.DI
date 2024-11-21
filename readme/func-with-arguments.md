@@ -90,7 +90,7 @@ partial class Composition
   private readonly Composition _root;
   private readonly Lock _lock;
 
-  private Clock? _singletonClock39;
+  private Clock? _singletonClock41;
 
   [OrdinalAttribute(20)]
   public Composition()
@@ -119,19 +119,19 @@ partial class Composition
         // and source code statements "subId"
         int transientInt324 = subId;
         int transientInt323 = dependencyId;
-        if (_root._singletonClock39 is null)
+        if (_root._singletonClock41 is null)
         {
           using (_lock.EnterScope())
           {
-            if (_root._singletonClock39 is null)
+            if (_root._singletonClock41 is null)
             {
-              _root._singletonClock39 = new Clock();
+              _root._singletonClock41 = new Clock();
             }
           }
         }
 
-        Dependency localDependency39 = new Dependency(_root._singletonClock39!, transientInt323, transientInt324);
-        return localDependency39;
+        Dependency localDependency45 = new Dependency(_root._singletonClock41!, transientInt323, transientInt324);
+        return localDependency45;
       };
       return new Service(transientFunc1);
     }

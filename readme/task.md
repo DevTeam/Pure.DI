@@ -80,26 +80,26 @@ partial class Composition
   public IService GetRoot(CancellationToken cancellationToken)
   {
     TaskFactory<IDependency> perBlockTaskFactory3;
-    CancellationToken localCancellationToken46 = cancellationToken;
+    CancellationToken localCancellationToken52 = cancellationToken;
     TaskCreationOptions transientTaskCreationOptions4 = TaskCreationOptions.None;
-    TaskCreationOptions localTaskCreationOptions47 = transientTaskCreationOptions4;
+    TaskCreationOptions localTaskCreationOptions53 = transientTaskCreationOptions4;
     TaskContinuationOptions transientTaskContinuationOptions5 = TaskContinuationOptions.None;
-    TaskContinuationOptions localTaskContinuationOptions48 = transientTaskContinuationOptions5;
+    TaskContinuationOptions localTaskContinuationOptions54 = transientTaskContinuationOptions5;
     TaskScheduler transientTaskScheduler6 = TaskScheduler.Current;
-    TaskScheduler localTaskScheduler49 = transientTaskScheduler6;
-    perBlockTaskFactory3 = new TaskFactory<IDependency>(localCancellationToken46, localTaskCreationOptions47, localTaskContinuationOptions48, localTaskScheduler49);
+    TaskScheduler localTaskScheduler55 = transientTaskScheduler6;
+    perBlockTaskFactory3 = new TaskFactory<IDependency>(localCancellationToken52, localTaskCreationOptions53, localTaskContinuationOptions54, localTaskScheduler55);
     Func<IDependency> perBlockFunc2 = new Func<IDependency>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
     {
-      IDependency localValue50 = new Dependency();
-      return localValue50;
+      IDependency localValue56 = new Dependency();
+      return localValue56;
     });
     Task<IDependency> transientTask1;
     // Injects an instance factory
-    Func<IDependency> localFactory51 = perBlockFunc2;
+    Func<IDependency> localFactory57 = perBlockFunc2;
     // Injects a task factory creating and scheduling task objects
-    TaskFactory<IDependency> localTaskFactory52 = perBlockTaskFactory3;
+    TaskFactory<IDependency> localTaskFactory58 = perBlockTaskFactory3;
     // Creates and starts a task using the instance factory
-    transientTask1 = localTaskFactory52.StartNew(localFactory51);
+    transientTask1 = localTaskFactory58.StartNew(localFactory57);
     return new Service(transientTask1);
   }
 }
