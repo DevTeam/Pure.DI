@@ -36,7 +36,6 @@ internal static class Names
     public const string ResolverPropertyName = "Value";
     public const string IDisposableInterfaceName = $"{SystemNamespace}{nameof(IDisposable)}";
     public const string IAsyncDisposableInterfaceName = $"{SystemNamespace}IAsyncDisposable";
-    public const string IAsyncDisposableInterfaceShortName = $"{nameof(System)}.IAsyncDisposable";
     public const string ResolverInterfaceName = $"{ApiNamespace}{nameof(IResolver<object, object>)}";
     public const string ContextInterfaceName = $"{ApiNamespace}{nameof(IContext)}";
     public const string ConfigurationInterfaceName = $"{ApiNamespace}{nameof(IConfiguration)}";
@@ -45,8 +44,10 @@ internal static class Names
     public const string OrdinalAttributeName = $"{ApiNamespace}{nameof(OrdinalAttribute)}";
     public const string BindAttributeName = $"{ApiNamespace}{nameof(BindAttribute)}";
 
-    // Classes
-    public const string ValueTaskName = $"{SystemNamespace}Threading.Tasks.ValueTask";
+    // Types
+    public const string ObjectTypeName = $"{SystemNamespace}Object";
+    public const string ValueTaskTypeName = $"{SystemNamespace}Threading.Tasks.ValueTask";
+    public const string LockTypeName = $"{SystemNamespace}Threading.Lock";
 
     // Members
     public const string ResolveMethodName = nameof(IResolver<object, object>.Resolve);

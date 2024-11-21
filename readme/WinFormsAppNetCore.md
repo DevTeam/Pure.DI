@@ -62,7 +62,7 @@ The [project file](/samples/WinFormsAppNetCore/WinFormsAppNetCore.csproj) looks 
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
         <UseWPF>true</UseWPF>
-        <TargetFramework>net8.0-windows</TargetFramework>
+        <TargetFramework>net9.0-windows</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>

@@ -67,7 +67,7 @@ The above code specifies the generation of a partial class named *__Composition_
 ```c#
 partial class Composition
 {
-    private object _lock = new object();
+    private Lock _lock = new Lock();
     private Random? _random;
     
     public Program Root
@@ -75,9 +75,9 @@ partial class Composition
       get
       {
         var stateFunc = new Func<State>(() => {
-              if (_random == null)
-                lock (_lock)
-                  if (_random == null)
+              if (_random is null)
+                using (_lock.EnterScope())
+                  if (_random is null)
                     _random = new Random();
 
               return (State)_random.Next(2)

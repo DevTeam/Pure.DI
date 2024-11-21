@@ -85,7 +85,7 @@ The [project file](/samples/ShroedingersCat/ShroedingersCat.csproj) looks like t
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>

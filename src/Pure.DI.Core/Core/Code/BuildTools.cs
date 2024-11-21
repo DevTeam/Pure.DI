@@ -7,7 +7,8 @@ internal class BuildTools(
     IFilter filter,
     ITypeResolver typeResolver,
     IBaseSymbolsProvider baseSymbolsProvider,
-    [Tag("Injection")] IIdGenerator idGenerator)
+    [Tag("Injection")] IIdGenerator idGenerator,
+    ILocks locks)
     : IBuildTools
 {
     public void AddPureHeader(LinesBuilder code)
@@ -102,9 +103,10 @@ internal class BuildTools(
             .Select(i => new Line(0, $"{i.Name}.Add({variable.VariableName});"))
             .ToList();
 
+        var compilation = variable.Node.Binding.SemanticModel.Compilation;
         if (lockIsRequired && accLines.Count > 0)
         {
-            code.AppendLine($"lock ({Names.LockFieldName})");
+            locks.AddLockStatements(compilation, code, false);
             code.AppendLine("{");
             code.IncIndent();
         }
@@ -115,6 +117,7 @@ internal class BuildTools(
         {
             code.DecIndent();
             code.AppendLine("}");
+            locks.AddUnlockStatements(compilation, code, false);
         }
 
         if (!ctx.DependencyGraph.Source.Hints.IsOnNewInstanceEnabled)

@@ -2,7 +2,9 @@
 
 namespace Pure.DI.Core.Code;
 
-internal class NodeInfo(IAsyncDisposableSettings asyncDisposableSettings) : INodeInfo
+using SpecialType = Microsoft.CodeAnalysis.SpecialType;
+
+internal class NodeInfo(ITypes types) : INodeInfo
 {
     public bool IsDelegate(DependencyNode node) =>
         node.Type.TypeKind == TypeKind.Delegate;
@@ -25,6 +27,6 @@ internal class NodeInfo(IAsyncDisposableSettings asyncDisposableSettings) : INod
         node.Construct is { Source.Kind: MdConstructKind.AsyncEnumerable };
 
     private bool IsAsyncDisposable(Compilation compilation, ISymbol type) =>
-        asyncDisposableSettings.TryGetAsyncDisposableType(compilation) is { } asyncDisposableType
+        types.TryGet(Core.SpecialType.IAsyncDisposable, compilation) is { } asyncDisposableType
         && SymbolEqualityComparer.Default.Equals(type, asyncDisposableType);
 }

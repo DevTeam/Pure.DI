@@ -5,7 +5,8 @@ namespace Pure.DI.Core.Code;
 internal sealed class ParameterizedConstructorBuilder(
     ITypeResolver typeResolver,
     [Tag(typeof(ParameterizedConstructorCommenter))]
-    ICommenter<Unit> constructorCommenter)
+    ICommenter<Unit> constructorCommenter,
+    ILocks locks)
     : IBuilder<CompositionCode, CompositionCode>
 {
     public CompositionCode Build(CompositionCode composition)
@@ -44,7 +45,7 @@ internal sealed class ParameterizedConstructorBuilder(
             code.AppendLine($"{Names.RootFieldName} = this;");
             if (composition.IsThreadSafe)
             {
-                code.AppendLine($"{Names.LockFieldName} = new object();");
+                code.AppendLine($"{Names.LockFieldName} = new {locks.GetLockType(composition.Compilation)}();");
             }
 
             if (composition.TotalDisposablesCount > 0)

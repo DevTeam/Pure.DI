@@ -82,7 +82,7 @@ internal class BindingBuilder(
                     if (implementationType is not null && contractsSource is not null)
                     {
                         var baseSymbols = Enumerable.Empty<ITypeSymbol>();
-                        if (implementationType is { SpecialType: SpecialType.None, TypeKind: TypeKind.Class, IsAbstract: false })
+                        if (implementationType is { SpecialType: Microsoft.CodeAnalysis.SpecialType.None, TypeKind: TypeKind.Class, IsAbstract: false })
                         {
                             baseSymbols = baseSymbolsProvider
                                 .GetBaseSymbols(implementationType, (i, deepness) => deepness switch
@@ -92,7 +92,7 @@ internal class BindingBuilder(
                                         implementationType.TypeKind != TypeKind.Interface
                                         && !implementationType.IsAbstract
                                         && (i.TypeKind == TypeKind.Interface || i.IsAbstract)
-                                        && i.SpecialType == SpecialType.None
+                                        && i.SpecialType == Microsoft.CodeAnalysis.SpecialType.None
                                         => true,
                                     _ => false
                                 }, 1);

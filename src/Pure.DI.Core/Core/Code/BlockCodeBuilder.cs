@@ -4,13 +4,15 @@ namespace Pure.DI.Core.Code;
 
 internal class BlockCodeBuilder(
     INodeInfo nodeInfo,
-    ICompilations compilations)
+    ICompilations compilations,
+    ILocks locks)
     : ICodeBuilder<Block>
 {
     public void Build(BuildContext ctx, in Block block)
     {
         var variable = ctx.Variable;
-        var languageVersion = compilations.GetLanguageVersion(variable.Node.Binding.SemanticModel.Compilation);
+        var compilation = variable.Node.Binding.SemanticModel.Compilation;
+        var languageVersion = compilations.GetLanguageVersion(compilation);
         if (!IsNewInstanceRequired(variable))
         {
             return;
@@ -48,14 +50,14 @@ internal class BlockCodeBuilder(
                     ? $"!{variable.VariableName}Created"
                     : languageVersion >= LanguageVersion.CSharp9
                         ? $"{variable.VariableName} is null"
-                        : $"{Names.SystemNamespace}Object.ReferenceEquals({variable.VariableName}, null)";
+                        : $"{Names.ObjectTypeName}.ReferenceEquals({variable.VariableName}, null)";
 
                 if (lockIsRequired)
                 {
                     code.AppendLine($"if ({checkExpression})");
                     code.AppendLine("{");
                     code.IncIndent();
-                    code.AppendLine($"lock ({Names.LockFieldName})");
+                    locks.AddLockStatements(compilation, code, false);
                     code.AppendLine("{");
                     code.IncIndent();
                     ctx = ctx with { LockIsRequired = false };
@@ -122,6 +124,7 @@ internal class BlockCodeBuilder(
             code.AppendLine("}");
             if (!lockIsRequired)
             {
+                locks.AddUnlockStatements(compilation, code, false);
                 code.AppendLine();
                 return;
             }

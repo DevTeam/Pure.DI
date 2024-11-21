@@ -50,7 +50,7 @@ The following partial class will be generated:
 partial class Composition
 {
   private readonly Composition _root;
-  private readonly object _lock;
+  private readonly Lock _lock;
 
   private (IDependency dep3, IDependency dep4) _singletonValueTuple40;
   private bool _singletonValueTuple40Created;
@@ -59,7 +59,7 @@ partial class Composition
   public Composition()
   {
     _root = this;
-    _lock = new object();
+    _lock = new Lock();
   }
 
   internal Composition(Composition parentScope)
@@ -76,7 +76,7 @@ partial class Composition
       var perResolveDependency39 = default(Dependency);
       if (!_root._singletonValueTuple40Created)
       {
-        lock (_lock)
+        using (_lock.EnterScope())
         {
           if (!_root._singletonValueTuple40Created)
           {
@@ -94,7 +94,7 @@ partial class Composition
 
       if (perResolveDependency39 is null)
       {
-        lock (_lock)
+        using (_lock.EnterScope())
         {
           if (perResolveDependency39 is null)
           {

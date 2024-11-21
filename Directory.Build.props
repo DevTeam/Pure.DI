@@ -4,7 +4,7 @@
         <InternalVersion>2.1.39</InternalVersion>
         <BasePackageId>Pure.DI</BasePackageId>
         <LangVersion>latest</LangVersion>
-        <BaseTargetFramework>net8.0</BaseTargetFramework>
+        <BaseTargetFramework>net9.0</BaseTargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>

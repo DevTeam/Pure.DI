@@ -14,7 +14,7 @@ internal sealed class ApiMembersBuilder(
         var hints = composition.Source.Source.Hints;
         var isCommentsEnabled = hints.IsCommentsEnabled;
         var apiCode = new LinesBuilder();
-        var nullable = composition.Source.Source.SemanticModel.Compilation.Options.NullableContextOptions == NullableContextOptions.Disable ? "" : "?";
+        var nullable = composition.Compilation.Options.NullableContextOptions == NullableContextOptions.Disable ? "" : "?";
         if (hints.IsResolveEnabled)
         {
             if (isCommentsEnabled)

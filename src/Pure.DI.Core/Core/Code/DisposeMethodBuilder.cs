@@ -2,7 +2,8 @@
 
 namespace Pure.DI.Core.Code;
 
-internal sealed class DisposeMethodBuilder
+internal sealed class DisposeMethodBuilder(
+    ILocks locks)
     : IBuilder<CompositionCode, CompositionCode>
 {
     public CompositionCode Build(CompositionCode composition)
@@ -29,7 +30,7 @@ internal sealed class DisposeMethodBuilder
         code.AppendLine("{");
         using (code.Indent())
         {
-            AddSyncPart(composition, code);
+            AddSyncPart(composition, code, false);
             code.AppendLine();
             code.AppendLine("while (disposeIndex-- > 0)");
             code.AppendLine("{");
@@ -85,11 +86,11 @@ internal sealed class DisposeMethodBuilder
                 code.AppendLine("/// </summary>");
             }
 
-            code.AppendLine($"{composition.Source.Source.Hints.DisposeAsyncMethodModifiers} async {Names.ValueTaskName} DisposeAsync()");
+            code.AppendLine($"{composition.Source.Source.Hints.DisposeAsyncMethodModifiers} async {Names.ValueTaskTypeName} DisposeAsync()");
             code.AppendLine("{");
             using (code.Indent())
             {
-                AddSyncPart(composition, code);
+                AddSyncPart(composition, code, true);
                 code.AppendLine();
                 code.AppendLine("while (disposeIndex-- > 0)");
                 code.AppendLine("{");
@@ -203,11 +204,11 @@ internal sealed class DisposeMethodBuilder
         }
     }
 
-    private static void AddSyncPart(CompositionCode composition, LinesBuilder code)
+    private void AddSyncPart(CompositionCode composition, LinesBuilder code, bool isAsync)
     {
         code.AppendLine("int disposeIndex;");
         code.AppendLine("object[] disposables;");
-        code.AppendLine($"lock ({Names.LockFieldName})");
+        locks.AddLockStatements(composition.Compilation, code, isAsync);
         code.AppendLine("{");
         using (code.Indent())
         {
@@ -225,5 +226,6 @@ internal sealed class DisposeMethodBuilder
         }
 
         code.AppendLine("}");
+        locks.AddUnlockStatements(composition.Compilation, code, isAsync);
     }
 }

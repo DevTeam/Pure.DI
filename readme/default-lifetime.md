@@ -52,7 +52,7 @@ The following partial class will be generated:
 partial class Composition
 {
   private readonly Composition _root;
-  private readonly object _lock;
+  private readonly Lock _lock;
 
   private Service? _singletonService40;
   private Dependency? _singletonDependency39;
@@ -61,7 +61,7 @@ partial class Composition
   public Composition()
   {
     _root = this;
-    _lock = new object();
+    _lock = new Lock();
   }
 
   internal Composition(Composition parentScope)
@@ -77,7 +77,7 @@ partial class Composition
     {
       if (_root._singletonService40 is null)
       {
-        lock (_lock)
+        using (_lock.EnterScope())
         {
           if (_root._singletonService40 is null)
           {

@@ -99,17 +99,21 @@ classDiagram
 	}
 	class String
 	class Int32
-	Uri --|> ISpanFormattable
 	Uri --|> IFormattable
+	Uri --|> ISpanFormattable
+	Uri --|> IEquatableᐸUriᐳ
 	Uri --|> ISerializable
 	class Uri
 	class IPerson {
 		<<interface>>
 	}
+	class IFormattable {
+		<<interface>>
+	}
 	class ISpanFormattable {
 		<<interface>>
 	}
-	class IFormattable {
+	class IEquatableᐸUriᐳ {
 		<<interface>>
 	}
 	class ISerializable {

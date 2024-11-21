@@ -11,4 +11,9 @@ internal record CompositionCode(
     int DisposablesScopedCount,
     bool IsThreadSafe,
     in ImmutableArray<Line> Diagram,
-    int MembersCount = 0);
+    int MembersCount = 0)
+{
+    public SemanticModel SemanticModel => Source.Source.SemanticModel;
+    
+    public Compilation Compilation => SemanticModel.Compilation;
+}

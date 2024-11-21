@@ -138,11 +138,12 @@ public sealed partial class Generator
             .DefaultLifetime(Lifetime.PerResolve)
                 .Bind().To<TypeResolver>()
                 .Bind().To<LogObserver>()
-                .Bind().To<AsyncDisposableSettings>()
+                .Bind().To<Types>()
                 .Bind().To<Filter>()
                 .Bind("UniqueTags").To<IdGenerator>()
                 .Bind("GenericType").To<IdGenerator>()
                 .Bind("Injection").To<IdGenerator>()
                 .Bind().To<IdGenerator>()
-                .Bind().To<Registry<TT>>();
+                .Bind().To<Registry<TT>>()
+                .Bind().To<Locks>();
 }

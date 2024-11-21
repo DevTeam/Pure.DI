@@ -65,13 +65,13 @@ The following partial class will be generated:
 partial class Composition
 {
   private readonly Composition _root;
-  private readonly object _lock;
+  private readonly Lock _lock;
 
   [OrdinalAttribute(20)]
   public Composition()
   {
     _root = this;
-    _lock = new object();
+    _lock = new Lock();
   }
 
   internal Composition(Composition parentScope)
@@ -87,7 +87,7 @@ partial class Composition
     {
       var accumulator42 = new Owned();
       Dependency transientDependency3 = new Dependency();
-      lock (_lock)
+      using (_lock.EnterScope())
       {
         accumulator42.Add(transientDependency3);
       }
@@ -96,7 +96,7 @@ partial class Composition
       Owned localOwned15 = accumulator42;
       IService localValue16 = new Service(transientDependency3);
       perBlockOwned0 = new Owned<IService>(localValue16, localOwned15);
-      lock (_lock)
+      using (_lock.EnterScope())
       {
         accumulator42.Add(perBlockOwned0);
       }

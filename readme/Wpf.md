@@ -108,7 +108,7 @@ The [project file](/samples/WpfAppNetCore/WpfAppNetCore.csproj) looks like this:
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
         <UseWPF>true</UseWPF>
-        <TargetFramework>net8.0-windows</TargetFramework>
+        <TargetFramework>net9.0-windows</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>

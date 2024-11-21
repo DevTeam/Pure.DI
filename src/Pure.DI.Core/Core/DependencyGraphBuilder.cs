@@ -288,7 +288,7 @@ internal sealed class DependencyGraphBuilder(
                 }
 
                 // Auto-binding
-                if (injection.Type is { IsAbstract: false, SpecialType: SpecialType.None })
+                if (injection.Type is { IsAbstract: false, SpecialType: Microsoft.CodeAnalysis.SpecialType.None })
                 {
                     var autoBinding = CreateAutoBinding(setup, targetNode, injection, ++maxId);
                     return CreateNodes(setup, autoBinding).ToArray();

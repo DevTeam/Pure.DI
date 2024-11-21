@@ -53,7 +53,7 @@ The following partial class will be generated:
 partial class Composition: IDisposable
 {
   private readonly Composition _root;
-  private readonly object _lock;
+  private readonly Lock _lock;
   private object[] _disposables;
   private int _disposeIndex;
 
@@ -63,7 +63,7 @@ partial class Composition: IDisposable
   public Composition()
   {
     _root = this;
-    _lock = new object();
+    _lock = new Lock();
     _disposables = new object[1];
   }
 
@@ -81,7 +81,7 @@ partial class Composition: IDisposable
     {
       if (_root._singletonDependency39 is null)
       {
-        lock (_lock)
+        using (_lock.EnterScope())
         {
           if (_root._singletonDependency39 is null)
           {
@@ -99,7 +99,7 @@ partial class Composition: IDisposable
   {
     int disposeIndex;
     object[] disposables;
-    lock (_lock)
+    using (_lock.EnterScope())
     {
       disposeIndex = _disposeIndex;
       _disposeIndex = 0;

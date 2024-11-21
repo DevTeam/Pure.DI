@@ -47,7 +47,7 @@ The following partial class will be generated:
 partial class Composition
 {
   private readonly Composition _root;
-  private readonly object _lock;
+  private readonly Lock _lock;
 
   private XyzDependency? _singletonXyzDependency41;
 
@@ -55,7 +55,7 @@ partial class Composition
   public Composition()
   {
     _root = this;
-    _lock = new object();
+    _lock = new Lock();
   }
 
   internal Composition(Composition parentScope)
@@ -73,7 +73,7 @@ partial class Composition
       AbcDependency perBlockAbcDependency4 = new AbcDependency();
       if (_root._singletonXyzDependency41 is null)
       {
-        lock (_lock)
+        using (_lock.EnterScope())
         {
           if (_root._singletonXyzDependency41 is null)
           {
@@ -87,12 +87,12 @@ partial class Composition
       }
 
       AbcDependency transientAbcDependency3 = new AbcDependency();
-      lock (_lock)
+      using (_lock.EnterScope())
       {
         accumulator44.Add(transientAbcDependency3);
       }
       Service transientService1 = new Service(transientAbcDependency3, _root._singletonXyzDependency41!, perBlockAbcDependency4);
-      lock (_lock)
+      using (_lock.EnterScope())
       {
         accumulator44.Add(transientService1);
       }

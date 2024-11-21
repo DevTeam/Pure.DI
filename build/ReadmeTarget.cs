@@ -249,7 +249,7 @@ internal class ReadmeTarget(
                     content = content
                         .Replace("$(version)", generatorPackageVersion)
                         .Replace("$(ms.version)", msPackageVersion)
-                        .Replace("$(targetFrameworkVersion)", "net8.0");
+                        .Replace("$(targetFrameworkVersion)", "net9.0");
                     await File.WriteAllTextAsync(readmeFile.Replace("PageTemplate.md", ".md"), content);
                 }
 

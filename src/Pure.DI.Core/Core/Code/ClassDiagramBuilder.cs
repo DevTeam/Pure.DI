@@ -16,7 +16,7 @@ internal sealed class ClassDiagramBuilder(
     public LinesBuilder Build(CompositionCode composition)
     {
         var setup = composition.Source.Source;
-        var nullable = composition.Source.Source.SemanticModel.Compilation.Options.NullableContextOptions == NullableContextOptions.Disable ? "" : "?";
+        var nullable = composition.Compilation.Options.NullableContextOptions == NullableContextOptions.Disable ? "" : "?";
         var lines = new LinesBuilder();
         lines.AppendLine("classDiagram");
         using (lines.Indent())

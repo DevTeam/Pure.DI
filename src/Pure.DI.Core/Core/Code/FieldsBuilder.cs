@@ -3,14 +3,17 @@
 
 namespace Pure.DI.Core.Code;
 
-internal sealed class FieldsBuilder(ITypeResolver typeResolver)
+internal sealed class FieldsBuilder(
+    ITypeResolver typeResolver,
+    ILocks locks)
     : IBuilder<CompositionCode, CompositionCode>
 {
     public CompositionCode Build(CompositionCode composition)
     {
         var code = composition.Code;
         var membersCounter = composition.MembersCount;
-        var nullable = composition.Source.Source.SemanticModel.Compilation.Options.NullableContextOptions == NullableContextOptions.Disable ? "" : "?";
+        var compilation = composition.Compilation;
+        var nullable = compilation.Options.NullableContextOptions == NullableContextOptions.Disable ? "" : "?";
 
         // _parent filed
         code.AppendLine($"private readonly {composition.Source.Source.Name.ClassName} {Names.RootFieldName};");
@@ -19,7 +22,7 @@ internal sealed class FieldsBuilder(ITypeResolver typeResolver)
         if (composition.IsThreadSafe)
         {
             // _lock field
-            code.AppendLine($"private readonly object {Names.LockFieldName};");
+            code.AppendLine($"private readonly {locks.GetLockType(compilation)} {Names.LockFieldName};");
             membersCounter++;
         }
 

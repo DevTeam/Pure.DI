@@ -93,7 +93,7 @@ The following partial class will be generated:
 partial class Composition: IDisposable
 {
   private readonly Composition _root;
-  private readonly object _lock;
+  private readonly Lock _lock;
   private object[] _disposables;
   private int _disposeIndex;
 
@@ -103,7 +103,7 @@ partial class Composition: IDisposable
   public Composition()
   {
     _root = this;
-    _lock = new object();
+    _lock = new Lock();
     _disposables = new object[1];
   }
 
@@ -125,7 +125,7 @@ partial class Composition: IDisposable
         var accumulator46 = new Owned();
         if (_root._singletonDependency40 is null)
         {
-          lock (_lock)
+          using (_lock.EnterScope())
           {
             if (_root._singletonDependency40 is null)
             {
@@ -140,7 +140,7 @@ partial class Composition: IDisposable
         Owned localOwned18 = accumulator46;
         IDependency localValue19 = _root._singletonDependency40!;
         perBlockOwned3 = new Owned<IDependency>(localValue19, localOwned18);
-        lock (_lock)
+        using (_lock.EnterScope())
         {
           accumulator46.Add(perBlockOwned3);
         }
@@ -151,7 +151,7 @@ partial class Composition: IDisposable
       {
         var accumulator46 = new Owned();
         Dependency transientDependency7 = new Dependency();
-        lock (_lock)
+        using (_lock.EnterScope())
         {
           accumulator46.Add(transientDependency7);
         }
@@ -160,7 +160,7 @@ partial class Composition: IDisposable
         Owned localOwned21 = accumulator46;
         IDependency localValue22 = transientDependency7;
         perBlockOwned5 = new Owned<IDependency>(localValue22, localOwned21);
-        lock (_lock)
+        using (_lock.EnterScope())
         {
           accumulator46.Add(perBlockOwned5);
         }
@@ -168,7 +168,7 @@ partial class Composition: IDisposable
         return localValue20;
       });
       Service transientService0 = new Service(perBlockFunc1, perBlockFunc2);
-      lock (_lock)
+      using (_lock.EnterScope())
       {
         accumulator46.Add(transientService0);
       }
@@ -240,7 +240,7 @@ partial class Composition: IDisposable
   {
     int disposeIndex;
     object[] disposables;
-    lock (_lock)
+    using (_lock.EnterScope())
     {
       disposeIndex = _disposeIndex;
       _disposeIndex = 0;

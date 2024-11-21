@@ -2,7 +2,9 @@
 
 namespace Pure.DI.Core.Code;
 
-internal sealed class DefaultConstructorBuilder : IBuilder<CompositionCode, CompositionCode>
+internal sealed class DefaultConstructorBuilder(
+    ILocks locks)
+    : IBuilder<CompositionCode, CompositionCode>
 {
     public CompositionCode Build(CompositionCode composition)
     {
@@ -30,7 +32,7 @@ internal sealed class DefaultConstructorBuilder : IBuilder<CompositionCode, Comp
             code.AppendLine($"{Names.RootFieldName} = this;");
             if (composition.IsThreadSafe)
             {
-                code.AppendLine($"{Names.LockFieldName} = new object();");
+                code.AppendLine($"{Names.LockFieldName} = new {locks.GetLockType(composition.Compilation)}();");
             }
 
             if (composition.TotalDisposablesCount > 0)
