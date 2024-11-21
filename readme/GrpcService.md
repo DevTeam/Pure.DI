@@ -55,11 +55,11 @@ The [project file](/samples/GrpcService/GrpcService.csproj) looks like this:
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.1.39">
+        <PackageReference Include="Pure.DI" Version="2.1.40">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.1.39" />
+        <PackageReference Include="Pure.DI.MS" Version="2.1.40" />
     </ItemGroup>
 
 </Project>
