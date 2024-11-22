@@ -41,7 +41,7 @@ partial class Composition
     public Composition() { }
 
     // Scope constructor
-    internal Composition(Composition baseComposition) { }
+    internal Composition(Composition parentScope) { }
 
     // Composition root
     public IService Root
@@ -143,7 +143,7 @@ This constructor creates a composition instance for the new scope. This allows `
 </details>
 
 <details>
-<summary>Properties</summary>
+<summary>Composition Roots</summary>
 
 ### Public Composition Roots
 
@@ -194,7 +194,7 @@ These properties have an arbitrary name and access modifier _private_ and cannot
 </details>
 
 <details>
-<summary>Methods</summary>
+<summary>Methods "Resolve"</summary>
 
 ### Resolve
 
@@ -668,7 +668,7 @@ For example:
 
 If you are using the Rider IDE, it already has a set of configurations to run these commands.
 
-> [!TIP]
+> [!NOTE]
 > This project uses [C# interactive](https://github.com/DevTeam/csharp-interactive) build automation system for .NET
 >
 > ![](https://raw.githubusercontent.com/DevTeam/csharp-interactive/master/docs/icon.ico)
@@ -677,7 +677,7 @@ If you are using the Rider IDE, it already has a set of configurations to run th
 
 Contribution Prerequisites:
 
-Installed [.NET SDK 8.0](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+Installed [.NET SDK 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
 
 ### Additional resources
 

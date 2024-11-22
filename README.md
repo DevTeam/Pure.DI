@@ -75,7 +75,7 @@ class ShroedingersCat(Lazy<State> superposition): ICat
 }
 ```
 
-> [!IMPORTANT]
+> [!NOTE]
 > Our abstraction and implementation knows nothing about the magic of DI or any frameworks.
 
 ### Let's glue it all together
@@ -153,7 +153,7 @@ class Program(IBox<ICat> box)
 }
 ```
 
-> [!TIP]
+> [!NOTE]
 > _Pure.DI_ creates efficient code in a pure DI paradigm, using only basic language constructs as if you were writing code by hand. This allows you to take full advantage of Dependency Injection everywhere and always, without any compromise!
 
 The full analog of this application with top-level statements can be found [here](samples/ShroedingersCatTopLevelStatements).
@@ -336,7 +336,7 @@ partial class Composition
     public Composition() { }
 
     // Scope constructor
-    internal Composition(Composition baseComposition) { }
+    internal Composition(Composition parentScope) { }
 
     // Composition root
     public IService Root
@@ -438,7 +438,7 @@ This constructor creates a composition instance for the new scope. This allows `
 </details>
 
 <details>
-<summary>Properties</summary>
+<summary>Composition Roots</summary>
 
 ### Public Composition Roots
 
@@ -489,7 +489,7 @@ These properties have an arbitrary name and access modifier _private_ and cannot
 </details>
 
 <details>
-<summary>Methods</summary>
+<summary>Methods "Resolve"</summary>
 
 ### Resolve
 
@@ -963,7 +963,7 @@ For example:
 
 If you are using the Rider IDE, it already has a set of configurations to run these commands.
 
-> [!TIP]
+> [!NOTE]
 > This project uses [C# interactive](https://github.com/DevTeam/csharp-interactive) build automation system for .NET
 >
 > ![](https://raw.githubusercontent.com/DevTeam/csharp-interactive/master/docs/icon.ico)
@@ -972,7 +972,7 @@ If you are using the Rider IDE, it already has a set of configurations to run th
 
 Contribution Prerequisites:
 
-Installed [.NET SDK 8.0](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+Installed [.NET SDK 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
 
 ### Additional resources
 

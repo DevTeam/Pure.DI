@@ -35,7 +35,7 @@ class ShroedingersCat(Lazy<State> superposition): ICat
 }
 ```
 
-> [!IMPORTANT]
+> [!NOTE]
 > Our abstraction and implementation knows nothing about the magic of DI or any frameworks.
 
 ### Let's glue it all together
@@ -113,7 +113,7 @@ class Program(IBox<ICat> box)
 }
 ```
 
-> [!TIP]
+> [!NOTE]
 > _Pure.DI_ creates efficient code in a pure DI paradigm, using only basic language constructs as if you were writing code by hand. This allows you to take full advantage of Dependency Injection everywhere and always, without any compromise!
 
 The full analog of this application with top-level statements can be found [here](samples/ShroedingersCatTopLevelStatements).
