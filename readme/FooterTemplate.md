@@ -671,7 +671,7 @@ If you are using the Rider IDE, it already has a set of configurations to run th
 > [!NOTE]
 > This project uses [C# interactive](https://github.com/DevTeam/csharp-interactive) build automation system for .NET
 >
-> ![](https://raw.githubusercontent.com/DevTeam/csharp-interactive/master/docs/icon.ico)
+> ![](https://raw.githubusercontent.com/DevTeam/csharp-interactive/master/docs/CSharpInteractive.gif)
 >
 > This tool helps to make .NET builds more efficient.
 
