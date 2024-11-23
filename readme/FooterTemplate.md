@@ -196,7 +196,7 @@ These properties have an arbitrary name and access modifier _private_ and cannot
 <details>
 <summary>Methods "Resolve"</summary>
 
-### Resolve
+### Methods "Resolve"
 
 By default, a set of four _Resolve_ methods is generated:
 

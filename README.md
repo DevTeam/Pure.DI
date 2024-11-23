@@ -161,23 +161,23 @@ The full analog of this application with top-level statements can be found [here
 <details>
 <summary>Just try!</summary>
 
-Clone a [sample project](https://github.com/DevTeam/Pure.DI.Example):
+Install the [projects template](https://www.nuget.org/packages/Pure.DI.Templates)
 
 ```shell
-git clone https://github.com/DevTeam/Pure.DI.Example.git
+dotnet new install Pure.DI.Templates
 ```
 
-And run it from solution root folder
+In some directory, create a console application
 
 ```shell
-cd ./Pure.DI.Example
+dotnet new di
 ```
+
+And run it
 
 ```shell
 dotnet run
 ```
-
-![](docs/icon.png)
 
 </details>
 
@@ -491,7 +491,7 @@ These properties have an arbitrary name and access modifier _private_ and cannot
 <details>
 <summary>Methods "Resolve"</summary>
 
-### Resolve
+### Methods "Resolve"
 
 By default, a set of four _Resolve_ methods is generated:
 
