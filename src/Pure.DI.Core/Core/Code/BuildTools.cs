@@ -117,7 +117,7 @@ internal class BuildTools(
         {
             code.DecIndent();
             code.AppendLine("}");
-            locks.AddUnlockStatements(compilation, code, false);
+            locks.AddUnlockStatements(code, false);
         }
 
         if (!ctx.DependencyGraph.Source.Hints.IsOnNewInstanceEnabled)

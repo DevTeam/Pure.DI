@@ -3,10 +3,11 @@
 
 namespace Pure.DI.Core;
 
-internal sealed class ConstructDependencyNodeBuilder : IBuilder<MdSetup, IEnumerable<DependencyNode>>
+internal sealed class ConstructDependencyNodeBuilder : IBuilder<DependencyNodeBuildContext, IEnumerable<DependencyNode>>
 {
-    public IEnumerable<DependencyNode> Build(MdSetup setup)
+    public IEnumerable<DependencyNode> Build(DependencyNodeBuildContext ctx)
     {
+        var setup = ctx.Setup;
         foreach (var binding in setup.Bindings)
         {
             if (binding.Construct is not { } construct)
@@ -23,7 +24,11 @@ internal sealed class ConstructDependencyNodeBuilder : IBuilder<MdSetup, IEnumer
                 }
 
                 var tag = contract.Tags.Select(i => i.Value).FirstOrDefault();
-                injections.Add(new Injection(InjectionKind.Contract, contract.ContractType.WithNullableAnnotation(NullableAnnotation.NotAnnotated), tag));
+                injections.Add(
+                    new Injection(
+                        InjectionKind.Contract,
+                        ctx.TypeConstructor.Construct(setup, binding.SemanticModel.Compilation, contract.ContractType.WithNullableAnnotation(NullableAnnotation.NotAnnotated)),
+                        tag));
             }
 
             yield return new DependencyNode(0, binding, Construct: new DpConstruct(construct, binding, injections.ToImmutableArray()));

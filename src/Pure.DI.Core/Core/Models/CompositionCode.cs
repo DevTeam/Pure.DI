@@ -13,7 +13,5 @@ internal record CompositionCode(
     in ImmutableArray<Line> Diagram,
     int MembersCount = 0)
 {
-    public SemanticModel SemanticModel => Source.Source.SemanticModel;
-    
-    public Compilation Compilation => SemanticModel.Compilation;
+    public Compilation Compilation => Source.Source.SemanticModel.Compilation;
 }

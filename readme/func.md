@@ -64,8 +64,8 @@ partial class Composition
     {
       Func<IDependency> perBlockFunc1 = new Func<IDependency>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
       {
-        IDependency localValue44 = new Dependency();
-        return localValue44;
+        IDependency localValue45 = new Dependency();
+        return localValue45;
       });
       return new Service(perBlockFunc1);
     }

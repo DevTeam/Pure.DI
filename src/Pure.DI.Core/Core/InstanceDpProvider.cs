@@ -9,6 +9,7 @@ internal class InstanceDpProvider(
 {
     public InstanceDp Get(
         MdSetup setup,
+        ITypeConstructor typeConstructor,
         Compilation compilation,
         INamedTypeSymbol implementationType)
     {
@@ -42,7 +43,7 @@ internal class InstanceDpProvider(
 
                         if (ordinal.HasValue)
                         {
-                            methods.Add(new DpMethod(method, ordinal, GetParameters(setup, method.Parameters, compilation, setup.TypeConstructor)));
+                            methods.Add(new DpMethod(method, ordinal, GetParameters(setup, method.Parameters, compilation, typeConstructor)));
                         }
                     }
 
@@ -61,7 +62,7 @@ internal class InstanceDpProvider(
                                     ordinal,
                                     new Injection(
                                         InjectionKind.Field,
-                                        attributes.GetAttribute(setup.TypeAttributes, field, setup.TypeConstructor?.Construct(setup, compilation, type) ?? type),
+                                        attributes.GetAttribute(setup.TypeAttributes, field, typeConstructor.Construct(setup, compilation, type)),
                                         GetTagAttribute(setup, field))));
                         }
                     }
@@ -81,7 +82,7 @@ internal class InstanceDpProvider(
                                     ordinal,
                                     new Injection(
                                         InjectionKind.Property,
-                                        attributes.GetAttribute(setup.TypeAttributes, property, setup.TypeConstructor?.Construct(setup, compilation, type) ?? type),
+                                        attributes.GetAttribute(setup.TypeAttributes, property, typeConstructor.Construct(setup, compilation, type)),
                                         GetTagAttribute(setup, property))));
                         }
                     }
@@ -100,7 +101,7 @@ internal class InstanceDpProvider(
         in MdSetup setup,
         in ImmutableArray<IParameterSymbol> parameters,
         Compilation compilation,
-        ITypeConstructor? typeConstructor)
+        ITypeConstructor typeConstructor)
     {
         if (parameters.Length == 0)
         {
@@ -116,7 +117,7 @@ internal class InstanceDpProvider(
                     parameter,
                     new Injection(
                         InjectionKind.Parameter,
-                        attributes.GetAttribute(setup.TypeAttributes, parameter, typeConstructor?.Construct(setup, compilation, type) ?? type),
+                        attributes.GetAttribute(setup.TypeAttributes, parameter, typeConstructor.Construct(setup, compilation, type)),
                         GetTagAttribute(setup, parameter))));
         }
 

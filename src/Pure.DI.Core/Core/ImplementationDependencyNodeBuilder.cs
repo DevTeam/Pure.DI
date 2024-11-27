@@ -9,11 +9,12 @@ internal sealed class ImplementationDependencyNodeBuilder(
     IBuilder<DpImplementation, IEnumerable<DpImplementation>> implementationVariantsBuilder,
     IAttributes attributes,
     IInstanceDpProvider instanceDpProvider)
-    : IBuilder<MdSetup, IEnumerable<DependencyNode>>
+    : IBuilder<DependencyNodeBuildContext, IEnumerable<DependencyNode>>
 {
-    public IEnumerable<DependencyNode> Build(MdSetup setup)
+    public IEnumerable<DependencyNode> Build(DependencyNodeBuildContext ctx)
     {
         var injectionsWalker = new DependenciesToInjectionsCountWalker();
+        var setup = ctx.Setup;
         foreach (var binding in setup.Bindings)
         {
             if (binding.Implementation is not { } implementation)
@@ -50,7 +51,7 @@ internal sealed class ImplementationDependencyNodeBuilder(
                     new DpMethod(
                         constructor,
                         attributes.GetAttribute(setup.OrdinalAttributes, constructor, default(int?)),
-                        instanceDpProvider.GetParameters(setup, constructor.Parameters, compilation, setup.TypeConstructor)));
+                        instanceDpProvider.GetParameters(setup, constructor.Parameters, compilation, ctx.TypeConstructor)));
             }
 
             if (!constructors.Any())
@@ -58,7 +59,7 @@ internal sealed class ImplementationDependencyNodeBuilder(
                 throw new CompileErrorException($"The instance of {implementationType} cannot be instantiated due to no accessible constructor available.", implementation.Source.GetLocation(), LogId.ErrorInvalidMetadata);
             }
 
-            var instanceDp = instanceDpProvider.Get(setup, compilation, implementationType);
+            var instanceDp = instanceDpProvider.Get(setup, ctx.TypeConstructor, compilation, implementationType);
             var implementations = constructors
                 .Select(constructor =>
                     new DpImplementation(

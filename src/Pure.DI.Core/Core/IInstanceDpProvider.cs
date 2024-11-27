@@ -4,6 +4,7 @@ internal interface IInstanceDpProvider
 {
     InstanceDp Get(
         MdSetup setup,
+        ITypeConstructor typeConstructor,
         Compilation compilation,
         INamedTypeSymbol implementationType);
 
@@ -11,5 +12,5 @@ internal interface IInstanceDpProvider
         in MdSetup setup,
         in ImmutableArray<IParameterSymbol> parameters,
         Compilation compilation,
-        ITypeConstructor? typeConstructor);
+        ITypeConstructor typeConstructor);
 }

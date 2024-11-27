@@ -1385,7 +1385,7 @@ public class FactoryTests
     }
     
     [Fact]
-    public async Task ShouldSupportInitializationWhenMethod()
+    public async Task ShouldSupportBuildUpWhenMethod()
     {
         // Given
 
@@ -1455,7 +1455,7 @@ public class FactoryTests
     }
     
     [Fact]
-    public async Task ShouldSupportInitializationWhenGeneric()
+    public async Task ShouldSupportBuildUpWhenGeneric()
     {
         // Given
 
@@ -1525,7 +1525,77 @@ public class FactoryTests
     }
     
     [Fact]
-    public async Task ShouldSupportInitializationWhenMethodAndProperty()
+    public async Task ShouldSupportBuildUpWhenOpenGeneric()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency<T> {}
+                           
+                               class Dependency<T>: IDependency<T>
+                               {
+                                   [Ordinal(1)]
+                                   internal void Initialize([Tag(374)] T depName)
+                                   {
+                                       Console.WriteLine($"Initialize {depName}");
+                                   }
+                               }
+                           
+                               interface IService
+                               {
+                                   IDependency<string> Dep { get; }
+                               }
+                           
+                               class Service: IService 
+                               {
+                                   public Service(IDependency<string> dep)
+                                   { 
+                                       Dep = dep;
+                                   }
+                           
+                                   public IDependency<string> Dep { get; }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind(374).To(_ => "Abc")
+                                           .Bind().To(ctx => {
+                                               var dep = new Dependency<TT>();
+                                               ctx.BuildUp(dep);
+                                               return dep;
+                                           })
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Initialize Abc"], result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportBuildUpWhenMethodAndProperty()
     {
         // Given
 
@@ -1598,7 +1668,7 @@ public class FactoryTests
     }
     
     [Fact]
-    public async Task ShouldSupportInitializationWhenMethodAndPropertyInIf()
+    public async Task ShouldSupportBuildUpWhenMethodAndPropertyInIf()
     {
         // Given
 
@@ -1674,7 +1744,7 @@ public class FactoryTests
     }
     
     [Fact]
-    public async Task ShouldSupportInitializationWhenMethodAndField()
+    public async Task ShouldSupportBuildUpWhenMethodAndField()
     {
         // Given
 

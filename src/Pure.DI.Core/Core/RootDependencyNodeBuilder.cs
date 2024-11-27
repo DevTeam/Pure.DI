@@ -2,12 +2,13 @@
 
 namespace Pure.DI.Core;
 
-internal sealed class RootDependencyNodeBuilder : IBuilder<MdSetup, IEnumerable<DependencyNode>>
+internal sealed class RootDependencyNodeBuilder : IBuilder<DependencyNodeBuildContext, IEnumerable<DependencyNode>>
 {
-    public IEnumerable<DependencyNode> Build(MdSetup setup)
+    public IEnumerable<DependencyNode> Build(DependencyNodeBuildContext ctx)
     {
         var id = -1;
-        foreach (var root in setup.Roots)
+        var setup = ctx.Setup;
+        foreach (var root in ctx.Setup.Roots)
         {
             var rootBinding = new MdBinding(
                 id--,
@@ -17,7 +18,16 @@ internal sealed class RootDependencyNodeBuilder : IBuilder<MdSetup, IEnumerable<
                 ImmutableArray<MdContract>.Empty,
                 ImmutableArray<MdTag>.Empty);
 
-            yield return new DependencyNode(0, rootBinding, Root: new DpRoot(root, rootBinding, new Injection(InjectionKind.Root, root.RootType.WithNullableAnnotation(NullableAnnotation.NotAnnotated), root.Tag?.Value)));
+            yield return new DependencyNode(
+                0,
+                rootBinding,
+                Root: new DpRoot(
+                    root,
+                    rootBinding,
+                    new Injection(
+                        InjectionKind.Root,
+                        root.RootType.WithNullableAnnotation(NullableAnnotation.NotAnnotated),
+                        root.Tag?.Value)));
         }
     }
 }

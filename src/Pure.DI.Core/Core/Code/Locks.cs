@@ -19,11 +19,11 @@ internal class Locks(ITypes types) : ILocks
         else
         {
             lines.AppendLine($"{Names.LockFieldName}.Enter();");
-            lines.AppendLine($"try");
+            lines.AppendLine("try");
         }
     }
 
-    public void AddUnlockStatements(Compilation compilation, LinesBuilder lines, bool isAsync)
+    public void AddUnlockStatements(LinesBuilder lines, bool isAsync)
     {
         if (!isAsync)
         {

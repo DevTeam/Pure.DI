@@ -12,7 +12,8 @@ using Variation = IEnumerator<ProcessingNode>;
 internal sealed class VariationalDependencyGraphBuilder(
     ILogger<VariationalDependencyGraphBuilder> logger,
     IGlobalOptions globalOptions,
-    IEnumerable<IBuilder<MdSetup, IEnumerable<DependencyNode>>> dependencyNodeBuilders,
+    Func<ITypeConstructor> typeConstructorFactory,
+    IEnumerable<IBuilder<DependencyNodeBuildContext, IEnumerable<DependencyNode>>> dependencyNodeBuilders,
     IVariator<ProcessingNode> variator,
     IBuilder<ContractsBuildContext, ISet<Injection>> contractsBuilder,
     IDependencyGraphBuilder graphBuilder,
@@ -21,7 +22,8 @@ internal sealed class VariationalDependencyGraphBuilder(
 {
     public DependencyGraph? Build(MdSetup setup)
     {
-        var rawNodes = SortByPriority(dependencyNodeBuilders.SelectMany(builder => builder.Build(setup))).Reverse();
+        var dependencyNodeBuildContext = new DependencyNodeBuildContext(setup, typeConstructorFactory());
+        var rawNodes = SortByPriority(dependencyNodeBuilders.SelectMany(builder => builder.Build(dependencyNodeBuildContext))).Reverse();
         var allNodes = new List<ProcessingNode>();
         var injections = new Dictionary<Injection, DependencyNode>();
         var allOverriddenInjections = new HashSet<Injection>();

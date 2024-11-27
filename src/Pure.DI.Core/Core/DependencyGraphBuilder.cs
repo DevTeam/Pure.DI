@@ -9,7 +9,7 @@ namespace Pure.DI.Core;
 using Injection = Injection;
 
 internal sealed class DependencyGraphBuilder(
-    IEnumerable<IBuilder<MdSetup, IEnumerable<DependencyNode>>> dependencyNodeBuilders,
+    IEnumerable<IBuilder<DependencyNodeBuildContext, IEnumerable<DependencyNode>>> dependencyNodeBuilders,
     IBuilder<ContractsBuildContext, ISet<Injection>> contractsBuilder,
     IMarker marker,
     Func<ITypeConstructor> typeConstructorFactory,
@@ -96,6 +96,7 @@ internal sealed class DependencyGraphBuilder(
                     }
                 }
 
+                var typeConstructor = typeConstructorFactory();
                 if (accumulators.TryGetValue(injection.Type, out var accs))
                 {
                     var accumulatorBinding = CreateAccumulatorBinding(
@@ -106,7 +107,7 @@ internal sealed class DependencyGraphBuilder(
                         hasExplicitDefaultValue,
                         explicitDefaultValue);
 
-                    return CreateNodes(setup, accumulatorBinding);
+                    return CreateNodes(setup, typeConstructor, accumulatorBinding);
                 }
 
                 switch (injection.Type)
@@ -127,7 +128,6 @@ internal sealed class DependencyGraphBuilder(
                                 continue;
                             }
 
-                            var typeConstructor = typeConstructorFactory();
                             if (!typeConstructor.TryBind(setup, item.Key.Type, injection.Type))
                             {
                                 continue;
@@ -145,7 +145,7 @@ internal sealed class DependencyGraphBuilder(
                                 typeConstructor,
                                 ++maxId);
 
-                            var genericNode = CreateNodes(setup, genericBinding).Single(i => i.Variation == sourceNode.Variation);
+                            var genericNode = CreateNodes(setup, typeConstructor, genericBinding).Single(i => i.Variation == sourceNode.Variation);
                             UpdateMap(newInjection, genericNode);
                             foreach (var contract in genericBinding.Contracts.Where(i => i.ContractType is not null))
                             {
@@ -187,7 +187,7 @@ internal sealed class DependencyGraphBuilder(
                                         ++maxId,
                                         constructKind);
 
-                                    foreach (var newNode in CreateNodes(setup, constructBinding))
+                                    foreach (var newNode in CreateNodes(setup, typeConstructor, constructBinding))
                                     {
                                         var contextTag = GetContextTag(injection, newNode);
                                         var newInjection = injection with { Tag = contextTag ?? injection.Tag };
@@ -201,7 +201,7 @@ internal sealed class DependencyGraphBuilder(
                         }
 
                         // OnCannotResolve
-                        if (TryCreateOnCannotResolve(setup, targetNode, injection, ref maxId, map, processed))
+                        if (TryCreateOnCannotResolve(setup, typeConstructor, targetNode, injection, ref maxId, map, processed))
                         {
                             continue;
                         }
@@ -221,7 +221,7 @@ internal sealed class DependencyGraphBuilder(
                             ++maxId,
                             MdConstructKind.Array);
 
-                        foreach (var newNode in CreateNodes(setup, arrayBinding))
+                        foreach (var newNode in CreateNodes(setup, typeConstructor, arrayBinding))
                         {
                             var contextTag = GetContextTag(injection, newNode);
                             var newInjection = injection with { Tag = contextTag ?? injection.Tag };
@@ -247,7 +247,7 @@ internal sealed class DependencyGraphBuilder(
                         default,
                         hasExplicitDefaultValue, explicitDefaultValue);
 
-                    var newSourceNodes = CreateNodes(setup, explicitDefaultBinding);
+                    var newSourceNodes = CreateNodes(setup, typeConstructor, explicitDefaultBinding);
                     foreach (var newNode in newSourceNodes)
                     {
                         if (!edgesMap.TryGetValue(node, out var edges))
@@ -276,7 +276,7 @@ internal sealed class DependencyGraphBuilder(
                         ++maxId,
                         MdConstructKind.Composition);
 
-                    foreach (var newNode in CreateNodes(setup, compositionBinding))
+                    foreach (var newNode in CreateNodes(setup, typeConstructor, compositionBinding))
                     {
                         var contextTag = GetContextTag(injection, newNode);
                         var newInjection = injection with { Tag = contextTag ?? injection.Tag };
@@ -291,11 +291,11 @@ internal sealed class DependencyGraphBuilder(
                 if (injection.Type is { IsAbstract: false, SpecialType: Microsoft.CodeAnalysis.SpecialType.None })
                 {
                     var autoBinding = CreateAutoBinding(setup, targetNode, injection, ++maxId);
-                    return CreateNodes(setup, autoBinding).ToArray();
+                    return CreateNodes(setup, typeConstructor, autoBinding).ToArray();
                 }
 
                 // OnCannotResolve
-                if (TryCreateOnCannotResolve(setup, targetNode, injection, ref maxId, map, processed))
+                if (TryCreateOnCannotResolve(setup, typeConstructor, targetNode, injection, ref maxId, map, processed))
                 {
                     continue;
                 }
@@ -387,6 +387,7 @@ internal sealed class DependencyGraphBuilder(
 
     private bool TryCreateOnCannotResolve(
         MdSetup setup,
+        ITypeConstructor typeConstructor,
         DependencyNode ownerNode,
         Injection unresolvedInjection,
         ref int maxId,
@@ -410,7 +411,7 @@ internal sealed class DependencyGraphBuilder(
                 MdConstructKind.OnCannotResolve,
                 unresolvedInjection.Tag);
 
-            var onCannotResolveNodes = CreateNodes(setup, onCannotResolveBinding);
+            var onCannotResolveNodes = CreateNodes(setup, typeConstructor, onCannotResolveBinding);
             foreach (var onCannotResolveNode in onCannotResolveNodes)
             {
                 map[unresolvedInjection] = onCannotResolveNode;
@@ -645,9 +646,10 @@ internal sealed class DependencyGraphBuilder(
         return new ProcessingNode(dependencyNode, contracts);
     }
 
-    private IEnumerable<DependencyNode> CreateNodes(MdSetup setup, MdBinding binding)
+    private IEnumerable<DependencyNode> CreateNodes(MdSetup setup, ITypeConstructor typeConstructor, MdBinding binding)
     {
         var newSetup = setup with { Roots = ImmutableArray<MdRoot>.Empty, Bindings = ImmutableArray.Create(binding) };
-        return dependencyNodeBuilders.SelectMany(builder => builder.Build(newSetup));
+        var ctx = new DependencyNodeBuildContext(newSetup, typeConstructor);
+        return dependencyNodeBuilders.SelectMany(builder => builder.Build(ctx));
     }
 }

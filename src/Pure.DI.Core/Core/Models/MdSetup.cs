@@ -21,8 +21,7 @@ internal record MdSetup(
     in ImmutableArray<MdOrdinalAttribute> OrdinalAttributes,
     in ImmutableArray<MdAccumulator> Accumulators,
     IReadOnlyCollection<MdTagOnSites> TagOn,
-    IReadOnlyCollection<string> Comments,
-    ITypeConstructor? TypeConstructor = default)
+    IReadOnlyCollection<string> Comments)
 {
     private readonly Lazy<HashSet<string>> _genericTypeArgumentTypes =
         new(() => [..GenericTypeArguments.Select(i => i.Type.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat))]);

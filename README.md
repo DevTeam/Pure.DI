@@ -243,6 +243,7 @@ dotnet run
 - [Generic composition roots with constraints](readme/generic-composition-roots-with-constraints.md)
 - [Generic async composition roots with constraints](readme/generic-async-composition-roots-with-constraints.md)
 - [Custom generic argument](readme/custom-generic-argument.md)
+- [Build up of an existing generic object](readme/build-up-of-an-existing-generic-object.md)
 ### Attributes
 - [Constructor ordinal attribute](readme/constructor-ordinal-attribute.md)
 - [Member ordinal attribute](readme/member-ordinal-attribute.md)

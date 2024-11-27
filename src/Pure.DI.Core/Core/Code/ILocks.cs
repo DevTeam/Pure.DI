@@ -6,5 +6,5 @@ internal interface ILocks
 
     void AddLockStatements(Compilation compilation, LinesBuilder lines, bool isAsync);
     
-    void AddUnlockStatements(Compilation compilation, LinesBuilder lines, bool isAsync);
+    void AddUnlockStatements(LinesBuilder lines, bool isAsync);
 }

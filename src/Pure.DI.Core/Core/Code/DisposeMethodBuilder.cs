@@ -226,6 +226,6 @@ internal sealed class DisposeMethodBuilder(
         }
 
         code.AppendLine("}");
-        locks.AddUnlockStatements(composition.Compilation, code, isAsync);
+        locks.AddUnlockStatements(code, isAsync);
     }
 }

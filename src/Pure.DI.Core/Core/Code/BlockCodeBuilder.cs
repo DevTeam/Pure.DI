@@ -124,7 +124,7 @@ internal class BlockCodeBuilder(
             code.AppendLine("}");
             if (!lockIsRequired)
             {
-                locks.AddUnlockStatements(compilation, code, false);
+                locks.AddUnlockStatements(code, false);
                 code.AppendLine();
                 return;
             }

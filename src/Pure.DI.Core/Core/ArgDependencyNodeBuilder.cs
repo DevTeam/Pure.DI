@@ -2,11 +2,11 @@
 
 namespace Pure.DI.Core;
 
-internal sealed class ArgDependencyNodeBuilder : IBuilder<MdSetup, IEnumerable<DependencyNode>>
+internal sealed class ArgDependencyNodeBuilder : IBuilder<DependencyNodeBuildContext, IEnumerable<DependencyNode>>
 {
-    public IEnumerable<DependencyNode> Build(MdSetup setup)
+    public IEnumerable<DependencyNode> Build(DependencyNodeBuildContext ctx)
     {
-        foreach (var binding in setup.Bindings)
+        foreach (var binding in ctx.Setup.Bindings)
         {
             if (binding.Arg is not { } arg)
             {
