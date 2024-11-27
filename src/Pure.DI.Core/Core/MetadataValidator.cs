@@ -124,9 +124,9 @@ internal sealed class MetadataValidator(
                         isValid = false;
                     }
 
-                    if (marker.IsMarkerBased(setup, arg.Type))
+                    if (arg.Kind == ArgKind.Class && marker.IsMarkerBased(setup, arg.Type))
                     {
-                        logger.CompileError("The argument type cannot be based on a generic type marker.", location, LogId.ErrorInvalidMetadata);
+                        logger.CompileError("The class argument type cannot be based on a generic type marker.", location, LogId.ErrorInvalidMetadata);
                     }
                 }
             }

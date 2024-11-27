@@ -88,9 +88,9 @@ internal sealed class DependencyGraphBuilder(
 
                 if (map.TryGetValue(injection, out var sourceNode))
                 {
+                    registryManager.Register(setup, sourceNode.Binding);
                     if (!marker.IsMarkerBased(setup, sourceNode.Type))
                     {
-                        registryManager.Register(setup, sourceNode.Binding);
                         queue.Enqueue(CreateNewProcessingNode(setup, injection, sourceNode));
                         continue;
                     }

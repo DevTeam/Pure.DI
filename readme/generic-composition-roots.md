@@ -73,18 +73,18 @@ partial class Composition
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public IService<T2> GetOtherService<T2>()
+  public IService<T1> GetOtherService<T1>()
   {
-    OtherService<T2> transientOtherService0;
-    IDependency<T2> localDependency77 = new Dependency<T2>();
-    transientOtherService0 = new OtherService<T2>(localDependency77);
+    OtherService<T1> transientOtherService0;
+    IDependency<T1> localDependency77 = new Dependency<T1>();
+    transientOtherService0 = new OtherService<T1>(localDependency77);
     return transientOtherService0;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public IService<T2> GetMyRoot<T2>()
+  public IService<T1> GetMyRoot<T1>()
   {
-    return new Service<T2>(new Dependency<T2>());
+    return new Service<T1>(new Dependency<T1>());
   }
 }
 ```
@@ -95,28 +95,28 @@ Class diagram:
 classDiagram
 	class Composition {
 		<<partial>>
-		+IServiceᐸT2ᐳ GetMyRootᐸT2ᐳ()
-		+IServiceᐸT2ᐳ GetOtherServiceᐸT2ᐳ()
+		+IServiceᐸT1ᐳ GetMyRootᐸT1ᐳ()
+		+IServiceᐸT1ᐳ GetOtherServiceᐸT1ᐳ()
 	}
-	OtherServiceᐸT2ᐳ --|> IServiceᐸT2ᐳ : "Other" 
-	class OtherServiceᐸT2ᐳ
-	ServiceᐸT2ᐳ --|> IServiceᐸT2ᐳ
-	class ServiceᐸT2ᐳ {
-		+Service(IDependencyᐸT2ᐳ dependency)
+	OtherServiceᐸT1ᐳ --|> IServiceᐸT1ᐳ : "Other" 
+	class OtherServiceᐸT1ᐳ
+	ServiceᐸT1ᐳ --|> IServiceᐸT1ᐳ
+	class ServiceᐸT1ᐳ {
+		+Service(IDependencyᐸT1ᐳ dependency)
 	}
-	DependencyᐸT2ᐳ --|> IDependencyᐸT2ᐳ
-	class DependencyᐸT2ᐳ {
+	DependencyᐸT1ᐳ --|> IDependencyᐸT1ᐳ
+	class DependencyᐸT1ᐳ {
 		+Dependency()
 	}
-	class IServiceᐸT2ᐳ {
+	class IServiceᐸT1ᐳ {
 		<<interface>>
 	}
-	class IDependencyᐸT2ᐳ {
+	class IDependencyᐸT1ᐳ {
 		<<interface>>
 	}
-	Composition ..> OtherServiceᐸT2ᐳ : IServiceᐸT2ᐳ GetOtherServiceᐸT2ᐳ()
-	Composition ..> ServiceᐸT2ᐳ : IServiceᐸT2ᐳ GetMyRootᐸT2ᐳ()
-	OtherServiceᐸT2ᐳ *--  DependencyᐸT2ᐳ : IDependencyᐸT2ᐳ
-	ServiceᐸT2ᐳ *--  DependencyᐸT2ᐳ : IDependencyᐸT2ᐳ
+	Composition ..> OtherServiceᐸT1ᐳ : IServiceᐸT1ᐳ GetOtherServiceᐸT1ᐳ()
+	Composition ..> ServiceᐸT1ᐳ : IServiceᐸT1ᐳ GetMyRootᐸT1ᐳ()
+	OtherServiceᐸT1ᐳ *--  DependencyᐸT1ᐳ : IDependencyᐸT1ᐳ
+	ServiceᐸT1ᐳ *--  DependencyᐸT1ᐳ : IDependencyᐸT1ᐳ
 ```
 

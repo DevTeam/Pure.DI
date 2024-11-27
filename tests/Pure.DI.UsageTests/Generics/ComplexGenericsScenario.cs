@@ -11,6 +11,7 @@ $f=It can also be useful in a very simple scenario where, for example, the seque
 // ReSharper disable UnusedTypeParameter
 // ReSharper disable ArrangeTypeModifiers
 
+#pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Generics.ComplexGenericsScenario;
 
 using Shouldly;
@@ -19,7 +20,7 @@ using Xunit;
 // {
 interface IDependency<T>;
 
-class Dependency<T> : IDependency<T>;
+class Dependency<T>(T value) : IDependency<T>;
 
 readonly record struct DependencyStruct<T> : IDependency<T>
     where T : struct;
@@ -63,16 +64,19 @@ public class Scenario
         DI.Setup(nameof(Composition))
             // This hint indicates to not generate methods such as Resolve
             .Hint(Hint.Resolve, "Off")
+            .RootArg<TT>("depArg")
             .Bind<IDependency<TT>>().To<Dependency<TT>>()
-            .Bind<IDependency<TTS>>("value type").To<DependencyStruct<TTS>>()
+            .Bind<IDependency<TTS>>("value type")
+                .As(Lifetime.Singleton)
+                .To<DependencyStruct<TTS>>()
             .Bind<IService<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>()
-            .To<Service<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>()
+                .To<Service<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>()
 
             // Composition root
-            .Root<Program<string>>("Root");
+            .Root<Program<TT>>("GetRoot");
 
         var composition = new Composition();
-        var program = composition.Root;
+        var program = composition.GetRoot<string>(depArg: "some value");
         var service = program.Service;
         service.ShouldBeOfType<Service<string, int, List<string>, Dictionary<string, int>>>();
         service.Dependency1.ShouldBeOfType<Dependency<string>>();

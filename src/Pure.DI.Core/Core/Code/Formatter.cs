@@ -3,7 +3,9 @@
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.Core.Code;
 
-internal class Formatter(IComments comments)
+internal class Formatter(
+    IComments comments,
+    ITypeResolver typeResolver)
     : IFormatter
 {
 #if ROSLYN4_8_OR_GREATER
@@ -45,7 +47,7 @@ internal class Formatter(IComments comments)
         return sb.ToString();
     }
 
-    public string FormatRef(Root root)
+    public string FormatRef(MdSetup setup, Root root)
     {
         var sb = new StringBuilder();
         sb.Append(root.DisplayName);
@@ -63,15 +65,13 @@ internal class Formatter(IComments comments)
         }
 
         sb.Append('(');
-        sb.Append(string.Join(", ", root.Args.Select(i => i.ContractType)));
+        sb.Append(string.Join(", ", root.Args.Select(i => typeResolver.Resolve(setup, i.ContractType))));
         sb.Append(')');
         return FormatRef(sb.ToString());
     }
 
-    public string FormatRef(string text)
-    {
-        return $"<see cref=\"{text}\"/>";
-    }
+    public string FormatRef(string text) => 
+        $"<see cref=\"{text}\"/>";
 
     public string FormatRef(ITypeSymbol type)
     {

@@ -566,14 +566,14 @@ public class ArgsTests
                                        var composition = new Composition("Some Name");
                                        Console.WriteLine(composition.Service.Name);
                                    }
-                               
+                               }
                            }
                            """.RunAsync();
 
         // Then
         result.Success.ShouldBeFalse(result);
         result.Errors.Count.ShouldBe(2, result);
-        result.Errors.Count(i => i is { Id: LogId.ErrorInvalidMetadata, Message: "The argument type cannot be based on a generic type marker." }).ShouldBe(1, result);
+        result.Errors.Count(i => i is { Id: LogId.ErrorInvalidMetadata, Message: "The class argument type cannot be based on a generic type marker." }).ShouldBe(1, result);
     }
 
     [Fact]
@@ -632,13 +632,13 @@ public class ArgsTests
                                        var composition = new Composition("Some Name");
                                        Console.WriteLine(composition.Service.Name);
                                    }
-                               
+                               }
                            }
                            """.RunAsync();
 
         // Then
         result.Success.ShouldBeFalse(result);
         result.Errors.Count.ShouldBe(2, result);
-        result.Errors.Count(i => i is { Id: LogId.ErrorInvalidMetadata, Message: "The argument type cannot be based on a generic type marker." }).ShouldBe(1, result);
+        result.Errors.Count(i => i is { Id: LogId.ErrorInvalidMetadata, Message: "The class argument type cannot be based on a generic type marker." }).ShouldBe(1, result);
     }
 }

@@ -8,7 +8,7 @@ Defining generic type arguments using particular marker types like ```TT``` in t
 ```c#
 interface IDependency<T>;
 
-class Dependency<T> : IDependency<T>;
+class Dependency<T>(T value) : IDependency<T>;
 
 readonly record struct DependencyStruct<T> : IDependency<T>
     where T : struct;
@@ -45,16 +45,19 @@ class Program<T>(IService<T, int, List<T>, Dictionary<T, int>> service)
 DI.Setup(nameof(Composition))
     // This hint indicates to not generate methods such as Resolve
     .Hint(Hint.Resolve, "Off")
+    .RootArg<TT>("depArg")
     .Bind<IDependency<TT>>().To<Dependency<TT>>()
-    .Bind<IDependency<TTS>>("value type").To<DependencyStruct<TTS>>()
+    .Bind<IDependency<TTS>>("value type")
+        .As(Lifetime.Singleton)
+        .To<DependencyStruct<TTS>>()
     .Bind<IService<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>()
-    .To<Service<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>()
+        .To<Service<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>()
 
     // Composition root
-    .Root<Program<string>>("Root");
+    .Root<Program<TT>>("GetRoot");
 
 var composition = new Composition();
-var program = composition.Root;
+var program = composition.GetRoot<string>(depArg: "some value");
 var service = program.Service;
 service.ShouldBeOfType<Service<string, int, List<string>, Dictionary<string, int>>>();
 service.Dependency1.ShouldBeOfType<Dependency<string>>();
@@ -69,25 +72,42 @@ The following partial class will be generated:
 partial class Composition
 {
   private readonly Composition _root;
+  private readonly Lock _lock;
 
-  [OrdinalAttribute(20)]
+  private DependencyStruct<int> _singletonDependencyStruct49;
+  private bool _singletonDependencyStruct49Created;
+
+  [OrdinalAttribute(10)]
   public Composition()
   {
     _root = this;
+    _lock = new Lock();
   }
 
   internal Composition(Composition parentScope)
   {
     _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
+    _lock = _root._lock;
   }
 
-  public Program<string> Root
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public Program<T1> GetRoot<T1>(T1 depArg)
+    where T1: notnull
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    get
+    if (!_root._singletonDependencyStruct49Created)
     {
-      return new Program<string>(new Service<string, int, List<string>, Dictionary<string, int>>(new Dependency<string>(), new DependencyStruct<int>()));
+      using (_lock.EnterScope())
+      {
+        if (!_root._singletonDependencyStruct49Created)
+        {
+          _root._singletonDependencyStruct49 = new DependencyStruct<int>();
+          Thread.MemoryBarrier();
+          _root._singletonDependencyStruct49Created = true;
+        }
+      }
     }
+
+    return new Program<T1>(new Service<T1, int, List<T1>, Dictionary<T1, int>>(new Dependency<T1>(depArg), _root._singletonDependencyStruct49));
   }
 }
 ```
@@ -98,32 +118,33 @@ Class diagram:
 classDiagram
 	class Composition {
 		<<partial>>
-		+ProgramᐸStringᐳ Root
+		+ProgramᐸT1ᐳ GetRootᐸT1ᐳ(T1 depArg)
 	}
-	ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ --|> IServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ
-	class ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ {
-		+Service(IDependencyᐸStringᐳ dependency1, IDependencyᐸInt32ᐳ dependency2)
-	}
-	DependencyᐸStringᐳ --|> IDependencyᐸStringᐳ
-	class DependencyᐸStringᐳ {
-		+Dependency()
+	ServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ --|> IServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ
+	class ServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ {
+		+Service(IDependencyᐸT1ᐳ dependency1, IDependencyᐸInt32ᐳ dependency2)
 	}
 	DependencyStructᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ : "value type" 
 	class DependencyStructᐸInt32ᐳ {
 		+DependencyStruct()
 	}
-	class IServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ {
-		<<interface>>
+	DependencyᐸT1ᐳ --|> IDependencyᐸT1ᐳ
+	class DependencyᐸT1ᐳ {
+		+Dependency(T1 value)
 	}
-	class IDependencyᐸStringᐳ {
+	class IServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ {
 		<<interface>>
 	}
 	class IDependencyᐸInt32ᐳ {
 		<<interface>>
 	}
-	Composition ..> ProgramᐸStringᐳ : ProgramᐸStringᐳ Root
-	ProgramᐸStringᐳ *--  ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ : IServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ
-	ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ *--  DependencyᐸStringᐳ : IDependencyᐸStringᐳ
-	ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ *--  DependencyStructᐸInt32ᐳ : "value type"  IDependencyᐸInt32ᐳ
+	class IDependencyᐸT1ᐳ {
+		<<interface>>
+	}
+	Composition ..> ProgramᐸT1ᐳ : ProgramᐸT1ᐳ GetRootᐸT1ᐳ(T1 depArg)
+	ProgramᐸT1ᐳ *--  ServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ : IServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ
+	ServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ *--  DependencyᐸT1ᐳ : IDependencyᐸT1ᐳ
+	ServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ o-- "Singleton" DependencyStructᐸInt32ᐳ : "value type"  IDependencyᐸInt32ᐳ
+	DependencyᐸT1ᐳ o-- T1 : Argument "depArg"
 ```
 
