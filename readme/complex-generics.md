@@ -74,8 +74,8 @@ partial class Composition
   private readonly Composition _root;
   private readonly Lock _lock;
 
-  private DependencyStruct<int> _singletonDependencyStruct49;
-  private bool _singletonDependencyStruct49Created;
+  private DependencyStruct<int> _singletonDependencyStruct51;
+  private bool _singletonDependencyStruct51Created;
 
   [OrdinalAttribute(10)]
   public Composition()
@@ -94,20 +94,20 @@ partial class Composition
   public Program<T1> GetRoot<T1>(T1 depArg)
     where T1: notnull
   {
-    if (!_root._singletonDependencyStruct49Created)
+    if (!_root._singletonDependencyStruct51Created)
     {
       using (_lock.EnterScope())
       {
-        if (!_root._singletonDependencyStruct49Created)
+        if (!_root._singletonDependencyStruct51Created)
         {
-          _root._singletonDependencyStruct49 = new DependencyStruct<int>();
+          _root._singletonDependencyStruct51 = new DependencyStruct<int>();
           Thread.MemoryBarrier();
-          _root._singletonDependencyStruct49Created = true;
+          _root._singletonDependencyStruct51Created = true;
         }
       }
     }
 
-    return new Program<T1>(new Service<T1, int, List<T1>, Dictionary<T1, int>>(new Dependency<T1>(depArg), _root._singletonDependencyStruct49));
+    return new Program<T1>(new Service<T1, int, List<T1>, Dictionary<T1, int>>(new Dependency<T1>(depArg), _root._singletonDependencyStruct51));
   }
 }
 ```

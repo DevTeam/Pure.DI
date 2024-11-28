@@ -36,7 +36,7 @@ partial class Composition
 {
   private readonly Composition _root;
 
-  private Service? _singletonService42;
+  private Service? _singletonService44;
 
   [OrdinalAttribute(20)]
   public Composition()
@@ -54,17 +54,17 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonService42 is null)
+      if (_root._singletonService44 is null)
       {
         Func<IDependency> perBlockFunc0 = new Func<IDependency>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
         {
           IDependency localValue78 = new Dependency();
           return localValue78;
         });
-        _root._singletonService42 = new Service(perBlockFunc0);
+        _root._singletonService44 = new Service(perBlockFunc0);
       }
 
-      return _root._singletonService42!;
+      return _root._singletonService44!;
     }
   }
 }

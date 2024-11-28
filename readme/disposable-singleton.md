@@ -57,7 +57,7 @@ partial class Composition: IDisposable
   private object[] _disposables;
   private int _disposeIndex;
 
-  private Dependency? _singletonDependency41;
+  private Dependency? _singletonDependency43;
 
   [OrdinalAttribute(20)]
   public Composition()
@@ -79,19 +79,19 @@ partial class Composition: IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonDependency41 is null)
+      if (_root._singletonDependency43 is null)
       {
         using (_lock.EnterScope())
         {
-          if (_root._singletonDependency41 is null)
+          if (_root._singletonDependency43 is null)
           {
-            _root._singletonDependency41 = new Dependency();
-            _root._disposables[_root._disposeIndex++] = _root._singletonDependency41;
+            _root._singletonDependency43 = new Dependency();
+            _root._disposables[_root._disposeIndex++] = _root._singletonDependency43;
           }
         }
       }
 
-      return new Service(_root._singletonDependency41!);
+      return new Service(_root._singletonDependency43!);
     }
   }
 
@@ -105,7 +105,7 @@ partial class Composition: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _singletonDependency41 = null;
+      _singletonDependency43 = null;
     }
 
     while (disposeIndex-- > 0)

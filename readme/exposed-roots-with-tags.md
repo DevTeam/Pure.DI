@@ -39,7 +39,7 @@ partial class Composition
   private readonly Composition _root;
   private readonly Lock _lock;
 
-  private Integration.CompositionWithTagsInOtherProject? _singletonCompositionWithTagsInOtherProject41;
+  private Integration.CompositionWithTagsInOtherProject? _singletonCompositionWithTagsInOtherProject43;
 
   [OrdinalAttribute(20)]
   public Composition()
@@ -59,19 +59,19 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonCompositionWithTagsInOtherProject41 is null)
+      if (_root._singletonCompositionWithTagsInOtherProject43 is null)
       {
         using (_lock.EnterScope())
         {
-          if (_root._singletonCompositionWithTagsInOtherProject41 is null)
+          if (_root._singletonCompositionWithTagsInOtherProject43 is null)
           {
-            _root._singletonCompositionWithTagsInOtherProject41 = new Integration.CompositionWithTagsInOtherProject();
+            _root._singletonCompositionWithTagsInOtherProject43 = new Integration.CompositionWithTagsInOtherProject();
           }
         }
       }
 
       Integration.IMyService transientIMyService1;
-      Integration.CompositionWithTagsInOtherProject localInstance_1182D1276 = _root._singletonCompositionWithTagsInOtherProject41!;
+      Integration.CompositionWithTagsInOtherProject localInstance_1182D1276 = _root._singletonCompositionWithTagsInOtherProject43!;
       transientIMyService1 = localInstance_1182D1276.MyService;
       return new Program(transientIMyService1);
     }

@@ -53,7 +53,7 @@ partial class Composition
   private readonly Lock _lock;
 
   private IDependency? _singletonIDependency0;
-  private Facade? _singletonFacade41;
+  private Facade? _singletonFacade43;
 
   [OrdinalAttribute(20)]
   public Composition()
@@ -79,12 +79,12 @@ partial class Composition
         {
           if (_root._singletonIDependency0 is null)
           {
-            if (_root._singletonFacade41 is null)
+            if (_root._singletonFacade43 is null)
             {
-              _root._singletonFacade41 = new Facade();
+              _root._singletonFacade43 = new Facade();
             }
 
-            Facade localInstance_1182D12738 = _root._singletonFacade41!;
+            Facade localInstance_1182D12738 = _root._singletonFacade43!;
             _root._singletonIDependency0 = localInstance_1182D12738.Dependency;
           }
         }

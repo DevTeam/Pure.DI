@@ -107,7 +107,7 @@ partial class Composition: IDisposable
   private object[] _disposables;
   private int _disposeIndex;
 
-  private Dependency? _singletonDependency42;
+  private Dependency? _singletonDependency44;
 
   [OrdinalAttribute(20)]
   public Composition()
@@ -129,50 +129,50 @@ partial class Composition: IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var accumulator48 = new Abstractions.Own();
+      var accumulator50 = new Abstractions.Own();
       Func<Abstractions.Own<IDependency>> perBlockFunc2 = new Func<Abstractions.Own<IDependency>>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
       {
-        var accumulator48 = new Abstractions.Own();
-        if (_root._singletonDependency42 is null)
+        var accumulator50 = new Abstractions.Own();
+        if (_root._singletonDependency44 is null)
         {
           using (_lock.EnterScope())
           {
-            if (_root._singletonDependency42 is null)
+            if (_root._singletonDependency44 is null)
             {
-              _root._singletonDependency42 = new Dependency();
-              _root._disposables[_root._disposeIndex++] = _root._singletonDependency42;
+              _root._singletonDependency44 = new Dependency();
+              _root._disposables[_root._disposeIndex++] = _root._singletonDependency44;
             }
           }
         }
 
         Abstractions.Own<IDependency> perBlockOwn3;
         // Creates the owner of an instance
-        Abstractions.Own localOwn18 = accumulator48;
-        IDependency localValue19 = _root._singletonDependency42!;
+        Abstractions.Own localOwn18 = accumulator50;
+        IDependency localValue19 = _root._singletonDependency44!;
         perBlockOwn3 = new Abstractions.Own<IDependency>(localValue19, localOwn18);
         using (_lock.EnterScope())
         {
-          accumulator48.Add(perBlockOwn3);
+          accumulator50.Add(perBlockOwn3);
         }
         Abstractions.Own<IDependency> localValue17 = perBlockOwn3;
         return localValue17;
       });
       Func<Abstractions.Own<IDependency>> perBlockFunc1 = new Func<Abstractions.Own<IDependency>>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
       {
-        var accumulator48 = new Abstractions.Own();
+        var accumulator50 = new Abstractions.Own();
         Dependency transientDependency7 = new Dependency();
         using (_lock.EnterScope())
         {
-          accumulator48.Add(transientDependency7);
+          accumulator50.Add(transientDependency7);
         }
         Abstractions.Own<IDependency> perBlockOwn5;
         // Creates the owner of an instance
-        Abstractions.Own localOwn21 = accumulator48;
+        Abstractions.Own localOwn21 = accumulator50;
         IDependency localValue22 = transientDependency7;
         perBlockOwn5 = new Abstractions.Own<IDependency>(localValue22, localOwn21);
         using (_lock.EnterScope())
         {
-          accumulator48.Add(perBlockOwn5);
+          accumulator50.Add(perBlockOwn5);
         }
         Abstractions.Own<IDependency> localValue20 = perBlockOwn5;
         return localValue20;
@@ -180,7 +180,7 @@ partial class Composition: IDisposable
       Service transientService0 = new Service(perBlockFunc1, perBlockFunc2);
       using (_lock.EnterScope())
       {
-        accumulator48.Add(transientService0);
+        accumulator50.Add(transientService0);
       }
       return transientService0;
     }
@@ -256,7 +256,7 @@ partial class Composition: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _singletonDependency42 = null;
+      _singletonDependency44 = null;
     }
 
     while (disposeIndex-- > 0)

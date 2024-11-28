@@ -75,7 +75,7 @@ partial class Composition
   private readonly Composition _root;
   private readonly Lock _lock;
 
-  private Dependency? _scopedDependency41;
+  private Dependency? _scopedDependency43;
 
   [OrdinalAttribute(20)]
   public Composition()
@@ -116,18 +116,18 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_scopedDependency41 is null)
+      if (_scopedDependency43 is null)
       {
         using (_lock.EnterScope())
         {
-          if (_scopedDependency41 is null)
+          if (_scopedDependency43 is null)
           {
-            _scopedDependency41 = new Dependency();
+            _scopedDependency43 = new Dependency();
           }
         }
       }
 
-      return new Service(_scopedDependency41!);
+      return new Service(_scopedDependency43!);
     }
   }
 }
