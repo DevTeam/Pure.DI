@@ -109,16 +109,19 @@ namespace Pure.DI
                     .To(_ => global::System.Buffers.MemoryPool<TT>.Shared)
                 .Bind<global::System.Buffers.ArrayPool<TT>>()
                     .To(_ => global::System.Buffers.ArrayPool<TT>.Shared)
-#endif                
-                .Bind<global::System.Collections.Generic.ICollection<TT>>()
+#endif
                 .Bind<global::System.Collections.Generic.IList<TT>>()
                 .Bind<global::System.Collections.Generic.List<TT>>()
                     .To((TT[] arr) => new global::System.Collections.Generic.List<TT>(arr))
+                .Bind<global::System.Collections.Generic.ICollection<TT>>()
+                .Bind<global::System.Collections.ObjectModel.Collection<TT>>()
+                    .To((TT[] arr) => new global::System.Collections.ObjectModel.Collection<TT>(arr))
 #if NETSTANDARD || NET || NETCOREAPP || NET45_OR_GREATER
                 .Bind<global::System.Collections.Generic.IReadOnlyCollection<TT>>()
                 .Bind<global::System.Collections.Generic.IReadOnlyList<TT>>()
-                    .To((TT[] arr) => arr)
 #endif
+                .Bind<global::System.Collections.ObjectModel.ReadOnlyCollection<TT>>()
+                    .To((TT[] arr) => new global::System.Collections.ObjectModel.ReadOnlyCollection<TT>(arr))
 #if NETSTANDARD1_1_OR_GREATER || NET || NETCOREAPP || NET40_OR_GREATER
                 .Bind<global::System.Collections.Concurrent.IProducerConsumerCollection<TT>>()
                 .Bind<global::System.Collections.Concurrent.ConcurrentBag<TT>>()
@@ -141,7 +144,11 @@ namespace Pure.DI
 #if NETSTANDARD || NET || NETCOREAPP || NET45_OR_GREATER
                 .Bind<global::System.Collections.Generic.SortedSet<TT>>()
                     .To((TT[] arr) => new global::System.Collections.Generic.SortedSet<TT>(arr))
-#endif                
+#endif
+#if NET9_0_OR_GREATER
+                .Bind<global::System.Collections.ObjectModel.ReadOnlySet<TT>>()
+                    .To((global::System.Collections.Generic.ISet<TT> val) => new global::System.Collections.ObjectModel.ReadOnlySet<TT>(val))
+#endif
                 .Bind<global::System.Collections.Generic.Queue<TT>>()
                     .To((TT[] arr) => new global::System.Collections.Generic.Queue<TT>(arr))
                 .Bind<global::System.Collections.Generic.Stack<TT>>()

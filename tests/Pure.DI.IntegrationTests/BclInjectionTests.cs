@@ -30,6 +30,9 @@ public class BclInjectionTests
     [InlineData("System.Collections.Concurrent.ConcurrentQueue")]
     [InlineData("System.Collections.Concurrent.ConcurrentStack")]
     [InlineData("System.Collections.Concurrent.BlockingCollection")]
+    [InlineData("System.Collections.ObjectModel.ReadOnlySet")]
+    [InlineData("System.Collections.ObjectModel.Collection")]
+    [InlineData("System.Collections.ObjectModel.ReadOnlyCollection")]
     public async Task ShouldSupportCollectionInjection(string collectionType, LanguageVersion languageVersion = LanguageVersion.CSharp9)
     {
         // Given
@@ -43,7 +46,7 @@ public class BclInjectionTests
                            {
                                struct Point
                                {
-                                   int X, Y;        
+                                   int X, Y;
                                    
                                    public Point(int x, int y)
                                    {
@@ -75,7 +78,7 @@ public class BclInjectionTests
                                    public Service(###CollectionType###<IDependency> deps)
                                    { 
                                        Console.WriteLine("Service creating");
-                                   }    
+                                   }
                                }
                            
                                static class Setup
@@ -103,7 +106,7 @@ public class BclInjectionTests
                                        {
                                            var composition = new Composition();
                                            var service = composition.Service;
-                                       }             
+                                       }
                                        catch(Exception ex)
                                        {
                                            Console.WriteLine(ex.Message);
@@ -151,6 +154,7 @@ public class BclInjectionTests
     [InlineData("System.Collections.Concurrent.ConcurrentQueue")]
     [InlineData("System.Collections.Concurrent.ConcurrentStack")]
     [InlineData("System.Collections.Concurrent.BlockingCollection")]
+    [InlineData("System.Collections.ObjectModel.ReadOnlySet")]
     public async Task ShouldSupportCollectionInjectionWhenGeneric(string collectionType, LanguageVersion languageVersion = LanguageVersion.CSharp9)
     {
         // Given
@@ -164,7 +168,7 @@ public class BclInjectionTests
                            {
                                struct Point
                                {
-                                   int X, Y;        
+                                   int X, Y;
                                    
                                    public Point(int x, int y)
                                    {
@@ -196,7 +200,7 @@ public class BclInjectionTests
                                    public Service(###CollectionType###<IDependency<int>> deps)
                                    { 
                                        Console.WriteLine("Service creating");
-                                   }    
+                                   }
                                }
                            
                                static class Setup
@@ -223,7 +227,7 @@ public class BclInjectionTests
                                        {
                                            var composition = new Composition();
                                            var service = composition.Service;
-                                       }             
+                                       }
                                        catch(Exception ex)
                                        {
                                            Console.WriteLine(ex.Message);
@@ -271,6 +275,8 @@ public class BclInjectionTests
     [InlineData("System.Collections.Concurrent.ConcurrentQueue")]
     [InlineData("System.Collections.Concurrent.ConcurrentStack")]
     [InlineData("System.Collections.Concurrent.BlockingCollection")]
+    [InlineData("System.Collections.ObjectModel.Collection")]
+    [InlineData("System.Collections.ObjectModel.ReadOnlyCollection")]
     public async Task ShouldSupportCollectionInjectionWhenHasNoBindings(string collectionType, LanguageVersion languageVersion = LanguageVersion.CSharp9)
     {
         // Given
@@ -293,7 +299,7 @@ public class BclInjectionTests
                                    public Service(###CollectionType###<IDependency> deps)
                                    { 
                                        Console.WriteLine("Service creating");
-                                   }    
+                                   }
                                }
                            
                                static class Setup
@@ -314,7 +320,7 @@ public class BclInjectionTests
                                        {
                                            var composition = new Composition();
                                            var service = composition.Service;
-                                       }             
+                                       }
                                        catch(Exception ex)
                                        {
                                            Console.WriteLine(ex.Message);
@@ -350,7 +356,7 @@ public class BclInjectionTests
                            {
                                struct Point
                                {
-                                   int X, Y;        
+                                   int X, Y;
                                    
                                    public Point(int x, int y)
                                    {
@@ -386,7 +392,7 @@ public class BclInjectionTests
                                        }
                            
                                        Console.WriteLine("Service creating");
-                                   }    
+                                   }
                                }
                            
                                static class Setup
@@ -413,7 +419,7 @@ public class BclInjectionTests
                                        {
                                            var composition = new Composition();
                                            var service = composition.Service;
-                                       }             
+                                       }
                                        catch(Exception ex)
                                        {
                                            Console.WriteLine(ex.Message);
