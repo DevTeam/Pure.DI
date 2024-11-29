@@ -18,47 +18,59 @@ internal sealed class ClassDiagramBuilder(
         var setup = composition.Source.Source;
         var nullable = composition.Compilation.Options.NullableContextOptions == NullableContextOptions.Disable ? "" : "?";
         var lines = new LinesBuilder();
+        lines.AppendLine("---");
+        lines.AppendLine(" config:");
+        lines.AppendLine("  class:");
+        lines.AppendLine("   hideEmptyMembersBox: true");
+        lines.AppendLine("---");
         lines.AppendLine("classDiagram");
         using (lines.Indent())
         {
+            var classes = new List<Class>();
             var hasResolveMethods = composition.Source.Source.Hints.IsResolveEnabled;
             var rootProperties = composition.Roots.ToDictionary(i => i.Injection, i => i);
+            var compositionLines = new LinesBuilder();
             if (hasResolveMethods || rootProperties.Any())
             {
-                lines.AppendLine($"class {composition.Source.Source.Name.ClassName} {{");
+                compositionLines.AppendLine($"class {composition.Source.Source.Name.ClassName} {{");
                 using (lines.Indent())
                 {
-                    lines.AppendLine("<<partial>>");
+                    compositionLines.AppendLine("<<partial>>");
                     foreach (var root in composition.Roots.OrderByDescending(i => i.IsPublic).ThenBy(i => i.Name))
                     {
-                        lines.AppendLine($"{(root.IsPublic ? "+" : "-")}{FormatRoot(setup, root)}");
+                        compositionLines.AppendLine($"{(root.IsPublic ? "+" : "-")}{FormatRoot(setup, root)}");
                     }
 
                     if (hasResolveMethods)
                     {
                         var hints = composition.Source.Source.Hints;
                         var genericParameterT = $"{DefaultFormatOptions.StartGenericArgsSymbol}T{DefaultFormatOptions.FinishGenericArgsSymbol}";
-                        lines.AppendLine($"{(hints.ResolveMethodModifiers == Names.DefaultApiMethodModifiers ? "+ " : "")}T {hints.ResolveMethodName}{genericParameterT}()");
-                        lines.AppendLine($"{(hints.ResolveByTagMethodModifiers == Names.DefaultApiMethodModifiers ? "+ " : "")}T {hints.ResolveByTagMethodName}{genericParameterT}(object{nullable} tag)");
-                        lines.AppendLine($"{(hints.ObjectResolveMethodModifiers == Names.DefaultApiMethodModifiers ? "+ " : "")}object {hints.ObjectResolveMethodName}(Type type)");
-                        lines.AppendLine($"{(hints.ObjectResolveByTagMethodModifiers == Names.DefaultApiMethodModifiers ? "+ " : "")}object {hints.ObjectResolveByTagMethodName}(Type type, object{nullable} tag)");
+                        compositionLines.AppendLine($"{(hints.ResolveMethodModifiers == Names.DefaultApiMethodModifiers ? "+ " : "")}T {hints.ResolveMethodName}{genericParameterT}()");
+                        compositionLines.AppendLine($"{(hints.ResolveByTagMethodModifiers == Names.DefaultApiMethodModifiers ? "+ " : "")}T {hints.ResolveByTagMethodName}{genericParameterT}(object{nullable} tag)");
+                        compositionLines.AppendLine($"{(hints.ObjectResolveMethodModifiers == Names.DefaultApiMethodModifiers ? "+ " : "")}object {hints.ObjectResolveMethodName}(Type type)");
+                        compositionLines.AppendLine($"{(hints.ObjectResolveByTagMethodModifiers == Names.DefaultApiMethodModifiers ? "+ " : "")}object {hints.ObjectResolveByTagMethodName}(Type type, object{nullable} tag)");
                     }
                 }
 
-                lines.AppendLine("}");
+                compositionLines.AppendLine("}");
             }
             else
             {
-                lines.AppendLine($"class {composition.Source.Source.Name.ClassName}");
+                compositionLines.AppendLine($"class {composition.Source.Source.Name.ClassName}");
             }
+            
+            var compositionClass = new Class(composition.Source.Source.Name.Namespace, composition.Source.Source.Name.ClassName, "", default, compositionLines);
+            classes.Add(compositionClass);
 
             if (composition.TotalDisposablesCount > 0)
             {
+                classes.Add(new Class(nameof(System), "IDisposable", "abstract", default, new LinesBuilder()));
                 lines.AppendLine($"{composition.Source.Source.Name.ClassName} --|> IDisposable");
             }
 
             if (composition.AsyncDisposableCount > 0)
             {
+                classes.Add(new Class(nameof(System), "IAsyncDisposable", "abstract", default, new LinesBuilder()));
                 lines.AppendLine($"{composition.Source.Source.Name.ClassName} --|> IAsyncDisposable");
             }
 
@@ -85,61 +97,32 @@ internal sealed class ClassDiagramBuilder(
                     lines.AppendLine($"{FormatType(setup, node.Type, DefaultFormatOptions)} --|> {FormatType(setup, contract.Type, DefaultFormatOptions)}{(string.IsNullOrWhiteSpace(tag) ? "" : $" : {tag}")}");
                 }
 
-                var classDiagramWalker = new ClassDiagramWalker(setup, this, lines, DefaultFormatOptions);
-                classDiagramWalker.VisitDependencyNode(Unit.Shared, node);
+                var classDiagramWalker = new ClassDiagramWalker(setup, this, classes, DefaultFormatOptions);
+                classDiagramWalker.VisitDependencyNode(new LinesBuilder(), node);
             }
 
             foreach (var type in types)
             {
-                var typeKind = "";
-                if (type.IsRecord)
-                {
-                    typeKind = "record";
-                }
-
-                if (type.IsTupleType)
-                {
-                    typeKind = "tuple";
-                }
-
-                if (type.IsAbstract)
-                {
-                    typeKind = "abstract";
-                }
-
-                typeKind = type.TypeKind switch
-                {
-                    TypeKind.Interface or TypeKind.Enum or TypeKind.Delegate or TypeKind.Struct => type.TypeKind.ToString().ToLower(),
-                    _ => typeKind
-                };
-
-                if (string.IsNullOrWhiteSpace(typeKind))
-                {
-                    continue;
-                }
-
-                lines.AppendLine($"class {FormatType(setup, type, DefaultFormatOptions)} {{");
-                using (lines.Indent())
-                {
-                    lines.AppendLine($"<<{typeKind}>>");
-                }
-
-                lines.AppendLine("}");
+                classes.Add(new Class(type.ContainingNamespace?.ToDisplayString() ?? "", FormatType(setup, type, DefaultFormatOptions), "", type, new LinesBuilder()));
             }
 
             foreach (var (dependency, count) in graph.Edges.GroupBy(i => i).Select(i => (dependency: i.First(), count: i.Count())))
             {
                 cancellationToken.ThrowIfCancellationRequested();
+                var sourceType = FormatType(setup, dependency.Source.Type, DefaultFormatOptions);
+                classes.Add(new Class(dependency.Source.Type.ContainingNamespace?.ToDisplayString() ?? "", sourceType, "", dependency.Source.Type, new LinesBuilder()));
                 if (dependency.Target.Root is not null && rootProperties.TryGetValue(dependency.Injection, out var root))
                 {
-                    lines.AppendLine($"{composition.Source.Source.Name.ClassName} ..> {FormatType(setup, dependency.Source.Type, DefaultFormatOptions)} : {FormatRoot(setup, root)}");
+                    lines.AppendLine($"{composition.Source.Source.Name.ClassName} ..> {sourceType} : {FormatRoot(setup, root)}");
                 }
                 else
                 {
+                    var targetType = FormatType(setup, dependency.Target.Type, DefaultFormatOptions);
+                    classes.Add(new Class(dependency.Target.Type.ContainingNamespace?.ToDisplayString() ?? "", targetType, "", dependency.Target.Type, new LinesBuilder()));
                     if (dependency.Source.Arg is { } arg)
                     {
                         var tags = arg.Binding.Contracts.SelectMany(i => i.Tags.Select(tag => tag.Value)).ToArray();
-                        lines.AppendLine($"{FormatType(setup, dependency.Target.Type, DefaultFormatOptions)} o-- {FormatType(setup, dependency.Source.Type, DefaultFormatOptions)} : {(tags.Any() ? FormatTags(tags) + " " : "")}Argument \\\"{arg.Source.ArgName}\\\"");
+                        lines.AppendLine($"{targetType} o-- {sourceType} : {(tags.Any() ? FormatTags(tags) + " " : "")}Argument \\\"{arg.Source.ArgName}\\\"");
                     }
                     else
                     {
@@ -149,8 +132,47 @@ internal sealed class ClassDiagramBuilder(
                         }
 
                         var relationship = dependency.Source.Lifetime == Lifetime.Transient ? "*--" : "o--";
-                        lines.AppendLine($"{FormatType(setup, dependency.Target.Type, DefaultFormatOptions)} {relationship} {FormatCardinality(count, dependency.Source.Lifetime)} {FormatType(setup, dependency.Source.Type, DefaultFormatOptions)} : {FormatDependency(setup, dependency, DefaultFormatOptions)}");
+                        lines.AppendLine($"{targetType} {relationship} {FormatCardinality(count, dependency.Source.Lifetime)} {sourceType} : {FormatDependency(setup, dependency, DefaultFormatOptions)}");
                     }
+                }
+            }
+
+            foreach (var classByNamespace in classes.GroupBy(i => i.Namespace).OrderBy(i => i.Key))
+            {
+                var ns = classByNamespace.Key;
+                var hasNamespace = !string.IsNullOrWhiteSpace(ns);
+                if (hasNamespace)
+                {
+                    lines.AppendLine($"namespace {ns} {{");
+                    lines.IncIndent();
+                }
+                
+                foreach (var cls in classByNamespace.GroupBy(i => i.Name).Select(i => i.First()).OrderBy(i => i.Name))
+                {
+                    var classLines = cls.Lines;
+                    if (classLines.Count > 0)
+                    {
+                        lines.AppendLines(cls.Lines.Lines);
+                        continue;
+                    }
+
+                    lines.AppendLine($"class {cls.Name} {{");
+                    if (!string.IsNullOrWhiteSpace(cls.ActualKind))
+                    {
+                        using (lines.Indent())
+                        {
+                            lines.AppendLine($"<<{cls.ActualKind}>>");
+                        }
+                    }
+
+                    lines.AppendLine("}");
+                }
+
+                // ReSharper disable once InvertIf
+                if (hasNamespace)
+                {
+                    lines.DecIndent();
+                    lines.AppendLine("}");
                 }
             }
         }
@@ -304,52 +326,98 @@ internal sealed class ClassDiagramBuilder(
     private class ClassDiagramWalker(
         MdSetup setup,
         ClassDiagramBuilder builder,
-        LinesBuilder lines,
+        IList<Class> classes,
         FormatOptions options)
-        : DependenciesWalker<Unit>
+        : DependenciesWalker<LinesBuilder>
     {
-        private readonly LinesBuilder _nodeLines = new();
-
-        public override void VisitDependencyNode(in Unit ctx, DependencyNode node)
+        public override void VisitDependencyNode(in LinesBuilder ctx, DependencyNode node)
         {
-            base.VisitDependencyNode(ctx, node);
-            if (!_nodeLines.Lines.Any())
-            {
-                lines.AppendLine($"class {builder.FormatType(setup, node.Type, options)}");
-                return;
-            }
-
-            lines.AppendLine($"class {builder.FormatType(setup, node.Type, options)} {{");
+            var lines = new LinesBuilder();
+            var name = builder.FormatType(setup, node.Type, options);
+            var cls = new Class(node.Type.ContainingNamespace?.ToDisplayString() ?? "", name, "", node.Type, lines);
+            classes.Add(cls);
+            lines.AppendLine($"class {name} {{");
             using (lines.Indent())
             {
-                lines.AppendLines(_nodeLines.Lines);
+                if (!string.IsNullOrWhiteSpace(cls.ActualKind))
+                {
+                    using (lines.Indent())
+                    {
+                        lines.AppendLine($"<<{cls.ActualKind}>>");
+                    }
+                }
+
+                base.VisitDependencyNode(lines, node);
             }
 
             lines.AppendLine("}");
         }
 
-        public override void VisitConstructor(in Unit ctx, in DpMethod constructor)
+        public override void VisitConstructor(in LinesBuilder ctx, in DpMethod constructor)
         {
-            _nodeLines.AppendLine(builder.FormatMethod(setup, constructor.Method, options));
+            ctx.AppendLine(builder.FormatMethod(setup, constructor.Method, options));
             base.VisitConstructor(ctx, in constructor);
         }
 
-        public override void VisitMethod(in Unit ctx, in DpMethod method)
+        public override void VisitMethod(in LinesBuilder ctx, in DpMethod method)
         {
-            _nodeLines.AppendLine(builder.FormatMethod(setup, method.Method, options));
+            ctx.AppendLine(builder.FormatMethod(setup, method.Method, options));
             base.VisitMethod(ctx, in method);
         }
 
-        public override void VisitProperty(in Unit ctx, in DpProperty property)
+        public override void VisitProperty(in LinesBuilder ctx, in DpProperty property)
         {
-            _nodeLines.AppendLine(builder.FormatProperty(setup, property.Property, options));
+            ctx.AppendLine(builder.FormatProperty(setup, property.Property, options));
             base.VisitProperty(ctx, in property);
         }
 
-        public override void VisitField(in Unit ctx, in DpField field)
+        public override void VisitField(in LinesBuilder ctx, in DpField field)
         {
-            _nodeLines.AppendLine(builder.FormatField(setup, field.Field, options));
+            ctx.AppendLine(builder.FormatField(setup, field.Field, options));
             base.VisitField(ctx, in field);
+        }
+    }
+
+    private record Class(string Namespace, string Name, string Kind, ITypeSymbol? Type, LinesBuilder Lines)
+    {
+        public string ActualKind
+        {
+            get
+            {
+                var typeKind = Kind;
+                if (Type == null)
+                {
+                    return typeKind;
+                }
+
+                if (Type.IsRecord)
+                {
+                    typeKind = "record";
+                }
+                
+                if (Type is IArrayTypeSymbol)
+                {
+                    typeKind = "array";
+                }
+
+                if (Type.IsTupleType)
+                {
+                    typeKind = "tuple";
+                }
+
+                if (Type.IsAbstract)
+                {
+                    typeKind = "abstract";
+                }
+
+                typeKind = Type.TypeKind switch
+                {
+                    TypeKind.Interface or TypeKind.Enum or TypeKind.Delegate or TypeKind.Struct => Type.TypeKind.ToString().ToLower(),
+                    _ => typeKind
+                };
+
+                return typeKind;
+            }
         }
     }
 }
