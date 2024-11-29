@@ -190,6 +190,10 @@ internal sealed class ClassDiagramBuilder(
         if (lifetime != Lifetime.Transient)
         {
             cardinality.Append(lifetime);
+            if (count > 1)
+            {
+                cardinality.Append(" instances");
+            }
         }
 
         if (cardinality.Length > 0)

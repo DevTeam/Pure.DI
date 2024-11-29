@@ -45,10 +45,10 @@ classDiagram
 	CompositionRoot o-- "Scoped" Service1 : IService1
 	CompositionRoot *-- "3 " Service2 : IService2
 	CompositionRoot *--  Service3 : IService3
-	CompositionRoot o-- "2 Scoped" Service4 : IService4
+	CompositionRoot o-- "2 Scoped instances" Service4 : IService4
 	Service1 *--  Service2 : IService2
 	Service2 *-- "5 " Service3 : IService3
-	Service3 o-- "2 Scoped" Service4 : IService4
+	Service3 o-- "2 Scoped instances" Service4 : IService4
 ```
 
 ### Generated code

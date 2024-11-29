@@ -111,9 +111,9 @@ namespace Pure.DI
                     .To(_ => global::System.Buffers.ArrayPool<TT>.Shared)
 #endif
                 .Bind<global::System.Collections.Generic.IList<TT>>()
+                .Bind<global::System.Collections.Generic.ICollection<TT>>()
                 .Bind<global::System.Collections.Generic.List<TT>>()
                     .To((TT[] arr) => new global::System.Collections.Generic.List<TT>(arr))
-                .Bind<global::System.Collections.Generic.ICollection<TT>>()
                 .Bind<global::System.Collections.ObjectModel.Collection<TT>>()
                     .To((TT[] arr) => new global::System.Collections.ObjectModel.Collection<TT>(arr))
 #if NETSTANDARD || NET || NETCOREAPP || NET45_OR_GREATER

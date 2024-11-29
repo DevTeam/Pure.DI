@@ -112,6 +112,6 @@ classDiagram
 		<<interface>>
 	}
 	Composition ..> Service : IService Root
-	Service o-- "2 Singleton" Dependency : IDependency
+	Service o-- "2 Singleton instances" Dependency : IDependency
 ```
 

@@ -102,14 +102,6 @@ DI.Setup(nameof(Composition))
 > [!NOTE]
 > In fact, the `Bind().As(Singleton).To<Random>()` binding is unnecessary since _Pure.DI_ supports many .NET BCL types out of the box, including [Random](https://github.com/DevTeam/Pure.DI/blob/27a1ccd604b2fdd55f6bfec01c24c86428ddfdcb/src/Pure.DI.Core/Features/Default.g.cs#L289). It was added just for the example of using the _Singleton_ lifetime.
 
-The Pure.DI source code generator works like this:
-
-```mermaid
-flowchart TD
-    setups[DI setups analysis] --> types["`Types analysis
-    constructors/methods/properties/fields`"] --> deps[Creating a dependency graph] --> verification[Dependency graph verification] --> code[Code generation]
-```
-
 The above code specifies the generation of a partial class named *__Composition__*, this name is defined in the `DI.Setup(nameof(Composition))` call. This class contains a *__Root__* property that returns a graph of objects with an object of type *__Program__* as the root. The type and name of the property is defined by calling `Root<Program>("Root")`. The code of the generated class looks as follows:
 
 ```c#
@@ -367,12 +359,12 @@ partial class Composition
 }
 ```
 
-</details>
-
 The _compositionTypeName_ parameter can be omitted
 
 - if the setup is performed inside a partial class, then the composition will be created for this partial class
 - for the case of a class with composition kind `CompositionKind.Global`, see [this example](readme/global-compositions.md)
+
+</details>
 
 <details>
 <summary>Setup arguments</summary>
@@ -857,6 +849,42 @@ Appropriate comments will be added to the generated ```Composition``` class and 
 Then documentation for the composition root:
 
 ![ReadmeDocumentation2.png](readme/ReadmeDocumentation2.png)
+
+</details>
+
+<details>
+<summary>Code generation workflow</summary>
+
+```mermaid
+flowchart TD
+    start@{ shape: circle, label: "Start" }
+    setups[fa:fa-search DI setups analysis]
+    types["`fa:fa-search Types analysis
+    constructors/methods/properties/fields`"] 
+    subgraph dep[Dependency graph]
+    option[fa:fa-search Selecting a next dependency set]
+    creating[fa:fa-cog Creating a dependency graph variant]
+    verification{fa:fa-check-circle Verification}
+    end
+    codeGeneration[fa:fa-code Code generation]
+    compilation[fa:fa-cog Compilation]
+    failed@{ shape: dbl-circ, label: "fa:fa-thumbs-down Compilation failed" }
+    success@{ shape: dbl-circ, label: "fa:fa-thumbs-up Success" }
+
+    start ==> setups
+    setups -.->|Has problems| failed
+    setups ==> types
+    types -.-> |Has problems| failed
+    types ==> option
+    option ==> creating
+    option -.-> |There are no other options| failed
+    creating ==> verification
+    verification -->|Has problems| option
+    verification ==>|Correct| codeGeneration
+    codeGeneration ==> compilation
+    compilation -.-> |Has problems| failed
+    compilation ==> success
+```
 
 </details>
 

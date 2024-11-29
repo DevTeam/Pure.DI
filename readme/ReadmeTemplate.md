@@ -62,14 +62,6 @@ DI.Setup(nameof(Composition))
 > [!NOTE]
 > In fact, the `Bind().As(Singleton).To<Random>()` binding is unnecessary since _Pure.DI_ supports many .NET BCL types out of the box, including [Random](https://github.com/DevTeam/Pure.DI/blob/27a1ccd604b2fdd55f6bfec01c24c86428ddfdcb/src/Pure.DI.Core/Features/Default.g.cs#L289). It was added just for the example of using the _Singleton_ lifetime.
 
-The Pure.DI source code generator works like this:
-
-```mermaid
-flowchart TD
-    setups[DI setups analysis] --> types["`Types analysis
-    constructors/methods/properties/fields`"] --> deps[Creating a dependency graph] --> verification[Dependency graph verification] --> code[Code generation]
-```
-
 The above code specifies the generation of a partial class named *__Composition__*, this name is defined in the `DI.Setup(nameof(Composition))` call. This class contains a *__Root__* property that returns a graph of objects with an object of type *__Program__* as the root. The type and name of the property is defined by calling `Root<Program>("Root")`. The code of the generated class looks as follows:
 
 ```c#

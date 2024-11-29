@@ -113,8 +113,8 @@ classDiagram
 		<<interface>>
 	}
 	Composition ..> Service : Service Root
-	Service o-- "2 PerBlock" Dependency : IDependency
+	Service o-- "2 PerBlock instances" Dependency : IDependency
 	Service o-- "Singleton" ValueTupleᐸIDependencyˏIDependencyᐳ : ValueTupleᐸIDependencyˏIDependencyᐳ
-	ValueTupleᐸIDependencyˏIDependencyᐳ o-- "2 PerBlock" Dependency : IDependency
+	ValueTupleᐸIDependencyˏIDependencyᐳ o-- "2 PerBlock instances" Dependency : IDependency
 ```
 
