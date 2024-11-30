@@ -256,39 +256,52 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
-		<<partial>>
-		+IService Root
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
-	}
 	Service --|> IService
-	class Service {
-		+Service(FuncᐸInt32ˏInt32ˏIDependencyᐳ dependencyFactory)
-	}
-	class FuncᐸInt32ˏInt32ˏIDependencyᐳ
-	class Dependency {
-		+Dependency(IClock clock, Int32 id, Int32 subId)
-	}
 	Clock --|> IClock
-	class Clock {
-		+Clock()
-	}
-	class Int32
-	class IService {
-		<<interface>>
-	}
-	class IClock {
-		<<interface>>
-	}
 	Composition ..> Service : IService Root
 	Service *--  FuncᐸInt32ˏInt32ˏIDependencyᐳ : FuncᐸInt32ˏInt32ˏIDependencyᐳ
 	FuncᐸInt32ˏInt32ˏIDependencyᐳ *--  Dependency : Dependency
 	Dependency o-- "Singleton" Clock : IClock
 	Dependency *--  Int32 : Int32
 	Dependency *--  Int32 : "sub"  Int32
+	namespace Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario {
+		class Clock {
+			+Clock()
+		}
+		class Composition {
+		<<partial>>
+		+IService Root
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+		}
+		class Dependency {
+			+Dependency(IClock clock, Int32 id, Int32 subId)
+		}
+		class IClock {
+			<<interface>>
+		}
+		class IService {
+			<<interface>>
+		}
+		class Service {
+			+Service(FuncᐸInt32ˏInt32ˏIDependencyᐳ dependencyFactory)
+		}
+	}
+	namespace System {
+		class FuncᐸInt32ˏInt32ˏIDependencyᐳ {
+				<<delegate>>
+		}
+		class Int32 {
+				<<struct>>
+		}
+	}
 ```
 

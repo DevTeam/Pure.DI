@@ -86,38 +86,45 @@ service.Dependency4.ShouldBeOfType<AbcDependency>();
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
-		<<partial>>
-		+IService Root
-	}
 	Service --|> IService
-	class Service {
-		+Service(IDependency dependency1, IDependency dependency2, ConsumerᐸStringᐳ consumer)
-		+IDependency Dependency3
-	}
 	AbcDependency --|> IDependency
 	AbcDependency --|> IDependency
-	class AbcDependency {
-		+AbcDependency()
-	}
 	XyzDependency --|> IDependency
-	class XyzDependency {
-		+XyzDependency()
-	}
-	class ConsumerᐸStringᐳ {
-		+Consumer(IDependency myDep)
-	}
-	class IService {
-		<<interface>>
-	}
-	class IDependency {
-		<<interface>>
-	}
 	Composition ..> Service : IService Root
 	Service *--  AbcDependency : IDependency
 	Service *-- "2 " XyzDependency : IDependency
 	Service *--  ConsumerᐸStringᐳ : ConsumerᐸStringᐳ
 	ConsumerᐸStringᐳ *--  AbcDependency : IDependency
+	namespace MyNamespace {
+		class AbcDependency {
+			+AbcDependency()
+		}
+		class Composition {
+		<<partial>>
+		+IService Root
+		}
+		class ConsumerᐸStringᐳ {
+			+Consumer(IDependency myDep)
+		}
+		class IDependency {
+			<<interface>>
+		}
+		class IService {
+			<<interface>>
+		}
+		class Service {
+			+Service(IDependency dependency1, IDependency dependency2, ConsumerᐸStringᐳ consumer)
+			+IDependency Dependency3
+		}
+		class XyzDependency {
+			+XyzDependency()
+		}
+	}
 ```
 

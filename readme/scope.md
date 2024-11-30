@@ -182,37 +182,52 @@ partial class Composition: IDisposable
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
-		<<partial>>
-		+Program ProgramRoot
-		+IService SessionRoot
-	}
 	Composition --|> IDisposable
 	Service --|> IService
-	class Service {
-		+Service(IDependency dependency)
-	}
-	class FuncᐸSessionᐳ
 	Dependency --|> IDependency
-	class Dependency {
-		+Dependency()
-	}
-	class Session {
-		+Session(Composition composition)
-	}
-	class Composition
-	class IService {
-		<<interface>>
-	}
-	class IDependency {
-		<<interface>>
-	}
 	Composition ..> Program : Program ProgramRoot
 	Composition ..> Service : IService SessionRoot
 	Program o-- "PerBlock" FuncᐸSessionᐳ : FuncᐸSessionᐳ
 	Service o-- "Scoped" Dependency : IDependency
 	FuncᐸSessionᐳ *--  Session : Session
 	Session *--  Composition : Composition
+	namespace Pure.DI.UsageTests.Lifetimes.ScopeScenario {
+		class Composition {
+		<<partial>>
+		+Program ProgramRoot
+		+IService SessionRoot
+		}
+		class Dependency {
+			+Dependency()
+		}
+		class IDependency {
+			<<interface>>
+		}
+		class IService {
+			<<interface>>
+		}
+		class Program {
+		}
+		class Service {
+			+Service(IDependency dependency)
+		}
+		class Session {
+			+Session(Composition composition)
+		}
+	}
+	namespace System {
+		class FuncᐸSessionᐳ {
+				<<delegate>>
+		}
+		class IDisposable {
+			<<abstract>>
+		}
+	}
 ```
 

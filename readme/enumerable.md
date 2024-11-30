@@ -192,37 +192,48 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
+	Service --|> IService
+	AbcDependency --|> IDependency
+	XyzDependency --|> IDependency : 2 
+	Composition ..> Service : IService Root
+	Service o-- "PerBlock" IEnumerableᐸIDependencyᐳ : IEnumerableᐸIDependencyᐳ
+	IEnumerableᐸIDependencyᐳ *--  AbcDependency : IDependency
+	IEnumerableᐸIDependencyᐳ *--  XyzDependency : 2  IDependency
+	namespace Pure.DI.UsageTests.BCL.EnumerableScenario {
+		class AbcDependency {
+			+AbcDependency()
+		}
+		class Composition {
 		<<partial>>
 		+IService Root
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
+		}
+		class IDependency {
+			<<interface>>
+		}
+		class IService {
+			<<interface>>
+		}
+		class Service {
+			+Service(IEnumerableᐸIDependencyᐳ dependencies)
+		}
+		class XyzDependency {
+			+XyzDependency()
+		}
 	}
-	Service --|> IService
-	class Service {
-		+Service(IEnumerableᐸIDependencyᐳ dependencies)
+	namespace System.Collections.Generic {
+		class IEnumerableᐸIDependencyᐳ {
+				<<interface>>
+		}
 	}
-	class IEnumerableᐸIDependencyᐳ
-	AbcDependency --|> IDependency
-	class AbcDependency {
-		+AbcDependency()
-	}
-	XyzDependency --|> IDependency : 2 
-	class XyzDependency {
-		+XyzDependency()
-	}
-	class IService {
-		<<interface>>
-	}
-	class IDependency {
-		<<interface>>
-	}
-	Composition ..> Service : IService Root
-	Service o-- "PerBlock" IEnumerableᐸIDependencyᐳ : IEnumerableᐸIDependencyᐳ
-	IEnumerableᐸIDependencyᐳ *--  AbcDependency : IDependency
-	IEnumerableᐸIDependencyᐳ *--  XyzDependency : 2  IDependency
 ```
 

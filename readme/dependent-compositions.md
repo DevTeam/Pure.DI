@@ -367,8 +367,29 @@ partial class OtherComposition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class OtherComposition {
+	Service --|> IService
+	Dependency --|> IDependency
+	OtherComposition ..> Program : Program Program
+	OtherComposition ..> Service : IService Root
+	Program *--  Service : IService
+	Service *--  Dependency : IDependency
+	namespace Pure.DI.UsageTests.Advanced.DependentCompositionsScenario {
+		class Dependency {
+			+Dependency()
+		}
+		class IDependency {
+			<<interface>>
+		}
+		class IService {
+			<<interface>>
+		}
+		class OtherComposition {
 		<<partial>>
 		+Program Program
 		+IService Root
@@ -376,24 +397,12 @@ classDiagram
 		+ T ResolveᐸTᐳ(object? tag)
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
+		}
+		class Program {
+		}
+		class Service {
+			+Service(IDependency dependency)
+		}
 	}
-	Service --|> IService
-	class Service {
-		+Service(IDependency dependency)
-	}
-	Dependency --|> IDependency
-	class Dependency {
-		+Dependency()
-	}
-	class IService {
-		<<interface>>
-	}
-	class IDependency {
-		<<interface>>
-	}
-	OtherComposition ..> Program : Program Program
-	OtherComposition ..> Service : IService Root
-	Program *--  Service : IService
-	Service *--  Dependency : IDependency
 ```
 

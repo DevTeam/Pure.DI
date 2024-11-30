@@ -92,31 +92,39 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
-		<<partial>>
-		+IServiceᐸT1ᐳ GetMyRootᐸT1ᐳ()
-		+IServiceᐸT1ᐳ GetOtherServiceᐸT1ᐳ()
-	}
 	OtherServiceᐸT1ᐳ --|> IServiceᐸT1ᐳ : "Other" 
-	class OtherServiceᐸT1ᐳ
 	ServiceᐸT1ᐳ --|> IServiceᐸT1ᐳ
-	class ServiceᐸT1ᐳ {
-		+Service(IDependencyᐸT1ᐳ dependency)
-	}
 	DependencyᐸT1ᐳ --|> IDependencyᐸT1ᐳ
-	class DependencyᐸT1ᐳ {
-		+Dependency()
-	}
-	class IServiceᐸT1ᐳ {
-		<<interface>>
-	}
-	class IDependencyᐸT1ᐳ {
-		<<interface>>
-	}
 	Composition ..> OtherServiceᐸT1ᐳ : IServiceᐸT1ᐳ GetOtherServiceᐸT1ᐳ()
 	Composition ..> ServiceᐸT1ᐳ : IServiceᐸT1ᐳ GetMyRootᐸT1ᐳ()
 	OtherServiceᐸT1ᐳ *--  DependencyᐸT1ᐳ : IDependencyᐸT1ᐳ
 	ServiceᐸT1ᐳ *--  DependencyᐸT1ᐳ : IDependencyᐸT1ᐳ
+	namespace Pure.DI.UsageTests.Generics.GenericsCompositionRootsScenario {
+		class Composition {
+		<<partial>>
+		+IServiceᐸT1ᐳ GetMyRootᐸT1ᐳ()
+		+IServiceᐸT1ᐳ GetOtherServiceᐸT1ᐳ()
+		}
+		class DependencyᐸT1ᐳ {
+			+Dependency()
+		}
+		class IDependencyᐸT1ᐳ {
+			<<interface>>
+		}
+		class IServiceᐸT1ᐳ {
+			<<interface>>
+		}
+		class OtherServiceᐸT1ᐳ {
+		}
+		class ServiceᐸT1ᐳ {
+			+Service(IDependencyᐸT1ᐳ dependency)
+		}
+	}
 ```
 

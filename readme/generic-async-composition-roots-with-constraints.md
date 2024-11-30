@@ -145,39 +145,15 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
-		<<partial>>
-		+TaskᐸIServiceᐸT2ˏTᐳᐳ GetMyRootAsyncᐸT2ˏTᐳ(System.Threading.CancellationToken cancellationToken)
-		+TaskᐸIServiceᐸT2ˏBooleanᐳᐳ GetOtherServiceAsyncᐸT2ᐳ(System.Threading.CancellationToken cancellationToken)
-	}
-	class FuncᐸIServiceᐸT2ˏBooleanᐳᐳ
-	class TaskFactoryᐸIServiceᐸT2ˏBooleanᐳᐳ
-	class FuncᐸIServiceᐸT2ˏTᐳᐳ
-	class TaskFactoryᐸIServiceᐸT2ˏTᐳᐳ
 	OtherServiceᐸT2ᐳ --|> IServiceᐸT2ˏBooleanᐳ : "Other" 
-	class OtherServiceᐸT2ᐳ
-	class CancellationToken
-	class TaskCreationOptions
-	class TaskContinuationOptions
-	class TaskScheduler
 	ServiceᐸT2ˏTᐳ --|> IServiceᐸT2ˏTᐳ
-	class ServiceᐸT2ˏTᐳ {
-		+Service(IDependencyᐸT2ᐳ dependency)
-	}
 	DependencyᐸT2ᐳ --|> IDependencyᐸT2ᐳ
-	class DependencyᐸT2ᐳ {
-		+Dependency()
-	}
-	class IServiceᐸT2ˏBooleanᐳ {
-		<<interface>>
-	}
-	class IServiceᐸT2ˏTᐳ {
-		<<interface>>
-	}
-	class IDependencyᐸT2ᐳ {
-		<<interface>>
-	}
 	Composition ..> TaskᐸIServiceᐸT2ˏBooleanᐳᐳ : TaskᐸIServiceᐸT2ˏBooleanᐳᐳ GetOtherServiceAsyncᐸT2ᐳ(System.Threading.CancellationToken cancellationToken)
 	Composition ..> TaskᐸIServiceᐸT2ˏTᐳᐳ : TaskᐸIServiceᐸT2ˏTᐳᐳ GetMyRootAsyncᐸT2ˏTᐳ(System.Threading.CancellationToken cancellationToken)
 	TaskᐸIServiceᐸT2ˏBooleanᐳᐳ o-- "PerBlock" FuncᐸIServiceᐸT2ˏBooleanᐳᐳ : "Other"  FuncᐸIServiceᐸT2ˏBooleanᐳᐳ
@@ -196,5 +172,61 @@ classDiagram
 	TaskFactoryᐸIServiceᐸT2ˏTᐳᐳ *--  TaskScheduler : TaskScheduler
 	OtherServiceᐸT2ᐳ *--  DependencyᐸT2ᐳ : IDependencyᐸT2ᐳ
 	ServiceᐸT2ˏTᐳ *--  DependencyᐸT2ᐳ : IDependencyᐸT2ᐳ
+	namespace Pure.DI.UsageTests.Generics.GenericAsyncCompositionRootsWithConstraintsScenario {
+		class Composition {
+		<<partial>>
+		+TaskᐸIServiceᐸT2ˏTᐳᐳ GetMyRootAsyncᐸT2ˏTᐳ(System.Threading.CancellationToken cancellationToken)
+		+TaskᐸIServiceᐸT2ˏBooleanᐳᐳ GetOtherServiceAsyncᐸT2ᐳ(System.Threading.CancellationToken cancellationToken)
+		}
+		class DependencyᐸT2ᐳ {
+			+Dependency()
+		}
+		class IDependencyᐸT2ᐳ {
+			<<interface>>
+		}
+		class IServiceᐸT2ˏBooleanᐳ {
+			<<interface>>
+		}
+		class IServiceᐸT2ˏTᐳ {
+			<<interface>>
+		}
+		class OtherServiceᐸT2ᐳ {
+		}
+		class ServiceᐸT2ˏTᐳ {
+			+Service(IDependencyᐸT2ᐳ dependency)
+		}
+	}
+	namespace System {
+		class FuncᐸIServiceᐸT2ˏBooleanᐳᐳ {
+				<<delegate>>
+		}
+		class FuncᐸIServiceᐸT2ˏTᐳᐳ {
+				<<delegate>>
+		}
+	}
+	namespace System.Threading {
+		class CancellationToken {
+				<<struct>>
+		}
+	}
+	namespace System.Threading.Tasks {
+		class TaskContinuationOptions {
+				<<enum>>
+		}
+		class TaskCreationOptions {
+				<<enum>>
+		}
+		class TaskFactoryᐸIServiceᐸT2ˏBooleanᐳᐳ {
+		}
+		class TaskFactoryᐸIServiceᐸT2ˏTᐳᐳ {
+		}
+		class TaskScheduler {
+				<<abstract>>
+		}
+		class TaskᐸIServiceᐸT2ˏBooleanᐳᐳ {
+		}
+		class TaskᐸIServiceᐸT2ˏTᐳᐳ {
+		}
+	}
 ```
 

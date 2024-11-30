@@ -70,27 +70,34 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
-		<<partial>>
-		+IService MyService
-	}
 	Service --|> IService
-	class Service {
-		+Service()
-		+IDependency Dependency
-	}
 	Dependency --|> IDependency
-	class Dependency {
-		+Dependency()
-	}
-	class IService {
-		<<interface>>
-	}
-	class IDependency {
-		<<interface>>
-	}
 	Composition ..> Service : IService MyService
 	Service *--  Dependency : IDependency
+	namespace Pure.DI.UsageTests.Basics.PropertyInjectionScenario {
+		class Composition {
+		<<partial>>
+		+IService MyService
+		}
+		class Dependency {
+			+Dependency()
+		}
+		class IDependency {
+			<<interface>>
+		}
+		class IService {
+			<<interface>>
+		}
+		class Service {
+			+Service()
+			+IDependency Dependency
+		}
+	}
 ```
 

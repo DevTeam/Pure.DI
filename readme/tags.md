@@ -127,35 +127,42 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
-		<<partial>>
-		+IService Root
-		+IDependency XyzRoot
-	}
 	Service --|> IService
-	class Service {
-		+Service(IDependency dependency1, IDependency dependency2, IDependency dependency3)
-	}
 	XyzDependency --|> IDependency : "XyzTag" 
-	class XyzDependency {
-		+XyzDependency()
-	}
 	AbcDependency --|> IDependency : "AbcTag" 
 	AbcDependency --|> IDependency
-	class AbcDependency {
-		+AbcDependency()
-	}
-	class IService {
-		<<interface>>
-	}
-	class IDependency {
-		<<interface>>
-	}
 	Composition ..> Service : IService Root
 	Composition ..> XyzDependency : IDependency XyzRoot
 	Service *--  AbcDependency : "AbcTag"  IDependency
 	Service o-- "Singleton" XyzDependency : "XyzTag"  IDependency
 	Service *--  AbcDependency : IDependency
+	namespace Pure.DI.UsageTests.Basics.TagsScenario {
+		class AbcDependency {
+			+AbcDependency()
+		}
+		class Composition {
+		<<partial>>
+		+IService Root
+		+IDependency XyzRoot
+		}
+		class IDependency {
+			<<interface>>
+		}
+		class IService {
+			<<interface>>
+		}
+		class Service {
+			+Service(IDependency dependency1, IDependency dependency2, IDependency dependency3)
+		}
+		class XyzDependency {
+			+XyzDependency()
+		}
+	}
 ```
 

@@ -201,37 +201,48 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
+	Service --|> IService
+	AbcDependency --|> IDependency
+	XyzDependency --|> IDependency : 2 
+	Composition ..> Service : IService Root
+	Service *--  IAsyncEnumerableᐸIDependencyᐳ : IAsyncEnumerableᐸIDependencyᐳ
+	IAsyncEnumerableᐸIDependencyᐳ *--  AbcDependency : IDependency
+	IAsyncEnumerableᐸIDependencyᐳ *--  XyzDependency : 2  IDependency
+	namespace Pure.DI.UsageTests.BCL.AsyncEnumerableScenario {
+		class AbcDependency {
+			+AbcDependency()
+		}
+		class Composition {
 		<<partial>>
 		+IService Root
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
+		}
+		class IDependency {
+			<<interface>>
+		}
+		class IService {
+			<<interface>>
+		}
+		class Service {
+			+Service(IAsyncEnumerableᐸIDependencyᐳ dependencies)
+		}
+		class XyzDependency {
+			+XyzDependency()
+		}
 	}
-	Service --|> IService
-	class Service {
-		+Service(IAsyncEnumerableᐸIDependencyᐳ dependencies)
+	namespace System.Collections.Generic {
+		class IAsyncEnumerableᐸIDependencyᐳ {
+				<<interface>>
+		}
 	}
-	class IAsyncEnumerableᐸIDependencyᐳ
-	AbcDependency --|> IDependency
-	class AbcDependency {
-		+AbcDependency()
-	}
-	XyzDependency --|> IDependency : 2 
-	class XyzDependency {
-		+XyzDependency()
-	}
-	class IService {
-		<<interface>>
-	}
-	class IDependency {
-		<<interface>>
-	}
-	Composition ..> Service : IService Root
-	Service *--  IAsyncEnumerableᐸIDependencyᐳ : IAsyncEnumerableᐸIDependencyᐳ
-	IAsyncEnumerableᐸIDependencyᐳ *--  AbcDependency : IDependency
-	IAsyncEnumerableᐸIDependencyᐳ *--  XyzDependency : 2  IDependency
 ```
 

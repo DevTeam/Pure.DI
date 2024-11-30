@@ -126,36 +126,45 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
-		<<partial>>
-		+IService MyService
-	}
 	Service --|> IService
-	class Service {
-		+Service(Dependency dependencyImpl, IDependency dependency, IOtherDependency otherDependency)
-	}
 	Dependency --|> IDependency
 	Dependency --|> IOtherDependency
 	Dependency --|> IEnumerableᐸStringᐳ
-	class Dependency {
-		+Dependency()
-	}
-	class IService {
-		<<interface>>
-	}
-	class IDependency {
-		<<interface>>
-	}
-	class IOtherDependency {
-		<<interface>>
-	}
-	class IEnumerableᐸStringᐳ {
-		<<interface>>
-	}
 	Composition ..> Service : IService MyService
 	Service o-- "PerBlock" Dependency : Dependency
 	Service o-- "PerBlock" Dependency : IDependency
 	Service o-- "PerBlock" Dependency : IOtherDependency
+	namespace Pure.DI.UsageTests.Basics.SimplifiedBindingScenario {
+		class Composition {
+		<<partial>>
+		+IService MyService
+		}
+		class Dependency {
+			+Dependency()
+		}
+		class IDependency {
+			<<interface>>
+		}
+		class IOtherDependency {
+			<<interface>>
+		}
+		class IService {
+			<<interface>>
+		}
+		class Service {
+			+Service(Dependency dependencyImpl, IDependency dependency, IOtherDependency otherDependency)
+		}
+	}
+	namespace System.Collections.Generic {
+		class IEnumerableᐸStringᐳ {
+			<<interface>>
+		}
+	}
 ```
 

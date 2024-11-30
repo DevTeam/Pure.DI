@@ -151,33 +151,46 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
+	Service --|> IService
+	Dependency --|> IDependency
+	Composition ..> OwnedᐸIServiceᐳ : OwnedᐸIServiceᐳ Root
+	OwnedᐸIServiceᐳ *--  Owned : Owned
+	OwnedᐸIServiceᐳ *--  Service : IService
+	Service *--  Dependency : IDependency
+	namespace Pure.DI {
+		class Owned {
+		}
+		class OwnedᐸIServiceᐳ {
+			<<struct>>
+		}
+	}
+	namespace Pure.DI.UsageTests.Advanced.TrackingDisposableScenario {
+		class Composition {
 		<<partial>>
 		+OwnedᐸIServiceᐳ Root
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
+		}
+		class Dependency {
+			+Dependency()
+		}
+		class IDependency {
+			<<interface>>
+		}
+		class IService {
+			<<interface>>
+		}
+		class Service {
+			+Service(IDependency dependency)
+		}
 	}
-	class Owned
-	Service --|> IService
-	class Service {
-		+Service(IDependency dependency)
-	}
-	Dependency --|> IDependency
-	class Dependency {
-		+Dependency()
-	}
-	class IService {
-		<<interface>>
-	}
-	class IDependency {
-		<<interface>>
-	}
-	Composition ..> OwnedᐸIServiceᐳ : OwnedᐸIServiceᐳ Root
-	OwnedᐸIServiceᐳ *--  Owned : Owned
-	OwnedᐸIServiceᐳ *--  Service : IService
-	Service *--  Dependency : IDependency
 ```
 

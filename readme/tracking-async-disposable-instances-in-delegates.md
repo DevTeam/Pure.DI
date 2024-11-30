@@ -245,29 +245,47 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
+	Dependency --|> IDependency
+	Composition ..> Service : Service Root
+	Service o-- "PerBlock" FuncᐸOwnedᐸIDependencyᐳᐳ : FuncᐸOwnedᐸIDependencyᐳᐳ
+	FuncᐸOwnedᐸIDependencyᐳᐳ o-- "PerBlock" OwnedᐸIDependencyᐳ : OwnedᐸIDependencyᐳ
+	OwnedᐸIDependencyᐳ *--  Owned : Owned
+	OwnedᐸIDependencyᐳ *--  Dependency : IDependency
+	namespace Pure.DI {
+		class Owned {
+		}
+		class OwnedᐸIDependencyᐳ {
+				<<struct>>
+		}
+	}
+	namespace Pure.DI.UsageTests.Advanced.TrackingAsyncDisposableInDelegatesScenario {
+		class Composition {
 		<<partial>>
 		+Service Root
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
+		}
+		class Dependency {
+			+Dependency()
+		}
+		class IDependency {
+			<<interface>>
+		}
+		class Service {
+		}
 	}
-	class FuncᐸOwnedᐸIDependencyᐳᐳ
-	class OwnedᐸIDependencyᐳ
-	class Owned
-	Dependency --|> IDependency
-	class Dependency {
-		+Dependency()
+	namespace System {
+		class FuncᐸOwnedᐸIDependencyᐳᐳ {
+				<<delegate>>
+		}
 	}
-	class IDependency {
-		<<interface>>
-	}
-	Composition ..> Service : Service Root
-	Service o-- "PerBlock" FuncᐸOwnedᐸIDependencyᐳᐳ : FuncᐸOwnedᐸIDependencyᐳᐳ
-	FuncᐸOwnedᐸIDependencyᐳᐳ o-- "PerBlock" OwnedᐸIDependencyᐳ : OwnedᐸIDependencyᐳ
-	OwnedᐸIDependencyᐳ *--  Owned : Owned
-	OwnedᐸIDependencyᐳ *--  Dependency : IDependency
 ```
 

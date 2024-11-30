@@ -4,43 +4,16 @@ Creating an object graph of 22 transient objects.
 
 ### Class diagram
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Transient {
-		<<partial>>
-		+CompositionRoot TestPureDIByCR()
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
-	}
 	Service1 --|> IService1
-	class Service1 {
-		+Service1(IService2 service2)
-	}
 	Service2 --|> IService2
-	class Service2 {
-		+Service2(IService3 service31, IService3 service32, IService3 service33, IService3 service34, IService3 service35)
-	}
 	Service3 --|> IService3
-	class Service3 {
-		+Service3(IService4 service41, IService4 service42)
-	}
 	Service4 --|> IService4
-	class Service4 {
-		+Service4()
-	}
-	class IService1 {
-		<<interface>>
-	}
-	class IService2 {
-		<<interface>>
-	}
-	class IService3 {
-		<<interface>>
-	}
-	class IService4 {
-		<<interface>>
-	}
 	Transient ..> CompositionRoot : CompositionRoot TestPureDIByCR()
 	CompositionRoot *--  Service1 : IService1
 	CompositionRoot *-- "3 " Service2 : IService2
@@ -49,6 +22,44 @@ classDiagram
 	Service1 *--  Service2 : IService2
 	Service2 *-- "5 " Service3 : IService3
 	Service3 *-- "2 " Service4 : IService4
+	namespace Pure.DI.Benchmarks.Benchmarks {
+		class Transient {
+		<<partial>>
+		+CompositionRoot TestPureDIByCR()
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+		}
+	}
+	namespace Pure.DI.Benchmarks.Model {
+		class CompositionRoot {
+		}
+		class IService1 {
+			<<interface>>
+		}
+		class IService2 {
+			<<interface>>
+		}
+		class IService3 {
+			<<interface>>
+		}
+		class IService4 {
+			<<interface>>
+		}
+		class Service1 {
+			+Service1(IService2 service2)
+		}
+		class Service2 {
+			+Service2(IService3 service31, IService3 service32, IService3 service33, IService3 service34, IService3 service35)
+		}
+		class Service3 {
+			+Service3(IService4 service41, IService4 service42)
+		}
+		class Service4 {
+			+Service4()
+		}
+	}
 ```
 
 ### Generated code

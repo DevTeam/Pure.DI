@@ -155,37 +155,52 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
+	Service --|> IService
+	Dependency --|> IDependency
+	Dependency --|> IAsyncDisposable
+	Composition ..> OwnedᐸIServiceᐳ : OwnedᐸIServiceᐳ Root
+	OwnedᐸIServiceᐳ *--  Owned : Owned
+	OwnedᐸIServiceᐳ *--  Service : IService
+	Service *--  Dependency : IDependency
+	namespace Pure.DI {
+		class Owned {
+		}
+		class OwnedᐸIServiceᐳ {
+			<<struct>>
+		}
+	}
+	namespace Pure.DI.UsageTests.Advanced.TrackingAsyncDisposableScenario {
+		class Composition {
 		<<partial>>
 		+OwnedᐸIServiceᐳ Root
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
+		}
+		class Dependency {
+			+Dependency()
+		}
+		class IDependency {
+			<<interface>>
+		}
+		class IService {
+			<<interface>>
+		}
+		class Service {
+			+Service(IDependency dependency)
+		}
 	}
-	class Owned
-	Service --|> IService
-	class Service {
-		+Service(IDependency dependency)
+	namespace System {
+		class IAsyncDisposable {
+			<<interface>>
+		}
 	}
-	Dependency --|> IDependency
-	Dependency --|> IAsyncDisposable
-	class Dependency {
-		+Dependency()
-	}
-	class IService {
-		<<interface>>
-	}
-	class IDependency {
-		<<interface>>
-	}
-	class IAsyncDisposable {
-		<<interface>>
-	}
-	Composition ..> OwnedᐸIServiceᐳ : OwnedᐸIServiceᐳ Root
-	OwnedᐸIServiceᐳ *--  Owned : Owned
-	OwnedᐸIServiceᐳ *--  Service : IService
-	Service *--  Dependency : IDependency
 ```
 

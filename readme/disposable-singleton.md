@@ -133,27 +133,39 @@ partial class Composition: IDisposable
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
-		<<partial>>
-		+IService Root
-	}
 	Composition --|> IDisposable
 	Service --|> IService
-	class Service {
-		+Service(IDependency dependency)
-	}
 	Dependency --|> IDependency
-	class Dependency {
-		+Dependency()
-	}
-	class IService {
-		<<interface>>
-	}
-	class IDependency {
-		<<interface>>
-	}
 	Composition ..> Service : IService Root
 	Service o-- "Singleton" Dependency : IDependency
+	namespace Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario {
+		class Composition {
+		<<partial>>
+		+IService Root
+		}
+		class Dependency {
+			+Dependency()
+		}
+		class IDependency {
+			<<interface>>
+		}
+		class IService {
+			<<interface>>
+		}
+		class Service {
+			+Service(IDependency dependency)
+		}
+	}
+	namespace System {
+		class IDisposable {
+			<<abstract>>
+		}
+	}
 ```
 

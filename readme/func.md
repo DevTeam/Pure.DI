@@ -190,32 +190,43 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
+	Service --|> IService
+	Dependency --|> IDependency
+	Composition ..> Service : IService Root
+	Service o-- "PerBlock" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
+	FuncᐸIDependencyᐳ *--  Dependency : IDependency
+	namespace Pure.DI.UsageTests.BCL.FuncScenario {
+		class Composition {
 		<<partial>>
 		+IService Root
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
+		}
+		class Dependency {
+			+Dependency()
+		}
+		class IDependency {
+			<<interface>>
+		}
+		class IService {
+			<<interface>>
+		}
+		class Service {
+			+Service(FuncᐸIDependencyᐳ dependencyFactory)
+		}
 	}
-	Service --|> IService
-	class Service {
-		+Service(FuncᐸIDependencyᐳ dependencyFactory)
+	namespace System {
+		class FuncᐸIDependencyᐳ {
+				<<delegate>>
+		}
 	}
-	class FuncᐸIDependencyᐳ
-	Dependency --|> IDependency
-	class Dependency {
-		+Dependency()
-	}
-	class IService {
-		<<interface>>
-	}
-	class IDependency {
-		<<interface>>
-	}
-	Composition ..> Service : IService Root
-	Service o-- "PerBlock" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
-	FuncᐸIDependencyᐳ *--  Dependency : IDependency
 ```
 

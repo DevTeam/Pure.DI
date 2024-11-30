@@ -108,32 +108,14 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
-		<<partial>>
-		+IService GetRoot(System.Threading.CancellationToken cancellationToken)
-	}
 	Service --|> IService
-	class Service {
-		+Service(TaskᐸIDependencyᐳ dependencyTask)
-	}
-	class TaskᐸIDependencyᐳ
-	class FuncᐸIDependencyᐳ
-	class TaskFactoryᐸIDependencyᐳ
 	Dependency --|> IDependency
-	class Dependency {
-		+Dependency()
-	}
-	class CancellationToken
-	class TaskCreationOptions
-	class TaskContinuationOptions
-	class TaskScheduler
-	class IService {
-		<<interface>>
-	}
-	class IDependency {
-		<<interface>>
-	}
 	Composition ..> Service : IService GetRoot(System.Threading.CancellationToken cancellationToken)
 	Service *--  TaskᐸIDependencyᐳ : TaskᐸIDependencyᐳ
 	TaskᐸIDependencyᐳ o-- "PerBlock" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
@@ -143,5 +125,48 @@ classDiagram
 	TaskFactoryᐸIDependencyᐳ *--  TaskCreationOptions : TaskCreationOptions
 	TaskFactoryᐸIDependencyᐳ *--  TaskContinuationOptions : TaskContinuationOptions
 	TaskFactoryᐸIDependencyᐳ *--  TaskScheduler : TaskScheduler
+	namespace Pure.DI.UsageTests.BCL.TaskScenario {
+		class Composition {
+		<<partial>>
+		+IService GetRoot(System.Threading.CancellationToken cancellationToken)
+		}
+		class Dependency {
+			+Dependency()
+		}
+		class IDependency {
+			<<interface>>
+		}
+		class IService {
+			<<interface>>
+		}
+		class Service {
+			+Service(TaskᐸIDependencyᐳ dependencyTask)
+		}
+	}
+	namespace System {
+		class FuncᐸIDependencyᐳ {
+				<<delegate>>
+		}
+	}
+	namespace System.Threading {
+		class CancellationToken {
+				<<struct>>
+		}
+	}
+	namespace System.Threading.Tasks {
+		class TaskContinuationOptions {
+				<<enum>>
+		}
+		class TaskCreationOptions {
+				<<enum>>
+		}
+		class TaskFactoryᐸIDependencyᐳ {
+		}
+		class TaskScheduler {
+				<<abstract>>
+		}
+		class TaskᐸIDependencyᐳ {
+		}
+	}
 ```
 

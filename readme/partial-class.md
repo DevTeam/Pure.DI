@@ -215,27 +215,41 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
+	Dependency --|> IDependency
+	Composition ..> Service : Service Root
+	Service *--  String : "name with id"  String
+	Service *-- "2 " Dependency : IDependency
+	Dependency *--  Int64 : Int64
+	namespace Pure.DI.UsageTests.Advanced.PartialClassScenario {
+		class Composition {
 		<<partial>>
 		+Service Root
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
+		}
+		class Dependency {
+			+Dependency(Int64 id)
+		}
+		class IDependency {
+			<<interface>>
+		}
+		class Service {
+		}
 	}
-	class String
-	Dependency --|> IDependency
-	class Dependency {
-		+Dependency(Int64 id)
+	namespace System {
+		class Int64 {
+				<<struct>>
+		}
+		class String {
+		}
 	}
-	class Int64
-	class IDependency {
-		<<interface>>
-	}
-	Composition ..> Service : Service Root
-	Service *--  String : "name with id"  String
-	Service *-- "2 " Dependency : IDependency
-	Dependency *--  Int64 : Int64
 ```
 

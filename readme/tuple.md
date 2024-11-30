@@ -181,36 +181,48 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
+	Service --|> IService
+	Dependency --|> IDependency
+	Composition ..> Service : IService Root
+	Service *--  ValueTupleᐸPointˏIDependencyᐳ : ValueTupleᐸPointˏIDependencyᐳ
+	ValueTupleᐸPointˏIDependencyᐳ *--  Point : Point
+	ValueTupleᐸPointˏIDependencyᐳ *--  Dependency : IDependency
+	namespace Pure.DI.UsageTests.BCL.TupleScenario {
+		class Composition {
 		<<partial>>
 		+IService Root
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
+		}
+		class Dependency {
+			+Dependency()
+		}
+		class IDependency {
+			<<interface>>
+		}
+		class IService {
+			<<interface>>
+		}
+		class Point {
+				<<struct>>
+		}
+		class Service {
+			+Service(ValueTupleᐸPointˏIDependencyᐳ tuple)
+		}
 	}
-	Service --|> IService
-	class Service {
-		+Service(ValueTupleᐸPointˏIDependencyᐳ tuple)
+	namespace System {
+		class ValueTupleᐸPointˏIDependencyᐳ {
+				<<struct>>
+			+ValueTuple(Point item1, IDependency item2)
+		}
 	}
-	class ValueTupleᐸPointˏIDependencyᐳ {
-		+ValueTuple(Point item1, IDependency item2)
-	}
-	class Point
-	Dependency --|> IDependency
-	class Dependency {
-		+Dependency()
-	}
-	class IService {
-		<<interface>>
-	}
-	class IDependency {
-		<<interface>>
-	}
-	Composition ..> Service : IService Root
-	Service *--  ValueTupleᐸPointˏIDependencyᐳ : ValueTupleᐸPointˏIDependencyᐳ
-	ValueTupleᐸPointˏIDependencyᐳ *--  Point : Point
-	ValueTupleᐸPointˏIDependencyᐳ *--  Dependency : IDependency
 ```
 

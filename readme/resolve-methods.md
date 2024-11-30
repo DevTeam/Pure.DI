@@ -209,8 +209,20 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
+	OtherService --|> IService : "My Tag" 
+	Service --|> IService
+	Dependency --|> IDependency
+	Composition ..> OtherService : IService OtherService
+	Composition ..> Service : IService _
+	Service *--  Dependency : IDependency
+	namespace Pure.DI.UsageTests.Basics.ResolveMethodsScenario {
+		class Composition {
 		<<partial>>
 		+IService OtherService
 		-IService _
@@ -218,27 +230,22 @@ classDiagram
 		+ T ResolveᐸTᐳ(object? tag)
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
+		}
+		class Dependency {
+			+Dependency()
+		}
+		class IDependency {
+			<<interface>>
+		}
+		class IService {
+			<<interface>>
+		}
+		class OtherService {
+			+OtherService()
+		}
+		class Service {
+			+Service(IDependency dependency)
+		}
 	}
-	OtherService --|> IService : "My Tag" 
-	class OtherService {
-		+OtherService()
-	}
-	Service --|> IService
-	class Service {
-		+Service(IDependency dependency)
-	}
-	Dependency --|> IDependency
-	class Dependency {
-		+Dependency()
-	}
-	class IService {
-		<<interface>>
-	}
-	class IDependency {
-		<<interface>>
-	}
-	Composition ..> OtherService : IService OtherService
-	Composition ..> Service : IService _
-	Service *--  Dependency : IDependency
 ```
 

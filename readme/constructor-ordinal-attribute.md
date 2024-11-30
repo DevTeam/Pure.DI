@@ -81,20 +81,30 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
-		<<partial>>
-		+IService Root
-	}
 	Service --|> IService
-	class Service {
-		~Service(String name)
-	}
-	class String
-	class IService {
-		<<interface>>
-	}
 	Composition ..> Service : IService Root
 	Service o-- String : Argument "serviceName"
+	namespace Pure.DI.UsageTests.Attributes.ConstructorOrdinalAttributeScenario {
+		class Composition {
+		<<partial>>
+		+IService Root
+		}
+		class IService {
+			<<interface>>
+		}
+		class Service {
+			~Service(String name)
+		}
+	}
+	namespace System {
+		class String {
+		}
+	}
 ```
 

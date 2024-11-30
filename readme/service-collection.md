@@ -249,8 +249,19 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
+	Service --|> IService
+	Dependency --|> IDependency : "Dependency Key" 
+	Composition ..> Service : IService _
+	Composition ..> Dependency : IDependency _
+	Service o-- "Singleton" Dependency : "Dependency Key"  IDependency
+	namespace Pure.DI.UsageTests.BCL.ServiceCollectionScenario {
+		class Composition {
 		<<partial>>
 		-IDependency _
 		-IService _
@@ -258,23 +269,19 @@ classDiagram
 		+ T ResolveᐸTᐳ(object? tag)
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
+		}
+		class Dependency {
+			+Dependency()
+		}
+		class IDependency {
+			<<interface>>
+		}
+		class IService {
+			<<interface>>
+		}
+		class Service {
+			+Service(IDependency dependency)
+		}
 	}
-	Service --|> IService
-	class Service {
-		+Service(IDependency dependency)
-	}
-	Dependency --|> IDependency : "Dependency Key" 
-	class Dependency {
-		+Dependency()
-	}
-	class IService {
-		<<interface>>
-	}
-	class IDependency {
-		<<interface>>
-	}
-	Composition ..> Service : IService _
-	Composition ..> Dependency : IDependency _
-	Service o-- "Singleton" Dependency : "Dependency Key"  IDependency
 ```
 

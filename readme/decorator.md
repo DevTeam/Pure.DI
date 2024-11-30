@@ -67,23 +67,30 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
-		<<partial>>
-		+IService Root
-	}
 	GreetingService --|> IService
-	class GreetingService {
-		+GreetingService(IService baseService)
-	}
 	Service --|> IService : "base" 
-	class Service {
-		+Service()
-	}
-	class IService {
-		<<interface>>
-	}
 	Composition ..> GreetingService : IService Root
 	GreetingService *--  Service : "base"  IService
+	namespace Pure.DI.UsageTests.Interception.DecoratorScenario {
+		class Composition {
+		<<partial>>
+		+IService Root
+		}
+		class GreetingService {
+			+GreetingService(IService baseService)
+		}
+		class IService {
+			<<interface>>
+		}
+		class Service {
+			+Service()
+		}
+	}
 ```
 

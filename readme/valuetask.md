@@ -190,32 +190,43 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
+	Service --|> IService
+	Dependency --|> IDependency
+	Composition ..> Service : IService Root
+	Service *--  ValueTaskᐸIDependencyᐳ : ValueTaskᐸIDependencyᐳ
+	ValueTaskᐸIDependencyᐳ *--  Dependency : IDependency
+	namespace Pure.DI.UsageTests.BCL.ValueTaskScenario {
+		class Composition {
 		<<partial>>
 		+IService Root
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
+		}
+		class Dependency {
+			+Dependency()
+		}
+		class IDependency {
+			<<interface>>
+		}
+		class IService {
+			<<interface>>
+		}
+		class Service {
+			+Service(ValueTaskᐸIDependencyᐳ dependencyTask)
+		}
 	}
-	Service --|> IService
-	class Service {
-		+Service(ValueTaskᐸIDependencyᐳ dependencyTask)
+	namespace System.Threading.Tasks {
+		class ValueTaskᐸIDependencyᐳ {
+				<<struct>>
+		}
 	}
-	class ValueTaskᐸIDependencyᐳ
-	Dependency --|> IDependency
-	class Dependency {
-		+Dependency()
-	}
-	class IService {
-		<<interface>>
-	}
-	class IDependency {
-		<<interface>>
-	}
-	Composition ..> Service : IService Root
-	Service *--  ValueTaskᐸIDependencyᐳ : ValueTaskᐸIDependencyᐳ
-	ValueTaskᐸIDependencyᐳ *--  Dependency : IDependency
 ```
 

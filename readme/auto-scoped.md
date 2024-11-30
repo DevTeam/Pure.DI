@@ -136,27 +136,43 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
-		<<partial>>
-		+Program ProgramRoot
-		+Service SessionRoot
-	}
-	class FuncᐸIServiceᐳ
 	Dependency --|> IDependency
-	class Dependency {
-		+Dependency()
-	}
-	class IService
-	class Composition
-	class IDependency {
-		<<interface>>
-	}
 	Composition ..> Program : Program ProgramRoot
 	Composition ..> Service : Service SessionRoot
 	Program o-- "PerBlock" FuncᐸIServiceᐳ : FuncᐸIServiceᐳ
 	Service o-- "Scoped" Dependency : IDependency
 	FuncᐸIServiceᐳ *--  IService : IService
 	IService *--  Composition : Composition
+	namespace Pure.DI.UsageTests.Lifetimes.AutoScopedScenario {
+		class Composition {
+		<<partial>>
+		+Program ProgramRoot
+		+Service SessionRoot
+		}
+		class Dependency {
+			+Dependency()
+		}
+		class IDependency {
+			<<interface>>
+		}
+		class IService {
+				<<interface>>
+		}
+		class Program {
+		}
+		class Service {
+		}
+	}
+	namespace System {
+		class FuncᐸIServiceᐳ {
+				<<delegate>>
+		}
+	}
 ```
 

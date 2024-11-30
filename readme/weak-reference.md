@@ -175,34 +175,43 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
+	Service --|> IService
+	Dependency --|> IDependency
+	Composition ..> Service : IService Root
+	Service *--  WeakReferenceᐸIDependencyᐳ : WeakReferenceᐸIDependencyᐳ
+	WeakReferenceᐸIDependencyᐳ *--  Dependency : IDependency
+	namespace Pure.DI.UsageTests.BCL.WeakReferenceScenario {
+		class Composition {
 		<<partial>>
 		+IService Root
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
+		}
+		class Dependency {
+			+Dependency()
+		}
+		class IDependency {
+			<<interface>>
+		}
+		class IService {
+			<<interface>>
+		}
+		class Service {
+			+Service(WeakReferenceᐸIDependencyᐳ dependency)
+		}
 	}
-	Service --|> IService
-	class Service {
-		+Service(WeakReferenceᐸIDependencyᐳ dependency)
+	namespace System {
+		class WeakReferenceᐸIDependencyᐳ {
+			+WeakReference(IDependency target)
+		}
 	}
-	class WeakReferenceᐸIDependencyᐳ {
-		+WeakReference(IDependency target)
-	}
-	Dependency --|> IDependency
-	class Dependency {
-		+Dependency()
-	}
-	class IService {
-		<<interface>>
-	}
-	class IDependency {
-		<<interface>>
-	}
-	Composition ..> Service : IService Root
-	Service *--  WeakReferenceᐸIDependencyᐳ : WeakReferenceᐸIDependencyᐳ
-	WeakReferenceᐸIDependencyᐳ *--  Dependency : IDependency
 ```
 

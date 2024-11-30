@@ -137,7 +137,7 @@ internal sealed class ClassDiagramBuilder(
                 }
             }
 
-            foreach (var classByNamespace in classes.GroupBy(i => i.Namespace).OrderBy(i => i.Key))
+            foreach (var classByNamespace in classes.GroupBy(i => i.ActualNamespace).OrderBy(i => i.Key))
             {
                 var ns = classByNamespace.Key;
                 var hasNamespace = !string.IsNullOrWhiteSpace(ns);
@@ -380,6 +380,8 @@ internal sealed class ClassDiagramBuilder(
 
     private record Class(string Namespace, string Name, string Kind, ITypeSymbol? Type, LinesBuilder Lines)
     {
+        public string ActualNamespace => string.IsNullOrWhiteSpace(Namespace) ? nameof(System) : Namespace;
+        
         public string ActualKind
         {
             get

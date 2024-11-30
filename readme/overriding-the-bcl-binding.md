@@ -194,24 +194,35 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
+	Service --|> IService
+	Composition ..> Service : IService Root
+	Service *--  ArrayᐸIDependencyᐳ : ArrayᐸIDependencyᐳ
+	namespace Pure.DI.UsageTests.BCL.OverridingBclBindingScenario {
+		class Composition {
 		<<partial>>
 		+IService Root
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
+		}
+		class IService {
+			<<interface>>
+		}
+		class Service {
+			+Service(ArrayᐸIDependencyᐳ dependencies)
+		}
 	}
-	Service --|> IService
-	class Service {
-		+Service(ArrayᐸIDependencyᐳ dependencies)
+	namespace System {
+		class ArrayᐸIDependencyᐳ {
+				<<array>>
+		}
 	}
-	class ArrayᐸIDependencyᐳ
-	class IService {
-		<<interface>>
-	}
-	Composition ..> Service : IService Root
-	Service *--  ArrayᐸIDependencyᐳ : ArrayᐸIDependencyᐳ
 ```
 

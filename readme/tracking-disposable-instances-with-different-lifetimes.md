@@ -328,26 +328,14 @@ partial class Composition: IDisposable
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
-		<<partial>>
-		+Service Root
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
-	}
 	Composition --|> IDisposable
-	class FuncᐸOwnedᐸIDependencyᐳᐳ
-	class OwnedᐸIDependencyᐳ
-	class Owned
 	Dependency --|> IDependency
-	class Dependency {
-		+Dependency()
-	}
-	class IDependency {
-		<<interface>>
-	}
 	Composition ..> Service : Service Root
 	Service o-- "PerBlock" FuncᐸOwnedᐸIDependencyᐳᐳ : FuncᐸOwnedᐸIDependencyᐳᐳ
 	Service o-- "PerBlock" FuncᐸOwnedᐸIDependencyᐳᐳ : "single"  FuncᐸOwnedᐸIDependencyᐳᐳ
@@ -357,5 +345,38 @@ classDiagram
 	OwnedᐸIDependencyᐳ *--  Dependency : IDependency
 	OwnedᐸIDependencyᐳ *--  Owned : Owned
 	OwnedᐸIDependencyᐳ o-- "Singleton" Dependency : "single"  IDependency
+	namespace Pure.DI {
+		class Owned {
+		}
+		class OwnedᐸIDependencyᐳ {
+				<<struct>>
+		}
+	}
+	namespace Pure.DI.UsageTests.Advanced.TrackingDisposableWithDifferentLifetimesScenario {
+		class Composition {
+		<<partial>>
+		+Service Root
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+		}
+		class Dependency {
+			+Dependency()
+		}
+		class IDependency {
+			<<interface>>
+		}
+		class Service {
+		}
+	}
+	namespace System {
+		class FuncᐸOwnedᐸIDependencyᐳᐳ {
+				<<delegate>>
+		}
+		class IDisposable {
+			<<abstract>>
+		}
+	}
 ```
 

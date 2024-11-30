@@ -190,37 +190,48 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
+	ServiceᐸStringᐳ --|> IServiceᐸStringᐳ
+	AbcDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : typeof(Pure.DI.UsageTests.Advanced.TagUniqueScenario.AbcDependency<Pure.DI.TT>) 
+	XyzDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : typeof(Pure.DI.UsageTests.Advanced.TagUniqueScenario.XyzDependency<Pure.DI.TT>) 
+	Composition ..> ServiceᐸStringᐳ : IServiceᐸStringᐳ Root
+	ServiceᐸStringᐳ o-- "PerBlock" IEnumerableᐸIDependencyᐸStringᐳᐳ : IEnumerableᐸIDependencyᐸStringᐳᐳ
+	IEnumerableᐸIDependencyᐸStringᐳᐳ *--  AbcDependencyᐸStringᐳ : typeof(Pure.DI.UsageTests.Advanced.TagUniqueScenario.AbcDependency<Pure.DI.TT>)  IDependencyᐸStringᐳ
+	IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : typeof(Pure.DI.UsageTests.Advanced.TagUniqueScenario.XyzDependency<Pure.DI.TT>)  IDependencyᐸStringᐳ
+	namespace Pure.DI.UsageTests.Advanced.TagUniqueScenario {
+		class AbcDependencyᐸStringᐳ {
+			+AbcDependency()
+		}
+		class Composition {
 		<<partial>>
 		+IServiceᐸStringᐳ Root
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
+		}
+		class IDependencyᐸStringᐳ {
+			<<interface>>
+		}
+		class IServiceᐸStringᐳ {
+			<<interface>>
+		}
+		class ServiceᐸStringᐳ {
+			+Service(IEnumerableᐸIDependencyᐸStringᐳᐳ dependencies)
+		}
+		class XyzDependencyᐸStringᐳ {
+			+XyzDependency()
+		}
 	}
-	ServiceᐸStringᐳ --|> IServiceᐸStringᐳ
-	class ServiceᐸStringᐳ {
-		+Service(IEnumerableᐸIDependencyᐸStringᐳᐳ dependencies)
+	namespace System.Collections.Generic {
+		class IEnumerableᐸIDependencyᐸStringᐳᐳ {
+				<<interface>>
+		}
 	}
-	class IEnumerableᐸIDependencyᐸStringᐳᐳ
-	AbcDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : typeof(Pure.DI.UsageTests.Advanced.TagUniqueScenario.AbcDependency<Pure.DI.TT>) 
-	class AbcDependencyᐸStringᐳ {
-		+AbcDependency()
-	}
-	XyzDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : typeof(Pure.DI.UsageTests.Advanced.TagUniqueScenario.XyzDependency<Pure.DI.TT>) 
-	class XyzDependencyᐸStringᐳ {
-		+XyzDependency()
-	}
-	class IServiceᐸStringᐳ {
-		<<interface>>
-	}
-	class IDependencyᐸStringᐳ {
-		<<interface>>
-	}
-	Composition ..> ServiceᐸStringᐳ : IServiceᐸStringᐳ Root
-	ServiceᐸStringᐳ o-- "PerBlock" IEnumerableᐸIDependencyᐸStringᐳᐳ : IEnumerableᐸIDependencyᐸStringᐳᐳ
-	IEnumerableᐸIDependencyᐸStringᐳᐳ *--  AbcDependencyᐸStringᐳ : typeof(Pure.DI.UsageTests.Advanced.TagUniqueScenario.AbcDependency<Pure.DI.TT>)  IDependencyᐸStringᐳ
-	IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : typeof(Pure.DI.UsageTests.Advanced.TagUniqueScenario.XyzDependency<Pure.DI.TT>)  IDependencyᐸStringᐳ
 ```
 

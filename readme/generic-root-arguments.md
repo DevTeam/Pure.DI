@@ -63,20 +63,32 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
-		<<partial>>
-		+IServiceᐸT1ᐳ GetMyServiceᐸT1ᐳ(T1 someArg)
-	}
 	ServiceᐸT1ᐳ --|> IServiceᐸT1ᐳ
-	class ServiceᐸT1ᐳ {
-		+Service()
-		+SetDependency(T1 dependency) : Void
-	}
-	class IServiceᐸT1ᐳ {
-		<<interface>>
-	}
 	Composition ..> ServiceᐸT1ᐳ : IServiceᐸT1ᐳ GetMyServiceᐸT1ᐳ(T1 someArg)
 	ServiceᐸT1ᐳ o-- T1 : Argument "someArg"
+	namespace Pure.DI {
+		class T1 {
+			<<abstract>>
+		}
+	}
+	namespace Pure.DI.UsageTests.Basics.GenericRootArgScenario {
+		class Composition {
+		<<partial>>
+		+IServiceᐸT1ᐳ GetMyServiceᐸT1ᐳ(T1 someArg)
+		}
+		class IServiceᐸT1ᐳ {
+			<<interface>>
+		}
+		class ServiceᐸT1ᐳ {
+			+Service()
+			+SetDependency(T1 dependency) : Void
+		}
+	}
 ```
 

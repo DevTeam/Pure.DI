@@ -191,30 +191,42 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
+	Service --|> IService
+	Composition ..> Service : IService Root
+	Service *--  ReadOnlySpanᐸDependencyᐳ : ReadOnlySpanᐸDependencyᐳ
+	ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'a'  Dependency
+	ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'b'  Dependency
+	ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'c'  Dependency
+	namespace Pure.DI.UsageTests.BCL.SpanScenario {
+		class Composition {
 		<<partial>>
 		+IService Root
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
+		}
+		class Dependency {
+				<<struct>>
+			+Dependency()
+		}
+		class IService {
+			<<interface>>
+		}
+		class Service {
+			+Service(ReadOnlySpanᐸDependencyᐳ dependencies)
+		}
 	}
-	Service --|> IService
-	class Service {
-		+Service(ReadOnlySpanᐸDependencyᐳ dependencies)
+	namespace System {
+		class ReadOnlySpanᐸDependencyᐳ {
+				<<struct>>
+		}
 	}
-	class ReadOnlySpanᐸDependencyᐳ
-	class Dependency {
-		+Dependency()
-	}
-	class IService {
-		<<interface>>
-	}
-	Composition ..> Service : IService Root
-	Service *--  ReadOnlySpanᐸDependencyᐳ : ReadOnlySpanᐸDependencyᐳ
-	ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'a'  Dependency
-	ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'b'  Dependency
-	ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'c'  Dependency
 ```
 

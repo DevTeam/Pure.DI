@@ -98,31 +98,43 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
-		<<partial>>
-		+IService CreateServiceWithArgs(int id, string dependencyName, string serviceName)
-	}
 	Service --|> IService
-	class Service {
-		+Service(String name, IDependency dependency)
-	}
-	class String
 	Dependency --|> IDependency
-	class Dependency {
-		+Dependency(Int32 id, String dependencyName)
-	}
-	class Int32
-	class IService {
-		<<interface>>
-	}
-	class IDependency {
-		<<interface>>
-	}
 	Composition ..> Service : IService CreateServiceWithArgs(int id, string dependencyName, string serviceName)
 	Service o-- String : "forService"  Argument "serviceName"
 	Service *--  Dependency : IDependency
 	Dependency o-- Int32 : Argument "id"
 	Dependency o-- String : Argument "dependencyName"
+	namespace Pure.DI.UsageTests.Basics.RootArgumentsScenario {
+		class Composition {
+		<<partial>>
+		+IService CreateServiceWithArgs(int id, string dependencyName, string serviceName)
+		}
+		class Dependency {
+			+Dependency(Int32 id, String dependencyName)
+		}
+		class IDependency {
+			<<interface>>
+		}
+		class IService {
+			<<interface>>
+		}
+		class Service {
+			+Service(String name, IDependency dependency)
+		}
+	}
+	namespace System {
+		class Int32 {
+				<<struct>>
+		}
+		class String {
+		}
+	}
 ```
 

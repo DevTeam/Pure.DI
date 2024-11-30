@@ -58,15 +58,24 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
-		<<partial>>
-		+Service MyService
-	}
-	class Dependency {
-		+Dependency()
-	}
 	Composition ..> Service : Service MyService
 	Service *--  Dependency : Dependency
+	namespace Pure.DI.UsageTests.Basics.AutoBindingsScenario {
+		class Composition {
+		<<partial>>
+		+Service MyService
+		}
+		class Dependency {
+			+Dependency()
+		}
+		class Service {
+		}
+	}
 ```
 

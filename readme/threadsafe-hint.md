@@ -73,28 +73,39 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
-		<<partial>>
-		+IService Root
-	}
 	Service --|> IService
-	class Service {
-		+Service(FuncᐸIDependencyᐳ dependencyFactory)
-	}
-	class FuncᐸIDependencyᐳ
 	Dependency --|> IDependency
-	class Dependency {
-		+Dependency()
-	}
-	class IService {
-		<<interface>>
-	}
-	class IDependency {
-		<<interface>>
-	}
 	Composition ..> Service : IService Root
 	Service o-- "PerBlock" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
 	FuncᐸIDependencyᐳ *--  Dependency : IDependency
+	namespace Pure.DI.UsageTests.Hints.ThreadSafeHintScenario {
+		class Composition {
+		<<partial>>
+		+IService Root
+		}
+		class Dependency {
+			+Dependency()
+		}
+		class IDependency {
+			<<interface>>
+		}
+		class IService {
+			<<interface>>
+		}
+		class Service {
+			+Service(FuncᐸIDependencyᐳ dependencyFactory)
+		}
+	}
+	namespace System {
+		class FuncᐸIDependencyᐳ {
+				<<delegate>>
+		}
+	}
 ```
 

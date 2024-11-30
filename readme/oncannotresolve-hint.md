@@ -94,28 +94,38 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
-		<<partial>>
-		+IService Root
-	}
 	Service --|> IService
-	class Service {
-		+Service(IDependency dependency)
-	}
-	class String
 	Dependency --|> IDependency
-	class Dependency {
-		+Dependency(String name)
-	}
-	class IService {
-		<<interface>>
-	}
-	class IDependency {
-		<<interface>>
-	}
 	Composition ..> Service : IService Root
 	Service *--  Dependency : IDependency
 	Dependency *--  String : String
+	namespace Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario {
+		class Composition {
+		<<partial>>
+		+IService Root
+		}
+		class Dependency {
+			+Dependency(String name)
+		}
+		class IDependency {
+			<<interface>>
+		}
+		class IService {
+			<<interface>>
+		}
+		class Service {
+			+Service(IDependency dependency)
+		}
+	}
+	namespace System {
+		class String {
+		}
+	}
 ```
 

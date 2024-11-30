@@ -99,24 +99,33 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
-		<<partial>>
-		+IService Root
-	}
 	Service --|> IService
-	class Service {
-		+Service(IDependency dep)
-	}
-	class IDependency
-	class Facade {
-		+Facade()
-	}
-	class IService {
-		<<interface>>
-	}
 	Composition ..> Service : IService Root
 	Service *--  IDependency : IDependency
 	IDependency o-- "Singleton" Facade : Facade
+	namespace Pure.DI.UsageTests.Basics.BindAttributeScenario {
+		class Composition {
+		<<partial>>
+		+IService Root
+		}
+		class Facade {
+			+Facade()
+		}
+		class IDependency {
+				<<interface>>
+		}
+		class IService {
+			<<interface>>
+		}
+		class Service {
+			+Service(IDependency dep)
+		}
+	}
 ```
 

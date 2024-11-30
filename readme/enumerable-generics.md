@@ -237,54 +237,18 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
-		<<partial>>
-		+IServiceᐸInt32ᐳ IntRoot
-		+IServiceᐸStringᐳ StringRoot
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
-	}
 	ServiceᐸStringᐳ --|> IServiceᐸStringᐳ
-	class ServiceᐸStringᐳ {
-		+Service(IEnumerableᐸIDependencyᐸStringᐳᐳ dependencies)
-	}
 	ServiceᐸInt32ᐳ --|> IServiceᐸInt32ᐳ
-	class ServiceᐸInt32ᐳ {
-		+Service(IEnumerableᐸIDependencyᐸInt32ᐳᐳ dependencies)
-	}
-	class IEnumerableᐸIDependencyᐸStringᐳᐳ
-	class IEnumerableᐸIDependencyᐸInt32ᐳᐳ
 	AbcDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ
-	class AbcDependencyᐸStringᐳ {
-		+AbcDependency()
-	}
 	XyzDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : "Xyz" 
-	class XyzDependencyᐸStringᐳ {
-		+XyzDependency()
-	}
 	AbcDependencyᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ
-	class AbcDependencyᐸInt32ᐳ {
-		+AbcDependency()
-	}
 	XyzDependencyᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ : "Xyz" 
-	class XyzDependencyᐸInt32ᐳ {
-		+XyzDependency()
-	}
-	class IServiceᐸStringᐳ {
-		<<interface>>
-	}
-	class IServiceᐸInt32ᐳ {
-		<<interface>>
-	}
-	class IDependencyᐸStringᐳ {
-		<<interface>>
-	}
-	class IDependencyᐸInt32ᐳ {
-		<<interface>>
-	}
 	Composition ..> ServiceᐸStringᐳ : IServiceᐸStringᐳ StringRoot
 	Composition ..> ServiceᐸInt32ᐳ : IServiceᐸInt32ᐳ IntRoot
 	ServiceᐸStringᐳ o-- "PerBlock" IEnumerableᐸIDependencyᐸStringᐳᐳ : IEnumerableᐸIDependencyᐸStringᐳᐳ
@@ -293,5 +257,54 @@ classDiagram
 	IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : "Xyz"  IDependencyᐸStringᐳ
 	IEnumerableᐸIDependencyᐸInt32ᐳᐳ *--  AbcDependencyᐸInt32ᐳ : IDependencyᐸInt32ᐳ
 	IEnumerableᐸIDependencyᐸInt32ᐳᐳ *--  XyzDependencyᐸInt32ᐳ : "Xyz"  IDependencyᐸInt32ᐳ
+	namespace Pure.DI.UsageTests.BCL.EnumerableGenericsScenario {
+		class AbcDependencyᐸInt32ᐳ {
+			+AbcDependency()
+		}
+		class AbcDependencyᐸStringᐳ {
+			+AbcDependency()
+		}
+		class Composition {
+		<<partial>>
+		+IServiceᐸInt32ᐳ IntRoot
+		+IServiceᐸStringᐳ StringRoot
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+		}
+		class IDependencyᐸInt32ᐳ {
+			<<interface>>
+		}
+		class IDependencyᐸStringᐳ {
+			<<interface>>
+		}
+		class IServiceᐸInt32ᐳ {
+			<<interface>>
+		}
+		class IServiceᐸStringᐳ {
+			<<interface>>
+		}
+		class ServiceᐸInt32ᐳ {
+			+Service(IEnumerableᐸIDependencyᐸInt32ᐳᐳ dependencies)
+		}
+		class ServiceᐸStringᐳ {
+			+Service(IEnumerableᐸIDependencyᐸStringᐳᐳ dependencies)
+		}
+		class XyzDependencyᐸInt32ᐳ {
+			+XyzDependency()
+		}
+		class XyzDependencyᐸStringᐳ {
+			+XyzDependency()
+		}
+	}
+	namespace System.Collections.Generic {
+		class IEnumerableᐸIDependencyᐸInt32ᐳᐳ {
+				<<interface>>
+		}
+		class IEnumerableᐸIDependencyᐸStringᐳᐳ {
+				<<interface>>
+		}
+	}
 ```
 

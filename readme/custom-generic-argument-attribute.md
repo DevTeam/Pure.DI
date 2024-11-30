@@ -192,38 +192,45 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
+	Service --|> IService
+	DependencyᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ
+	DependencyᐸStringᐳ --|> IDependencyᐸStringᐳ
+	Composition ..> Service : IService Root
+	Service *--  DependencyᐸInt32ᐳ : IDependencyᐸInt32ᐳ
+	Service *--  DependencyᐸStringᐳ : IDependencyᐸStringᐳ
+	namespace Pure.DI.UsageTests.Attributes.CustomGenericArgumentAttributeScenario {
+		class Composition {
 		<<partial>>
 		+IService Root
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
+		}
+		class DependencyᐸInt32ᐳ {
+			+Dependency()
+		}
+		class DependencyᐸStringᐳ {
+			+Dependency()
+		}
+		class IDependencyᐸInt32ᐳ {
+			<<interface>>
+		}
+		class IDependencyᐸStringᐳ {
+			<<interface>>
+		}
+		class IService {
+			<<interface>>
+		}
+		class Service {
+			+Service(IDependencyᐸInt32ᐳ intDependency, IDependencyᐸStringᐳ stringDependency)
+		}
 	}
-	Service --|> IService
-	class Service {
-		+Service(IDependencyᐸInt32ᐳ intDependency, IDependencyᐸStringᐳ stringDependency)
-	}
-	DependencyᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ
-	class DependencyᐸInt32ᐳ {
-		+Dependency()
-	}
-	DependencyᐸStringᐳ --|> IDependencyᐸStringᐳ
-	class DependencyᐸStringᐳ {
-		+Dependency()
-	}
-	class IService {
-		<<interface>>
-	}
-	class IDependencyᐸInt32ᐳ {
-		<<interface>>
-	}
-	class IDependencyᐸStringᐳ {
-		<<interface>>
-	}
-	Composition ..> Service : IService Root
-	Service *--  DependencyᐸInt32ᐳ : IDependencyᐸInt32ᐳ
-	Service *--  DependencyᐸStringᐳ : IDependencyᐸStringᐳ
 ```
 

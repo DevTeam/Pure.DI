@@ -109,42 +109,57 @@ partial class PersonComposition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class PersonComposition {
-		<<partial>>
-		+IPerson Person
-	}
 	Person --|> IPerson
-	class Person {
-		+Person(String name)
-		~Object Id
-		+Initialize(Object state) : Void
-	}
-	class String
-	class Int32
 	Uri --|> IFormattable
 	Uri --|> ISpanFormattable
 	Uri --|> IEquatableᐸUriᐳ
 	Uri --|> ISerializable
-	class Uri
-	class IPerson {
-		<<interface>>
-	}
-	class IFormattable {
-		<<interface>>
-	}
-	class ISpanFormattable {
-		<<interface>>
-	}
-	class IEquatableᐸUriᐳ {
-		<<interface>>
-	}
-	class ISerializable {
-		<<interface>>
-	}
 	PersonComposition ..> Person : IPerson Person
 	Person *--  String : "NikName"  String
 	Person o-- Int32 : Argument "personId"
 	Person *--  Uri : Uri
+	namespace Pure.DI.UsageTests.Attributes.CustomAttributesScenario {
+		class IPerson {
+			<<interface>>
+		}
+		class Person {
+			+Person(String name)
+			~Object Id
+			+Initialize(Object state) : Void
+		}
+		class PersonComposition {
+		<<partial>>
+		+IPerson Person
+		}
+	}
+	namespace System {
+		class IEquatableᐸUriᐳ {
+			<<interface>>
+		}
+		class IFormattable {
+			<<interface>>
+		}
+		class Int32 {
+				<<struct>>
+		}
+		class ISpanFormattable {
+			<<interface>>
+		}
+		class String {
+		}
+		class Uri {
+		}
+	}
+	namespace System.Runtime.Serialization {
+		class ISerializable {
+			<<interface>>
+		}
+	}
 ```
 

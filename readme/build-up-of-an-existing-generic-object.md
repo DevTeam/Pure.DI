@@ -92,35 +92,48 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
-		<<partial>>
-		+IServiceᐸGuidᐳ GetMyService(string name)
-	}
 	ServiceᐸGuidᐳ --|> IServiceᐸGuidᐳ
 	ServiceᐸGuidᐳ --|> IEquatableᐸServiceᐸGuidᐳᐳ
-	class ServiceᐸGuidᐳ {
-		+Service(IDependencyᐸGuidᐳ Dependency)
-	}
 	DependencyᐸGuidᐳ --|> IDependencyᐸGuidᐳ
-	class DependencyᐸGuidᐳ {
-		+String Name
-		+SetId(T id) : Void
-	}
-	class String
-	class Guid
-	class IServiceᐸGuidᐳ {
-		<<interface>>
-	}
-	class IEquatableᐸServiceᐸGuidᐳᐳ {
-		<<interface>>
-	}
-	class IDependencyᐸGuidᐳ {
-		<<interface>>
-	}
 	Composition ..> ServiceᐸGuidᐳ : IServiceᐸGuidᐳ GetMyService(string name)
 	ServiceᐸGuidᐳ *--  DependencyᐸGuidᐳ : IDependencyᐸGuidᐳ
 	DependencyᐸGuidᐳ o-- String : Argument "name"
 	DependencyᐸGuidᐳ *--  Guid : Guid
+	namespace Pure.DI.UsageTests.Basics.GenericBuildUpScenario {
+		class Composition {
+		<<partial>>
+		+IServiceᐸGuidᐳ GetMyService(string name)
+		}
+		class DependencyᐸGuidᐳ {
+			+String Name
+			+SetId(T id) : Void
+		}
+		class IDependencyᐸGuidᐳ {
+			<<interface>>
+		}
+		class IServiceᐸGuidᐳ {
+			<<interface>>
+		}
+		class ServiceᐸGuidᐳ {
+				<<record>>
+			+Service(IDependencyᐸGuidᐳ Dependency)
+		}
+	}
+	namespace System {
+		class Guid {
+				<<struct>>
+		}
+		class IEquatableᐸServiceᐸGuidᐳᐳ {
+			<<interface>>
+		}
+		class String {
+		}
+	}
 ```
 

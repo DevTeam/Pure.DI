@@ -112,24 +112,36 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
-		<<partial>>
-		+Service Root
-	}
 	Dependency --|> IDependency
-	class Dependency {
-		+Dependency()
-	}
-	class ValueTupleᐸIDependencyˏIDependencyᐳ {
-		+ValueTuple(IDependency item1, IDependency item2)
-	}
-	class IDependency {
-		<<interface>>
-	}
 	Composition ..> Service : Service Root
 	Service o-- "2 PerResolve instances" Dependency : IDependency
 	Service o-- "Singleton" ValueTupleᐸIDependencyˏIDependencyᐳ : ValueTupleᐸIDependencyˏIDependencyᐳ
 	ValueTupleᐸIDependencyˏIDependencyᐳ o-- "2 PerResolve instances" Dependency : IDependency
+	namespace Pure.DI.UsageTests.Lifetimes.PerResolveScenario {
+		class Composition {
+		<<partial>>
+		+Service Root
+		}
+		class Dependency {
+			+Dependency()
+		}
+		class IDependency {
+			<<interface>>
+		}
+		class Service {
+		}
+	}
+	namespace System {
+		class ValueTupleᐸIDependencyˏIDependencyᐳ {
+				<<struct>>
+			+ValueTuple(IDependency item1, IDependency item2)
+		}
+	}
 ```
 

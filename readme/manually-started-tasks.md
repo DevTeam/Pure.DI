@@ -108,32 +108,50 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
-		<<partial>>
-		+IService GetRoot(System.Threading.CancellationToken cancellationToken)
-	}
 	Service --|> IService
-	class Service {
-		+Service(TaskᐸIDependencyᐳ dependencyTask)
-	}
-	class TaskᐸIDependencyᐳ
-	class FuncᐸIDependencyᐳ
-	class CancellationToken
 	Dependency --|> IDependency
-	class Dependency {
-		+Dependency()
-	}
-	class IService {
-		<<interface>>
-	}
-	class IDependency {
-		<<interface>>
-	}
 	Composition ..> Service : IService GetRoot(System.Threading.CancellationToken cancellationToken)
 	Service *--  TaskᐸIDependencyᐳ : TaskᐸIDependencyᐳ
 	TaskᐸIDependencyᐳ o-- "PerBlock" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
 	TaskᐸIDependencyᐳ o-- CancellationToken : Argument "cancellationToken"
 	FuncᐸIDependencyᐳ *--  Dependency : IDependency
+	namespace Pure.DI.UsageTests.BCL.ManualTaskScenario {
+		class Composition {
+		<<partial>>
+		+IService GetRoot(System.Threading.CancellationToken cancellationToken)
+		}
+		class Dependency {
+			+Dependency()
+		}
+		class IDependency {
+			<<interface>>
+		}
+		class IService {
+			<<interface>>
+		}
+		class Service {
+			+Service(TaskᐸIDependencyᐳ dependencyTask)
+		}
+	}
+	namespace System {
+		class FuncᐸIDependencyᐳ {
+				<<delegate>>
+		}
+	}
+	namespace System.Threading {
+		class CancellationToken {
+				<<struct>>
+		}
+	}
+	namespace System.Threading.Tasks {
+		class TaskᐸIDependencyᐳ {
+		}
+	}
 ```
 

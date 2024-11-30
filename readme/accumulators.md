@@ -228,39 +228,52 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
-		<<partial>>
-		+ValueTupleᐸIServiceˏMyAccumulatorᐳ Root
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
-	}
 	Service --|> IService
-	class Service {
-		+Service(IDependency dependency1, IDependency dependency2, IDependency dependency3)
-	}
-	class MyAccumulator
 	AbcDependency --|> IDependency : typeof(Pure.DI.UsageTests.Advanced.AccumulatorScenario.AbcDependency) 
-	class AbcDependency {
-		+AbcDependency()
-	}
 	XyzDependency --|> IDependency : typeof(Pure.DI.UsageTests.Advanced.AccumulatorScenario.XyzDependency) 
-	class XyzDependency {
-		+XyzDependency()
-	}
-	class IService {
-		<<interface>>
-	}
-	class IDependency {
-		<<interface>>
-	}
 	Composition ..> ValueTupleᐸIServiceˏMyAccumulatorᐳ : ValueTupleᐸIServiceˏMyAccumulatorᐳ Root
 	ValueTupleᐸIServiceˏMyAccumulatorᐳ *--  Service : IService
 	ValueTupleᐸIServiceˏMyAccumulatorᐳ *--  MyAccumulator : MyAccumulator
 	Service *--  AbcDependency : typeof(Pure.DI.UsageTests.Advanced.AccumulatorScenario.AbcDependency)  IDependency
 	Service o-- "Singleton" XyzDependency : typeof(Pure.DI.UsageTests.Advanced.AccumulatorScenario.XyzDependency)  IDependency
 	Service o-- "PerBlock" AbcDependency : IDependency
+	namespace Pure.DI.UsageTests.Advanced.AccumulatorScenario {
+		class AbcDependency {
+			+AbcDependency()
+		}
+		class Composition {
+		<<partial>>
+		+ValueTupleᐸIServiceˏMyAccumulatorᐳ Root
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+		}
+		class IDependency {
+			<<interface>>
+		}
+		class IService {
+			<<interface>>
+		}
+		class MyAccumulator {
+		}
+		class Service {
+			+Service(IDependency dependency1, IDependency dependency2, IDependency dependency3)
+		}
+		class XyzDependency {
+			+XyzDependency()
+		}
+	}
+	namespace System {
+		class ValueTupleᐸIServiceˏMyAccumulatorᐳ {
+			<<struct>>
+		}
+	}
 ```
 

@@ -109,18 +109,25 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
+	Service --|> IService
+	Composition ..> Service : IService Root
+	namespace Pure.DI.UsageTests.Interception.InterceptionScenario {
+		class Composition {
 		<<partial>>
 		+IService Root
+		}
+		class IService {
+			<<interface>>
+		}
+		class Service {
+			+Service()
+		}
 	}
-	Service --|> IService
-	class Service {
-		+Service()
-	}
-	class IService {
-		<<interface>>
-	}
-	Composition ..> Service : IService Root
 ```
 

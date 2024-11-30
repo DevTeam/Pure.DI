@@ -101,34 +101,42 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
-		<<partial>>
-		+IServiceᐸT2ˏTᐳ GetMyRootᐸT2ˏTᐳ()
-		+IServiceᐸT2ˏBooleanᐳ GetOtherServiceᐸT2ᐳ()
-	}
 	OtherServiceᐸT2ᐳ --|> IServiceᐸT2ˏBooleanᐳ : "Other" 
-	class OtherServiceᐸT2ᐳ
 	ServiceᐸT2ˏTᐳ --|> IServiceᐸT2ˏTᐳ
-	class ServiceᐸT2ˏTᐳ {
-		+Service(IDependencyᐸT2ᐳ dependency)
-	}
 	DependencyᐸT2ᐳ --|> IDependencyᐸT2ᐳ
-	class DependencyᐸT2ᐳ {
-		+Dependency()
-	}
-	class IServiceᐸT2ˏBooleanᐳ {
-		<<interface>>
-	}
-	class IServiceᐸT2ˏTᐳ {
-		<<interface>>
-	}
-	class IDependencyᐸT2ᐳ {
-		<<interface>>
-	}
 	Composition ..> OtherServiceᐸT2ᐳ : IServiceᐸT2ˏBooleanᐳ GetOtherServiceᐸT2ᐳ()
 	Composition ..> ServiceᐸT2ˏTᐳ : IServiceᐸT2ˏTᐳ GetMyRootᐸT2ˏTᐳ()
 	OtherServiceᐸT2ᐳ *--  DependencyᐸT2ᐳ : IDependencyᐸT2ᐳ
 	ServiceᐸT2ˏTᐳ *--  DependencyᐸT2ᐳ : IDependencyᐸT2ᐳ
+	namespace Pure.DI.UsageTests.Generics.GenericCompositionRootsWithConstraintsScenario {
+		class Composition {
+		<<partial>>
+		+IServiceᐸT2ˏTᐳ GetMyRootᐸT2ˏTᐳ()
+		+IServiceᐸT2ˏBooleanᐳ GetOtherServiceᐸT2ᐳ()
+		}
+		class DependencyᐸT2ᐳ {
+			+Dependency()
+		}
+		class IDependencyᐸT2ᐳ {
+			<<interface>>
+		}
+		class IServiceᐸT2ˏBooleanᐳ {
+			<<interface>>
+		}
+		class IServiceᐸT2ˏTᐳ {
+			<<interface>>
+		}
+		class OtherServiceᐸT2ᐳ {
+		}
+		class ServiceᐸT2ˏTᐳ {
+			+Service(IDependencyᐸT2ᐳ dependency)
+		}
+	}
 ```
 

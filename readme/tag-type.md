@@ -259,8 +259,26 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
+	XyzDependency --|> IDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.XyzDependency) 
+	Service --|> IService
+	AbcDependency --|> IDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.AbcDependency) 
+	AbcDependency --|> IDependency
+	Composition ..> XyzDependency : IDependency XyzRoot
+	Composition ..> Service : IService Root
+	Service *--  AbcDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.AbcDependency)  IDependency
+	Service o-- "Singleton" XyzDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.XyzDependency)  IDependency
+	Service *--  AbcDependency : IDependency
+	namespace Pure.DI.UsageTests.Advanced.TagTypeScenario {
+		class AbcDependency {
+			+AbcDependency()
+		}
+		class Composition {
 		<<partial>>
 		+IService Root
 		+IDependency XyzRoot
@@ -268,30 +286,19 @@ classDiagram
 		+ T ResolveᐸTᐳ(object? tag)
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
+		}
+		class IDependency {
+			<<interface>>
+		}
+		class IService {
+			<<interface>>
+		}
+		class Service {
+			+Service(IDependency dependency1, IDependency dependency2, IDependency dependency3)
+		}
+		class XyzDependency {
+			+XyzDependency()
+		}
 	}
-	XyzDependency --|> IDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.XyzDependency) 
-	class XyzDependency {
-		+XyzDependency()
-	}
-	Service --|> IService
-	class Service {
-		+Service(IDependency dependency1, IDependency dependency2, IDependency dependency3)
-	}
-	AbcDependency --|> IDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.AbcDependency) 
-	AbcDependency --|> IDependency
-	class AbcDependency {
-		+AbcDependency()
-	}
-	class IDependency {
-		<<interface>>
-	}
-	class IService {
-		<<interface>>
-	}
-	Composition ..> XyzDependency : IDependency XyzRoot
-	Composition ..> Service : IService Root
-	Service *--  AbcDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.AbcDependency)  IDependency
-	Service o-- "Singleton" XyzDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.XyzDependency)  IDependency
-	Service *--  AbcDependency : IDependency
 ```
 

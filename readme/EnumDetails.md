@@ -4,56 +4,19 @@ Creating an object graph of 12 transient objects, including 1 transient enumerab
 
 ### Class diagram
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Enum {
-		<<partial>>
-		+CompositionRoot TestPureDIByCR()
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
-	}
 	Service1 --|> IService1
-	class Service1 {
-		+Service1(IService2 service2)
-	}
 	Service2Enum --|> IService2
-	class Service2Enum {
-		+Service2Enum(IEnumerableᐸIService3ᐳ services)
-	}
 	Service3 --|> IService3
-	class Service3 {
-		+Service3(IService4 service41, IService4 service42)
-	}
 	Service4 --|> IService4
-	class Service4 {
-		+Service4()
-	}
-	class IEnumerableᐸIService3ᐳ
 	Service3v2 --|> IService3 : 2 
-	class Service3v2 {
-		+Service3v2(IService4 service41, IService4 service42)
-	}
 	Service3v3 --|> IService3 : 3 
-	class Service3v3 {
-		+Service3v3(IService4 service41, IService4 service42)
-	}
 	Service3v4 --|> IService3 : 4 
-	class Service3v4 {
-		+Service3v4(IService4 service41, IService4 service42)
-	}
-	class IService1 {
-		<<interface>>
-	}
-	class IService2 {
-		<<interface>>
-	}
-	class IService3 {
-		<<interface>>
-	}
-	class IService4 {
-		<<interface>>
-	}
 	Enum ..> CompositionRoot : CompositionRoot TestPureDIByCR()
 	CompositionRoot *--  Service1 : IService1
 	CompositionRoot *-- "3 " Service2Enum : IService2
@@ -69,6 +32,58 @@ classDiagram
 	Service3v2 *-- "2 " Service4 : IService4
 	Service3v3 *-- "2 " Service4 : IService4
 	Service3v4 *-- "2 " Service4 : IService4
+	namespace Pure.DI.Benchmarks.Benchmarks {
+		class Enum {
+		<<partial>>
+		+CompositionRoot TestPureDIByCR()
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+		}
+	}
+	namespace Pure.DI.Benchmarks.Model {
+		class CompositionRoot {
+		}
+		class IService1 {
+			<<interface>>
+		}
+		class IService2 {
+			<<interface>>
+		}
+		class IService3 {
+			<<interface>>
+		}
+		class IService4 {
+			<<interface>>
+		}
+		class Service1 {
+			+Service1(IService2 service2)
+		}
+		class Service2Enum {
+			+Service2Enum(IEnumerableᐸIService3ᐳ services)
+		}
+		class Service3 {
+			+Service3(IService4 service41, IService4 service42)
+		}
+		class Service3v2 {
+			+Service3v2(IService4 service41, IService4 service42)
+		}
+		class Service3v3 {
+			+Service3v3(IService4 service41, IService4 service42)
+		}
+		class Service3v4 {
+			+Service3v4(IService4 service41, IService4 service42)
+		}
+		class Service4 {
+			+Service4()
+		}
+	}
+	namespace System.Collections.Generic {
+		class IEnumerableᐸIService3ᐳ {
+				<<interface>>
+		}
+	}
 ```
 
 ### Generated code

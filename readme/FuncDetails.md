@@ -4,44 +4,16 @@ Creating an object graph of 7 transition objects plus 1 `Func<T>` with additiona
 
 ### Class diagram
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Func {
-		<<partial>>
-		+CompositionRoot TestPureDIByCR()
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
-	}
 	Service1 --|> IService1
-	class Service1 {
-		+Service1(IService2 service2)
-	}
 	Service2Func --|> IService2
-	class Service2Func {
-		+Service2Func(FuncᐸIService3ᐳ service3Factory)
-	}
 	Service3 --|> IService3
-	class Service3 {
-		+Service3(IService4 service41, IService4 service42)
-	}
 	Service4 --|> IService4
-	class Service4 {
-		+Service4()
-	}
-	class FuncᐸIService3ᐳ
-	class IService1 {
-		<<interface>>
-	}
-	class IService2 {
-		<<interface>>
-	}
-	class IService3 {
-		<<interface>>
-	}
-	class IService4 {
-		<<interface>>
-	}
 	Func ..> CompositionRoot : CompositionRoot TestPureDIByCR()
 	CompositionRoot *--  Service1 : IService1
 	CompositionRoot *-- "3 " Service2Func : IService2
@@ -51,6 +23,49 @@ classDiagram
 	Service2Func o-- "PerBlock" FuncᐸIService3ᐳ : FuncᐸIService3ᐳ
 	Service3 *-- "2 " Service4 : IService4
 	FuncᐸIService3ᐳ *--  Service3 : IService3
+	namespace Pure.DI.Benchmarks.Benchmarks {
+		class Func {
+		<<partial>>
+		+CompositionRoot TestPureDIByCR()
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+		}
+	}
+	namespace Pure.DI.Benchmarks.Model {
+		class CompositionRoot {
+		}
+		class IService1 {
+			<<interface>>
+		}
+		class IService2 {
+			<<interface>>
+		}
+		class IService3 {
+			<<interface>>
+		}
+		class IService4 {
+			<<interface>>
+		}
+		class Service1 {
+			+Service1(IService2 service2)
+		}
+		class Service2Func {
+			+Service2Func(FuncᐸIService3ᐳ service3Factory)
+		}
+		class Service3 {
+			+Service3(IService4 service41, IService4 service42)
+		}
+		class Service4 {
+			+Service4()
+		}
+	}
+	namespace System {
+		class FuncᐸIService3ᐳ {
+				<<delegate>>
+		}
+	}
 ```
 
 ### Generated code

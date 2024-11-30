@@ -78,30 +78,40 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
-		<<partial>>
-		+IService Root
-	}
 	Service --|> IService
-	class Service {
-		+Service()
-		+String ServiceNameField
-		+IDependency Dependency
-	}
-	class String
 	Dependency --|> IDependency
-	class Dependency {
-		+Dependency()
-	}
-	class IService {
-		<<interface>>
-	}
-	class IDependency {
-		<<interface>>
-	}
 	Composition ..> Service : IService Root
 	Service o-- String : Argument "name"
 	Service *--  Dependency : IDependency
+	namespace Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario {
+		class Composition {
+		<<partial>>
+		+IService Root
+		}
+		class Dependency {
+			+Dependency()
+		}
+		class IDependency {
+			<<interface>>
+		}
+		class IService {
+			<<interface>>
+		}
+		class Service {
+			+Service()
+			+String ServiceNameField
+			+IDependency Dependency
+		}
+	}
+	namespace System {
+		class String {
+		}
+	}
 ```
 

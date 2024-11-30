@@ -110,27 +110,41 @@ partial class PersonComposition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class PersonComposition {
-		<<partial>>
-		+IPerson Person
-	}
 	Person --|> IPerson
-	class Person {
-		+Person()
-		+Int32 Id
-		+String FirstName
-		+DateTime Birthday
-	}
-	class Int32
-	class String
-	class DateTime
-	class IPerson {
-		<<interface>>
-	}
 	PersonComposition ..> Person : IPerson Person
 	Person o-- Int32 : Argument "personId"
 	Person o-- String : Argument "personName"
 	Person o-- DateTime : Argument "personBirthday"
+	namespace Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario {
+		class IPerson {
+			<<interface>>
+		}
+		class Person {
+			+Person()
+			+Int32 Id
+			+String FirstName
+			+DateTime Birthday
+		}
+		class PersonComposition {
+		<<partial>>
+		+IPerson Person
+		}
+	}
+	namespace System {
+		class DateTime {
+				<<struct>>
+		}
+		class Int32 {
+				<<struct>>
+		}
+		class String {
+		}
+	}
 ```
 

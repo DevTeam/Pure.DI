@@ -115,36 +115,51 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
-		<<partial>>
-		+ProgramᐸT1ᐳ GetRootᐸT1ᐳ(T1 depArg)
-	}
 	ServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ --|> IServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ
-	class ServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ {
-		+Service(IDependencyᐸT1ᐳ dependency1, IDependencyᐸInt32ᐳ dependency2)
-	}
 	DependencyStructᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ : "value type" 
-	class DependencyStructᐸInt32ᐳ {
-		+DependencyStruct()
-	}
 	DependencyᐸT1ᐳ --|> IDependencyᐸT1ᐳ
-	class DependencyᐸT1ᐳ {
-		+Dependency(T1 value)
-	}
-	class IServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ {
-		<<interface>>
-	}
-	class IDependencyᐸInt32ᐳ {
-		<<interface>>
-	}
-	class IDependencyᐸT1ᐳ {
-		<<interface>>
-	}
 	Composition ..> ProgramᐸT1ᐳ : ProgramᐸT1ᐳ GetRootᐸT1ᐳ(T1 depArg)
 	ProgramᐸT1ᐳ *--  ServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ : IServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ
 	ServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ *--  DependencyᐸT1ᐳ : IDependencyᐸT1ᐳ
 	ServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ o-- "Singleton" DependencyStructᐸInt32ᐳ : "value type"  IDependencyᐸInt32ᐳ
 	DependencyᐸT1ᐳ o-- T1 : Argument "depArg"
+	namespace Pure.DI {
+		class T1 {
+			<<abstract>>
+		}
+	}
+	namespace Pure.DI.UsageTests.Generics.ComplexGenericsScenario {
+		class Composition {
+		<<partial>>
+		+ProgramᐸT1ᐳ GetRootᐸT1ᐳ(T1 depArg)
+		}
+		class DependencyStructᐸInt32ᐳ {
+				<<struct>>
+			+DependencyStruct()
+		}
+		class DependencyᐸT1ᐳ {
+			+Dependency(T1 value)
+		}
+		class IDependencyᐸInt32ᐳ {
+			<<interface>>
+		}
+		class IDependencyᐸT1ᐳ {
+			<<interface>>
+		}
+		class IServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ {
+			<<interface>>
+		}
+		class ProgramᐸT1ᐳ {
+		}
+		class ServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ {
+			+Service(IDependencyᐸT1ᐳ dependency1, IDependencyᐸInt32ᐳ dependency2)
+		}
+	}
 ```
 

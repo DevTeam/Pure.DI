@@ -321,8 +321,20 @@ partial class Composition: IDisposable
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
+	Composition --|> IDisposable
+	Service --|> IService
+	Dependency --|> IDependency
+	Composition ..> Service : IService _
+	Composition ..> Dependency : IDependency _
+	Service o-- "Singleton" Dependency : IDependency
+	namespace Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario {
+		class Composition {
 		<<partial>>
 		-IDependency _
 		-IService _
@@ -330,24 +342,24 @@ classDiagram
 		+ T ResolveᐸTᐳ(object? tag)
 		+ object GetService(Type type)
 		+ object GetRequiredKeyedService(Type type, object? tag)
+		}
+		class Dependency {
+			+Dependency()
+		}
+		class IDependency {
+			<<interface>>
+		}
+		class IService {
+			<<interface>>
+		}
+		class Service {
+			+Service(IDependency dependency)
+		}
 	}
-	Composition --|> IDisposable
-	Service --|> IService
-	class Service {
-		+Service(IDependency dependency)
+	namespace System {
+		class IDisposable {
+			<<abstract>>
+		}
 	}
-	Dependency --|> IDependency
-	class Dependency {
-		+Dependency()
-	}
-	class IService {
-		<<interface>>
-	}
-	class IDependency {
-		<<interface>>
-	}
-	Composition ..> Service : IService _
-	Composition ..> Dependency : IDependency _
-	Service o-- "Singleton" Dependency : IDependency
 ```
 

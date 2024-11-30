@@ -128,28 +128,43 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
-		<<partial>>
-		+IService GetMyService(bool isFake)
-	}
 	Service --|> IService
-	class Service {
-		+Service(IDependency dependency)
-	}
-	class IDependency
-	class Boolean
-	class Dependency {
-		+Dependency(DateTimeOffset time)
-	}
-	class DateTimeOffset
-	class IService {
-		<<interface>>
-	}
 	Composition ..> Service : IService GetMyService(bool isFake)
 	Service *--  IDependency : IDependency
 	IDependency o-- Boolean : "FakeArgTag"  Argument "isFake"
 	IDependency *--  Dependency : Dependency
 	Dependency *--  DateTimeOffset : DateTimeOffset
+	namespace Pure.DI.UsageTests.Basics.FactoryScenario {
+		class Composition {
+		<<partial>>
+		+IService GetMyService(bool isFake)
+		}
+		class Dependency {
+			+Dependency(DateTimeOffset time)
+		}
+		class IDependency {
+				<<interface>>
+		}
+		class IService {
+			<<interface>>
+		}
+		class Service {
+			+Service(IDependency dependency)
+		}
+	}
+	namespace System {
+		class Boolean {
+				<<struct>>
+		}
+		class DateTimeOffset {
+				<<struct>>
+		}
+	}
 ```
 

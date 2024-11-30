@@ -73,26 +73,33 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
-		<<partial>>
-		+IService MyRoot
-	}
 	Service --|> IService
-	class Service {
-		+Service(IDependency dependency)
-	}
 	Dependency --|> IDependency
-	class Dependency {
-		+Dependency()
-	}
-	class IService {
-		<<interface>>
-	}
-	class IDependency {
-		<<interface>>
-	}
 	Composition ..> Service : IService MyRoot
 	Service o-- "Singleton" Dependency : IDependency
+	namespace Pure.DI.UsageTests.Basics.RootBindScenario {
+		class Composition {
+		<<partial>>
+		+IService MyRoot
+		}
+		class Dependency {
+			+Dependency()
+		}
+		class IDependency {
+			<<interface>>
+		}
+		class IService {
+			<<interface>>
+		}
+		class Service {
+			+Service(IDependency dependency)
+		}
+	}
 ```
 

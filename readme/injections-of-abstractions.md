@@ -81,27 +81,36 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
-		<<partial>>
-		+Program Root
-	}
 	Service --|> IService
-	class Service {
-		+Service(IDependency dependency)
-	}
 	Dependency --|> IDependency
-	class Dependency {
-		+Dependency()
-	}
-	class IService {
-		<<interface>>
-	}
-	class IDependency {
-		<<interface>>
-	}
 	Composition ..> Program : Program Root
 	Program *--  Service : IService
 	Service *--  Dependency : IDependency
+	namespace Pure.DI.UsageTests.Basics.InjectionsOfAbstractionsScenario {
+		class Composition {
+		<<partial>>
+		+Program Root
+		}
+		class Dependency {
+			+Dependency()
+		}
+		class IDependency {
+			<<interface>>
+		}
+		class IService {
+			<<interface>>
+		}
+		class Program {
+		}
+		class Service {
+			+Service(IDependency dependency)
+		}
+	}
 ```
 

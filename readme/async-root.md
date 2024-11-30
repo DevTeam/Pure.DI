@@ -79,31 +79,14 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
-		<<partial>>
-		+TaskᐸIServiceᐳ GetMyServiceAsync(System.Threading.CancellationToken cancellationToken)
-	}
-	class FuncᐸIServiceᐳ
-	class TaskFactoryᐸIServiceᐳ
 	Service --|> IService
-	class Service {
-		+Service(IDependency dependency)
-	}
-	class CancellationToken
-	class TaskCreationOptions
-	class TaskContinuationOptions
-	class TaskScheduler
 	Dependency --|> IDependency
-	class Dependency {
-		+Dependency()
-	}
-	class IService {
-		<<interface>>
-	}
-	class IDependency {
-		<<interface>>
-	}
 	Composition ..> TaskᐸIServiceᐳ : TaskᐸIServiceᐳ GetMyServiceAsync(System.Threading.CancellationToken cancellationToken)
 	TaskᐸIServiceᐳ o-- "PerBlock" FuncᐸIServiceᐳ : FuncᐸIServiceᐳ
 	TaskᐸIServiceᐳ o-- "PerBlock" TaskFactoryᐸIServiceᐳ : TaskFactoryᐸIServiceᐳ
@@ -113,5 +96,48 @@ classDiagram
 	TaskFactoryᐸIServiceᐳ *--  TaskContinuationOptions : TaskContinuationOptions
 	TaskFactoryᐸIServiceᐳ *--  TaskScheduler : TaskScheduler
 	Service *--  Dependency : IDependency
+	namespace Pure.DI.UsageTests.Basics.AsyncRootScenario {
+		class Composition {
+		<<partial>>
+		+TaskᐸIServiceᐳ GetMyServiceAsync(System.Threading.CancellationToken cancellationToken)
+		}
+		class Dependency {
+			+Dependency()
+		}
+		class IDependency {
+			<<interface>>
+		}
+		class IService {
+			<<interface>>
+		}
+		class Service {
+			+Service(IDependency dependency)
+		}
+	}
+	namespace System {
+		class FuncᐸIServiceᐳ {
+				<<delegate>>
+		}
+	}
+	namespace System.Threading {
+		class CancellationToken {
+				<<struct>>
+		}
+	}
+	namespace System.Threading.Tasks {
+		class TaskContinuationOptions {
+				<<enum>>
+		}
+		class TaskCreationOptions {
+				<<enum>>
+		}
+		class TaskFactoryᐸIServiceᐳ {
+		}
+		class TaskScheduler {
+				<<abstract>>
+		}
+		class TaskᐸIServiceᐳ {
+		}
+	}
 ```
 

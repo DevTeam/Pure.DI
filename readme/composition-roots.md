@@ -263,8 +263,21 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
+	OtherService --|> IService : "Other" 
+	Dependency --|> IDependency
+	Service --|> IService
+	Composition ..> OtherService : IService MyOtherService
+	Composition ..> Dependency : IDependency _
+	Composition ..> Service : IService MyService
+	Service *--  Dependency : IDependency
+	namespace Pure.DI.UsageTests.Basics.CompositionRootsScenario {
+		class Composition {
 		<<partial>>
 		+IService MyOtherService
 		+IService MyService
@@ -273,28 +286,22 @@ classDiagram
 		+ T ResolveᐸTᐳ(object? tag)
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
+		}
+		class Dependency {
+			+Dependency()
+		}
+		class IDependency {
+			<<interface>>
+		}
+		class IService {
+			<<interface>>
+		}
+		class OtherService {
+			+OtherService()
+		}
+		class Service {
+			+Service(IDependency dependency)
+		}
 	}
-	OtherService --|> IService : "Other" 
-	class OtherService {
-		+OtherService()
-	}
-	Dependency --|> IDependency
-	class Dependency {
-		+Dependency()
-	}
-	Service --|> IService
-	class Service {
-		+Service(IDependency dependency)
-	}
-	class IService {
-		<<interface>>
-	}
-	class IDependency {
-		<<interface>>
-	}
-	Composition ..> OtherService : IService MyOtherService
-	Composition ..> Dependency : IDependency _
-	Composition ..> Service : IService MyService
-	Service *--  Dependency : IDependency
 ```
 

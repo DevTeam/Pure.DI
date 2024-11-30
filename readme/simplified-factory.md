@@ -96,26 +96,38 @@ partial class Composition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
-		<<partial>>
-		+IService MyService
-	}
 	Service --|> IService
-	class Service {
-		+Service(IDependency dependency)
-	}
 	Dependency --|> IDependency
-	class Dependency
-	class DateTimeOffset
-	class IService {
-		<<interface>>
-	}
-	class IDependency {
-		<<interface>>
-	}
 	Composition ..> Service : IService MyService
 	Service *--  Dependency : IDependency
 	Dependency *--  DateTimeOffset : "now datetime"  DateTimeOffset
+	namespace Pure.DI.UsageTests.Basics.SimplifiedFactoryScenario {
+		class Composition {
+		<<partial>>
+		+IService MyService
+		}
+		class Dependency {
+		}
+		class IDependency {
+			<<interface>>
+		}
+		class IService {
+			<<interface>>
+		}
+		class Service {
+			+Service(IDependency dependency)
+		}
+	}
+	namespace System {
+		class DateTimeOffset {
+				<<struct>>
+		}
+	}
 ```
 

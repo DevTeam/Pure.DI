@@ -338,26 +338,14 @@ partial class Composition: IDisposable
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class Composition {
-		<<partial>>
-		+Service Root
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
-	}
 	Composition --|> IDisposable
-	class FuncᐸOwnᐸIDependencyᐳᐳ
-	class OwnᐸIDependencyᐳ
-	class Own
 	Dependency --|> IDependency
-	class Dependency {
-		+Dependency()
-	}
-	class IDependency {
-		<<interface>>
-	}
 	Composition ..> Service : Service Root
 	Service o-- "PerBlock" FuncᐸOwnᐸIDependencyᐳᐳ : FuncᐸOwnᐸIDependencyᐳᐳ
 	Service o-- "PerBlock" FuncᐸOwnᐸIDependencyᐳᐳ : "single"  FuncᐸOwnᐸIDependencyᐳᐳ
@@ -367,5 +355,38 @@ classDiagram
 	OwnᐸIDependencyᐳ *--  Dependency : IDependency
 	OwnᐸIDependencyᐳ *--  Own : Own
 	OwnᐸIDependencyᐳ o-- "Singleton" Dependency : "single"  IDependency
+	namespace Pure.DI.Abstractions {
+		class Own {
+		}
+		class OwnᐸIDependencyᐳ {
+				<<struct>>
+		}
+	}
+	namespace Pure.DI.UsageTests.Advanced.TrackingDisposableWithAbstractionsScenario {
+		class Composition {
+		<<partial>>
+		+Service Root
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+		}
+		class Dependency {
+			+Dependency()
+		}
+		class IDependency {
+			<<interface>>
+		}
+		class Service {
+		}
+	}
+	namespace System {
+		class FuncᐸOwnᐸIDependencyᐳᐳ {
+				<<delegate>>
+		}
+		class IDisposable {
+			<<abstract>>
+		}
+	}
 ```
 

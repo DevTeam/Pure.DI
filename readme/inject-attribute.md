@@ -85,26 +85,39 @@ partial class PersonComposition
 Class diagram:
 
 ```mermaid
+---
+ config:
+  class:
+   hideEmptyMembersBox: true
+---
 classDiagram
-	class PersonComposition {
-		<<partial>>
-		+IPerson Person
-	}
 	Person --|> IPerson
-	class Person {
-		+Person(String name)
-		~Object Id
-		+Initialize(Object state) : Void
-	}
-	class String
-	class Int32
-	class Uri
-	class IPerson {
-		<<interface>>
-	}
 	PersonComposition ..> Person : IPerson Person
 	Person *--  String : "NikName"  String
 	Person o-- Int32 : Argument "personId"
 	Person *--  Uri : "Person Uri"  Uri
+	namespace Pure.DI.UsageTests.Attributes.InjectAttributeScenario {
+		class IPerson {
+			<<interface>>
+		}
+		class Person {
+			+Person(String name)
+			~Object Id
+			+Initialize(Object state) : Void
+		}
+		class PersonComposition {
+		<<partial>>
+		+IPerson Person
+		}
+	}
+	namespace System {
+		class Int32 {
+				<<struct>>
+		}
+		class String {
+		}
+		class Uri {
+		}
+	}
 ```
 
