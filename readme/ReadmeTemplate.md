@@ -72,6 +72,7 @@ partial class Composition
     
     public Program Root
     {
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
       get
       {
         var stateFunc = new Func<State>(() => {
@@ -90,7 +91,7 @@ partial class Composition
                 stateFunc))));    
       }
     }
-    
+
     public T Resolve<T>() { ... }
 
     public object Resolve(Type type) { ... }
