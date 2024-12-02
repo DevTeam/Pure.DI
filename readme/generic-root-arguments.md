@@ -72,11 +72,6 @@ classDiagram
 	ServiceᐸT1ᐳ --|> IServiceᐸT1ᐳ
 	Composition ..> ServiceᐸT1ᐳ : IServiceᐸT1ᐳ GetMyServiceᐸT1ᐳ(T1 someArg)
 	ServiceᐸT1ᐳ o-- T1 : Argument "someArg"
-	namespace Pure.DI {
-		class T1 {
-			<<abstract>>
-		}
-	}
 	namespace Pure.DI.UsageTests.Basics.GenericRootArgScenario {
 		class Composition {
 		<<partial>>

@@ -97,20 +97,28 @@ internal sealed class ClassDiagramBuilder(
                     lines.AppendLine($"{FormatType(setup, node.Type, DefaultFormatOptions)} --|> {FormatType(setup, contract.Type, DefaultFormatOptions)}{(string.IsNullOrWhiteSpace(tag) ? "" : $" : {tag}")}");
                 }
 
-                var classDiagramWalker = new ClassDiagramWalker(setup, this, classes, DefaultFormatOptions);
+                var classDiagramWalker = new ClassDiagramWalker(setup, marker, this, classes, DefaultFormatOptions);
                 classDiagramWalker.VisitDependencyNode(new LinesBuilder(), node);
             }
 
+            // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
             foreach (var type in types)
             {
-                classes.Add(new Class(type.ContainingNamespace?.ToDisplayString() ?? "", FormatType(setup, type, DefaultFormatOptions), "", type, new LinesBuilder()));
+                if (!marker.IsMarker(setup, type))
+                {
+                    classes.Add(new Class(type.ContainingNamespace?.ToDisplayString() ?? "", FormatType(setup, type, DefaultFormatOptions), "", type, new LinesBuilder()));
+                }
             }
 
             foreach (var (dependency, count) in graph.Edges.GroupBy(i => i).Select(i => (dependency: i.First(), count: i.Count())))
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 var sourceType = FormatType(setup, dependency.Source.Type, DefaultFormatOptions);
-                classes.Add(new Class(dependency.Source.Type.ContainingNamespace?.ToDisplayString() ?? "", sourceType, "", dependency.Source.Type, new LinesBuilder()));
+                if (!marker.IsMarker(setup, dependency.Source.Type))
+                {
+                    classes.Add(new Class(dependency.Source.Type.ContainingNamespace?.ToDisplayString() ?? "", sourceType, "", dependency.Source.Type, new LinesBuilder()));
+                }
+
                 if (dependency.Target.Root is not null && rootProperties.TryGetValue(dependency.Injection, out var root))
                 {
                     lines.AppendLine($"{composition.Source.Source.Name.ClassName} ..> {sourceType} : {FormatRoot(setup, root)}");
@@ -118,7 +126,11 @@ internal sealed class ClassDiagramBuilder(
                 else
                 {
                     var targetType = FormatType(setup, dependency.Target.Type, DefaultFormatOptions);
-                    classes.Add(new Class(dependency.Target.Type.ContainingNamespace?.ToDisplayString() ?? "", targetType, "", dependency.Target.Type, new LinesBuilder()));
+                    if (!marker.IsMarker(setup, dependency.Target.Type))
+                    {
+                        classes.Add(new Class(dependency.Target.Type.ContainingNamespace?.ToDisplayString() ?? "", targetType, "", dependency.Target.Type, new LinesBuilder()));
+                    }
+
                     if (dependency.Source.Arg is { } arg)
                     {
                         var tags = arg.Binding.Contracts.SelectMany(i => i.Tags.Select(tag => tag.Value)).ToArray();
@@ -137,13 +149,13 @@ internal sealed class ClassDiagramBuilder(
                 }
             }
 
-            foreach (var classByNamespace in classes.GroupBy(i => i.ActualNamespace).OrderBy(i => i.Key))
+            foreach (var classByNamespace in classes.GroupBy(i => i.Namespace).OrderBy(i => i.Key))
             {
-                var ns = classByNamespace.Key;
-                var hasNamespace = !string.IsNullOrWhiteSpace(ns);
+                var actualNamespace = classByNamespace.Key;
+                var hasNamespace = !string.IsNullOrWhiteSpace(actualNamespace);
                 if (hasNamespace)
                 {
-                    lines.AppendLine($"namespace {ns} {{");
+                    lines.AppendLine($"namespace {actualNamespace} {{");
                     lines.IncIndent();
                 }
                 
@@ -325,6 +337,7 @@ internal sealed class ClassDiagramBuilder(
 
     private class ClassDiagramWalker(
         MdSetup setup,
+        IMarker marker,
         ClassDiagramBuilder builder,
         IList<Class> classes,
         FormatOptions options)
@@ -335,7 +348,11 @@ internal sealed class ClassDiagramBuilder(
             var lines = new LinesBuilder();
             var name = builder.FormatType(setup, node.Type, options);
             var cls = new Class(node.Type.ContainingNamespace?.ToDisplayString() ?? "", name, "", node.Type, lines);
-            classes.Add(cls);
+            if (!marker.IsMarker(setup, node.Type))
+            {
+                classes.Add(cls);
+            }
+
             lines.AppendLine($"class {name} {{");
             using (lines.Indent())
             {
@@ -380,8 +397,6 @@ internal sealed class ClassDiagramBuilder(
 
     private record Class(string Namespace, string Name, string Kind, ITypeSymbol? Type, LinesBuilder Lines)
     {
-        public string ActualNamespace => string.IsNullOrWhiteSpace(Namespace) ? nameof(System) : Namespace;
-        
         public string ActualKind
         {
             get

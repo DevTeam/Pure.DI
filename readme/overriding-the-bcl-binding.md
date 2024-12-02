@@ -203,6 +203,9 @@ classDiagram
 	Service --|> IService
 	Composition ..> Service : IService Root
 	Service *--  ArrayᐸIDependencyᐳ : ArrayᐸIDependencyᐳ
+	class ArrayᐸIDependencyᐳ {
+			<<array>>
+	}
 	namespace Pure.DI.UsageTests.BCL.OverridingBclBindingScenario {
 		class Composition {
 		<<partial>>
@@ -217,11 +220,6 @@ classDiagram
 		}
 		class Service {
 			+Service(ArrayᐸIDependencyᐳ dependencies)
-		}
-	}
-	namespace System {
-		class ArrayᐸIDependencyᐳ {
-				<<array>>
 		}
 	}
 ```

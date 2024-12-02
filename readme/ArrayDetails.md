@@ -32,6 +32,9 @@ classDiagram
 	Service3v2 *-- "2 " Service4 : IService4
 	Service3v3 *-- "2 " Service4 : IService4
 	Service3v4 *-- "2 " Service4 : IService4
+	class ArrayᐸIService3ᐳ {
+			<<array>>
+	}
 	namespace Pure.DI.Benchmarks.Benchmarks {
 		class Array {
 		<<partial>>
@@ -77,11 +80,6 @@ classDiagram
 		}
 		class Service4 {
 			+Service4()
-		}
-	}
-	namespace System {
-		class ArrayᐸIService3ᐳ {
-				<<array>>
 		}
 	}
 ```

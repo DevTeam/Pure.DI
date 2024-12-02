@@ -129,11 +129,6 @@ classDiagram
 	ServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ *--  DependencyᐸT1ᐳ : IDependencyᐸT1ᐳ
 	ServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ o-- "Singleton" DependencyStructᐸInt32ᐳ : "value type"  IDependencyᐸInt32ᐳ
 	DependencyᐸT1ᐳ o-- T1 : Argument "depArg"
-	namespace Pure.DI {
-		class T1 {
-			<<abstract>>
-		}
-	}
 	namespace Pure.DI.UsageTests.Generics.ComplexGenericsScenario {
 		class Composition {
 		<<partial>>

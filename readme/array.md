@@ -222,6 +222,9 @@ classDiagram
 	Service *--  ArrayᐸIDependencyᐳ : ArrayᐸIDependencyᐳ
 	ArrayᐸIDependencyᐳ *--  AbcDependency : IDependency
 	ArrayᐸIDependencyᐳ *--  XyzDependency : 2  IDependency
+	class ArrayᐸIDependencyᐳ {
+			<<array>>
+	}
 	namespace Pure.DI.UsageTests.BCL.ArrayScenario {
 		class AbcDependency {
 			+AbcDependency()
@@ -245,11 +248,6 @@ classDiagram
 		}
 		class XyzDependency {
 			+XyzDependency()
-		}
-	}
-	namespace System {
-		class ArrayᐸIDependencyᐳ {
-				<<array>>
 		}
 	}
 ```
