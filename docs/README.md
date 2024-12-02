@@ -4,7 +4,7 @@ _Supports .NET starting with .NET Framework 2.0, released 2005-10-27, and all ne
 
 - .NET SDK [6.0.4](https://dotnet.microsoft.com/download/dotnet/6.0) or later is installed
 
-At the same time, projects can be developed for older versions of .NET, starting with .NET Framework 2.0 released on 2005-10-27.
+At the same time, you can develop .NET projects even for older versions like [.NET Framework 2.0](https://www.microsoft.com/en-us/download/details.aspx?id=6041)
 
 - [C# 8](https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-version-history#c-version-80) or later
 
