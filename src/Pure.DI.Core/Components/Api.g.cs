@@ -1093,37 +1093,42 @@ namespace Pure.DI
         /// <summary>
         /// Specifies to use a <c>internal</c> access modifier for the root of the composition.
         /// </summary>
-        Internal = 2,
+        Internal = 1 << 1,
         
         /// <summary>
         /// Specifies to use a <c>private</c> access modifier for the root of the composition.
         /// </summary>
-        Private = 4,
+        Private = 1 << 2,
         
         /// <summary>
         /// Specifies to create a composition root as a property.
         /// </summary>
-        Property = 8,
+        Property = 1 << 3,
         
         /// <summary>
         /// Specifies to create a composition root as a method.
         /// </summary>
-        Method = 16,
+        Method = 1 << 4,
         
         /// <summary>
         /// Specifies to create a static root of the composition.
         /// </summary>
-        Static = 32,
+        Static = 1 << 5,
         
         /// <summary>
         /// Specifies to create a partial root of the composition.
         /// </summary>
-        Partial = 64,
+        Partial = 1 << 6,
         
         /// <summary>
         /// Specifies to create a exposed root of the composition.
         /// </summary>
-        Exposed = 128
+        Exposed = 1 << 7,
+        
+        /// <summary>
+        /// Specifies to use a <c>protected</c> access modifier for the root of the composition.
+        /// </summary>
+        Protected = 1 << 8,
     }
     
     /// <summary>

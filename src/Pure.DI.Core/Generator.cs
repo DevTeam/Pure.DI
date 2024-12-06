@@ -145,5 +145,6 @@ public sealed partial class Generator
                 .Bind("Injection").To<IdGenerator>()
                 .Bind().To<IdGenerator>()
                 .Bind().To<Registry<TT>>()
-                .Bind().To<Locks>();
+                .Bind().To<Locks>()
+                .Bind().To<RootAccessModifierResolver>();
 }

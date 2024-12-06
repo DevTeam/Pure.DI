@@ -7,6 +7,7 @@ internal sealed class RootMethodsBuilder(
     ITypeResolver typeResolver,
     [Tag(typeof(RootMethodsCommenter))] ICommenter<Root> rootCommenter,
     IMarker marker,
+    IRootAccessModifierResolver rootAccessModifierResolver,
     CancellationToken cancellationToken)
     : IBuilder<CompositionCode, CompositionCode>
 {
@@ -51,15 +52,20 @@ internal sealed class RootMethodsBuilder(
             rootArgsStr = $"({string.Join(", ", root.Args.Select(arg => $"{typeResolver.Resolve(composition.Source.Source, arg.InstanceType)} {arg.VariableDeclarationName}"))})";
             buildTools.AddPureHeader(code);
         }
-
-        var modifier = !root.IsPublic || (root.Kind & RootKinds.Private) == RootKinds.Private
-            ? "private"
-            : (root.Kind & RootKinds.Internal) == RootKinds.Internal
-                ? "internal"
-                : "public";
-
+        
         var name = new StringBuilder();
-        name.Append(modifier);
+        var accessModifier = rootAccessModifierResolver.Resolve(root) switch
+        {
+            Accessibility.Private => "private",
+            Accessibility.ProtectedAndInternal => "protected",
+            Accessibility.Protected => "protected",
+            Accessibility.Internal => "internal",
+            Accessibility.ProtectedOrInternal => "internal",
+            Accessibility.Public => "public",
+            _ => ""
+        };
+
+        name.Append(accessModifier);
         if ((root.Kind & RootKinds.Static) == RootKinds.Static)
         {
             name.Append(" static");

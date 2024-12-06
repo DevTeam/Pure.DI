@@ -153,7 +153,7 @@ classDiagram
 		class Composition {
 		<<partial>>
 		+Program ProgramRoot
-		+Service SessionRoot
+		-Service SessionRoot
 		}
 		class Dependency {
 			+Dependency()

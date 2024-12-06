@@ -8,6 +8,7 @@ internal sealed class ClassDiagramBuilder(
     IBuilder<ContractsBuildContext, ISet<Injection>> injectionsBuilder,
     IMarker marker,
     ITypeResolver typeResolver,
+    IRootAccessModifierResolver rootAccessModifierResolver,
     CancellationToken cancellationToken)
     : IBuilder<CompositionCode, LinesBuilder>
 {
@@ -38,7 +39,7 @@ internal sealed class ClassDiagramBuilder(
                     compositionLines.AppendLine("<<partial>>");
                     foreach (var root in composition.Roots.OrderByDescending(i => i.IsPublic).ThenBy(i => i.Name))
                     {
-                        compositionLines.AppendLine($"{(root.IsPublic ? "+" : "-")}{FormatRoot(setup, root)}");
+                        compositionLines.AppendLine($"{Format(rootAccessModifierResolver.Resolve(root))}{FormatRoot(setup, root)}");
                     }
 
                     if (hasResolveMethods)
@@ -320,7 +321,6 @@ internal sealed class ClassDiagramBuilder(
     private static string Format(Accessibility accessibility) =>
         accessibility switch
         {
-            Accessibility.NotApplicable => "",
             Accessibility.Private => "-",
             Accessibility.ProtectedAndInternal => "#",
             Accessibility.Protected => "#",

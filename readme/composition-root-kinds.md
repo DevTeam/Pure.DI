@@ -247,9 +247,9 @@ classDiagram
 	namespace Pure.DI.UsageTests.Advanced.CompositionRootKindsScenario {
 		class Composition {
 		<<partial>>
-		+IDependency Dependency
+		~IDependency Dependency
 		+IService GetOtherService()
-		+IService GetRoot()
+		-IService GetRoot()
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
 		+ object Resolve(Type type)

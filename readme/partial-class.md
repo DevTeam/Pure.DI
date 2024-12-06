@@ -229,7 +229,7 @@ classDiagram
 	namespace Pure.DI.UsageTests.Advanced.PartialClassScenario {
 		class Composition {
 		<<partial>>
-		+Service Root
+		~Service Root
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
 		+ object Resolve(Type type)
