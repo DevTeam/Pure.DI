@@ -13,14 +13,13 @@ interface IService
     ImmutableArray<IDependency> Dependencies { get; }
 }
 
-class Service([Tag("my tag")] Func<IDependency> dependencyFactory)
-    : IService
+class Service([Tag("my tag")] Func<IDependency> dependencyFactory): IService
 {
     public ImmutableArray<IDependency> Dependencies { get; } =
     [
-        ..Enumerable
-            .Range(0, 10)
-            .Select(_ => dependencyFactory())
+        dependencyFactory(),
+        dependencyFactory(),
+        dependencyFactory()
     ];
 }
 
@@ -33,7 +32,7 @@ DI.Setup(nameof(Composition))
 
 var composition = new Composition();
 var service = composition.Root;
-service.Dependencies.Length.ShouldBe(10);
+service.Dependencies.Length.ShouldBe(3);
 ```
 
 The following partial class will be generated:

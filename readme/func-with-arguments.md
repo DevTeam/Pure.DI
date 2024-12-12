@@ -37,17 +37,14 @@ interface IService
     ImmutableArray<IDependency> Dependencies { get; }
 }
 
-class Service : IService
+class Service(Func<int, int, IDependency> dependencyFactory): IService
 {
-    public Service(Func<int, int, IDependency> dependencyFactory) =>
-        Dependencies =
-        [
-            ..Enumerable
-                .Range(0, 10)
-                .Select((_, index) => dependencyFactory(index, 99))
-        ];
-
-    public ImmutableArray<IDependency> Dependencies { get; }
+    public ImmutableArray<IDependency> Dependencies { get; } =
+    [
+        dependencyFactory(0, 99),
+        dependencyFactory(1, 99),
+        dependencyFactory(2, 99)
+    ];
 }
 
 DI.Setup(nameof(Composition))
@@ -75,9 +72,10 @@ DI.Setup(nameof(Composition))
 
 var composition = new Composition();
 var service = composition.Root;
-service.Dependencies.Length.ShouldBe(10);
-service.Dependencies[3].Id.ShouldBe(3);
-service.Dependencies[3].SubId.ShouldBe(99);
+service.Dependencies.Length.ShouldBe(3);
+service.Dependencies[0].Id.ShouldBe(0);
+service.Dependencies[1].Id.ShouldBe(1);
+service.Dependencies[2].Id.ShouldBe(2);
 ```
 
 Using a binding of the form `.Bind<T>().To<T>("some statement")` is a kind of hack that allows you to replace an injection with just its own string.

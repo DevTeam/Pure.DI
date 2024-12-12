@@ -26,7 +26,7 @@ interface IService
     ImmutableArray<IDependency> Dependencies { get; }
 }
 
-class Service(Func<IDependency> dependencyFactory) : IService
+class Service(Func<IDependency> dependencyFactory): IService
 {
     public ImmutableArray<IDependency> Dependencies =>
     [
