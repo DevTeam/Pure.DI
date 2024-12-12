@@ -8,30 +8,26 @@ This approach of interception maximizes performance by precompiling the proxy ob
 ```c#
 public interface IDependency
 {
-    void DependencyCall();
+    int DependencyRun();
 }
 
 class Dependency : IDependency
 {
-    public void DependencyCall()
-    {
-    }
+    public int DependencyRun() => 33;
 }
 
 public interface IService
 {
     IDependency Dependency { get; }
 
-    void ServiceCall();
+    string ServiceRun();
 }
 
 class Service(IDependency dependency) : IService
 {
     public IDependency Dependency { get; } = dependency;
 
-    public void ServiceCall()
-    {
-    }
+    public string ServiceRun() => "Abc";
 }
 
 internal partial class Composition : IInterceptor
@@ -64,8 +60,8 @@ internal partial class Composition : IInterceptor
 
     public void Intercept(IInvocation invocation)
     {
-        _log.Add(invocation.Method.Name);
         invocation.Proceed();
+        _log.Add($"{invocation.Method.Name} returns {invocation.ReturnValue}");
     }
 
     private static class ProxyFactory<T>
@@ -105,14 +101,14 @@ DI.Setup(nameof(Composition))
 var log = new List<string>();
 var composition = new Composition(log);
 var service = composition.Root;
-service.ServiceCall();
-service.Dependency.DependencyCall();
+service.ServiceRun();
+service.Dependency.DependencyRun();
 
 log.ShouldBe(
     ImmutableArray.Create(
-        "ServiceCall",
-        "get_Dependency",
-        "DependencyCall"));
+        "ServiceRun returns Abc",
+        "get_Dependency returns Castle.Proxies.IDependencyProxy",
+        "DependencyRun returns 33"));
 ```
 
 The following partial class will be generated:
@@ -122,7 +118,7 @@ partial class Composition
 {
   private readonly Composition _root;
 
-  [OrdinalAttribute(20)]
+  [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;

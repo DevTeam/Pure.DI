@@ -51,14 +51,11 @@ partial class Composition
             // Session composition root
             .Root<Service>("SessionRoot", kind: RootKinds.Private)
             // Auto scoped
-            .Bind().To<IService>(ctx =>
+            .Bind().To(IService (Composition baseComposition) =>
             {
-                // Injects a base composition
-                ctx.Inject(out Composition baseComposition);
-
                 // Creates a session
                 var session = new Composition(baseComposition);
-
+                // Provides a root
                 return session.SessionRoot;
             })
 

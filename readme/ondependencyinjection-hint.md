@@ -11,7 +11,7 @@ using static Hint;
 
 interface IDependency;
 
-class Dependency : IDependency;
+record Dependency(int Id) : IDependency;
 
 interface IService
 {
@@ -42,16 +42,20 @@ partial class Composition
 
 // OnDependencyInjection = On
 DI.Setup(nameof(Composition))
-    .Hint(OnDependencyInjectionContractTypeNameRegularExpression, nameof(IDependency))
+    .Hint(OnDependencyInjectionContractTypeNameRegularExpression, "(.*IDependency|int)$")
+    .RootArg<int>("id")
     .Bind().To<Dependency>()
     .Bind().To<Service>()
-    .Root<IService>("Root");
+    .Root<IService>("GetRoot");
 
 var log = new List<string>();
 var composition = new Composition(log);
-var service = composition.Root;
+var service = composition.GetRoot(33);
 
-log.ShouldBe(ImmutableArray.Create("Dependency injected"));
+log.ShouldBe([
+    "Int32 injected",
+    "Dependency injected"
+]);
 ```
 
 The `OnDependencyInjectionContractTypeNameRegularExpression` hint helps identify the set of types that require injection control. You can use it to specify a regular expression to filter the full name of a type.
@@ -64,7 +68,7 @@ partial class Composition
 {
   private readonly Composition _root;
 
-  [OrdinalAttribute(20)]
+  [OrdinalAttribute(10)]
   public Composition()
   {
     _root = this;
@@ -75,13 +79,10 @@ partial class Composition
     _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
   }
 
-  public IService Root
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public IService GetRoot(int id)
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    get
-    {
-      return new Service(OnDependencyInjection<IDependency>(new Dependency(), null, Lifetime.Transient));
-    }
+    return new Service(OnDependencyInjection<IDependency>(new Dependency(OnDependencyInjection<int>(id, null, Lifetime.Transient)), null, Lifetime.Transient));
   }
 
 
@@ -100,15 +101,18 @@ Class diagram:
 classDiagram
 	Service --|> IService
 	Dependency --|> IDependency
-	Composition ..> Service : IService Root
+	Dependency --|> IEquatableᐸDependencyᐳ
+	Composition ..> Service : IService GetRoot(int id)
 	Service *--  Dependency : IDependency
+	Dependency o-- Int32 : Argument "id"
 	namespace Pure.DI.UsageTests.Hints.OnDependencyInjectionHintScenario {
 		class Composition {
 		<<partial>>
-		+IService Root
+		+IService GetRoot(int id)
 		}
 		class Dependency {
-			+Dependency()
+				<<record>>
+			+Dependency(Int32 Id)
 		}
 		class IDependency {
 			<<interface>>
@@ -118,6 +122,14 @@ classDiagram
 		}
 		class Service {
 			+Service(IDependency dependency)
+		}
+	}
+	namespace System {
+		class IEquatableᐸDependencyᐳ {
+			<<interface>>
+		}
+		class Int32 {
+				<<struct>>
 		}
 	}
 ```

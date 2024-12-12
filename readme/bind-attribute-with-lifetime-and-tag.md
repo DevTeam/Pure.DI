@@ -55,7 +55,7 @@ partial class Composition
   private IDependency? _singletonIDependency0;
   private Facade? _singletonFacade43;
 
-  [OrdinalAttribute(20)]
+  [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;

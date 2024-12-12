@@ -66,16 +66,20 @@ internal class ApiInvocationProcessor(
                                 if (type is INamedTypeSymbol symbol)
                                 {
                                     if (symbol.TypeArguments.Length > 1
-                                        && invocation.ArgumentList.Arguments[0].Expression is ParenthesizedLambdaExpressionSyntax { ParameterList.Parameters.Count: > 0 } parenthesizedLambdaExpressionSyntaxWithTypes
                                         && symbol.TypeArguments[0].ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat) != Names.ContextInterfaceName)
                                     {
-                                        VisitSimpleFactory(
-                                            metadataVisitor,
-                                            semanticModel,
-                                            invocation,
-                                            symbol.TypeArguments.Last(),
-                                            parenthesizedLambdaExpressionSyntaxWithTypes.ParameterList.Parameters.Select(i => i.Type!).ToList(),
-                                            parenthesizedLambdaExpressionSyntaxWithTypes);
+                                        switch (invocation.ArgumentList.Arguments[0].Expression)
+                                        {
+                                            case ParenthesizedLambdaExpressionSyntax { ParameterList.Parameters.Count: > 0 } parenthesizedLambda:
+                                                VisitSimpleFactory(
+                                                    metadataVisitor,
+                                                    semanticModel,
+                                                    invocation,
+                                                    symbol.TypeArguments.Last(),
+                                                    parenthesizedLambda.ParameterList.Parameters.Select(i => i.Type!).ToList(),
+                                                    parenthesizedLambda);
+                                                break;
+                                        }
 
                                         break;
                                     }
@@ -205,20 +209,28 @@ internal class ApiInvocationProcessor(
                         if (genericName.TypeArgumentList.Arguments.Count > 1
                             && invocation.ArgumentList.Arguments.Count == 1)
                         {
-                            if (invocation.ArgumentList.Arguments[0].Expression is not ParenthesizedLambdaExpressionSyntax parenthesizedLambdaExpressionSyntax
-                                || parenthesizedLambdaExpressionSyntax.ParameterList.Parameters.Count == 0)
+                            switch (invocation.ArgumentList.Arguments[0].Expression)
                             {
-                                NotSupported(invocation);
-                                break;
+                                case ParenthesizedLambdaExpressionSyntax { ParameterList.Parameters.Count: > 0 } parenthesizedLambda:
+                                    VisitSimpleFactory(
+                                        metadataVisitor,
+                                        semanticModel,
+                                        invocation,
+                                        semantic.GetTypeSymbol<ITypeSymbol>(semanticModel, genericName.TypeArgumentList.Arguments.Last()),
+                                        genericName.TypeArgumentList.Arguments.Reverse().Skip(1).Reverse().ToList(),
+                                        parenthesizedLambda);
+                                    break;
+                                
+                                case SimpleLambdaExpressionSyntax simpleLambda:
+                                    VisitSimpleFactory(
+                                        metadataVisitor,
+                                        semanticModel,
+                                        invocation,
+                                        semantic.GetTypeSymbol<ITypeSymbol>(semanticModel, genericName.TypeArgumentList.Arguments.Last()),
+                                        genericName.TypeArgumentList.Arguments.Reverse().Skip(1).Reverse().ToList(),
+                                        simpleLambda);
+                                    break;
                             }
-
-                            VisitSimpleFactory(
-                                metadataVisitor,
-                                semanticModel,
-                                invocation,
-                                semantic.GetTypeSymbol<ITypeSymbol>(semanticModel, genericName.TypeArgumentList.Arguments.Last()),
-                                genericName.TypeArgumentList.Arguments.Reverse().Skip(1).Reverse().ToList(),
-                                parenthesizedLambdaExpressionSyntax);
 
                             break;
                         }
@@ -387,10 +399,21 @@ internal class ApiInvocationProcessor(
         InvocationExpressionSyntax source,
         ITypeSymbol returnType,
         List<TypeSyntax> argsTypes,
-        ParenthesizedLambdaExpressionSyntax lambdaExpression)
+        LambdaExpressionSyntax lambdaExpression)
     {
         CheckNotAsync(lambdaExpression);
-        var parameters = lambdaExpression.ParameterList.Parameters;
+        var parameters = new List<ParameterSyntax>();
+        switch (lambdaExpression)
+        {
+            case ParenthesizedLambdaExpressionSyntax parenthesizedLambda:
+                parameters.AddRange(parenthesizedLambda.ParameterList.Parameters);
+                break;
+            
+            case SimpleLambdaExpressionSyntax simpleLambda:
+                parameters.Add(simpleLambda.Parameter);
+                break;
+        }
+
         var paramAttributes = parameters.Select(i => i.AttributeLists.SelectMany(j => j.Attributes).ToList()).ToList();
         var resolvers = new List<MdResolver>();
         var namespaces = new HashSet<string>();
@@ -424,6 +447,7 @@ internal class ApiInvocationProcessor(
                 source,
                 returnType,
                 lambdaExpression,
+                true,
                 SyntaxFactory.Parameter(SyntaxFactory.Identifier("ctx_1182D127")),
                 resolvers.ToImmutableArray(),
                 ImmutableArray<MdInitializer>.Empty,
@@ -648,6 +672,7 @@ internal class ApiInvocationProcessor(
                 lambdaExpression,
                 resultType,
                 lambdaExpression,
+                false,
                 contextParameter,
                 resolvers,
                 initializers,

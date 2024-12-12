@@ -54,7 +54,7 @@ internal partial class Composition
         ref T value,
         object? tag,
         Lifetime lifetime) =>
-        _log.Add(typeof(T).Name);
+        _log.Add($"{typeof(T).Name} created");
 }
 // }
 
@@ -76,7 +76,10 @@ public class Scenario
         var service1 = composition.Root;
         var service2 = composition.Root;
 
-        log.ShouldBe([nameof(Dependency), nameof(Service), nameof(Service)]);
+        log.ShouldBe([
+            "Dependency created",
+            "Service created",
+            "Service created"]);
 // }
         composition.SaveClassDiagram();
     }

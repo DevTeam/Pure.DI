@@ -34,7 +34,7 @@ internal class FactoryCodeBuilder(
 
         var originalLambda = factory.Source.Factory;
         // Simple factory
-        if (originalLambda is ParenthesizedLambdaExpressionSyntax parenthesizedLambda)
+        if (factory.Source.IsSimpleFactory)
         {
             var block = new List<StatementSyntax>();
             foreach (var resolver in factory.Source.Resolvers)
@@ -132,13 +132,13 @@ internal class FactoryCodeBuilder(
             }
             else
             {
-                if (parenthesizedLambda.Block is { } lambdaBlock)
+                if (originalLambda.Block is { } lambdaBlock)
                 {
                     block.AddRange(lambdaBlock.Statements);
                 }
                 else
                 {
-                    if (parenthesizedLambda.ExpressionBody is { } body)
+                    if (originalLambda.ExpressionBody is { } body)
                     {
                         block.Add(SyntaxFactory.ReturnStatement(body));
                     }

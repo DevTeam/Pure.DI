@@ -95,7 +95,7 @@ partial class Composition: IDisposable, IAsyncDisposable
 
   private Dependency? _scopedDependency43;
 
-  [OrdinalAttribute(20)]
+  [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;

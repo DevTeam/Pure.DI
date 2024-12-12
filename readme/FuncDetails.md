@@ -77,7 +77,7 @@ partial class Func
 {
   private readonly Func _root;
 
-  [OrdinalAttribute(20)]
+  [OrdinalAttribute(256)]
   public Func()
   {
     _root = this;

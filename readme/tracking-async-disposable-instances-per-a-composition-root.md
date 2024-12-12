@@ -71,7 +71,7 @@ partial class Composition
   private readonly Composition _root;
   private readonly Lock _lock;
 
-  [OrdinalAttribute(20)]
+  [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;

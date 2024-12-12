@@ -41,7 +41,7 @@ partial class Composition
 
   private Integration.CompositionWithTagsInOtherProject? _singletonCompositionWithTagsInOtherProject43;
 
-  [OrdinalAttribute(20)]
+  [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;

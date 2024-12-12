@@ -61,7 +61,7 @@ partial class Composition: IDisposable, IAsyncDisposable
 
   private Dependency? _singletonDependency43;
 
-  [OrdinalAttribute(20)]
+  [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;

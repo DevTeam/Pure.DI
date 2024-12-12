@@ -59,13 +59,13 @@ DI.Setup(nameof(Composition))
         Tag.On("MyNamespace.Service.Service:dependency1"),
         // Tag on injection site for generic type
         Tag.On("MyNamespace.Consumer`1.Consumer:myDep"))
-    .To<AbcDependency>()
+        .To<AbcDependency>()
     .Bind(
         // Combined tag
         Tag.On(
             "MyNamespace.Service.Service:dependency2",
             "MyNamespace.Service:Dependency3"))
-    .To<XyzDependency>()
+        .To<XyzDependency>()
     .Bind<IService>().To<Service>()
 
     // Specifies to create the composition root named "Root"

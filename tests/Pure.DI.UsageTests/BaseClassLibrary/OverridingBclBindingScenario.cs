@@ -39,12 +39,9 @@ public class Scenario
     {
 // {
         DI.Setup(nameof(Composition))
-            .Bind<IDependency[]>().To(_ => new IDependency[]
-            {
-                new AbcDependency(),
-                new XyzDependency(),
-                new AbcDependency()
-            })
+            .Bind<IDependency[]>().To<IDependency[]>(_ =>
+                [new AbcDependency(), new XyzDependency(), new AbcDependency()]
+            )
             .Bind<IService>().To<Service>()
 
             // Composition root

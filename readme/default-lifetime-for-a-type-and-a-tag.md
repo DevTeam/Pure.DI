@@ -56,7 +56,7 @@ partial class Composition
   private Dependency? _singletonDependency43;
   private Dependency? _singletonDependency44;
 
-  [OrdinalAttribute(20)]
+  [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;

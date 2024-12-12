@@ -36,14 +36,11 @@ partial class Composition
             // Session composition root
             .Root<Service>("SessionRoot", kind: RootKinds.Private)
             // Auto scoped
-            .Bind().To<IService>(ctx =>
+            .Bind().To(IService (Composition baseComposition) =>
             {
-                // Injects a base composition
-                ctx.Inject(out Composition baseComposition);
-
                 // Creates a session
                 var session = new Composition(baseComposition);
-
+                // Provides a root
                 return session.SessionRoot;
             })
 
@@ -77,7 +74,7 @@ partial class Composition
 
   private Dependency? _scopedDependency43;
 
-  [OrdinalAttribute(20)]
+  [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;
@@ -99,10 +96,10 @@ partial class Composition
       {
         Composition transientComposition3 = this;
         IService transientIService2;
-        // Injects a base composition
         Composition localBaseComposition81 = transientComposition3;
         // Creates a session
         var localSession82= new Composition(localBaseComposition81);
+        // Provides a root
         transientIService2 = localSession82.SessionRoot;
         IService localValue80 = transientIService2;
         return localValue80;

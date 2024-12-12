@@ -325,6 +325,7 @@ internal sealed class SetupsBuilder(
                     source,
                     contractType,
                     FactoryCodeBuilder.DefaultBindAttrParenthesizedLambda,
+                    true,
                     FactoryCodeBuilder.DefaultCtxParameter,
                     resolvers.ToImmutableArray(),
                     ImmutableArray<MdInitializer>.Empty,

@@ -92,7 +92,7 @@ partial class Composition
 
   private Clock? _singletonClock43;
 
-  [OrdinalAttribute(20)]
+  [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;

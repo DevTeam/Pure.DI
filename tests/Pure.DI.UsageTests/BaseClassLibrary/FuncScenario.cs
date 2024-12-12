@@ -28,11 +28,11 @@ interface IService
 
 class Service(Func<IDependency> dependencyFactory) : IService
 {
-    public ImmutableArray<IDependency> Dependencies { get; } =
+    public ImmutableArray<IDependency> Dependencies =>
     [
-        ..Enumerable
-            .Range(0, 10)
-            .Select(_ => dependencyFactory())
+        dependencyFactory(),
+        dependencyFactory(),
+        dependencyFactory()
     ];
 }
 // }
@@ -52,7 +52,7 @@ public class Scenario
 
         var composition = new Composition();
         var service = composition.Root;
-        service.Dependencies.Length.ShouldBe(10);
+        service.Dependencies.Length.ShouldBe(3);
 // }
         composition.SaveClassDiagram();
     }

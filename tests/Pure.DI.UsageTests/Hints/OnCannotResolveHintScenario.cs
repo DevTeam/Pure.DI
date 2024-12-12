@@ -49,7 +49,7 @@ partial class Composition
     {
         if (typeof(T) == typeof(string))
         {
-            return (T)(object)"Dependency with name";
+            return (T)(object)"My name";
         }
 
         throw new InvalidOperationException("Cannot resolve.");
@@ -73,7 +73,7 @@ public class Scenario
 
         var composition = new Composition();
         var service = composition.Root;
-        service.Dependency.ToString().ShouldBe("Dependency with name");
+        service.Dependency.ToString().ShouldBe("My name");
 
 // }
         composition.SaveClassDiagram();

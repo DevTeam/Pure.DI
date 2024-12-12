@@ -37,8 +37,8 @@ public class Scenario
             .Bind().As(Lifetime.Singleton).To<Dependency>()
             .RootBind<IService>("MyRoot").To<Service>();
         // It's the same as:
-        //   .Bind<IService>().To<Service>()
-        //   .Root<IService>("MyRoot")
+        //  .Bind<IService>().To<Service>()
+        //  .Root<IService>("MyRoot")
 
         var composition = new Composition();
         composition.MyRoot.ShouldBeOfType<Service>();

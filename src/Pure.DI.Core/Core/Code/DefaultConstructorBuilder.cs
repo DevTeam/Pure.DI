@@ -24,7 +24,7 @@ internal sealed class DefaultConstructorBuilder(
             code.AppendLine("/// </summary>");
         }
 
-        code.AppendLine($"[{Names.OrdinalAttributeName}(20)]");
+        code.AppendLine($"[{Names.OrdinalAttributeName}(256)]");
         code.AppendLine($"public {composition.Source.Source.Name.ClassName}()");
         code.AppendLine("{");
         using (code.Indent())

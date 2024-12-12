@@ -101,8 +101,8 @@ public class Scenario
             // for all abstract but NOT special types that are directly implemented.
             // So that's the equivalent of the following:
             // .Bind<IDependency, IOtherDependency, Dependency>()
-            //  .As(Lifetime.PerBlock)
-            //  .To<Dependency>()
+            //   .As(Lifetime.PerBlock)
+            //   .To<Dependency>()
             .Bind().As(Lifetime.PerBlock).To<Dependency>()
             .Bind().To<Service>()
 

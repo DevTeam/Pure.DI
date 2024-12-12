@@ -44,7 +44,7 @@ partial class Composition
 
   private Integration.CompositionInOtherProject? _singletonCompositionInOtherProject43;
 
-  [OrdinalAttribute(20)]
+  [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;

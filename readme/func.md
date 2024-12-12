@@ -17,11 +17,11 @@ interface IService
 
 class Service(Func<IDependency> dependencyFactory) : IService
 {
-    public ImmutableArray<IDependency> Dependencies { get; } =
+    public ImmutableArray<IDependency> Dependencies =>
     [
-        ..Enumerable
-            .Range(0, 10)
-            .Select(_ => dependencyFactory())
+        dependencyFactory(),
+        dependencyFactory(),
+        dependencyFactory()
     ];
 }
 
@@ -34,7 +34,7 @@ DI.Setup(nameof(Composition))
 
 var composition = new Composition();
 var service = composition.Root;
-service.Dependencies.Length.ShouldBe(10);
+service.Dependencies.Length.ShouldBe(3);
 ```
 
 Be careful, replication takes into account the lifetime of the object.
@@ -46,7 +46,7 @@ partial class Composition
 {
   private readonly Composition _root;
 
-  [OrdinalAttribute(20)]
+  [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;

@@ -153,7 +153,7 @@ public class SimpleFactoryTests
     }
 
     [Fact]
-    public async Task ShouldSupportSimpleFactoryWhenSimpleLambdaWitgGenericParams()
+    public async Task ShouldSupportSimpleFactoryWhenSimpleLambdaWithGenericParams()
     {
         // Given
 
@@ -278,6 +278,83 @@ public class SimpleFactoryTests
                                        DI.Setup("Composition")
                                            .Bind().To(_ => DateTimeOffset.Now)
                                            .Bind().To((Dependency dependency) => dependency.Initialize(DateTimeOffset.Now))
+                                           .Bind().To<Service>()
+                                           .Root<IService>("MyService");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.MyService;
+                                       Console.WriteLine(service.Dependency.IsInitialized);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportSimpleFactoryWhenInjectionWithOutTypeInLambda()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency
+                               {
+                                   DateTimeOffset Time { get; }
+                           
+                                   bool IsInitialized { get; }
+                               }
+                           
+                               class Dependency : IDependency
+                               {
+                                   public DateTimeOffset Time { get; private set; }
+                           
+                                   public bool IsInitialized { get; private set; }
+                           
+                                   public IDependency Initialize(DateTimeOffset time)
+                                   {
+                                       Time = time;
+                                       IsInitialized = true;
+                                       return this;
+                                   }
+                               }
+                           
+                               interface IService
+                               {
+                                   IDependency Dependency { get; }
+                               }
+                           
+                               class Service : IService
+                               {
+                                   public Service(IDependency dependency)
+                                   {
+                                       Dependency = dependency;
+                                   }
+                           
+                                   public IDependency Dependency { get; }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind().To(_ => DateTimeOffset.Now)
+                                           .Bind().To<Dependency, IDependency>(dependency => dependency.Initialize(DateTimeOffset.Now))
                                            .Bind().To<Service>()
                                            .Root<IService>("MyService");
                                    }

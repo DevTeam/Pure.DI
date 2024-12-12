@@ -39,7 +39,7 @@ internal partial class Composition
         ref T value,
         object? tag,
         Lifetime lifetime) =>
-        _log.Add(typeof(T).Name);
+        _log.Add($"{typeof(T).Name} created");
 }
 
 DI.Setup(nameof(Composition))
@@ -53,7 +53,10 @@ var composition = new Composition(log);
 var service1 = composition.Root;
 var service2 = composition.Root;
 
-log.ShouldBe([nameof(Dependency), nameof(Service), nameof(Service)]);
+log.ShouldBe([
+    "Dependency created",
+    "Service created",
+    "Service created"]);
 ```
 
 The `OnNewInstanceLifetimeRegularExpression` hint helps you define a set of lifetimes that require instance creation control. You can use it to specify a regular expression to filter bindings by lifetime name.
@@ -69,7 +72,7 @@ partial class Composition
 
   private Dependency? _singletonDependency43;
 
-  [OrdinalAttribute(20)]
+  [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;

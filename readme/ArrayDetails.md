@@ -93,7 +93,7 @@ partial class Array
 {
   private readonly Array _root;
 
-  [OrdinalAttribute(20)]
+  [OrdinalAttribute(256)]
   public Array()
   {
     _root = this;

@@ -16,9 +16,9 @@ $f=For more hints, see [this](README.md#setup-hints) page.
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable UnusedMember.Global
 
+// ReSharper disable NotAccessedPositionalProperty.Global
 namespace Pure.DI.UsageTests.Hints.OnDependencyInjectionHintScenario;
 
-using System.Collections.Immutable;
 using Shouldly;
 using Xunit;
 
@@ -27,7 +27,7 @@ using static Hint;
 
 interface IDependency;
 
-class Dependency : IDependency;
+record Dependency(int Id) : IDependency;
 
 interface IService
 {
@@ -66,16 +66,20 @@ public class Scenario
 // {
         // OnDependencyInjection = On
         DI.Setup(nameof(Composition))
-            .Hint(OnDependencyInjectionContractTypeNameRegularExpression, nameof(IDependency))
+            .Hint(OnDependencyInjectionContractTypeNameRegularExpression, "(.*IDependency|int)$")
+            .RootArg<int>("id")
             .Bind().To<Dependency>()
             .Bind().To<Service>()
-            .Root<IService>("Root");
+            .Root<IService>("GetRoot");
 
         var log = new List<string>();
         var composition = new Composition(log);
-        var service = composition.Root;
+        var service = composition.GetRoot(33);
 
-        log.ShouldBe(ImmutableArray.Create("Dependency injected"));
+        log.ShouldBe([
+            "Int32 injected",
+            "Dependency injected"
+        ]);
 // }
         composition.SaveClassDiagram();
     }

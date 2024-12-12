@@ -109,7 +109,7 @@ partial class Composition: IDisposable
 
   private Dependency? _singletonDependency44;
 
-  [OrdinalAttribute(20)]
+  [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;

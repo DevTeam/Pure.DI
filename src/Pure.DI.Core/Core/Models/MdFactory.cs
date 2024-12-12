@@ -7,6 +7,7 @@ internal readonly record struct MdFactory(
     SyntaxNode Source,
     ITypeSymbol Type,
     LambdaExpressionSyntax Factory,
+    bool IsSimpleFactory,
     ParameterSyntax Context,
     in ImmutableArray<MdResolver> Resolvers,
     in ImmutableArray<MdInitializer> Initializers,

@@ -38,7 +38,7 @@ partial class Composition
 
   private Service? _singletonService44;
 
-  [OrdinalAttribute(20)]
+  [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;

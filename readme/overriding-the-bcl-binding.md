@@ -23,12 +23,9 @@ class Service(IDependency[] dependencies) : IService
 }
 
 DI.Setup(nameof(Composition))
-    .Bind<IDependency[]>().To(_ => new IDependency[]
-    {
-        new AbcDependency(),
-        new XyzDependency(),
-        new AbcDependency()
-    })
+    .Bind<IDependency[]>().To<IDependency[]>(_ =>
+        [new AbcDependency(), new XyzDependency(), new AbcDependency()]
+    )
     .Bind<IService>().To<Service>()
 
     // Composition root
@@ -49,7 +46,7 @@ partial class Composition
 {
   private readonly Composition _root;
 
-  [OrdinalAttribute(20)]
+  [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;
@@ -65,12 +62,8 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      IDependency[] transient1 = new IDependency[]
-      {
-        new AbcDependency(),
-        new XyzDependency(),
-        new AbcDependency()
-      };
+      IDependency[] transient1 = [new AbcDependency(), new XyzDependency(), new AbcDependency()]
+      ;
       return new Service(transient1);
     }
   }

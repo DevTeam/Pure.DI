@@ -39,9 +39,9 @@ class Service(
 
 DI.Setup(nameof(Composition))
     .Bind(Tag.OnConstructorArg<Service>("dependency1"))
-    .To<AbcDependency>()
+        .To<AbcDependency>()
     .Bind(Tag.OnConstructorArg<Consumer<TT>>("myDep"))
-    .To<XyzDependency>()
+        .To<XyzDependency>()
     .Bind<IService>().To<Service>()
 
     // Specifies to create the composition root named "Root"
@@ -63,7 +63,7 @@ partial class Composition
 {
   private readonly Composition _root;
 
-  [OrdinalAttribute(20)]
+  [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;
