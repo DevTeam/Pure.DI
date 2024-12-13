@@ -29,7 +29,7 @@ DI.Setup(nameof(Composition))
     .Root<IService<TT>>("GetMyService");
 
 var composition = new Composition();
-var service = composition.GetMyService<int>(someArg: 33);
+IService<int> service = composition.GetMyService<int>(someArg: 33);
 ```
 
 The following partial class will be generated:
@@ -39,7 +39,7 @@ partial class Composition
 {
   private readonly Composition _root;
 
-  [OrdinalAttribute(10)]
+  [OrdinalAttribute(128)]
   public Composition()
   {
     _root = this;

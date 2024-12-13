@@ -13,7 +13,7 @@ internal sealed class DryIoc : BaseAbstractContainer<Container>
         Type contractType,
         Type implementationType,
         AbstractLifetime lifetime = AbstractLifetime.Transient,
-        string? name = default)
+        string? name = null)
     {
         var reuse = lifetime switch
         {

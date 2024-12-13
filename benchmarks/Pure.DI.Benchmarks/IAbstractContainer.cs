@@ -8,5 +8,5 @@ public interface IAbstractContainer<out TActualContainer> : IDisposable
         Type contractType,
         Type implementationType,
         AbstractLifetime lifetime = AbstractLifetime.Transient,
-        string? name = default);
+        string? name = null);
 }

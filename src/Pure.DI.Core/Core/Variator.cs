@@ -41,7 +41,7 @@ internal sealed class Variator<T> : IVariator<T>
             return hasNext;
         }
 
-        variants = default;
+        variants = null;
         return false;
     }
 }

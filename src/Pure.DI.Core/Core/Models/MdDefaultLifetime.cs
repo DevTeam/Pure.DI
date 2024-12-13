@@ -4,7 +4,7 @@ namespace Pure.DI.Core.Models;
 
 internal readonly record struct MdDefaultLifetime(
     in MdLifetime Lifetime,
-    ITypeSymbol? Type = default,
+    ITypeSymbol? Type = null,
     ImmutableArray<MdTag> Tags = default)
 {
     public override string ToString() =>

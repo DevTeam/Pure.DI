@@ -60,18 +60,18 @@ internal sealed class ClassDiagramBuilder(
                 compositionLines.AppendLine($"class {composition.Source.Source.Name.ClassName}");
             }
             
-            var compositionClass = new Class(composition.Source.Source.Name.Namespace, composition.Source.Source.Name.ClassName, "", default, compositionLines);
+            var compositionClass = new Class(composition.Source.Source.Name.Namespace, composition.Source.Source.Name.ClassName, "", null, compositionLines);
             classes.Add(compositionClass);
 
             if (composition.TotalDisposablesCount > 0)
             {
-                classes.Add(new Class(nameof(System), "IDisposable", "abstract", default, new LinesBuilder()));
+                classes.Add(new Class(nameof(System), "IDisposable", "abstract", null, new LinesBuilder()));
                 lines.AppendLine($"{composition.Source.Source.Name.ClassName} --|> IDisposable");
             }
 
             if (composition.AsyncDisposableCount > 0)
             {
-                classes.Add(new Class(nameof(System), "IAsyncDisposable", "abstract", default, new LinesBuilder()));
+                classes.Add(new Class(nameof(System), "IAsyncDisposable", "abstract", null, new LinesBuilder()));
                 lines.AppendLine($"{composition.Source.Source.Name.ClassName} --|> IAsyncDisposable");
             }
 

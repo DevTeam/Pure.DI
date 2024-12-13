@@ -15,7 +15,7 @@ internal sealed class IoCContainer : BaseAbstractContainer<Container>
         Type contractType,
         Type implementationType,
         AbstractLifetime lifetime = AbstractLifetime.Transient,
-        string? name = default)
+        string? name = null)
     {
         var bind = _container.Bind(contractType);
         switch (lifetime)

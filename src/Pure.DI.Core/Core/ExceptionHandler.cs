@@ -66,7 +66,7 @@ internal class ExceptionHandler(ILogger<ExceptionHandler> logger)
                 DiagnosticSeverity.Hidden,
 #endif
                 "Code generation aborted.",
-                default,
+                null,
                 LogId.InfoGenerationInterrupted,
                 handledException));
 
@@ -75,7 +75,7 @@ internal class ExceptionHandler(ILogger<ExceptionHandler> logger)
             new LogEntry(
                 DiagnosticSeverity.Error,
                 "An unhandled error has occurred.",
-                default,
+                null,
                 LogId.ErrorUnhandled,
                 exception));
 }

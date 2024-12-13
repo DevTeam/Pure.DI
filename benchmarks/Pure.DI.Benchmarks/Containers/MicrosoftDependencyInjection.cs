@@ -18,7 +18,7 @@ internal sealed class MicrosoftDependencyInjection : BaseAbstractContainer<Servi
         Type contractType,
         Type implementationType,
         AbstractLifetime lifetime = AbstractLifetime.Transient,
-        string? name = default)
+        string? name = null)
     {
         switch (lifetime)
         {

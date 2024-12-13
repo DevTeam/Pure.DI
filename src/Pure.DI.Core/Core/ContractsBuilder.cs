@@ -35,7 +35,7 @@ internal sealed class ContractsBuilder : IBuilder<ContractsBuildContext, ISet<In
 
             if (!contractTags.Any())
             {
-                contractTags.Add(default);
+                contractTags.Add(null);
             }
 
             foreach (var tag in contractTags)

@@ -17,7 +17,7 @@ internal class VariablesBuilder(
         var blockId = 0;
         var transientId = 0;
         var blockMap = new Dictionary<(MdBinding, object?, int), Variable>();
-        var rootBlock = new Block(blockId++, default, []);
+        var rootBlock = new Block(blockId++, null, []);
         rootBlock.Statements.AddFirst(
             GetVariable(
                 dependencyGraph.Source,
@@ -60,7 +60,7 @@ internal class VariablesBuilder(
                         }
 
                         var path = new Dictionary<int, Variable>();
-                        ICollection<Accumulator>? accumulators = default;
+                        ICollection<Accumulator>? accumulators = null;
                         var isRoot = true;
                         foreach (var pathItem in currentStatement.GetPath())
                         {
@@ -71,7 +71,7 @@ internal class VariablesBuilder(
                                 continue;
                             }
 
-                            if (accumulators != default)
+                            if (accumulators != null)
                             {
                                 continue;
                             }
@@ -197,7 +197,7 @@ internal class VariablesBuilder(
         DependencyNode node,
         in Injection injection,
         ref int transientId,
-        Variable? cycleVariable = default)
+        Variable? cycleVariable = null)
     {
         if (cycleVariable is not null)
         {

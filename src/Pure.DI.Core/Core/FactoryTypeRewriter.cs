@@ -40,7 +40,7 @@ internal sealed class FactoryTypeRewriter(
             return new MdTag(0, newTag);
         }
 
-        return default;
+        return null;
     }
 
     public override SyntaxNode? VisitIdentifierName(IdentifierNameSyntax node) =>
@@ -54,11 +54,11 @@ internal sealed class FactoryTypeRewriter(
             ? SyntaxFactory.ParseTypeName(newTypeName)
                 .WithLeadingTrivia(node.GetLeadingTrivia())
                 .WithTrailingTrivia(node.GetTrailingTrivia())
-            : default(SyntaxNode?);
+            : null;
 
     private bool TryGetNewTypeName(SyntaxNode? node, [NotNullWhen(true)] out string? newTypeName)
     {
-        newTypeName = default;
+        newTypeName = null;
         if (node is null)
         {
             return false;
@@ -75,7 +75,7 @@ internal sealed class FactoryTypeRewriter(
 
     private bool TryGetNewTypeName(ITypeSymbol type, bool inTree, [NotNullWhen(true)] out string? newTypeName)
     {
-        newTypeName = default;
+        newTypeName = null;
         if (!marker.IsMarkerBased(_context.Setup, type))
         {
             return false;

@@ -15,9 +15,9 @@ internal sealed class Unity : BaseAbstractContainer<UnityContainer>
         Type contractType,
         Type implementationType,
         AbstractLifetime lifetime = AbstractLifetime.Transient,
-        string? name = default)
+        string? name = null)
     {
-        ITypeLifetimeManager? lifetimeManager = default;
+        ITypeLifetimeManager? lifetimeManager = null;
         switch (lifetime)
         {
             case AbstractLifetime.Transient:
@@ -28,7 +28,7 @@ internal sealed class Unity : BaseAbstractContainer<UnityContainer>
                 break;
 
             default:
-                throw new ArgumentOutOfRangeException(nameof(lifetime), lifetime, default);
+                throw new ArgumentOutOfRangeException(nameof(lifetime), lifetime, null);
         }
 
         ((IUnityContainer)_container).RegisterType(contractType, implementationType, name, lifetimeManager);

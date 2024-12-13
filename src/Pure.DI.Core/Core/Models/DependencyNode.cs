@@ -15,11 +15,11 @@ internal record DependencyNode(
     public DependencyNode(
         int Variation,
         in MdBinding binding,
-        in DpRoot? Root = default,
-        in DpImplementation? Implementation = default,
-        in DpFactory? Factory = default,
-        in DpArg? Arg = default,
-        in DpConstruct? Construct = default)
+        in DpRoot? Root = null,
+        in DpImplementation? Implementation = null,
+        in DpFactory? Factory = null,
+        in DpArg? Arg = null,
+        in DpConstruct? Construct = null)
         : this(
             Variation,
             binding,

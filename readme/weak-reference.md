@@ -15,7 +15,7 @@ class Service(WeakReference<IDependency> dependency) : IService
     public IDependency? Dependency =>
         dependency.TryGetTarget(out var value)
             ? value
-            : default;
+            : null;
 }
 
 DI.Setup(nameof(Composition))

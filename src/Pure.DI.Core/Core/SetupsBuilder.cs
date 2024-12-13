@@ -147,7 +147,7 @@ internal sealed class SetupsBuilder(
             FinalizeBinding(setup, binding);
         }
 
-        return FinishSetup(default)!;
+        return FinishSetup(null)!;
     }
 
     private void FinalizeBinding(MdSetup setup, MdBinding binding)
@@ -202,7 +202,7 @@ internal sealed class SetupsBuilder(
         foreach (var (attribute, member) in membersToBind)
         {
             var values = arguments.GetArgs(attribute.ConstructorArguments, attribute.NamedArguments, "type", "lifetime", "tags");
-            ITypeSymbol? contractType = default;
+            ITypeSymbol? contractType = null;
             if (values.Length > 0 && values[0].Value is ITypeSymbol newContractType)
             {
                 contractType = newContractType;
@@ -282,7 +282,7 @@ internal sealed class SetupsBuilder(
                 tags = [];
             }
 
-            object? valueTag = default;
+            object? valueTag = null;
             if (!contract.Tags.IsDefaultOrEmpty)
             {
                 valueTag = contract.Tags.First().Value;
@@ -314,7 +314,7 @@ internal sealed class SetupsBuilder(
 
             if (tags.Count == 0)
             {
-                VisitTag(new MdTag(tagPosition, default));
+                VisitTag(new MdTag(tagPosition, null));
             }
 
             var memberResolver = CreateResolver(typeConstructor, FactoryCodeBuilder.DefaultInstanceValueName, contract.ContractType!, valueTag, ref position);
@@ -358,7 +358,7 @@ internal sealed class SetupsBuilder(
     {
         if (_setup is not { } setup)
         {
-            return default;
+            return null;
         }
 
         setup = setup with
@@ -387,7 +387,7 @@ internal sealed class SetupsBuilder(
         _ordinalAttributes.Clear();
         _usingDirectives.Clear();
         _accumulators.Clear();
-        _setup = default;
+        _setup = null;
         _bindingBuilder = bindingBuilderFactory();
         return setup;
     }

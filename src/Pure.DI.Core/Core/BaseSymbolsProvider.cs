@@ -34,7 +34,7 @@ internal class BaseSymbolsProvider : IBaseSymbolsProvider
                 yield return type;
             }
 
-            if (symbol.BaseType != default)
+            if (symbol.BaseType != null)
             {
                 symbol = symbol.BaseType;
                 continue;

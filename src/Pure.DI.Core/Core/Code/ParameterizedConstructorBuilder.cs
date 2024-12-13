@@ -25,7 +25,7 @@ internal sealed class ParameterizedConstructorBuilder(
 
         constructorCommenter.AddComments(composition, Unit.Shared);
 
-        code.AppendLine($"[{Names.OrdinalAttributeName}(10)]");
+        code.AppendLine($"[{Names.OrdinalAttributeName}(128)]");
         var classArgs = composition.Args.GetArgsOfKind(ArgKind.Class).ToArray();
         code.AppendLine($"public {composition.Source.Source.Name.ClassName}({string.Join(", ", classArgs.Select(arg => $"{typeResolver.Resolve(composition.Source.Source, arg.InstanceType)} {arg.Node.Arg?.Source.ArgName}"))})");
         code.AppendLine("{");

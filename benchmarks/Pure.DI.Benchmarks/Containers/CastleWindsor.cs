@@ -15,7 +15,7 @@ internal sealed class CastleWindsor : BaseAbstractContainer<WindsorContainer>
         Type contractType,
         Type implementationType,
         AbstractLifetime lifetime = AbstractLifetime.Transient,
-        string? name = default)
+        string? name = null)
     {
         var registration = Component.For(contractType).ImplementedBy(implementationType);
         switch (lifetime)

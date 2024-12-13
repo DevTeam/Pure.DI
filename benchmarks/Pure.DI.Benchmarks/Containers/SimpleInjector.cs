@@ -33,7 +33,7 @@ internal sealed class SimpleInjector : BaseAbstractContainer<Container>
         Type contractType,
         Type implementationType,
         AbstractLifetime lifetime = AbstractLifetime.Transient,
-        string? name = default)
+        string? name = null)
     {
         switch (lifetime)
         {

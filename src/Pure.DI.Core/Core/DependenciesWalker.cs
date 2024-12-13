@@ -39,7 +39,7 @@ internal class DependenciesWalker<TContext>
 
     public virtual void VisitRoot(in TContext ctx, in DpRoot root)
     {
-        VisitInjection(ctx, root.Injection, false, default, ImmutableArray.Create(root.Source.Source.GetLocation()));
+        VisitInjection(ctx, root.Injection, false, null, ImmutableArray.Create(root.Source.Source.GetLocation()));
     }
 
     public virtual void VisitImplementation(in TContext ctx, in DpImplementation implementation)
@@ -69,7 +69,7 @@ internal class DependenciesWalker<TContext>
     {
         foreach (var injection in factory.ResolversInjections)
         {
-            VisitInjection(ctx, injection, false, default, ImmutableArray.Create(factory.Source.Source.GetLocation()));
+            VisitInjection(ctx, injection, false, null, ImmutableArray.Create(factory.Source.Source.GetLocation()));
         }
         
         foreach (var initializer in factory.Initializers)
@@ -86,7 +86,7 @@ internal class DependenciesWalker<TContext>
     {
         foreach (var injection in construct.Injections)
         {
-            VisitInjection(ctx, injection, false, default, ImmutableArray.Create(construct.Binding.Source.GetLocation()));
+            VisitInjection(ctx, injection, false, null, ImmutableArray.Create(construct.Binding.Source.GetLocation()));
         }
     }
 
@@ -114,7 +114,7 @@ internal class DependenciesWalker<TContext>
             ctx,
             property.Injection,
             parameter.HasExplicitDefaultValue,
-            parameter.HasExplicitDefaultValue ? parameter.ExplicitDefaultValue : default,
+            parameter.HasExplicitDefaultValue ? parameter.ExplicitDefaultValue : null,
             property.Property.Locations);
     }
 
@@ -124,7 +124,7 @@ internal class DependenciesWalker<TContext>
             ctx,
             field.Injection,
             field.Field.HasConstantValue,
-            field.Field.HasConstantValue ? field.Field.ConstantValue : default,
+            field.Field.HasConstantValue ? field.Field.ConstantValue : null,
             field.Field.Locations);
     }
 
@@ -142,7 +142,7 @@ internal class DependenciesWalker<TContext>
             ctx,
             parameter.Injection,
             parameter.ParameterSymbol.HasExplicitDefaultValue,
-            parameter.ParameterSymbol.HasExplicitDefaultValue ? parameter.ParameterSymbol.ExplicitDefaultValue : default,
+            parameter.ParameterSymbol.HasExplicitDefaultValue ? parameter.ParameterSymbol.ExplicitDefaultValue : null,
             parameter.ParameterSymbol.Locations);
     }
 

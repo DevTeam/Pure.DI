@@ -45,7 +45,7 @@ partial class Composition
 
   private Integration.CompositionWithGenericRootsAndArgsInOtherProject? _singletonCompositionWithGenericRootsAndArgsInOtherProject44;
 
-  [OrdinalAttribute(10)]
+  [OrdinalAttribute(128)]
   public Composition()
   {
     _root = this;

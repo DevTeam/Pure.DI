@@ -125,7 +125,7 @@ internal class ReadmeTarget(
         foreach (var file in files)
         {
             var relativePath = Path.GetRelativePath(Environment.CurrentDirectory, file);
-            Part? part = default;
+            Part? part = null;
             var vars = new Dictionary<string, string>
             {
                 [VisibleKey] = "False",
@@ -151,7 +151,7 @@ internal class ReadmeTarget(
 
                 if (str.StartsWith("*/"))
                 {
-                    part = default;
+                    part = null;
                     continue;
                 }
 
@@ -171,7 +171,7 @@ internal class ReadmeTarget(
                     body.AddRange(localBody.Select(i => i.Length > offset ? i[offset..].TrimEnd() : i));
                     offset = int.MaxValue;
                     localBody.Clear();
-                    part = default;
+                    part = null;
                     continue;
                 }
 
@@ -210,6 +210,12 @@ internal class ReadmeTarget(
                         {
                             offset = curOffset;
                         }
+                    }
+
+                    if (line.TrimStart().StartsWith("//# "))
+                    {
+                        localBody.Add(line.Replace("//# ", ""));
+                        continue;
                     }
 
                     localBody.Add(line);

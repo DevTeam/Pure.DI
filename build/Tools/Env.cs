@@ -16,8 +16,8 @@ internal class Env
 
     private static string? TryFindFile(string? path, string searchPattern)
     {
-        string? target = default;
-        while (path != default && target == default)
+        string? target = null;
+        while (path != null && target == null)
         {
             target = Directory.EnumerateFileSystemEntries(path, searchPattern).FirstOrDefault();
             path = Path.GetDirectoryName(path);

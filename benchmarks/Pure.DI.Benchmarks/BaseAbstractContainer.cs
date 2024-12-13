@@ -22,7 +22,7 @@ internal abstract class BaseAbstractContainer<TActualContainer> : IAbstractConta
         Type contractType,
         Type implementationType,
         AbstractLifetime lifetime = AbstractLifetime.Transient,
-        string? name = default);
+        string? name = null);
 
     public abstract T Resolve<T>() where T : class;
 

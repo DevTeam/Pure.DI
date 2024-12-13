@@ -12,7 +12,7 @@ internal sealed class Graph<TVertex, TEdge> : IGraph<TVertex, TEdge>
 
     public Graph(
         IEnumerable<GraphEntry<TVertex, TEdge>> entries,
-        IEqualityComparer<TVertex>? vertexEqualityComparer = default)
+        IEqualityComparer<TVertex>? vertexEqualityComparer = null)
     {
         var comparer = vertexEqualityComparer ?? EqualityComparer<TVertex>.Default;
         _inOutEdges = new Dictionary<TVertex, GraphEntry<TVertex, TEdge>>(comparer);

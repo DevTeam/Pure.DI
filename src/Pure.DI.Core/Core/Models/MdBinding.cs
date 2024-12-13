@@ -7,12 +7,12 @@ internal record MdBinding(
     in SemanticModel SemanticModel,
     in ImmutableArray<MdContract> Contracts,
     in ImmutableArray<MdTag> Tags,
-    in MdLifetime? Lifetime = default,
-    in MdImplementation? Implementation = default,
-    in MdFactory? Factory = default,
-    in MdArg? Arg = default,
-    in MdConstruct? Construct = default,
-    ITypeConstructor? TypeConstructor = default)
+    in MdLifetime? Lifetime = null,
+    in MdImplementation? Implementation = null,
+    in MdFactory? Factory = null,
+    in MdArg? Arg = null,
+    in MdConstruct? Construct = null,
+    ITypeConstructor? TypeConstructor = null)
 {
     public override string ToString()
     {

@@ -77,7 +77,7 @@ partial class Composition
   private readonly string _argServiceName;
   private readonly string _argDependencyName;
 
-  [OrdinalAttribute(10)]
+  [OrdinalAttribute(128)]
   public Composition(int id, string serviceName, string dependencyName)
   {
     _argId = id;

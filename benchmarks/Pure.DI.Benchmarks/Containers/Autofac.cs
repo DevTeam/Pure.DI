@@ -17,7 +17,7 @@ internal sealed class Autofac : BaseAbstractContainer<IContainer>
         Type contractType,
         Type implementationType,
         AbstractLifetime lifetime = AbstractLifetime.Transient,
-        string? name = default)
+        string? name = null)
     {
         var registration = _builder.RegisterType(implementationType).As(contractType);
         switch (lifetime)

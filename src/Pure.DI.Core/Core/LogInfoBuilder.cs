@@ -16,7 +16,7 @@ internal sealed class LogInfoBuilder : IBuilder<LogEntry, LogInfo>
             _ => throw new ArgumentOutOfRangeException(nameof(logEntry.Severity), logEntry.Severity, null)
         };
 
-        DiagnosticDescriptor? descriptor = default;
+        DiagnosticDescriptor? descriptor = null;
         if (!string.IsNullOrWhiteSpace(logEntry.Id))
         {
             var message = new StringBuilder(logEntry.Message);

@@ -36,6 +36,8 @@ class Service(
 
 DI.Setup(nameof(Composition))
     // Tag.Type here is the same as typeof(AbcDependency)
+    // The `default` tag is used to resolve dependencies
+    // when the tag was not specified by the consumer
     .Bind<IDependency>(Tag.Type, default).To<AbcDependency>()
     // Tag.Type here is the same as typeof(XyzDependency)
     .Bind<IDependency>(Tag.Type).As(Lifetime.Singleton).To<XyzDependency>()

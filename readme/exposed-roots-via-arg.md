@@ -41,7 +41,7 @@ partial class Composition
 
   private readonly Integration.CompositionInOtherProject _argBaseComposition;
 
-  [OrdinalAttribute(10)]
+  [OrdinalAttribute(128)]
   public Composition(Integration.CompositionInOtherProject baseComposition)
   {
     _argBaseComposition = baseComposition ?? throw new ArgumentNullException(nameof(baseComposition));

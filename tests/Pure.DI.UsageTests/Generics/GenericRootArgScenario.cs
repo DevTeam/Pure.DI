@@ -10,6 +10,9 @@ $d=Generic root arguments
 // ReSharper disable ArrangeTypeModifiers
 
 // ReSharper disable UnusedVariable
+// ReSharper disable SuggestVarOrType_Elsewhere
+// ReSharper disable RedundantTypeArgumentsOfMethod
+// ReSharper disable UnusedMemberInSuper.Global
 namespace Pure.DI.UsageTests.Basics.GenericRootArgScenario;
 
 using Xunit;
@@ -48,7 +51,7 @@ public class Scenario
             .Root<IService<TT>>("GetMyService");
 
         var composition = new Composition();
-        var service = composition.GetMyService<int>(someArg: 33);
+        IService<int> service = composition.GetMyService<int>(someArg: 33);
 // }
         composition.SaveClassDiagram();
     }

@@ -11,6 +11,7 @@ $h=`Tag.Type` in bindings replaces the expression `typeof(T)`, where `T` is the 
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable ClassNeverInstantiated.Global
 
+// ReSharper disable PreferConcreteValueOverDefault
 namespace Pure.DI.UsageTests.Advanced.TagTypeScenario;
 
 using Shouldly;
@@ -53,7 +54,9 @@ public class Scenario
     {
 // {
         DI.Setup(nameof(Composition))
-            // Tag.Type here is the same as typeof(AbcDependency) 
+            // Tag.Type here is the same as typeof(AbcDependency)
+            // The `default` tag is used to resolve dependencies
+            // when the tag was not specified by the consumer
             .Bind<IDependency>(Tag.Type, default).To<AbcDependency>()
             // Tag.Type here is the same as typeof(XyzDependency)
             .Bind<IDependency>(Tag.Type).As(Lifetime.Singleton).To<XyzDependency>()

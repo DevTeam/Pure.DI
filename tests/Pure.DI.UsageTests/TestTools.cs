@@ -4,7 +4,7 @@ using System.Text;
 
 public static class TestTools
 {
-    public static void SaveClassDiagram(this object composition, string? name = default)
+    public static void SaveClassDiagram(this object composition, string? name = null)
     {
         var logDirName = Path.Combine(GetSolutionDirectory(), ".logs");
         Directory.CreateDirectory(logDirName);
@@ -25,8 +25,8 @@ public static class TestTools
 
     private static string? TryFindFile(string? path, string searchPattern)
     {
-        string? target = default;
-        while (path != default && target == default)
+        string? target = null;
+        while (path != null && target == null)
         {
             target = Directory.EnumerateFileSystemEntries(path, searchPattern).FirstOrDefault();
             path = Path.GetDirectoryName(path);

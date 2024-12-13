@@ -11,7 +11,7 @@ internal readonly record struct MdConstruct(
     ImmutableArray<MdContract> Dependencies,
     bool HasExplicitDefaultValue,
     object? ExplicitDefaultValue,
-    object? State = default)
+    object? State = null)
 {
     public override string ToString() => $"To<{Kind}<{Type}>>()";
 }

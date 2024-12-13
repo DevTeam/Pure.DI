@@ -12,7 +12,7 @@ internal readonly record struct MdFactory(
     in ImmutableArray<MdResolver> Resolvers,
     in ImmutableArray<MdInitializer> Initializers,
     bool HasContextTag,
-    in MdResolver? MemberResolver = default)
+    in MdResolver? MemberResolver = null)
 {
     public override string ToString() => $"To<{Type}>({Factory})";
 }

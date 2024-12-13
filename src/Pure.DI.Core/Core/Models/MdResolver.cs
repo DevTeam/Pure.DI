@@ -10,11 +10,11 @@ internal readonly record struct MdResolver(
     ITypeSymbol ContractType,
     MdTag? Tag,
     ExpressionSyntax TargetValue,
-    TypeSyntax? ArgumentType = default,
-    ParameterSyntax? Parameter = default,
+    TypeSyntax? ArgumentType = null,
+    ParameterSyntax? Parameter = null,
     ImmutableArray<AttributeSyntax> Attributes = default,
-    ISymbol? Member = default,
-    ITypeConstructor? TypeConstructor = default)
+    ISymbol? Member = null,
+    ITypeConstructor? TypeConstructor = null)
 {
     public override string ToString() => $"<=={ContractType}({Tag?.ToString()})";
 }

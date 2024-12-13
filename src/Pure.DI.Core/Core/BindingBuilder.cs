@@ -143,12 +143,12 @@ internal class BindingBuilder(
         {
             _contracts.Clear();
             _tags.Clear();
-            _source = default;
-            _semanticModel = default;
-            _lifetime = default;
-            _implementation = default;
-            _factory = default;
-            _arg = default;
+            _source = null;
+            _semanticModel = null;
+            _lifetime = null;
+            _implementation = null;
+            _factory = null;
+            _arg = null;
         }
     }
 

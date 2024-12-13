@@ -12,6 +12,7 @@ $f=The tag can be a constant, a type, or a value of an enumerated type. The _def
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable ClassNeverInstantiated.Global
 
+// ReSharper disable PreferConcreteValueOverDefault
 namespace Pure.DI.UsageTests.Basics.TagsScenario;
 
 using Shouldly;
@@ -57,6 +58,8 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
+            // The `default` tag is used to resolve dependencies
+            // when the tag was not specified by the consumer
             .Bind<IDependency>("AbcTag", default).To<AbcDependency>()
             .Bind<IDependency>("XyzTag")
             .As(Lifetime.Singleton)

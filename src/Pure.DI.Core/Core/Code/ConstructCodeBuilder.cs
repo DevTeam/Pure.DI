@@ -66,7 +66,7 @@ internal class ConstructCodeBuilder(
             var hasYieldReturn = false;
             foreach (var statement in variable.Args)
             {
-                ctx.StatementBuilder.Build(ctx with { Level = level, Variable = statement.Current, LockIsRequired = default }, statement);
+                ctx.StatementBuilder.Build(ctx with { Level = level, Variable = statement.Current, LockIsRequired = null }, statement);
                 code.AppendLine($"yield return {ctx.BuildTools.OnInjected(ctx, statement.Current)};");
                 hasYieldReturn = true;
             }

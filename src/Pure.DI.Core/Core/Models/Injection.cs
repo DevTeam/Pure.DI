@@ -8,7 +8,7 @@ internal readonly record struct Injection(
     ITypeSymbol Type,
     object? Tag)
 {
-    public override string ToString() => $"{Type}{(Tag != default && Tag is not MdTagOnSites ? $"({Tag.ValueToString()})" : "")}";
+    public override string ToString() => $"{Type}{(Tag != null && Tag is not MdTagOnSites ? $"({Tag.ValueToString()})" : "")}";
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool Equals(Injection other) =>

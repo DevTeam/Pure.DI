@@ -29,7 +29,7 @@ using Generator = Generator;
 public static class TestExtensions
 {
     [SuppressMessage("Performance", "CA1806:Не игнорируйте результаты метода")]
-    internal static async Task<Result> RunAsync(this string setupCode, Options? options = default)
+    internal static async Task<Result> RunAsync(this string setupCode, Options? options = null)
     {
         var stdOut = new List<string>();
         var runOptions = options ?? new Options();

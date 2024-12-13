@@ -23,7 +23,7 @@ internal class ApiInvocationProcessor(
         {
             MemberAccessExpressionSyntax memberAccess when memberAccess.Kind() == SyntaxKind.SimpleMemberAccessExpression => memberAccess.Name,
             IdentifierNameSyntax { Identifier.Text: nameof(DI.Setup) } identifierName => identifierName,
-            _ => default
+            _ => null
         };
 
         var prevInvocation = invocation.DescendantNodes().FirstOrDefault(i => i is InvocationExpressionSyntax);
@@ -51,7 +51,7 @@ internal class ApiInvocationProcessor(
                             new MdContract(
                                 semanticModel,
                                 invocation.ArgumentList,
-                                default,
+                                null,
                                 ContractKind.Implicit,
                                 BuildTags(semanticModel, invocation.ArgumentList.Arguments)));
                         break;
@@ -463,7 +463,7 @@ internal class ApiInvocationProcessor(
     {
         if (genericName.TypeArgumentList.Arguments is not [{ } attributeTypeSyntax])
         {
-            type = default;
+            type = null;
             return false;
         }
 
@@ -498,7 +498,7 @@ internal class ApiInvocationProcessor(
         IReadOnlyCollection<string> invocationComments,
         ITypeSymbol rootSymbol)
     {
-        tag ??= new MdTag(0, default);
+        tag ??= new MdTag(0, null);
         var rootArgs = arguments.GetArgs(invocation.ArgumentList, "name", "kind");
         var name = rootArgs[0] is { } nameArg ? semantic.GetConstantValue<string>(semanticModel, nameArg.Expression) ?? "" : "";
         var kind = rootArgs[1] is { } kindArg ? semantic.GetConstantValue<RootKinds>(semanticModel, kindArg.Expression) : RootKinds.Default;
@@ -599,7 +599,7 @@ internal class ApiInvocationProcessor(
                                 invocation,
                                 position++,
                                 argumentOperation.Value.Type!,
-                                default,
+                                null,
                                 targetValue.Expression);
                         }
 
@@ -621,7 +621,7 @@ internal class ApiInvocationProcessor(
                             hasContextTag
                                 ? MdTag.ContextTag
                                 : tag is null
-                                    ? default
+                                    ? null
                                     : semantic.GetConstantValue<object>(semanticModel, tag));
 
                         if (args[1] is { } valueArg

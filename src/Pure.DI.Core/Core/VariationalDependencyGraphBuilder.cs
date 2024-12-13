@@ -72,7 +72,7 @@ internal sealed class VariationalDependencyGraphBuilder(
         try
         {
             var maxIterations = globalOptions.MaxIterations;
-            DependencyGraph? first = default;
+            DependencyGraph? first = null;
             var maxAttempts = 0x2000;
             while (variator.TryGetNextVariants(variants, out var nodes))
             {

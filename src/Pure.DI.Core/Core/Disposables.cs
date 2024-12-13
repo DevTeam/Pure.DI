@@ -47,7 +47,7 @@ internal static class Disposables
 
         public override bool Equals(object? obj)
         {
-            if (ReferenceEquals(default, obj))
+            if (ReferenceEquals(null, obj))
             {
                 return false;
             }

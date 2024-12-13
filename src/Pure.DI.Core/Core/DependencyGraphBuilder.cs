@@ -25,7 +25,7 @@ internal sealed class DependencyGraphBuilder(
         IReadOnlyCollection<ProcessingNode> nodes,
         out DependencyGraph? dependencyGraph)
     {
-        dependencyGraph = default;
+        dependencyGraph = null;
         var maxId = 0;
         var map = new Dictionary<Injection, DependencyNode>(nodes.Count);
         var contextMap = new Dictionary<Injection, DependencyNode>(nodes.Count);
@@ -149,7 +149,7 @@ internal sealed class DependencyGraphBuilder(
                             UpdateMap(newInjection, genericNode);
                             foreach (var contract in genericBinding.Contracts.Where(i => i.ContractType is not null))
                             {
-                                foreach (var tag in contract.Tags.Select(i => i.Value).DefaultIfEmpty(default))
+                                foreach (var tag in contract.Tags.Select(i => i.Value).DefaultIfEmpty(null))
                                 {
                                     newInjection = new Injection(InjectionKind.Contract, contract.ContractType!, contextTag ?? tag);
                                     UpdateMap(newInjection, genericNode);
@@ -244,7 +244,7 @@ internal sealed class DependencyGraphBuilder(
                         Lifetime.Transient,
                         ++maxId,
                         MdConstructKind.ExplicitDefaultValue,
-                        default,
+                        null,
                         hasExplicitDefaultValue, explicitDefaultValue);
 
                     var newSourceNodes = CreateNodes(setup, typeConstructor, explicitDefaultBinding);
@@ -357,7 +357,7 @@ internal sealed class DependencyGraphBuilder(
         return ImmutableArray<DependencyNode>.Empty;
 
         object? GetContextTag(Injection injection, DependencyNode node) => 
-            node.Factory is { Source.HasContextTag: true } ? injection.Tag : default;
+            node.Factory is { Source.HasContextTag: true } ? injection.Tag : null;
 
         void UpdateMap(Injection injection, DependencyNode node)
         {
@@ -462,17 +462,17 @@ internal sealed class DependencyGraphBuilder(
                 {
                     Type = typeConstructor.Construct(setup, compilation, sourceNode.Binding.Implementation.Value.Type)
                 }
-                : default(MdImplementation?),
+                : null,
             Factory = sourceNode.Binding.Factory.HasValue
                 ? factoryRewriterFactory().Build(
                     new RewriterContext<MdFactory>(setup, typeConstructor, injection, sourceNode.Binding.Factory.Value))
-                : default(MdFactory?),
+                : null,
             Arg = sourceNode.Binding.Arg.HasValue
                 ? sourceNode.Binding.Arg.Value with
                 {
                     Type = typeConstructor.Construct(setup, compilation, sourceNode.Binding.Arg.Value.Type)
                 }
-                : default(MdArg?)
+                : null
         };
     }
 
@@ -492,9 +492,9 @@ internal sealed class DependencyGraphBuilder(
             ImmutableArray.Create(new MdContract(targetNode.Binding.SemanticModel, accumulator.Source, accumulator.AccumulatorType, ContractKind.Implicit, ImmutableArray<MdTag>.Empty)),
             ImmutableArray<MdTag>.Empty,
             new MdLifetime(targetNode.Binding.SemanticModel, accumulator.Source, Lifetime.Transient),
-            default,
-            default,
-            default,
+            null,
+            null,
+            null,
             new MdConstruct(
                 targetNode.Binding.SemanticModel,
                 targetNode.Binding.Source,
@@ -549,9 +549,9 @@ internal sealed class DependencyGraphBuilder(
         Lifetime lifetime,
         int newId,
         MdConstructKind constructKind,
-        object? tag = default,
-        bool hasExplicitDefaultValue = default,
-        object? explicitDefaultValue = default)
+        object? tag = null,
+        bool hasExplicitDefaultValue = false,
+        object? explicitDefaultValue = null)
     {
         elementType = elementType.WithNullableAnnotation(NullableAnnotation.NotAnnotated);
         var dependencyContracts = new List<MdContract>();
@@ -572,7 +572,7 @@ internal sealed class DependencyGraphBuilder(
             var isDuplicate = false;
             if (constructKind is MdConstructKind.Enumerable or MdConstructKind.Array or MdConstructKind.Span or MdConstructKind.AsyncEnumerable)
             {
-                foreach (var mdTag in tags.DefaultIfEmpty(new MdTag(0, default)))
+                foreach (var mdTag in tags.DefaultIfEmpty(new MdTag(0, null)))
                 {
                     if (!contracts.Add(new Injection(InjectionKind.Construct, elementType, mdTag)))
                     {
@@ -601,9 +601,9 @@ internal sealed class DependencyGraphBuilder(
             newContracts,
             ImmutableArray<MdTag>.Empty,
             new MdLifetime(targetNode.Binding.SemanticModel, targetNode.Binding.Source, lifetime),
-            default,
-            default,
-            default,
+            null,
+            null,
+            null,
             new MdConstruct(
                 targetNode.Binding.SemanticModel,
                 targetNode.Binding.Source,

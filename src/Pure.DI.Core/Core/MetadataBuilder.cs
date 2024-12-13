@@ -100,8 +100,8 @@ internal sealed class MetadataBuilder(
 
     private void MergeSetups(IEnumerable<MdSetup> setups, out MdSetup mergedSetup, bool resolveDependsOn)
     {
-        MdSetup? lastSetup = default;
-        var name = new CompositionName("Composition", "", default);
+        MdSetup? lastSetup = null;
+        var name = new CompositionName("Composition", "", null);
         var kind = CompositionKind.Global;
         var settings = new Hints();
         var bindingsBuilder = ImmutableArray.CreateBuilder<MdBinding>(64);

@@ -9,7 +9,7 @@ internal class TypeResolver(
 {
     private readonly Dictionary<ITypeSymbol, string> _names = new(SymbolEqualityComparer.Default);
 
-    public TypeDescription Resolve(MdSetup setup, ITypeSymbol type) => Resolve(setup, type, default);
+    public TypeDescription Resolve(MdSetup setup, ITypeSymbol type) => Resolve(setup, type, null);
 
     private TypeDescription Resolve(MdSetup setup, ITypeSymbol type, ITypeParameterSymbol? typeParam)
     {

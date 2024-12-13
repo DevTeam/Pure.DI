@@ -77,7 +77,7 @@ partial class Composition
   private DependencyStruct<int> _singletonDependencyStruct51;
   private bool _singletonDependencyStruct51Created;
 
-  [OrdinalAttribute(10)]
+  [OrdinalAttribute(128)]
   public Composition()
   {
     _root = this;

@@ -29,7 +29,7 @@ internal class FactoryCodeBuilder(
         if (nodeInfo.IsLazy(variable.Node))
         {
             level++;
-            lockIsRequired = default;
+            lockIsRequired = null;
         }
 
         var originalLambda = factory.Source.Factory;
@@ -66,7 +66,7 @@ internal class FactoryCodeBuilder(
                 && memberResolver.Member is { } member
                 && memberResolver.TypeConstructor is { } typeConstructor)
             {
-                ExpressionSyntax? value = default;
+                ExpressionSyntax? value = null;
                 var type = memberResolver.ContractType;
                 ExpressionSyntax instance = member.IsStatic
                     ? SyntaxFactory.ParseTypeName(type.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat))

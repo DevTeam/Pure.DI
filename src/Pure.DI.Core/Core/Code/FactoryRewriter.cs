@@ -149,7 +149,7 @@ internal sealed class FactoryRewriter(
             _ => ""
         };
 
-        ExpressionSyntax? expressionSyntax = default;
+        ExpressionSyntax? expressionSyntax = null;
         var processed = name switch
         {
             nameof(IContext.Inject) => TryInject(invocation, out expressionSyntax),
@@ -183,7 +183,7 @@ internal sealed class FactoryRewriter(
         {
             1 => invocation.ArgumentList.Arguments[0].Expression,
             2 => arguments.GetArgs(invocation.ArgumentList, "tag", "value").Last()?.Expression,
-            _ => default
+            _ => null
         };
 
         switch (value)
@@ -203,7 +203,7 @@ internal sealed class FactoryRewriter(
             }
         }
 
-        expressionSyntax = default;
+        expressionSyntax = null;
         return false;
     }
     
@@ -214,7 +214,7 @@ internal sealed class FactoryRewriter(
         var value = invocation.ArgumentList.Arguments.Count switch
         {
             1 => invocation.ArgumentList.Arguments[0].Expression,
-            _ => default
+            _ => null
         };
 
         switch (value)
@@ -234,7 +234,7 @@ internal sealed class FactoryRewriter(
             }
         }
 
-        expressionSyntax = default;
+        expressionSyntax = null;
         return false;
     }
 

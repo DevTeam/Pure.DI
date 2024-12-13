@@ -15,7 +15,7 @@ internal sealed class ApiBuilder(IResources resources)
             {
                 source = SourceText.From(
                     resource.Content,
-                    default,
+                    null,
                     SourceHashAlgorithm.Sha1,
                     false,
                     true);

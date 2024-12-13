@@ -26,7 +26,7 @@ partial class Composition
     private static readonly HashSet<(Type type, object? tag)> Roots = [];
 
     // Check that the root can be resolved by Resolve methods
-    internal static bool HasRoot(Type type, object? key = default) =>
+    internal static bool HasRoot(Type type, object? key = null) =>
         Roots.Contains((type, key));
 
     static void Setup() =>

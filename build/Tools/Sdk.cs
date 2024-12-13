@@ -15,7 +15,7 @@ internal class Sdk
 
     private static NuGetVersion[] GetVersions()
     {
-        bool? getVersions = default;
+        bool? getVersions = null;
         var versions = new List<NuGetVersion>();
         new DotNetCustom("--info").Run(output =>
         {

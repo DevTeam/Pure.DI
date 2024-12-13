@@ -14,7 +14,7 @@ internal sealed class IoCContainerByCompositionRoot<TContract> : BaseAbstractCon
         Type contractType,
         Type implementationType,
         AbstractLifetime lifetime = AbstractLifetime.Transient,
-        string? name = default)
+        string? name = null)
     {
         _container.Bind(contractType, implementationType, lifetime, name);
         return this;

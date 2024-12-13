@@ -97,7 +97,7 @@ internal sealed class RootMethodsBuilder(
             var tag = root.Injection.Tag;
             if (tag == MdTag.ContextTag)
             {
-                tag = default;
+                tag = null;
             }
 
             if (tag is not null)

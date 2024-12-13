@@ -94,8 +94,8 @@ internal sealed class MetadataValidator(
     private bool Validate(MdSetup setup, in MdBinding binding)
     {
         var isValid = true;
-        ITypeSymbol? implementationType = default;
-        SemanticModel? semanticModel = default;
+        ITypeSymbol? implementationType = null;
+        SemanticModel? semanticModel = null;
         var location = binding.Source.GetLocation();
         if (binding.Implementation is { } implementation)
         {
@@ -132,7 +132,7 @@ internal sealed class MetadataValidator(
             }
         }
 
-        if (implementationType == default || implementationType is IErrorTypeSymbol || semanticModel == default)
+        if (implementationType == null || implementationType is IErrorTypeSymbol || semanticModel == null)
         {
             logger.CompileError("Invalid binding due to construction failure.", location, LogId.ErrorInvalidMetadata);
             return false;
