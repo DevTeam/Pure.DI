@@ -28,6 +28,7 @@ $f=- Providing resistance to failures, etc.
 
 namespace Pure.DI.UsageTests.Interception.InterceptionScenario;
 
+using System.Runtime.CompilerServices;
 using Castle.DynamicProxy;
 using Shouldly;
 using Xunit;
@@ -47,6 +48,7 @@ partial class Composition : IInterceptor
 {
     private static readonly ProxyGenerator ProxyGenerator = new();
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private partial T OnDependencyInjection<T>(
         in T value,
         object? tag,

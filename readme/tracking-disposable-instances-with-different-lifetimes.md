@@ -135,37 +135,51 @@ partial class Composition: IDisposable
           }
         }
 
+        Owned transientOwned4;
+        Owned localOwned28 = accumulator50;
+        transientOwned4 = localOwned28;
+        using (_lock.EnterScope())
+        {
+          accumulator50.Add(transientOwned4);
+        }
         Owned<IDependency> perBlockOwned3;
         // Creates the owner of an instance
-        Owned localOwned24 = accumulator50;
-        IDependency localValue25 = _root._singletonDependency44!;
-        perBlockOwned3 = new Owned<IDependency>(localValue25, localOwned24);
+        IOwned localOwned29 = transientOwned4;
+        IDependency localValue30 = _root._singletonDependency44!;
+        perBlockOwned3 = new Owned<IDependency>(localValue30, localOwned29);
         using (_lock.EnterScope())
         {
           accumulator50.Add(perBlockOwned3);
         }
-        Owned<IDependency> localValue23 = perBlockOwned3;
-        return localValue23;
+        Owned<IDependency> localValue27 = perBlockOwned3;
+        return localValue27;
       });
       Func<Owned<IDependency>> perBlockFunc1 = new Func<Owned<IDependency>>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
       {
         var accumulator50 = new Owned();
-        Dependency transientDependency7 = new Dependency();
+        Dependency transientDependency8 = new Dependency();
         using (_lock.EnterScope())
         {
-          accumulator50.Add(transientDependency7);
+          accumulator50.Add(transientDependency8);
         }
-        Owned<IDependency> perBlockOwned5;
+        Owned transientOwned7;
+        Owned localOwned32 = accumulator50;
+        transientOwned7 = localOwned32;
+        using (_lock.EnterScope())
+        {
+          accumulator50.Add(transientOwned7);
+        }
+        Owned<IDependency> perBlockOwned6;
         // Creates the owner of an instance
-        Owned localOwned27 = accumulator50;
-        IDependency localValue28 = transientDependency7;
-        perBlockOwned5 = new Owned<IDependency>(localValue28, localOwned27);
+        IOwned localOwned33 = transientOwned7;
+        IDependency localValue34 = transientDependency8;
+        perBlockOwned6 = new Owned<IDependency>(localValue34, localOwned33);
         using (_lock.EnterScope())
         {
-          accumulator50.Add(perBlockOwned5);
+          accumulator50.Add(perBlockOwned6);
         }
-        Owned<IDependency> localValue26 = perBlockOwned5;
-        return localValue26;
+        Owned<IDependency> localValue31 = perBlockOwned6;
+        return localValue31;
       });
       Service transientService0 = new Service(perBlockFunc1, perBlockFunc2);
       using (_lock.EnterScope())
@@ -335,17 +349,21 @@ Class diagram:
 ---
 classDiagram
 	Composition --|> IDisposable
+	Owned --|> IOwned
 	Dependency --|> IDependency
 	Composition ..> Service : Service Root
 	Service o-- "PerBlock" FuncᐸOwnedᐸIDependencyᐳᐳ : FuncᐸOwnedᐸIDependencyᐳᐳ
 	Service o-- "PerBlock" FuncᐸOwnedᐸIDependencyᐳᐳ : "single"  FuncᐸOwnedᐸIDependencyᐳᐳ
 	FuncᐸOwnedᐸIDependencyᐳᐳ o-- "PerBlock" OwnedᐸIDependencyᐳ : OwnedᐸIDependencyᐳ
 	FuncᐸOwnedᐸIDependencyᐳᐳ o-- "PerBlock" OwnedᐸIDependencyᐳ : "single"  OwnedᐸIDependencyᐳ
-	OwnedᐸIDependencyᐳ *--  Owned : Owned
+	OwnedᐸIDependencyᐳ *--  Owned : IOwned
 	OwnedᐸIDependencyᐳ *--  Dependency : IDependency
-	OwnedᐸIDependencyᐳ *--  Owned : Owned
+	OwnedᐸIDependencyᐳ *--  Owned : IOwned
 	OwnedᐸIDependencyᐳ o-- "Singleton" Dependency : "single"  IDependency
 	namespace Pure.DI {
+		class IOwned {
+			<<interface>>
+		}
 		class Owned {
 		}
 		class OwnedᐸIDependencyᐳ {

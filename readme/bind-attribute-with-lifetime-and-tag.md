@@ -84,8 +84,8 @@ partial class Composition
               _root._singletonFacade43 = new Facade();
             }
 
-            Facade localInstance_1182D12738 = _root._singletonFacade43!;
-            _root._singletonIDependency0 = localInstance_1182D12738.Dependency;
+            Facade localInstance_1182D12744 = _root._singletonFacade43!;
+            _root._singletonIDependency0 = localInstance_1182D12744.Dependency;
           }
         }
       }

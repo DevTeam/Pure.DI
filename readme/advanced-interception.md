@@ -43,6 +43,7 @@ internal partial class Composition : IInterceptor
         _interceptors = [this];
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private partial T OnDependencyInjection<T>(
         in T value,
         object? tag,

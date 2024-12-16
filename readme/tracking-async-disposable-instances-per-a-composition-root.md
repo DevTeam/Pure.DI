@@ -97,9 +97,16 @@ partial class Composition
       }
       Owned<IService> perBlockOwned0;
       // Creates the owner of an instance
-      Owned localOwned10 = accumulator46;
-      IService localValue11 = new Service(transientDependency3);
-      perBlockOwned0 = new Owned<IService>(localValue11, localOwned10);
+      Owned transientOwned1;
+      Owned localOwned13 = accumulator46;
+      transientOwned1 = localOwned13;
+      using (_lock.EnterScope())
+      {
+        accumulator46.Add(transientOwned1);
+      }
+      IOwned localOwned11 = transientOwned1;
+      IService localValue12 = new Service(transientDependency3);
+      perBlockOwned0 = new Owned<IService>(localValue12, localOwned11);
       using (_lock.EnterScope())
       {
         accumulator46.Add(perBlockOwned0);
@@ -161,14 +168,18 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
+	Owned --|> IOwned
 	Service --|> IService
 	Dependency --|> IDependency
 	Dependency --|> IAsyncDisposable
 	Composition ..> OwnedᐸIServiceᐳ : OwnedᐸIServiceᐳ Root
-	OwnedᐸIServiceᐳ *--  Owned : Owned
+	OwnedᐸIServiceᐳ *--  Owned : IOwned
 	OwnedᐸIServiceᐳ *--  Service : IService
 	Service *--  Dependency : IDependency
 	namespace Pure.DI {
+		class IOwned {
+			<<interface>>
+		}
 		class Owned {
 		}
 		class OwnedᐸIServiceᐳ {

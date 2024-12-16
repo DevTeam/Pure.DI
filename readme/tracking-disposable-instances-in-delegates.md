@@ -98,17 +98,24 @@ partial class Composition
         {
           accumulator47.Add(transientDependency4);
         }
+        Owned transientOwned3;
+        Owned localOwned15 = accumulator47;
+        transientOwned3 = localOwned15;
+        using (_lock.EnterScope())
+        {
+          accumulator47.Add(transientOwned3);
+        }
         Owned<IDependency> perBlockOwned2;
         // Creates the owner of an instance
-        Owned localOwned13 = accumulator47;
-        IDependency localValue14 = transientDependency4;
-        perBlockOwned2 = new Owned<IDependency>(localValue14, localOwned13);
+        IOwned localOwned16 = transientOwned3;
+        IDependency localValue17 = transientDependency4;
+        perBlockOwned2 = new Owned<IDependency>(localValue17, localOwned16);
         using (_lock.EnterScope())
         {
           accumulator47.Add(perBlockOwned2);
         }
-        Owned<IDependency> localValue12 = perBlockOwned2;
-        return localValue12;
+        Owned<IDependency> localValue14 = perBlockOwned2;
+        return localValue14;
       });
       Service transientService0 = new Service(perBlockFunc1);
       using (_lock.EnterScope())
@@ -244,13 +251,17 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
+	Owned --|> IOwned
 	Dependency --|> IDependency
 	Composition ..> Service : Service Root
 	Service o-- "PerBlock" FuncᐸOwnedᐸIDependencyᐳᐳ : FuncᐸOwnedᐸIDependencyᐳᐳ
 	FuncᐸOwnedᐸIDependencyᐳᐳ o-- "PerBlock" OwnedᐸIDependencyᐳ : OwnedᐸIDependencyᐳ
-	OwnedᐸIDependencyᐳ *--  Owned : Owned
+	OwnedᐸIDependencyᐳ *--  Owned : IOwned
 	OwnedᐸIDependencyᐳ *--  Dependency : IDependency
 	namespace Pure.DI {
+		class IOwned {
+			<<interface>>
+		}
 		class Owned {
 		}
 		class OwnedᐸIDependencyᐳ {

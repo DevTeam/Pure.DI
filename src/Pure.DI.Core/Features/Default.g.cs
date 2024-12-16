@@ -29,7 +29,7 @@ namespace Pure.DI
                     .As(Lifetime.PerBlock)
                     .To(ctx => {
                         // Creates the owner of an instance
-                        ctx.Inject<Owned>(out var owned);
+                        ctx.Inject<IOwned>(out var owned);
                         ctx.Inject<TT>(ctx.Tag, out var value);
                         return new Owned<TT>(value, owned);
                     })
