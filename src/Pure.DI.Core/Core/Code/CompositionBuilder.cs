@@ -34,6 +34,7 @@ internal class CompositionBuilder(
                 new LinesBuilder(),
                 new LinesBuilder(),
                 root.Injection.Tag != MdTag.ContextTag ? root.Injection.Tag : null,
+                graph.Source.Name.FullName,
                 null,
                 root.Node.Accumulators.ToImmutableArray());
 

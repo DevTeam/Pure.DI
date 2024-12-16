@@ -76,10 +76,10 @@ partial class Composition
   {
     Guid transientGuid2 = Guid.NewGuid();
     Dependency transientDependency1;
-    var localDependency45= new Dependency();
-    localDependency45.SetId(transientGuid2);
-    localDependency45.Name = name;
-    transientDependency1 = localDependency45;
+    var localDependency49= new Dependency();
+    localDependency49.SetId(transientGuid2);
+    localDependency49.Name = name;
+    transientDependency1 = localDependency49;
     return new Service(transientDependency1);
   }
 }

@@ -37,24 +37,13 @@ interface IService
 
 class Service : IService
 {
-    public Service(ILogger<Service> log, IDependency dependency)
+    public Service(Serilog.ILogger log, IDependency dependency)
     {
         Dependency = dependency;
         log.Information("Created");
     }
 
     public IDependency Dependency { get; }
-}
-
-interface ILogger<T>: Serilog.ILogger;
-
-class Logger<T>(Serilog.ILogger logger) : ILogger<T>
-{
-    private readonly Serilog.ILogger _logger =
-        logger.ForContext(typeof(T));
-
-    public void Write(LogEvent logEvent) =>
-        _logger.Write(logEvent);
 }
 
 partial class Composition
@@ -70,12 +59,16 @@ partial class Composition
             .Hint(Hint.OnNewInstanceImplementationTypeNameRegularExpression, "^((?!Logger).)*$")
             .Hint(Hint.OnDependencyInjectionContractTypeNameRegularExpression, "^((?!Logger).)*$")
 
-            .Arg<Serilog.ILogger>("logger")
-            .Bind().As(Lifetime.Singleton).To<Logger<TT>>()
+            .Arg<Serilog.ILogger>("logger", "from arg")
+            .Bind<Serilog.ILogger>().To(ctx =>
+            {
+                ctx.Inject("from arg", out Serilog.ILogger logger);
+                return logger.ForContext(ctx.OwnerType);
+            })
 
             .Bind().To<Dependency>()
             .Bind().To<Service>()
-            .Root<ILogger<Composition>>(nameof(Log), kind: RootKinds.Private)
+            .Root<Serilog.ILogger>(nameof(Log), kind: RootKinds.Private)
             .Root<IService>(nameof(Root));
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

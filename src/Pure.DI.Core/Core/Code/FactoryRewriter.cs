@@ -26,11 +26,15 @@ internal sealed class FactoryRewriter(
     private static readonly IdentifierNameSyntax InitializationMarkerExpression = SyntaxFactory.IdentifierName(Names.InitializationMarker);
     private int _nestedLambdaCounter;
     private int _nestedBlockCounter;
+    private BuildContext? _ctx;
 
     public bool IsFinishMarkRequired { get; private set; }
 
-    public LambdaExpressionSyntax Rewrite(LambdaExpressionSyntax lambda) =>
-        (LambdaExpressionSyntax)Visit(lambda);
+    public LambdaExpressionSyntax Rewrite(BuildContext ctx, LambdaExpressionSyntax lambda)
+    {
+        _ctx = ctx;
+        return (LambdaExpressionSyntax)Visit(lambda);
+    }
 
     public override SyntaxNode? VisitSimpleLambdaExpression(SimpleLambdaExpressionSyntax node)
     {
@@ -241,10 +245,17 @@ internal sealed class FactoryRewriter(
     public override SyntaxNode? VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
     {
         if (node.IsKind(SyntaxKind.SimpleMemberAccessExpression)
-            && node is { Expression: IdentifierNameSyntax identifierName, Name.Identifier.Text: nameof(IContext.Tag) }
+            && node is { Expression: IdentifierNameSyntax identifierName }
             && identifierName.Identifier.Text == factory.Source.Context.Identifier.Text)
         {
-            return SyntaxFactory.ParseExpression(variable.Injection.Tag.ValueToString());
+            switch (node.Name.Identifier.Text)
+            {
+                case nameof(IContext.Tag):
+                    return SyntaxFactory.ParseExpression(variable.Injection.Tag.ValueToString());
+                
+                case nameof(IContext.OwnerType) when _ctx is {} ctx:
+                    return SyntaxFactory.ParseExpression($"typeof({ctx.OwnerTypeName})");
+            }
         }
 
         return base.VisitMemberAccessExpression(node);

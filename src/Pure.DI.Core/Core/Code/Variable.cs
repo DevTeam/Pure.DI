@@ -5,6 +5,7 @@ internal record Variable(
     IStatement? Parent,
     int PerLifetimeId,
     in DependencyNode Node,
+    in DependencyNode TargetNode,
     in Injection Injection,
     ICollection<IStatement> Args,
     VariableInfo Info,

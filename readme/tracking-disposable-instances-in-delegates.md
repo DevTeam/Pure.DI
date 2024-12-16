@@ -99,23 +99,23 @@ partial class Composition
           accumulator47.Add(transientDependency4);
         }
         Owned transientOwned3;
-        Owned localOwned15 = accumulator47;
-        transientOwned3 = localOwned15;
+        Owned localOwned19 = accumulator47;
+        transientOwned3 = localOwned19;
         using (_lock.EnterScope())
         {
           accumulator47.Add(transientOwned3);
         }
         Owned<IDependency> perBlockOwned2;
         // Creates the owner of an instance
-        IOwned localOwned16 = transientOwned3;
-        IDependency localValue17 = transientDependency4;
-        perBlockOwned2 = new Owned<IDependency>(localValue17, localOwned16);
+        IOwned localOwned20 = transientOwned3;
+        IDependency localValue21 = transientDependency4;
+        perBlockOwned2 = new Owned<IDependency>(localValue21, localOwned20);
         using (_lock.EnterScope())
         {
           accumulator47.Add(perBlockOwned2);
         }
-        Owned<IDependency> localValue14 = perBlockOwned2;
-        return localValue14;
+        Owned<IDependency> localValue18 = perBlockOwned2;
+        return localValue18;
       });
       Service transientService0 = new Service(perBlockFunc1);
       using (_lock.EnterScope())

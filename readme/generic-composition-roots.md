@@ -76,8 +76,8 @@ partial class Composition
   public IService<T1> GetOtherService<T1>()
   {
     OtherService<T1> transientOtherService0;
-    IDependency<T1> localDependency83 = new Dependency<T1>();
-    transientOtherService0 = new OtherService<T1>(localDependency83);
+    IDependency<T1> localDependency87 = new Dependency<T1>();
+    transientOtherService0 = new OtherService<T1>(localDependency87);
     return transientOtherService0;
   }
 

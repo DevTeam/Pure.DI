@@ -27,7 +27,7 @@ interface IDependency;
 
 class Dependency : IDependency
 {
-    public Dependency(ILogger<Dependency> log)
+    public Dependency(Serilog.ILogger log)
     {
         log.Information("created");
     }
@@ -41,7 +41,7 @@ interface IService
 class Service : IService
 {
     public Service(
-        ILogger<Service> log,
+        Serilog.ILogger log,
         IDependency dependency)
     {
         Dependency = dependency;
@@ -51,17 +51,6 @@ class Service : IService
     public IDependency Dependency { get; }
 }
 
-interface ILogger<T>: Serilog.ILogger;
-
-class Logger<T>(Serilog.ILogger logger) : ILogger<T>
-{
-    private readonly Serilog.ILogger _logger =
-        logger.ForContext(typeof(T));
-
-    public void Write(LogEvent logEvent) =>
-        _logger.Write(logEvent);
-}
-
 partial class Composition
 {
     private void Setup() =>
@@ -69,8 +58,12 @@ partial class Composition
 // }
             .Hint(Hint.Resolve, "Off")
 // {
-            .Arg<Serilog.ILogger>("logger")
-            .Bind().As(Lifetime.Singleton).To<Logger<TT>>()
+            .Arg<Serilog.ILogger>("logger", "from arg")
+            .Bind().To(ctx =>
+            {
+                ctx.Inject<Serilog.ILogger>("from arg", out var logger);
+                return logger.ForContext(ctx.OwnerType);
+            })
 
             .Bind().To<Dependency>()
             .Bind().To<Service>()

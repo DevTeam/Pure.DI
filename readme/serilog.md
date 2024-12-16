@@ -8,7 +8,7 @@ interface IDependency;
 
 class Dependency : IDependency
 {
-    public Dependency(ILogger<Dependency> log)
+    public Dependency(Serilog.ILogger log)
     {
         log.Information("created");
     }
@@ -22,7 +22,7 @@ interface IService
 class Service : IService
 {
     public Service(
-        ILogger<Service> log,
+        Serilog.ILogger log,
         IDependency dependency)
     {
         Dependency = dependency;
@@ -32,24 +32,17 @@ class Service : IService
     public IDependency Dependency { get; }
 }
 
-interface ILogger<T>: Serilog.ILogger;
-
-class Logger<T>(Serilog.ILogger logger) : ILogger<T>
-{
-    private readonly Serilog.ILogger _logger =
-        logger.ForContext(typeof(T));
-
-    public void Write(LogEvent logEvent) =>
-        _logger.Write(logEvent);
-}
-
 partial class Composition
 {
     private void Setup() =>
         DI.Setup(nameof(Composition))
 
-            .Arg<Serilog.ILogger>("logger")
-            .Bind().As(Lifetime.Singleton).To<Logger<TT>>()
+            .Arg<Serilog.ILogger>("logger", "from arg")
+            .Bind().To(ctx =>
+            {
+                ctx.Inject<Serilog.ILogger>("from arg", out var logger);
+                return logger.ForContext(ctx.OwnerType);
+            })
 
             .Bind().To<Dependency>()
             .Bind().To<Service>()
@@ -67,10 +60,6 @@ The following partial class will be generated:
 partial class Composition
 {
   private readonly Composition _root;
-  private readonly Lock _lock;
-
-  private Logger<Service>? _singletonLogger47;
-  private Logger<Dependency>? _singletonLogger48;
 
   private readonly Serilog.ILogger _argLogger;
 
@@ -79,14 +68,12 @@ partial class Composition
   {
     _argLogger = logger ?? throw new ArgumentNullException(nameof(logger));
     _root = this;
-    _lock = new Lock();
   }
 
   internal Composition(Composition parentScope)
   {
     _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
     _argLogger = _root._argLogger;
-    _lock = _root._lock;
   }
 
   public IService Root
@@ -94,29 +81,13 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonLogger48 is null)
-      {
-        using (_lock.EnterScope())
-        {
-          if (_root._singletonLogger48 is null)
-          {
-            _root._singletonLogger48 = new Logger<Dependency>(_argLogger);
-          }
-        }
-      }
-
-      if (_root._singletonLogger47 is null)
-      {
-        using (_lock.EnterScope())
-        {
-          if (_root._singletonLogger47 is null)
-          {
-            _root._singletonLogger47 = new Logger<Service>(_argLogger);
-          }
-        }
-      }
-
-      return new Service(_root._singletonLogger47!, new Dependency(_root._singletonLogger48!));
+      Serilog.ILogger transientILogger3;
+      Serilog.ILogger localLogger9 = _argLogger;
+      transientILogger3 = localLogger9.ForContext(typeof(Dependency));
+      Serilog.ILogger transientILogger1;
+      Serilog.ILogger localLogger10 = _argLogger;
+      transientILogger1 = localLogger10.ForContext(typeof(Service));
+      return new Service(transientILogger1, new Dependency(transientILogger3));
     }
   }
 }
@@ -132,43 +103,28 @@ Class diagram:
 ---
 classDiagram
 	Service --|> IService
-	LoggerᐸServiceᐳ --|> ILoggerᐸServiceᐳ
 	Dependency --|> IDependency
-	LoggerᐸDependencyᐳ --|> ILoggerᐸDependencyᐳ
 	Composition ..> Service : IService Root
-	Service o-- "Singleton" LoggerᐸServiceᐳ : ILoggerᐸServiceᐳ
+	Service *--  ILogger : ILogger
 	Service *--  Dependency : IDependency
-	LoggerᐸServiceᐳ o-- ILogger : Argument "logger"
-	Dependency o-- "Singleton" LoggerᐸDependencyᐳ : ILoggerᐸDependencyᐳ
-	LoggerᐸDependencyᐳ o-- ILogger : Argument "logger"
+	ILogger o-- ILogger : "from arg"  Argument "logger"
+	Dependency *--  ILogger : ILogger
 	namespace Pure.DI.UsageTests.Advanced.SerilogScenario {
 		class Composition {
 		<<partial>>
 		+IService Root
 		}
 		class Dependency {
-			+Dependency(ILoggerᐸDependencyᐳ log)
+			+Dependency(ILogger log)
 		}
 		class IDependency {
-			<<interface>>
-		}
-		class ILoggerᐸDependencyᐳ {
-			<<interface>>
-		}
-		class ILoggerᐸServiceᐳ {
 			<<interface>>
 		}
 		class IService {
 			<<interface>>
 		}
-		class LoggerᐸDependencyᐳ {
-			+Logger(ILogger logger)
-		}
-		class LoggerᐸServiceᐳ {
-			+Logger(ILogger logger)
-		}
 		class Service {
-			+Service(ILoggerᐸServiceᐳ log, IDependency dependency)
+			+Service(ILogger log, IDependency dependency)
 		}
 	}
 	namespace Serilog {

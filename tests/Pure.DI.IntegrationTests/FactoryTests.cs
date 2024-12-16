@@ -753,6 +753,89 @@ public class FactoryTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe([output, "Created"], result);
     }
+    
+    [Theory]
+    /*[InlineData(nameof(Lifetime.Transient), "Service")]
+    [InlineData(nameof(Lifetime.Singleton), "Composition")]
+    [InlineData(nameof(Lifetime.Scoped), "Composition")]
+    [InlineData(nameof(Lifetime.PerBlock), "Service")]*/
+    [InlineData(nameof(Lifetime.PerResolve), "Service")]
+    public async Task ShouldSupportFactoryWhenUsingOwnerType(string lifetime, string owner)
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency
+                               {
+                               }
+                           
+                               class Dependency: IDependency
+                               {
+                                    public Dependency(string owner)
+                                    {
+                                        Console.WriteLine(owner);
+                                    }
+                               }
+                           
+                               interface IService
+                               {
+                                   IDependency Dep { get; }
+                               }
+                           
+                               class Service: IService 
+                               {
+                                   public Service(IDependency dep)
+                                   { 
+                                       Dep = dep;
+                                       Console.WriteLine("Created");
+                                   }
+                           
+                                   public IDependency Dep { get; }
+                               }
+                           
+                               internal partial class Composition
+                               {
+                                   private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime) 
+                                   {
+                                       return value;
+                                   }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       // OnDependencyInjection = On
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().As(Lifetime.#lifetime#).To(ctx => new Dependency(ctx.OwnerType.Name))
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                   }
+                               }
+                           }
+                           """
+            .Replace("#lifetime#", lifetime)
+            .RunAsync(new Options(LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe([owner, "Created"], result);
+    }
 
     [Fact]
     public async Task ShouldSupportFactoryWithInjectInFunc()

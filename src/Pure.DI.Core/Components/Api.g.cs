@@ -2431,7 +2431,17 @@ namespace Pure.DI
         /// <seealso cref="IConfiguration.Bind{T}"/>
         /// <seealso cref="IBinding.Tags"/>
         object Tag { get; }
-            
+
+        /// <summary>
+        /// The owner type of the instance being created. Cannot be used outside of the binding setup. See also <see cref="IBinding.Tags"/>
+        /// <br/>For the <see cref="Lifetime.Transient"/> instance, this is the owner type.
+        /// <br/>For instances of <see cref="Lifetime.Singleton"/> and <see cref="Lifetime.Scoped"/>, this is the composition type.
+        /// <br/>For the <see cref="Lifetime.PerBlock"/> instance, this is the type that generated the block.
+        /// <br/>For a <see cref="Lifetime.PerResolve"/> instance, it is the composition root type.
+        /// </summary>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        Type OwnerType { get; }
+
         /// <summary>
         /// Injects an instance of type <c>T</c>. Cannot be used outside of the binding setup.
         /// <example>

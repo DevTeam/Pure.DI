@@ -156,7 +156,7 @@ internal class FactoryCodeBuilder(
         var injections = new List<FactoryRewriter.Injection>();
         var inits = new List<FactoryRewriter.Initializer>();
         var factoryRewriter = new FactoryRewriter(arguments, compilations, factory, variable, finishLabel, injections, inits, triviaTools);
-        var lambda = factoryRewriter.Rewrite(factoryExpression);
+        var lambda = factoryRewriter.Rewrite(ctx, factoryExpression);
         new FactoryValidator(factory).Validate(lambda);
         SyntaxNode syntaxNode = lambda.Block is not null ? lambda.Block : SyntaxFactory.ExpressionStatement((ExpressionSyntax)lambda.Body);
         var lines = new List<TextLine>();

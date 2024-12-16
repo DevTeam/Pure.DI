@@ -9,6 +9,7 @@ internal record BuildContext(
     LinesBuilder Code,
     LinesBuilder LocalFunctionsCode,
     object? ContextTag,
+    string OwnerTypeName,
     bool? LockIsRequired,
     ImmutableArray<Accumulator> Accumulators,
     bool IsFactory = false);
