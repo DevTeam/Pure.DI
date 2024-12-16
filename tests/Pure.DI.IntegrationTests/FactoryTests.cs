@@ -652,8 +652,8 @@ public class FactoryTests
                                {
                                    public static void Main()
                                    {
-                                       var composition = new Composition();      
-                                       var service = composition.Service;     
+                                       var composition = new Composition();
+                                       var service = composition.Service;
                                    }
                                }
                            }
@@ -662,6 +662,96 @@ public class FactoryTests
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Created"], result);
+    }
+    
+    [Theory]
+    [InlineData("123", "ctx.Tag", "123")]
+    [InlineData("\"123\"", "ctx.Tag", "123")]
+    [InlineData("'1'", "((char)ctx.Tag) + 1", "50")]
+    [InlineData("123", "(object)ctx.Tag", "123")]
+    [InlineData("123", "int.Parse(ctx.Tag.ToString() ?? \"\")", "123")]
+    [InlineData("123", "dependency.GetInt((int)ctx.Tag)", "123")]
+    [InlineData("123", "((int)ctx.Tag) * 2", "246")]
+    [InlineData("123", "dependency.GetInt((int)ctx.Tag) * 2", "246")]
+    [InlineData("typeof(int)", "ctx.Tag", "System.Int32")]
+    public async Task ShouldSupportFactoryWhenUsingParentTag(string tag, string tagExpression, string output)
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency
+                               {
+                                    int GetInt(int val);
+                               }
+                           
+                               class Dependency: IDependency
+                               {
+                                    public int GetInt(int val) => val;
+                               }
+                           
+                               interface IService
+                               {
+                                   IDependency Dep { get; }
+                               }
+                           
+                               class Service: IService 
+                               {
+                                   public Service(IDependency dep)
+                                   { 
+                                       Dep = dep;
+                                       Console.WriteLine("Created");
+                                   }
+                           
+                                   public IDependency Dep { get; }
+                               }
+                           
+                               internal partial class Composition
+                               {
+                                   private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime) 
+                                   {
+                                       return value;
+                                   }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       // OnDependencyInjection = On
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>(#tag#).To(ctx => new Dependency())
+                                           .Bind<IService>(#tag#).To(ctx => {
+                                               ctx.Inject<IDependency>(ctx.Tag, out var dependency);
+                                               Console.WriteLine(#tagExpression#);
+                                               return new Service(dependency);
+                                           })
+                                           .Root<IService>("Service", #tag#);
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                   }
+                               }
+                           }
+                           """
+            .Replace("#tagExpression#", tagExpression)
+            .Replace("#tag#", tag)
+            .RunAsync(new Options(LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe([output, "Created"], result);
     }
 
     [Fact]

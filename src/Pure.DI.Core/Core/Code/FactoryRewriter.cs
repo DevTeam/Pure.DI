@@ -244,26 +244,7 @@ internal sealed class FactoryRewriter(
             && node is { Expression: IdentifierNameSyntax identifierName, Name.Identifier.Text: nameof(IContext.Tag) }
             && identifierName.Identifier.Text == factory.Source.Context.Identifier.Text)
         {
-            var token = SyntaxFactory.ParseToken(variable.Injection.Tag.ValueToString());
-            if (token.IsKind(SyntaxKind.NumericLiteralToken))
-            {
-                return SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, token);
-            }
-
-            if (token.IsKind(SyntaxKind.CharacterLiteralToken))
-            {
-                return SyntaxFactory.LiteralExpression(SyntaxKind.CharacterLiteralExpression, token);
-            }
-
-            if (token.IsKind(SyntaxKind.StringLiteralToken))
-            {
-                return SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, token);
-            }
-
-            if (token.IsKind(SyntaxKind.NullKeyword))
-            {
-                return SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, token);
-            }
+            return SyntaxFactory.ParseExpression(variable.Injection.Tag.ValueToString());
         }
 
         return base.VisitMemberAccessExpression(node);
