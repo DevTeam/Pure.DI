@@ -17,16 +17,6 @@ internal class StatementCodeBuilder(
             ctx = ctx with { ContextTag = curVariable.Injection.Tag };
         }
 
-        var ownerTypeName = curVariable.Node.Lifetime switch
-        {
-            Lifetime.Transient => curVariable.TargetNode.Type.ToDisplayString(),
-            Lifetime.PerResolve => statement.GetPath().Last().Current.Node.Type.ToDisplayString(),
-            Lifetime.PerBlock => statement.Current.ParentBlock.Current.Node.Type.ToDisplayString(),
-            _ => ctx.DependencyGraph.Source.Name.FullName
-        };
-
-        ctx = ctx with { OwnerTypeName = ownerTypeName };
-        
         switch (statement)
         {
             case Variable variable:

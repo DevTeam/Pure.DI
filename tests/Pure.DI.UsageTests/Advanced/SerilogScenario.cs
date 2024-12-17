@@ -62,7 +62,8 @@ partial class Composition
             .Bind().To(ctx =>
             {
                 ctx.Inject<Serilog.ILogger>("from arg", out var logger);
-                return logger.ForContext(ctx.OwnerType);
+                var consumers = ctx.ConsumerTypes;
+                return consumers.Length == 1 ? logger.ForContext(consumers[0]) : logger;
             })
 
             .Bind().To<Dependency>()
@@ -93,6 +94,11 @@ public class Scenario
         var service = composition.Root;
 // }
         events.Count.ShouldBe(2);
+        foreach (var e in events)
+        {
+            e.Properties.ContainsKey("SourceContext").ShouldBeTrue();
+        }
+
         composition.SaveClassDiagram();
     }
 }

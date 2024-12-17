@@ -755,12 +755,12 @@ public class FactoryTests
     }
     
     [Theory]
-    /*[InlineData(nameof(Lifetime.Transient), "Service")]
-    [InlineData(nameof(Lifetime.Singleton), "Composition")]
-    [InlineData(nameof(Lifetime.Scoped), "Composition")]
-    [InlineData(nameof(Lifetime.PerBlock), "Service")]*/
-    [InlineData(nameof(Lifetime.PerResolve), "Service")]
-    public async Task ShouldSupportFactoryWhenUsingOwnerType(string lifetime, string owner)
+    [InlineData(nameof(Lifetime.Transient), "ServiceAbc", "Service")]
+    [InlineData(nameof(Lifetime.Singleton), "Service", "ServiceAbc")]
+    [InlineData(nameof(Lifetime.Scoped), "Service", "ServiceAbc")]
+    [InlineData(nameof(Lifetime.PerBlock), "Service", "ServiceAbc")]
+    [InlineData(nameof(Lifetime.PerResolve), "Service", "ServiceAbc")]
+    public async Task ShouldSupportFactoryWhenUsingConsumers(string lifetime, params string[] consumers)
     {
         // Given
 
@@ -777,9 +777,12 @@ public class FactoryTests
                            
                                class Dependency: IDependency
                                {
-                                    public Dependency(string owner)
+                                    public Dependency(Type[] consumers)
                                     {
-                                        Console.WriteLine(owner);
+                                        foreach(var type in consumers)
+                                        {
+                                            Console.WriteLine(type.Name);
+                                        }
                                     }
                                }
                            
@@ -790,12 +793,21 @@ public class FactoryTests
                            
                                class Service: IService 
                                {
-                                   public Service(IDependency dep)
+                                   public Service(IDependency dep, [Tag("Abc")] IService serviceAbc)
                                    { 
                                        Dep = dep;
-                                       Console.WriteLine("Created");
                                    }
                            
+                                   public IDependency Dep { get; }
+                               }
+                               
+                               class ServiceAbc: IService 
+                               {
+                                   public ServiceAbc(IDependency dep)
+                                   { 
+                                       Dep = dep;
+                                   }
+                               
                                    public IDependency Dep { get; }
                                }
                            
@@ -813,8 +825,9 @@ public class FactoryTests
                                    {
                                        // OnDependencyInjection = On
                                        DI.Setup("Composition")
-                                           .Bind<IDependency>().As(Lifetime.#lifetime#).To(ctx => new Dependency(ctx.OwnerType.Name))
+                                           .Bind<IDependency>().As(Lifetime.#lifetime#).To(ctx => new Dependency(ctx.ConsumerTypes))
                                            .Bind<IService>().To<Service>()
+                                           .Bind<IService>("Abc").To<ServiceAbc>()
                                            .Root<IService>("Service");
                                    }
                                }
@@ -834,7 +847,7 @@ public class FactoryTests
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe([owner, "Created"], result);
+        result.StdOut.ShouldBe(consumers.AsEnumerable(), result);
     }
 
     [Fact]

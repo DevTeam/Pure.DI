@@ -253,8 +253,14 @@ internal sealed class FactoryRewriter(
                 case nameof(IContext.Tag):
                     return SyntaxFactory.ParseExpression(variable.Injection.Tag.ValueToString());
                 
-                case nameof(IContext.OwnerType) when _ctx is {} ctx:
-                    return SyntaxFactory.ParseExpression($"typeof({ctx.OwnerTypeName})");
+                case nameof(IContext.ConsumerTypes):
+                    var consumers = variable.Info.GetTargetNodes().Select(targetNode => $"typeof({targetNode.Type.ToDisplayString()})").ToList();
+                    if (consumers.Count == 0 && _ctx is not null)
+                    {
+                        consumers.Add($"typeof({_ctx.DependencyGraph.Source.Name.FullName})");
+                    }
+                    
+                    return SyntaxFactory.ParseExpression($"new {Names.SystemNamespace}Type[{consumers.Count}]{{{string.Join(", ", consumers)}}}");
             }
         }
 
