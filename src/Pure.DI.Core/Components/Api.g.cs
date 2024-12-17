@@ -2433,7 +2433,7 @@ namespace Pure.DI
         object Tag { get; }
 
         /// <summary>
-        /// The types of consumers for which the instance is created. Cannot be used outside of the binding setup.
+        /// The types of consumers for which the instance is created. Cannot be used outside of the binding setup. Guaranteed to contain at least one element.
         /// </summary>
         /// <seealso cref="IConfiguration.Bind{T}"/>
         Type[] ConsumerTypes { get; }

@@ -209,6 +209,7 @@ dotnet run
 - [Required properties or fields](readme/required-properties-or-fields.md)
 - [Root binding](readme/root-binding.md)
 - [Async Root](readme/async-root.md)
+- [Consumer types](readme/consumer-types.md)
 ### Lifetimes
 - [Transient](readme/transient.md)
 - [Singleton](readme/singleton.md)
@@ -301,7 +302,6 @@ dotnet run
 - [Exposed roots via root arg](readme/exposed-roots-via-root-arg.md)
 - [Exposed generic roots](readme/exposed-generic-roots.md)
 - [Exposed generic roots with args](readme/exposed-generic-roots-with-args.md)
-- [Serilog](readme/serilog.md)
 - [DI tracing via serilog](readme/di-tracing-via-serilog.md)
 ### Applications
 - Console

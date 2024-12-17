@@ -55,8 +55,8 @@ partial class Composition
   public Program GetProgram(Integration.CompositionInOtherProject baseComposition)
   {
     Integration.IMyService transientIMyService1;
-    Integration.CompositionInOtherProject localInstance_1182D1279 = baseComposition;
-    transientIMyService1 = localInstance_1182D1279.MyService;
+    Integration.CompositionInOtherProject localInstance_1182D1277 = baseComposition;
+    transientIMyService1 = localInstance_1182D1277.MyService;
     return new Program(transientIMyService1);
   }
 }

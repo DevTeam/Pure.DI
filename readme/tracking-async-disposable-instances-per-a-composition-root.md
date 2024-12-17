@@ -98,15 +98,15 @@ partial class Composition
       Owned<IService> perBlockOwned0;
       // Creates the owner of an instance
       Owned transientOwned1;
-      Owned localOwned21 = accumulator46;
-      transientOwned1 = localOwned21;
+      Owned localOwned15 = accumulator46;
+      transientOwned1 = localOwned15;
       using (_lock.EnterScope())
       {
         accumulator46.Add(transientOwned1);
       }
-      IOwned localOwned19 = transientOwned1;
-      IService localValue20 = new Service(transientDependency3);
-      perBlockOwned0 = new Owned<IService>(localValue20, localOwned19);
+      IOwned localOwned13 = transientOwned1;
+      IService localValue14 = new Service(transientDependency3);
+      perBlockOwned0 = new Owned<IService>(localValue14, localOwned13);
       using (_lock.EnterScope())
       {
         accumulator46.Add(perBlockOwned0);

@@ -1,6 +1,6 @@
 ﻿/*
 $v=true
-$p=302
+$p=300
 $d=DI tracing via serilog
 */
 
@@ -63,8 +63,7 @@ partial class Composition
             .Bind<Serilog.ILogger>().To(ctx =>
             {
                 ctx.Inject("from arg", out Serilog.ILogger logger);
-                var consumers = ctx.ConsumerTypes;
-                return consumers.Length == 1 ? logger.ForContext(consumers[0]) : logger;
+                return logger.ForContext(ctx.ConsumerTypes[0]);
             })
 
             .Bind().To<Dependency>()

@@ -1,6 +1,8 @@
-#### Serilog
+#### Consumer types
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Advanced/SerilogScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/ConsumerTypesScenario.cs)
+
+`ConsumerTypes` is used to get the list of consumer types of a given dependency. It contains an array of types and guarantees that it will contain at least one element. The use of `ConsumerTypes` is demonstrated on the example of [Serilog library](https://serilog.net/):
 
 
 ```c#
@@ -41,8 +43,7 @@ partial class Composition
             .Bind().To(ctx =>
             {
                 ctx.Inject<Serilog.ILogger>("from arg", out var logger);
-                var consumers = ctx.ConsumerTypes;
-                return consumers.Length == 1 ? logger.ForContext(consumers[0]) : logger;
+                return logger.ForContext(ctx.ConsumerTypes[0]);
             })
 
             .Bind().To<Dependency>()
@@ -83,13 +84,11 @@ partial class Composition
     get
     {
       Serilog.ILogger transientILogger3;
-      Serilog.ILogger localLogger11 = _argLogger;
-      var localConsumers12= new Type[1]{typeof(Dependency)};
-      transientILogger3 = localConsumers12.Length == 1 ? localLogger11.ForContext(localConsumers12[0]) : localLogger11;
+      Serilog.ILogger localLogger48 = _argLogger;
+      transientILogger3 = localLogger48.ForContext(new Type[1]{typeof(Dependency)}[0]);
       Serilog.ILogger transientILogger1;
-      Serilog.ILogger localLogger13 = _argLogger;
-      var localConsumers14= new Type[1]{typeof(Service)};
-      transientILogger1 = localConsumers14.Length == 1 ? localLogger13.ForContext(localConsumers14[0]) : localLogger13;
+      Serilog.ILogger localLogger49 = _argLogger;
+      transientILogger1 = localLogger49.ForContext(new Type[1]{typeof(Service)}[0]);
       return new Service(transientILogger1, new Dependency(transientILogger3));
     }
   }
@@ -112,7 +111,7 @@ classDiagram
 	Service *--  Dependency : IDependency
 	ILogger o-- ILogger : "from arg"  Argument "logger"
 	Dependency *--  ILogger : ILogger
-	namespace Pure.DI.UsageTests.Advanced.SerilogScenario {
+	namespace Pure.DI.UsageTests.Basics.ConsumerTypesScenario {
 		class Composition {
 		<<partial>>
 		+IService Root
