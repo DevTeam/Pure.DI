@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis.Operations;
 internal class Semantic(
     IInjectionSiteFactory injectionSiteFactory,
     IWildcardMatcher wildcardMatcher,
+    ITypes types,
     CancellationToken cancellationToken)
     : ISemantic
 {
@@ -87,7 +88,7 @@ internal class Semantic(
                     var valueStr = memberAccessExpressionSyntax.Name.Identifier.Text;
                     switch (classIdentifierName.Identifier.Text)
                     {
-                        case nameof(CompositionKind):
+                        case nameof(CompositionKind) when IsSpecialType(semanticModel, node, SpecialType.CompositionKind):
                             if (Enum.TryParse<CompositionKind>(valueStr, out var compositionKindValue))
                             {
                                 return (T)(object)compositionKindValue;
@@ -95,7 +96,7 @@ internal class Semantic(
 
                             break;
 
-                        case nameof(Lifetime):
+                        case nameof(Lifetime) when IsSpecialType(semanticModel, node, SpecialType.Lifetime):
                             if (Enum.TryParse<Lifetime>(valueStr, out var lifetimeValue))
                             {
                                 return (T)(object)lifetimeValue;
@@ -106,10 +107,10 @@ internal class Semantic(
                         case nameof(Tag):
                             switch (valueStr)
                             {
-                                case nameof(Tag.Type):
+                                case nameof(Tag.Type) when IsSpecialType(semanticModel, node, SpecialType.Tag):
                                     return (T)(object)Tag.Type;
 
-                                case nameof(Tag.Unique):
+                                case nameof(Tag.Unique) when IsSpecialType(semanticModel, node, SpecialType.Tag):
                                     return (T)(object)Tag.Unique;
                             }
 
@@ -119,6 +120,18 @@ internal class Semantic(
 
                 break;
             }
+            
+            case IdentifierNameSyntax identifierNameSyntax:
+                switch (identifierNameSyntax.Identifier.Text)
+                {
+                    case nameof(Tag.Type) when IsSpecialType(semanticModel, node, SpecialType.Tag):
+                        return (T)(object)Tag.Type;
+
+                    case nameof(Tag.Unique) when IsSpecialType(semanticModel, node, SpecialType.Tag):
+                        return (T)(object)Tag.Unique;
+                }
+
+                break;
 
             case InvocationExpressionSyntax invocationExpressionSyntax:
             {
@@ -234,4 +247,8 @@ internal class Semantic(
 
         throw new CompileErrorException($"{node} must be a constant value of type {typeof(T)} or a special API call.", node.GetLocation(), LogId.ErrorInvalidMetadata);
     }
+
+    private bool IsSpecialType(SemanticModel semanticModel, SyntaxNode node, SpecialType specialType) =>
+        semanticModel.GetTypeInfo(node).Type is { } type
+        && type.Equals(types.TryGet(specialType, semanticModel.Compilation), SymbolEqualityComparer.Default);
 }

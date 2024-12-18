@@ -9,7 +9,10 @@ internal class Types(
     private static readonly Dictionary<SpecialType, string> TypeShortNames = new()
     {
         { SpecialType.IAsyncDisposable, $"{nameof(System)}.IAsyncDisposable" },
-        { SpecialType.Lock, $"{nameof(System)}.Threading.Lock" }
+        { SpecialType.Lock, $"{nameof(System)}.Threading.Lock" },
+        { SpecialType.CompositionKind, $"{Names.GeneratorName}.{nameof(CompositionKind)}" },
+        { SpecialType.Lifetime, $"{Names.GeneratorName}.{nameof(Lifetime)}" },
+        { SpecialType.Tag, $"{Names.GeneratorName}.{nameof(Tag)}" }
     };
 
     public INamedTypeSymbol? TryGet(SpecialType specialType, Compilation compilation) =>

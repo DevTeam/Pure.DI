@@ -4,5 +4,11 @@ internal enum SpecialType
 {
     IAsyncDisposable,
     
-    Lock
+    Lock,
+    
+    CompositionKind,
+    
+    Lifetime,
+    
+    Tag
 }

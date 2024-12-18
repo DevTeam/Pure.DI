@@ -446,6 +446,64 @@ public class TagsTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["2", "Sample.Service"], result);
     }
+    
+    [Fact]
+    public async Task ShouldSupportTagUniqueWhenStatic()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           namespace Sample
+                           {
+                               using System;
+                               using System.Linq;
+                               using System.Collections.Generic;
+                               using Pure.DI;
+                               using Sample;
+                               using static Pure.DI.Tag;
+                               
+                               internal interface IDep { }
+                               
+                               internal class Dep1: IDep { }
+                               
+                               internal class Dep2: IDep { }
+                           
+                               internal interface IService { }
+                           
+                               internal class Service: IService
+                               {
+                                   public Service(IEnumerable<IDep> deps)
+                                   {
+                                       Console.WriteLine(deps.Count());
+                                   }
+                               }
+                               
+                               internal partial class Composition
+                               {                   
+                                   void Setup() => 
+                                       DI.Setup("Composition")
+                                           .Bind<IDep>(Unique).To<Dep1>()
+                                           .Bind(Unique).To<Dep2>()
+                                           .Bind().To<Service>()
+                                           .Root<Service>("Root");
+                               }
+                           
+                               public class Program
+                               {
+                                  public static void Main()
+                                  {
+                                      var composition = new Composition();
+                                      Console.WriteLine(composition.Root);
+                                  }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["2", "Sample.Service"], result);
+    }
 
     [Fact]
     public async Task ShouldSupportTagType()
