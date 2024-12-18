@@ -20,10 +20,12 @@ internal readonly record struct Injection(
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool EqualTags(object? tag, object? otherTag) =>
-        SpecialEqualTags(tag, otherTag) || SpecialEqualTags(otherTag, tag)
-                                        || Equals(tag, otherTag);
+        SpecialEqualTags(tag, otherTag) 
+        || SpecialEqualTags(otherTag, tag)
+        || Equals(tag, otherTag);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool SpecialEqualTags(object? tag, object? otherTag) =>
-        ReferenceEquals(tag, MdTag.ContextTag) || (tag is MdTagOnSites tagOn && tagOn.Equals(otherTag));
+        ReferenceEquals(tag, MdTag.ContextTag)
+        || (tag is MdTagOnSites tagOn && tagOn.Equals(otherTag));
 }

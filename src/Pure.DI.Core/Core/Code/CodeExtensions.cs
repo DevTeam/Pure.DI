@@ -2,15 +2,17 @@
 
 namespace Pure.DI.Core.Code;
 
+using System.Globalization;
+
 internal static class CodeExtensions
 {
     public static string ValueToString(this object? tag, string defaultValue = "null") =>
         tag switch
         {
             string => $"\"{tag}\"",
-            double => $"{tag}D",
-            float => $"{tag}F",
-            decimal => $"{tag}M",
+            double val => $"{val.ToString(CultureInfo.InvariantCulture)}D",
+            float val => $"{val.ToString(CultureInfo.InvariantCulture)}F",
+            decimal val => $"{val.ToString(CultureInfo.InvariantCulture)}M",
             uint => $"{tag}U",
             long => $"{tag}L",
             ulong => $"{tag}UL",
@@ -20,9 +22,9 @@ internal static class CodeExtensions
             ushort => $"(ushort){tag}",
             nint => $"(nint){tag}",
             nuint => $"(nuint){tag}",
-            char ch => $"'{ch.ToString()}'",
-            Enum en => $"{en.GetType()}.{en}",
-            ITypeSymbol => $"typeof({tag})",
+            char val => $"'{val}'",
+            Enum val => $"{val.GetType()}.{val}",
+            ITypeSymbol val => $"typeof({val.ToDisplayString()})",
             MdTagOnSites => defaultValue,
             not null => tag.ToString(),
             _ => defaultValue

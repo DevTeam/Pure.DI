@@ -1470,8 +1470,19 @@ public class TagsTests
         result.StdOut.ShouldBe(["Sample.Service"], result);
     }
 
-    [Fact]
-    public async Task ShouldSupportTag()
+    [Theory]
+    [InlineData("\"123\"")]
+    [InlineData("123.2D")]
+    [InlineData("123.2F")]
+    // [InlineData("123.2M")]
+    [InlineData("123U")]
+    [InlineData("123L")]
+    [InlineData("123UL")]
+    [InlineData("123")]
+    [InlineData("MyEnum.Val2")]
+    [InlineData("'a'")]
+    [InlineData("typeof(MyEnum)")]
+    public async Task ShouldSupportTag(string tag)
     {
         // Given
 
@@ -1482,6 +1493,8 @@ public class TagsTests
 
                            namespace Sample
                            {
+                               enum MyEnum { Val1, Val2 }
+
                                internal interface IDependency { }
                            
                                internal class Dependency : IDependency { }
@@ -1495,7 +1508,7 @@ public class TagsTests
                            
                                internal class Service : IService
                                {
-                                   public Service([Tag(123)] Func<IDependency> dependency1, [Tag(123)] IDependency dependency2)
+                                   public Service([Tag(#tag#)] Func<IDependency> dependency1, [Tag(#tag#)] IDependency dependency2)
                                    {
                                        Dependency1 = dependency1();
                                        Dependency2 = dependency2;
@@ -1511,9 +1524,9 @@ public class TagsTests
                                    private static void SetupComposition()
                                    {
                                        DI.Setup(nameof(Composition))
-                                           .Bind<IDependency>(123).As(Lifetime.Singleton).To<Dependency>()
+                                           .Bind<IDependency>(#tag#).As(Lifetime.Singleton).To<Dependency>()
                                            .Bind<IService>().To<Service>()
-                                           .Root<IDependency>("Dependency", 123)
+                                           .Root<IDependency>("Dependency", #tag#)
                                            .Root<IService>("Root");
                                    }
                                }
@@ -1530,7 +1543,7 @@ public class TagsTests
                                    }
                                }
                            }
-                           """.RunAsync();
+                           """.Replace("#tag#", tag).RunAsync();
 
         // Then
         result.Success.ShouldBeTrue(result);
