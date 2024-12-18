@@ -3,6 +3,7 @@
 namespace Pure.DI;
 
 using System.Diagnostics;
+using static Lifetime;
 
 public sealed partial class Generator
 {
@@ -42,12 +43,12 @@ public sealed partial class Generator
                 .Bind<IEqualityComparer<string>>().To(_ => StringComparer.InvariantCultureIgnoreCase)
                 .Bind().To<BindingBuilder>()
 
-            .DefaultLifetime(Lifetime.Singleton)
+            .DefaultLifetime(Singleton)
                 .Bind().To<Cache<TT1, TT2>>()
                 .Bind().To<ObserversRegistry>()
                 .Bind().To((IBuilder<Unit, IEnumerable<Source>> api) => api.Build(Unit.Shared))
 
-            .DefaultLifetime(Lifetime.PerBlock)
+            .DefaultLifetime(PerBlock)
                 .Bind().To<Arguments>()
                 .Bind().To<Comments>()
                 .Bind().To<BuildTools>()
@@ -135,7 +136,7 @@ public sealed partial class Generator
                 .Bind(Tag.Type).To<ResolversFieldsBuilder>()
                 .Bind(Tag.Type).To<ToStringMethodBuilder>()
 
-            .DefaultLifetime(Lifetime.PerResolve)
+            .DefaultLifetime(PerResolve)
                 .Bind().To<TypeResolver>()
                 .Bind().To<LogObserver>()
                 .Bind().To<Types>()
