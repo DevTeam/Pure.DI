@@ -681,6 +681,8 @@ You can set project properties to save generated files and control their storage
 
 Thank you for your interest in contributing to the _Pure.DI_ project! First of all, if you are going to make a big change or feature, please open a problem first. That way, we can coordinate and understand if the change you're going to work on fits with current priorities and if we can commit to reviewing and merging it within a reasonable timeframe. We don't want you to waste a lot of your valuable time on something that may not align with what we want for _Pure.DI_.
 
+Contribution prerequisites: [.NET SDK 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) or later is installed.
+
 The entire build logic is a regular [console .NET application](/build). You can use the [build.cmd](/build.cmd) and [build.sh](/build.sh) files with the appropriate command in the parameters to perform all basic actions on the project, e.g:
 
 | Command        | Description                                                       |
@@ -702,27 +704,11 @@ For example:
 ./build.cmd benchmarks
 ```
 
-If you are using the Rider IDE, it already has a set of configurations to run these commands.
+If you are using the Rider IDE, it already has a set of configurations to run these commands. This project uses [C# interactive](https://github.com/DevTeam/csharp-interactive) build automation system for .NET. This tool helps to make .NET builds more efficient.
 
-> [!NOTE]
-> This project uses [C# interactive](https://github.com/DevTeam/csharp-interactive) build automation system for .NET
->
-> ![](https://raw.githubusercontent.com/DevTeam/csharp-interactive/master/docs/CSharpInteractive.gif)
->
-> This tool helps to make .NET builds more efficient.
-
-Contribution Prerequisites:
-
-Installed [.NET SDK 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
+![](https://raw.githubusercontent.com/DevTeam/csharp-interactive/master/docs/CSharpInteractive.gif)
 
 ### Additional resources
-
-> RU DotNext video
-> 
-> <a href="http://www.youtube.com/watch?feature=player_embedded&v=nrp9SH-gLqg" target="_blank"><img src="http://img.youtube.com/vi/nrp9SH-gLqg/0.jpg"
-alt="DotNext Pure.DI" width="640" border="10"/></a>
-
-> [C# interactive](https://github.com/DevTeam/csharp-interactive) build automation system for .NET
 
 Examples of how to set up a composition
 - [Pure.DI](https://github.com/DevTeam/Pure.DI/blob/master/src/Pure.DI.Core/Generator.cs)
@@ -735,3 +721,8 @@ Articles
 - [RU Pure.DI v2.1](https://habr.com/ru/articles/795809/)
 - [RU Pure.DI next step](https://habr.com/ru/articles/554236/)
 - [RU Pure.DI for .NET](https://habr.com/ru/articles/552858/)
+
+RU DotNext video
+
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=nrp9SH-gLqg" target="_blank"><img src="http://img.youtube.com/vi/nrp9SH-gLqg/0.jpg"
+alt="DotNext Pure.DI" width="640" border="10"/></a>

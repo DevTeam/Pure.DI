@@ -1,14 +1,10 @@
-_Supports .NET starting with .NET Framework 2.0, released 2005-10-27, and all newer versions._
+_Supports .NET starting with [.NET Framework 2.0](https://www.microsoft.com/en-us/download/details.aspx?id=6041), released 2005-10-27, and all newer versions._
 
 ## Usage requirements
 
-- .NET SDK [6.0.4](https://dotnet.microsoft.com/download/dotnet/6.0) or later is installed
+- [.NET SDK 6.0.4](https://dotnet.microsoft.com/download/dotnet/6.0) or later is installed. At the same time, you can develop .NET projects even for older versions like .NET Framework 2.0
 
-At the same time, you can develop .NET projects even for older versions like [.NET Framework 2.0](https://www.microsoft.com/en-us/download/details.aspx?id=6041)
-
-- [C# 8](https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-version-history#c-version-80) or later
-
-This requirement only needs to be met for projects that reference the _Pure.DI_ source code generator, other projects can use any version of C#.
+- [C# 8](https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-version-history#c-version-80) or later. This requirement only needs to be met for projects that reference the _Pure.DI_ source code generator, other projects can use any version of C#.
 
 ## Key features
 

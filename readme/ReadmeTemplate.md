@@ -35,7 +35,7 @@ class ShroedingersCat(Lazy<State> superposition): ICat
 }
 ```
 
-> [!NOTE]
+> [!IMPORTANT]
 > Our abstraction and implementation knows nothing about the magic of DI or any frameworks.
 
 ### Let's glue it all together
@@ -98,6 +98,8 @@ partial class Composition
 }
 ```
 
+Obviously, this code does not depend on other libraries, does not use type reflection or any other tricks that can negatively affect performance and memory consumption. It looks like an efficient code written by hand. At any given time, you can study it and understand how it works.
+
 The `public Program Root { get; }` property here is a [*__Composition Root__*](https://blog.ploeh.dk/2011/07/28/CompositionRoot/), the only place in the application where the composition of the object graph for the application takes place. Each instance is created by only basic language constructs, which compiles with all optimizations with minimal impact on performance and memory consumption. In general, applications may have multiple composition roots and thus such properties. Each composition root must have its own unique name, which is defined when the `Root<T>(string name)` method is called, as shown in the above code.
 
 ### Time to open boxes!
@@ -114,13 +116,12 @@ class Program(IBox<ICat> box)
 }
 ```
 
-> [!NOTE]
-> _Pure.DI_ creates efficient code in a pure DI paradigm, using only basic language constructs as if you were writing code by hand. This allows you to take full advantage of Dependency Injection everywhere and always, without any compromise!
+_Pure.DI_ creates efficient code in a pure DI paradigm, using only basic language constructs as if you were writing code by hand. This allows you to take full advantage of Dependency Injection everywhere and always, without any compromise!
 
 The full analog of this application with top-level statements can be found [here](samples/ShroedingersCatTopLevelStatements).
 
 <details>
-<summary>Just try!</summary>
+<summary>Just try creating a project from scratch!</summary>
 
 Install the [projects template](https://www.nuget.org/packages/Pure.DI.Templates)
 

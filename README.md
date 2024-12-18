@@ -9,17 +9,13 @@
 
 ![](readme/di.gif)
 
-_Supports .NET starting with .NET Framework 2.0, released 2005-10-27, and all newer versions._
+_Supports .NET starting with [.NET Framework 2.0](https://www.microsoft.com/en-us/download/details.aspx?id=6041), released 2005-10-27, and all newer versions._
 
 ## Usage requirements
 
-- .NET SDK [6.0.4](https://dotnet.microsoft.com/download/dotnet/6.0) or later is installed
+- [.NET SDK 6.0.4](https://dotnet.microsoft.com/download/dotnet/6.0) or later is installed. At the same time, you can develop .NET projects even for older versions like .NET Framework 2.0
 
-At the same time, you can develop .NET projects even for older versions like [.NET Framework 2.0](https://www.microsoft.com/en-us/download/details.aspx?id=6041)
-
-- [C# 8](https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-version-history#c-version-80) or later
-
-This requirement only needs to be met for projects that reference the _Pure.DI_ source code generator, other projects can use any version of C#.
+- [C# 8](https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-version-history#c-version-80) or later. This requirement only needs to be met for projects that reference the _Pure.DI_ source code generator, other projects can use any version of C#.
 
 ## Key features
 
@@ -80,7 +76,7 @@ class ShroedingersCat(Lazy<State> superposition): ICat
 }
 ```
 
-> [!NOTE]
+> [!IMPORTANT]
 > Our abstraction and implementation knows nothing about the magic of DI or any frameworks.
 
 ### Let's glue it all together
@@ -143,6 +139,8 @@ partial class Composition
 }
 ```
 
+Obviously, this code does not depend on other libraries, does not use type reflection or any other tricks that can negatively affect performance and memory consumption. It looks like an efficient code written by hand. At any given time, you can study it and understand how it works.
+
 The `public Program Root { get; }` property here is a [*__Composition Root__*](https://blog.ploeh.dk/2011/07/28/CompositionRoot/), the only place in the application where the composition of the object graph for the application takes place. Each instance is created by only basic language constructs, which compiles with all optimizations with minimal impact on performance and memory consumption. In general, applications may have multiple composition roots and thus such properties. Each composition root must have its own unique name, which is defined when the `Root<T>(string name)` method is called, as shown in the above code.
 
 ### Time to open boxes!
@@ -159,13 +157,12 @@ class Program(IBox<ICat> box)
 }
 ```
 
-> [!NOTE]
-> _Pure.DI_ creates efficient code in a pure DI paradigm, using only basic language constructs as if you were writing code by hand. This allows you to take full advantage of Dependency Injection everywhere and always, without any compromise!
+_Pure.DI_ creates efficient code in a pure DI paradigm, using only basic language constructs as if you were writing code by hand. This allows you to take full advantage of Dependency Injection everywhere and always, without any compromise!
 
 The full analog of this application with top-level statements can be found [here](samples/ShroedingersCatTopLevelStatements).
 
 <details>
-<summary>Just try!</summary>
+<summary>Just try creating a project from scratch!</summary>
 
 Install the [projects template](https://www.nuget.org/packages/Pure.DI.Templates)
 
@@ -986,6 +983,8 @@ You can set project properties to save generated files and control their storage
 
 Thank you for your interest in contributing to the _Pure.DI_ project! First of all, if you are going to make a big change or feature, please open a problem first. That way, we can coordinate and understand if the change you're going to work on fits with current priorities and if we can commit to reviewing and merging it within a reasonable timeframe. We don't want you to waste a lot of your valuable time on something that may not align with what we want for _Pure.DI_.
 
+Contribution prerequisites: [.NET SDK 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) or later is installed.
+
 The entire build logic is a regular [console .NET application](/build). You can use the [build.cmd](/build.cmd) and [build.sh](/build.sh) files with the appropriate command in the parameters to perform all basic actions on the project, e.g:
 
 | Command        | Description                                                       |
@@ -1007,27 +1006,11 @@ For example:
 ./build.cmd benchmarks
 ```
 
-If you are using the Rider IDE, it already has a set of configurations to run these commands.
+If you are using the Rider IDE, it already has a set of configurations to run these commands. This project uses [C# interactive](https://github.com/DevTeam/csharp-interactive) build automation system for .NET. This tool helps to make .NET builds more efficient.
 
-> [!NOTE]
-> This project uses [C# interactive](https://github.com/DevTeam/csharp-interactive) build automation system for .NET
->
-> ![](https://raw.githubusercontent.com/DevTeam/csharp-interactive/master/docs/CSharpInteractive.gif)
->
-> This tool helps to make .NET builds more efficient.
-
-Contribution Prerequisites:
-
-Installed [.NET SDK 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
+![](https://raw.githubusercontent.com/DevTeam/csharp-interactive/master/docs/CSharpInteractive.gif)
 
 ### Additional resources
-
-> RU DotNext video
-> 
-> <a href="http://www.youtube.com/watch?feature=player_embedded&v=nrp9SH-gLqg" target="_blank"><img src="http://img.youtube.com/vi/nrp9SH-gLqg/0.jpg"
-alt="DotNext Pure.DI" width="640" border="10"/></a>
-
-> [C# interactive](https://github.com/DevTeam/csharp-interactive) build automation system for .NET
 
 Examples of how to set up a composition
 - [Pure.DI](https://github.com/DevTeam/Pure.DI/blob/master/src/Pure.DI.Core/Generator.cs)
@@ -1040,6 +1023,11 @@ Articles
 - [RU Pure.DI v2.1](https://habr.com/ru/articles/795809/)
 - [RU Pure.DI next step](https://habr.com/ru/articles/554236/)
 - [RU Pure.DI for .NET](https://habr.com/ru/articles/552858/)
+
+RU DotNext video
+
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=nrp9SH-gLqg" target="_blank"><img src="http://img.youtube.com/vi/nrp9SH-gLqg/0.jpg"
+alt="DotNext Pure.DI" width="640" border="10"/></a>
 
 
 ## Benchmarks
