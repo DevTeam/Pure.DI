@@ -1,4 +1,5 @@
-﻿namespace Pure.DI.Core.Code;
+﻿// ReSharper disable ClassNeverInstantiated.Global
+namespace Pure.DI.Core.Code;
 
 internal class TagClassBuilder(
     IInformation information,
@@ -67,8 +68,6 @@ internal class TagClassBuilder(
 
                             code.AppendLine("/// </list>");
                         }
-                        
-                        
                     }
 
                     code.AppendLine("/// </summary>");

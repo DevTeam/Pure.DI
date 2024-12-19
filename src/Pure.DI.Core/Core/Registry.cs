@@ -23,16 +23,7 @@ internal class Registry<T> : IRegistryManager<T>, IRegistry<T>
         }
     }
 
-    public IEnumerable<T> GetRegistrations()
-    {
-        List<T> result;
-        lock (_registered)
-        {
-            result = _registered.Select(i => i.Value).ToList();
-        }
-
-        return result;
-    }
-
-    private readonly record struct Key(CompositionName CompositionName, T Value);
+    private readonly record struct Key(
+        CompositionName CompositionName,
+        T Value);
 }

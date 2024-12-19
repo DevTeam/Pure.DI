@@ -106,17 +106,12 @@ internal class Semantic(
                             break;
 
                         case nameof(Tag) when typeof(T) == typeof(object):
-                            switch (valueStr)
+                            return valueStr switch
                             {
-                                case nameof(Tag.Type) when IsSpecialType(semanticModel, node, SpecialType.Tag):
-                                    return (T)(object)Tag.Type;
-
-                                case nameof(Tag.Unique) when IsSpecialType(semanticModel, node, SpecialType.Tag):
-                                    return (T)(object)Tag.Unique;
-
-                                default:
-                                    return (T)smartTags.Register(valueStr);
-                            }
+                                nameof(Tag.Type) when IsSpecialType(semanticModel, node, SpecialType.Tag) => (T)(object)Tag.Type,
+                                nameof(Tag.Unique) when IsSpecialType(semanticModel, node, SpecialType.Tag) => (T)(object)Tag.Unique,
+                                _ => (T)smartTags.Register(valueStr)
+                            };
                     }
                 }
 
@@ -124,17 +119,12 @@ internal class Semantic(
             }
             
             case IdentifierNameSyntax identifierNameSyntax when typeof(T) == typeof(object):
-                switch (identifierNameSyntax.Identifier.Text)
+                return identifierNameSyntax.Identifier.Text switch
                 {
-                    case nameof(Tag.Type) when IsSpecialType(semanticModel, node, SpecialType.Tag):
-                        return (T)(object)Tag.Type;
-
-                    case nameof(Tag.Unique) when IsSpecialType(semanticModel, node, SpecialType.Tag):
-                        return (T)(object)Tag.Unique;
-                    
-                    default:
-                        return (T)smartTags.Register(identifierNameSyntax.Identifier.Text);
-                }
+                    nameof(Tag.Type) when IsSpecialType(semanticModel, node, SpecialType.Tag) => (T)(object)Tag.Type,
+                    nameof(Tag.Unique) when IsSpecialType(semanticModel, node, SpecialType.Tag) => (T)(object)Tag.Unique,
+                    _ => (T)smartTags.Register(identifierNameSyntax.Identifier.Text)
+                };
 
             case InvocationExpressionSyntax invocationExpressionSyntax:
             {

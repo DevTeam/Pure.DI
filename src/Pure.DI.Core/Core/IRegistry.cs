@@ -1,8 +1,6 @@
 ﻿namespace Pure.DI.Core;
 
-internal interface IRegistry<T>
+internal interface IRegistry<in T>
 {
     bool IsRegistered(MdSetup setup, T value);
-
-    IEnumerable<T> GetRegistrations();
 }

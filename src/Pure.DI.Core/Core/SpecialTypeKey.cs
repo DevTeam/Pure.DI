@@ -1,3 +1,6 @@
-﻿namespace Pure.DI.Core;
+﻿// ReSharper disable NotAccessedPositionalProperty.Global
+namespace Pure.DI.Core;
 
-internal record SpecialTypeKey(SpecialType SpecialType, Compilation Compilation);
+internal record SpecialTypeKey(
+    SpecialType SpecialType,
+    Compilation Compilation);

@@ -1,5 +1,6 @@
 ﻿// ReSharper disable HeapView.DelegateAllocation
 
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
 internal class Attributes(ISemantic semantic)

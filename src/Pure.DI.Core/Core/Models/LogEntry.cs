@@ -1,5 +1,6 @@
 // ReSharper disable HeapView.BoxingAllocation
 
+// ReSharper disable NotAccessedPositionalProperty.Global
 namespace Pure.DI.Core.Models;
 
 public readonly record struct LogEntry(

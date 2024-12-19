@@ -1,4 +1,5 @@
-﻿#pragma warning disable CS9113 // Parameter is unread.
+﻿// ReSharper disable ClassNeverInstantiated.Global
+#pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.Core;
 
 internal class TagOnSitesValidator(ILogger logger, IRegistry<MdInjectionSite> registry)

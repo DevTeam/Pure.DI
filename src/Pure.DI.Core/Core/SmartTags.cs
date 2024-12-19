@@ -1,4 +1,5 @@
 ﻿// ReSharper disable InvertIf
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
 internal class SmartTags : ISmartTags
