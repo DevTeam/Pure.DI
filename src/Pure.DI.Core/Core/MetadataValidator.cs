@@ -5,7 +5,7 @@
 namespace Pure.DI.Core;
 
 internal sealed class MetadataValidator(
-    ILogger<MetadataValidator> logger,
+    ILogger logger,
     IBaseSymbolsProvider baseSymbolsProvider,
     IMarker marker)
     : IValidator<MdSetup>

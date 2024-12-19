@@ -3,7 +3,7 @@
 namespace Pure.DI.Core;
 
 internal sealed class DependencyGraphValidator(
-    ILogger<DependencyGraphValidator> logger,
+    ILogger logger,
     ITypeResolver typeResolver,
     IFilter filter,
     CancellationToken cancellationToken)

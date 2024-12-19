@@ -3,7 +3,10 @@
 namespace Pure.DI;
 
 using System.Diagnostics;
+using static Hint;
 using static Lifetime;
+using static RootKinds;
+using static Tag;
 
 public sealed partial class Generator
 {
@@ -22,12 +25,12 @@ public sealed partial class Generator
     
     [Conditional("DI")]
     private void Setup() => DI.Setup()
-        .Hint(Hint.Resolve, "Off")
+        .Hint(Resolve, "Off")
 
         // Roots
             .Root<IEnumerable<Source>>(nameof(Api))
             .Root<IObserversRegistry>(nameof(Observers))
-            .RootBind<Generation>(nameof(Generate), kind: RootKinds.Internal, "internal")
+            .RootBind<Generation>(nameof(Generate), kind: Internal)
                 .To((IBuilder<ImmutableArray<SyntaxUpdate>, Generation> generator, ImmutableArray<SyntaxUpdate> updates) => generator.Build(updates))
 
             .RootArg<IGeneratorOptions>("options")
@@ -42,6 +45,11 @@ public sealed partial class Generator
                 .Bind().To<TypeConstructor>()
                 .Bind<IEqualityComparer<string>>().To(_ => StringComparer.InvariantCultureIgnoreCase)
                 .Bind().To<BindingBuilder>()
+                .Bind<ILogger>().To(ctx =>
+                {
+                    ctx.Inject<Logger>(out var logger);
+                    return logger.WithTargetType(ctx.ConsumerTypes[0]);
+                })
 
             .DefaultLifetime(Singleton)
                 .Bind().To<Cache<TT1, TT2>>()
@@ -52,7 +60,6 @@ public sealed partial class Generator
                 .Bind().To<Arguments>()
                 .Bind().To<Comments>()
                 .Bind().To<BuildTools>()
-                .Bind().To<Logger<TT>>()
                 .Bind().To<Resources>()
                 .Bind().To<Information>()
                 .Bind().To<GlobalOptions>()
@@ -70,26 +77,26 @@ public sealed partial class Generator
                 .Bind().To<Attributes>()
                 .Bind().To<Compilations>()
                 .Bind().To<GraphWalker<TT, TT1>>()
-                .Bind(Tag.Type).To<LifetimesValidatorVisitor>()
-                .Bind(Tag.Type).To<CyclicDependencyValidatorVisitor>()
+                .Bind(Type).To<LifetimesValidatorVisitor>()
+                .Bind(Type).To<CyclicDependencyValidatorVisitor>()
                 .Bind().To<LifetimeAnalyzer>()
                 .Bind().To<TriviaTools>()
                 .Bind().To<InstanceDpProvider>()
                 .Bind().To<Injections>()
 
                 // Validators
-                .Bind(Tag.Type).To<MetadataValidator>()
-                .Bind(Tag.Type).To<DependencyGraphValidator>()
-                .Bind(Tag.Type).To<CyclicDependenciesValidator>()
-                .Bind(Tag.Type).To<RootValidator>()
-                .Bind(Tag.Type).To<TagOnSitesValidator>()
-                .Bind(Tag.Type).To<BindingsValidator>()
-                .Bind(Tag.Type).To<LifetimesValidator>()
+                .Bind(Type).To<MetadataValidator>()
+                .Bind(Type).To<DependencyGraphValidator>()
+                .Bind(Type).To<CyclicDependenciesValidator>()
+                .Bind(Type).To<RootValidator>()
+                .Bind(Type).To<TagOnSitesValidator>()
+                .Bind(Type).To<BindingsValidator>()
+                .Bind(Type).To<LifetimesValidator>()
             
                 // Comments
-                .Bind(Tag.Type).To<ClassCommenter>()
-                .Bind(Tag.Type).To<ParameterizedConstructorCommenter>()
-                .Bind(Tag.Type).To<RootMethodsCommenter>()
+                .Bind(Type).To<ClassCommenter>()
+                .Bind(Type).To<ParameterizedConstructorCommenter>()
+                .Bind(Type).To<RootMethodsCommenter>()
             
                 // Builders
                 .Bind().To<MetadataBuilder>()
@@ -98,11 +105,11 @@ public sealed partial class Generator
                 .Bind().To<ContractsBuilder>()
                 .Bind().To<ClassDiagramBuilder>()
                 .Bind().To<RootsBuilder>()
-                .Bind(Tag.Unique).To<FactoryDependencyNodeBuilder>()
-                .Bind(Tag.Unique).To<ArgDependencyNodeBuilder>()
-                .Bind(Tag.Unique).To<ConstructDependencyNodeBuilder>()
-                .Bind(Tag.Unique).To<ImplementationDependencyNodeBuilder>()
-                .Bind(Tag.Unique).To<RootDependencyNodeBuilder>()
+                .Bind(Unique).To<FactoryDependencyNodeBuilder>()
+                .Bind(Unique).To<ArgDependencyNodeBuilder>()
+                .Bind(Unique).To<ConstructDependencyNodeBuilder>()
+                .Bind(Unique).To<ImplementationDependencyNodeBuilder>()
+                .Bind(Unique).To<RootDependencyNodeBuilder>()
                 .Bind().To<VariationalDependencyGraphBuilder>()
                 .Bind().To<ImplementationVariantsBuilder>()
                 .Bind().To<ApiBuilder>()
@@ -122,19 +129,19 @@ public sealed partial class Generator
                 .Bind().To<FactoryCodeBuilder>()
                 .Bind().To<ConstructCodeBuilder>()
                 .Bind().To<ClassBuilder>()
-                .Bind(Tag.Type).To<DisposeMethodBuilder>()
-                .Bind(Tag.Type).To<RootMethodsBuilder>()
-                .Bind(Tag.Type).To<UsingDeclarationsBuilder>()
-                .Bind(Tag.Type).To<ArgFieldsBuilder>()
-                .Bind(Tag.Type).To<FieldsBuilder>()
-                .Bind(Tag.Type).To<ScopeConstructorBuilder>()
-                .Bind(Tag.Type).To<ParameterizedConstructorBuilder>()
-                .Bind(Tag.Type).To<DefaultConstructorBuilder>()
-                .Bind(Tag.Type).To<ResolverClassesBuilder>()
-                .Bind(Tag.Type).To<StaticConstructorBuilder>()
-                .Bind(Tag.Type).To<ApiMembersBuilder>()
-                .Bind(Tag.Type).To<ResolversFieldsBuilder>()
-                .Bind(Tag.Type).To<ToStringMethodBuilder>()
+                .Bind(Type).To<DisposeMethodBuilder>()
+                .Bind(Type).To<RootMethodsBuilder>()
+                .Bind(Type).To<UsingDeclarationsBuilder>()
+                .Bind(Type).To<ArgFieldsBuilder>()
+                .Bind(Type).To<FieldsBuilder>()
+                .Bind(Type).To<ScopeConstructorBuilder>()
+                .Bind(Type).To<ParameterizedConstructorBuilder>()
+                .Bind(Type).To<DefaultConstructorBuilder>()
+                .Bind(Type).To<ResolverClassesBuilder>()
+                .Bind(Type).To<StaticConstructorBuilder>()
+                .Bind(Type).To<ApiMembersBuilder>()
+                .Bind(Type).To<ResolversFieldsBuilder>()
+                .Bind(Type).To<ToStringMethodBuilder>()
 
             .DefaultLifetime(PerResolve)
                 .Bind().To<TypeResolver>()

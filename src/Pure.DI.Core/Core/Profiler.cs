@@ -5,7 +5,7 @@ namespace Pure.DI.Core;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-internal class Profiler(ILogger<Profiler> logger, CancellationToken cancellationToken) : IProfiler
+internal class Profiler(ILogger logger, CancellationToken cancellationToken) : IProfiler
 {
     private CancellationToken _cancellationToken = cancellationToken;
 

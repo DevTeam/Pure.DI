@@ -3,7 +3,7 @@
 namespace Pure.DI.Core;
 
 internal class RootValidator(
-    ILogger<RootValidator> logger)
+    ILogger logger)
     : IValidator<CompositionCode>
 {
     public bool Validate(CompositionCode composition)

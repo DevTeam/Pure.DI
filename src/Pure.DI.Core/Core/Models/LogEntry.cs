@@ -7,4 +7,5 @@ public readonly record struct LogEntry(
     string Message,
     Location? Location = null,
     string? Id = null,
-    Exception? Exception = null);
+    Exception? Exception = null,
+    Type? TargetType = null);

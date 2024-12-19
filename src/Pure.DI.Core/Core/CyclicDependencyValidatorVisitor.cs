@@ -1,7 +1,7 @@
 ﻿namespace Pure.DI.Core;
 
 internal class CyclicDependencyValidatorVisitor(
-    ILogger<CyclicDependencyValidatorVisitor> logger,
+    ILogger logger,
     INodeInfo nodeInfo)
     : IGraphVisitor<HashSet<object>, ImmutableArray<DependencyNode>>
 {

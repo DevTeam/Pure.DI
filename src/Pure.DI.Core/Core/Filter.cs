@@ -5,7 +5,7 @@ namespace Pure.DI.Core;
 using System.Text.RegularExpressions;
 
 internal sealed class Filter(
-    ILogger<Filter> logger,
+    ILogger logger,
     ICache<string, Regex> regexCache)
     : IFilter
 {

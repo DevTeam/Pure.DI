@@ -10,7 +10,7 @@ namespace Pure.DI.Core;
 using Variation = IEnumerator<ProcessingNode>;
 
 internal sealed class VariationalDependencyGraphBuilder(
-    ILogger<VariationalDependencyGraphBuilder> logger,
+    ILogger logger,
     IGlobalOptions globalOptions,
     Func<ITypeConstructor> typeConstructorFactory,
     IEnumerable<IBuilder<DependencyNodeBuildContext, IEnumerable<DependencyNode>>> dependencyNodeBuilders,

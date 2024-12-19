@@ -1,7 +1,7 @@
 ﻿namespace Pure.DI.Core;
 
 internal class LifetimesValidatorVisitor(
-    ILogger<LifetimesValidatorVisitor> logger,
+    ILogger logger,
     ILifetimeAnalyzer lifetimeAnalyzer)
     : IGraphVisitor<HashSet<object>, ImmutableArray<DependencyNode>>
 {
