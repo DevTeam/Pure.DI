@@ -777,12 +777,14 @@ public class FactoryTests
                            
                                class Dependency: IDependency
                                {
-                                    public Dependency(Type[] consumers)
+                                    public Dependency Init(Type[] consumers)
                                     {
-                                        foreach(var type in consumers)
-                                        {
-                                            Console.WriteLine(type.Name);
-                                        }
+                                       foreach(var type in consumers)
+                                       {
+                                           Console.WriteLine(type.Name);
+                                       }
+                                       
+                                       return this;
                                     }
                                }
                            
@@ -825,7 +827,12 @@ public class FactoryTests
                                    {
                                        // OnDependencyInjection = On
                                        DI.Setup("Composition")
-                                           .Bind<IDependency>().As(Lifetime.#lifetime#).To(ctx => new Dependency(ctx.ConsumerTypes))
+                                           .Bind<Dependency>().As(Lifetime.Singleton).To<Dependency>()
+                                           .Bind<IDependency>().As(Lifetime.#lifetime#).To(ctx =>
+                                           { 
+                                                ctx.Inject<Dependency>(out var dependency);
+                                                return dependency.Init(ctx.ConsumerTypes);
+                                           } )
                                            .Bind<IService>().To<Service>()
                                            .Bind<IService>("Abc").To<ServiceAbc>()
                                            .Root<IService>("Service");

@@ -251,7 +251,7 @@ internal sealed class FactoryRewriter(
             switch (node.Name.Identifier.Text)
             {
                 case nameof(IContext.Tag):
-                    return SyntaxFactory.ParseExpression(variable.Injection.Tag.ValueToString());
+                    return Visit(SyntaxFactory.ParseExpression($" {variable.Injection.Tag.ValueToString()}"));
                 
                 case nameof(IContext.ConsumerTypes):
                     var consumers = variable.Info.GetTargetNodes().Select(targetNode => $"typeof({targetNode.Type.ToDisplayString()})").ToList();
@@ -260,7 +260,7 @@ internal sealed class FactoryRewriter(
                         consumers.Add($"typeof({_ctx.DependencyGraph.Source.Name.FullName})");
                     }
                     
-                    return SyntaxFactory.ParseExpression($"new {Names.SystemNamespace}Type[{consumers.Count}]{{{string.Join(", ", consumers)}}}");
+                    return Visit(SyntaxFactory.ParseExpression($" new {Names.SystemNamespace}Type[{consumers.Count}]{{{string.Join(", ", consumers)}}}"));
             }
         }
 
