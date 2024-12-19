@@ -118,6 +118,7 @@ public sealed partial class Generator
                 .Bind().To<Core.Generator>()
                 .Bind().To<FactoryTypeRewriter>()
                 .Bind().To<CompositionBuilder>()
+                .Bind().To<TagClassBuilder>()
                 .Bind().To<VariablesBuilder>()
                 .Bind().To<MermaidUrlBuilder>()
                 
@@ -128,7 +129,7 @@ public sealed partial class Generator
                 .Bind().To<ImplementationCodeBuilder>()
                 .Bind().To<FactoryCodeBuilder>()
                 .Bind().To<ConstructCodeBuilder>()
-                .Bind().To<ClassBuilder>()
+                .Bind().To<CompositionClassBuilder>()
                 .Bind(Type).To<DisposeMethodBuilder>()
                 .Bind(Type).To<RootMethodsBuilder>()
                 .Bind(Type).To<UsingDeclarationsBuilder>()
@@ -154,5 +155,6 @@ public sealed partial class Generator
                 .Bind().To<IdGenerator>()
                 .Bind().To<Registry<TT>>()
                 .Bind().To<Locks>()
-                .Bind().To<RootAccessModifierResolver>();
+                .Bind().To<RootAccessModifierResolver>()
+                .Bind().To<SmartTags>();
 }

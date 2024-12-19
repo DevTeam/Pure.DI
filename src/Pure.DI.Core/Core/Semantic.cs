@@ -8,6 +8,7 @@ internal class Semantic(
     IInjectionSiteFactory injectionSiteFactory,
     IWildcardMatcher wildcardMatcher,
     ITypes types,
+    ISmartTags smartTags,
     CancellationToken cancellationToken)
     : ISemantic
 {
@@ -104,7 +105,7 @@ internal class Semantic(
 
                             break;
 
-                        case nameof(Tag):
+                        case nameof(Tag) when typeof(T) == typeof(object):
                             switch (valueStr)
                             {
                                 case nameof(Tag.Type) when IsSpecialType(semanticModel, node, SpecialType.Tag):
@@ -112,16 +113,17 @@ internal class Semantic(
 
                                 case nameof(Tag.Unique) when IsSpecialType(semanticModel, node, SpecialType.Tag):
                                     return (T)(object)Tag.Unique;
-                            }
 
-                            break;
+                                default:
+                                    return (T)smartTags.Register(valueStr);
+                            }
                     }
                 }
 
                 break;
             }
             
-            case IdentifierNameSyntax identifierNameSyntax:
+            case IdentifierNameSyntax identifierNameSyntax when typeof(T) == typeof(object):
                 switch (identifierNameSyntax.Identifier.Text)
                 {
                     case nameof(Tag.Type) when IsSpecialType(semanticModel, node, SpecialType.Tag):
@@ -129,9 +131,10 @@ internal class Semantic(
 
                     case nameof(Tag.Unique) when IsSpecialType(semanticModel, node, SpecialType.Tag):
                         return (T)(object)Tag.Unique;
+                    
+                    default:
+                        return (T)smartTags.Register(identifierNameSyntax.Identifier.Text);
                 }
-
-                break;
 
             case InvocationExpressionSyntax invocationExpressionSyntax:
             {

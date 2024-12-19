@@ -36,9 +36,9 @@ internal class InstanceDpProvider(
                 case IMethodSymbol method:
                     if (method.MethodKind == MethodKind.Ordinary)
                     {
-                        var ordinal = attributes.GetAttribute(setupAttributes, member, default(int?))
+                        var ordinal = attributes.GetAttribute(setup.SemanticModel, setupAttributes, member, default(int?))
                                       ?? method.Parameters
-                                          .Select(param => attributes.GetAttribute(setupAttributes, param, default(int?)))
+                                          .Select(param => attributes.GetAttribute(setup.SemanticModel, setupAttributes, param, default(int?)))
                                           .FirstOrDefault(i => i.HasValue);
 
                         if (ordinal.HasValue)
@@ -52,7 +52,7 @@ internal class InstanceDpProvider(
                 case IFieldSymbol field:
                     if (field is { IsReadOnly: false, IsStatic: false, IsConst: false })
                     {
-                        var ordinal = attributes.GetAttribute(setupAttributes, member, default(int?));
+                        var ordinal = attributes.GetAttribute(setup.SemanticModel, setupAttributes, member, default(int?));
                         if (field.IsRequired || ordinal.HasValue)
                         {
                             var type = field.Type.WithNullableAnnotation(NullableAnnotation.NotAnnotated);
@@ -62,7 +62,7 @@ internal class InstanceDpProvider(
                                     ordinal,
                                     new Injection(
                                         InjectionKind.Field,
-                                        attributes.GetAttribute(setup.TypeAttributes, field, typeConstructor.Construct(setup, compilation, type)),
+                                        attributes.GetAttribute(setup.SemanticModel, setup.TypeAttributes, field, typeConstructor.Construct(setup, compilation, type)),
                                         GetTagAttribute(setup, field))));
                         }
                     }
@@ -72,7 +72,7 @@ internal class InstanceDpProvider(
                 case IPropertySymbol property:
                     if (property is { IsReadOnly: false, IsStatic: false, IsIndexer: false })
                     {
-                        var ordinal = attributes.GetAttribute(setupAttributes, member, default(int?));
+                        var ordinal = attributes.GetAttribute(setup.SemanticModel, setupAttributes, member, default(int?));
                         if (ordinal.HasValue || property.IsRequired)
                         {
                             var type = property.Type.WithNullableAnnotation(NullableAnnotation.NotAnnotated);
@@ -82,7 +82,7 @@ internal class InstanceDpProvider(
                                     ordinal,
                                     new Injection(
                                         InjectionKind.Property,
-                                        attributes.GetAttribute(setup.TypeAttributes, property, typeConstructor.Construct(setup, compilation, type)),
+                                        attributes.GetAttribute(setup.SemanticModel, setup.TypeAttributes, property, typeConstructor.Construct(setup, compilation, type)),
                                         GetTagAttribute(setup, property))));
                         }
                     }
@@ -117,7 +117,7 @@ internal class InstanceDpProvider(
                     parameter,
                     new Injection(
                         InjectionKind.Parameter,
-                        attributes.GetAttribute(setup.TypeAttributes, parameter, typeConstructor.Construct(setup, compilation, type)),
+                        attributes.GetAttribute(setup.SemanticModel, setup.TypeAttributes, parameter, typeConstructor.Construct(setup, compilation, type)),
                         GetTagAttribute(setup, parameter))));
         }
 
@@ -145,7 +145,7 @@ internal class InstanceDpProvider(
     private object? GetTagAttribute(
         MdSetup setup,
         ISymbol member) =>
-        attributes.GetAttribute(setup.TagAttributes, member, default(object?))
+        attributes.GetAttribute(setup.SemanticModel, setup.TagAttributes, member, default(object?))
         ?? TryCreateTagOnSite(setup, member);
     
     private object? TryCreateTagOnSite(

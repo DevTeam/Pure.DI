@@ -3,6 +3,7 @@
 internal interface IAttributes
 {
     T GetAttribute<TMdAttribute, T>(
+        SemanticModel semanticModel,
         in ImmutableArray<TMdAttribute> metadata,
         ISymbol member,
         T defaultValue)

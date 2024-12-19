@@ -10,23 +10,23 @@ internal class CodeBuilder(
     IEnumerable<IValidator<CompositionCode>> compositionValidators,
     IBuilder<DependencyGraph, IReadOnlyDictionary<Injection, Root>> rootsBuilder,
     IBuilder<DependencyGraph, CompositionCode> compositionBuilder,
-    IBuilder<CompositionCode, CompositionCode> classBuilder,
+    IBuilder<CompositionCode, CompositionCode> compositionClassBuilder,
     IGeneratorSources sources,
     CancellationToken cancellationToken)
-    : IBuilder<MdSetup, Unit>
+    : IBuilder<MdSetup, CompositionCode?>
 {
-    public Unit Build(MdSetup setup)
+    public CompositionCode? Build(MdSetup setup)
     {
         if (metadataValidators.Any(validator => !validator.Validate(setup)))
         {
-            return Unit.Shared;
+            return null;
         }
 
         cancellationToken.ThrowIfCancellationRequested();
         var dependencyGraph = dependencyGraphBuilder.Build(setup);
         if (dependencyGraph is null)
         {
-            return Unit.Shared;
+            return null;
         }
 
         foreach (var graphObserver in observersProvider.GetObservers<DependencyGraph>())
@@ -41,7 +41,7 @@ internal class CodeBuilder(
         cancellationToken.ThrowIfCancellationRequested();
         if (dependencyGraphValidators.Any(validator => !validator.Validate(dependencyGraph)))
         {
-            return Unit.Shared;
+            return null;
         }
 
         cancellationToken.ThrowIfCancellationRequested();
@@ -49,15 +49,16 @@ internal class CodeBuilder(
 
         if (compositionValidators.Any(validator => !validator.Validate(composition)))
         {
-            return Unit.Shared;
+            return null;
         }
 
         cancellationToken.ThrowIfCancellationRequested();
-        composition = classBuilder.Build(composition);
+        composition = compositionClassBuilder.Build(composition);
 
         cancellationToken.ThrowIfCancellationRequested();
         using var rent = composition.Code.SaveToArray(Encoding.UTF8, out var buffer, out var size);
         sources.AddSource($"{setup.Name.FullName}.g.cs", SourceText.From(buffer, size, Encoding.UTF8, SourceHashAlgorithm.Sha1, false, true));
-        return Unit.Shared;
+
+        return composition;
     }
 }

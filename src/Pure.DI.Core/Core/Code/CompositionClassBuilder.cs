@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core.Code;
 
-internal sealed class ClassBuilder(
+internal sealed class CompositionClassBuilder(
     [Tag(typeof(UsingDeclarationsBuilder))]
     IBuilder<CompositionCode, CompositionCode> usingDeclarations,
     [Tag(typeof(FieldsBuilder))] IBuilder<CompositionCode, CompositionCode> fields,

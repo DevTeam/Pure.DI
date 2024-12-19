@@ -1,11 +1,29 @@
-#### Tags
+#### Smart tags
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/TagsScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/SmartTagsScenario.cs)
 
-Sometimes it's important to take control of building a dependency graph. For example, when there are multiple implementations of the same contract. In this case, _tags_ will help:
+When you need to compose a large composition of objects, you may need a large number of tags. Strings or other constant values are not always convenient to use, because there can be infinitely many variants of numbers or strings. And if you specify one value in the binding, you can make a mistake and specify another value in the dependency, which will lead to a compilation error. The solution to this problem is to create an enumerable type and use its values as tags.  _Pure.DI_ makes it easier to solve this problem.
+
+When you specify a tag in a binding and the compiler can't determine what that value is, _Pure.DI_ will automatically create a constant for it inside the `Pure.DI.Tag` type. For the example below, the set of constants would look like this:
+
+```c#
+namespace Pure.DI
+{
+  internal partial class Tag
+  {
+    public const string Abc = "Abc";
+    public const string Xyz = "Xyz";
+  }
+}
+```
+In this way you can apply refactoring in the development environment. And also changes of tags in bindings will be automatically checked by the compiler. This will reduce the number of errors.
+The example below also uses the `using static Pure.DI.Tag;` directive to access tags in `Pure.DI.Tag` without specifying a type name:
 
 
 ```c#
+using static Pure.DI.Tag;
+using static Pure.DI.Lifetime;
+
 interface IDependency;
 
 class AbcDependency : IDependency;
@@ -24,8 +42,8 @@ interface IService
 }
 
 class Service(
-    [Tag("AbcTag")] IDependency dependency1,
-    [Tag("XyzTag")] IDependency dependency2,
+    [Tag(Abc)] IDependency dependency1,
+    [Tag(Xyz)] IDependency dependency2,
     IDependency dependency3)
     : IService
 {
@@ -39,14 +57,12 @@ class Service(
 DI.Setup(nameof(Composition))
     // The `default` tag is used to resolve dependencies
     // when the tag was not specified by the consumer
-    .Bind<IDependency>("AbcTag", default).To<AbcDependency>()
-    .Bind<IDependency>("XyzTag")
-    .As(Lifetime.Singleton)
-    .To<XyzDependency>()
+    .Bind<IDependency>(Abc, default).To<AbcDependency>()
+    .Bind<IDependency>(Xyz).As(Singleton).To<XyzDependency>()
     .Bind<IService>().To<Service>()
 
-    // "XyzRoot" is root name, "XyzTag" is tag
-    .Root<IDependency>("XyzRoot", "XyzTag")
+    // "XyzRoot" is root name, Xyz is tag
+    .Root<IDependency>("XyzRoot", Xyz)
 
     // Specifies to create the composition root named "Root"
     .Root<IService>("Root");
@@ -58,8 +74,6 @@ service.Dependency2.ShouldBeOfType<XyzDependency>();
 service.Dependency2.ShouldBe(composition.XyzRoot);
 service.Dependency3.ShouldBeOfType<AbcDependency>();
 ```
-
-The tag can be a constant, a type, a [smart tag](smart-tags.md), or a value of an `Enum` type. The _default_ and _null_ tags are also supported.
 
 The following partial class will be generated:
 
@@ -136,15 +150,15 @@ Class diagram:
 ---
 classDiagram
 	Service --|> IService
-	XyzDependency --|> IDependency : "XyzTag" 
-	AbcDependency --|> IDependency : "AbcTag" 
+	XyzDependency --|> IDependency : "Xyz" 
+	AbcDependency --|> IDependency : "Abc" 
 	AbcDependency --|> IDependency
 	Composition ..> Service : IService Root
 	Composition ..> XyzDependency : IDependency XyzRoot
-	Service *--  AbcDependency : "AbcTag"  IDependency
-	Service o-- "Singleton" XyzDependency : "XyzTag"  IDependency
+	Service *--  AbcDependency : "Abc"  IDependency
+	Service o-- "Singleton" XyzDependency : "Xyz"  IDependency
 	Service *--  AbcDependency : IDependency
-	namespace Pure.DI.UsageTests.Basics.TagsScenario {
+	namespace Pure.DI.UsageTests.Basics.SmartTagsScenario {
 		class AbcDependency {
 			+AbcDependency()
 		}

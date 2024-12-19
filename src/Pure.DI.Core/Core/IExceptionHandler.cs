@@ -2,5 +2,5 @@
 
 internal interface IExceptionHandler
 {
-    void SafeRun<T>(T state, Action<T> action);
+    TResult? SafeRun<T, TResult>(T state, Func<T, TResult> action);
 }

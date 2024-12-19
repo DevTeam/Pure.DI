@@ -198,6 +198,7 @@ dotnet run
 - [Class arguments](readme/class-arguments.md)
 - [Root arguments](readme/root-arguments.md)
 - [Tags](readme/tags.md)
+- [Smart tags](readme/smart-tags.md)
 - [Build up of an existing object](readme/build-up-of-an-existing-object.md)
 - [Field injection](readme/field-injection.md)
 - [Method injection](readme/method-injection.md)

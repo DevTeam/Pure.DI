@@ -6,6 +6,7 @@ internal class Attributes(ISemantic semantic)
     : IAttributes
 {
     public T GetAttribute<TMdAttribute, T>(
+        SemanticModel semanticModel,
         in ImmutableArray<TMdAttribute> metadata,
         ISymbol member,
         T defaultValue)
@@ -35,6 +36,12 @@ internal class Attributes(ISemantic semantic)
                     var args = attr.ConstructorArguments;
                     if (attributeMetadata.ArgumentPosition >= args.Length)
                     {
+                        if (attr.ApplicationSyntaxReference?.GetSyntax() is AttributeSyntax { ArgumentList: {} argumentList }
+                            && attributeMetadata.ArgumentPosition < argumentList.Arguments.Count)
+                        {
+                            return semantic.GetConstantValue<T>(semanticModel, argumentList.Arguments[attributeMetadata.ArgumentPosition].Expression) ?? defaultValue;
+                        }
+
                         throw new CompileErrorException($"The argument position {attributeMetadata.ArgumentPosition.ToString()} of attribute {attributeMetadata.Source} is out of range [0..{args.Length.ToString()}].", attributeMetadata.Source.GetLocation(), LogId.ErrorInvalidMetadata);
                     }
 

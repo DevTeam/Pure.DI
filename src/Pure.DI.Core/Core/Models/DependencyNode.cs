@@ -23,7 +23,7 @@ internal record DependencyNode(
         : this(
             Variation,
             binding,
-            Root?.Source.RootType ?? Implementation?.Source.Type ?? Factory?.Source.Type ?? Arg?.Source.Type ?? Construct?.Source.Type!,
+            Root?.Source.RootType ?? binding.Type,
             [],
             Root,
             Implementation,

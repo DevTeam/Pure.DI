@@ -24,4 +24,6 @@ internal record MdBinding(
     public virtual bool Equals(MdBinding? other) => Id == other?.Id;
 
     public override int GetHashCode() => Id;
+
+    public ITypeSymbol Type => Implementation?.Type ?? Factory?.Type ?? Arg?.Type ?? Construct?.Type!;
 }

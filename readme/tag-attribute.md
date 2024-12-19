@@ -45,7 +45,7 @@ service.Dependency1.ShouldBeOfType<AbcDependency>();
 service.Dependency2.ShouldBeOfType<XyzDependency>();
 ```
 
-The tag can be a constant, a type, or a value of an enumerated type. This attribute is part of the API, but you can use your own attribute at any time, and this allows you to define them in the assembly and namespace you want.
+The tag can be a constant, a type, a [smart tag](smart-tags.md), or a value of an `Enum` type. This attribute is part of the API, but you can use your own attribute at any time, and this allows you to define them in the assembly and namespace you want.
 
 The following partial class will be generated:
 

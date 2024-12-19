@@ -5,11 +5,11 @@ namespace Pure.DI.Core;
 internal class ExceptionHandler(ILogger logger)
     : IExceptionHandler
 {
-    public void SafeRun<T>(T state, Action<T> action)
+    public TResult? SafeRun<T, TResult>(T state, Func<T, TResult> action)
     {
         try
         {
-            action(state);
+            return action(state);
         }
         catch (AggregateException aggregateException)
         {
@@ -31,6 +31,8 @@ internal class ExceptionHandler(ILogger logger)
         {
             OnException(exception);
         }
+
+        return default;
     }
 
     private void OnAggregateException(AggregateException aggregateException)
