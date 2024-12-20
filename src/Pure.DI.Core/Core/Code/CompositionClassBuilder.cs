@@ -48,7 +48,7 @@ internal sealed class CompositionClassBuilder(
         code.AppendLine($"// by {information.Description}");
         if (composition.Compilation.Options.NullableContextOptions != NullableContextOptions.Disable)
         {
-            code.AppendLine("#nullable enable");
+            code.AppendLine("#nullable enable annotations");
         }
 
         code.AppendLine();

@@ -1959,4 +1959,59 @@ public class SetupTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["True"], result);
     }
+    
+    [Fact]
+    public async Task ShouldSupportNullableResultTypeWhenFactory()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+                           using static Pure.DI.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency { };
+                           
+                               class Dependency : IDependency { }
+                               
+                               interface IService
+                               {
+                                   void DoSomething();
+                               }
+                               
+                               class Service : IService
+                               {
+                                   public Service(IDependency? dependency)
+                                   {
+                                   }
+                               
+                                   public void DoSomething()
+                                   {
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   private void Setup() =>
+                                        DI.Setup(nameof(Composition))
+                                           .Bind<IDependency?>().To<IDependency?>(_ => default)
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                           
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Service);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Sample.Service"], result);
+    }
 }

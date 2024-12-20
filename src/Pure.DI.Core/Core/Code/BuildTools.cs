@@ -57,7 +57,7 @@ internal class BuildTools(
 
             if (skipNotNullCheck && (variable.HasCycle || variable.Node.Lifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve))
             {
-                variableCode = $"{variableCode}!";
+                variableCode = $"{variableCode}";
             }
         }
 
