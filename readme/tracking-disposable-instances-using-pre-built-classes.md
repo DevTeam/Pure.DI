@@ -148,7 +148,7 @@ partial class Composition: IDisposable
         Abstractions.Own<IDependency> perBlockOwn3;
         // Creates the owner of an instance
         Abstractions.Own localOwn24 = accumulator50;
-        IDependency localValue25 = _root._singletonDependency44!;
+        IDependency localValue25 = _root._singletonDependency44;
         perBlockOwn3 = new Abstractions.Own<IDependency>(localValue25, localOwn24);
         using (_lock.EnterScope())
         {

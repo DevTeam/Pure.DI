@@ -93,7 +93,7 @@ partial class Composition: IDisposable, IAsyncDisposable
         }
       }
 
-      return new Service(_root._singletonDependency43!);
+      return new Service(_root._singletonDependency43);
     }
   }
 

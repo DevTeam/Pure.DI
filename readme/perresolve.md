@@ -85,7 +85,7 @@ partial class Composition
               perResolveDependency43 = new Dependency();
             }
 
-            _root._singletonValueTuple44 = (perResolveDependency43!, perResolveDependency43!);
+            _root._singletonValueTuple44 = (perResolveDependency43, perResolveDependency43);
             Thread.MemoryBarrier();
             _root._singletonValueTuple44Created = true;
           }
@@ -103,7 +103,7 @@ partial class Composition
         }
       }
 
-      return new Service(perResolveDependency43!, perResolveDependency43!, _root._singletonValueTuple44);
+      return new Service(perResolveDependency43, perResolveDependency43, _root._singletonValueTuple44);
     }
   }
 }

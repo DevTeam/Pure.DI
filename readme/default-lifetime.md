@@ -86,12 +86,12 @@ partial class Composition
               _root._singletonDependency43 = new Dependency();
             }
 
-            _root._singletonService44 = new Service(_root._singletonDependency43!, _root._singletonDependency43!);
+            _root._singletonService44 = new Service(_root._singletonDependency43, _root._singletonDependency43);
           }
         }
       }
 
-      return _root._singletonService44!;
+      return _root._singletonService44;
     }
   }
 }

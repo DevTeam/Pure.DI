@@ -105,7 +105,7 @@ partial class Composition
         }
       }
 
-      Service transientService0 = new Service(_root._singletonDependency43!);
+      Service transientService0 = new Service(_root._singletonDependency43);
       OnNewInstance<Service>(ref transientService0, null, Lifetime.Transient);
       return transientService0;
     }

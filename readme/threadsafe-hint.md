@@ -64,7 +64,7 @@ partial class Composition
         _root._singletonService44 = new Service(perBlockFunc0);
       }
 
-      return _root._singletonService44!;
+      return _root._singletonService44;
     }
   }
 }

@@ -96,7 +96,7 @@ partial class Composition
         }
       }
 
-      return new Service(_root._singletonDependency43!, _root._singletonDependency44!);
+      return new Service(_root._singletonDependency43, _root._singletonDependency44);
     }
   }
 }

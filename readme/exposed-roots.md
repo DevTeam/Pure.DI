@@ -74,7 +74,7 @@ partial class Composition
       }
 
       Integration.IMyService transientIMyService1;
-      Integration.CompositionInOtherProject localInstance_1182D1275 = _root._singletonCompositionInOtherProject43!;
+      Integration.CompositionInOtherProject localInstance_1182D1275 = _root._singletonCompositionInOtherProject43;
       transientIMyService1 = localInstance_1182D1275.MyService;
       return new Program(transientIMyService1);
     }

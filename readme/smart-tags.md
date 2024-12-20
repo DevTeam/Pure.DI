@@ -114,7 +114,7 @@ partial class Composition
         }
       }
 
-      return _root._singletonXyzDependency44!;
+      return _root._singletonXyzDependency44;
     }
   }
 
@@ -134,7 +134,7 @@ partial class Composition
         }
       }
 
-      return new Service(new AbcDependency(), _root._singletonXyzDependency44!, new AbcDependency());
+      return new Service(new AbcDependency(), _root._singletonXyzDependency44, new AbcDependency());
     }
   }
 }

@@ -79,7 +79,7 @@ partial class Composition
         }
       }
 
-      return _root._singletonDependency43!;
+      return _root._singletonDependency43;
     }
   }
 
@@ -99,7 +99,7 @@ partial class Composition
         }
       }
 
-      return new Service(_root._singletonDependency43!);
+      return new Service(_root._singletonDependency43);
     }
   }
 

@@ -127,7 +127,7 @@ partial class Composition: IDisposable, IAsyncDisposable
         }
       }
 
-      return new Service(_scopedDependency43!);
+      return new Service(_scopedDependency43);
     }
   }
 

@@ -124,7 +124,7 @@ partial class Composition
         }
       }
 
-      return new Service(_scopedDependency43!);
+      return new Service(_scopedDependency43);
     }
   }
 }

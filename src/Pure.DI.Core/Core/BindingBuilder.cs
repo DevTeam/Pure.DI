@@ -3,8 +3,10 @@
 
 namespace Pure.DI.Core;
 
+using static Tag;
+
 internal class BindingBuilder(
-    [Tag("UniqueTags")] IIdGenerator idGenerator,
+    [Tag(Tag.UniqueTag)] IIdGenerator idGenerator,
     IBaseSymbolsProvider baseSymbolsProvider)
     : IBindingBuilder
 {
@@ -162,12 +164,12 @@ internal class BindingBuilder(
         if (tag.Value is Tag tagVal)
         {
             // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
-            if (tagVal == Tag.Type)
+            if (tagVal == Type)
             {
                 return MdTag.CreateTypeTag(tag, type);
             }
 
-            if (tagVal == Tag.Unique)
+            if (tagVal == Unique)
             {
                 return MdTag.CreateUniqueTag(tag, id.Value);
             }

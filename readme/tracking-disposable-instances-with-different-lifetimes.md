@@ -145,7 +145,7 @@ partial class Composition: IDisposable
         Owned<IDependency> perBlockOwned3;
         // Creates the owner of an instance
         IOwned localOwned31 = transientOwned4;
-        IDependency localValue32 = _root._singletonDependency44!;
+        IDependency localValue32 = _root._singletonDependency44;
         perBlockOwned3 = new Owned<IDependency>(localValue32, localOwned31);
         using (_lock.EnterScope())
         {

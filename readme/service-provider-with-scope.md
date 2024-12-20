@@ -115,7 +115,7 @@ partial class Composition: IDisposable
         }
       }
 
-      return _root._singletonDependency43!;
+      return _root._singletonDependency43;
     }
   }
 
@@ -135,13 +135,13 @@ partial class Composition: IDisposable
               _root._singletonDependency43 = new Dependency();
             }
 
-            _scopedService44 = new Service(_root._singletonDependency43!);
+            _scopedService44 = new Service(_root._singletonDependency43);
             _disposables[_disposeIndex++] = _scopedService44;
           }
         }
       }
 
-      return _scopedService44!;
+      return _scopedService44;
     }
   }
 

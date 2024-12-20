@@ -3,11 +3,13 @@
 
 namespace Pure.DI.Core.Code;
 
+using static Tag;
+
 internal class BuildTools(
     IFilter filter,
     ITypeResolver typeResolver,
     IBaseSymbolsProvider baseSymbolsProvider,
-    [Tag("Injection")] IIdGenerator idGenerator,
+    [Tag(Injection)] IIdGenerator idGenerator,
     ILocks locks)
     : IBuildTools
 {

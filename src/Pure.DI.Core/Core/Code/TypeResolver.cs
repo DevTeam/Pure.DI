@@ -2,9 +2,11 @@
 
 namespace Pure.DI.Core.Code;
 
+using static Tag;
+
 internal class TypeResolver(
     IMarker marker,
-    [Tag("GenericType")] IIdGenerator idGenerator)
+    [Tag(GenericType)] IIdGenerator idGenerator)
     : ITypeResolver
 {
     private readonly Dictionary<ITypeSymbol, string> _names = new(SymbolEqualityComparer.Default);
