@@ -2,7 +2,7 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/SmartTagsScenario.cs)
 
-When you need to compose a large composition of objects, you may need a large number of tags. Strings or other constant values are not always convenient to use, because there can be infinitely many variants of numbers or strings. And if you specify one value in the binding, you can make a mistake and specify another value in the dependency, which will lead to a compilation error. The solution to this problem is to create an enumerable type and use its values as tags.  _Pure.DI_ makes it easier to solve this problem.
+When you have a large graph of objects, you may need a lot of tags to neatly define all the dependencies in it. Strings or other constant values are not always convenient to use, because they have too much variability. And there are often cases when you specify one tag in the binding, but the same tag in the dependency, but with a typo, which leads to a compilation error when checking the dependency graph. The solution to this problem is to create an `Enum` type and use its values as tags. _Pure.DI_ makes it easier to solve this problem.
 
 When you specify a tag in a binding and the compiler can't determine what that value is, _Pure.DI_ will automatically create a constant for it inside the `Pure.DI.Tag` type. For the example below, the set of constants would look like this:
 
@@ -16,7 +16,7 @@ namespace Pure.DI
   }
 }
 ```
-In this way you can apply refactoring in the development environment. And also changes of tags in bindings will be automatically checked by the compiler. This will reduce the number of errors.
+So you can apply refactoring in the development environment. And also tag changes in bindings will be automatically checked by the compiler. This will reduce the number of errors.
 The example below also uses the `using static Pure.DI.Tag;` directive to access tags in `Pure.DI.Tag` without specifying a type name:
 
 

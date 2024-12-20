@@ -8,5 +8,7 @@ internal interface IFormatter
 
     string FormatRef(string text);
 
+    string FormatRef(Lifetime lifetime);
+
     string FormatRef(ITypeSymbol type);
 }

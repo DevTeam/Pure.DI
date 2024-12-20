@@ -72,6 +72,9 @@ internal class Formatter(
 
     public string FormatRef(string text) => 
         $"<see cref=\"{text}\"/>";
+    
+    public string FormatRef(Lifetime lifetime) => 
+        $"<see cref=\"{Names.GeneratorName}.{nameof(Lifetime)}.{lifetime}\"/>";
 
     public string FormatRef(ITypeSymbol type)
     {

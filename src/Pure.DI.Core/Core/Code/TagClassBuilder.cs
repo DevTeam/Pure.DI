@@ -1,4 +1,5 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable UnusedVariable
 namespace Pure.DI.Core.Code;
 
 internal class TagClassBuilder(
@@ -50,20 +51,21 @@ internal class TagClassBuilder(
                     code.AppendLine($"/// Atomically generated smart tag with value {comments.Escape(tag.Name.ValueToString())}.");
                     if (tagToDependencies.TryGetValue(tag.Name, out var dependencies))
                     {
-                        code.AppendLine("/// Used by:");
+                        code.AppendLine("/// It's used for:");
                         code.AppendLine("/// <br/>");
                         var groupByComposition = dependencies.GroupBy(i => i.composition.Source.Source.Name.FullName);
                         foreach (var compositionGroup in groupByComposition)
                         {
                             code.AppendLine("/// <br/>");
                             code.AppendLine($"/// class {formatter.FormatRef(compositionGroup.Key)}");
-                            code.AppendLine("/// <list type=\"bullet\">");
-                            foreach (var (_, (_, dependencyNode, injection, target)) in compositionGroup
+                            code.AppendLine("/// <list type=\"number\">");
+                            foreach (var (composition, (isResolved, source, injection, target)) in compositionGroup
                                          .OrderBy(i => i.dependency.Target.Binding.Id)
                                          .ThenBy(i => i.dependency.Source.Binding.Id))
                             {
                                 var tagStr = comments.Escape(injection.Tag != null && injection.Tag is not MdTagOnSites ? $"({injection.Tag})" : "");
-                                code.AppendLine($"/// <item>{formatter.FormatRef(target.Type)} &lt;-- {formatter.FormatRef(injection.Type)}{tagStr} -- {formatter.FormatRef(dependencyNode.Type)} </item>");
+                                var injectionTypeStr = injection.Type.Equals(source.Type, SymbolEqualityComparer.Default) ? "" : formatter.FormatRef(injection.Type);
+                                code.AppendLine($"/// <item>{formatter.FormatRef(target.Type)} &lt;-- {injectionTypeStr}{tagStr} -- {formatter.FormatRef(source.Type)} as {formatter.FormatRef(source.Lifetime)}</item>");
                             }
 
                             code.AppendLine("/// </list>");
