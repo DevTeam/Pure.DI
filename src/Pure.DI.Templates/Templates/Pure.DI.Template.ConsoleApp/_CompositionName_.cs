@@ -4,5 +4,5 @@ internal partial class $(CompositionName)
 {
     private void Setup() => DI.Setup()
         .Bind().As(Singleton).To<ConsoleAdapter>()
-        .Root<Program>("Root");
+        .Root<Program>(nameof(Root));
 }

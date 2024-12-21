@@ -1,8 +1,9 @@
 ﻿using Build;
+using static Pure.DI.Lifetime;
 
 DI.Setup(nameof(Composition))
     .Root<RootTarget>("RootTarget")
-    .DefaultLifetime(Lifetime.PerBlock)
+    .DefaultLifetime(PerBlock)
     .Bind().To<RootCommand>()
     .Bind().To<Settings>()
     .Bind<ITeamCityArtifactsWriter>().To(_ => GetService<ITeamCityWriter>())
@@ -18,6 +19,7 @@ DI.Setup(nameof(Composition))
     .Bind(Tag.Type).To<BenchmarksTarget>()
     .Bind(Tag.Type).To<DeployTarget>()
     .Bind(Tag.Type).To<TemplateTarget>()
+    .Bind(Tag.Type).To<InstallTemplateTarget>()
     .Bind(Tag.Type).To<UpdateTarget>()
     .Bind(Tag.Type).To<PublishBlazorTarget>()
     .Bind(Tag.Type).To<PerformanceTestsTarget>();

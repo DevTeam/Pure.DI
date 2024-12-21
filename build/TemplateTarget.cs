@@ -8,31 +8,36 @@ internal class TemplateTarget(
     Commands commands,
     Versions versions,
     ITeamCityArtifactsWriter artifactsWriter)
-    : IInitializable, ITarget<string>
+    : IInitializable, ITarget<Package>
 {
-    private const string ProjectName = "Pure.DI.Templates";
+    public const string ProjectName = "Pure.DI.Templates";
 
     public Task InitializeAsync(CancellationToken cancellationToken) => commands.RegisterAsync(
-        this, "Creates and deploys templates", "template", "t");
+        this, "Creates and deploys template", "template", "t");
 
-    public async Task<string> RunAsync(CancellationToken cancellationToken)
+    public async Task<Package> RunAsync(CancellationToken cancellationToken)
     {
-        var packageVersion = versions.GetNext(new NuGetRestoreSettings("Pure.DI"), Settings.VersionRange, 0).ToString();
-        foreach (var jsonFile in new[]
-                 {
-                     "src/Pure.DI.Templates/Templates/Pure.DI.Template.ClassLibrary/.template.config/template.json",
-                     "src/Pure.DI.Templates/Templates/Pure.DI.Template.ConsoleApp/.template.config/template.json"
-                 })
+        var packageVersion = versions.GetNext(new NuGetRestoreSettings("Pure.DI"), Settings.VersionRange, 0);
+        var packageVersionStr = packageVersion.ToString();
+        var templatesPath = Path.Combine("src", ProjectName, "Templates");
+        var jsonConfigPath = Path.Combine(".template.config", "template.json");
+        var jsonConfigs = new[]
+        {
+            Path.Combine(templatesPath, "Pure.DI.Template.ClassLibrary", jsonConfigPath),
+            Path.Combine(templatesPath, "Pure.DI.Template.ConsoleApp", jsonConfigPath)
+        };
+
+        foreach (var jsonFile in jsonConfigs)
         {
             var content = await File.ReadAllTextAsync(jsonFile, cancellationToken);
-            content = content.Replace("$(version)", packageVersion);
+            content = content.Replace("$(version)", packageVersionStr);
             await File.WriteAllTextAsync(jsonFile, content, cancellationToken);
         }
 
         var props = new[]
         {
             ("configuration", settings.Configuration),
-            ("version", packageVersion)
+            ("version", packageVersionStr)
         };
 
         var projectDirectory = Path.Combine("src", ProjectName);
@@ -47,7 +52,7 @@ internal class TemplateTarget(
         if (string.IsNullOrWhiteSpace(settings.NuGetKey))
         {
             Warning($"The NuGet key was not specified, the package {targetPackage} will not be pushed.");
-            return targetPackage;
+            return new Package(targetPackage, false, packageVersion);
         }
 
         await new DotNetNuGetPush()
@@ -56,6 +61,6 @@ internal class TemplateTarget(
             .WithApiKey(settings.NuGetKey)
             .BuildAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
-        return targetPackage;
+        return new Package(targetPackage, false, packageVersion);
     }
 }

@@ -22,7 +22,7 @@ internal class GeneratorTarget(
         var mergedPackagePath = Path.GetFullPath(Path.Combine(generatorProjectDirectory, PackagesDir, PackageName));
         var generatorPackages = CreateGeneratorPackagesAsync(generatorProjectDirectory, cancellationToken);
         var mergedPackage = await packages.MergeAsync(generatorPackages, mergedPackagePath, cancellationToken);
-        return new Package(mergedPackage, true);
+        return new Package(mergedPackage, true, settings.NextVersion);
     }
 
     private async IAsyncEnumerable<string> CreateGeneratorPackagesAsync(string generatorProjectDirectory, [EnumeratorCancellation] CancellationToken cancellationToken)

@@ -21,11 +21,12 @@ internal class LibrariesTarget(
     [SuppressMessage("Performance", "CA1861:Avoid constant arrays as arguments")]
     public async Task<IReadOnlyCollection<Library>> RunAsync(CancellationToken cancellationToken)
     {
+        var version = settings.NextVersion;
         // Libraries
         List<Library> libraries =
         [
             new("Pure.DI.MS",
-                new Package(GetPackagePath("Pure.DI.MS", settings.NextVersion), false),
+                new Package(GetPackagePath("Pure.DI.MS", settings.NextVersion), false, version),
                 sdk.Versions
                     .Where(i => i.Version.Major >= 7)
                     .Select(v => $"net{v.Version.Major}.{v.Version.Minor}")
@@ -33,7 +34,7 @@ internal class LibrariesTarget(
                 ["webapi"]),
 
             new("Pure.DI.Abstractions",
-                new Package(GetPackagePath("Pure.DI.Abstractions", settings.NextVersion), false),
+                new Package(GetPackagePath("Pure.DI.Abstractions", settings.NextVersion), false, version),
                 sdk.Versions
                     .Where(i => i.Version.Major >= 7)
                     .Select(v => $"net{v.Version.Major}.{v.Version.Minor}")
