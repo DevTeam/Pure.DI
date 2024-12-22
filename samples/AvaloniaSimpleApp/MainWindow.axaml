@@ -8,4 +8,4 @@
         xmlns:app="clr-namespace:AvaloniaSimpleApp"
         x:DataType="app:Composition"
         Title="{Binding MainViewModel.Title}"
-        Content="{Binding MainViewModel.Greetings}"/>
+        Content="{Binding MainViewModel.Greetings}" />
