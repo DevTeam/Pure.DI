@@ -17,6 +17,9 @@ $h=  }
 $h=}
 $h=```
 $h=So you can apply refactoring in the development environment. And also tag changes in bindings will be automatically checked by the compiler. This will reduce the number of errors.
+$h=
+$h=![](smart_tags.gif)
+$h=
 $h=The example below also uses the `using static Pure.DI.Tag;` directive to access tags in `Pure.DI.Tag` without specifying a type name:
 */
 
