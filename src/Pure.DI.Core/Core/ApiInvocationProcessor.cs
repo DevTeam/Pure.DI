@@ -422,7 +422,7 @@ internal class ApiInvocationProcessor(
             var argTypeSyntax = argsTypes[i];
             var argType = semantic.GetTypeSymbol<ITypeSymbol>(semanticModel, argTypeSyntax);
             var argNamespace = argType.ContainingNamespace;
-            if (argNamespace is not null)
+            if (semantic.IsValidNamespace(argNamespace))
             {
                 namespaces.Add(argNamespace.ToString());
             }
@@ -687,12 +687,12 @@ internal class ApiInvocationProcessor(
         }
     }
 
-    private static void VisitUsingDirectives(
+    private void VisitUsingDirectives(
         IMetadataVisitor metadataVisitor,
         SemanticModel semanticModel,
         SyntaxNode node)
     {
-        var namespacesSyntaxWalker = new NamespacesSyntaxWalker(semanticModel);
+        var namespacesSyntaxWalker = new NamespacesSyntaxWalker(semanticModel, semantic);
         namespacesSyntaxWalker.Visit(node);
         var namespaces = namespacesSyntaxWalker.ToArray();
         if (namespaces.Any())

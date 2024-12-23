@@ -7,7 +7,8 @@ internal sealed class SetupsBuilder(
     ICache<ImmutableArray<byte>, bool> setupCache,
     Func<IBindingBuilder> bindingBuilderFactory,
     IArguments arguments,
-    Func<ITypeConstructor> typeConstructorFactory)
+    Func<ITypeConstructor> typeConstructorFactory,
+    ISemantic semantic)
     : IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>, IMetadataVisitor, ISetupFinalizer
 {
     private readonly List<MdSetup> _setups = [];
@@ -48,8 +49,15 @@ internal sealed class SetupsBuilder(
         _setup = setup;
     }
 
-    public void VisitUsingDirectives(in MdUsingDirectives usingDirectives) =>
+    public void VisitUsingDirectives(in MdUsingDirectives usingDirectives)
+    {
+        if (usingDirectives.UsingDirectives.Length == 0 && usingDirectives.StaticUsingDirectives.Length == 0)
+        {
+            return;
+        }
+
         _usingDirectives.Add(usingDirectives);
+    }
 
     public void VisitBinding(in MdBinding binding)
     {
@@ -338,7 +346,11 @@ internal sealed class SetupsBuilder(
             MdResolver CreateResolver(ITypeConstructor constructor, string name, ITypeSymbol injectedType, object? tag, ref int curPosition)
             {
                 var typeSyntax = SyntaxFactory.ParseTypeName(injectedType.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat));
-                namespaces.Add(injectedType.ContainingNamespace.ToString());
+                if (semantic.IsValidNamespace(injectedType.ContainingNamespace))
+                {
+                    namespaces.Add(injectedType.ContainingNamespace.ToString());
+                }
+
                 return new MdResolver
                 {
                     SemanticModel = semanticModel,

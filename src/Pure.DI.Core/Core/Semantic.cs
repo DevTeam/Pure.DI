@@ -244,4 +244,7 @@ internal class Semantic(
     private bool IsSpecialType(SemanticModel semanticModel, SyntaxNode node, SpecialType specialType) =>
         semanticModel.GetTypeInfo(node).Type is { } type
         && type.Equals(types.TryGet(specialType, semanticModel.Compilation), SymbolEqualityComparer.Default);
+
+    public bool IsValidNamespace(INamespaceSymbol? namespaceSymbol) => 
+        namespaceSymbol is { IsImplicitlyDeclared: false };
 }

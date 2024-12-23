@@ -1,6 +1,8 @@
 namespace Pure.DI.Core;
 
-internal sealed class NamespacesSyntaxWalker(SemanticModel semanticModel)
+internal sealed class NamespacesSyntaxWalker(
+    SemanticModel semanticModel,
+    ISemantic semantic)
     : CSharpSyntaxWalker, IEnumerable<string>
 {
     private readonly HashSet<string> _namespaces = [];
@@ -24,12 +26,13 @@ internal sealed class NamespacesSyntaxWalker(SemanticModel semanticModel)
         {
             switch (symbol)
             {
-                case INamedTypeSymbol type when type.ContainingNamespace.IsGlobalNamespace:
-                    return;
-
                 case INamedTypeSymbol type:
                 {
-                    _namespaces.Add(type.ContainingNamespace.ToString());
+                    if (semantic.IsValidNamespace(type.ContainingNamespace))
+                    {
+                        _namespaces.Add(type.ContainingNamespace.ToString());
+                    }
+
                     if (!type.IsGenericType)
                     {
                         return;
