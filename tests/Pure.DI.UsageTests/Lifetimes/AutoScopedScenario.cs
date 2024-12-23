@@ -14,11 +14,40 @@ $f=> The method `Inject()`cannot be used outside of the binding setup.
 // ReSharper disable UnusedMember.Local
 // ReSharper disable ArrangeTypeMemberModifiers
 
+// ReSharper disable PartialTypeWithSinglePart
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Lifetimes.AutoScopedScenario;
 
 using Xunit;
 using static Lifetime;
+
+// {
+//# using Pure.DI;
+//# using Shouldly;
+//# using static Pure.DI.Lifetime;
+// }
+
+public class Scenario
+{
+    [Fact]
+    public void Run()
+    {
+// {
+        var composition = new Composition();
+        var program = composition.ProgramRoot;
+
+        // Creates service in session #1
+        var service1 = program.CreateService();
+
+        // Creates service in session #2
+        var service2 = program.CreateService();
+
+        // Checks that the scoped instances are not identical in different sessions
+        service1.Dependency.ShouldNotBe(service2.Dependency);
+// }
+        composition.SaveClassDiagram();
+    }
+}
 
 // {
 interface IDependency;
@@ -36,7 +65,7 @@ class Service(IDependency dependency) : IService
 }
 
 // Implements a session
-class Program(Func<IService> serviceFactory)
+partial class Program(Func<IService> serviceFactory)
 {
     public IService CreateService() => serviceFactory();
 }
@@ -63,25 +92,3 @@ partial class Composition
             .Root<Program>("ProgramRoot");
 }
 // }
-
-public class Scenario
-{
-    [Fact]
-    public void Run()
-    {
-// {
-        var composition = new Composition();
-        var program = composition.ProgramRoot;
-
-        // Creates service in session #1
-        var service1 = program.CreateService();
-
-        // Creates service in session #2
-        var service2 = program.CreateService();
-
-        // Checks that the scoped instances are not identical in different sessions
-        service1.Dependency.ShouldNotBe(service2.Dependency);
-// }
-        composition.SaveClassDiagram();
-    }
-}

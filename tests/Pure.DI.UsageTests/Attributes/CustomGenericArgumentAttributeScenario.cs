@@ -16,6 +16,35 @@ using Shouldly;
 using Xunit;
 
 // {
+//# using Pure.DI;
+//# using Shouldly;
+// }
+
+public class Scenario
+{
+    [Fact]
+    public void Run()
+    {
+// {
+        DI.Setup(nameof(Composition))
+            // Registers custom generic argument
+            .GenericTypeArgumentAttribute<MyGenericTypeArgumentAttribute>()
+            .Bind<IDependency<TTMy>>().To<Dependency<TTMy>>()
+            .Bind<IService>().To<Service>()
+
+            // Composition root
+            .Root<IService>("Root");
+
+        var composition = new Composition();
+        var service = composition.Root;
+        service.IntDependency.ShouldBeOfType<Dependency<int>>();
+        service.StringDependency.ShouldBeOfType<Dependency<string>>();
+// }
+        composition.SaveClassDiagram();
+    }
+}
+
+// {
 [AttributeUsage(AttributeTargets.Interface | AttributeTargets.Class | AttributeTargets.Struct)]
 class MyGenericTypeArgumentAttribute : Attribute;
 
@@ -43,27 +72,3 @@ class Service(
     public IDependency<string> StringDependency { get; } = stringDependency;
 }
 // }
-
-public class Scenario
-{
-    [Fact]
-    public void Run()
-    {
-// {
-        DI.Setup(nameof(Composition))
-            // Registers custom generic argument
-            .GenericTypeArgumentAttribute<MyGenericTypeArgumentAttribute>()
-            .Bind<IDependency<TTMy>>().To<Dependency<TTMy>>()
-            .Bind<IService>().To<Service>()
-
-            // Composition root
-            .Root<IService>("Root");
-
-        var composition = new Composition();
-        var service = composition.Root;
-        service.IntDependency.ShouldBeOfType<Dependency<int>>();
-        service.StringDependency.ShouldBeOfType<Dependency<string>>();
-// }
-        composition.SaveClassDiagram();
-    }
-}

@@ -16,13 +16,42 @@ $f=> Each potentially injectable argument, property, or field contains an additi
 // ReSharper disable UnusedTypeParameter
 
 #pragma warning disable CS9113 // Parameter is unread.
-// {
 namespace Pure.DI.UsageTests.Advanced.TagOnConstructorArgScenario;
 
-// }
 using Pure.DI;
 using UsageTests;
 using Xunit;
+
+// {
+//# using Pure.DI;
+//# using Shouldly;
+// }
+
+public class Scenario
+{
+    [Fact]
+    public void Run()
+    {
+        // Resolve = Off
+// {
+        DI.Setup(nameof(Composition))
+            .Bind(Tag.OnConstructorArg<Service>("dependency1"))
+                .To<AbcDependency>()
+            .Bind(Tag.OnConstructorArg<Consumer<TT>>("myDep"))
+                .To<XyzDependency>()
+            .Bind<IService>().To<Service>()
+
+            // Specifies to create the composition root named "Root"
+            .Root<IService>("Root");
+
+        var composition = new Composition();
+        var service = composition.Root;
+        service.Dependency1.ShouldBeOfType<AbcDependency>();
+        service.Dependency2.ShouldBeOfType<XyzDependency>();
+// }
+        composition.SaveClassDiagram();
+    }
+}
 
 // {
 interface IDependency;
@@ -53,29 +82,3 @@ class Service(
     public IDependency Dependency2 => consumer.Dependency;
 }
 // }
-
-public class Scenario
-{
-    [Fact]
-    public void Run()
-    {
-        // Resolve = Off
-// {
-        DI.Setup(nameof(Composition))
-            .Bind(Tag.OnConstructorArg<Service>("dependency1"))
-                .To<AbcDependency>()
-            .Bind(Tag.OnConstructorArg<Consumer<TT>>("myDep"))
-                .To<XyzDependency>()
-            .Bind<IService>().To<Service>()
-
-            // Specifies to create the composition root named "Root"
-            .Root<IService>("Root");
-
-        var composition = new Composition();
-        var service = composition.Root;
-        service.Dependency1.ShouldBeOfType<AbcDependency>();
-        service.Dependency2.ShouldBeOfType<XyzDependency>();
-// }
-        composition.SaveClassDiagram();
-    }
-}

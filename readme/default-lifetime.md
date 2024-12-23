@@ -6,6 +6,28 @@ For example, if some lifetime is used more often than others, you can make it th
 
 
 ```c#
+using Pure.DI;
+using Shouldly;
+using static Pure.DI.Lifetime;
+
+DI.Setup(nameof(Composition))
+    // This hint indicates to not generate methods such as Resolve
+    .Hint(Hint.Resolve, "Off")
+    // Default Lifetime applies
+    // to all bindings until the end of the chain
+    // or the next call to the DefaultLifetime method
+    .DefaultLifetime(Singleton)
+    .Bind().To<Dependency>()
+    .Bind().To<Service>()
+    .Root<IService>("Root");
+
+var composition = new Composition();
+var service1 = composition.Root;
+var service2 = composition.Root;
+service1.ShouldBe(service2);
+service1.Dependency1.ShouldBe(service1.Dependency2);
+service1.Dependency1.ShouldBe(service2.Dependency1);
+
 interface IDependency;
 
 class Dependency : IDependency;
@@ -26,76 +48,8 @@ class Service(
 
     public IDependency Dependency2 { get; } = dependency2;
 }
-
-DI.Setup(nameof(Composition))
-    // This hint indicates to not generate methods such as Resolve
-    .Hint(Hint.Resolve, "Off")
-    // Default Lifetime applies
-    // to all bindings until the end of the chain
-    // or the next call to the DefaultLifetime method
-    .DefaultLifetime(Lifetime.Singleton)
-    .Bind().To<Dependency>()
-    .Bind().To<Service>()
-    .Root<IService>("Root");
-
-var composition = new Composition();
-var service1 = composition.Root;
-var service2 = composition.Root;
-service1.ShouldBe(service2);
-service1.Dependency1.ShouldBe(service1.Dependency2);
-service1.Dependency1.ShouldBe(service2.Dependency1);
 ```
 
-The following partial class will be generated:
-
-```c#
-partial class Composition
-{
-  private readonly Composition _root;
-  private readonly Lock _lock;
-
-  private Service? _singletonService44;
-  private Dependency? _singletonDependency43;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-    _lock = new Lock();
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = _root._lock;
-  }
-
-  public IService Root
-  {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    get
-    {
-      if (_root._singletonService44 is null)
-      {
-        using (_lock.EnterScope())
-        {
-          if (_root._singletonService44 is null)
-          {
-            if (_root._singletonDependency43 is null)
-            {
-              _root._singletonDependency43 = new Dependency();
-            }
-
-            _root._singletonService44 = new Service(_root._singletonDependency43, _root._singletonDependency43);
-          }
-        }
-      }
-
-      return _root._singletonService44;
-    }
-  }
-}
-```
 
 Class diagram:
 

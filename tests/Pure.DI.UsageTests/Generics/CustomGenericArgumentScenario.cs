@@ -16,28 +16,8 @@ using Shouldly;
 using Xunit;
 
 // {
-interface TTMy;
-
-interface IDependency<T>;
-
-class Dependency<T> : IDependency<T>;
-
-interface IService
-{
-    IDependency<int> IntDependency { get; }
-
-    IDependency<string> StringDependency { get; }
-}
-
-class Service(
-    IDependency<int> intDependency,
-    IDependency<string> stringDependency)
-    : IService
-{
-    public IDependency<int> IntDependency { get; } = intDependency;
-
-    public IDependency<string> StringDependency { get; } = stringDependency;
-}
+//# using Pure.DI;
+//# using Shouldly;
 // }
 
 public class Scenario
@@ -63,3 +43,28 @@ public class Scenario
         composition.SaveClassDiagram();
     }
 }
+
+// {
+interface TTMy;
+
+interface IDependency<T>;
+
+class Dependency<T> : IDependency<T>;
+
+interface IService
+{
+    IDependency<int> IntDependency { get; }
+
+    IDependency<string> StringDependency { get; }
+}
+
+class Service(
+    IDependency<int> intDependency,
+    IDependency<string> stringDependency)
+    : IService
+{
+    public IDependency<int> IntDependency { get; } = intDependency;
+
+    public IDependency<string> StringDependency { get; } = stringDependency;
+}
+// }

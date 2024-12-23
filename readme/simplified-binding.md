@@ -6,6 +6,27 @@ You can use the `Bind(...)` method without type parameters. In this case binding
 
 
 ```c#
+using System.Collections;
+using Pure.DI;
+
+// Specifies to create a partial class "Composition"
+DI.Setup(nameof(Composition))
+    // Begins the binding definition for the implementation type itself,
+    // and if the implementation is not an abstract class or structure,
+    // for all abstract but NOT special types that are directly implemented.
+    // So that's the equivalent of the following:
+    // .Bind<IDependency, IOtherDependency, Dependency>()
+    //   .As(Lifetime.PerBlock)
+    //   .To<Dependency>()
+    .Bind().As(Lifetime.PerBlock).To<Dependency>()
+    .Bind().To<Service>()
+
+    // Specifies to create a property "MyService"
+    .Root<IService>("MyService");
+
+var composition = new Composition();
+var service = composition.MyService;
+
 interface IDependencyBase;
 
 class DependencyBase : IDependencyBase;
@@ -36,24 +57,6 @@ class Service(
     IDependency dependency,
     IOtherDependency otherDependency)
     : IService;
-
-// Specifies to create a partial class "Composition"
-DI.Setup(nameof(Composition))
-    // Begins the binding definition for the implementation type itself,
-    // and if the implementation is not an abstract class or structure,
-    // for all abstract but NOT special types that are directly implemented.
-    // So that's the equivalent of the following:
-    // .Bind<IDependency, IOtherDependency, Dependency>()
-    //   .As(Lifetime.PerBlock)
-    //   .To<Dependency>()
-    .Bind().As(Lifetime.PerBlock).To<Dependency>()
-    .Bind().To<Service>()
-
-    // Specifies to create a property "MyService"
-    .Root<IService>("MyService");
-
-var composition = new Composition();
-var service = composition.MyService;
 ```
 
 As practice has shown, in most cases it is possible to define abstraction types in bindings automatically. That's why we added API `Bind()` method without type parameters to define abstractions in bindings. It is the `Bind()` method that performs the binding:
@@ -93,35 +96,6 @@ For class `Dependency`, the `Bind().To<Dependency>()` binding will be equivalent
 | ❌ | `DependencyBase`      | non-abstract                                    |
 | ❌ | `IDependencyBase`     | is not directly implemented by class Dependency |
 
-The following partial class will be generated:
-
-```c#
-partial class Composition
-{
-  private readonly Composition _root;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-  }
-
-  public IService MyService
-  {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    get
-    {
-      Dependency perBlockDependency1 = new Dependency();
-      return new Service(perBlockDependency1, perBlockDependency1, perBlockDependency1);
-    }
-  }
-}
-```
 
 Class diagram:
 

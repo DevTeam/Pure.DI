@@ -15,30 +15,8 @@ using Shouldly;
 using Xunit;
 
 // {
-interface IDependency;
-
-class AbcDependency : IDependency;
-
-class XyzDependency : IDependency;
-
-interface IService
-{
-    Task<IReadOnlyList<IDependency>> GetDependenciesAsync();
-}
-
-class Service(IAsyncEnumerable<IDependency> dependencies) : IService
-{
-    public async Task<IReadOnlyList<IDependency>> GetDependenciesAsync()
-    {
-        var deps = new List<IDependency>();
-        await foreach (var dependency in dependencies)
-        {
-            deps.Add(dependency);
-        }
-
-        return deps;
-    }
-}
+//# using Pure.DI;
+//# using Shouldly;
 // }
 
 public class Scenario
@@ -64,3 +42,30 @@ public class Scenario
         composition.SaveClassDiagram();
     }
 }
+
+// {
+interface IDependency;
+
+class AbcDependency : IDependency;
+
+class XyzDependency : IDependency;
+
+interface IService
+{
+    Task<IReadOnlyList<IDependency>> GetDependenciesAsync();
+}
+
+class Service(IAsyncEnumerable<IDependency> dependencies) : IService
+{
+    public async Task<IReadOnlyList<IDependency>> GetDependenciesAsync()
+    {
+        var deps = new List<IDependency>();
+        await foreach (var dependency in dependencies)
+        {
+            deps.Add(dependency);
+        }
+
+        return deps;
+    }
+}
+// }

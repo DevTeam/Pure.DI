@@ -20,36 +20,8 @@ using Shouldly;
 using Xunit;
 
 // {
-interface IDependency
-{
-    int Id { get; }
-
-    public string DependencyName { get; }
-}
-
-class Dependency(int id, string dependencyName) : IDependency
-{
-    public int Id { get; } = id;
-
-    public string DependencyName { get; } = dependencyName;
-}
-
-interface IService
-{
-    string Name { get; }
-
-    IDependency Dependency { get; }
-}
-
-class Service(
-    [Tag("forService")] string name,
-    IDependency dependency)
-    : IService
-{
-    public string Name { get; } = name;
-
-    public IDependency Dependency { get; } = dependency;
-}
+//# using Pure.DI;
+//# using Shouldly;
 // }
 
 public class Scenario
@@ -87,3 +59,36 @@ public class Scenario
         composition.SaveClassDiagram();
     }
 }
+
+// {
+interface IDependency
+{
+    int Id { get; }
+
+    public string DependencyName { get; }
+}
+
+class Dependency(int id, string dependencyName) : IDependency
+{
+    public int Id { get; } = id;
+
+    public string DependencyName { get; } = dependencyName;
+}
+
+interface IService
+{
+    string Name { get; }
+
+    IDependency Dependency { get; }
+}
+
+class Service(
+    [Tag("forService")] string name,
+    IDependency dependency)
+    : IService
+{
+    public string Name { get; } = name;
+
+    public IDependency Dependency { get; } = dependency;
+}
+// }

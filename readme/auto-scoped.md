@@ -6,6 +6,22 @@ You can use the following example to automatically create a session when creatin
 
 
 ```c#
+using Pure.DI;
+using Shouldly;
+using static Pure.DI.Lifetime;
+
+var composition = new Composition();
+var program = composition.ProgramRoot;
+
+// Creates service in session #1
+var service1 = program.CreateService();
+
+// Creates service in session #2
+var service2 = program.CreateService();
+
+// Checks that the scoped instances are not identical in different sessions
+service1.Dependency.ShouldNotBe(service2.Dependency);
+
 interface IDependency;
 
 class Dependency : IDependency;
@@ -21,7 +37,7 @@ class Service(IDependency dependency) : IService
 }
 
 // Implements a session
-class Program(Func<IService> serviceFactory)
+partial class Program(Func<IService> serviceFactory)
 {
     public IService CreateService() => serviceFactory();
 }
@@ -47,88 +63,11 @@ partial class Composition
             // Program composition root
             .Root<Program>("ProgramRoot");
 }
-
-var composition = new Composition();
-var program = composition.ProgramRoot;
-
-// Creates service in session #1
-var service1 = program.CreateService();
-
-// Creates service in session #2
-var service2 = program.CreateService();
-
-// Checks that the scoped instances are not identical in different sessions
-service1.Dependency.ShouldNotBe(service2.Dependency);
 ```
 
 > [!IMPORTANT]
 > The method `Inject()`cannot be used outside of the binding setup.
 
-The following partial class will be generated:
-
-```c#
-partial class Composition
-{
-  private readonly Composition _root;
-  private readonly Lock _lock;
-
-  private Dependency? _scopedDependency43;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-    _lock = new Lock();
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = _root._lock;
-  }
-
-  public Program ProgramRoot
-  {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    get
-    {
-      Func<IService> perBlockFunc1 = new Func<IService>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
-      {
-        Composition transientComposition3 = this;
-        IService transientIService2;
-        Composition localBaseComposition91 = transientComposition3;
-        // Creates a session
-        var localSession92= new Composition(localBaseComposition91);
-        // Provides a root
-        transientIService2 = localSession92.SessionRoot;
-        IService localValue90 = transientIService2;
-        return localValue90;
-      });
-      return new Program(perBlockFunc1);
-    }
-  }
-
-  private Service SessionRoot
-  {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    get
-    {
-      if (_scopedDependency43 is null)
-      {
-        using (_lock.EnterScope())
-        {
-          if (_scopedDependency43 is null)
-          {
-            _scopedDependency43 = new Dependency();
-          }
-        }
-      }
-
-      return new Service(_scopedDependency43);
-    }
-  }
-}
-```
 
 Class diagram:
 

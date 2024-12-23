@@ -16,32 +16,8 @@ using Shouldly;
 using Xunit;
 
 // {
-interface IDependency
-{
-    string Name { get; }
-
-    Guid Id { get; }
-}
-
-class Dependency : IDependency
-{
-    // The Ordinal attribute specifies to perform an injection and its order
-    [Ordinal(1)]
-    public string Name { get; set; } = "";
-    
-    public Guid Id { get; private set; } = Guid.Empty;
-
-    // The Ordinal attribute specifies to perform an injection and its order
-    [Ordinal(0)]
-    public void SetId(Guid id) => Id = id;
-}
-
-interface IService
-{
-    IDependency Dependency { get; }
-}
-
-record Service(IDependency Dependency) : IService;
+//# using Pure.DI;
+//# using Shouldly;
 // }
 
 public class Scenario
@@ -73,3 +49,32 @@ public class Scenario
         composition.SaveClassDiagram();
     }
 }
+
+// {
+interface IDependency
+{
+    string Name { get; }
+
+    Guid Id { get; }
+}
+
+class Dependency : IDependency
+{
+    // The Ordinal attribute specifies to perform an injection and its order
+    [Ordinal(1)]
+    public string Name { get; set; } = "";
+    
+    public Guid Id { get; private set; } = Guid.Empty;
+
+    // The Ordinal attribute specifies to perform an injection and its order
+    [Ordinal(0)]
+    public void SetId(Guid id) => Id = id;
+}
+
+interface IService
+{
+    IDependency Dependency { get; }
+}
+
+record Service(IDependency Dependency) : IService;
+// }

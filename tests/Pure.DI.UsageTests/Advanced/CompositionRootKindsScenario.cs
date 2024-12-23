@@ -17,6 +17,28 @@ namespace Pure.DI.UsageTests.Advanced.CompositionRootKindsScenario;
 
 using Shouldly;
 using Xunit;
+using static RootKinds;
+
+// {
+//# using Pure.DI;
+//# using static Pure.DI.RootKinds;
+// }
+
+public class Scenario
+{
+    [Fact]
+    public void Run()
+    {
+// {
+        var composition = new Composition();
+        var service = composition.Root;
+        var otherService = composition.GetOtherService();
+        var dependency = Composition.Dependency;
+// }
+        service.ShouldBeOfType<Service>();
+        composition.SaveClassDiagram();
+    }
+}
 
 // {
 interface IDependency;
@@ -43,32 +65,16 @@ partial class Composition
             .Bind<IDependency>().To<Dependency>()
 
             // Creates a public root method named "GetOtherService"
-            .Root<IService>("GetOtherService", "Other", RootKinds.Public | RootKinds.Method)
+            .Root<IService>("GetOtherService", "Other", Public | Method)
 
             // Creates a private partial root method named "GetRoot"
-            .Root<IService>("GetRoot", kind: RootKinds.Private | RootKinds.Partial | RootKinds.Method)
+            .Root<IService>("GetRoot", kind: Private | Partial | Method)
 
             // Creates a internal static root named "Dependency"
-            .Root<IDependency>("Dependency", kind: RootKinds.Internal | RootKinds.Static);
+            .Root<IDependency>("Dependency", kind: Internal | Static);
 
     private partial IService GetRoot();
 
     public IService Root => GetRoot();
 }
 // }
-
-public class Scenario
-{
-    [Fact]
-    public void Run()
-    {
-// {
-        var composition = new Composition();
-        var service = composition.Root;
-        var otherService = composition.GetOtherService();
-        var dependency = Composition.Dependency;
-// }
-        service.ShouldBeOfType<Service>();
-        composition.SaveClassDiagram();
-    }
-}

@@ -13,6 +13,29 @@ But you can always override them, as in the example below for <c>TaskScheduler.C
 
 
 ```c#
+using Pure.DI;
+using Shouldly;
+
+DI.Setup(nameof(Composition))
+    .Hint(Hint.Resolve, "Off")
+    // Overrides TaskScheduler.Default if necessary
+    .Bind<TaskScheduler>().To(_ => TaskScheduler.Current)
+    // Specifies to use CancellationToken from the composition root argument,
+    // if not specified then CancellationToken.None will be used
+    .RootArg<CancellationToken>("cancellationToken")
+    .Bind<IDependency>().To<Dependency>()
+    .Bind<IService>().To<Service>()
+
+    // Composition root
+    .Root<IService>("GetRoot");
+
+var composition = new Composition();
+using var cancellationTokenSource = new CancellationTokenSource();
+
+// Creates a composition root with the CancellationToken passed to it
+var service = composition.GetRoot(cancellationTokenSource.Token);
+await service.RunAsync(cancellationTokenSource.Token);
+
 interface IDependency
 {
     ValueTask DoSomething(CancellationToken cancellationToken);
@@ -36,74 +59,8 @@ class Service(Task<IDependency> dependencyTask) : IService
         await dependency.DoSomething(cancellationToken);
     }
 }
-
-DI.Setup(nameof(Composition))
-    .Hint(Hint.Resolve, "Off")
-    // Overrides TaskScheduler.Default if necessary
-    .Bind<TaskScheduler>().To(_ => TaskScheduler.Current)
-    // Specifies to use CancellationToken from the composition root argument,
-    // if not specified then CancellationToken.None will be used
-    .RootArg<CancellationToken>("cancellationToken")
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>()
-
-    // Composition root
-    .Root<IService>("GetRoot");
-
-var composition = new Composition();
-using var cancellationTokenSource = new CancellationTokenSource();
-
-// Creates a composition root with the CancellationToken passed to it
-var service = composition.GetRoot(cancellationTokenSource.Token);
-await service.RunAsync(cancellationTokenSource.Token);
 ```
 
-The following partial class will be generated:
-
-```c#
-partial class Composition
-{
-  private readonly Composition _root;
-
-  [OrdinalAttribute(128)]
-  public Composition()
-  {
-    _root = this;
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-  }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public IService GetRoot(CancellationToken cancellationToken)
-  {
-    TaskFactory<IDependency> perBlockTaskFactory3;
-    CancellationToken localCancellationToken63 = cancellationToken;
-    TaskCreationOptions transientTaskCreationOptions4 = TaskCreationOptions.None;
-    TaskCreationOptions localTaskCreationOptions64 = transientTaskCreationOptions4;
-    TaskContinuationOptions transientTaskContinuationOptions5 = TaskContinuationOptions.None;
-    TaskContinuationOptions localTaskContinuationOptions65 = transientTaskContinuationOptions5;
-    TaskScheduler transientTaskScheduler6 = TaskScheduler.Current;
-    TaskScheduler localTaskScheduler66 = transientTaskScheduler6;
-    perBlockTaskFactory3 = new TaskFactory<IDependency>(localCancellationToken63, localTaskCreationOptions64, localTaskContinuationOptions65, localTaskScheduler66);
-    Func<IDependency> perBlockFunc2 = new Func<IDependency>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
-    {
-      IDependency localValue67 = new Dependency();
-      return localValue67;
-    });
-    Task<IDependency> transientTask1;
-    // Injects an instance factory
-    Func<IDependency> localFactory68 = perBlockFunc2;
-    // Injects a task factory creating and scheduling task objects
-    TaskFactory<IDependency> localTaskFactory69 = perBlockTaskFactory3;
-    // Creates and starts a task using the instance factory
-    transientTask1 = localTaskFactory69.StartNew(localFactory68);
-    return new Service(transientTask1);
-  }
-}
-```
 
 Class diagram:
 

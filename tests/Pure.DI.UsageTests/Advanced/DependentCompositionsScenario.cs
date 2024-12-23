@@ -14,6 +14,7 @@ $h=- _CompositionKind.Global_ - the composition class will also not be created, 
 // ReSharper disable RedundantAssignment
 // ReSharper disable ArrangeTypeModifiers
 
+// ReSharper disable PartialTypeWithSinglePart
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Advanced.DependentCompositionsScenario;
 
@@ -21,20 +22,11 @@ using Pure.DI;
 using UsageTests;
 using Shouldly;
 using Xunit;
+using static CompositionKind;
 
 // {
-interface IDependency;
-
-class Dependency : IDependency;
-
-interface IService;
-
-class Service(IDependency dependency) : IService;
-
-class Program(IService service)
-{
-    public IService Service { get; } = service;
-}
+//# using Pure.DI;
+//# using static Pure.DI.CompositionKind;
 // }
 
 public class Scenario
@@ -42,10 +34,10 @@ public class Scenario
     [Fact]
     public void Run()
     {
-// {    
+// {
         // This setup does not generate code, but can be used as a dependency
         // and requires the use of the "DependsOn" call to add it as a dependency
-        DI.Setup("BaseComposition", CompositionKind.Internal)
+        DI.Setup("BaseComposition", Internal)
             .Bind<IDependency>().To<Dependency>();
 
         // This setup generates code and can also be used as a dependency
@@ -71,3 +63,18 @@ public class Scenario
         otherComposition.SaveClassDiagram();
     }
 }
+
+// {
+interface IDependency;
+
+class Dependency : IDependency;
+
+interface IService;
+
+class Service(IDependency dependency) : IService;
+
+partial class Program(IService service)
+{
+    public IService Service { get; } = service;
+}
+// }

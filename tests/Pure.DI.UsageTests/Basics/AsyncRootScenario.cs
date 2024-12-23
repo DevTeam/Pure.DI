@@ -13,13 +13,7 @@ namespace Pure.DI.UsageTests.Basics.AsyncRootScenario;
 using Xunit;
 
 // {
-interface IDependency;
-
-class Dependency : IDependency;
-
-interface IService;
-
-class Service(IDependency dependency) : IService;
+//# using Pure.DI;
 // }
 
 public class Scenario
@@ -49,3 +43,13 @@ public class Scenario
         composition.SaveClassDiagram();
     }
 }
+
+// {
+interface IDependency;
+
+class Dependency : IDependency;
+
+interface IService;
+
+class Service(IDependency dependency) : IService;
+// }

@@ -15,19 +15,7 @@ namespace Pure.DI.UsageTests.BCL.WeakReferenceScenario;
 using Xunit;
 
 // {
-interface IDependency;
-
-class Dependency : IDependency;
-
-interface IService;
-
-class Service(WeakReference<IDependency> dependency) : IService
-{
-    public IDependency? Dependency =>
-        dependency.TryGetTarget(out var value)
-            ? value
-            : null;
-}
+//# using Pure.DI;
 // }
 
 public class Scenario
@@ -49,3 +37,19 @@ public class Scenario
         composition.SaveClassDiagram();
     }
 }
+
+// {
+interface IDependency;
+
+class Dependency : IDependency;
+
+interface IService;
+
+class Service(WeakReference<IDependency> dependency) : IService
+{
+    public IDependency? Dependency =>
+        dependency.TryGetTarget(out var value)
+            ? value
+            : null;
+}
+// }

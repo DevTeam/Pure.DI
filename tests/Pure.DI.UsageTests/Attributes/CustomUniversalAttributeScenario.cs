@@ -20,27 +20,8 @@ namespace Pure.DI.UsageTests.Attributes.CustomUniversalAttributeScenario;
 using Xunit;
 
 // {
-[AttributeUsage(
-    AttributeTargets.Constructor
-    | AttributeTargets.Method
-    | AttributeTargets.Parameter
-    | AttributeTargets.Property
-    | AttributeTargets.Field)]
-class InjectAttribute<T>(object? tag = null, int ordinal = 0) : Attribute;
-
-interface IPerson;
-
-class Person([Inject<string>("NikName")] string name) : IPerson
-{
-    private object? _state;
-
-    [Inject<int>(ordinal: 1)] internal object Id = "";
-
-    public void Initialize([Inject<Uri>] object state) =>
-        _state = state;
-
-    public override string ToString() => $"{Id} {name} {_state}";
-}
+//# using Pure.DI;
+//# using Shouldly;
 // }
 
 public class Scenario
@@ -69,3 +50,27 @@ public class Scenario
         composition.SaveClassDiagram();
     }
 }
+
+// {
+[AttributeUsage(
+    AttributeTargets.Constructor
+    | AttributeTargets.Method
+    | AttributeTargets.Parameter
+    | AttributeTargets.Property
+    | AttributeTargets.Field)]
+class InjectAttribute<T>(object? tag = null, int ordinal = 0) : Attribute;
+
+interface IPerson;
+
+class Person([Inject<string>("NikName")] string name) : IPerson
+{
+    private object? _state;
+
+    [Inject<int>(ordinal: 1)] internal object Id = "";
+
+    public void Initialize([Inject<Uri>] object state) =>
+        _state = state;
+
+    public override string ToString() => $"{Id} {name} {_state}";
+}
+// }

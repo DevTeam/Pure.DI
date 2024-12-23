@@ -14,8 +14,32 @@ For generic types, the type name also contains the number of type parameters, e.
 
 
 ```c#
-namespace MyNamespace;
+using Pure.DI;
+using Shouldly;
 
+DI.Setup(nameof(Composition))
+    .Bind(
+        Tag.On("*Service.Service:dependency1"),
+        // Tag on injection site for generic type
+        Tag.On("*Consumer`1.Consumer:myDep"))
+        .To<AbcDependency>()
+    .Bind(
+        // Combined tag
+        Tag.On(
+            "*Service.Service:dependency2",
+            "*Service:Dependency3"))
+        .To<XyzDependency>()
+    .Bind<IService>().To<Service>()
+
+    // Specifies to create the composition root named "Root"
+    .Root<IService>("Root");
+
+var composition = new Composition();
+var service = composition.Root;
+service.Dependency1.ShouldBeOfType<AbcDependency>();
+service.Dependency2.ShouldBeOfType<XyzDependency>();
+service.Dependency3.ShouldBeOfType<XyzDependency>();
+service.Dependency4.ShouldBeOfType<AbcDependency>();
 
 interface IDependency;
 
@@ -53,30 +77,6 @@ class Service(
 
     public IDependency Dependency4 => consumer.Dependency;
 }
-
-DI.Setup(nameof(Composition))
-    .Bind(
-        Tag.On("MyNamespace.Service.Service:dependency1"),
-        // Tag on injection site for generic type
-        Tag.On("MyNamespace.Consumer`1.Consumer:myDep"))
-        .To<AbcDependency>()
-    .Bind(
-        // Combined tag
-        Tag.On(
-            "MyNamespace.Service.Service:dependency2",
-            "MyNamespace.Service:Dependency3"))
-        .To<XyzDependency>()
-    .Bind<IService>().To<Service>()
-
-    // Specifies to create the composition root named "Root"
-    .Root<IService>("Root");
-
-var composition = new Composition();
-var service = composition.Root;
-service.Dependency1.ShouldBeOfType<AbcDependency>();
-service.Dependency2.ShouldBeOfType<XyzDependency>();
-service.Dependency3.ShouldBeOfType<XyzDependency>();
-service.Dependency4.ShouldBeOfType<AbcDependency>();
 ```
 
 > [!WARNING]
@@ -101,7 +101,7 @@ classDiagram
 	Service *-- "2 " XyzDependency : IDependency
 	Service *--  ConsumerᐸStringᐳ : ConsumerᐸStringᐳ
 	ConsumerᐸStringᐳ *--  AbcDependency : IDependency
-	namespace MyNamespace {
+	namespace Pure.DI.UsageTests.Advanced {
 		class AbcDependency {
 			+AbcDependency()
 		}

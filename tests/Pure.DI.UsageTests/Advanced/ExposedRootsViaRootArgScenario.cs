@@ -21,6 +21,7 @@ $h=```
 // ReSharper disable RedundantAssignment
 // ReSharper disable ArrangeTypeModifiers
 
+// ReSharper disable PartialTypeWithSinglePart
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Advanced.ExposedRootsViaRootArgScenario;
 
@@ -29,10 +30,8 @@ using Pure.DI;
 using Xunit;
 
 // {
-class Program(IMyService myService)
-{
-    public void DoSomething() => myService.DoSomething();
-}
+//# using Pure.DI;
+//# using Pure.DI.Integration;
 // }
 
 public class Scenario
@@ -40,7 +39,7 @@ public class Scenario
     [Fact]
     public void Run()
     {
-// {    
+// {
         DI.Setup(nameof(Composition))
             .Hint(Hint.Resolve, "Off")
             // Binds to exposed composition roots from other project
@@ -54,3 +53,10 @@ public class Scenario
 // }
     }
 }
+
+// {
+partial class Program(IMyService myService)
+{
+    public void DoSomething() => myService.DoSomething();
+}
+// }

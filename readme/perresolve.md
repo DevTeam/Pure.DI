@@ -6,6 +6,29 @@ The _PerResolve_ lifetime ensures that there will be one instance of the depende
 
 
 ```c#
+using Pure.DI;
+using Shouldly;
+using static Pure.DI.Lifetime;
+
+DI.Setup(nameof(Composition))
+    // This hint indicates to not generate methods such as Resolve
+    .Hint(Hint.Resolve, "Off")
+    .Bind().As(PerResolve).To<Dependency>()
+    .Bind().As(Singleton).To<(IDependency dep3, IDependency dep4)>()
+
+    // Composition root
+    .Root<Service>("Root");
+
+var composition = new Composition();
+
+var service1 = composition.Root;
+service1.Dep1.ShouldBe(service1.Dep2);
+service1.Dep3.ShouldBe(service1.Dep4);
+service1.Dep1.ShouldBe(service1.Dep3);
+
+var service2 = composition.Root;
+service2.Dep1.ShouldNotBe(service1.Dep1);
+
 interface IDependency;
 
 class Dependency : IDependency;
@@ -23,91 +46,8 @@ class Service(
 
     public IDependency Dep4 { get; } = deps.dep4;
 }
-
-DI.Setup(nameof(Composition))
-    // This hint indicates to not generate methods such as Resolve
-    .Hint(Hint.Resolve, "Off")
-    .Bind().As(Lifetime.PerResolve).To<Dependency>()
-    .Bind().As(Lifetime.Singleton).To<(IDependency dep3, IDependency dep4)>()
-
-    // Composition root
-    .Root<Service>("Root");
-
-var composition = new Composition();
-
-var service1 = composition.Root;
-service1.Dep1.ShouldBe(service1.Dep2);
-service1.Dep3.ShouldBe(service1.Dep4);
-service1.Dep1.ShouldBe(service1.Dep3);
-
-var service2 = composition.Root;
-service2.Dep1.ShouldNotBe(service1.Dep1);
 ```
 
-The following partial class will be generated:
-
-```c#
-partial class Composition
-{
-  private readonly Composition _root;
-  private readonly Lock _lock;
-
-  private (IDependency dep3, IDependency dep4) _singletonValueTuple44;
-  private bool _singletonValueTuple44Created;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-    _lock = new Lock();
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = _root._lock;
-  }
-
-  public Service Root
-  {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    get
-    {
-      var perResolveDependency43 = default(Dependency);
-      if (!_root._singletonValueTuple44Created)
-      {
-        using (_lock.EnterScope())
-        {
-          if (!_root._singletonValueTuple44Created)
-          {
-            if (perResolveDependency43 is null)
-            {
-              perResolveDependency43 = new Dependency();
-            }
-
-            _root._singletonValueTuple44 = (perResolveDependency43, perResolveDependency43);
-            Thread.MemoryBarrier();
-            _root._singletonValueTuple44Created = true;
-          }
-        }
-      }
-
-      if (perResolveDependency43 is null)
-      {
-        using (_lock.EnterScope())
-        {
-          if (perResolveDependency43 is null)
-          {
-            perResolveDependency43 = new Dependency();
-          }
-        }
-      }
-
-      return new Service(perResolveDependency43, perResolveDependency43, _root._singletonValueTuple44);
-    }
-  }
-}
-```
 
 Class diagram:
 

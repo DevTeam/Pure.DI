@@ -8,15 +8,7 @@ Sometimes you want to be able to create composition roots with type parameters. 
 
 
 ```c#
-interface IDependency<T>;
-
-class Dependency<T> : IDependency<T>;
-
-interface IService<T>;
-
-class Service<T>(IDependency<T> dependency) : IService<T>;
-
-class OtherService<T>(IDependency<T> dependency) : IService<T>;
+using Pure.DI;
 
 DI.Setup(nameof(Composition))
     // This hint indicates to not generate methods such as Resolve
@@ -49,45 +41,21 @@ var service = composition.GetMyRoot<int>();
 
 // someOtherService = new OtherService<int>(new Dependency<int>());
 var someOtherService = composition.GetOtherService<string>();
+
+interface IDependency<T>;
+
+class Dependency<T> : IDependency<T>;
+
+interface IService<T>;
+
+class Service<T>(IDependency<T> dependency) : IService<T>;
+
+class OtherService<T>(IDependency<T> dependency) : IService<T>;
 ```
 
 > [!IMPORTANT]
 > The method `Inject()`cannot be used outside of the binding setup.
 
-The following partial class will be generated:
-
-```c#
-partial class Composition
-{
-  private readonly Composition _root;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-  }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public IService<T1> GetOtherService<T1>()
-  {
-    OtherService<T1> transientOtherService0;
-    IDependency<T1> localDependency87 = new Dependency<T1>();
-    transientOtherService0 = new OtherService<T1>(localDependency87);
-    return transientOtherService0;
-  }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public IService<T1> GetMyRoot<T1>()
-  {
-    return new Service<T1>(new Dependency<T1>());
-  }
-}
-```
 
 Class diagram:
 

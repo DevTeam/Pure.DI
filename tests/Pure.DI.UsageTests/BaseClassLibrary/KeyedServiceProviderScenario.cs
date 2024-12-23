@@ -18,6 +18,27 @@ using Shouldly;
 using Xunit;
 
 // {
+//# using Pure.DI;
+//# using Shouldly;
+//# using Microsoft.Extensions.DependencyInjection;
+// }
+
+public class Scenario
+{
+    [Fact]
+    public void Run()
+    {
+// {
+        var serviceProvider = new Composition();
+        var service = serviceProvider.GetRequiredKeyedService<IService>("Service Key");
+        var dependency = serviceProvider.GetRequiredKeyedService<IDependency>("Dependency Key");
+        service.Dependency.ShouldBe(dependency);
+// }
+        serviceProvider.SaveClassDiagram();
+    }
+}
+
+// {
 interface IDependency;
 
 class Dependency : IDependency;
@@ -53,18 +74,3 @@ partial class Composition : IKeyedServiceProvider
         GetRequiredKeyedService(serviceType, serviceKey);
 }
 // }
-
-public class Scenario
-{
-    [Fact]
-    public void Run()
-    {
-// {
-        var serviceProvider = new Composition();
-        var service = serviceProvider.GetRequiredKeyedService<IService>("Service Key");
-        var dependency = serviceProvider.GetRequiredKeyedService<IDependency>("Dependency Key");
-        service.Dependency.ShouldBe(dependency);
-// }
-        serviceProvider.SaveClassDiagram();
-    }
-}

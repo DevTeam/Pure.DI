@@ -15,25 +15,8 @@ using Shouldly;
 using Xunit;
 
 // {
-interface IDependency;
-
-class Dependency : IDependency;
-
-interface IService
-{
-    string Name { get; }
-
-    IDependency Dependency { get; }
-}
-
-// If injection cannot be performed explicitly,
-// the default value will be used
-class Service(string name = "My Service") : IService
-{
-    public string Name { get; } = name;
-
-    public required IDependency Dependency { get; init; } = new Dependency();
-}
+//# using Pure.DI;
+//# using Shouldly;
 // }
 
 public class Scenario
@@ -58,3 +41,25 @@ public class Scenario
         composition.SaveClassDiagram();
     }
 }
+
+// {
+interface IDependency;
+
+class Dependency : IDependency;
+
+interface IService
+{
+    string Name { get; }
+
+    IDependency Dependency { get; }
+}
+
+// If injection cannot be performed explicitly,
+// the default value will be used
+class Service(string name = "My Service") : IService
+{
+    public string Name { get; } = name;
+
+    public required IDependency Dependency { get; init; } = new Dependency();
+}
+// }

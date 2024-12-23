@@ -17,30 +17,8 @@ using Shouldly;
 using Xunit;
 
 // {
-interface IDependency;
-
-class AbcDependency : IDependency;
-
-class XyzDependency : IDependency;
-
-class Dependency : IDependency;
-
-interface IService
-{
-    IDependency Dependency1 { get; }
-
-    IDependency Dependency2 { get; }
-}
-
-class Service(
-    [Tag("Abc")] IDependency dependency1,
-    [Tag("Xyz")] IDependency dependency2)
-    : IService
-{
-    public IDependency Dependency1 { get; } = dependency1;
-
-    public IDependency Dependency2 { get; } = dependency2;
-}
+//# using Pure.DI;
+//# using Shouldly;
 // }
 
 public class Scenario
@@ -66,3 +44,30 @@ public class Scenario
         composition.SaveClassDiagram();
     }
 }
+
+// {
+interface IDependency;
+
+class AbcDependency : IDependency;
+
+class XyzDependency : IDependency;
+
+class Dependency : IDependency;
+
+interface IService
+{
+    IDependency Dependency1 { get; }
+
+    IDependency Dependency2 { get; }
+}
+
+class Service(
+    [Tag("Abc")] IDependency dependency1,
+    [Tag("Xyz")] IDependency dependency2)
+    : IService
+{
+    public IDependency Dependency1 { get; } = dependency1;
+
+    public IDependency Dependency2 { get; } = dependency2;
+}
+// }

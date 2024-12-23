@@ -7,6 +7,18 @@ _Decorator_ is a well-known and useful design pattern. It is convenient to use t
 
 
 ```c#
+using Pure.DI;
+using Shouldly;
+
+DI.Setup(nameof(Composition))
+    .Bind("base").To<Service>()
+    .Bind().To<GreetingService>()
+    .Root<IService>("Root");
+
+var composition = new Composition();
+var service = composition.Root;
+service.GetMessage().ShouldBe("Hello World !!!");
+
 interface IService
 {
     string GetMessage();
@@ -21,48 +33,10 @@ class GreetingService([Tag("base")] IService baseService) : IService
 {
     public string GetMessage() => $"{baseService.GetMessage()} !!!";
 }
-
-
-DI.Setup(nameof(Composition))
-    .Bind("base").To<Service>()
-    .Bind().To<GreetingService>()
-    .Root<IService>("Root");
-
-var composition = new Composition();
-var service = composition.Root;
-service.GetMessage().ShouldBe("Hello World !!!");
 ```
 
 Here an instance of the _Service_ type, labeled _"base"_, is injected in the decorator _DecoratorService_. You can use any tag that semantically reflects the feature of the abstraction being embedded. The tag can be a constant, a type, or a value of an enumerated type.
 
-The following partial class will be generated:
-
-```c#
-partial class Composition
-{
-  private readonly Composition _root;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-  }
-
-  public IService Root
-  {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    get
-    {
-      return new GreetingService(new Service());
-    }
-  }
-}
-```
 
 Class diagram:
 

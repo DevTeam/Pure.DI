@@ -4,6 +4,18 @@
 
 
 ```c#
+using Pure.DI;
+
+DI.Setup(nameof(Composition))
+    .RootArg<TT>("someArg")
+    .Bind<IService<TT>>().To<Service<TT>>()
+
+    // Composition root
+    .Root<IService<TT>>("GetMyService");
+
+var composition = new Composition();
+IService<int> service = composition.GetMyService<int>(someArg: 33);
+
 interface IService<out T>
 {
     T? Dependency { get; }
@@ -20,45 +32,8 @@ class Service<T> : IService<T>
 
     public T? Dependency { get; private set; }
 }
-
-DI.Setup(nameof(Composition))
-    .RootArg<TT>("someArg")
-    .Bind<IService<TT>>().To<Service<TT>>()
-
-    // Composition root
-    .Root<IService<TT>>("GetMyService");
-
-var composition = new Composition();
-IService<int> service = composition.GetMyService<int>(someArg: 33);
 ```
 
-The following partial class will be generated:
-
-```c#
-partial class Composition
-{
-  private readonly Composition _root;
-
-  [OrdinalAttribute(128)]
-  public Composition()
-  {
-    _root = this;
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-  }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public IService<T1> GetMyService<T1>(T1 someArg)
-  {
-    Service<T1> transientService0 = new Service<T1>();
-    transientService0.SetDependency(someArg);
-    return transientService0;
-  }
-}
-```
 
 Class diagram:
 

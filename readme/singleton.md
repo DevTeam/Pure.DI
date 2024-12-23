@@ -6,6 +6,23 @@ The _Singleton_ lifetime ensures that there will be a single instance of the dep
 
 
 ```c#
+using Pure.DI;
+using Shouldly;
+using static Pure.DI.Lifetime;
+
+DI.Setup(nameof(Composition))
+    // This hint indicates to not generate methods such as Resolve
+    .Hint(Hint.Resolve, "Off")
+    .Bind().As(Singleton).To<Dependency>()
+    .Bind().To<Service>()
+    .Root<IService>("Root");
+
+var composition = new Composition();
+var service1 = composition.Root;
+var service2 = composition.Root;
+service1.Dependency1.ShouldBe(service1.Dependency2);
+service2.Dependency1.ShouldBe(service1.Dependency1);
+
 interface IDependency;
 
 class Dependency : IDependency;
@@ -26,19 +43,6 @@ class Service(
 
     public IDependency Dependency2 { get; } = dependency2;
 }
-
-DI.Setup(nameof(Composition))
-    // This hint indicates to not generate methods such as Resolve
-    .Hint(Hint.Resolve, "Off")
-    .Bind().As(Lifetime.Singleton).To<Dependency>()
-    .Bind().To<Service>()
-    .Root<IService>("Root");
-
-var composition = new Composition();
-var service1 = composition.Root;
-var service2 = composition.Root;
-service1.Dependency1.ShouldBe(service1.Dependency2);
-service2.Dependency1.ShouldBe(service1.Dependency1);
 ```
 
 Some articles advise using objects with a _Singleton_ lifetime as often as possible, but the following details must be considered:
@@ -55,50 +59,6 @@ Some articles advise using objects with a _Singleton_ lifetime as often as possi
 
 - Sometimes additional logic is required to dispose of _Singleton_.
 
-The following partial class will be generated:
-
-```c#
-partial class Composition
-{
-  private readonly Composition _root;
-  private readonly Lock _lock;
-
-  private Dependency? _singletonDependency43;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-    _lock = new Lock();
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = _root._lock;
-  }
-
-  public IService Root
-  {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    get
-    {
-      if (_root._singletonDependency43 is null)
-      {
-        using (_lock.EnterScope())
-        {
-          if (_root._singletonDependency43 is null)
-          {
-            _root._singletonDependency43 = new Dependency();
-          }
-        }
-      }
-
-      return new Service(_root._singletonDependency43, _root._singletonDependency43);
-    }
-  }
-}
-```
 
 Class diagram:
 

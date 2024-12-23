@@ -23,6 +23,39 @@ namespace Pure.DI.UsageTests.Attributes.CustomAttributesScenario;
 using Xunit;
 
 // {
+//# using Pure.DI;
+//# using Shouldly;
+// }
+
+public class Scenario
+{
+    [Fact]
+    public void Run()
+    {
+        // Resolve = Off
+// {
+        DI.Setup(nameof(PersonComposition))
+            .TagAttribute<MyTagAttribute>()
+            .OrdinalAttribute<MyOrdinalAttribute>()
+            .TypeAttribute<MyTypeAttribute>()
+            .TypeAttribute<MyGenericTypeAttribute<TT>>()
+            .Arg<int>("personId")
+            .Bind().To(_ => new Uri("https://github.com/DevTeam/Pure.DI"))
+            .Bind("NikName").To(_ => "Nik")
+            .Bind().To<Person>()
+
+            // Composition root
+            .Root<IPerson>("Person");
+
+        var composition = new PersonComposition(personId: 123);
+        var person = composition.Person;
+        person.ToString().ShouldBe("123 Nik https://github.com/DevTeam/Pure.DI");
+// }
+        composition.SaveClassDiagram();
+    }
+}
+
+// {
 [AttributeUsage(
     AttributeTargets.Constructor
     | AttributeTargets.Method |
@@ -63,31 +96,3 @@ class Person([MyTag("NikName")] string name) : IPerson
     public override string ToString() => $"{Id} {name} {_state}";
 }
 // }
-
-public class Scenario
-{
-    [Fact]
-    public void Run()
-    {
-        // Resolve = Off
-// {
-        DI.Setup(nameof(PersonComposition))
-            .TagAttribute<MyTagAttribute>()
-            .OrdinalAttribute<MyOrdinalAttribute>()
-            .TypeAttribute<MyTypeAttribute>()
-            .TypeAttribute<MyGenericTypeAttribute<TT>>()
-            .Arg<int>("personId")
-            .Bind().To(_ => new Uri("https://github.com/DevTeam/Pure.DI"))
-            .Bind("NikName").To(_ => "Nik")
-            .Bind().To<Person>()
-
-            // Composition root
-            .Root<IPerson>("Person");
-
-        var composition = new PersonComposition(personId: 123);
-        var person = composition.Person;
-        person.ToString().ShouldBe("123 Nik https://github.com/DevTeam/Pure.DI");
-// }
-        composition.SaveClassDiagram();
-    }
-}

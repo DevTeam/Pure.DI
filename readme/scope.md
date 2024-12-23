@@ -6,51 +6,9 @@ The _Scoped_ lifetime ensures that there will be a single instance of the depend
 
 
 ```c#
-interface IDependency
-{
-    bool IsDisposed { get; }
-}
-
-class Dependency : IDependency, IDisposable
-{
-    public bool IsDisposed { get; private set; }
-
-    public void Dispose() => IsDisposed = true;
-}
-
-interface IService
-{
-    IDependency Dependency { get; }
-}
-
-class Service(IDependency dependency) : IService
-{
-    public IDependency Dependency => dependency;
-}
-
-// Implements a session
-class Session(Composition composition) : Composition(composition);
-
-class Program(Func<Session> sessionFactory)
-{
-    public Session CreateSession() => sessionFactory();
-}
-
-partial class Composition
-{
-    static void Setup() =>
-        DI.Setup()
-            // This hint indicates to not generate methods such as Resolve
-            .Hint(Hint.Resolve, "Off")
-            .Bind().As(Scoped).To<Dependency>()
-            .Bind().To<Service>()
-
-            // Session composition root
-            .Root<IService>("SessionRoot")
-
-            // Program composition root
-            .Root<Program>("ProgramRoot");
-}
+using Pure.DI;
+using Shouldly;
+using static Pure.DI.Lifetime;
 
 var composition = new Composition();
 var program = composition.ProgramRoot;
@@ -79,105 +37,54 @@ dependency1.IsDisposed.ShouldBeTrue();
 session2.Dispose();
 // Checks that the scoped instance is finalized
 dependency2.IsDisposed.ShouldBeTrue();
-```
 
-The following partial class will be generated:
-
-```c#
-partial class Composition: IDisposable
+interface IDependency
 {
-  private readonly Composition _root;
-  private readonly Lock _lock;
-  private object[] _disposables;
-  private int _disposeIndex;
+    bool IsDisposed { get; }
+}
 
-  private Dependency? _scopedDependency43;
+class Dependency : IDependency, IDisposable
+{
+    public bool IsDisposed { get; private set; }
 
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-    _lock = new Lock();
-    _disposables = new object[1];
-  }
+    public void Dispose() => IsDisposed = true;
+}
 
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = _root._lock;
-    _disposables = new object[1];
-  }
+interface IService
+{
+    IDependency Dependency { get; }
+}
 
-  public IService SessionRoot
-  {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    get
-    {
-      if (_scopedDependency43 is null)
-      {
-        using (_lock.EnterScope())
-        {
-          if (_scopedDependency43 is null)
-          {
-            _scopedDependency43 = new Dependency();
-            _disposables[_disposeIndex++] = _scopedDependency43;
-          }
-        }
-      }
+class Service(IDependency dependency) : IService
+{
+    public IDependency Dependency => dependency;
+}
 
-      return new Service(_scopedDependency43);
-    }
-  }
+// Implements a session
+class Session(Composition composition) : Composition(composition);
 
-  public Program ProgramRoot
-  {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    get
-    {
-      Func<Session> perBlockFunc1 = new Func<Session>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
-      {
-        Composition transientComposition3 = this;
-        Session localValue93 = new Session(transientComposition3);
-        return localValue93;
-      });
-      return new Program(perBlockFunc1);
-    }
-  }
+partial class Program(Func<Session> sessionFactory)
+{
+    public Session CreateSession() => sessionFactory();
+}
 
-  public void Dispose()
-  {
-    int disposeIndex;
-    object[] disposables;
-    using (_lock.EnterScope())
-    {
-      disposeIndex = _disposeIndex;
-      _disposeIndex = 0;
-      disposables = _disposables;
-      _disposables = new object[1];
-      _scopedDependency43 = null;
-    }
+partial class Composition
+{
+    static void Setup() =>
+        DI.Setup()
+            // This hint indicates to not generate methods such as Resolve
+            .Hint(Hint.Resolve, "Off")
+            .Bind().As(Scoped).To<Dependency>()
+            .Bind().To<Service>()
 
-    while (disposeIndex-- > 0)
-    {
-      switch (disposables[disposeIndex])
-      {
-        case IDisposable disposableInstance:
-          try
-          {
-            disposableInstance.Dispose();
-          }
-          catch (Exception exception)
-          {
-            OnDisposeException(disposableInstance, exception);
-          }
-          break;
-      }
-    }
-  }
+            // Session composition root
+            .Root<IService>("SessionRoot")
 
-  partial void OnDisposeException<T>(T disposableInstance, Exception exception) where T : IDisposable;
+            // Program composition root
+            .Root<Program>("ProgramRoot");
 }
 ```
+
 
 Class diagram:
 

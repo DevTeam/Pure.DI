@@ -16,13 +16,44 @@ $f=> Each potentially injectable argument, property, or field contains an additi
 // ReSharper disable UnusedTypeParameter
 
 #pragma warning disable CS9113 // Parameter is unread.
-// {
 namespace Pure.DI.UsageTests.Advanced.TagOnInjectionSiteWithWildcardsScenario;
 
-// }
 using Pure.DI;
 using UsageTests;
 using Xunit;
+
+// {
+//# using Pure.DI;
+//# using Shouldly;
+// }
+
+public class Scenario
+{
+    [Fact]
+    public void Run()
+    {
+        // Resolve = Off
+// {
+        DI.Setup(nameof(Composition))
+            .Bind(Tag.On("*Service:Dependency3", "*Consumer:myDep"))
+                .To<AbcDependency>()
+            .Bind(Tag.On("*Service:dependency?"))
+                .To<XyzDependency>()
+            .Bind<IService>().To<Service>()
+
+            // Specifies to create the composition root named "Root"
+            .Root<IService>("Root");
+
+        var composition = new Composition();
+        var service = composition.Root;
+        service.Dependency1.ShouldBeOfType<XyzDependency>();
+        service.Dependency2.ShouldBeOfType<XyzDependency>();
+        service.Dependency3.ShouldBeOfType<AbcDependency>();
+        service.Dependency4.ShouldBeOfType<AbcDependency>();
+// }
+        composition.SaveClassDiagram();
+    }
+}
 
 // {
 interface IDependency;
@@ -62,31 +93,3 @@ class Service(
     public IDependency Dependency4 => consumer.Dependency;
 }
 // }
-
-public class Scenario
-{
-    [Fact]
-    public void Run()
-    {
-        // Resolve = Off
-// {
-        DI.Setup(nameof(Composition))
-            .Bind(Tag.On("*Service:Dependency3", "*Consumer:myDep"))
-                .To<AbcDependency>()
-            .Bind(Tag.On("*Service:dependency?"))
-                .To<XyzDependency>()
-            .Bind<IService>().To<Service>()
-
-            // Specifies to create the composition root named "Root"
-            .Root<IService>("Root");
-
-        var composition = new Composition();
-        var service = composition.Root;
-        service.Dependency1.ShouldBeOfType<XyzDependency>();
-        service.Dependency2.ShouldBeOfType<XyzDependency>();
-        service.Dependency3.ShouldBeOfType<AbcDependency>();
-        service.Dependency4.ShouldBeOfType<AbcDependency>();
-// }
-        composition.SaveClassDiagram();
-    }
-}

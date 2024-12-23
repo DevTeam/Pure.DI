@@ -18,6 +18,39 @@ using Shouldly;
 using Xunit;
 
 // {
+//# using Pure.DI;
+//# using Shouldly;
+//# using Microsoft.Extensions.DependencyInjection;
+// }
+
+public class Scenario
+{
+    [Fact]
+    public void Run()
+    {
+// {
+        using var composition = new Composition();
+
+        using var scope1 = composition.CreateScope();
+        var service1 = scope1.ServiceProvider.GetRequiredService<IService>();
+        var dependency1 = composition.GetRequiredService<IDependency>();
+        service1.Dependency.ShouldBe(dependency1);
+        service1.ShouldBe(scope1.ServiceProvider.GetRequiredService<IService>());
+
+        using var scope2 = composition.CreateScope();
+        var service2 = scope2.ServiceProvider.GetRequiredService<IService>();
+        var dependency2 = composition.GetRequiredService<IDependency>();
+        service2.Dependency.ShouldBe(dependency2);
+        service2.ShouldBe(scope2.ServiceProvider.GetRequiredService<IService>());
+
+        service1.ShouldNotBe(service2);
+        dependency1.ShouldBe(dependency2);
+// }
+        composition.SaveClassDiagram();
+    }
+}
+
+// {
 interface IDependency;
 
 class Dependency : IDependency;
@@ -67,30 +100,3 @@ partial class Composition
         GetRequiredKeyedService(serviceType, serviceKey);
 }
 // }
-
-public class Scenario
-{
-    [Fact]
-    public void Run()
-    {
-// {
-        using var composition = new Composition();
-
-        using var scope1 = composition.CreateScope();
-        var service1 = scope1.ServiceProvider.GetRequiredService<IService>();
-        var dependency1 = composition.GetRequiredService<IDependency>();
-        service1.Dependency.ShouldBe(dependency1);
-        service1.ShouldBe(scope1.ServiceProvider.GetRequiredService<IService>());
-
-        using var scope2 = composition.CreateScope();
-        var service2 = scope2.ServiceProvider.GetRequiredService<IService>();
-        var dependency2 = composition.GetRequiredService<IDependency>();
-        service2.Dependency.ShouldBe(dependency2);
-        service2.ShouldBe(scope2.ServiceProvider.GetRequiredService<IService>());
-
-        service1.ShouldNotBe(service2);
-        dependency1.ShouldBe(dependency2);
-// }
-        composition.SaveClassDiagram();
-    }
-}

@@ -34,12 +34,50 @@ $h=The example below also uses the `using static Pure.DI.Tag;` directive to acce
 namespace Pure.DI.UsageTests.Basics.SmartTagsScenario;
 
 using Shouldly;
+using static Pure.DI.Tag;
+using static Pure.DI.Lifetime;
 using Xunit;
 
 // {
-using static Pure.DI.Tag;
-using static Pure.DI.Lifetime;
+//# using Pure.DI;
+//# using Shouldly;
+// }
 
+public class Scenario
+{
+    [Fact]
+    public void Run()
+    {
+        // Resolve = Off
+// {
+        //# using static Pure.DI.Tag;
+        //# using static Pure.DI.Lifetime;
+        
+        DI.Setup(nameof(Composition))
+            // The `default` tag is used to resolve dependencies
+            // when the tag was not specified by the consumer
+            .Bind<IDependency>(Abc, default).To<AbcDependency>()
+            .Bind<IDependency>(Xyz).As(Singleton).To<XyzDependency>()
+            .Bind<IService>().To<Service>()
+
+            // "XyzRoot" is root name, Xyz is tag
+            .Root<IDependency>("XyzRoot", Xyz)
+
+            // Specifies to create the composition root named "Root"
+            .Root<IService>("Root");
+
+        var composition = new Composition();
+        var service = composition.Root;
+        service.Dependency1.ShouldBeOfType<AbcDependency>();
+        service.Dependency2.ShouldBeOfType<XyzDependency>();
+        service.Dependency2.ShouldBe(composition.XyzRoot);
+        service.Dependency3.ShouldBeOfType<AbcDependency>();
+// }
+        composition.SaveClassDiagram();
+    }
+}
+
+// {
 interface IDependency;
 
 class AbcDependency : IDependency;
@@ -70,34 +108,3 @@ class Service(
     public IDependency Dependency3 { get; } = dependency3;
 }
 // }
-
-public class Scenario
-{
-    [Fact]
-    public void Run()
-    {
-        // Resolve = Off
-// {
-        DI.Setup(nameof(Composition))
-            // The `default` tag is used to resolve dependencies
-            // when the tag was not specified by the consumer
-            .Bind<IDependency>(Abc, default).To<AbcDependency>()
-            .Bind<IDependency>(Xyz).As(Singleton).To<XyzDependency>()
-            .Bind<IService>().To<Service>()
-
-            // "XyzRoot" is root name, Xyz is tag
-            .Root<IDependency>("XyzRoot", Xyz)
-
-            // Specifies to create the composition root named "Root"
-            .Root<IService>("Root");
-
-        var composition = new Composition();
-        var service = composition.Root;
-        service.Dependency1.ShouldBeOfType<AbcDependency>();
-        service.Dependency2.ShouldBeOfType<XyzDependency>();
-        service.Dependency2.ShouldBe(composition.XyzRoot);
-        service.Dependency3.ShouldBeOfType<AbcDependency>();
-// }
-        composition.SaveClassDiagram();
-    }
-}

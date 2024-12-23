@@ -22,29 +22,8 @@ namespace Pure.DI.UsageTests.BCL.TaskScenario;
 using Xunit;
 
 // {
-interface IDependency
-{
-    ValueTask DoSomething(CancellationToken cancellationToken);
-}
-
-class Dependency : IDependency
-{
-    public ValueTask DoSomething(CancellationToken cancellationToken) => ValueTask.CompletedTask;
-}
-
-interface IService
-{
-    Task RunAsync(CancellationToken cancellationToken);
-}
-
-class Service(Task<IDependency> dependencyTask) : IService
-{
-    public async Task RunAsync(CancellationToken cancellationToken)
-    {
-        var dependency = await dependencyTask;
-        await dependency.DoSomething(cancellationToken);
-    }
-}
+//# using Pure.DI;
+//# using Shouldly;
 // }
 
 public class Scenario
@@ -76,3 +55,29 @@ public class Scenario
         composition.SaveClassDiagram();
     }
 }
+
+// {
+interface IDependency
+{
+    ValueTask DoSomething(CancellationToken cancellationToken);
+}
+
+class Dependency : IDependency
+{
+    public ValueTask DoSomething(CancellationToken cancellationToken) => ValueTask.CompletedTask;
+}
+
+interface IService
+{
+    Task RunAsync(CancellationToken cancellationToken);
+}
+
+class Service(Task<IDependency> dependencyTask) : IService
+{
+    public async Task RunAsync(CancellationToken cancellationToken)
+    {
+        var dependency = await dependencyTask;
+        await dependency.DoSomething(cancellationToken);
+    }
+}
+// }

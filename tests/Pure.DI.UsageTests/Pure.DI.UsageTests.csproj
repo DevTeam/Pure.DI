@@ -1,23 +1,13 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <Import Project="Test.props"/>
 
     <PropertyGroup>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
-        <CompilerGeneratedFilesOutputPath>../../.logs</CompilerGeneratedFilesOutputPath>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\Pure.DI.Core\Pure.DI.Core.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
-        <ProjectReference Include="..\..\src\Pure.DI\Pure.DI.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
-        <ProjectReference Include="..\..\src\Pure.DI.Abstractions\Pure.DI.Abstractions.csproj" OutputItemType="Analyzer" />
-        <ProjectReference Include="..\Pure.DI.Example\Pure.DI.Example.csproj" />
-        <Compile Include="..\..\src\Pure.DI.Abstractions\any\Pure.DI\Abstractions\*.g.cs"/>
-        <Compile Include="..\..\src\Pure.DI.MS\any\Pure.DI\MS\*.cs" Link=""/>
-        <PackageReference Include="Castle.Core" Version="5.1.1"/>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
-        <PackageReference Include="Serilog" Version="4.2.0" />
-        <PackageReference Include="Shouldly" Version="4.2.1"/>
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
         <PackageReference Include="xunit" Version="2.9.2" />
         <PackageReference Include="xunit.runner.visualstudio" Version="3.0.0">
             <PrivateAssets>all</PrivateAssets>

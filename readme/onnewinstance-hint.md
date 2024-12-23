@@ -7,7 +7,25 @@ In addition, setup hints can be comments before the _Setup_ method in the form `
 
 
 ```c#
-using static Hint;
+using Pure.DI;
+using static Pure.DI.Hint;
+using Shouldly;
+
+DI.Setup(nameof(Composition))
+    .Hint(OnNewInstance, "On")
+    .Bind().As(Lifetime.Singleton).To<Dependency>()
+    .Bind().To<Service>()
+    .Root<IService>("Root");
+
+var log = new List<string>();
+var composition = new Composition(log);
+var service1 = composition.Root;
+var service2 = composition.Root;
+
+log.ShouldBe([
+    "Dependency created",
+    "Service created",
+    "Service created"]);
 
 interface IDependency;
 
@@ -41,80 +59,11 @@ internal partial class Composition
         Lifetime lifetime) =>
         _log.Add($"{typeof(T).Name} created");
 }
-
-DI.Setup(nameof(Composition))
-    .Hint(OnNewInstance, "On")
-    .Bind().As(Lifetime.Singleton).To<Dependency>()
-    .Bind().To<Service>()
-    .Root<IService>("Root");
-
-var log = new List<string>();
-var composition = new Composition(log);
-var service1 = composition.Root;
-var service2 = composition.Root;
-
-log.ShouldBe([
-    "Dependency created",
-    "Service created",
-    "Service created"]);
 ```
 
 The `OnNewInstanceLifetimeRegularExpression` hint helps you define a set of lifetimes that require instance creation control. You can use it to specify a regular expression to filter bindings by lifetime name.
 For more hints, see [this](README.md#setup-hints) page.
 
-The following partial class will be generated:
-
-```c#
-partial class Composition
-{
-  private readonly Composition _root;
-  private readonly Lock _lock;
-
-  private Dependency? _singletonDependency43;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-    _lock = new Lock();
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = _root._lock;
-  }
-
-  public IService Root
-  {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    get
-    {
-      if (_root._singletonDependency43 is null)
-      {
-        using (_lock.EnterScope())
-        {
-          if (_root._singletonDependency43 is null)
-          {
-            Dependency _singletonDependency43Temp;
-            _singletonDependency43Temp = new Dependency();
-            OnNewInstance<Dependency>(ref _singletonDependency43Temp, null, Lifetime.Singleton);
-            Thread.MemoryBarrier();
-            _root._singletonDependency43 = _singletonDependency43Temp;
-          }
-        }
-      }
-
-      Service transientService0 = new Service(_root._singletonDependency43);
-      OnNewInstance<Service>(ref transientService0, null, Lifetime.Transient);
-      return transientService0;
-    }
-  }
-
-
-  partial void OnNewInstance<T>(ref T value, object? tag, Lifetime lifetime);
-}
-```
 
 Class diagram:
 

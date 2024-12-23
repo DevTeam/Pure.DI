@@ -18,17 +18,11 @@ $f=For more hints, see [this](README.md#setup-hints) page.
 namespace Pure.DI.UsageTests.Hints.ResolveHintScenario;
 
 using Xunit;
+using static Pure.DI.Hint;
 
 // {
-using static Hint;
-
-interface IDependency;
-
-class Dependency : IDependency;
-
-interface IService;
-
-class Service(IDependency dependency) : IService;
+//# using Pure.DI;
+//# using static Pure.DI.Hint;
 // }
 
 public class Scenario
@@ -51,3 +45,13 @@ public class Scenario
         composition.SaveClassDiagram();
     }
 }
+
+// {
+interface IDependency;
+
+class Dependency : IDependency;
+
+interface IService;
+
+class Service(IDependency dependency) : IService;
+// }

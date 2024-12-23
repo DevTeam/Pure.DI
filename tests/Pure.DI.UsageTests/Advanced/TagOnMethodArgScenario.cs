@@ -16,34 +16,15 @@ $f=> Each potentially injectable argument, property, or field contains an additi
 // ReSharper disable UnusedTypeParameter
 
 #pragma warning disable CS9113 // Parameter is unread.
-// {
 namespace Pure.DI.UsageTests.Advanced.TagOnMethodArgScenario;
 
-// }
 using Pure.DI;
 using UsageTests;
 using Xunit;
 
 // {
-interface IDependency;
-
-class AbcDependency : IDependency;
-
-class XyzDependency : IDependency;
-
-interface IService
-{
-    IDependency? Dependency { get; }
-}
-
-class Service : IService
-{
-    [Ordinal(1)]
-    public void Initialize(IDependency dep) =>
-        Dependency = dep;
-
-    public IDependency? Dependency { get; private set; }
-}
+//# using Pure.DI;
+//# using Shouldly;
 // }
 
 public class Scenario
@@ -69,3 +50,25 @@ public class Scenario
         composition.SaveClassDiagram();
     }
 }
+
+// {
+interface IDependency;
+
+class AbcDependency : IDependency;
+
+class XyzDependency : IDependency;
+
+interface IService
+{
+    IDependency? Dependency { get; }
+}
+
+class Service : IService
+{
+    [Ordinal(1)]
+    public void Initialize(IDependency dep) =>
+        Dependency = dep;
+
+    public IDependency? Dependency { get; private set; }
+}
+// }

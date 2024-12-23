@@ -23,18 +23,19 @@ $h=```
 // ReSharper disable RedundantAssignment
 // ReSharper disable ArrangeTypeModifiers
 
+// ReSharper disable PartialTypeWithSinglePart
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Advanced.ExposedGenericRootsWithArgsScenario;
 
 using Integration;
 using Pure.DI;
 using Xunit;
+using static Lifetime;
 
 // {
-class Program(IMyGenericService<int> myService)
-{
-    public void DoSomething(int value) => myService.DoSomething(value);
-}
+//# using Pure.DI;
+//# using static Pure.DI.Lifetime;
+//# using Pure.DI.Integration;
 // }
 
 public class Scenario
@@ -42,12 +43,12 @@ public class Scenario
     [Fact]
     public void Run()
     {
-// {    
+// {
         DI.Setup(nameof(Composition))
             .Hint(Hint.Resolve, "Off")
             .RootArg<int>("id")
             // Binds to exposed composition roots from other project
-            .Bind().As(Lifetime.Singleton).To<CompositionWithGenericRootsAndArgsInOtherProject>()
+            .Bind().As(Singleton).To<CompositionWithGenericRootsAndArgsInOtherProject>()
             .Root<Program>("GetProgram");
 
         var composition = new Composition();
@@ -56,3 +57,10 @@ public class Scenario
 // }
     }
 }
+
+// {
+partial class Program(IMyGenericService<int> myService)
+{
+    public void DoSomething(int value) => myService.DoSomething(value);
+}
+// }

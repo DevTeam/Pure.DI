@@ -7,22 +7,7 @@
 
 
 ```c#
-interface IDependency<T>
-    where T : IDisposable;
-
-class Dependency<T> : IDependency<T>
-    where T : IDisposable;
-
-interface IService<T, TStruct>
-    where T : IDisposable
-    where TStruct : struct;
-
-class Service<T, TStruct>(IDependency<T> dependency) : IService<T, TStruct>
-    where T : IDisposable
-    where TStruct : struct;
-
-class OtherService<T>(IDependency<T> dependency) : IService<T, bool>
-    where T : IDisposable;
+using Pure.DI;
 
 DI.Setup(nameof(Composition))
     // This hint indicates to not generate methods such as Resolve
@@ -55,48 +40,28 @@ var service = composition.GetMyRoot<Stream, double>();
 
 // someOtherService = new OtherService<BinaryReader>(new Dependency<BinaryReader>());
 var someOtherService = composition.GetOtherService<BinaryReader>();
+
+interface IDependency<T>
+    where T : IDisposable;
+
+class Dependency<T> : IDependency<T>
+    where T : IDisposable;
+
+interface IService<T, TStruct>
+    where T : IDisposable
+    where TStruct : struct;
+
+class Service<T, TStruct>(IDependency<T> dependency) : IService<T, TStruct>
+    where T : IDisposable
+    where TStruct : struct;
+
+class OtherService<T>(IDependency<T> dependency) : IService<T, bool>
+    where T : IDisposable;
 ```
 
 > [!IMPORTANT]
 > The method `Inject()`cannot be used outside of the binding setup.
 
-The following partial class will be generated:
-
-```c#
-partial class Composition
-{
-  private readonly Composition _root;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-  }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public IService<T2, bool> GetOtherService<T2>()
-    where T2: IDisposable
-  {
-    OtherService<T2> transientOtherService0;
-    IDependency<T2> localDependency86 = new Dependency<T2>();
-    transientOtherService0 = new OtherService<T2>(localDependency86);
-    return transientOtherService0;
-  }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public IService<T2, T> GetMyRoot<T2, T>()
-    where T2: IDisposable
-    where T: struct
-  {
-    return new Service<T2, T>(new Dependency<T2>());
-  }
-}
-```
 
 Class diagram:
 

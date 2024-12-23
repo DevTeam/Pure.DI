@@ -18,6 +18,42 @@ using Shouldly;
 using Xunit;
 
 // {
+//# using Pure.DI;
+//# using Shouldly;
+// }
+
+public class Scenario
+{
+    [Fact]
+    public void Run()
+    {
+// {
+        DI.Setup(nameof(Composition))
+            // This hint indicates to not generate methods such as Resolve
+            .Hint(Hint.Resolve, "Off")
+            .RootArg<TT>("depArg")
+            .Bind<IDependency<TT>>().To<Dependency<TT>>()
+            .Bind<IDependency<TTS>>("value type")
+                .As(Lifetime.Singleton)
+                .To<DependencyStruct<TTS>>()
+            .Bind<IService<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>()
+                .To<Service<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>()
+
+            // Composition root
+            .Root<Program<TT>>("GetRoot");
+
+        var composition = new Composition();
+        var program = composition.GetRoot<string>(depArg: "some value");
+        var service = program.Service;
+        service.ShouldBeOfType<Service<string, int, List<string>, Dictionary<string, int>>>();
+        service.Dependency1.ShouldBeOfType<Dependency<string>>();
+        service.Dependency2.ShouldBeOfType<DependencyStruct<int>>();
+// }
+        composition.SaveClassDiagram();
+    }
+}
+
+// {
 interface IDependency<T>;
 
 class Dependency<T>(T value) : IDependency<T>;
@@ -54,34 +90,3 @@ class Program<T>(IService<T, int, List<T>, Dictionary<T, int>> service)
     public IService<T, int, List<T>, Dictionary<T, int>> Service { get; } = service;
 }
 // }
-
-public class Scenario
-{
-    [Fact]
-    public void Run()
-    {
-// {
-        DI.Setup(nameof(Composition))
-            // This hint indicates to not generate methods such as Resolve
-            .Hint(Hint.Resolve, "Off")
-            .RootArg<TT>("depArg")
-            .Bind<IDependency<TT>>().To<Dependency<TT>>()
-            .Bind<IDependency<TTS>>("value type")
-                .As(Lifetime.Singleton)
-                .To<DependencyStruct<TTS>>()
-            .Bind<IService<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>()
-                .To<Service<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>()
-
-            // Composition root
-            .Root<Program<TT>>("GetRoot");
-
-        var composition = new Composition();
-        var program = composition.GetRoot<string>(depArg: "some value");
-        var service = program.Service;
-        service.ShouldBeOfType<Service<string, int, List<string>, Dictionary<string, int>>>();
-        service.Dependency1.ShouldBeOfType<Dependency<string>>();
-        service.Dependency2.ShouldBeOfType<DependencyStruct<int>>();
-// }
-        composition.SaveClassDiagram();
-    }
-}

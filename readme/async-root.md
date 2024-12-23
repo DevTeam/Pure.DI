@@ -4,13 +4,7 @@
 
 
 ```c#
-interface IDependency;
-
-class Dependency : IDependency;
-
-interface IService;
-
-class Service(IDependency dependency) : IService;
+using Pure.DI;
 
 DI.Setup(nameof(Composition))
     .Bind<IDependency>().To<Dependency>()
@@ -27,54 +21,16 @@ var composition = new Composition();
 
 // Resolves composition roots asynchronously
 var service = await composition.GetMyServiceAsync(CancellationToken.None);
+
+interface IDependency;
+
+class Dependency : IDependency;
+
+interface IService;
+
+class Service(IDependency dependency) : IService;
 ```
 
-The following partial class will be generated:
-
-```c#
-partial class Composition
-{
-  private readonly Composition _root;
-
-  [OrdinalAttribute(128)]
-  public Composition()
-  {
-    _root = this;
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-  }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public Task<IService> GetMyServiceAsync(CancellationToken cancellationToken)
-  {
-    TaskFactory<IService> perBlockTaskFactory2;
-    CancellationToken localCancellationToken37 = cancellationToken;
-    TaskCreationOptions transientTaskCreationOptions3 = TaskCreationOptions.None;
-    TaskCreationOptions localTaskCreationOptions38 = transientTaskCreationOptions3;
-    TaskContinuationOptions transientTaskContinuationOptions4 = TaskContinuationOptions.None;
-    TaskContinuationOptions localTaskContinuationOptions39 = transientTaskContinuationOptions4;
-    TaskScheduler transientTaskScheduler5 = TaskScheduler.Default;
-    TaskScheduler localTaskScheduler40 = transientTaskScheduler5;
-    perBlockTaskFactory2 = new TaskFactory<IService>(localCancellationToken37, localTaskCreationOptions38, localTaskContinuationOptions39, localTaskScheduler40);
-    Func<IService> perBlockFunc1 = new Func<IService>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
-    {
-      IService localValue41 = new Service(new Dependency());
-      return localValue41;
-    });
-    Task<IService> transientTask0;
-    // Injects an instance factory
-    Func<IService> localFactory42 = perBlockFunc1;
-    // Injects a task factory creating and scheduling task objects
-    TaskFactory<IService> localTaskFactory43 = perBlockTaskFactory2;
-    // Creates and starts a task using the instance factory
-    transientTask0 = localTaskFactory43.StartNew(localFactory42);
-    return transientTask0;
-  }
-}
-```
 
 Class diagram:
 

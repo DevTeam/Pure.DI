@@ -4,6 +4,20 @@
 
 
 ```c#
+using Pure.DI;
+using Shouldly;
+
+DI.Setup(nameof(Composition))
+    .Bind().As(Lifetime.Singleton).To<Facade>()
+    .Bind().To<Service>()
+
+    // Composition root
+    .Root<IService>("Root");
+
+var composition = new Composition();
+var service = composition.Root;
+service.DoSomething();
+
 interface IDependency<T>
 {
     public void DoSomething();
@@ -31,66 +45,8 @@ class Service(IDependency<int> dep) : IService
 {
     public void DoSomething() => dep.DoSomething();
 }
-
-DI.Setup(nameof(Composition))
-    .Bind().As(Lifetime.Singleton).To<Facade>()
-    .Bind().To<Service>()
-
-    // Composition root
-    .Root<IService>("Root");
-
-var composition = new Composition();
-var service = composition.Root;
-service.DoSomething();
 ```
 
-The following partial class will be generated:
-
-```c#
-partial class Composition
-{
-  private readonly Composition _root;
-  private readonly Lock _lock;
-
-  private Facade? _singletonFacade43;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-    _lock = new Lock();
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = _root._lock;
-  }
-
-  public IService Root
-  {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    get
-    {
-      if (_root._singletonFacade43 is null)
-      {
-        using (_lock.EnterScope())
-        {
-          if (_root._singletonFacade43 is null)
-          {
-            _root._singletonFacade43 = new Facade();
-          }
-        }
-      }
-
-      IDependency<int> transientIDependency1;
-      Facade localInstance_1182D12744 = _root._singletonFacade43;
-      transientIDependency1 = localInstance_1182D12744.GetDependency<int>();
-      return new Service(transientIDependency1);
-    }
-  }
-}
-```
 
 Class diagram:
 

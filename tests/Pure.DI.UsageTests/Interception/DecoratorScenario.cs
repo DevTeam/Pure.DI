@@ -18,21 +18,8 @@ using Shouldly;
 using Xunit;
 
 // {
-interface IService
-{
-    string GetMessage();
-}
-
-class Service : IService
-{
-    public string GetMessage() => "Hello World";
-}
-
-class GreetingService([Tag("base")] IService baseService) : IService
-{
-    public string GetMessage() => $"{baseService.GetMessage()} !!!";
-}
-
+//# using Pure.DI;
+//# using Shouldly;
 // }
 
 public class Scenario
@@ -54,3 +41,20 @@ public class Scenario
         composition.SaveClassDiagram();
     }
 }
+
+// {
+interface IService
+{
+    string GetMessage();
+}
+
+class Service : IService
+{
+    public string GetMessage() => "Hello World";
+}
+
+class GreetingService([Tag("base")] IService baseService) : IService
+{
+    public string GetMessage() => $"{baseService.GetMessage()} !!!";
+}
+// }

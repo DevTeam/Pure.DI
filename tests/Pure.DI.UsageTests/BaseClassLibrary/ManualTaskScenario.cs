@@ -17,38 +17,7 @@ namespace Pure.DI.UsageTests.BCL.ManualTaskScenario;
 using Xunit;
 
 // {
-interface IDependency
-{
-    ValueTask DoSomething(CancellationToken cancellationToken);
-}
-
-class Dependency : IDependency
-{
-    public ValueTask DoSomething(CancellationToken cancellationToken) => ValueTask.CompletedTask;
-}
-
-interface IService
-{
-    Task RunAsync(CancellationToken cancellationToken);
-}
-
-class Service : IService
-{
-    private readonly Task<IDependency> _dependencyTask;
-
-    public Service(Task<IDependency> dependencyTask)
-    {
-        _dependencyTask = dependencyTask;
-        // This is where the task starts
-        _dependencyTask.Start();
-    }
-
-    public async Task RunAsync(CancellationToken cancellationToken)
-    {
-        var dependency = await _dependencyTask;
-        await dependency.DoSomething(cancellationToken);
-    }
-}
+//# using Pure.DI;
 // }
 
 public class Scenario
@@ -87,3 +56,38 @@ public class Scenario
         composition.SaveClassDiagram();
     }
 }
+
+// {
+interface IDependency
+{
+    ValueTask DoSomething(CancellationToken cancellationToken);
+}
+
+class Dependency : IDependency
+{
+    public ValueTask DoSomething(CancellationToken cancellationToken) => ValueTask.CompletedTask;
+}
+
+interface IService
+{
+    Task RunAsync(CancellationToken cancellationToken);
+}
+
+class Service : IService
+{
+    private readonly Task<IDependency> _dependencyTask;
+
+    public Service(Task<IDependency> dependencyTask)
+    {
+        _dependencyTask = dependencyTask;
+        // This is where the task starts
+        _dependencyTask.Start();
+    }
+
+    public async Task RunAsync(CancellationToken cancellationToken)
+    {
+        var dependency = await _dependencyTask;
+        await dependency.DoSomething(cancellationToken);
+    }
+}
+// }

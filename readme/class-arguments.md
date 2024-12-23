@@ -9,6 +9,33 @@ Sometimes you need to pass some state to a composition class to use it when reso
 
 
 ```c#
+using Pure.DI;
+using Shouldly;
+
+DI.Setup(nameof(Composition))
+    .Bind<IDependency>().To<Dependency>()
+    .Bind<IService>().To<Service>()
+
+    // Composition root "MyRoot"
+    .Root<IService>("MyService")
+
+    // Some kind of identifier
+    .Arg<int>("id")
+
+    // An argument can be tagged (e.g., tag "my service name")
+    // to be injectable by type and this tag
+    .Arg<string>("serviceName", "my service name")
+    .Arg<string>("dependencyName");
+
+var composition = new Composition(id: 123, serviceName: "Abc", dependencyName: "Xyz");
+
+// service = new Service("Abc", new Dependency(123, "Xyz"));
+var service = composition.MyService;
+
+service.Name.ShouldBe("Abc");
+service.Dependency.Id.ShouldBe(123);
+service.Dependency.Name.ShouldBe("Xyz");
+
 interface IDependency
 {
     int Id { get; }
@@ -40,70 +67,8 @@ class Service(
 
     public IDependency Dependency { get; } = dependency;
 }
-
-DI.Setup(nameof(Composition))
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>()
-
-    // Composition root "MyRoot"
-    .Root<IService>("MyService")
-
-    // Some kind of identifier
-    .Arg<int>("id")
-
-    // An argument can be tagged (e.g., tag "my service name")
-    // to be injectable by type and this tag
-    .Arg<string>("serviceName", "my service name")
-    .Arg<string>("dependencyName");
-
-var composition = new Composition(id: 123, serviceName: "Abc", dependencyName: "Xyz");
-
-// service = new Service("Abc", new Dependency(123, "Xyz"));
-var service = composition.MyService;
-
-service.Name.ShouldBe("Abc");
-service.Dependency.Id.ShouldBe(123);
-service.Dependency.Name.ShouldBe("Xyz");
 ```
 
-The following partial class will be generated:
-
-```c#
-partial class Composition
-{
-  private readonly Composition _root;
-
-  private readonly int _argId;
-  private readonly string _argServiceName;
-  private readonly string _argDependencyName;
-
-  [OrdinalAttribute(128)]
-  public Composition(int id, string serviceName, string dependencyName)
-  {
-    _argId = id;
-    _argServiceName = serviceName ?? throw new ArgumentNullException(nameof(serviceName));
-    _argDependencyName = dependencyName ?? throw new ArgumentNullException(nameof(dependencyName));
-    _root = this;
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _argId = _root._argId;
-    _argServiceName = _root._argServiceName;
-    _argDependencyName = _root._argDependencyName;
-  }
-
-  public IService MyService
-  {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    get
-    {
-      return new Service(_argServiceName, new Dependency(_argId, _argDependencyName));
-    }
-  }
-}
-```
 
 Class diagram:
 

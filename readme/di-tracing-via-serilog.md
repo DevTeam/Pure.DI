@@ -4,6 +4,15 @@
 
 
 ```c#
+using Pure.DI;
+using Serilog.Core;
+using Serilog.Events;
+using System.Runtime.CompilerServices;
+
+Serilog.ILogger serilogLogger = new Serilog.LoggerConfiguration().CreateLogger();
+var composition = new Composition(logger: serilogLogger);
+var service = composition.Root;
+
 interface IDependency;
 
 class Dependency : IDependency;
@@ -58,68 +67,8 @@ partial class Composition
         return value;
     }
 }
-
-Serilog.ILogger serilogLogger = CreateLogger();
-var composition = new Composition(logger: serilogLogger);
-var service = composition.Root;
 ```
 
-The following partial class will be generated:
-
-```c#
-partial class Composition
-{
-  private readonly Composition _root;
-
-  private readonly Serilog.ILogger _argLogger;
-
-  [OrdinalAttribute(128)]
-  public Composition(Serilog.ILogger logger)
-  {
-    _argLogger = logger ?? throw new ArgumentNullException(nameof(logger));
-    _root = this;
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _argLogger = _root._argLogger;
-  }
-
-  private Serilog.ILogger Log
-  {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    get
-    {
-      Serilog.ILogger transientILogger0;
-      Serilog.ILogger localLogger1 = _argLogger;
-      transientILogger0 = localLogger1.ForContext( new Type[1]{typeof(Composition)}[0]);
-      return transientILogger0;
-    }
-  }
-
-  public IService Root
-  {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    get
-    {
-      Dependency transientDependency2 = new Dependency();
-      OnNewInstance<Dependency>(ref transientDependency2, null, Lifetime.Transient);
-      Serilog.ILogger transientILogger1;
-      Serilog.ILogger localLogger0 = _argLogger;
-      transientILogger1 = localLogger0.ForContext( new Type[1]{typeof(Service)}[0]);
-      Service transientService0 = new Service(transientILogger1, OnDependencyInjection<IDependency>(transientDependency2, null, Lifetime.Transient));
-      OnNewInstance<Service>(ref transientService0, null, Lifetime.Transient);
-      return OnDependencyInjection<IService>(transientService0, null, Lifetime.Transient);
-    }
-  }
-
-
-  partial void OnNewInstance<T>(ref T value, object? tag, Lifetime lifetime);
-
-  private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime);
-}
-```
 
 Class diagram:
 

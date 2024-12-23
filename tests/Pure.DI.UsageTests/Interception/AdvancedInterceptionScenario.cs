@@ -22,6 +22,44 @@ using Shouldly;
 using Xunit;
 
 // {
+//# using System.Collections.Immutable;
+//# using System.Linq.Expressions;
+//# using System.Runtime.CompilerServices;
+//# using Castle.DynamicProxy;
+//# using Pure.DI;
+//# using Shouldly;
+// }
+
+public class Scenario
+{
+    [Fact]
+    public void Run()
+    {
+        // Resolve = Off
+// {
+        // OnDependencyInjection = On
+        DI.Setup(nameof(Composition))
+            .Bind().To<Dependency>()
+            .Bind().To<Service>()
+            .Root<IService>("Root");
+
+        var log = new List<string>();
+        var composition = new Composition(log);
+        var service = composition.Root;
+        service.ServiceRun();
+        service.Dependency.DependencyRun();
+
+        log.ShouldBe(
+            ImmutableArray.Create(
+                "ServiceRun returns Abc",
+                "get_Dependency returns Castle.Proxies.IDependencyProxy",
+                "DependencyRun returns 33"));
+// }
+        composition.SaveClassDiagram();
+    }
+}
+
+// {
 public interface IDependency
 {
     int DependencyRun();
@@ -109,32 +147,3 @@ internal partial class Composition : IInterceptor
     }
 }
 // }
-
-public class Scenario
-{
-    [Fact]
-    public void Run()
-    {
-        // Resolve = Off
-// {
-        // OnDependencyInjection = On
-        DI.Setup(nameof(Composition))
-            .Bind().To<Dependency>()
-            .Bind().To<Service>()
-            .Root<IService>("Root");
-
-        var log = new List<string>();
-        var composition = new Composition(log);
-        var service = composition.Root;
-        service.ServiceRun();
-        service.Dependency.DependencyRun();
-
-        log.ShouldBe(
-            ImmutableArray.Create(
-                "ServiceRun returns Abc",
-                "get_Dependency returns Castle.Proxies.IDependencyProxy",
-                "DependencyRun returns 33"));
-// }
-        composition.SaveClassDiagram();
-    }
-}

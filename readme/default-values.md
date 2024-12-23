@@ -4,6 +4,21 @@
 
 
 ```c#
+using Pure.DI;
+using Shouldly;
+
+DI.Setup(nameof(Composition))
+    .Bind<IDependency>().To<Dependency>()
+    .Bind<IService>().To<Service>()
+
+    // Composition root
+    .Root<IService>("Root");
+
+var composition = new Composition();
+var service = composition.Root;
+service.Dependency.ShouldBeOfType<Dependency>();
+service.Name.ShouldBe("My Service");
+
 interface IDependency;
 
 class Dependency : IDependency;
@@ -23,48 +38,8 @@ class Service(string name = "My Service") : IService
 
     public required IDependency Dependency { get; init; } = new Dependency();
 }
-
-DI.Setup(nameof(Composition))
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>()
-
-    // Composition root
-    .Root<IService>("Root");
-
-var composition = new Composition();
-var service = composition.Root;
-service.Dependency.ShouldBeOfType<Dependency>();
-service.Name.ShouldBe("My Service");
 ```
 
-The following partial class will be generated:
-
-```c#
-partial class Composition
-{
-  private readonly Composition _root;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-  }
-
-  public IService Root
-  {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    get
-    {
-      return new Service() { Dependency = new Dependency() };
-    }
-  }
-}
-```
 
 Class diagram:
 

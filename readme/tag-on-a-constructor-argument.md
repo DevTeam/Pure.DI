@@ -6,8 +6,23 @@ The wildcards ‘*’ and ‘?’ are supported.
 
 
 ```c#
-namespace Pure.DI.UsageTests.Advanced.TagOnConstructorArgScenario;
+using Pure.DI;
+using Shouldly;
 
+DI.Setup(nameof(Composition))
+    .Bind(Tag.OnConstructorArg<Service>("dependency1"))
+        .To<AbcDependency>()
+    .Bind(Tag.OnConstructorArg<Consumer<TT>>("myDep"))
+        .To<XyzDependency>()
+    .Bind<IService>().To<Service>()
+
+    // Specifies to create the composition root named "Root"
+    .Root<IService>("Root");
+
+var composition = new Composition();
+var service = composition.Root;
+service.Dependency1.ShouldBeOfType<AbcDependency>();
+service.Dependency2.ShouldBeOfType<XyzDependency>();
 
 interface IDependency;
 
@@ -36,54 +51,11 @@ class Service(
 
     public IDependency Dependency2 => consumer.Dependency;
 }
-
-DI.Setup(nameof(Composition))
-    .Bind(Tag.OnConstructorArg<Service>("dependency1"))
-        .To<AbcDependency>()
-    .Bind(Tag.OnConstructorArg<Consumer<TT>>("myDep"))
-        .To<XyzDependency>()
-    .Bind<IService>().To<Service>()
-
-    // Specifies to create the composition root named "Root"
-    .Root<IService>("Root");
-
-var composition = new Composition();
-var service = composition.Root;
-service.Dependency1.ShouldBeOfType<AbcDependency>();
-service.Dependency2.ShouldBeOfType<XyzDependency>();
 ```
 
 > [!WARNING]
 > Each potentially injectable argument, property, or field contains an additional tag. This tag can be used to specify what can be injected there. This will only work if the binding type and the tag match. So while this approach can be useful for specifying what to enter, it can be more expensive to maintain and less reliable, so it is recommended to use attributes like `[Tag(...)]` instead.
 
-The following partial class will be generated:
-
-```c#
-partial class Composition
-{
-  private readonly Composition _root;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-  }
-
-  public IService Root
-  {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    get
-    {
-      return new Service(new AbcDependency(), new Consumer<string>(new XyzDependency()));
-    }
-  }
-}
-```
 
 Class diagram:
 

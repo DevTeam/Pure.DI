@@ -19,37 +19,8 @@ using Shouldly;
 using Xunit;
 
 // {
-interface IDependency
-{
-    int Id { get; }
-
-    string Name { get; }
-}
-
-class Dependency(int id, string name) : IDependency
-{
-    public int Id { get; } = id;
-
-    public string Name { get; } = name;
-}
-
-interface IService
-{
-    string Name { get; }
-
-    IDependency Dependency { get; }
-}
-
-class Service(
-    // The tag allows to specify the injection point accurately.
-    // This is useful, for example, when the type is the same.
-    [Tag("my service name")] string name,
-    IDependency dependency) : IService
-{
-    public string Name { get; } = name;
-
-    public IDependency Dependency { get; } = dependency;
-}
+//# using Pure.DI;
+//# using Shouldly;
 // }
 
 public class Scenario
@@ -86,3 +57,37 @@ public class Scenario
         composition.SaveClassDiagram();
     }
 }
+
+// {
+interface IDependency
+{
+    int Id { get; }
+
+    string Name { get; }
+}
+
+class Dependency(int id, string name) : IDependency
+{
+    public int Id { get; } = id;
+
+    public string Name { get; } = name;
+}
+
+interface IService
+{
+    string Name { get; }
+
+    IDependency Dependency { get; }
+}
+
+class Service(
+    // The tag allows to specify the injection point accurately.
+    // This is useful, for example, when the type is the same.
+    [Tag("my service name")] string name,
+    IDependency dependency) : IService
+{
+    public string Name { get; } = name;
+
+    public IDependency Dependency { get; } = dependency;
+}
+// }

@@ -21,10 +21,43 @@ namespace Pure.DI.UsageTests.Hints.OnDependencyInjectionHintScenario;
 
 using Shouldly;
 using Xunit;
-
-// {
 using static Hint;
 
+// {
+//# using Pure.DI;
+//# using static Pure.DI.Hint;
+//# using Shouldly;
+// }
+
+public class Scenario
+{
+    [Fact]
+    public void Run()
+    {
+        // Resolve = Off
+// {
+        // OnDependencyInjection = On
+        DI.Setup(nameof(Composition))
+            .Hint(OnDependencyInjectionContractTypeNameRegularExpression, "(.*IDependency|int)$")
+            .RootArg<int>("id")
+            .Bind().To<Dependency>()
+            .Bind().To<Service>()
+            .Root<IService>("GetRoot");
+
+        var log = new List<string>();
+        var composition = new Composition(log);
+        var service = composition.GetRoot(33);
+
+        log.ShouldBe([
+            "Int32 injected",
+            "Dependency injected"
+        ]);
+// }
+        composition.SaveClassDiagram();
+    }
+}
+
+// {
 interface IDependency;
 
 record Dependency(int Id) : IDependency;
@@ -56,31 +89,3 @@ partial class Composition
     }
 }
 // }
-
-public class Scenario
-{
-    [Fact]
-    public void Run()
-    {
-        // Resolve = Off
-// {
-        // OnDependencyInjection = On
-        DI.Setup(nameof(Composition))
-            .Hint(OnDependencyInjectionContractTypeNameRegularExpression, "(.*IDependency|int)$")
-            .RootArg<int>("id")
-            .Bind().To<Dependency>()
-            .Bind().To<Service>()
-            .Root<IService>("GetRoot");
-
-        var log = new List<string>();
-        var composition = new Composition(log);
-        var service = composition.GetRoot(33);
-
-        log.ShouldBe([
-            "Int32 injected",
-            "Dependency injected"
-        ]);
-// }
-        composition.SaveClassDiagram();
-    }
-}

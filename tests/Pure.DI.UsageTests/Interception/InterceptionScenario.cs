@@ -34,6 +34,34 @@ using Shouldly;
 using Xunit;
 
 // {
+//# using System.Runtime.CompilerServices;
+//# using Castle.DynamicProxy;
+//# using Pure.DI;
+//# using Shouldly;
+// }
+
+public class Scenario
+{
+    [Fact]
+    public void Run()
+    {
+        // Resolve = Off
+// {    
+        // OnDependencyInjection = On
+        // OnDependencyInjectionContractTypeNameRegularExpression = IService
+        DI.Setup(nameof(Composition))
+            .Bind().To<Service>()
+            .Root<IService>("Root");
+
+        var composition = new Composition();
+        var service = composition.Root;
+        service.GetMessage().ShouldBe("Hello World !!!");
+// }
+        composition.SaveClassDiagram();
+    }
+}
+
+// {
 public interface IService
 {
     string GetMessage();
@@ -76,24 +104,3 @@ partial class Composition : IInterceptor
     }
 }
 // }
-
-public class Scenario
-{
-    [Fact]
-    public void Run()
-    {
-        // Resolve = Off
-// {    
-        // OnDependencyInjection = On
-        // OnDependencyInjectionContractTypeNameRegularExpression = IService
-        DI.Setup(nameof(Composition))
-            .Bind().To<Service>()
-            .Root<IService>("Root");
-
-        var composition = new Composition();
-        var service = composition.Root;
-        service.GetMessage().ShouldBe("Hello World !!!");
-// }
-        composition.SaveClassDiagram();
-    }
-}

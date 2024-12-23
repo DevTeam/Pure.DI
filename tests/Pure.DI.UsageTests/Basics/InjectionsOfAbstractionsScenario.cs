@@ -21,26 +21,7 @@ namespace Pure.DI.UsageTests.Basics.InjectionsOfAbstractionsScenario;
 using Xunit;
 
 // {
-interface IDependency;
-
-class Dependency : IDependency;
-
-interface IService
-{
-    void DoSomething();
-}
-
-class Service(IDependency dependency) : IService
-{
-    public void DoSomething()
-    {
-    }
-}
-
-class Program(IService service)
-{
-    public void Run() => service.DoSomething();
-}
+//# using Pure.DI;
 // }
 
 public class Scenario
@@ -69,3 +50,26 @@ public class Scenario
         composition.SaveClassDiagram();
     }
 }
+
+// {
+interface IDependency;
+
+class Dependency : IDependency;
+
+interface IService
+{
+    void DoSomething();
+}
+
+class Service(IDependency dependency) : IService
+{
+    public void DoSomething()
+    {
+    }
+}
+
+partial class Program(IService service)
+{
+    public void Run() => service.DoSomething();
+}
+// }

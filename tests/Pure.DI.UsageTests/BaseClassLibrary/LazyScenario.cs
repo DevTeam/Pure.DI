@@ -14,19 +14,8 @@ using Shouldly;
 using Xunit;
 
 // {
-interface IDependency;
-
-class Dependency : IDependency;
-
-interface IService
-{
-    IDependency Dependency { get; }
-}
-
-class Service(Lazy<IDependency> dependency) : IService
-{
-    public IDependency Dependency => dependency.Value;
-}
+//# using Pure.DI;
+//# using Shouldly;
 // }
 
 public class Scenario
@@ -49,3 +38,19 @@ public class Scenario
         composition.SaveClassDiagram();
     }
 }
+
+// {
+interface IDependency;
+
+class Dependency : IDependency;
+
+interface IService
+{
+    IDependency Dependency { get; }
+}
+
+class Service(Lazy<IDependency> dependency) : IService
+{
+    public IDependency Dependency => dependency.Value;
+}
+// }

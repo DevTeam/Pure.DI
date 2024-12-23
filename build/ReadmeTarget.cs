@@ -119,8 +119,9 @@ internal class ReadmeTarget(
 
     private async Task<IEnumerable<(string GroupName, Dictionary<string, string>[] SampleItems)>> CreateExamplesAsync(CancellationToken cancellationToken)
     {
+        var solutionDir = env.GetPath(PathType.SolutionDirectory);
         var items = new List<Dictionary<string, string>>();
-        var testsDir = Path.Combine(env.GetPath(PathType.SolutionDirectory), "tests", "Pure.DI.UsageTests");
+        var testsDir = Path.Combine(solutionDir, "tests", "Pure.DI.UsageTests");
         var files = Directory.EnumerateFiles(testsDir, "*.cs", SearchOption.AllDirectories);
         foreach (var file in files)
         {
@@ -243,6 +244,7 @@ internal class ReadmeTarget(
 
     private async Task GenerateExamplesAsync(IEnumerable<(string GroupName, Dictionary<string, string>[] SampleItems)> examples, TextWriter readmeWriter, string logsDirectory)
     {
+        var solutionDir = env.GetPath(PathType.SolutionDirectory);
         var generatorPackageVersion = versions.GetNext(new NuGetRestoreSettings("Pure.DI"), Settings.VersionRange, 0).ToString();
         var msPackageVersion = versions.GetNext(new NuGetRestoreSettings("Pure.DI.MS"), Settings.VersionRange, 0).ToString();
         foreach (var readmeFile in Directory.EnumerateFiles(Path.Combine(ReadmeDir), "*.md"))
@@ -267,55 +269,96 @@ internal class ReadmeTarget(
 
         await readmeWriter.WriteLineAsync("## Examples");
         await readmeWriter.WriteLineAsync("");
-        foreach (var (groupName, exampleItems) in examples)
+        
+        var tempDir = Path.Combine(env.GetPath(PathType.TempDirectory));
+        Directory.CreateDirectory(tempDir);
+        try
         {
-            var groupTitle = new string(FormatTitle(groupName).ToArray());
-            Info($"Processing examples group \"{groupTitle}\"");
-            await readmeWriter.WriteLineAsync($"### {groupTitle}");
-            foreach (var vars in exampleItems)
+            new DotNetNew()
+                .WithWorkingDirectory(tempDir)
+                .WithTemplateName("console")
+                .WithName("App")
+                .Run().EnsureSuccess();
+            
+            var appDir = Path.Combine(tempDir, "App");
+            File.Copy(Path.Combine(solutionDir, "tests", "Pure.DI.UsageTests", "Test.props"), Path.Combine(appDir, "Directory.Build.props"));
+            var programFile = Path.Combine(appDir, "Program.cs");
+            foreach (var (groupName, exampleItems) in examples)
             {
-                var description = vars[DescriptionKey];
-                var exampleFile = $"{CreateExampleFileName(description)}.md";
-                await using var examplesWriter = File.CreateText(Path.Combine(ReadmeDir, exampleFile));
-                WriteLine($"  · \"{description}\"", Color.Details);
-                await readmeWriter.WriteLineAsync($"- [{description}]({ReadmeDir}/{exampleFile})");
-                await examplesWriter.WriteLineAsync($"#### {description}");
-                await examplesWriter.WriteLineAsync("");
-                await examplesWriter.WriteLineAsync($"[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../{vars[SourceKey].Replace('\\', '/')})");
-                await examplesWriter.WriteLineAsync("");
-                var header = vars[HeaderKey];
-                if (!string.IsNullOrWhiteSpace(header))
+                var groupTitle = new string(FormatTitle(groupName).ToArray());
+                Info($"Processing examples group \"{groupTitle}\"");
+                await readmeWriter.WriteLineAsync($"### {groupTitle}");
+                foreach (var vars in exampleItems)
                 {
-                    await examplesWriter.WriteLineAsync(header);
+                    var description = vars[DescriptionKey];
+                    var code = vars[BodyKey];
+                    var file = CreateExampleFileName(description);
+                    await File.WriteAllTextAsync(programFile, code);
+                    var result = new DotNetBuild()
+                        .WithProject(Path.Combine(appDir, "App.csproj"))
+                        .WithWorkingDirectory(solutionDir)
+                        .WithProps(("SolutionDir", solutionDir))
+                        .Build();
+                    if (result.ExitCode != 0)
+                    {
+                        WriteLine($"{file}:", Color.Header);
+                        foreach (var line in code.Split([Environment.NewLine], StringSplitOptions.None))
+                        {
+                            WriteLine(line, Color.Details);
+                        }
+
+                        continue;
+                    }
+
+                    var exampleFile = $"{file}.md";
+                    await using var examplesWriter = File.CreateText(Path.Combine(ReadmeDir, exampleFile));
+                    WriteLine(description, Color.Details);
+                    await readmeWriter.WriteLineAsync($"- [{description}]({ReadmeDir}/{exampleFile})");
+                    await examplesWriter.WriteLineAsync($"#### {description}");
                     await examplesWriter.WriteLineAsync("");
-                }
-
-                await examplesWriter.WriteLineAsync("");
-                await examplesWriter.WriteLineAsync("```c#");
-                await examplesWriter.WriteLineAsync(vars[BodyKey]);
-                await examplesWriter.WriteLineAsync("```");
-                await examplesWriter.WriteLineAsync("");
-
-                var footer = vars[FooterKey];
-                if (!string.IsNullOrWhiteSpace(footer))
-                {
-                    await examplesWriter.WriteLineAsync(footer);
+                    await examplesWriter.WriteLineAsync($"[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../{vars[SourceKey].Replace('\\', '/')})");
                     await examplesWriter.WriteLineAsync("");
+                    var header = vars[HeaderKey];
+                    if (!string.IsNullOrWhiteSpace(header))
+                    {
+                        await examplesWriter.WriteLineAsync(header);
+                        await examplesWriter.WriteLineAsync("");
+                    }
+
+                    await examplesWriter.WriteLineAsync("");
+                    await examplesWriter.WriteLineAsync("```c#");
+                    await examplesWriter.WriteLineAsync(code);
+                    await examplesWriter.WriteLineAsync("```");
+                    await examplesWriter.WriteLineAsync("");
+
+                    var footer = vars[FooterKey];
+                    if (!string.IsNullOrWhiteSpace(footer))
+                    {
+                        await examplesWriter.WriteLineAsync(footer);
+                        await examplesWriter.WriteLineAsync("");
+                    }
+
+                    var exampleName = Path.GetFileNameWithoutExtension(vars[SourceKey]);
+
+                    await AddExample(logsDirectory, $"Pure.DI.UsageTests.*.{exampleName}.*.g.cs", examplesWriter);
+                    await examplesWriter.WriteLineAsync("");
+
+                    await AddClassDiagram(logsDirectory, exampleName, examplesWriter);
+                    await examplesWriter.WriteLineAsync("");
+
+                    await examplesWriter.FlushAsync();
                 }
-
-                var exampleName = Path.GetFileNameWithoutExtension(vars[SourceKey]);
-
-                await AddExample(logsDirectory, $"Pure.DI.UsageTests.*.{exampleName}.*.g.cs", examplesWriter);
-                await examplesWriter.WriteLineAsync("");
-
-                await AddClassDiagram(logsDirectory, exampleName, examplesWriter);
-                await examplesWriter.WriteLineAsync("");
-
-                await examplesWriter.FlushAsync();
+            }
+        }
+        finally
+        {
+            if (Directory.Exists(tempDir))
+            {
+                Directory.Delete(tempDir, true);
             }
         }
     }
-
+    
     private static async Task AddClassDiagram(string logsDirectory, string exampleName, TextWriter examplesWriter)
     {
         var classDiagramFile = Path.Combine(logsDirectory, exampleName + ".Mermaid");
@@ -376,12 +419,13 @@ internal class ReadmeTarget(
                         .Replace("Pure.DI.", "")
                         .Replace("Benchmarks.Model.", "")
                         .Replace(salt, "")));
+
             await examplesWriter.WriteLineAsync(generatedCode);
             await examplesWriter.WriteLineAsync("```");
         }
     }
 
-    private static async Task AddBenchmarksAsync(string logsDirectory, TextWriter readmeWriter)
+    private async Task AddBenchmarksAsync(string logsDirectory, TextWriter readmeWriter)
     {
         var benchmarksReportFiles = Directory.EnumerateFiles(logsDirectory, "*.html").ToArray();
         if (benchmarksReportFiles.Length != 0)

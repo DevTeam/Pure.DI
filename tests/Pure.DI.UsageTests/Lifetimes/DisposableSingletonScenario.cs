@@ -13,6 +13,39 @@ $f=A composition class becomes disposable if it creates at least one disposable 
 namespace Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario;
 
 using Xunit;
+using static Lifetime;
+
+// {
+//# using Pure.DI;
+//# using Shouldly;
+//# using static Pure.DI.Lifetime;
+// }
+
+public class Scenario
+{
+    [Fact]
+    public void Run()
+    {
+// {
+        DI.Setup(nameof(Composition))
+            // This hint indicates to not generate methods such as Resolve
+            .Hint(Hint.Resolve, "Off")
+            .Bind().As(Singleton).To<Dependency>()
+            .Bind().To<Service>()
+            .Root<IService>("Root");
+
+        IDependency dependency;
+        using (var composition = new Composition())
+        {
+            var service = composition.Root;
+            dependency = service.Dependency;
+        }
+
+        dependency.IsDisposed.ShouldBeTrue();
+// }
+        new Composition().SaveClassDiagram();
+    }
+}
 
 // {
 interface IDependency
@@ -37,29 +70,3 @@ class Service(IDependency dependency) : IService
     public IDependency Dependency { get; } = dependency;
 }
 // }
-
-public class Scenario
-{
-    [Fact]
-    public void Run()
-    {
-// {
-        DI.Setup(nameof(Composition))
-            // This hint indicates to not generate methods such as Resolve
-            .Hint(Hint.Resolve, "Off")
-            .Bind().As(Lifetime.Singleton).To<Dependency>()
-            .Bind().To<Service>()
-            .Root<IService>("Root");
-
-        IDependency dependency;
-        using (var composition = new Composition())
-        {
-            var service = composition.Root;
-            dependency = service.Dependency;
-        }
-
-        dependency.IsDisposed.ShouldBeTrue();
-// }
-        new Composition().SaveClassDiagram();
-    }
-}

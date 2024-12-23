@@ -9,6 +9,35 @@ Sometimes it is necessary to pass some state to the composition to use it when r
 
 
 ```c#
+using Pure.DI;
+using Shouldly;
+
+DI.Setup(nameof(Composition))
+    // This hint indicates to not generate methods such as Resolve
+    .Hint(Hint.Resolve, "Off")
+    .Bind<IDependency>().To<Dependency>()
+    .Bind<IService>().To<Service>()
+
+    // Some argument
+    .RootArg<int>("id")
+    .RootArg<string>("dependencyName")
+
+    // An argument can be tagged (e.g., tag "forService")
+    // to be injectable by type and this tag
+    .RootArg<string>("serviceName", "forService")
+
+    // Composition root
+    .Root<IService>("CreateServiceWithArgs");
+
+var composition = new Composition();
+
+// service = new Service("Abc", new Dependency(123, "dependency 123"));
+var service = composition.CreateServiceWithArgs(serviceName: "Abc", id: 123, dependencyName: "dependency 123");
+
+service.Name.ShouldBe("Abc");
+service.Dependency.Id.ShouldBe(123);
+service.Dependency.DependencyName.ShouldBe("dependency 123");
+
 interface IDependency
 {
     int Id { get; }
@@ -39,61 +68,10 @@ class Service(
 
     public IDependency Dependency { get; } = dependency;
 }
-
-DI.Setup(nameof(Composition))
-    // This hint indicates to not generate methods such as Resolve
-    .Hint(Hint.Resolve, "Off")
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>()
-
-    // Some argument
-    .RootArg<int>("id")
-    .RootArg<string>("dependencyName")
-
-    // An argument can be tagged (e.g., tag "forService")
-    // to be injectable by type and this tag
-    .RootArg<string>("serviceName", "forService")
-
-    // Composition root
-    .Root<IService>("CreateServiceWithArgs");
-
-var composition = new Composition();
-
-// service = new Service("Abc", new Dependency(123, "dependency 123"));
-var service = composition.CreateServiceWithArgs(serviceName: "Abc", id: 123, dependencyName: "dependency 123");
-
-service.Name.ShouldBe("Abc");
-service.Dependency.Id.ShouldBe(123);
-service.Dependency.DependencyName.ShouldBe("dependency 123");
 ```
 
 When using composition root arguments, compilation warnings are shown if `Resolve` methods are generated, since these methods will not be able to create these roots. You can disable the creation of `Resolve` methods using the `Hint(Hint.Resolve, "Off")` hint, or ignore them but remember the risks of using `Resolve` methods.
 
-The following partial class will be generated:
-
-```c#
-partial class Composition
-{
-  private readonly Composition _root;
-
-  [OrdinalAttribute(128)]
-  public Composition()
-  {
-    _root = this;
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-  }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public IService CreateServiceWithArgs(int id, string dependencyName, string serviceName)
-  {
-    return new Service(serviceName, new Dependency(id, dependencyName));
-  }
-}
-```
 
 Class diagram:
 

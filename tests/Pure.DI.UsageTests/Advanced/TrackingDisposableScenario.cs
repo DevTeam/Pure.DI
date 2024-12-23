@@ -15,6 +15,41 @@ namespace Pure.DI.UsageTests.Advanced.TrackingDisposableScenario;
 using Xunit;
 
 // {
+//# using Pure.DI;
+//# using Shouldly;
+// }
+
+public class Scenario
+{
+    [Fact]
+    public void Run()
+    {
+// {
+        var composition = new Composition();
+        var root1 = composition.Root;
+        var root2 = composition.Root;
+
+        root2.Dispose();
+
+        // Checks that the disposable instances
+        // associated with root1 have been disposed of
+        root2.Value.Dependency.IsDisposed.ShouldBeTrue();
+
+        // Checks that the disposable instances
+        // associated with root2 have not been disposed of
+        root1.Value.Dependency.IsDisposed.ShouldBeFalse();
+
+        root1.Dispose();
+
+        // Checks that the disposable instances
+        // associated with root2 have been disposed of
+        root1.Value.Dependency.IsDisposed.ShouldBeTrue();
+// }
+        new Composition().SaveClassDiagram();
+    }
+}
+
+// {
 interface IDependency
 {
     bool IsDisposed { get; }
@@ -49,33 +84,3 @@ partial class Composition
             .Root<Owned<IService>>("Root");
 }
 // }
-
-public class Scenario
-{
-    [Fact]
-    public void Run()
-    {
-// {
-        var composition = new Composition();
-        var root1 = composition.Root;
-        var root2 = composition.Root;
-
-        root2.Dispose();
-
-        // Checks that the disposable instances
-        // associated with root1 have been disposed of
-        root2.Value.Dependency.IsDisposed.ShouldBeTrue();
-
-        // Checks that the disposable instances
-        // associated with root2 have not been disposed of
-        root1.Value.Dependency.IsDisposed.ShouldBeFalse();
-
-        root1.Dispose();
-
-        // Checks that the disposable instances
-        // associated with root2 have been disposed of
-        root1.Value.Dependency.IsDisposed.ShouldBeTrue();
-// }
-        new Composition().SaveClassDiagram();
-    }
-}

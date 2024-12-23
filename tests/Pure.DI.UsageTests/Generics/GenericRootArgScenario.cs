@@ -18,22 +18,7 @@ namespace Pure.DI.UsageTests.Basics.GenericRootArgScenario;
 using Xunit;
 
 // {
-interface IService<out T>
-{
-    T? Dependency { get; }
-}
-
-class Service<T> : IService<T>
-{
-    // The Ordinal attribute specifies to perform an injection,
-    // the integer value in the argument specifies
-    // the ordinal of injection
-    [Ordinal(0)]
-    public void SetDependency(T dependency) =>
-        Dependency = dependency;
-
-    public T? Dependency { get; private set; }
-}
+//# using Pure.DI;
 // }
 
 public class Scenario
@@ -56,3 +41,22 @@ public class Scenario
         composition.SaveClassDiagram();
     }
 }
+
+// {
+interface IService<out T>
+{
+    T? Dependency { get; }
+}
+
+class Service<T> : IService<T>
+{
+    // The Ordinal attribute specifies to perform an injection,
+    // the integer value in the argument specifies
+    // the ordinal of injection
+    [Ordinal(0)]
+    public void SetDependency(T dependency) =>
+        Dependency = dependency;
+
+    public T? Dependency { get; private set; }
+}
+// }

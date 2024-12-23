@@ -12,6 +12,41 @@ $h=For example, if some lifetime is used more often than others, you can make it
 namespace Pure.DI.UsageTests.Lifetimes.DefaultLifetimeScenario;
 
 using Xunit;
+using static Lifetime;
+
+// {
+//# using Pure.DI;
+//# using Shouldly;
+//# using static Pure.DI.Lifetime;
+// }
+
+public class Scenario
+{
+    [Fact]
+    public void Run()
+    {
+// {
+        DI.Setup(nameof(Composition))
+            // This hint indicates to not generate methods such as Resolve
+            .Hint(Hint.Resolve, "Off")
+            // Default Lifetime applies
+            // to all bindings until the end of the chain
+            // or the next call to the DefaultLifetime method
+            .DefaultLifetime(Singleton)
+            .Bind().To<Dependency>()
+            .Bind().To<Service>()
+            .Root<IService>("Root");
+
+        var composition = new Composition();
+        var service1 = composition.Root;
+        var service2 = composition.Root;
+        service1.ShouldBe(service2);
+        service1.Dependency1.ShouldBe(service1.Dependency2);
+        service1.Dependency1.ShouldBe(service2.Dependency1);
+// }
+        composition.SaveClassDiagram();
+    }
+}
 
 // {
 interface IDependency;
@@ -35,31 +70,3 @@ class Service(
     public IDependency Dependency2 { get; } = dependency2;
 }
 // }
-
-public class Scenario
-{
-    [Fact]
-    public void Run()
-    {
-// {
-        DI.Setup(nameof(Composition))
-            // This hint indicates to not generate methods such as Resolve
-            .Hint(Hint.Resolve, "Off")
-            // Default Lifetime applies
-            // to all bindings until the end of the chain
-            // or the next call to the DefaultLifetime method
-            .DefaultLifetime(Lifetime.Singleton)
-            .Bind().To<Dependency>()
-            .Bind().To<Service>()
-            .Root<IService>("Root");
-
-        var composition = new Composition();
-        var service1 = composition.Root;
-        var service2 = composition.Root;
-        service1.ShouldBe(service2);
-        service1.Dependency1.ShouldBe(service1.Dependency2);
-        service1.Dependency1.ShouldBe(service2.Dependency1);
-// }
-        composition.SaveClassDiagram();
-    }
-}

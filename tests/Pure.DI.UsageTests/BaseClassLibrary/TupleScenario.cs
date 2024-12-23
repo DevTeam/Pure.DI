@@ -18,21 +18,7 @@ namespace Pure.DI.UsageTests.BCL.TupleScenario;
 using Xunit;
 
 // {
-interface IDependency;
-
-class Dependency : IDependency;
-
-readonly record struct Point(int X, int Y);
-
-interface IService
-{
-    IDependency Dependency { get; }
-}
-
-class Service((Point Point, IDependency Dependency) tuple) : IService
-{
-    public IDependency Dependency { get; } = tuple.Dependency;
-}
+//# using Pure.DI;
 // }
 
 public class Scenario
@@ -55,3 +41,21 @@ public class Scenario
         composition.SaveClassDiagram();
     }
 }
+
+// {
+interface IDependency;
+
+class Dependency : IDependency;
+
+readonly record struct Point(int X, int Y);
+
+interface IService
+{
+    IDependency Dependency { get; }
+}
+
+class Service((Point Point, IDependency Dependency) tuple) : IService
+{
+    public IDependency Dependency { get; } = tuple.Dependency;
+}
+// }

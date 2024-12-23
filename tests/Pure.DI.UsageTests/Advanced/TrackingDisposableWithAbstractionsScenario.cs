@@ -25,6 +25,54 @@ using Abstractions;
 using Xunit;
 
 // {
+//# using Pure.DI;
+//# using Pure.DI.Abstractions;
+//# using Shouldly;
+// }
+
+public class Scenario
+{
+    [Fact]
+    public void Run()
+    {
+// {
+        var composition = new Composition();
+        var root1 = composition.Root;
+        var root2 = composition.Root;
+        root1.Dependency.ShouldNotBe(root2.Dependency);
+        root1.SingleDependency.ShouldBe(root2.SingleDependency);
+
+        root2.Dispose();
+
+        // Checks that the disposable instances
+        // associated with root1 have been disposed of
+        root2.Dependency.IsDisposed.ShouldBeTrue();
+
+        // But the singleton is still not disposed of
+        root2.SingleDependency.IsDisposed.ShouldBeFalse();
+
+        // Checks that the disposable instances
+        // associated with root2 have not been disposed of
+        root1.Dependency.IsDisposed.ShouldBeFalse();
+        root1.SingleDependency.IsDisposed.ShouldBeFalse();
+
+        root1.Dispose();
+
+        // Checks that the disposable instances
+        // associated with root2 have been disposed of
+        root1.Dependency.IsDisposed.ShouldBeTrue();
+
+        // But the singleton is still not disposed of
+        root1.SingleDependency.IsDisposed.ShouldBeFalse();
+        
+        composition.Dispose();
+        root1.SingleDependency.IsDisposed.ShouldBeTrue();
+// }
+        new Composition().SaveClassDiagram();
+    }
+}
+
+// {
 interface IDependency
 {
     bool IsDisposed { get; }
@@ -75,45 +123,3 @@ partial class Composition
             .Root<Service>("Root");
 }
 // }
-
-public class Scenario
-{
-    [Fact]
-    public void Run()
-    {
-// {
-        var composition = new Composition();
-        var root1 = composition.Root;
-        var root2 = composition.Root;
-        root1.Dependency.ShouldNotBe(root2.Dependency);
-        root1.SingleDependency.ShouldBe(root2.SingleDependency);
-
-        root2.Dispose();
-
-        // Checks that the disposable instances
-        // associated with root1 have been disposed of
-        root2.Dependency.IsDisposed.ShouldBeTrue();
-
-        // But the singleton is still not disposed of
-        root2.SingleDependency.IsDisposed.ShouldBeFalse();
-
-        // Checks that the disposable instances
-        // associated with root2 have not been disposed of
-        root1.Dependency.IsDisposed.ShouldBeFalse();
-        root1.SingleDependency.IsDisposed.ShouldBeFalse();
-
-        root1.Dispose();
-
-        // Checks that the disposable instances
-        // associated with root2 have been disposed of
-        root1.Dependency.IsDisposed.ShouldBeTrue();
-
-        // But the singleton is still not disposed of
-        root1.SingleDependency.IsDisposed.ShouldBeFalse();
-        
-        composition.Dispose();
-        root1.SingleDependency.IsDisposed.ShouldBeTrue();
-// }
-        new Composition().SaveClassDiagram();
-    }
-}

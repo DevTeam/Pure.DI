@@ -20,10 +20,42 @@ namespace Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario;
 
 using Shouldly;
 using Xunit;
-
-// {
 using static Hint;
 
+// {
+//# using Pure.DI;
+//# using static Pure.DI.Hint;
+//# using Shouldly;
+// }
+
+public class Scenario
+{
+    [Fact]
+    public void Run()
+    {
+        // Resolve = Off
+// {
+        DI.Setup(nameof(Composition))
+            .Hint(OnNewInstance, "On")
+            .Bind().As(Lifetime.Singleton).To<Dependency>()
+            .Bind().To<Service>()
+            .Root<IService>("Root");
+
+        var log = new List<string>();
+        var composition = new Composition(log);
+        var service1 = composition.Root;
+        var service2 = composition.Root;
+
+        log.ShouldBe([
+            "Dependency created",
+            "Service created",
+            "Service created"]);
+// }
+        composition.SaveClassDiagram();
+    }
+}
+
+// {
 interface IDependency;
 
 class Dependency : IDependency
@@ -57,30 +89,3 @@ internal partial class Composition
         _log.Add($"{typeof(T).Name} created");
 }
 // }
-
-public class Scenario
-{
-    [Fact]
-    public void Run()
-    {
-        // Resolve = Off
-// {
-        DI.Setup(nameof(Composition))
-            .Hint(OnNewInstance, "On")
-            .Bind().As(Lifetime.Singleton).To<Dependency>()
-            .Bind().To<Service>()
-            .Root<IService>("Root");
-
-        var log = new List<string>();
-        var composition = new Composition(log);
-        var service1 = composition.Root;
-        var service2 = composition.Root;
-
-        log.ShouldBe([
-            "Dependency created",
-            "Service created",
-            "Service created"]);
-// }
-        composition.SaveClassDiagram();
-    }
-}

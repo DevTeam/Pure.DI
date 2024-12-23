@@ -27,23 +27,12 @@ $f=[![NuGet](https://img.shields.io/nuget/v/Pure.DI)](https://www.nuget.org/pack
 namespace Pure.DI.UsageTests.Attributes.InjectAttributeScenario;
 
 using Xunit;
-
-// {
 using Pure.DI.Abstractions;
 
-interface IPerson;
-
-class Person([Inject("NikName")] string name) : IPerson
-{
-    private object? _state;
-
-    [Inject<int>] internal object Id = "";
-
-    public void Initialize([Inject<Uri>("Person Uri", 1)] object state) =>
-        _state = state;
-
-    public override string ToString() => $"{Id} {name} {_state}";
-}
+// {
+//# using Pure.DI;
+//# using Shouldly;
+//# using Pure.DI.Abstractions;
 // }
 
 public class Scenario
@@ -69,3 +58,19 @@ public class Scenario
         composition.SaveClassDiagram();
     }
 }
+
+// {
+interface IPerson;
+
+class Person([Inject("NikName")] string name) : IPerson
+{
+    private object? _state;
+
+    [Inject<int>] internal object Id = "";
+
+    public void Initialize([Inject<Uri>("Person Uri", 1)] object state) =>
+        _state = state;
+
+    public override string ToString() => $"{Id} {name} {_state}";
+}
+// }

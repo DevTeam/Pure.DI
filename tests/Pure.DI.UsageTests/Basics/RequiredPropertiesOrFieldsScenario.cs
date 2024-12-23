@@ -16,27 +16,8 @@ using Shouldly;
 using Xunit;
 
 // {
-interface IDependency;
-
-class Dependency : IDependency;
-
-interface IService
-{
-    string Name { get; }
-
-    IDependency Dependency { get; }
-}
-
-class Service : IService
-{
-    public required string ServiceNameField;
-
-    public string Name => ServiceNameField;
-
-    // The required property will be injected automatically
-    // without additional effort
-    public required IDependency Dependency { get; init; }
-}
+//# using Pure.DI;
+//# using Shouldly;
 // }
 
 public class Scenario
@@ -62,3 +43,27 @@ public class Scenario
         composition.SaveClassDiagram();
     }
 }
+
+// {
+interface IDependency;
+
+class Dependency : IDependency;
+
+interface IService
+{
+    string Name { get; }
+
+    IDependency Dependency { get; }
+}
+
+class Service : IService
+{
+    public required string ServiceNameField;
+
+    public string Name => ServiceNameField;
+
+    // The required property will be injected automatically
+    // without additional effort
+    public required IDependency Dependency { get; init; }
+}
+// }

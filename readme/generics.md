@@ -10,6 +10,23 @@ For the case of `IDependency<TT>`, `TT` is a _marker_ type, which allows the usu
 
 
 ```c#
+using Pure.DI;
+using Shouldly;
+
+DI.Setup(nameof(Composition))
+    // This hint indicates to not generate methods such as Resolve
+    .Hint(Hint.Resolve, "Off")
+    .Bind<IDependency<TT>>().To<Dependency<TT>>()
+    .Bind<IService>().To<Service>()
+
+    // Composition root
+    .Root<IService>("Root");
+
+var composition = new Composition();
+var service = composition.Root;
+service.IntDependency.ShouldBeOfType<Dependency<int>>();
+service.StringDependency.ShouldBeOfType<Dependency<string>>();
+
 interface IDependency<T>;
 
 class Dependency<T> : IDependency<T>;
@@ -30,20 +47,6 @@ class Service(
 
     public IDependency<string> StringDependency { get; } = stringDependency;
 }
-
-DI.Setup(nameof(Composition))
-    // This hint indicates to not generate methods such as Resolve
-    .Hint(Hint.Resolve, "Off")
-    .Bind<IDependency<TT>>().To<Dependency<TT>>()
-    .Bind<IService>().To<Service>()
-
-    // Composition root
-    .Root<IService>("Root");
-
-var composition = new Composition();
-var service = composition.Root;
-service.IntDependency.ShouldBeOfType<Dependency<int>>();
-service.StringDependency.ShouldBeOfType<Dependency<string>>();
 ```
 
 Actually, the property _Root_ looks like:
@@ -89,34 +92,6 @@ internal interface TTDisposable: IDisposable { }
 internal interface TTEnumerator<out T>: IEnumerator<T> { }
 ```
 
-The following partial class will be generated:
-
-```c#
-partial class Composition
-{
-  private readonly Composition _root;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-  }
-
-  public IService Root
-  {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    get
-    {
-      return new Service(new Dependency<int>(), new Dependency<string>());
-    }
-  }
-}
-```
 
 Class diagram:
 

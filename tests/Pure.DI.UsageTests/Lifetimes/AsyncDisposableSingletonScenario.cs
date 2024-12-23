@@ -12,6 +12,39 @@ $h=If at least one of these objects implements the `IAsyncDisposable` interface,
 namespace Pure.DI.UsageTests.Lifetimes.AsyncDisposableSingletonScenario;
 
 using Xunit;
+using static Lifetime;
+
+// {
+//# using Pure.DI;
+//# using Shouldly;
+//# using static Pure.DI.Lifetime;
+// }
+
+public class Scenario
+{
+    [Fact]
+    public async Task Run()
+    {
+// {
+        DI.Setup(nameof(Composition))
+            // This hint indicates to not generate methods such as Resolve
+            .Hint(Hint.Resolve, "Off")
+            .Bind().As(Singleton).To<Dependency>()
+            .Bind().To<Service>()
+            .Root<IService>("Root");
+
+        IDependency dependency;
+        await using (var composition = new Composition())
+        {
+            var service = composition.Root;
+            dependency = service.Dependency;
+        }
+
+        dependency.IsDisposed.ShouldBeTrue();
+// }
+        new Composition().SaveClassDiagram();
+    }
+}
 
 // {
 interface IDependency
@@ -40,29 +73,3 @@ class Service(IDependency dependency) : IService
     public IDependency Dependency { get; } = dependency;
 }
 // }
-
-public class Scenario
-{
-    [Fact]
-    public async Task Run()
-    {
-// {
-        DI.Setup(nameof(Composition))
-            // This hint indicates to not generate methods such as Resolve
-            .Hint(Hint.Resolve, "Off")
-            .Bind().As(Lifetime.Singleton).To<Dependency>()
-            .Bind().To<Service>()
-            .Root<IService>("Root");
-
-        IDependency dependency;
-        await using (var composition = new Composition())
-        {
-            var service = composition.Root;
-            dependency = service.Dependency;
-        }
-
-        dependency.IsDisposed.ShouldBeTrue();
-// }
-        new Composition().SaveClassDiagram();
-    }
-}

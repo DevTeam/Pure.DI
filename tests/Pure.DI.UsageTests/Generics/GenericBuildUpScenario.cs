@@ -16,36 +16,8 @@ using Shouldly;
 using Xunit;
 
 // {
-interface IDependency<out T>
-    where T: struct
-{
-    string Name { get; }
-
-    T Id { get; }
-}
-
-class Dependency<T> : IDependency<T>
-    where T: struct
-{
-    // The Ordinal attribute specifies to perform an injection and its order
-    [Ordinal(1)]
-    public string Name { get; set; } = "";
-    
-    public T Id { get; private set; }
-
-    // The Ordinal attribute specifies to perform an injection and its order
-    [Ordinal(0)]
-    public void SetId(T id) => Id = id;
-}
-
-interface IService<out T>
-    where T: struct
-{
-    IDependency<T> Dependency { get; }
-}
-
-record Service<T>(IDependency<T> Dependency)
-    : IService<T> where T: struct;
+//# using Pure.DI;
+//# using Shouldly;
 // }
 
 public class Scenario
@@ -77,3 +49,36 @@ public class Scenario
         composition.SaveClassDiagram();
     }
 }
+
+// {
+interface IDependency<out T>
+    where T: struct
+{
+    string Name { get; }
+
+    T Id { get; }
+}
+
+class Dependency<T> : IDependency<T>
+    where T: struct
+{
+    // The Ordinal attribute specifies to perform an injection and its order
+    [Ordinal(1)]
+    public string Name { get; set; } = "";
+    
+    public T Id { get; private set; }
+
+    // The Ordinal attribute specifies to perform an injection and its order
+    [Ordinal(0)]
+    public void SetId(T id) => Id = id;
+}
+
+interface IService<out T>
+    where T: struct
+{
+    IDependency<T> Dependency { get; }
+}
+
+record Service<T>(IDependency<T> Dependency)
+    : IService<T> where T: struct;
+// }

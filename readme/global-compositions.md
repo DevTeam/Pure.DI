@@ -6,10 +6,15 @@ When the `Setup(name, kind)` method is called, the second optional parameter spe
 
 
 ```c#
+using Pure.DI;
+using static Pure.DI.CompositionKind;
+
+return;
+
 class MyGlobalComposition
 {
     static void Setup() =>
-        DI.Setup(kind: CompositionKind.Global)
+        DI.Setup(kind: Global)
             .Hint(Hint.ToString, "Off")
             .Hint(Hint.FormatCode, "Off");
 }
@@ -17,7 +22,7 @@ class MyGlobalComposition
 class MyGlobalComposition2
 {
     static void Setup() =>
-        DI.Setup(kind: CompositionKind.Global)
+        DI.Setup(kind: Global)
             .Hint(Hint.ToString, "On");
 }
 ```

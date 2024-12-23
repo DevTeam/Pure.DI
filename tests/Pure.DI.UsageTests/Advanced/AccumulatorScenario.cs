@@ -17,6 +17,38 @@ namespace Pure.DI.UsageTests.Advanced.AccumulatorScenario;
 
 using Shouldly;
 using Xunit;
+using static Lifetime;
+
+// {
+//# using Pure.DI;
+//# using static Pure.DI.Lifetime;
+//# using Shouldly;
+// }
+
+public class Scenario
+{
+    [Fact]
+    public void Run()
+    {
+// {
+        DI.Setup(nameof(Composition))
+            .Accumulate<IAccumulating, MyAccumulator>(Transient, Singleton)
+            .Bind<IDependency>().As(PerBlock).To<AbcDependency>()
+            .Bind<IDependency>(Tag.Type).To<AbcDependency>()
+            .Bind<IDependency>(Tag.Type).As(Singleton).To<XyzDependency>()
+            .Bind<IService>().To<Service>()
+            .Root<(IService service, MyAccumulator accumulator)>("Root");
+
+        var composition = new Composition();
+        var (service, accumulator) = composition.Root;
+        accumulator.Count.ShouldBe(3);
+        accumulator[0].ShouldBeOfType<XyzDependency>();
+        accumulator[1].ShouldBeOfType<AbcDependency>();
+        accumulator[2].ShouldBeOfType<Service>();
+// }
+        composition.SaveClassDiagram();
+    }
+}
 
 // {
 interface IAccumulating;
@@ -37,29 +69,3 @@ class Service(
     IDependency dependency3)
     : IService, IAccumulating;
 // }
-
-public class Scenario
-{
-    [Fact]
-    public void Run()
-    {
-// {
-        DI.Setup(nameof(Composition))
-            .Accumulate<IAccumulating, MyAccumulator>(Lifetime.Transient, Lifetime.Singleton)
-            .Bind<IDependency>().As(Lifetime.PerBlock).To<AbcDependency>()
-            .Bind<IDependency>(Tag.Type).To<AbcDependency>()
-            .Bind<IDependency>(Tag.Type).As(Lifetime.Singleton).To<XyzDependency>()
-            .Bind<IService>().To<Service>()
-            .Root<(IService service, MyAccumulator accumulator)>("Root");
-
-        var composition = new Composition();
-        var (service, accumulator) = composition.Root;
-        accumulator.Count.ShouldBe(3);
-        accumulator[0].ShouldBeOfType<XyzDependency>();
-        accumulator[1].ShouldBeOfType<AbcDependency>();
-        accumulator[2].ShouldBeOfType<Service>();
-
-// }
-        composition.SaveClassDiagram();
-    }
-}

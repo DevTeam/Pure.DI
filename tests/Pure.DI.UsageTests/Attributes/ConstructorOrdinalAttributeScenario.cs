@@ -19,29 +19,8 @@ using Shouldly;
 using Xunit;
 
 // {
-interface IDependency;
-
-class Dependency : IDependency;
-
-interface IService;
-
-class Service : IService
-{
-    private readonly string _name;
-
-    // The integer value in the argument specifies
-    // the ordinal of injection
-    [Ordinal(1)]
-    public Service(IDependency dependency) =>
-        _name = "with dependency";
-
-    [Ordinal(0)]
-    internal Service(string name) => _name = name;
-
-    public Service() => _name = "default";
-
-    public override string ToString() => _name;
-}
+//# using Pure.DI;
+//# using Shouldly;
 // }
 
 public class Scenario
@@ -66,3 +45,29 @@ public class Scenario
         composition.SaveClassDiagram();
     }
 }
+
+// {
+interface IDependency;
+
+class Dependency : IDependency;
+
+interface IService;
+
+class Service : IService
+{
+    private readonly string _name;
+
+    // The integer value in the argument specifies
+    // the ordinal of injection
+    [Ordinal(1)]
+    public Service(IDependency dependency) =>
+        _name = "with dependency";
+
+    [Ordinal(0)]
+    internal Service(string name) => _name = name;
+
+    public Service() => _name = "default";
+
+    public override string ToString() => _name;
+}
+// }

@@ -19,6 +19,27 @@ using Shouldly;
 using Xunit;
 
 // {
+//# using Pure.DI;
+//# using Shouldly;
+//# using Microsoft.Extensions.DependencyInjection;
+// }
+
+public class Scenario
+{
+    [Fact]
+    public void Run()
+    {
+// {
+        var serviceProvider = new Composition();
+        var service = serviceProvider.GetRequiredService<IService>();
+        var dependency = serviceProvider.GetRequiredService<IDependency>();
+        service.Dependency.ShouldBe(dependency);
+// }
+        serviceProvider.SaveClassDiagram();
+    }
+}
+
+// {
 interface IDependency;
 
 class Dependency : IDependency;
@@ -47,18 +68,3 @@ partial class Composition : IServiceProvider
             .Root<IService>();
 }
 // }
-
-public class Scenario
-{
-    [Fact]
-    public void Run()
-    {
-// {
-        var serviceProvider = new Composition();
-        var service = serviceProvider.GetRequiredService<IService>();
-        var dependency = serviceProvider.GetRequiredService<IDependency>();
-        service.Dependency.ShouldBe(dependency);
-// }
-        serviceProvider.SaveClassDiagram();
-    }
-}

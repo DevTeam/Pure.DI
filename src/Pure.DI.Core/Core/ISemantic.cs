@@ -15,4 +15,6 @@ internal interface ISemantic
     T?[] GetConstantValues<T>(SemanticModel semanticModel, SyntaxNode node);
 
     T? GetConstantValue<T>(SemanticModel semanticModel, SyntaxNode node);
+
+    bool IsValidNamespace(INamespaceSymbol? namespaceSymbol);
 }

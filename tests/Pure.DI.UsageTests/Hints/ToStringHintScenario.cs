@@ -20,15 +20,10 @@ $f=For more hints, see [this](README.md#setup-hints) page.
 namespace Pure.DI.UsageTests.Hints.ToStringHintScenario;
 
 using Xunit;
+using static Hint;
 
 // {
-interface IDependency;
-
-class Dependency : IDependency;
-
-interface IService;
-
-class Service(IDependency dependency) : IService;
+//# using Pure.DI;
 // }
 
 public class Scenario
@@ -50,3 +45,13 @@ public class Scenario
         composition.SaveClassDiagram();
     }
 }
+
+// {
+interface IDependency;
+
+class Dependency : IDependency;
+
+interface IService;
+
+class Service(IDependency dependency) : IService;
+// }

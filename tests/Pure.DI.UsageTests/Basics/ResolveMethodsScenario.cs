@@ -26,15 +26,7 @@ using Shouldly;
 using Xunit;
 
 // {
-interface IDependency;
-
-class Dependency : IDependency;
-
-interface IService;
-
-class Service(IDependency dependency) : IService;
-
-class OtherService : IService;
+//# using Pure.DI;
 // }
 
 [SuppressMessage("Usage", "CA2263:Предпочитать универсальную перегрузку, если тип известен")]
@@ -79,3 +71,15 @@ public class Scenario
         composition.SaveClassDiagram();
     }
 }
+
+// {
+interface IDependency;
+
+class Dependency : IDependency;
+
+interface IService;
+
+class Service(IDependency dependency) : IService;
+
+class OtherService : IService;
+// }

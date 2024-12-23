@@ -18,67 +18,26 @@ public partial class CompositionWithGenericRootsAndArgsInOtherProject
 
 
 ```c#
-class Program(IMyGenericService<int> myService)
-{
-    public void DoSomething(int value) => myService.DoSomething(value);
-}
+using Pure.DI;
+using static Pure.DI.Lifetime;
+using Pure.DI.Integration;
 
 DI.Setup(nameof(Composition))
     .Hint(Hint.Resolve, "Off")
     .RootArg<int>("id")
     // Binds to exposed composition roots from other project
-    .Bind().As(Lifetime.Singleton).To<CompositionWithGenericRootsAndArgsInOtherProject>()
+    .Bind().As(Singleton).To<CompositionWithGenericRootsAndArgsInOtherProject>()
     .Root<Program>("GetProgram");
 
 var composition = new Composition();
 var program = composition.GetProgram(33);
 program.DoSomething(99);
-```
 
-The following partial class will be generated:
-
-```c#
-partial class Composition
+partial class Program(IMyGenericService<int> myService)
 {
-  private readonly Composition _root;
-  private readonly Lock _lock;
-
-  private Integration.CompositionWithGenericRootsAndArgsInOtherProject? _singletonCompositionWithGenericRootsAndArgsInOtherProject44;
-
-  [OrdinalAttribute(128)]
-  public Composition()
-  {
-    _root = this;
-    _lock = new Lock();
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = _root._lock;
-  }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public Program GetProgram(int id)
-  {
-    if (_root._singletonCompositionWithGenericRootsAndArgsInOtherProject44 is null)
-    {
-      using (_lock.EnterScope())
-      {
-        if (_root._singletonCompositionWithGenericRootsAndArgsInOtherProject44 is null)
-        {
-          _root._singletonCompositionWithGenericRootsAndArgsInOtherProject44 = new Integration.CompositionWithGenericRootsAndArgsInOtherProject();
-        }
-      }
-    }
-
-    Integration.IMyGenericService<int> transientIMyGenericService1;
-    int localId3 = id;
-    Integration.CompositionWithGenericRootsAndArgsInOtherProject localInstance_1182D1274 = _root._singletonCompositionWithGenericRootsAndArgsInOtherProject44;
-    transientIMyGenericService1 = localInstance_1182D1274.GetMyService<int>(localId3);
-    return new Program(transientIMyGenericService1);
-  }
+    public void DoSomething(int value) => myService.DoSomething(value);
 }
 ```
+
 
 

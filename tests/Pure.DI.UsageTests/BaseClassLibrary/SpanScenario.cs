@@ -26,17 +26,8 @@ using Shouldly;
 using Xunit;
 
 // {
-struct Dependency;
-
-interface IService
-{
-    int Count { get; }
-}
-
-class Service(ReadOnlySpan<Dependency> dependencies) : IService
-{
-    public int Count { get; } = dependencies.Length;
-}
+//# using Pure.DI;
+//# using Shouldly;
 // }
 
 public class Scenario
@@ -61,3 +52,17 @@ public class Scenario
         composition.SaveClassDiagram();
     }
 }
+
+// {
+struct Dependency;
+
+interface IService
+{
+    int Count { get; }
+}
+
+class Service(ReadOnlySpan<Dependency> dependencies) : IService
+{
+    public int Count { get; } = dependencies.Length;
+}
+// }

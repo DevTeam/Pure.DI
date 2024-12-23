@@ -17,6 +17,33 @@ namespace Pure.DI.UsageTests.Basics.BindAttributeForGenericTypeScenario;
 using Xunit;
 
 // {
+//# using Pure.DI;
+//# using Shouldly;
+// }
+
+public class Scenario
+{
+    [Fact]
+    public void Run()
+    {
+        // Resolve = Off
+// {
+        DI.Setup(nameof(Composition))
+            .Bind().As(Lifetime.Singleton).To<Facade>()
+            .Bind().To<Service>()
+
+            // Composition root
+            .Root<IService>("Root");
+
+        var composition = new Composition();
+        var service = composition.Root;
+        service.DoSomething();
+// }
+        composition.SaveClassDiagram();
+    }
+}
+
+// {
 interface IDependency<T>
 {
     public void DoSomething();
@@ -46,25 +73,4 @@ class Service(IDependency<int> dep) : IService
 }
 // }
 
-public class Scenario
-{
-    [Fact]
-    public void Run()
-    {
-        // Resolve = Off
-// {
-        DI.Setup(nameof(Composition))
-            .Bind().As(Lifetime.Singleton).To<Facade>()
-            .Bind().To<Service>()
-
-            // Composition root
-            .Root<IService>("Root");
-
-        var composition = new Composition();
-        var service = composition.Root;
-        service.DoSomething();
-// }
-        composition.SaveClassDiagram();
-    }
-}
 #pragma warning restore CA1822

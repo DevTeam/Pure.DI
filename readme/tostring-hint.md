@@ -7,13 +7,7 @@ In addition, setup hints can be comments before the _Setup_ method in the form `
 
 
 ```c#
-interface IDependency;
-
-class Dependency : IDependency;
-
-interface IService;
-
-class Service(IDependency dependency) : IService;
+using Pure.DI;
 
 DI.Setup(nameof(Composition))
     .Hint(Hint.ToString, "On")
@@ -23,39 +17,19 @@ DI.Setup(nameof(Composition))
 
 var composition = new Composition();
 string classDiagram = composition.ToString();
+
+interface IDependency;
+
+class Dependency : IDependency;
+
+interface IService;
+
+class Service(IDependency dependency) : IService;
 ```
 
 Developers who start using DI technology often complain that they stop seeing the structure of the application because it is difficult to understand how it is built. To make life easier, you can add the _ToString_ hint by telling the generator to create a `ToString()` method.
 For more hints, see [this](README.md#setup-hints) page.
 
-The following partial class will be generated:
-
-```c#
-partial class Composition
-{
-  private readonly Composition _root;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-  }
-
-  public IService MyService
-  {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    get
-    {
-      return new Service(new Dependency());
-    }
-  }
-}
-```
 
 Class diagram:
 

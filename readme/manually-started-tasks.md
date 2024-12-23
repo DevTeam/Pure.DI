@@ -6,6 +6,35 @@ By default, tasks are started automatically when they are injected. But you can 
 
 
 ```c#
+using Pure.DI;
+
+DI.Setup(nameof(Composition))
+    .Hint(Hint.Resolve, "Off")
+    // Overrides the default binding that performs an auto-start of a task
+    // when it is created. This binding will simply create the task.
+    // The start will be handled by the consumer.
+    .Bind<Task<TT>>().To(ctx =>
+    {
+        ctx.Inject(ctx.Tag, out Func<TT> factory);
+        ctx.Inject(out CancellationToken cancellationToken);
+        return new Task<TT>(factory, cancellationToken);
+    })
+    // Specifies to use CancellationToken from the composition root argument,
+    // if not specified then CancellationToken.None will be used
+    .RootArg<CancellationToken>("cancellationToken")
+    .Bind<IDependency>().To<Dependency>()
+    .Bind<IService>().To<Service>()
+
+    // Composition root
+    .Root<IService>("GetRoot");
+
+var composition = new Composition();
+using var cancellationTokenSource = new CancellationTokenSource();
+
+// Creates a composition root with the CancellationToken passed to it
+var service = composition.GetRoot(cancellationTokenSource.Token);
+await service.RunAsync(cancellationTokenSource.Token);
+
 interface IDependency
 {
     ValueTask DoSomething(CancellationToken cancellationToken);
@@ -38,72 +67,11 @@ class Service : IService
         await dependency.DoSomething(cancellationToken);
     }
 }
-
-DI.Setup(nameof(Composition))
-    .Hint(Hint.Resolve, "Off")
-    // Overrides the default binding that performs an auto-start of a task
-    // when it is created. This binding will simply create the task.
-    // The start will be handled by the consumer.
-    .Bind<Task<TT>>().To(ctx =>
-    {
-        ctx.Inject(ctx.Tag, out Func<TT> factory);
-        ctx.Inject(out CancellationToken cancellationToken);
-        return new Task<TT>(factory, cancellationToken);
-    })
-    // Specifies to use CancellationToken from the composition root argument,
-    // if not specified then CancellationToken.None will be used
-    .RootArg<CancellationToken>("cancellationToken")
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>()
-
-    // Composition root
-    .Root<IService>("GetRoot");
-
-var composition = new Composition();
-using var cancellationTokenSource = new CancellationTokenSource();
-
-// Creates a composition root with the CancellationToken passed to it
-var service = composition.GetRoot(cancellationTokenSource.Token);
-await service.RunAsync(cancellationTokenSource.Token);
 ```
 
 > [!IMPORTANT]
 > The method `Inject()`cannot be used outside of the binding setup.
 
-The following partial class will be generated:
-
-```c#
-partial class Composition
-{
-  private readonly Composition _root;
-
-  [OrdinalAttribute(128)]
-  public Composition()
-  {
-    _root = this;
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-  }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public IService GetRoot(CancellationToken cancellationToken)
-  {
-    Func<IDependency> perBlockFunc2 = new Func<IDependency>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
-    {
-      IDependency localValue60 = new Dependency();
-      return localValue60;
-    });
-    Task<IDependency> transientTask1;
-    Func<IDependency> localFactory61 = perBlockFunc2;
-    CancellationToken localCancellationToken62 = cancellationToken;
-    transientTask1 = new Task<IDependency>(localFactory61, localCancellationToken62);
-    return new Service(transientTask1);
-  }
-}
-```
 
 Class diagram:
 

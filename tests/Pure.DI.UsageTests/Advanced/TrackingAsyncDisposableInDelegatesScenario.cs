@@ -16,6 +16,41 @@ namespace Pure.DI.UsageTests.Advanced.TrackingAsyncDisposableInDelegatesScenario
 using Xunit;
 
 // {
+//# using Pure.DI;
+//# using Shouldly;
+// }
+
+public class Scenario
+{
+    [Fact]
+    public async Task Run()
+    {
+// {
+        var composition = new Composition();
+        var root1 = composition.Root;
+        var root2 = composition.Root;
+
+        await root2.DisposeAsync();
+
+        // Checks that the disposable instances
+        // associated with root1 have been disposed of
+        root2.Dependency.IsDisposed.ShouldBeTrue();
+
+        // Checks that the disposable instances
+        // associated with root2 have not been disposed of
+        root1.Dependency.IsDisposed.ShouldBeFalse();
+
+        await root1.DisposeAsync();
+
+        // Checks that the disposable instances
+        // associated with root2 have been disposed of
+        root1.Dependency.IsDisposed.ShouldBeTrue();
+// }
+        new Composition().SaveClassDiagram();
+    }
+}
+
+// {
 interface IDependency
 {
     bool IsDisposed { get; }
@@ -61,33 +96,3 @@ partial class Composition
             .Root<Service>("Root");
 }
 // }
-
-public class Scenario
-{
-    [Fact]
-    public async Task Run()
-    {
-// {
-        var composition = new Composition();
-        var root1 = composition.Root;
-        var root2 = composition.Root;
-
-        await root2.DisposeAsync();
-
-        // Checks that the disposable instances
-        // associated with root1 have been disposed of
-        root2.Dependency.IsDisposed.ShouldBeTrue();
-
-        // Checks that the disposable instances
-        // associated with root2 have not been disposed of
-        root1.Dependency.IsDisposed.ShouldBeFalse();
-
-        await root1.DisposeAsync();
-
-        // Checks that the disposable instances
-        // associated with root2 have been disposed of
-        root1.Dependency.IsDisposed.ShouldBeTrue();
-// }
-        new Composition().SaveClassDiagram();
-    }
-}

@@ -19,6 +19,32 @@ namespace Pure.DI.UsageTests.Advanced.PartialClassScenario;
 using System.Diagnostics;
 using Shouldly;
 using Xunit;
+using static RootKinds;
+
+// {
+//# using Pure.DI;
+//# using static Pure.DI.RootKinds;
+//# using Shouldly;
+//# using System.Diagnostics;
+// }
+
+public class Scenario
+{
+    [Fact]
+    public void Run()
+    {
+// {
+        var composition = new Composition("Abc");
+        var service = composition.Root;
+
+        service.Dependency1.Id.ShouldBe(1);
+        service.Dependency2.Id.ShouldBe(2);
+        service.Name.ShouldBe("Abc_3");
+// }
+        service.ShouldBeOfType<Service>();
+        composition.SaveClassDiagram();
+    }
+}
 
 // {
 interface IDependency
@@ -66,26 +92,6 @@ public partial class Composition
             .Bind<long>().To(_ => GenerateId())
             .Bind<string>("name with id").To(
                 _ => $"{_serviceName}_{GenerateId()}")
-            .Root<Service>(
-                "Root",
-                kind: RootKinds.Internal);
+            .Root<Service>("Root", kind: Internal);
 }
 // }
-
-public class Scenario
-{
-    [Fact]
-    public void Run()
-    {
-// {
-        var composition = new Composition("Abc");
-        var service = composition.Root;
-
-        service.Dependency1.Id.ShouldBe(1);
-        service.Dependency2.Id.ShouldBe(2);
-        service.Name.ShouldBe("Abc_3");
-// }
-        service.ShouldBeOfType<Service>();
-        composition.SaveClassDiagram();
-    }
-}

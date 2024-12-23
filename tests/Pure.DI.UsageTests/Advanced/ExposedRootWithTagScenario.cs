@@ -21,18 +21,19 @@ $h=```
 // ReSharper disable RedundantAssignment
 // ReSharper disable ArrangeTypeModifiers
 
+// ReSharper disable PartialTypeWithSinglePart
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Advanced.ExposedRootWithTagScenario;
 
 using Integration;
 using Pure.DI;
 using Xunit;
+using static Lifetime;
 
 // {
-class Program([Tag("Some tag")] IMyService myService)
-{
-    public void DoSomething() => myService.DoSomething();
-}
+//# using Pure.DI;
+//# using static Pure.DI.Lifetime;
+//# using Pure.DI.Integration;
 // }
 
 public class Scenario
@@ -40,10 +41,10 @@ public class Scenario
     [Fact]
     public void Run()
     {
-// {    
+// {
         DI.Setup(nameof(Composition))
             // Binds to exposed composition roots from other project
-            .Bind().As(Lifetime.Singleton).To<CompositionWithTagsInOtherProject>()
+            .Bind().As(Singleton).To<CompositionWithTagsInOtherProject>()
             .Root<Program>("Program");
 
         var composition = new Composition();
@@ -52,3 +53,10 @@ public class Scenario
 // }
     }
 }
+
+// {
+partial class Program([Tag("Some tag")] IMyService myService)
+{
+    public void DoSomething() => myService.DoSomething();
+}
+// }

@@ -20,6 +20,28 @@ using Shouldly;
 using Xunit;
 
 // {
+//# using Pure.DI;
+//# using Shouldly;
+// }
+
+public class Scenario
+{
+    [Fact]
+    public void Run()
+    {
+// {
+        Composition.HasRoot(typeof(IService)).ShouldBeTrue();
+        Composition.HasRoot(typeof(IDependency), "MyDepTag").ShouldBeTrue();
+
+        Composition.HasRoot(typeof(IDependency)).ShouldBeFalse();
+        Composition.HasRoot(typeof(IComparable)).ShouldBeFalse();
+
+// }
+        new Composition().SaveClassDiagram();
+    }
+}
+
+// {
 interface IDependency;
 
 class Dependency : IDependency;
@@ -64,20 +86,3 @@ partial class Composition
         Roots.Add((typeof(TContract), tag));
 }
 // }
-
-public class Scenario
-{
-    [Fact]
-    public void Run()
-    {
-// {
-        Composition.HasRoot(typeof(IService)).ShouldBeTrue();
-        Composition.HasRoot(typeof(IDependency), "MyDepTag").ShouldBeTrue();
-
-        Composition.HasRoot(typeof(IDependency)).ShouldBeFalse();
-        Composition.HasRoot(typeof(IComparable)).ShouldBeFalse();
-
-// }
-        new Composition().SaveClassDiagram();
-    }
-}

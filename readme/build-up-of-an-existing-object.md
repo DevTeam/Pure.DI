@@ -6,6 +6,28 @@ In other words, injecting the necessary dependencies via methods, properties, or
 
 
 ```c#
+using Pure.DI;
+using Shouldly;
+
+DI.Setup(nameof(Composition))
+    .RootArg<string>("name")
+    .Bind().To(_ => Guid.NewGuid())
+    .Bind().To(ctx =>
+    {
+        var dependency = new Dependency();
+        ctx.BuildUp(dependency);
+        return dependency;
+    })
+    .Bind().To<Service>()
+
+    // Composition root
+    .Root<IService>("GetMyService");
+
+var composition = new Composition();
+var service = composition.GetMyService("Some name");
+service.Dependency.Name.ShouldBe("Some name");
+service.Dependency.Id.ShouldNotBe(Guid.Empty);
+
 interface IDependency
 {
     string Name { get; }
@@ -32,58 +54,8 @@ interface IService
 }
 
 record Service(IDependency Dependency) : IService;
-
-DI.Setup(nameof(Composition))
-    .RootArg<string>("name")
-    .Bind().To(_ => Guid.NewGuid())
-    .Bind().To(ctx =>
-    {
-        var dependency = new Dependency();
-        ctx.BuildUp(dependency);
-        return dependency;
-    })
-    .Bind().To<Service>()
-
-    // Composition root
-    .Root<IService>("GetMyService");
-
-var composition = new Composition();
-var service = composition.GetMyService("Some name");
-service.Dependency.Name.ShouldBe("Some name");
-service.Dependency.Id.ShouldNotBe(Guid.Empty);
 ```
 
-The following partial class will be generated:
-
-```c#
-partial class Composition
-{
-  private readonly Composition _root;
-
-  [OrdinalAttribute(128)]
-  public Composition()
-  {
-    _root = this;
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-  }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public IService GetMyService(string name)
-  {
-    Guid transientGuid2 = Guid.NewGuid();
-    Dependency transientDependency1;
-    var localDependency47= new Dependency();
-    localDependency47.SetId(transientGuid2);
-    localDependency47.Name = name;
-    transientDependency1 = localDependency47;
-    return new Service(transientDependency1);
-  }
-}
-```
 
 Class diagram:
 

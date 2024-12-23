@@ -19,6 +19,24 @@ using Shouldly;
 using Xunit;
 
 // {
+//# using Pure.DI;
+// }
+
+public class Scenario
+{
+    [Fact]
+    public void Run()
+    {
+// {
+        var composition = new Composition();
+        var service = composition.Root;
+// }
+        service.ShouldBeOfType<Service>();
+        composition.SaveClassDiagram();
+    }
+}
+
+// {
 interface IDependency;
 
 class Dependency : IDependency;
@@ -51,17 +69,3 @@ partial class Composition
             .Root<IService>("Root");
 }
 // }
-
-public class Scenario
-{
-    [Fact]
-    public void Run()
-    {
-// {
-        var composition = new Composition();
-        var service = composition.Root;
-// }
-        service.ShouldBeOfType<Service>();
-        composition.SaveClassDiagram();
-    }
-}

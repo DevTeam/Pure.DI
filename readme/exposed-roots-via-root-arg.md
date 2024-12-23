@@ -16,10 +16,8 @@ public partial class CompositionInOtherProject
 
 
 ```c#
-class Program(IMyService myService)
-{
-    public void DoSomething() => myService.DoSomething();
-}
+using Pure.DI;
+using Pure.DI.Integration;
 
 DI.Setup(nameof(Composition))
     .Hint(Hint.Resolve, "Off")
@@ -31,35 +29,12 @@ var baseComposition = new CompositionInOtherProject();
 var composition = new Composition();
 var program = composition.GetProgram(baseComposition);
 program.DoSomething();
-```
 
-The following partial class will be generated:
-
-```c#
-partial class Composition
+partial class Program(IMyService myService)
 {
-  private readonly Composition _root;
-
-  [OrdinalAttribute(128)]
-  public Composition()
-  {
-    _root = this;
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-  }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public Program GetProgram(Integration.CompositionInOtherProject baseComposition)
-  {
-    Integration.IMyService transientIMyService1;
-    Integration.CompositionInOtherProject localInstance_1182D1277 = baseComposition;
-    transientIMyService1 = localInstance_1182D1277.MyService;
-    return new Program(transientIMyService1);
-  }
+    public void DoSomething() => myService.DoSomething();
 }
 ```
+
 
 

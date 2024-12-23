@@ -7,15 +7,8 @@ In addition, setup hints can be comments before the _Setup_ method in the form `
 
 
 ```c#
-using static Hint;
-
-interface IDependency;
-
-class Dependency : IDependency;
-
-interface IService;
-
-class Service(Func<IDependency> dependencyFactory) : IService;
+using Pure.DI;
+using static Pure.DI.Hint;
 
 DI.Setup(nameof(Composition))
     .Hint(ThreadSafe, "Off")
@@ -25,50 +18,18 @@ DI.Setup(nameof(Composition))
 
 var composition = new Composition();
 var service = composition.Root;
+
+interface IDependency;
+
+class Dependency : IDependency;
+
+interface IService;
+
+class Service(Func<IDependency> dependencyFactory) : IService;
 ```
 
 For more hints, see [this](README.md#setup-hints) page.
 
-The following partial class will be generated:
-
-```c#
-partial class Composition
-{
-  private readonly Composition _root;
-
-  private Service? _singletonService44;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-  }
-
-  public IService Root
-  {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    get
-    {
-      if (_root._singletonService44 is null)
-      {
-        Func<IDependency> perBlockFunc0 = new Func<IDependency>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
-        {
-          IDependency localValue88 = new Dependency();
-          return localValue88;
-        });
-        _root._singletonService44 = new Service(perBlockFunc0);
-      }
-
-      return _root._singletonService44;
-    }
-  }
-}
-```
 
 Class diagram:
 

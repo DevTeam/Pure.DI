@@ -16,22 +16,9 @@ using Shouldly;
 using Xunit;
 
 // {
-interface IDependency;
-
-class AbcDependency : IDependency;
-
-class XyzDependency : IDependency;
-
-interface IService
-{
-    ImmutableArray<IDependency> Dependencies { get; }
-}
-
-class Service(IEnumerable<IDependency> dependencies) : IService
-{
-    public ImmutableArray<IDependency> Dependencies { get; }
-        = [..dependencies];
-}
+//# using Pure.DI;
+//# using Shouldly;
+//# using System.Collections.Immutable;
 // }
 
 public class Scenario
@@ -57,3 +44,22 @@ public class Scenario
         composition.SaveClassDiagram();
     }
 }
+
+// {
+interface IDependency;
+
+class AbcDependency : IDependency;
+
+class XyzDependency : IDependency;
+
+interface IService
+{
+    ImmutableArray<IDependency> Dependencies { get; }
+}
+
+class Service(IEnumerable<IDependency> dependencies) : IService
+{
+    public ImmutableArray<IDependency> Dependencies { get; }
+        = [..dependencies];
+}
+// }

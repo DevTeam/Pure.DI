@@ -6,6 +6,23 @@ The _Transient_ lifetime specifies to create a new dependency instance each time
 
 
 ```c#
+using Pure.DI;
+using Shouldly;
+using static Pure.DI.Lifetime;
+
+DI.Setup(nameof(Composition))
+    // This hint indicates to not generate methods such as Resolve
+    .Hint(Hint.Resolve, "Off")
+    .Bind().As(Transient).To<Dependency>()
+    .Bind().To<Service>()
+    .Root<IService>("Root");
+
+var composition = new Composition();
+var service1 = composition.Root;
+var service2 = composition.Root;
+service1.Dependency1.ShouldNotBe(service1.Dependency2);
+service2.Dependency1.ShouldNotBe(service1.Dependency1);
+
 interface IDependency;
 
 class Dependency : IDependency;
@@ -26,19 +43,6 @@ class Service(
 
     public IDependency Dependency2 { get; } = dependency2;
 }
-
-DI.Setup(nameof(Composition))
-    // This hint indicates to not generate methods such as Resolve
-    .Hint(Hint.Resolve, "Off")
-    .Bind().As(Lifetime.Transient).To<Dependency>()
-    .Bind().To<Service>()
-    .Root<IService>("Root");
-
-var composition = new Composition();
-var service1 = composition.Root;
-var service2 = composition.Root;
-service1.Dependency1.ShouldNotBe(service1.Dependency2);
-service2.Dependency1.ShouldNotBe(service1.Dependency1);
 ```
 
 The _Transient_ lifetime is the safest and is used by default. Yes, its widespread use can cause a lot of memory traffic, but if there are doubts about thread safety, the _Transient_ lifetime is preferable because each consumer has its own instance of the dependency. The following nuances should be considered when choosing the _Transient_ lifetime:
@@ -52,34 +56,6 @@ The _Transient_ lifetime is the safest and is used by default. Yes, its widespre
 > [!IMPORTANT]
 > The following very important rule, in my opinion, will help in the last point. Now, when a constructor is used to implement dependencies, it should not be loaded with other tasks. Accordingly, constructors should be free of all logic except for checking arguments and saving them for later use. Following this rule, even the largest compositions of objects will be built quickly.
 
-The following partial class will be generated:
-
-```c#
-partial class Composition
-{
-  private readonly Composition _root;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-  }
-
-  public IService Root
-  {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    get
-    {
-      return new Service(new Dependency(), new Dependency());
-    }
-  }
-}
-```
 
 Class diagram:
 

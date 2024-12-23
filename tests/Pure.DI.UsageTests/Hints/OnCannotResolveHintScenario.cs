@@ -15,46 +15,16 @@ $f=For more hints, see [this](README.md#setup-hints) page.
 // ReSharper disable ArrangeTypeModifiers
 
 namespace Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario;
+#pragma warning disable CA1822
 
-using System.Diagnostics.CodeAnalysis;
 using Shouldly;
 using Xunit;
-
-// {
 using static Hint;
 
-interface IDependency;
-
-class Dependency(string name) : IDependency
-{
-    public override string ToString() => name;
-}
-
-interface IService
-{
-    IDependency Dependency { get; }
-}
-
-class Service(IDependency dependency) : IService
-{
-    public IDependency Dependency { get; } = dependency;
-}
-
-partial class Composition
-{
-    [SuppressMessage("Performance", "CA1822:Mark members as static")]
-    private partial T OnCannotResolve<T>(
-        object? tag,
-        Lifetime lifetime)
-    {
-        if (typeof(T) == typeof(string))
-        {
-            return (T)(object)"My name";
-        }
-
-        throw new InvalidOperationException("Cannot resolve.");
-    }
-}
+// {
+//# using Pure.DI;
+//# using static Pure.DI.Hint;
+//# using Shouldly;
 // }
 
 public class Scenario
@@ -79,3 +49,37 @@ public class Scenario
         composition.SaveClassDiagram();
     }
 }
+
+// {
+interface IDependency;
+
+class Dependency(string name) : IDependency
+{
+    public override string ToString() => name;
+}
+
+interface IService
+{
+    IDependency Dependency { get; }
+}
+
+class Service(IDependency dependency) : IService
+{
+    public IDependency Dependency { get; } = dependency;
+}
+
+partial class Composition
+{
+    private partial T OnCannotResolve<T>(
+        object? tag,
+        Lifetime lifetime)
+    {
+        if (typeof(T) == typeof(string))
+        {
+            return (T)(object)"My name";
+        }
+
+        throw new InvalidOperationException("Cannot resolve.");
+    }
+}
+// }

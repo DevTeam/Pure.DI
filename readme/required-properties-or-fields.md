@@ -6,6 +6,22 @@ All properties or fields marked with the _required_ keyword automatically become
 
 
 ```c#
+using Pure.DI;
+using Shouldly;
+
+DI.Setup(nameof(Composition))
+    .Arg<string>("name")
+    .Bind<IDependency>().To<Dependency>()
+    .Bind<IService>().To<Service>()
+
+    // Composition root
+    .Root<IService>("Root");
+
+var composition = new Composition(name: "My Service");
+var service = composition.Root;
+service.Dependency.ShouldBeOfType<Dependency>();
+service.Name.ShouldBe("My Service");
+
 interface IDependency;
 
 class Dependency : IDependency;
@@ -27,53 +43,8 @@ class Service : IService
     // without additional effort
     public required IDependency Dependency { get; init; }
 }
-
-DI.Setup(nameof(Composition))
-    .Arg<string>("name")
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>()
-
-    // Composition root
-    .Root<IService>("Root");
-
-var composition = new Composition(name: "My Service");
-var service = composition.Root;
-service.Dependency.ShouldBeOfType<Dependency>();
-service.Name.ShouldBe("My Service");
 ```
 
-The following partial class will be generated:
-
-```c#
-partial class Composition
-{
-  private readonly Composition _root;
-
-  private readonly string _argName;
-
-  [OrdinalAttribute(128)]
-  public Composition(string name)
-  {
-    _argName = name ?? throw new ArgumentNullException(nameof(name));
-    _root = this;
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _argName = _root._argName;
-  }
-
-  public IService Root
-  {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    get
-    {
-      return new Service() { ServiceNameField = _argName, Dependency = new Dependency() };
-    }
-  }
-}
-```
 
 Class diagram:
 

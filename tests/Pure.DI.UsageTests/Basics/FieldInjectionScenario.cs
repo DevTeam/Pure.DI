@@ -16,24 +16,8 @@ using Shouldly;
 using Xunit;
 
 // {
-interface IDependency;
-
-class Dependency : IDependency;
-
-interface IService
-{
-    IDependency? Dependency { get; }
-}
-
-class Service : IService
-{
-    // The Ordinal attribute specifies to perform an injection,
-    // the integer value in the argument specifies
-    // the ordinal of injection
-    [Ordinal(0)] internal IDependency? DependencyVal;
-
-    public IDependency? Dependency => DependencyVal;
-}
+//# using Pure.DI;
+//# using Shouldly;
 // }
 
 public class Scenario
@@ -57,3 +41,24 @@ public class Scenario
         composition.SaveClassDiagram();
     }
 }
+
+// {
+interface IDependency;
+
+class Dependency : IDependency;
+
+interface IService
+{
+    IDependency? Dependency { get; }
+}
+
+class Service : IService
+{
+    // The Ordinal attribute specifies to perform an injection,
+    // the integer value in the argument specifies
+    // the ordinal of injection
+    [Ordinal(0)] internal IDependency? DependencyVal;
+
+    public IDependency? Dependency => DependencyVal;
+}
+// }

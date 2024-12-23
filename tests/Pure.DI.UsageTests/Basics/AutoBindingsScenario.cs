@@ -21,9 +21,7 @@ namespace Pure.DI.UsageTests.Basics.AutoBindingsScenario;
 using Xunit;
 
 // {
-class Dependency;
-
-class Service(Dependency dependency);
+//# using Pure.DI;
 // }
 
 public class Scenario
@@ -46,3 +44,9 @@ public class Scenario
         composition.SaveClassDiagram();
     }
 }
+
+// {
+class Dependency;
+
+class Service(Dependency dependency);
+// }

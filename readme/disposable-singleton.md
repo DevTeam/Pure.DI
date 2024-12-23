@@ -6,6 +6,26 @@ To dispose all created singleton instances, simply dispose the composition insta
 
 
 ```c#
+using Pure.DI;
+using Shouldly;
+using static Pure.DI.Lifetime;
+
+DI.Setup(nameof(Composition))
+    // This hint indicates to not generate methods such as Resolve
+    .Hint(Hint.Resolve, "Off")
+    .Bind().As(Singleton).To<Dependency>()
+    .Bind().To<Service>()
+    .Root<IService>("Root");
+
+IDependency dependency;
+using (var composition = new Composition())
+{
+    var service = composition.Root;
+    dependency = service.Dependency;
+}
+
+dependency.IsDisposed.ShouldBeTrue();
+
 interface IDependency
 {
     bool IsDisposed { get; }
@@ -27,108 +47,10 @@ class Service(IDependency dependency) : IService
 {
     public IDependency Dependency { get; } = dependency;
 }
-
-DI.Setup(nameof(Composition))
-    // This hint indicates to not generate methods such as Resolve
-    .Hint(Hint.Resolve, "Off")
-    .Bind().As(Lifetime.Singleton).To<Dependency>()
-    .Bind().To<Service>()
-    .Root<IService>("Root");
-
-IDependency dependency;
-using (var composition = new Composition())
-{
-    var service = composition.Root;
-    dependency = service.Dependency;
-}
-
-dependency.IsDisposed.ShouldBeTrue();
 ```
 
 A composition class becomes disposable if it creates at least one disposable singleton instance.
 
-The following partial class will be generated:
-
-```c#
-partial class Composition: IDisposable
-{
-  private readonly Composition _root;
-  private readonly Lock _lock;
-  private object[] _disposables;
-  private int _disposeIndex;
-
-  private Dependency? _singletonDependency43;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-    _lock = new Lock();
-    _disposables = new object[1];
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = _root._lock;
-    _disposables = parentScope._disposables;
-  }
-
-  public IService Root
-  {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    get
-    {
-      if (_root._singletonDependency43 is null)
-      {
-        using (_lock.EnterScope())
-        {
-          if (_root._singletonDependency43 is null)
-          {
-            _root._singletonDependency43 = new Dependency();
-            _root._disposables[_root._disposeIndex++] = _root._singletonDependency43;
-          }
-        }
-      }
-
-      return new Service(_root._singletonDependency43);
-    }
-  }
-
-  public void Dispose()
-  {
-    int disposeIndex;
-    object[] disposables;
-    using (_lock.EnterScope())
-    {
-      disposeIndex = _disposeIndex;
-      _disposeIndex = 0;
-      disposables = _disposables;
-      _disposables = new object[1];
-      _singletonDependency43 = null;
-    }
-
-    while (disposeIndex-- > 0)
-    {
-      switch (disposables[disposeIndex])
-      {
-        case IDisposable disposableInstance:
-          try
-          {
-            disposableInstance.Dispose();
-          }
-          catch (Exception exception)
-          {
-            OnDisposeException(disposableInstance, exception);
-          }
-          break;
-      }
-    }
-  }
-
-  partial void OnDisposeException<T>(T disposableInstance, Exception exception) where T : IDisposable;
-}
-```
 
 Class diagram:
 

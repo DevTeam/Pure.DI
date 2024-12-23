@@ -21,38 +21,8 @@ using Shouldly;
 using Xunit;
 
 // {
-interface IDependency
-{
-    DateTimeOffset Time { get; }
-
-    bool IsInitialized { get; }
-}
-
-class Dependency(DateTimeOffset time) : IDependency
-{
-    public DateTimeOffset Time { get; } = time;
-
-    public bool IsInitialized { get; private set; }
-
-    public void Initialize() => IsInitialized = true;
-}
-
-class FakeDependency : IDependency
-{
-    public DateTimeOffset Time => DateTimeOffset.MinValue;
-
-    public bool IsInitialized => true;
-}
-
-interface IService
-{
-    IDependency Dependency { get; }
-}
-
-class Service(IDependency dependency) : IService
-{
-    public IDependency Dependency { get; } = dependency;
-}
+//# using Pure.DI;
+//# using Shouldly;
 // }
 
 public class Scenario
@@ -102,3 +72,38 @@ public class Scenario
         composition.SaveClassDiagram();
     }
 }
+
+// {
+interface IDependency
+{
+    DateTimeOffset Time { get; }
+
+    bool IsInitialized { get; }
+}
+
+class Dependency(DateTimeOffset time) : IDependency
+{
+    public DateTimeOffset Time { get; } = time;
+
+    public bool IsInitialized { get; private set; }
+
+    public void Initialize() => IsInitialized = true;
+}
+
+class FakeDependency : IDependency
+{
+    public DateTimeOffset Time => DateTimeOffset.MinValue;
+
+    public bool IsInitialized => true;
+}
+
+interface IService
+{
+    IDependency Dependency { get; }
+}
+
+class Service(IDependency dependency) : IService
+{
+    public IDependency Dependency { get; } = dependency;
+}
+// }

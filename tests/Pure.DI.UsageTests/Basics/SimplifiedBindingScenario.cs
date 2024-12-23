@@ -55,6 +55,40 @@ using System.Collections;
 using Xunit;
 
 // {
+//# using System.Collections;
+//# using Pure.DI;
+// }
+
+public class Scenario
+{
+    [Fact]
+    public void Run()
+    {
+        // Resolve = Off
+// {        
+        // Specifies to create a partial class "Composition"
+        DI.Setup(nameof(Composition))
+            // Begins the binding definition for the implementation type itself,
+            // and if the implementation is not an abstract class or structure,
+            // for all abstract but NOT special types that are directly implemented.
+            // So that's the equivalent of the following:
+            // .Bind<IDependency, IOtherDependency, Dependency>()
+            //   .As(Lifetime.PerBlock)
+            //   .To<Dependency>()
+            .Bind().As(Lifetime.PerBlock).To<Dependency>()
+            .Bind().To<Service>()
+
+            // Specifies to create a property "MyService"
+            .Root<IService>("MyService");
+
+        var composition = new Composition();
+        var service = composition.MyService;
+// }
+        composition.SaveClassDiagram();
+    }
+}
+
+// {
 interface IDependencyBase;
 
 class DependencyBase : IDependencyBase;
@@ -86,32 +120,3 @@ class Service(
     IOtherDependency otherDependency)
     : IService;
 // }
-
-public class Scenario
-{
-    [Fact]
-    public void Run()
-    {
-        // Resolve = Off
-// {        
-        // Specifies to create a partial class "Composition"
-        DI.Setup(nameof(Composition))
-            // Begins the binding definition for the implementation type itself,
-            // and if the implementation is not an abstract class or structure,
-            // for all abstract but NOT special types that are directly implemented.
-            // So that's the equivalent of the following:
-            // .Bind<IDependency, IOtherDependency, Dependency>()
-            //   .As(Lifetime.PerBlock)
-            //   .To<Dependency>()
-            .Bind().As(Lifetime.PerBlock).To<Dependency>()
-            .Bind().To<Service>()
-
-            // Specifies to create a property "MyService"
-            .Root<IService>("MyService");
-
-        var composition = new Composition();
-        var service = composition.MyService;
-// }
-        composition.SaveClassDiagram();
-    }
-}

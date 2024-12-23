@@ -21,6 +21,53 @@ using Shouldly;
 using Xunit;
 
 // {
+//# using Pure.DI;
+//# using Shouldly;
+//# using System.Collections.Immutable;
+// }
+
+public class Scenario
+{
+    [Fact]
+    public void Run()
+    {
+        // FormatCode = On
+// {    
+        DI.Setup(nameof(Composition))
+            .Bind<IClock>().As(Lifetime.Singleton).To<Clock>()
+            // Binds a dependency of type int
+            // to the source code statement "dependencyId"
+            .Bind<int>().To<int>("dependencyId")
+            // Binds a dependency of type int with tag "sub"
+            // to the source code statement "subId"
+            .Bind<int>("sub").To<int>("subId")
+            .Bind<Func<int, int, IDependency>>()
+            .To<Func<int, int, IDependency>>(ctx =>
+                (dependencyId, subId) =>
+                {
+                    // Builds up an instance of type Dependency
+                    // referring source code statements "dependencyId"
+                    // and source code statements "subId"
+                    ctx.Inject<Dependency>(out var dependency);
+                    return dependency;
+                })
+            .Bind<IService>().To<Service>()
+
+            // Composition root
+            .Root<IService>("Root");
+
+        var composition = new Composition();
+        var service = composition.Root;
+        service.Dependencies.Length.ShouldBe(3);
+        service.Dependencies[0].Id.ShouldBe(0);
+        service.Dependencies[1].Id.ShouldBe(1);
+        service.Dependencies[2].Id.ShouldBe(2);
+// }
+        composition.SaveClassDiagram();
+    }
+}
+
+// {
 interface IClock
 {
     DateTimeOffset Now { get; }
@@ -64,44 +111,3 @@ class Service(Func<int, int, IDependency> dependencyFactory): IService
     ];
 }
 // }
-
-public class Scenario
-{
-    [Fact]
-    public void Run()
-    {
-        // FormatCode = On
-// {    
-        DI.Setup(nameof(Composition))
-            .Bind<IClock>().As(Lifetime.Singleton).To<Clock>()
-            // Binds a dependency of type int
-            // to the source code statement "dependencyId"
-            .Bind<int>().To<int>("dependencyId")
-            // Binds a dependency of type int with tag "sub"
-            // to the source code statement "subId"
-            .Bind<int>("sub").To<int>("subId")
-            .Bind<Func<int, int, IDependency>>()
-            .To<Func<int, int, IDependency>>(ctx =>
-                (dependencyId, subId) =>
-                {
-                    // Builds up an instance of type Dependency
-                    // referring source code statements "dependencyId"
-                    // and source code statements "subId"
-                    ctx.Inject<Dependency>(out var dependency);
-                    return dependency;
-                })
-            .Bind<IService>().To<Service>()
-
-            // Composition root
-            .Root<IService>("Root");
-
-        var composition = new Composition();
-        var service = composition.Root;
-        service.Dependencies.Length.ShouldBe(3);
-        service.Dependencies[0].Id.ShouldBe(0);
-        service.Dependencies[1].Id.ShouldBe(1);
-        service.Dependencies[2].Id.ShouldBe(2);
-// }
-        composition.SaveClassDiagram();
-    }
-}

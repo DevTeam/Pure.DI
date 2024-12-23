@@ -6,6 +6,20 @@ To use dependency injection for a field, make sure the field is writable and sim
 
 
 ```c#
+using Pure.DI;
+using Shouldly;
+
+DI.Setup(nameof(Composition))
+    .Bind<IDependency>().To<Dependency>()
+    .Bind<IService>().To<Service>()
+
+    // Composition root
+    .Root<IService>("MyService");
+
+var composition = new Composition();
+var service = composition.MyService;
+service.Dependency.ShouldBeOfType<Dependency>();
+
 interface IDependency;
 
 class Dependency : IDependency;
@@ -24,49 +38,8 @@ class Service : IService
 
     public IDependency? Dependency => DependencyVal;
 }
-
-DI.Setup(nameof(Composition))
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>()
-
-    // Composition root
-    .Root<IService>("MyService");
-
-var composition = new Composition();
-var service = composition.MyService;
-service.Dependency.ShouldBeOfType<Dependency>();
 ```
 
-The following partial class will be generated:
-
-```c#
-partial class Composition
-{
-  private readonly Composition _root;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-  }
-
-  public IService MyService
-  {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    get
-    {
-      Service transientService0 = new Service();
-      transientService0.DependencyVal = new Dependency();
-      return transientService0;
-    }
-  }
-}
-```
 
 Class diagram:
 

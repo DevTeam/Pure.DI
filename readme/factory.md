@@ -7,38 +7,8 @@ At the compilation stage, the set of dependencies that an object needs in order 
 
 
 ```c#
-interface IDependency
-{
-    DateTimeOffset Time { get; }
-
-    bool IsInitialized { get; }
-}
-
-class Dependency(DateTimeOffset time) : IDependency
-{
-    public DateTimeOffset Time { get; } = time;
-
-    public bool IsInitialized { get; private set; }
-
-    public void Initialize() => IsInitialized = true;
-}
-
-class FakeDependency : IDependency
-{
-    public DateTimeOffset Time => DateTimeOffset.MinValue;
-
-    public bool IsInitialized => true;
-}
-
-interface IService
-{
-    IDependency Dependency { get; }
-}
-
-class Service(IDependency dependency) : IService
-{
-    public IDependency Dependency { get; } = dependency;
-}
+using Pure.DI;
+using Shouldly;
 
 DI.Setup(nameof(Composition))
     .Bind().To(_ => DateTimeOffset.Now)
@@ -76,54 +46,45 @@ service.Dependency.IsInitialized.ShouldBeTrue();
         
 var serviceWithFakeDependency = composition.GetMyService(isFake: true);
 serviceWithFakeDependency.Dependency.ShouldBeOfType<FakeDependency>();
+
+interface IDependency
+{
+    DateTimeOffset Time { get; }
+
+    bool IsInitialized { get; }
+}
+
+class Dependency(DateTimeOffset time) : IDependency
+{
+    public DateTimeOffset Time { get; } = time;
+
+    public bool IsInitialized { get; private set; }
+
+    public void Initialize() => IsInitialized = true;
+}
+
+class FakeDependency : IDependency
+{
+    public DateTimeOffset Time => DateTimeOffset.MinValue;
+
+    public bool IsInitialized => true;
+}
+
+interface IService
+{
+    IDependency Dependency { get; }
+}
+
+class Service(IDependency dependency) : IService
+{
+    public IDependency Dependency { get; } = dependency;
+}
 ```
 
 This approach is more expensive to maintain, but allows you to create objects more flexibly by passing them some state and introducing dependencies. As in the case of automatic dependency injecting, objects give up control on embedding, and the whole process takes place when the object graph is created.
 > [!IMPORTANT]
 > The method `Inject()`cannot be used outside of the binding setup.
 
-The following partial class will be generated:
-
-```c#
-partial class Composition
-{
-  private readonly Composition _root;
-
-  [OrdinalAttribute(128)]
-  public Composition()
-  {
-    _root = this;
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-  }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public IService GetMyService(bool isFake)
-  {
-    DateTimeOffset transientDateTimeOffset3 = DateTimeOffset.Now;
-    IDependency transientIDependency1;
-    // When building a composition of objects,
-    // all of this code will be outside the lambda function.
-    // Some custom logic for creating an instance.
-    // For example, here's how you can inject and initialize
-    // an instance of a particular type:
-      bool localIsFake50 = isFake;
-    if (localIsFake50)
-    {
-      {transientIDependency1 = new FakeDependency();
-    goto transientIDependency1Finish; }
-    }
-      Dependency localDependency51 = new Dependency(transientDateTimeOffset3);
-    localDependency51.Initialize();
-    transientIDependency1 = localDependency51;
-    transientIDependency1Finish:;
-    return new Service(transientIDependency1);
-  }
-}
-```
 
 Class diagram:
 

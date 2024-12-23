@@ -12,6 +12,7 @@ $h=The _Scoped_ lifetime ensures that there will be a single instance of the dep
 // ReSharper disable UnusedMember.Local
 // ReSharper disable ArrangeTypeMemberModifiers
 
+// ReSharper disable PartialTypeWithSinglePart
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Lifetimes.ScopeScenario;
 
@@ -19,51 +20,9 @@ using Xunit;
 using static Lifetime;
 
 // {
-interface IDependency
-{
-    bool IsDisposed { get; }
-}
-
-class Dependency : IDependency, IDisposable
-{
-    public bool IsDisposed { get; private set; }
-
-    public void Dispose() => IsDisposed = true;
-}
-
-interface IService
-{
-    IDependency Dependency { get; }
-}
-
-class Service(IDependency dependency) : IService
-{
-    public IDependency Dependency => dependency;
-}
-
-// Implements a session
-class Session(Composition composition) : Composition(composition);
-
-class Program(Func<Session> sessionFactory)
-{
-    public Session CreateSession() => sessionFactory();
-}
-
-partial class Composition
-{
-    static void Setup() =>
-        DI.Setup()
-            // This hint indicates to not generate methods such as Resolve
-            .Hint(Hint.Resolve, "Off")
-            .Bind().As(Scoped).To<Dependency>()
-            .Bind().To<Service>()
-
-            // Session composition root
-            .Root<IService>("SessionRoot")
-
-            // Program composition root
-            .Root<Program>("ProgramRoot");
-}
+//# using Pure.DI;
+//# using Shouldly;
+//# using static Pure.DI.Lifetime;
 // }
 
 public class Scenario
@@ -103,3 +62,51 @@ public class Scenario
         composition.SaveClassDiagram();
     }
 }
+
+// {
+interface IDependency
+{
+    bool IsDisposed { get; }
+}
+
+class Dependency : IDependency, IDisposable
+{
+    public bool IsDisposed { get; private set; }
+
+    public void Dispose() => IsDisposed = true;
+}
+
+interface IService
+{
+    IDependency Dependency { get; }
+}
+
+class Service(IDependency dependency) : IService
+{
+    public IDependency Dependency => dependency;
+}
+
+// Implements a session
+class Session(Composition composition) : Composition(composition);
+
+partial class Program(Func<Session> sessionFactory)
+{
+    public Session CreateSession() => sessionFactory();
+}
+
+partial class Composition
+{
+    static void Setup() =>
+        DI.Setup()
+            // This hint indicates to not generate methods such as Resolve
+            .Hint(Hint.Resolve, "Off")
+            .Bind().As(Scoped).To<Dependency>()
+            .Bind().To<Service>()
+
+            // Session composition root
+            .Root<IService>("SessionRoot")
+
+            // Program composition root
+            .Root<Program>("ProgramRoot");
+}
+// }

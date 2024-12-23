@@ -26,6 +26,37 @@ using Serilog.Events;
 using Xunit;
 
 // {
+//# using Pure.DI;
+//# using Serilog.Core;
+//# using Serilog.Events;
+//# using System.Runtime.CompilerServices;
+// }
+
+public class Scenario
+{
+    [Fact]
+    public void Run()
+    {
+        var events = new List<LogEvent>();
+        var serilogLogger = new Serilog.LoggerConfiguration()
+            .WriteTo.Sink(new EventSink(events))
+            .CreateLogger();
+// {
+        //# Serilog.ILogger serilogLogger = new Serilog.LoggerConfiguration().CreateLogger();
+        var composition = new Composition(logger: serilogLogger);
+        var service = composition.Root;
+// }
+        events.Count.ShouldBe(5);
+        foreach (var @event in events)
+        {
+            @event.Properties.ContainsKey("SourceContext").ShouldBeTrue();
+        }
+
+        composition.SaveClassDiagram();
+    }
+}
+
+// {
 interface IDependency;
 
 class Dependency : IDependency;
@@ -89,28 +120,4 @@ class EventSink(ICollection<LogEvent> events)
 {
     public void Emit(LogEvent logEvent) =>
         events.Add(logEvent);
-}
-
-public class Scenario
-{
-    [Fact]
-    public void Run()
-    {
-        var events = new List<LogEvent>();
-        var serilogLogger = new Serilog.LoggerConfiguration()
-            .WriteTo.Sink(new EventSink(events))
-            .CreateLogger();
-// {
-        //# Serilog.ILogger serilogLogger = CreateLogger();
-        var composition = new Composition(logger: serilogLogger);
-        var service = composition.Root;
-// }
-        events.Count.ShouldBe(5);
-        foreach (var e in events)
-        {
-            e.Properties.ContainsKey("SourceContext").ShouldBeTrue();
-        }
-
-        composition.SaveClassDiagram();
-    }
 }

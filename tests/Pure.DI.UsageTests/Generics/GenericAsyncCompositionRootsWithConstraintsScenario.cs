@@ -23,22 +23,7 @@ using Shouldly;
 using Xunit;
 
 // {
-interface IDependency<T>
-    where T : IDisposable;
-
-class Dependency<T> : IDependency<T>
-    where T : IDisposable;
-
-interface IService<T, TStruct>
-    where T : IDisposable
-    where TStruct : struct;
-
-class Service<T, TStruct>(IDependency<T> dependency) : IService<T, TStruct>
-    where T : IDisposable
-    where TStruct : struct;
-
-class OtherService<T>(IDependency<T> dependency) : IService<T, bool>
-    where T : IDisposable;
+//# using Pure.DI;
 // }
 
 public class Scenario
@@ -86,3 +71,22 @@ public class Scenario
         composition.SaveClassDiagram();
     }
 }
+
+// {
+interface IDependency<T>
+    where T : IDisposable;
+
+class Dependency<T> : IDependency<T>
+    where T : IDisposable;
+
+interface IService<T, TStruct>
+    where T : IDisposable
+    where TStruct : struct;
+
+class Service<T, TStruct>(IDependency<T> dependency) : IService<T, TStruct>
+    where T : IDisposable
+    where TStruct : struct;
+
+class OtherService<T>(IDependency<T> dependency) : IService<T, bool>
+    where T : IDisposable;
+// }

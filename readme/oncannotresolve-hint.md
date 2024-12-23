@@ -7,7 +7,21 @@ In addition, setup hints can be comments before the _Setup_ method in the form `
 
 
 ```c#
-using static Hint;
+using Pure.DI;
+using static Pure.DI.Hint;
+using Shouldly;
+
+// OnCannotResolveContractTypeNameRegularExpression = string
+DI.Setup(nameof(Composition))
+    .Hint(OnCannotResolve, "On")
+    .Bind().To<Dependency>()
+    .Bind().To<Service>()
+    .Root<IService>("Root");
+
+var composition = new Composition();
+var service = composition.Root;
+service.Dependency.ToString().ShouldBe("My name");
+
 
 interface IDependency;
 
@@ -28,7 +42,6 @@ class Service(IDependency dependency) : IService
 
 partial class Composition
 {
-    [SuppressMessage("Performance", "CA1822:Mark members as static")]
     private partial T OnCannotResolve<T>(
         object? tag,
         Lifetime lifetime)
@@ -41,55 +54,11 @@ partial class Composition
         throw new InvalidOperationException("Cannot resolve.");
     }
 }
-
-// OnCannotResolveContractTypeNameRegularExpression = string
-DI.Setup(nameof(Composition))
-    .Hint(OnCannotResolve, "On")
-    .Bind().To<Dependency>()
-    .Bind().To<Service>()
-    .Root<IService>("Root");
-
-var composition = new Composition();
-var service = composition.Root;
-service.Dependency.ToString().ShouldBe("My name");
-
 ```
 
 The `OnCannotResolveContractTypeNameRegularExpression` hint helps define the set of types that require manual dependency resolution. You can use it to specify a regular expression to filter the full type name.
 For more hints, see [this](README.md#setup-hints) page.
 
-The following partial class will be generated:
-
-```c#
-partial class Composition
-{
-  private readonly Composition _root;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-  }
-
-  public IService Root
-  {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    get
-    {
-      string transientString2 = OnCannotResolve<string>(null, Lifetime.Transient);
-      return new Service(new Dependency(transientString2));
-    }
-  }
-
-
-  private partial T OnCannotResolve<T>(object? tag, Lifetime lifetime);
-}
-```
 
 Class diagram:
 
