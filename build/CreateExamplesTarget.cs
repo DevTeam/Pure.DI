@@ -16,6 +16,7 @@ internal class CreateExamplesTarget(
     public const string FooterKey = "f";
     public const string SourceKey = "s";
     public const string BodyKey = "b";
+    public const string ReferencesKey = "r";
     
     private static readonly string[] Groups =
     [
@@ -82,7 +83,8 @@ internal class CreateExamplesTarget(
                 [DescriptionKey] = string.Empty,
                 [HeaderKey] = string.Empty,
                 [FooterKey] = string.Empty,
-                [SourceKey] = relativePath
+                [SourceKey] = relativePath,
+                [ReferencesKey] = string.Empty,
             };
             items.Add(vars);
             var body = new List<string>();
@@ -169,10 +171,11 @@ internal class CreateExamplesTarget(
                     localBody.Add(line);
                 }
             }
-
+            
             if (body.Count != 0)
             {
-                vars[BodyKey] = string.Join(Environment.NewLine, body);
+                var references = vars[ReferencesKey].Split(";", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                vars[BodyKey] = string.Join(Environment.NewLine, references.Select(i => $"using {i};").Concat(body));
             }
         }
 

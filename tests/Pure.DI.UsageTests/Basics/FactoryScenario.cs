@@ -7,6 +7,7 @@ $h=At the compilation stage, the set of dependencies that an object needs in ord
 $f=This approach is more expensive to maintain, but allows you to create objects more flexibly by passing them some state and introducing dependencies. As in the case of automatic dependency injecting, objects give up control on embedding, and the whole process takes place when the object graph is created.
 $f=> [!IMPORTANT]
 $f=> The method `Inject()`cannot be used outside of the binding setup.
+$r=Shouldly
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -22,7 +23,6 @@ using Xunit;
 
 // {
 //# using Pure.DI;
-//# using Shouldly;
 // }
 
 public class Scenario

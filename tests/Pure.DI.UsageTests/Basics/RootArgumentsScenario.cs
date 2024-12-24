@@ -7,6 +7,7 @@ $h=> [!NOTE]
 $h=> Actually, root arguments work like normal bindings. The difference is that they bind to the values of the arguments. These values will be injected wherever they are required.
 $h=
 $f=When using composition root arguments, compilation warnings are shown if `Resolve` methods are generated, since these methods will not be able to create these roots. You can disable the creation of `Resolve` methods using the `Hint(Hint.Resolve, "Off")` hint, or ignore them but remember the risks of using `Resolve` methods.
+$r=Shouldly
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -21,7 +22,6 @@ using Xunit;
 
 // {
 //# using Pure.DI;
-//# using Shouldly;
 // }
 
 public class Scenario

@@ -2,6 +2,7 @@
 $v=true
 $p=9
 $d=Async disposable scope
+$r=Shouldly
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -20,7 +21,6 @@ using static Lifetime;
 
 // {
 //# using Pure.DI;
-//# using Shouldly;
 //# using static Pure.DI.Lifetime;
 // }
 

@@ -3,6 +3,7 @@ $v=true
 $p=4
 $d=Tag Unique
 $h=`Tag.Unique` is useful to register a binding with a unique tag. It will not be available through the composition root or `Resolve` methods directly, but can be injected in compositions as some kind of enumeration.
+$r=Shouldly
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -19,7 +20,6 @@ using Xunit;
 
 // {
 //# using Pure.DI;
-//# using Shouldly;
 //# using System.Collections.Immutable;
 // }
 

@@ -2,6 +2,7 @@
 $v=true
 $p=102
 $d=Tracking async disposable instances per a composition root
+$r=Shouldly
 */
 
 // ReSharper disable CheckNamespace
@@ -16,7 +17,6 @@ using Xunit;
 
 // {
 //# using Pure.DI;
-//# using Shouldly;
 // }
 
 public class Scenario

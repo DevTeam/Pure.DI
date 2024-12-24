@@ -3,6 +3,7 @@ $v=true
 $p=99
 $d=Service provider
 $h=The `// ObjectResolveMethodName = GetService` hint overrides the _object Resolve(Type type)_ method name in _GetService_, allowing the _IServiceProvider_ interface to be implemented in a partial class.
+$r=Shouldly;Microsoft.Extensions.DependencyInjection
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -20,8 +21,6 @@ using Xunit;
 
 // {
 //# using Pure.DI;
-//# using Shouldly;
-//# using Microsoft.Extensions.DependencyInjection;
 // }
 
 public class Scenario

@@ -3,6 +3,7 @@ $v=true
 $p=8
 $d=Async disposable singleton
 $h=If at least one of these objects implements the `IAsyncDisposable` interface, then the composition implements `IAsyncDisposable` as well. To dispose of all created singleton instances in an asynchronous manner, simply dispose of the composition instance in an asynchronous manner:
+$r=Shouldly
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -16,7 +17,6 @@ using static Lifetime;
 
 // {
 //# using Pure.DI;
-//# using Shouldly;
 //# using static Pure.DI.Lifetime;
 // }
 

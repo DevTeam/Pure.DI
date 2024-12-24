@@ -2,6 +2,7 @@
 $v=true
 $p=300
 $d=DI tracing via serilog
+$r=Serilog.Core;Serilog.Events
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -27,8 +28,6 @@ using Xunit;
 
 // {
 //# using Pure.DI;
-//# using Serilog.Core;
-//# using Serilog.Events;
 //# using System.Runtime.CompilerServices;
 // }
 

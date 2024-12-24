@@ -10,9 +10,9 @@ It contains attributes like `Inject` and `Inject<T>` that work for constructors 
 
 
 ```c#
-using Pure.DI;
-using Pure.DI.Abstractions;
 using Shouldly;
+using Pure.DI.Abstractions;
+using Pure.DI;
 
 var composition = new Composition();
 var root1 = composition.Root;
@@ -96,6 +96,21 @@ partial class Composition
             .Root<Service>("Root");
 }
 ```
+
+<details>
+<summary>Running this code sample locally</summary>
+
+- Make sure you have the [.NET SDK 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) or later is installed
+- Create a net9.0 (or later) console application
+- Add references to NuGet packages
+  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+  - [Pure.DI.Abstractions](https://www.nuget.org/packages/Pure.DI.Abstractions)
+- Copy the example code into the _Program.cs_ file
+
+You are ready to run the example!
+
+</details>
 
 This package should also be included in a project:
 

@@ -2,6 +2,7 @@
 $v=true
 $p=99
 $d=Keyed service provider
+$r=Shouldly;Microsoft.Extensions.DependencyInjection
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -19,8 +20,6 @@ using Xunit;
 
 // {
 //# using Pure.DI;
-//# using Shouldly;
-//# using Microsoft.Extensions.DependencyInjection;
 // }
 
 public class Scenario

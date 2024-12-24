@@ -4,6 +4,7 @@ $p=7
 $d=Disposable singleton
 $h=To dispose all created singleton instances, simply dispose the composition instance:
 $f=A composition class becomes disposable if it creates at least one disposable singleton instance.
+$r=Shouldly
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -17,7 +18,6 @@ using static Lifetime;
 
 // {
 //# using Pure.DI;
-//# using Shouldly;
 //# using static Pure.DI.Lifetime;
 // }
 

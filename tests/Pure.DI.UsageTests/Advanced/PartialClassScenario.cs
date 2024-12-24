@@ -4,6 +4,7 @@ $p=10
 $d=Partial class
 $h=A partial class can contain setup code.
 $f=The partial class is also useful for specifying access modifiers to the generated class.
+$r=Shouldly
 */
 
 // ReSharper disable CheckNamespace
@@ -24,7 +25,6 @@ using static RootKinds;
 // {
 //# using Pure.DI;
 //# using static Pure.DI.RootKinds;
-//# using Shouldly;
 //# using System.Diagnostics;
 // }
 

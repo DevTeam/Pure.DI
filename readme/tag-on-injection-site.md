@@ -14,8 +14,8 @@ For generic types, the type name also contains the number of type parameters, e.
 
 
 ```c#
-using Pure.DI;
 using Shouldly;
+using Pure.DI;
 
 DI.Setup(nameof(Composition))
     .Bind(
@@ -78,6 +78,20 @@ class Service(
     public IDependency Dependency4 => consumer.Dependency;
 }
 ```
+
+<details>
+<summary>Running this code sample locally</summary>
+
+- Make sure you have the [.NET SDK 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) or later is installed
+- Create a net9.0 (or later) console application
+- Add references to NuGet packages
+  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+- Copy the example code into the _Program.cs_ file
+
+You are ready to run the example!
+
+</details>
 
 > [!WARNING]
 > Each potentially injectable argument, property, or field contains an additional tag. This tag can be used to specify what can be injected there. This will only work if the binding type and the tag match. So while this approach can be useful for specifying what to enter, it can be more expensive to maintain and less reliable, so it is recommended to use attributes like `[Tag(...)]` instead.

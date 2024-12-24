@@ -3,6 +3,7 @@ $v=true
 $p=11
 $d=Custom universal attribute
 $h=You can use a combined attribute, and each method in the list above has an optional parameter that defines the argument number (the default is 0) from where to get the appropriate metadata for _tag_, _ordinal_, or _type_.
+$r=Shouldly
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -21,7 +22,6 @@ using Xunit;
 
 // {
 //# using Pure.DI;
-//# using Shouldly;
 // }
 
 public class Scenario

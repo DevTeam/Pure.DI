@@ -32,13 +32,9 @@ internal class CompatibilityCheckTarget(
             .WithPackage("Pure.DI.Templates")
             .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
-        string[] frameworks =
+        var baseFrameworks = Enumerable.Range(5, settings.BaseDotNetFrameworkMajorVersion - 4).Select(i => $"net{i}.0");
+        List<string> frameworks =
         [
-            "net9.0",
-            "net8.0",
-            "net7.0",
-            "net6.0",
-            "net5.0",
             "netcoreapp3.1",
             "netcoreapp3.0",
             "netcoreapp2.2",
@@ -59,7 +55,11 @@ internal class CompatibilityCheckTarget(
         ];
 
         var tasks = new List<Task>();
-        tasks.AddRange(frameworks.Reverse().Select(framework => CompatibilityCheckAsync(generatorPackage.Path, framework, cancellationToken)));
+        tasks.AddRange(
+            baseFrameworks
+                .Concat(frameworks)
+                .Reverse()
+                .Select(framework => CompatibilityCheckAsync(generatorPackage.Path, framework, cancellationToken)));
 
         // Libraries
         var packages = new List<Package> { generatorPackage };

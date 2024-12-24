@@ -18,6 +18,7 @@ $f=
 $f=- Error handling
 $f=
 $f=- Providing resistance to failures, etc.
+$r=Shouldly;Castle.DynamicProxy
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -35,9 +36,7 @@ using Xunit;
 
 // {
 //# using System.Runtime.CompilerServices;
-//# using Castle.DynamicProxy;
 //# using Pure.DI;
-//# using Shouldly;
 // }
 
 public class Scenario

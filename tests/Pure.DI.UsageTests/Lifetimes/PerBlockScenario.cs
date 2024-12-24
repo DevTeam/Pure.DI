@@ -3,6 +3,7 @@ $v=true
 $p=3
 $d=PerBlock
 $h=The _PreBlock_ lifetime does not guarantee that there will be a single dependency instance for each instance of the composition root (as for the _PreResolve_ lifetime), but is useful for reducing the number of instances of a type.
+$r=Shouldly
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -16,7 +17,6 @@ using static Lifetime;
 
 // {
 //# using Pure.DI;
-//# using Shouldly;
 //# using static Pure.DI.Lifetime;
 // }
 

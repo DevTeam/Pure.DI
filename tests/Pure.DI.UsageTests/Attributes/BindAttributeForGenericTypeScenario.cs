@@ -2,6 +2,7 @@
 $v=true
 $p=15
 $d=Bind attribute for a generic type
+$r=Shouldly
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -18,7 +19,6 @@ using Xunit;
 
 // {
 //# using Pure.DI;
-//# using Shouldly;
 // }
 
 public class Scenario

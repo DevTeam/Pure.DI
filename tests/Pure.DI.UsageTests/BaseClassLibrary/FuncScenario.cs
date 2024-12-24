@@ -4,6 +4,7 @@ $p=0
 $d=Func
 $h=_Func<T>_ helps when the logic must enter instances of some type on demand or more than once. This is a very handy mechanism for instance replication. For example it is used when implementing the `Lazy<T>` injection.
 $f=Be careful, replication takes into account the lifetime of the object.
+$r=Shouldly
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -18,7 +19,6 @@ using Xunit;
 
 // {
 //# using Pure.DI;
-//# using Shouldly;
 //# using System.Collections.Immutable;
 // }
 

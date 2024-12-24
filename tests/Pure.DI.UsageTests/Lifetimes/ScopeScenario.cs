@@ -3,6 +3,7 @@ $v=true
 $p=4
 $d=Scope
 $h=The _Scoped_ lifetime ensures that there will be a single instance of the dependency for each scope.
+$r=Shouldly
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -21,7 +22,6 @@ using static Lifetime;
 
 // {
 //# using Pure.DI;
-//# using Shouldly;
 //# using static Pure.DI.Lifetime;
 // }
 

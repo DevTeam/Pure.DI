@@ -7,9 +7,9 @@ In addition, setup hints can be comments before the _Setup_ method in the form `
 
 
 ```c#
+using Shouldly;
 using Pure.DI;
 using static Pure.DI.Hint;
-using Shouldly;
 
 DI.Setup(nameof(Composition))
     .Hint(OnNewInstance, "On")
@@ -60,6 +60,20 @@ internal partial class Composition
         _log.Add($"{typeof(T).Name} created");
 }
 ```
+
+<details>
+<summary>Running this code sample locally</summary>
+
+- Make sure you have the [.NET SDK 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) or later is installed
+- Create a net9.0 (or later) console application
+- Add references to NuGet packages
+  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+- Copy the example code into the _Program.cs_ file
+
+You are ready to run the example!
+
+</details>
 
 The `OnNewInstanceLifetimeRegularExpression` hint helps you define a set of lifetimes that require instance creation control. You can use it to specify a regular expression to filter bindings by lifetime name.
 For more hints, see [this](README.md#setup-hints) page.

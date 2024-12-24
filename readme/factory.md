@@ -7,8 +7,8 @@ At the compilation stage, the set of dependencies that an object needs in order 
 
 
 ```c#
-using Pure.DI;
 using Shouldly;
+using Pure.DI;
 
 DI.Setup(nameof(Composition))
     .Bind().To(_ => DateTimeOffset.Now)
@@ -80,6 +80,20 @@ class Service(IDependency dependency) : IService
     public IDependency Dependency { get; } = dependency;
 }
 ```
+
+<details>
+<summary>Running this code sample locally</summary>
+
+- Make sure you have the [.NET SDK 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) or later is installed
+- Create a net9.0 (or later) console application
+- Add references to NuGet packages
+  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+- Copy the example code into the _Program.cs_ file
+
+You are ready to run the example!
+
+</details>
 
 This approach is more expensive to maintain, but allows you to create objects more flexibly by passing them some state and introducing dependencies. As in the case of automatic dependency injecting, objects give up control on embedding, and the whole process takes place when the object graph is created.
 > [!IMPORTANT]

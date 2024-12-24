@@ -3,6 +3,7 @@ $v=true
 $p=6
 $d=Default lifetime
 $h=For example, if some lifetime is used more often than others, you can make it the default lifetime:
+$r=Shouldly
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -16,7 +17,6 @@ using static Lifetime;
 
 // {
 //# using Pure.DI;
-//# using Shouldly;
 //# using static Pure.DI.Lifetime;
 // }
 

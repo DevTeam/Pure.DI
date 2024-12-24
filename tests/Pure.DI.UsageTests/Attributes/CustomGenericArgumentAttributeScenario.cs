@@ -2,6 +2,7 @@
 $v=true
 $p=12
 $d=Custom generic argument attribute
+$r=Shouldly
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -17,7 +18,6 @@ using Xunit;
 
 // {
 //# using Pure.DI;
-//# using Shouldly;
 // }
 
 public class Scenario

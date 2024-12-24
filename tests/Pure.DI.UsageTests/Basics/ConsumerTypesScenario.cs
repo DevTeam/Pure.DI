@@ -3,6 +3,7 @@ $v=true
 $p=19
 $d=Consumer types
 $h=`ConsumerTypes` is used to get the list of consumer types of a given dependency. It contains an array of types and guarantees that it will contain at least one element. The use of `ConsumerTypes` is demonstrated on the example of [Serilog library](https://serilog.net/):
+$r=Shouldly;Serilog.Core;Serilog.Events
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -25,9 +26,7 @@ using Xunit;
 
 // {
 //# using Pure.DI;
-//# using Shouldly;
 //# using Serilog.Core;
-//# using Serilog.Events;
 // }
 
 class EventSink(ICollection<LogEvent> events)

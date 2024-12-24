@@ -21,6 +21,7 @@ $h=
 $h=![](smart_tags.gif)
 $h=
 $h=The example below also uses the `using static Pure.DI.Tag;` directive to access tags in `Pure.DI.Tag` without specifying a type name:
+$r=Shouldly
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -40,7 +41,6 @@ using Xunit;
 
 // {
 //# using Pure.DI;
-//# using Shouldly;
 // }
 
 public class Scenario

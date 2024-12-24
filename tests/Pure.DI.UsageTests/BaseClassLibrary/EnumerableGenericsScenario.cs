@@ -2,6 +2,7 @@
 $v=true
 $p=1
 $d=Enumerable generics
+$r=Shouldly
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -18,7 +19,6 @@ using Xunit;
 
 // {
 //# using Pure.DI;
-//# using Shouldly;
 //# using System.Collections.Immutable;
 // }
 

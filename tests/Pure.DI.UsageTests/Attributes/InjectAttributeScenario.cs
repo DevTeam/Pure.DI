@@ -10,6 +10,7 @@ $h=It contains attributes like `Inject` and `Inject<T>` that work for constructo
 $f=This package should also be included in a project:
 $f=
 $f=[![NuGet](https://img.shields.io/nuget/v/Pure.DI)](https://www.nuget.org/packages/Pure.DI)
+$r=Shouldly;Pure.DI.Abstractions
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -31,8 +32,6 @@ using Pure.DI.Abstractions;
 
 // {
 //# using Pure.DI;
-//# using Shouldly;
-//# using Pure.DI.Abstractions;
 // }
 
 public class Scenario

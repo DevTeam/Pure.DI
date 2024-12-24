@@ -56,6 +56,19 @@ class Service(IDependency dependency) : IService;
 class OtherService : IService;
 ```
 
+<details>
+<summary>Running this code sample locally</summary>
+
+- Make sure you have the [.NET SDK 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) or later is installed
+- Create a net9.0 (or later) console application
+- Add reference to NuGet package
+  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+- Copy the example code into the _Program.cs_ file
+
+You are ready to run the example!
+
+</details>
+
 The name of the root of a composition is arbitrarily chosen depending on its purpose, but should be restricted by the property naming conventions in C# since it is the same name as a property in the composition class. In reality, the _Root_ property has the form:
 ```c#
 public IService Root

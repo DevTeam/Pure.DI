@@ -3,6 +3,7 @@ $v=true
 $p=2
 $d=Advanced interception
 $h=This approach of interception maximizes performance by precompiling the proxy object factory.
+$r=Shouldly;Castle.DynamicProxy
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -25,9 +26,7 @@ using Xunit;
 //# using System.Collections.Immutable;
 //# using System.Linq.Expressions;
 //# using System.Runtime.CompilerServices;
-//# using Castle.DynamicProxy;
 //# using Pure.DI;
-//# using Shouldly;
 // }
 
 public class Scenario

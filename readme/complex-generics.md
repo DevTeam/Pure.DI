@@ -6,8 +6,8 @@ Defining generic type arguments using particular marker types like ```TT``` in t
 
 
 ```c#
-using Pure.DI;
 using Shouldly;
+using Pure.DI;
 
 DI.Setup(nameof(Composition))
     // This hint indicates to not generate methods such as Resolve
@@ -66,6 +66,20 @@ class Program<T>(IService<T, int, List<T>, Dictionary<T, int>> service)
     public IService<T, int, List<T>, Dictionary<T, int>> Service { get; } = service;
 }
 ```
+
+<details>
+<summary>Running this code sample locally</summary>
+
+- Make sure you have the [.NET SDK 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) or later is installed
+- Create a net9.0 (or later) console application
+- Add references to NuGet packages
+  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+- Copy the example code into the _Program.cs_ file
+
+You are ready to run the example!
+
+</details>
 
 It can also be useful in a very simple scenario where, for example, the sequence of type arguments does not match the sequence of arguments of the contract that implements the type.
 

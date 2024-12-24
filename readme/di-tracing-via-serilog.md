@@ -4,9 +4,9 @@
 
 
 ```c#
-using Pure.DI;
 using Serilog.Core;
 using Serilog.Events;
+using Pure.DI;
 using System.Runtime.CompilerServices;
 
 Serilog.ILogger serilogLogger = new Serilog.LoggerConfiguration().CreateLogger();
@@ -68,6 +68,21 @@ partial class Composition
     }
 }
 ```
+
+<details>
+<summary>Running this code sample locally</summary>
+
+- Make sure you have the [.NET SDK 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) or later is installed
+- Create a net9.0 (or later) console application
+- Add references to NuGet packages
+  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+  - [Serilog.Core](https://www.nuget.org/packages/Serilog.Core)
+  - [Serilog.Events](https://www.nuget.org/packages/Serilog.Events)
+- Copy the example code into the _Program.cs_ file
+
+You are ready to run the example!
+
+</details>
 
 
 Class diagram:

@@ -6,6 +6,7 @@ $h=Hints are used to fine-tune code generation. The _OnCannotResolve_ hint deter
 $h=In addition, setup hints can be comments before the _Setup_ method in the form ```hint = value```, for example: `// OnCannotResolveContractTypeNameRegularExpression = string`.
 $f=The `OnCannotResolveContractTypeNameRegularExpression` hint helps define the set of types that require manual dependency resolution. You can use it to specify a regular expression to filter the full type name.
 $f=For more hints, see [this](README.md#setup-hints) page.
+$r=Shouldly
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -24,7 +25,6 @@ using static Hint;
 // {
 //# using Pure.DI;
 //# using static Pure.DI.Hint;
-//# using Shouldly;
 // }
 
 public class Scenario

@@ -2,6 +2,7 @@
 $v=true
 $p=101
 $d=Tracking disposable instances with different lifetimes
+$r=Shouldly
 */
 
 // ReSharper disable CheckNamespace
@@ -17,7 +18,6 @@ using Xunit;
 
 // {
 //# using Pure.DI;
-//# using Shouldly;
 // }
 
 public class Scenario

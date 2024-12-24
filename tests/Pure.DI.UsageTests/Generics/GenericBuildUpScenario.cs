@@ -3,6 +3,7 @@ $v=true
 $p=7
 $d=Build up of an existing generic object
 $h=In other words, injecting the necessary dependencies via methods, properties, or fields into an existing object.
+$r=Shouldly
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -17,7 +18,6 @@ using Xunit;
 
 // {
 //# using Pure.DI;
-//# using Shouldly;
 // }
 
 public class Scenario

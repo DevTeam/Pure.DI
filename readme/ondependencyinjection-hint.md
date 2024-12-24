@@ -7,9 +7,9 @@ In addition, setup hints can be comments before the _Setup_ method in the form `
 
 
 ```c#
+using Shouldly;
 using Pure.DI;
 using static Pure.DI.Hint;
-using Shouldly;
 
 // OnDependencyInjection = On
 DI.Setup(nameof(Composition))
@@ -59,6 +59,20 @@ partial class Composition
     }
 }
 ```
+
+<details>
+<summary>Running this code sample locally</summary>
+
+- Make sure you have the [.NET SDK 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) or later is installed
+- Create a net9.0 (or later) console application
+- Add references to NuGet packages
+  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+- Copy the example code into the _Program.cs_ file
+
+You are ready to run the example!
+
+</details>
 
 The `OnDependencyInjectionContractTypeNameRegularExpression` hint helps identify the set of types that require injection control. You can use it to specify a regular expression to filter the full name of a type.
 For more hints, see [this](README.md#setup-hints) page.

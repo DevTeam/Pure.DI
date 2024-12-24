@@ -6,8 +6,8 @@ In other words, injecting the necessary dependencies via methods, properties, or
 
 
 ```c#
-using Pure.DI;
 using Shouldly;
+using Pure.DI;
 
 DI.Setup(nameof(Composition))
     .RootArg<string>("name")
@@ -55,6 +55,20 @@ interface IService
 
 record Service(IDependency Dependency) : IService;
 ```
+
+<details>
+<summary>Running this code sample locally</summary>
+
+- Make sure you have the [.NET SDK 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) or later is installed
+- Create a net9.0 (or later) console application
+- Add references to NuGet packages
+  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+- Copy the example code into the _Program.cs_ file
+
+You are ready to run the example!
+
+</details>
 
 
 Class diagram:

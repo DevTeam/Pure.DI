@@ -3,6 +3,7 @@ $v=true
 $p=100
 $d=Overriding the BCL binding
 $h=At any time, the default binding to the BCL type can be changed to your own:
+$r=Shouldly
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -16,7 +17,6 @@ using Xunit;
 
 // {
 //# using Pure.DI;
-//# using Shouldly;
 // }
 
 public class Scenario

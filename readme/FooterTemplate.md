@@ -593,12 +593,12 @@ flowchart TD
 
 ## NuGet packages
 
-|                      |                                                                                                                     |                                                            |
-|----------------------|---------------------------------------------------------------------------------------------------------------------|:-----------------------------------------------------------|
-| Pure.DI              | [![NuGet](https://img.shields.io/nuget/v/Pure.DI)](https://www.nuget.org/packages/Pure.DI)                           | DI Source code generator                                   |
-| Pure.DI.Abstractions | [![NuGet](https://img.shields.io/nuget/v/Pure.DI.Abstractions)](https://www.nuget.org/packages/Pure.DI.Abstractions) | Abstractions for Pure.DI                                   |
-| Pure.DI.Templates    | [![NuGet](https://img.shields.io/nuget/v/Pure.DI.Templates)](https://www.nuget.org/packages/Pure.DI.Templates)       | Template Package you can call from the shell/command line. |
-| Pure.DI.MS           | [![NuGet](https://img.shields.io/nuget/v/Pure.DI.MS)](https://www.nuget.org/packages/Pure.DI.MS)                     | Tools for working with Microsoft DI                        |
+|                                                                             |                                                            |
+|-----------------------------------------------------------------------------|:-----------------------------------------------------------|
+| [Pure.DI](https://www.nuget.org/packages/Pure.DI)                           | DI Source code generator                                   |
+| [Pure.DI.Abstractions](https://www.nuget.org/packages/Pure.DI.Abstractions) | Abstractions for Pure.DI                                   |
+| [Pure.DI.Templates](https://www.nuget.org/packages/Pure.DI.Templates)       | Template Package you can call from the shell/command line. |
+| [Pure.DI.MS](https://www.nuget.org/packages/Pure.DI.MS)                     | Tools for working with Microsoft DI                        |
 
 ## Project template
 

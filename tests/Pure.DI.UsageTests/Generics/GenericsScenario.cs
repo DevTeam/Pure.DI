@@ -49,6 +49,7 @@ $f=
 $f=[GenericTypeArgument]
 $f=internal interface TTEnumerator<out T>: IEnumerator<T> { }
 $f=```
+$r=Shouldly
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -63,7 +64,6 @@ using Xunit;
 
 // {
 //# using Pure.DI;
-//# using Shouldly;
 // }
 
 public class Scenario

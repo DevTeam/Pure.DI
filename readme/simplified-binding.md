@@ -59,6 +59,19 @@ class Service(
     : IService;
 ```
 
+<details>
+<summary>Running this code sample locally</summary>
+
+- Make sure you have the [.NET SDK 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) or later is installed
+- Create a net9.0 (or later) console application
+- Add reference to NuGet package
+  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+- Copy the example code into the _Program.cs_ file
+
+You are ready to run the example!
+
+</details>
+
 As practice has shown, in most cases it is possible to define abstraction types in bindings automatically. That's why we added API `Bind()` method without type parameters to define abstractions in bindings. It is the `Bind()` method that performs the binding:
 
 - with the implementation type itself

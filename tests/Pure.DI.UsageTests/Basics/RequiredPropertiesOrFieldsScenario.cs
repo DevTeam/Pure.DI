@@ -3,6 +3,7 @@ $v=true
 $p=15
 $d=Required properties or fields
 $h=All properties or fields marked with the _required_ keyword automatically become injected dependencies.
+$r=Shouldly
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -17,7 +18,6 @@ using Xunit;
 
 // {
 //# using Pure.DI;
-//# using Shouldly;
 // }
 
 public class Scenario

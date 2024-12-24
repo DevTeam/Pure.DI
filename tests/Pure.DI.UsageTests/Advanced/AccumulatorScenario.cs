@@ -3,6 +3,7 @@ $v=true
 $p=8
 $d=Accumulators
 $h=Accumulators allow you to accumulate instances of certain types and lifetimes.
+$r=Shouldly
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -22,7 +23,6 @@ using static Lifetime;
 // {
 //# using Pure.DI;
 //# using static Pure.DI.Lifetime;
-//# using Shouldly;
 // }
 
 public class Scenario

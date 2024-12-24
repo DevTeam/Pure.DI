@@ -45,6 +45,19 @@ class Service(IDependency dependency) : IService;
 class OtherService : IService;
 ```
 
+<details>
+<summary>Running this code sample locally</summary>
+
+- Make sure you have the [.NET SDK 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) or later is installed
+- Create a net9.0 (or later) console application
+- Add reference to NuGet package
+  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+- Copy the example code into the _Program.cs_ file
+
+You are ready to run the example!
+
+</details>
+
 _Resolve_ methods are similar to calls to the roots of a composition. Composition roots are common properties. Their use is efficient and does not cause exceptions. And that is why it is recommended to use them. In contrast, _Resolve_ methods have a number of disadvantages:
 
 - They provide access to an unlimited set of dependencies.

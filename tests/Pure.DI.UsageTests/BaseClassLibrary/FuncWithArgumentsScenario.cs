@@ -3,6 +3,7 @@ $v=true
 $p=99
 $d=Func with arguments
 $f=Using a binding of the form `.Bind<T>().To<T>("some statement")` is a kind of hack that allows you to replace an injection with just its own string.
+$r=Shouldly
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -22,7 +23,6 @@ using Xunit;
 
 // {
 //# using Pure.DI;
-//# using Shouldly;
 //# using System.Collections.Immutable;
 // }
 

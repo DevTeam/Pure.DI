@@ -6,8 +6,8 @@ The _Transient_ lifetime specifies to create a new dependency instance each time
 
 
 ```c#
-using Pure.DI;
 using Shouldly;
+using Pure.DI;
 using static Pure.DI.Lifetime;
 
 DI.Setup(nameof(Composition))
@@ -44,6 +44,20 @@ class Service(
     public IDependency Dependency2 { get; } = dependency2;
 }
 ```
+
+<details>
+<summary>Running this code sample locally</summary>
+
+- Make sure you have the [.NET SDK 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) or later is installed
+- Create a net9.0 (or later) console application
+- Add references to NuGet packages
+  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+- Copy the example code into the _Program.cs_ file
+
+You are ready to run the example!
+
+</details>
 
 The _Transient_ lifetime is the safest and is used by default. Yes, its widespread use can cause a lot of memory traffic, but if there are doubts about thread safety, the _Transient_ lifetime is preferable because each consumer has its own instance of the dependency. The following nuances should be considered when choosing the _Transient_ lifetime:
 

@@ -6,8 +6,8 @@ Sometimes it's important to take control of building a dependency graph. For exa
 
 
 ```c#
-using Pure.DI;
 using Shouldly;
+using Pure.DI;
 
 DI.Setup(nameof(Composition))
     // The `default` tag is used to resolve dependencies
@@ -61,6 +61,20 @@ class Service(
     public IDependency Dependency3 { get; } = dependency3;
 }
 ```
+
+<details>
+<summary>Running this code sample locally</summary>
+
+- Make sure you have the [.NET SDK 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) or later is installed
+- Create a net9.0 (or later) console application
+- Add references to NuGet packages
+  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+- Copy the example code into the _Program.cs_ file
+
+You are ready to run the example!
+
+</details>
 
 The tag can be a constant, a type, a [smart tag](smart-tags.md), or a value of an `Enum` type. The _default_ and _null_ tags are also supported.
 

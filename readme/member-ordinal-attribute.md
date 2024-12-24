@@ -6,8 +6,8 @@ When applied to a property or field, these type members will also participate in
 
 
 ```c#
-using Pure.DI;
 using Shouldly;
+using Pure.DI;
 using System.Text;
 
 DI.Setup(nameof(PersonComposition))
@@ -65,6 +65,20 @@ class Person : IPerson
     }
 }
 ```
+
+<details>
+<summary>Running this code sample locally</summary>
+
+- Make sure you have the [.NET SDK 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) or later is installed
+- Create a net9.0 (or later) console application
+- Add references to NuGet packages
+  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+- Copy the example code into the _Program.cs_ file
+
+You are ready to run the example!
+
+</details>
 
 The attribute `Ordinal` is part of the API, but you can use your own attribute at any time, and this allows you to define them in the assembly and namespace you want.
 

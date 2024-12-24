@@ -6,9 +6,9 @@ The `// ObjectResolveMethodName = GetService` hint overrides the _object Resolve
 
 
 ```c#
-using Pure.DI;
 using Shouldly;
 using Microsoft.Extensions.DependencyInjection;
+using Pure.DI;
 
 var serviceProvider = new Composition();
 var service = serviceProvider.GetRequiredService<IService>();
@@ -43,6 +43,21 @@ partial class Composition : IServiceProvider
             .Root<IService>();
 }
 ```
+
+<details>
+<summary>Running this code sample locally</summary>
+
+- Make sure you have the [.NET SDK 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) or later is installed
+- Create a net9.0 (or later) console application
+- Add references to NuGet packages
+  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+  - [Microsoft.Extensions.DependencyInjection](https://www.nuget.org/packages/Microsoft.Extensions.DependencyInjection)
+- Copy the example code into the _Program.cs_ file
+
+You are ready to run the example!
+
+</details>
 
 
 Class diagram:

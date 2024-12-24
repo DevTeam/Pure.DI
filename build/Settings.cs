@@ -41,6 +41,11 @@ internal class Settings(Properties properties, Versions versions)
         new(new Version(4, 8, 0)),
         new(new Version(4, 3, 1))
     ];
+    
+    // Make sure that /Directory.Build.props has been updated.
+    public int BaseDotNetFrameworkMajorVersion => 9;
+    
+    public string BaseDotNetFrameworkVersion => $"{BaseDotNetFrameworkMajorVersion}.0";
 
     private static NuGetVersion GetVersion(Versions versions) =>
         versions.GetNext(new NuGetRestoreSettings("Pure.DI"), VersionRange, 0);

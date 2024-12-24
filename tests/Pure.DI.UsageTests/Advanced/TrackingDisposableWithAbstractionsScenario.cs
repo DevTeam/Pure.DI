@@ -10,6 +10,7 @@ $h=It contains attributes like `Inject` and `Inject<T>` that work for constructo
 $f=This package should also be included in a project:
 $f=
 $f=[![NuGet](https://img.shields.io/nuget/v/Pure.DI)](https://www.nuget.org/packages/Pure.DI)
+$r=Shouldly;Pure.DI.Abstractions
 */
 
 // ReSharper disable CheckNamespace
@@ -26,8 +27,6 @@ using Xunit;
 
 // {
 //# using Pure.DI;
-//# using Pure.DI.Abstractions;
-//# using Shouldly;
 // }
 
 public class Scenario

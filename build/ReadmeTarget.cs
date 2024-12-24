@@ -10,6 +10,7 @@ internal class ReadmeTarget(
     Commands commands,
     Env env,
     Versions versions,
+    Settings settings,
     [Tag(typeof(CreateExamplesTarget))] ITarget<IReadOnlyCollection<ExampleGroup>> createExamplesTarget,
     [Tag(typeof(BenchmarksTarget))] ITarget<int> benchmarksTarget)
     : IInitializable, ITarget<int>
@@ -86,7 +87,7 @@ internal class ReadmeTarget(
                     content = content
                         .Replace("$(version)", generatorPackageVersion)
                         .Replace("$(ms.version)", msPackageVersion)
-                        .Replace("$(targetFrameworkVersion)", "net9.0");
+                        .Replace("$(targetFrameworkVersion)", $"net{settings.BaseDotNetFrameworkVersion}");
                     await File.WriteAllTextAsync(readmeFile.Replace("PageTemplate.md", ".md"), content);
                 }
 
@@ -128,6 +129,26 @@ internal class ReadmeTarget(
                 await examplesWriter.WriteLineAsync("```c#");
                 await examplesWriter.WriteLineAsync(code);
                 await examplesWriter.WriteLineAsync("```");
+                await examplesWriter.WriteLineAsync("");
+                await examplesWriter.WriteLineAsync("<details>");
+                await examplesWriter.WriteLineAsync("<summary>Running this code sample locally</summary>");
+                await examplesWriter.WriteLineAsync("");
+                await examplesWriter.WriteLineAsync($"- Make sure you have the [.NET SDK {settings.BaseDotNetFrameworkVersion}](https://dotnet.microsoft.com/en-us/download/dotnet/{settings.BaseDotNetFrameworkVersion}) or later is installed");
+                await examplesWriter.WriteLineAsync($"- Create a net{settings.BaseDotNetFrameworkVersion} (or later) console application");
+                var references = vars[CreateExamplesTarget.ReferencesKey].Split(";", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                var refs = references.Length > 0 ? "s" : "";
+                await examplesWriter.WriteLineAsync($"- Add reference{refs} to NuGet package{refs}");
+                await examplesWriter.WriteLineAsync("  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)");
+                foreach (var reference in references)
+                {
+                    await examplesWriter.WriteLineAsync($"  - [{reference}](https://www.nuget.org/packages/{reference})");
+                }
+                
+                await examplesWriter.WriteLineAsync("- Copy the example code into the _Program.cs_ file");
+                await examplesWriter.WriteLineAsync("");
+                await examplesWriter.WriteLineAsync("You are ready to run the example!");
+                await examplesWriter.WriteLineAsync("");
+                await examplesWriter.WriteLineAsync("</details>");
                 await examplesWriter.WriteLineAsync("");
 
                 var footer = vars[CreateExamplesTarget.FooterKey];

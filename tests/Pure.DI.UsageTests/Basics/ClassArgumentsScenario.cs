@@ -6,6 +6,7 @@ $h=Sometimes you need to pass some state to a composition class to use it when r
 $h=> [!NOTE]
 $h=> Actually, class arguments work like normal bindings. The difference is that they bind to the values of the arguments. These values will be injected wherever they are required.
 $h=
+$r=Shouldly
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -20,7 +21,6 @@ using Xunit;
 
 // {
 //# using Pure.DI;
-//# using Shouldly;
 // }
 
 public class Scenario

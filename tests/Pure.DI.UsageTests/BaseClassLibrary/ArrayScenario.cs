@@ -28,6 +28,7 @@ $f=- System.Collections.Immutable.IImmutableQueue<T>
 $f=- System.Collections.Immutable.ImmutableQueue<T>
 $f=- System.Collections.Immutable.IImmutableStack<T>
 $f=And of course this list can easily be supplemented on its own.
+$r=Shouldly
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -41,7 +42,6 @@ using Xunit;
 
 // {
 //# using Pure.DI;
-//# using Shouldly;
 // }
 
 public class Scenario

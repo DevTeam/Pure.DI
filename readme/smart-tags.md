@@ -24,8 +24,8 @@ The example below also uses the `using static Pure.DI.Tag;` directive to access 
 
 
 ```c#
-using Pure.DI;
 using Shouldly;
+using Pure.DI;
 
 using static Pure.DI.Tag;
 using static Pure.DI.Lifetime;
@@ -80,6 +80,20 @@ class Service(
     public IDependency Dependency3 { get; } = dependency3;
 }
 ```
+
+<details>
+<summary>Running this code sample locally</summary>
+
+- Make sure you have the [.NET SDK 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) or later is installed
+- Create a net9.0 (or later) console application
+- Add references to NuGet packages
+  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+- Copy the example code into the _Program.cs_ file
+
+You are ready to run the example!
+
+</details>
 
 
 Class diagram:

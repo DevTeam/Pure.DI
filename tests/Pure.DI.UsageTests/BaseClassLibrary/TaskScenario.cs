@@ -10,6 +10,7 @@ $h=- TaskCreationOptions.None
 $h=- TaskContinuationOptions.None
 $h=
 $h=But you can always override them, as in the example below for <c>TaskScheduler.Current</c>.
+$r=Shouldly
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -23,7 +24,6 @@ using Xunit;
 
 // {
 //# using Pure.DI;
-//# using Shouldly;
 // }
 
 public class Scenario

@@ -6,8 +6,8 @@ To dispose all created singleton instances, simply dispose the composition insta
 
 
 ```c#
-using Pure.DI;
 using Shouldly;
+using Pure.DI;
 using static Pure.DI.Lifetime;
 
 DI.Setup(nameof(Composition))
@@ -48,6 +48,20 @@ class Service(IDependency dependency) : IService
     public IDependency Dependency { get; } = dependency;
 }
 ```
+
+<details>
+<summary>Running this code sample locally</summary>
+
+- Make sure you have the [.NET SDK 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) or later is installed
+- Create a net9.0 (or later) console application
+- Add references to NuGet packages
+  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+- Copy the example code into the _Program.cs_ file
+
+You are ready to run the example!
+
+</details>
 
 A composition class becomes disposable if it creates at least one disposable singleton instance.
 

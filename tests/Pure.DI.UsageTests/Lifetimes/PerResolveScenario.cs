@@ -3,6 +3,7 @@ $v=true
 $p=2
 $d=PerResolve
 $h=The _PerResolve_ lifetime ensures that there will be one instance of the dependency for each composition root instance.
+$r=Shouldly
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -16,7 +17,6 @@ using static Lifetime;
 
 // {
 //# using Pure.DI;
-//# using Shouldly;
 //# using static Pure.DI.Lifetime;
 // }
 

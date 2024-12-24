@@ -3,6 +3,7 @@ $v=true
 $p=3
 $d=Tag Type
 $h=`Tag.Type` in bindings replaces the expression `typeof(T)`, where `T` is the type of the implementation in a binding.
+$r=Shouldly
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -19,7 +20,6 @@ using Xunit;
 
 // {
 //# using Pure.DI;
-//# using Shouldly;
 // }
 
 public class Scenario

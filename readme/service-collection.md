@@ -6,10 +6,10 @@ The `// OnNewRoot = On` hint specifies to create a static method that will be ca
 
 
 ```c#
-using Pure.DI;
 using Pure.DI.MS;
 using Shouldly;
 using Microsoft.Extensions.DependencyInjection;
+using Pure.DI;
 
 var composition = new Composition();
 var serviceCollection = composition.ServiceCollection;
@@ -46,6 +46,22 @@ partial class Composition : ServiceProviderFactory<Composition>
             .Root<IService>();
 }
 ```
+
+<details>
+<summary>Running this code sample locally</summary>
+
+- Make sure you have the [.NET SDK 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) or later is installed
+- Create a net9.0 (or later) console application
+- Add references to NuGet packages
+  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+  - [Pure.DI.MS](https://www.nuget.org/packages/Pure.DI.MS)
+  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+  - [Microsoft.Extensions.DependencyInjection](https://www.nuget.org/packages/Microsoft.Extensions.DependencyInjection)
+- Copy the example code into the _Program.cs_ file
+
+You are ready to run the example!
+
+</details>
 
 
 Class diagram:
