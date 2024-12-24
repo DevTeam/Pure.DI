@@ -29,7 +29,7 @@ $f=> At this point, a composition from another assembly or another project can b
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Advanced.ExposedGenericRootsScenario;
 
-using Integration;
+using OtherAssembly;
 using Pure.DI;
 using Xunit;
 using static Lifetime;
@@ -37,7 +37,7 @@ using static Lifetime;
 // {
 //# using Pure.DI;
 //# using static Pure.DI.Lifetime;
-//# using Pure.DI.Integration;
+//# using OtherAssembly;
 // }
 
 public class Scenario

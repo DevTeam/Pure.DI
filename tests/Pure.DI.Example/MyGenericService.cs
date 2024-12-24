@@ -1,6 +1,6 @@
 ﻿// ReSharper disable UnusedMember.Global
 
-namespace Pure.DI.Integration;
+namespace OtherAssembly;
 
 internal class MyGenericService<T>(IMyDependency dependency, int id) : IMyGenericService<T>
 {

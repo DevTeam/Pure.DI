@@ -18,7 +18,7 @@ public partial class CompositionInOtherProject
 ```c#
 using Pure.DI;
 using static Pure.DI.Lifetime;
-using Pure.DI.Integration;
+using OtherAssembly;
 
 DI.Setup(nameof(Composition))
     // Binds to exposed composition roots from other project

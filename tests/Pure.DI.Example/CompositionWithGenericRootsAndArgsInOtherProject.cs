@@ -1,6 +1,6 @@
 ﻿// ReSharper disable UnusedMember.Local
 
-namespace Pure.DI.Integration;
+namespace OtherAssembly;
 
 using Pure.DI;
 

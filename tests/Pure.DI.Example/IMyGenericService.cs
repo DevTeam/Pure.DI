@@ -1,6 +1,6 @@
 ﻿// ReSharper disable UnusedParameter.Global
 
-namespace Pure.DI.Integration;
+namespace OtherAssembly;
 
 public interface IMyGenericService<in T>
 {

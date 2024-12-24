@@ -8,9 +8,9 @@ using Pure.DI.Benchmarks.Benchmarks;
 
 internal class ReadmeTarget(
     Commands commands,
-    Settings settings,
     Env env,
     Versions versions,
+    [Tag(typeof(CreateExamplesTarget))] ITarget<IReadOnlyCollection<ExampleGroup>> createExamplesTarget,
     [Tag(typeof(BenchmarksTarget))] ITarget<int> benchmarksTarget)
     : IInitializable, ITarget<int>
 {
@@ -20,28 +20,6 @@ internal class ReadmeTarget(
     private const string ReadmeTemplateFile = "ReadmeTemplate.md";
     private const string FooterTemplateFile = "FooterTemplate.md";
     private const string ReadmeFile = "README.md";
-    private const string VisibleKey = "v";
-    private const string TitleKey = "t";
-    private const string PriorityKey = "p";
-    private const string DescriptionKey = "d";
-    private const string HeaderKey = "h";
-    private const string FooterKey = "f";
-    private const string SourceKey = "s";
-    private const string BodyKey = "b";
-
-    private static readonly string[] Groups =
-    [
-        "Basics",
-        "Lifetimes",
-        "BaseClassLibrary",
-        "Generics",
-        "Attributes",
-        "Interception",
-        "Hints",
-        "Advanced"
-    ];
-
-    private static readonly char[] Separator = ['='];
 
     public Task InitializeAsync(CancellationToken cancellationToken) => commands.RegisterAsync(
         this, $"Generates {CommonReadmeFile}", "readme", "r");
@@ -61,29 +39,7 @@ internal class ReadmeTarget(
             Directory.Delete(generatedFiles, true);
         }
 
-        var usageTestsProject = Path.Combine(solutionDirectory, "tests", "Pure.DI.UsageTests", "Pure.DI.UsageTests.csproj");
-        var projects = new[]
-        {
-            usageTestsProject,
-            Path.Combine(solutionDirectory, "benchmarks", "Pure.DI.Benchmarks", "Pure.DI.Benchmarks.csproj")
-        };
-
-        var msbuild = new MSBuild()
-            .WithTarget("clean;rebuild")
-            .WithProps(("Configuration", settings.Configuration));
-
-        foreach (var project in projects)
-        {
-            await msbuild
-                .WithProject(project)
-                .BuildAsync(cancellationToken: cancellationToken).EnsureSuccess();
-        }
-
-        await new DotNetTest()
-            .WithProject(usageTestsProject)
-            .WithNoBuild(true)
-            .WithConfiguration(settings.Configuration)
-            .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
+        var examplesSet = await createExamplesTarget.RunAsync(cancellationToken);
 
         await using var readmeWriter = File.CreateText(ReadmeFile);
 
@@ -94,9 +50,8 @@ internal class ReadmeTarget(
         await AddContentAsync(ReadmeTemplateFile, readmeWriter);
 
         await readmeWriter.WriteLineAsync("");
-
-        var examples = await CreateExamplesAsync(cancellationToken);
-        await GenerateExamplesAsync(examples, readmeWriter, logsDirectory);
+        
+        await GenerateExamplesAsync(examplesSet, readmeWriter, logsDirectory);
 
         await AddContentAsync(FooterTemplateFile, readmeWriter);
 
@@ -117,132 +72,7 @@ internal class ReadmeTarget(
         }
     }
 
-    private async Task<IEnumerable<(string GroupName, Dictionary<string, string>[] SampleItems)>> CreateExamplesAsync(CancellationToken cancellationToken)
-    {
-        var solutionDir = env.GetPath(PathType.SolutionDirectory);
-        var items = new List<Dictionary<string, string>>();
-        var testsDir = Path.Combine(solutionDir, "tests", "Pure.DI.UsageTests");
-        var files = Directory.EnumerateFiles(testsDir, "*.cs", SearchOption.AllDirectories);
-        foreach (var file in files)
-        {
-            var relativePath = Path.GetRelativePath(Environment.CurrentDirectory, file);
-            Part? part = null;
-            var vars = new Dictionary<string, string>
-            {
-                [VisibleKey] = "False",
-                [TitleKey] = Path.GetDirectoryName(Path.GetRelativePath(testsDir, file)) ?? "",
-                [PriorityKey] = string.Empty,
-                [DescriptionKey] = string.Empty,
-                [HeaderKey] = string.Empty,
-                [FooterKey] = string.Empty,
-                [SourceKey] = relativePath
-            };
-            items.Add(vars);
-            var body = new List<string>();
-            var localBody = new List<string>();
-            var offset = int.MaxValue;
-            foreach (var line in await File.ReadAllLinesAsync(file, cancellationToken))
-            {
-                var str = line.Trim().Replace(" ", "");
-                if (str.StartsWith("/*"))
-                {
-                    part = Part.Comment;
-                    continue;
-                }
-
-                if (str.StartsWith("*/"))
-                {
-                    part = null;
-                    continue;
-                }
-
-                if (str.StartsWith("//{"))
-                {
-                    part = Part.Body;
-                    continue;
-                }
-
-                if (str.StartsWith("//}"))
-                {
-                    if (body.Count != 0)
-                    {
-                        body.Add("");
-                    }
-
-                    body.AddRange(localBody.Select(i => i.Length > offset ? i[offset..].TrimEnd() : i));
-                    offset = int.MaxValue;
-                    localBody.Clear();
-                    part = null;
-                    continue;
-                }
-
-                if (part == Part.Comment && str.StartsWith('$'))
-                {
-                    var parts = line[1..].Split(Separator, 2, StringSplitOptions.RemoveEmptyEntries);
-                    if (parts.Length > 0)
-                    {
-                        var key = parts[0].Trim();
-                        var curVar = vars[key];
-                        if (curVar != string.Empty)
-                        {
-                            curVar += "\n";
-                        }
-
-                        if (parts.Length == 2)
-                        {
-                            vars[key] = curVar + parts[1].TrimEnd();
-                        }
-                        else
-                        {
-                            vars[key] = curVar;
-                        }
-                    }
-
-                    continue;
-                }
-
-                if (part == Part.Body)
-                {
-                    var trimmedLine = line.TrimStart();
-                    if (!string.IsNullOrWhiteSpace(trimmedLine))
-                    {
-                        var curOffset = line.Length - trimmedLine.Length;
-                        if (curOffset < offset)
-                        {
-                            offset = curOffset;
-                        }
-                    }
-
-                    if (line.TrimStart().StartsWith("//# "))
-                    {
-                        localBody.Add(line.Replace("//# ", ""));
-                        continue;
-                    }
-
-                    localBody.Add(line);
-                }
-            }
-
-            if (body.Count != 0)
-            {
-                vars[BodyKey] = string.Join(Environment.NewLine, body);
-            }
-        }
-
-        var groups = Groups
-            .Select((name, index) => (name, index))
-            .ToDictionary(i => i.name, i => i.index);
-
-        var examples = items
-            .Where(i => i.ContainsKey(BodyKey) && i[VisibleKey] != "False")
-            .GroupBy(i => i[TitleKey])
-            .OrderBy(i => groups.TryGetValue(i.Key, out var index) ? index : int.MaxValue)
-            .Select(i => (GroupName: i.Key, SampleItems: i.OrderBy(j => int.Parse(j[PriorityKey])).ThenBy(j => j[DescriptionKey]).ToArray()));
-
-        return examples;
-    }
-
-    private async Task GenerateExamplesAsync(IEnumerable<(string GroupName, Dictionary<string, string>[] SampleItems)> examples, TextWriter readmeWriter, string logsDirectory)
+    private async Task GenerateExamplesAsync(IReadOnlyCollection<ExampleGroup> examplesSet, TextWriter readmeWriter, string logsDirectory)
     {
         var solutionDir = env.GetPath(PathType.SolutionDirectory);
         var generatorPackageVersion = versions.GetNext(new NuGetRestoreSettings("Pure.DI"), Settings.VersionRange, 0).ToString();
@@ -270,91 +100,53 @@ internal class ReadmeTarget(
         await readmeWriter.WriteLineAsync("## Examples");
         await readmeWriter.WriteLineAsync("");
         
-        var tempDir = Path.Combine(env.GetPath(PathType.TempDirectory));
-        Directory.CreateDirectory(tempDir);
-        try
+        foreach (var (groupName, exampleItems) in examplesSet)
         {
-            new DotNetNew()
-                .WithWorkingDirectory(tempDir)
-                .WithTemplateName("console")
-                .WithName("App")
-                .Run().EnsureSuccess();
-            
-            var appDir = Path.Combine(tempDir, "App");
-            File.Copy(Path.Combine(solutionDir, "tests", "Pure.DI.UsageTests", "Test.props"), Path.Combine(appDir, "Directory.Build.props"));
-            var programFile = Path.Combine(appDir, "Program.cs");
-            foreach (var (groupName, exampleItems) in examples)
+            var groupTitle = new string(FormatTitle(groupName).ToArray());
+            Info($"Processing examples group \"{groupTitle}\"");
+            await readmeWriter.WriteLineAsync($"### {groupTitle}");
+            foreach (var vars in exampleItems)
             {
-                var groupTitle = new string(FormatTitle(groupName).ToArray());
-                Info($"Processing examples group \"{groupTitle}\"");
-                await readmeWriter.WriteLineAsync($"### {groupTitle}");
-                foreach (var vars in exampleItems)
+                var description = vars[CreateExamplesTarget.DescriptionKey];
+                var code = vars[CreateExamplesTarget.BodyKey];
+                var file = CreateExampleFileName(description);
+                var exampleFile = $"{file}.md";
+                await using var examplesWriter = File.CreateText(Path.Combine(ReadmeDir, exampleFile));
+                WriteLine(description, Color.Details);
+                await readmeWriter.WriteLineAsync($"- [{description}]({ReadmeDir}/{exampleFile})");
+                await examplesWriter.WriteLineAsync($"#### {description}");
+                await examplesWriter.WriteLineAsync("");
+                await examplesWriter.WriteLineAsync($"[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../{vars[CreateExamplesTarget.SourceKey].Replace('\\', '/')})");
+                await examplesWriter.WriteLineAsync("");
+                var header = vars[CreateExamplesTarget.HeaderKey];
+                if (!string.IsNullOrWhiteSpace(header))
                 {
-                    var description = vars[DescriptionKey];
-                    var code = vars[BodyKey];
-                    var file = CreateExampleFileName(description);
-                    await File.WriteAllTextAsync(programFile, code);
-                    var result = new DotNetBuild()
-                        .WithProject(Path.Combine(appDir, "App.csproj"))
-                        .WithWorkingDirectory(solutionDir)
-                        .WithProps(("SolutionDir", solutionDir))
-                        .Build();
-                    if (result.ExitCode != 0)
-                    {
-                        WriteLine($"{file}:", Color.Header);
-                        foreach (var line in code.Split([Environment.NewLine], StringSplitOptions.None))
-                        {
-                            WriteLine(line, Color.Details);
-                        }
-
-                        continue;
-                    }
-
-                    var exampleFile = $"{file}.md";
-                    await using var examplesWriter = File.CreateText(Path.Combine(ReadmeDir, exampleFile));
-                    WriteLine(description, Color.Details);
-                    await readmeWriter.WriteLineAsync($"- [{description}]({ReadmeDir}/{exampleFile})");
-                    await examplesWriter.WriteLineAsync($"#### {description}");
+                    await examplesWriter.WriteLineAsync(header);
                     await examplesWriter.WriteLineAsync("");
-                    await examplesWriter.WriteLineAsync($"[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../{vars[SourceKey].Replace('\\', '/')})");
-                    await examplesWriter.WriteLineAsync("");
-                    var header = vars[HeaderKey];
-                    if (!string.IsNullOrWhiteSpace(header))
-                    {
-                        await examplesWriter.WriteLineAsync(header);
-                        await examplesWriter.WriteLineAsync("");
-                    }
-
-                    await examplesWriter.WriteLineAsync("");
-                    await examplesWriter.WriteLineAsync("```c#");
-                    await examplesWriter.WriteLineAsync(code);
-                    await examplesWriter.WriteLineAsync("```");
-                    await examplesWriter.WriteLineAsync("");
-
-                    var footer = vars[FooterKey];
-                    if (!string.IsNullOrWhiteSpace(footer))
-                    {
-                        await examplesWriter.WriteLineAsync(footer);
-                        await examplesWriter.WriteLineAsync("");
-                    }
-
-                    var exampleName = Path.GetFileNameWithoutExtension(vars[SourceKey]);
-
-                    await AddExample(logsDirectory, $"Pure.DI.UsageTests.*.{exampleName}.*.g.cs", examplesWriter);
-                    await examplesWriter.WriteLineAsync("");
-
-                    await AddClassDiagram(logsDirectory, exampleName, examplesWriter);
-                    await examplesWriter.WriteLineAsync("");
-
-                    await examplesWriter.FlushAsync();
                 }
-            }
-        }
-        finally
-        {
-            if (Directory.Exists(tempDir))
-            {
-                Directory.Delete(tempDir, true);
+
+                await examplesWriter.WriteLineAsync("");
+                await examplesWriter.WriteLineAsync("```c#");
+                await examplesWriter.WriteLineAsync(code);
+                await examplesWriter.WriteLineAsync("```");
+                await examplesWriter.WriteLineAsync("");
+
+                var footer = vars[CreateExamplesTarget.FooterKey];
+                if (!string.IsNullOrWhiteSpace(footer))
+                {
+                    await examplesWriter.WriteLineAsync(footer);
+                    await examplesWriter.WriteLineAsync("");
+                }
+
+                var exampleName = Path.GetFileNameWithoutExtension(vars[CreateExamplesTarget.SourceKey]);
+
+                await AddExample(logsDirectory, $"Pure.DI.UsageTests.*.{exampleName}.*.g.cs", examplesWriter);
+                await examplesWriter.WriteLineAsync("");
+
+                await AddClassDiagram(logsDirectory, exampleName, examplesWriter);
+                await examplesWriter.WriteLineAsync("");
+
+                await examplesWriter.FlushAsync();
             }
         }
     }
@@ -531,10 +323,4 @@ internal class ReadmeTarget(
             .Replace("`", string.Empty)
             .Replace("\\", string.Empty)
             .ToLowerInvariant();
-
-    private enum Part
-    {
-        Comment,
-        Body
-    }
 }

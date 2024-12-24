@@ -1,4 +1,4 @@
-﻿namespace Pure.DI.Integration;
+﻿namespace OtherAssembly;
 
 internal class MyService(IMyDependency dependency) : IMyService
 {

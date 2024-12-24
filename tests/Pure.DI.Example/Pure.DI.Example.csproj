@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <RootNamespace>Pure.DI.Integration</RootNamespace>
+        <RootNamespace>OtherAssembly</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>

@@ -1,4 +1,4 @@
-﻿namespace Pure.DI.Integration;
+﻿namespace OtherAssembly;
 
 public interface IMyService
 {

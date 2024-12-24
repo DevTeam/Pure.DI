@@ -27,7 +27,7 @@ $h=```
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Advanced.ExposedGenericRootsWithArgsScenario;
 
-using Integration;
+using OtherAssembly;
 using Pure.DI;
 using Xunit;
 using static Lifetime;
@@ -35,7 +35,7 @@ using static Lifetime;
 // {
 //# using Pure.DI;
 //# using static Pure.DI.Lifetime;
-//# using Pure.DI.Integration;
+//# using OtherAssembly;
 // }
 
 public class Scenario

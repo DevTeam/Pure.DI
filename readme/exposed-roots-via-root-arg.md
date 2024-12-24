@@ -17,7 +17,7 @@ public partial class CompositionInOtherProject
 
 ```c#
 using Pure.DI;
-using Pure.DI.Integration;
+using OtherAssembly;
 
 DI.Setup(nameof(Composition))
     .Hint(Hint.Resolve, "Off")

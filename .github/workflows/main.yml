@@ -3,10 +3,10 @@ name: Pure.DI check
 on: [ push, pull_request ]
 
 jobs:
-  build:  
-    
+  build:
+
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v4
 
@@ -15,15 +15,30 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
-      - name: Build and check
-        run: dotnet run --project ./build -- check      
-  
+      - name: Build and test
+        run: dotnet run --project ./build -- check
+
+  test-examples:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Test examples
+        run: dotnet run --project ./build -- te
+
   deploy-examples:
-    
+
     if: ${{ github.event_name != 'pull_request' }}
 
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v4
 
@@ -42,4 +57,4 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages
-          FOLDER: samples/BlazorWebAssemblyApp/bin/wwwroot          
+          FOLDER: samples/BlazorWebAssemblyApp/bin/wwwroot

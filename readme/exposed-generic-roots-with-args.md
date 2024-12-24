@@ -20,7 +20,7 @@ public partial class CompositionWithGenericRootsAndArgsInOtherProject
 ```c#
 using Pure.DI;
 using static Pure.DI.Lifetime;
-using Pure.DI.Integration;
+using OtherAssembly;
 
 DI.Setup(nameof(Composition))
     .Hint(Hint.Resolve, "Off")
