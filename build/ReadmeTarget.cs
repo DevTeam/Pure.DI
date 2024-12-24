@@ -74,7 +74,6 @@ internal class ReadmeTarget(
 
     private async Task GenerateExamplesAsync(IReadOnlyCollection<ExampleGroup> examplesSet, TextWriter readmeWriter, string logsDirectory)
     {
-        var solutionDir = env.GetPath(PathType.SolutionDirectory);
         var generatorPackageVersion = versions.GetNext(new NuGetRestoreSettings("Pure.DI"), Settings.VersionRange, 0).ToString();
         var msPackageVersion = versions.GetNext(new NuGetRestoreSettings("Pure.DI.MS"), Settings.VersionRange, 0).ToString();
         foreach (var readmeFile in Directory.EnumerateFiles(Path.Combine(ReadmeDir), "*.md"))
@@ -217,7 +216,7 @@ internal class ReadmeTarget(
         }
     }
 
-    private async Task AddBenchmarksAsync(string logsDirectory, TextWriter readmeWriter)
+    private static async Task AddBenchmarksAsync(string logsDirectory, TextWriter readmeWriter)
     {
         var benchmarksReportFiles = Directory.EnumerateFiles(logsDirectory, "*.html").ToArray();
         if (benchmarksReportFiles.Length != 0)

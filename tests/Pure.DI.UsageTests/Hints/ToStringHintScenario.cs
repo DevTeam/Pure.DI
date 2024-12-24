@@ -20,7 +20,6 @@ $f=For more hints, see [this](README.md#setup-hints) page.
 namespace Pure.DI.UsageTests.Hints.ToStringHintScenario;
 
 using Xunit;
-using static Hint;
 
 // {
 //# using Pure.DI;
