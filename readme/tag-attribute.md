@@ -64,6 +64,34 @@ You are ready to run the example!
 
 The tag can be a constant, a type, a [smart tag](smart-tags.md), or a value of an `Enum` type. This attribute is part of the API, but you can use your own attribute at any time, and this allows you to define them in the assembly and namespace you want.
 
+The following partial class will be generated:
+
+```c#
+partial class Composition
+{
+  private readonly Composition _root;
+
+  [OrdinalAttribute(256)]
+  public Composition()
+  {
+    _root = this;
+  }
+
+  internal Composition(Composition parentScope)
+  {
+    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
+  }
+
+  public IService Root
+  {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get
+    {
+      return new Service(new AbcDependency(), new XyzDependency());
+    }
+  }
+}
+```
 
 Class diagram:
 

@@ -85,6 +85,43 @@ You are ready to run the example!
 
 </details>
 
+The following partial class will be generated:
+
+```c#
+partial class PersonComposition
+{
+  private readonly PersonComposition _root;
+
+  private readonly int _argPersonId;
+
+  [OrdinalAttribute(128)]
+  public PersonComposition(int personId)
+  {
+    _argPersonId = personId;
+    _root = this;
+  }
+
+  internal PersonComposition(PersonComposition parentScope)
+  {
+    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
+    _argPersonId = _root._argPersonId;
+  }
+
+  public IPerson Person
+  {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get
+    {
+      Uri transientUri2 = new Uri("https://github.com/DevTeam/Pure.DI");
+      string transientString1 = "Nik";
+      Person transientPerson0 = new Person(transientString1);
+      transientPerson0.Id = _argPersonId;
+      transientPerson0.Initialize(transientUri2);
+      return transientPerson0;
+    }
+  }
+}
+```
 
 Class diagram:
 

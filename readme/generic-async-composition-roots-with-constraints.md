@@ -77,6 +77,85 @@ You are ready to run the example!
 > [!IMPORTANT]
 > The method `Inject()`cannot be used outside of the binding setup.
 
+The following partial class will be generated:
+
+```c#
+partial class Composition
+{
+  private readonly Composition _root;
+
+  [OrdinalAttribute(128)]
+  public Composition()
+  {
+    _root = this;
+  }
+
+  internal Composition(Composition parentScope)
+  {
+    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
+  }
+
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public Task<IService<T2, bool>> GetOtherServiceAsync<T2>(CancellationToken cancellationToken)
+    where T2: IDisposable
+  {
+    TaskFactory<IService<T2, bool>> perBlockTaskFactory2;
+    CancellationToken localCancellationToken71 = cancellationToken;
+    TaskCreationOptions transientTaskCreationOptions3 = TaskCreationOptions.None;
+    TaskCreationOptions localTaskCreationOptions72 = transientTaskCreationOptions3;
+    TaskContinuationOptions transientTaskContinuationOptions4 = TaskContinuationOptions.None;
+    TaskContinuationOptions localTaskContinuationOptions73 = transientTaskContinuationOptions4;
+    TaskScheduler transientTaskScheduler5 = TaskScheduler.Default;
+    TaskScheduler localTaskScheduler74 = transientTaskScheduler5;
+    perBlockTaskFactory2 = new TaskFactory<IService<T2, bool>>(localCancellationToken71, localTaskCreationOptions72, localTaskContinuationOptions73, localTaskScheduler74);
+    Func<IService<T2, bool>> perBlockFunc1 = new Func<IService<T2, bool>>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
+    {
+      OtherService<T2> transientOtherService6;
+      IDependency<T2> localDependency76 = new Dependency<T2>();
+      transientOtherService6 = new OtherService<T2>(localDependency76);
+      IService<T2, bool> localValue75 = transientOtherService6;
+      return localValue75;
+    });
+    Task<IService<T2, bool>> transientTask0;
+    // Injects an instance factory
+    Func<IService<T2, bool>> localFactory77 = perBlockFunc1;
+    // Injects a task factory creating and scheduling task objects
+    TaskFactory<IService<T2, bool>> localTaskFactory78 = perBlockTaskFactory2;
+    // Creates and starts a task using the instance factory
+    transientTask0 = localTaskFactory78.StartNew(localFactory77);
+    return transientTask0;
+  }
+
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public Task<IService<T2, T>> GetMyRootAsync<T2, T>(CancellationToken cancellationToken)
+    where T2: IDisposable
+    where T: struct
+  {
+    TaskFactory<IService<T2, T>> perBlockTaskFactory2;
+    CancellationToken localCancellationToken79 = cancellationToken;
+    TaskCreationOptions transientTaskCreationOptions3 = TaskCreationOptions.None;
+    TaskCreationOptions localTaskCreationOptions80 = transientTaskCreationOptions3;
+    TaskContinuationOptions transientTaskContinuationOptions4 = TaskContinuationOptions.None;
+    TaskContinuationOptions localTaskContinuationOptions81 = transientTaskContinuationOptions4;
+    TaskScheduler transientTaskScheduler5 = TaskScheduler.Default;
+    TaskScheduler localTaskScheduler82 = transientTaskScheduler5;
+    perBlockTaskFactory2 = new TaskFactory<IService<T2, T>>(localCancellationToken79, localTaskCreationOptions80, localTaskContinuationOptions81, localTaskScheduler82);
+    Func<IService<T2, T>> perBlockFunc1 = new Func<IService<T2, T>>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
+    {
+      IService<T2, T> localValue83 = new Service<T2, T>(new Dependency<T2>());
+      return localValue83;
+    });
+    Task<IService<T2, T>> transientTask0;
+    // Injects an instance factory
+    Func<IService<T2, T>> localFactory84 = perBlockFunc1;
+    // Injects a task factory creating and scheduling task objects
+    TaskFactory<IService<T2, T>> localTaskFactory85 = perBlockTaskFactory2;
+    // Creates and starts a task using the instance factory
+    transientTask0 = localTaskFactory85.StartNew(localFactory84);
+    return transientTask0;
+  }
+}
+```
 
 Class diagram:
 

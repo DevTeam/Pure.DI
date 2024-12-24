@@ -43,6 +43,46 @@ You are ready to run the example!
 
 For more hints, see [this](README.md#setup-hints) page.
 
+The following partial class will be generated:
+
+```c#
+partial class Composition
+{
+  private readonly Composition _root;
+
+  private Service? _singletonService44;
+
+  [OrdinalAttribute(256)]
+  public Composition()
+  {
+    _root = this;
+  }
+
+  internal Composition(Composition parentScope)
+  {
+    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
+  }
+
+  public IService Root
+  {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get
+    {
+      if (_root._singletonService44 is null)
+      {
+        Func<IDependency> perBlockFunc0 = new Func<IDependency>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
+        {
+          IDependency localValue88 = new Dependency();
+          return localValue88;
+        });
+        _root._singletonService44 = new Service(perBlockFunc0);
+      }
+
+      return _root._singletonService44;
+    }
+  }
+}
+```
 
 Class diagram:
 

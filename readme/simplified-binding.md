@@ -109,6 +109,35 @@ For class `Dependency`, the `Bind().To<Dependency>()` binding will be equivalent
 | ❌ | `DependencyBase`      | non-abstract                                    |
 | ❌ | `IDependencyBase`     | is not directly implemented by class Dependency |
 
+The following partial class will be generated:
+
+```c#
+partial class Composition
+{
+  private readonly Composition _root;
+
+  [OrdinalAttribute(256)]
+  public Composition()
+  {
+    _root = this;
+  }
+
+  internal Composition(Composition parentScope)
+  {
+    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
+  }
+
+  public IService MyService
+  {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get
+    {
+      Dependency perBlockDependency1 = new Dependency();
+      return new Service(perBlockDependency1, perBlockDependency1, perBlockDependency1);
+    }
+  }
+}
+```
 
 Class diagram:
 

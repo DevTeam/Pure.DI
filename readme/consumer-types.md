@@ -78,6 +78,44 @@ You are ready to run the example!
 
 </details>
 
+The following partial class will be generated:
+
+```c#
+partial class Composition
+{
+  private readonly Composition _root;
+
+  private readonly Serilog.ILogger _argLogger;
+
+  [OrdinalAttribute(128)]
+  public Composition(Serilog.ILogger logger)
+  {
+    _argLogger = logger ?? throw new ArgumentNullException(nameof(logger));
+    _root = this;
+  }
+
+  internal Composition(Composition parentScope)
+  {
+    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
+    _argLogger = _root._argLogger;
+  }
+
+  public IService Root
+  {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get
+    {
+      Serilog.ILogger transientILogger3;
+      Serilog.ILogger localLogger48 = _argLogger;
+      transientILogger3 = localLogger48.ForContext( new Type[1]{typeof(Dependency)}[0]);
+      Serilog.ILogger transientILogger1;
+      Serilog.ILogger localLogger49 = _argLogger;
+      transientILogger1 = localLogger49.ForContext( new Type[1]{typeof(Service)}[0]);
+      return new Service(transientILogger1, new Dependency(transientILogger3));
+    }
+  }
+}
+```
 
 Class diagram:
 

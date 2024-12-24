@@ -75,6 +75,43 @@ You are ready to run the example!
 > [!IMPORTANT]
 > The method `Inject()`cannot be used outside of the binding setup.
 
+The following partial class will be generated:
+
+```c#
+partial class Composition
+{
+  private readonly Composition _root;
+
+  [OrdinalAttribute(256)]
+  public Composition()
+  {
+    _root = this;
+  }
+
+  internal Composition(Composition parentScope)
+  {
+    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
+  }
+
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public IService<T2, bool> GetOtherService<T2>()
+    where T2: IDisposable
+  {
+    OtherService<T2> transientOtherService0;
+    IDependency<T2> localDependency86 = new Dependency<T2>();
+    transientOtherService0 = new OtherService<T2>(localDependency86);
+    return transientOtherService0;
+  }
+
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public IService<T2, T> GetMyRoot<T2, T>()
+    where T2: IDisposable
+    where T: struct
+  {
+    return new Service<T2, T>(new Dependency<T2>());
+  }
+}
+```
 
 Class diagram:
 

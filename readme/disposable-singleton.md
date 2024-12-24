@@ -65,6 +65,88 @@ You are ready to run the example!
 
 A composition class becomes disposable if it creates at least one disposable singleton instance.
 
+The following partial class will be generated:
+
+```c#
+partial class Composition: IDisposable
+{
+  private readonly Composition _root;
+  private readonly Lock _lock;
+  private object[] _disposables;
+  private int _disposeIndex;
+
+  private Dependency? _singletonDependency43;
+
+  [OrdinalAttribute(256)]
+  public Composition()
+  {
+    _root = this;
+    _lock = new Lock();
+    _disposables = new object[1];
+  }
+
+  internal Composition(Composition parentScope)
+  {
+    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
+    _lock = _root._lock;
+    _disposables = parentScope._disposables;
+  }
+
+  public IService Root
+  {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get
+    {
+      if (_root._singletonDependency43 is null)
+      {
+        using (_lock.EnterScope())
+        {
+          if (_root._singletonDependency43 is null)
+          {
+            _root._singletonDependency43 = new Dependency();
+            _root._disposables[_root._disposeIndex++] = _root._singletonDependency43;
+          }
+        }
+      }
+
+      return new Service(_root._singletonDependency43);
+    }
+  }
+
+  public void Dispose()
+  {
+    int disposeIndex;
+    object[] disposables;
+    using (_lock.EnterScope())
+    {
+      disposeIndex = _disposeIndex;
+      _disposeIndex = 0;
+      disposables = _disposables;
+      _disposables = new object[1];
+      _singletonDependency43 = null;
+    }
+
+    while (disposeIndex-- > 0)
+    {
+      switch (disposables[disposeIndex])
+      {
+        case IDisposable disposableInstance:
+          try
+          {
+            disposableInstance.Dispose();
+          }
+          catch (Exception exception)
+          {
+            OnDisposeException(disposableInstance, exception);
+          }
+          break;
+      }
+    }
+  }
+
+  partial void OnDisposeException<T>(T disposableInstance, Exception exception) where T : IDisposable;
+}
+```
 
 Class diagram:
 

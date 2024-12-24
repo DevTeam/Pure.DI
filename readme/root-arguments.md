@@ -86,6 +86,31 @@ You are ready to run the example!
 
 When using composition root arguments, compilation warnings are shown if `Resolve` methods are generated, since these methods will not be able to create these roots. You can disable the creation of `Resolve` methods using the `Hint(Hint.Resolve, "Off")` hint, or ignore them but remember the risks of using `Resolve` methods.
 
+The following partial class will be generated:
+
+```c#
+partial class Composition
+{
+  private readonly Composition _root;
+
+  [OrdinalAttribute(128)]
+  public Composition()
+  {
+    _root = this;
+  }
+
+  internal Composition(Composition parentScope)
+  {
+    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
+  }
+
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public IService CreateServiceWithArgs(int id, string dependencyName, string serviceName)
+  {
+    return new Service(serviceName, new Dependency(id, dependencyName));
+  }
+}
+```
 
 Class diagram:
 

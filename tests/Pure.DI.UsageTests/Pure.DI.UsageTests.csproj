@@ -4,6 +4,8 @@
 
     <PropertyGroup>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+        <CompilerGeneratedFilesOutputPath>../../.logs</CompilerGeneratedFilesOutputPath>
     </PropertyGroup>
 
     <ItemGroup>

@@ -64,6 +64,56 @@ You are ready to run the example!
 
 </details>
 
+The following partial class will be generated:
+
+```c#
+partial class Composition
+{
+  private readonly Composition _root;
+  private readonly Lock _lock;
+
+  private Service? _singletonService44;
+  private Dependency? _singletonDependency43;
+
+  [OrdinalAttribute(256)]
+  public Composition()
+  {
+    _root = this;
+    _lock = new Lock();
+  }
+
+  internal Composition(Composition parentScope)
+  {
+    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
+    _lock = _root._lock;
+  }
+
+  public IService Root
+  {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get
+    {
+      if (_root._singletonService44 is null)
+      {
+        using (_lock.EnterScope())
+        {
+          if (_root._singletonService44 is null)
+          {
+            if (_root._singletonDependency43 is null)
+            {
+              _root._singletonDependency43 = new Dependency();
+            }
+
+            _root._singletonService44 = new Service(_root._singletonDependency43, _root._singletonDependency43);
+          }
+        }
+      }
+
+      return _root._singletonService44;
+    }
+  }
+}
+```
 
 Class diagram:
 

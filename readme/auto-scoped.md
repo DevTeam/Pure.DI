@@ -82,6 +82,71 @@ You are ready to run the example!
 > [!IMPORTANT]
 > The method `Inject()`cannot be used outside of the binding setup.
 
+The following partial class will be generated:
+
+```c#
+partial class Composition
+{
+  private readonly Composition _root;
+  private readonly Lock _lock;
+
+  private Dependency? _scopedDependency43;
+
+  [OrdinalAttribute(256)]
+  public Composition()
+  {
+    _root = this;
+    _lock = new Lock();
+  }
+
+  internal Composition(Composition parentScope)
+  {
+    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
+    _lock = _root._lock;
+  }
+
+  public Program ProgramRoot
+  {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get
+    {
+      Func<IService> perBlockFunc1 = new Func<IService>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
+      {
+        Composition transientComposition3 = this;
+        IService transientIService2;
+        Composition localBaseComposition91 = transientComposition3;
+        // Creates a session
+        var localSession92= new Composition(localBaseComposition91);
+        // Provides a root
+        transientIService2 = localSession92.SessionRoot;
+        IService localValue90 = transientIService2;
+        return localValue90;
+      });
+      return new Program(perBlockFunc1);
+    }
+  }
+
+  private Service SessionRoot
+  {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get
+    {
+      if (_scopedDependency43 is null)
+      {
+        using (_lock.EnterScope())
+        {
+          if (_scopedDependency43 is null)
+          {
+            _scopedDependency43 = new Dependency();
+          }
+        }
+      }
+
+      return new Service(_scopedDependency43);
+    }
+  }
+}
+```
 
 Class diagram:
 

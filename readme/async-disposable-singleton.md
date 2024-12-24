@@ -67,6 +67,130 @@ You are ready to run the example!
 
 </details>
 
+The following partial class will be generated:
+
+```c#
+partial class Composition: IDisposable, IAsyncDisposable
+{
+  private readonly Composition _root;
+  private readonly Lock _lock;
+  private object[] _disposables;
+  private int _disposeIndex;
+
+  private Dependency? _singletonDependency43;
+
+  [OrdinalAttribute(256)]
+  public Composition()
+  {
+    _root = this;
+    _lock = new Lock();
+    _disposables = new object[1];
+  }
+
+  internal Composition(Composition parentScope)
+  {
+    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
+    _lock = _root._lock;
+    _disposables = parentScope._disposables;
+  }
+
+  public IService Root
+  {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get
+    {
+      if (_root._singletonDependency43 is null)
+      {
+        using (_lock.EnterScope())
+        {
+          if (_root._singletonDependency43 is null)
+          {
+            _root._singletonDependency43 = new Dependency();
+            _root._disposables[_root._disposeIndex++] = _root._singletonDependency43;
+          }
+        }
+      }
+
+      return new Service(_root._singletonDependency43);
+    }
+  }
+
+  public void Dispose()
+  {
+    int disposeIndex;
+    object[] disposables;
+    using (_lock.EnterScope())
+    {
+      disposeIndex = _disposeIndex;
+      _disposeIndex = 0;
+      disposables = _disposables;
+      _disposables = new object[1];
+      _singletonDependency43 = null;
+    }
+
+    while (disposeIndex-- > 0)
+    {
+      switch (disposables[disposeIndex])
+      {
+        case IAsyncDisposable asyncDisposableInstance:
+          try
+          {
+            var valueTask = asyncDisposableInstance.DisposeAsync();
+            if (!valueTask.IsCompleted)
+            {
+              valueTask.AsTask().Wait();
+            }
+          }
+          catch (Exception exception)
+          {
+            OnDisposeAsyncException(asyncDisposableInstance, exception);
+          }
+          break;
+      }
+    }
+  }
+
+  partial void OnDisposeException<T>(T disposableInstance, Exception exception) where T : IDisposable;
+
+  public async ValueTask DisposeAsync()
+  {
+    int disposeIndex;
+    object[] disposables;
+    _lock.Enter();
+    try
+    {
+      disposeIndex = _disposeIndex;
+      _disposeIndex = 0;
+      disposables = _disposables;
+      _disposables = new object[1];
+      _singletonDependency43 = null;
+    }
+    finally
+    {
+      _lock.Exit();
+    }
+
+    while (disposeIndex-- > 0)
+    {
+      switch (disposables[disposeIndex])
+      {
+        case IAsyncDisposable asyncDisposableInstance:
+          try
+          {
+            await asyncDisposableInstance.DisposeAsync();
+          }
+          catch (Exception exception)
+          {
+            OnDisposeAsyncException(asyncDisposableInstance, exception);
+          }
+          break;
+      }
+    }
+  }
+
+  partial void OnDisposeAsyncException<T>(T asyncDisposableInstance, Exception exception) where T : IAsyncDisposable;
+}
+```
 
 Class diagram:
 

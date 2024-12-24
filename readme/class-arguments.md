@@ -83,6 +83,44 @@ You are ready to run the example!
 
 </details>
 
+The following partial class will be generated:
+
+```c#
+partial class Composition
+{
+  private readonly Composition _root;
+
+  private readonly int _argId;
+  private readonly string _argServiceName;
+  private readonly string _argDependencyName;
+
+  [OrdinalAttribute(128)]
+  public Composition(int id, string serviceName, string dependencyName)
+  {
+    _argId = id;
+    _argServiceName = serviceName ?? throw new ArgumentNullException(nameof(serviceName));
+    _argDependencyName = dependencyName ?? throw new ArgumentNullException(nameof(dependencyName));
+    _root = this;
+  }
+
+  internal Composition(Composition parentScope)
+  {
+    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
+    _argId = _root._argId;
+    _argServiceName = _root._argServiceName;
+    _argDependencyName = _root._argDependencyName;
+  }
+
+  public IService MyService
+  {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get
+    {
+      return new Service(_argServiceName, new Dependency(_argId, _argDependencyName));
+    }
+  }
+}
+```
 
 Class diagram:
 

@@ -78,6 +78,59 @@ You are ready to run the example!
 The `OnNewInstanceLifetimeRegularExpression` hint helps you define a set of lifetimes that require instance creation control. You can use it to specify a regular expression to filter bindings by lifetime name.
 For more hints, see [this](README.md#setup-hints) page.
 
+The following partial class will be generated:
+
+```c#
+partial class Composition
+{
+  private readonly Composition _root;
+  private readonly Lock _lock;
+
+  private Dependency? _singletonDependency43;
+
+  [OrdinalAttribute(256)]
+  public Composition()
+  {
+    _root = this;
+    _lock = new Lock();
+  }
+
+  internal Composition(Composition parentScope)
+  {
+    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
+    _lock = _root._lock;
+  }
+
+  public IService Root
+  {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get
+    {
+      if (_root._singletonDependency43 is null)
+      {
+        using (_lock.EnterScope())
+        {
+          if (_root._singletonDependency43 is null)
+          {
+            Dependency _singletonDependency43Temp;
+            _singletonDependency43Temp = new Dependency();
+            OnNewInstance<Dependency>(ref _singletonDependency43Temp, null, Lifetime.Singleton);
+            Thread.MemoryBarrier();
+            _root._singletonDependency43 = _singletonDependency43Temp;
+          }
+        }
+      }
+
+      Service transientService0 = new Service(_root._singletonDependency43);
+      OnNewInstance<Service>(ref transientService0, null, Lifetime.Transient);
+      return transientService0;
+    }
+  }
+
+
+  partial void OnNewInstance<T>(ref T value, object? tag, Lifetime lifetime);
+}
+```
 
 Class diagram:
 

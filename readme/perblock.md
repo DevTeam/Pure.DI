@@ -62,6 +62,55 @@ You are ready to run the example!
 
 </details>
 
+The following partial class will be generated:
+
+```c#
+partial class Composition
+{
+  private readonly Composition _root;
+  private readonly Lock _lock;
+
+  private (IDependency dep3, IDependency dep4) _singletonValueTuple44;
+  private bool _singletonValueTuple44Created;
+
+  [OrdinalAttribute(256)]
+  public Composition()
+  {
+    _root = this;
+    _lock = new Lock();
+  }
+
+  internal Composition(Composition parentScope)
+  {
+    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
+    _lock = _root._lock;
+  }
+
+  public Service Root
+  {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get
+    {
+      if (!_root._singletonValueTuple44Created)
+      {
+        using (_lock.EnterScope())
+        {
+          if (!_root._singletonValueTuple44Created)
+          {
+            Dependency perBlockDependency2 = new Dependency();
+            _root._singletonValueTuple44 = (perBlockDependency2, perBlockDependency2);
+            Thread.MemoryBarrier();
+            _root._singletonValueTuple44Created = true;
+          }
+        }
+      }
+
+      Dependency perBlockDependency1 = new Dependency();
+      return new Service(perBlockDependency1, perBlockDependency1, _root._singletonValueTuple44);
+    }
+  }
+}
+```
 
 Class diagram:
 

@@ -78,6 +78,70 @@ You are ready to run the example!
 
 The tag can be a constant, a type, a [smart tag](smart-tags.md), or a value of an `Enum` type. The _default_ and _null_ tags are also supported.
 
+The following partial class will be generated:
+
+```c#
+partial class Composition
+{
+  private readonly Composition _root;
+  private readonly Lock _lock;
+
+  private XyzDependency? _singletonXyzDependency44;
+
+  [OrdinalAttribute(256)]
+  public Composition()
+  {
+    _root = this;
+    _lock = new Lock();
+  }
+
+  internal Composition(Composition parentScope)
+  {
+    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
+    _lock = _root._lock;
+  }
+
+  public IDependency XyzRoot
+  {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get
+    {
+      if (_root._singletonXyzDependency44 is null)
+      {
+        using (_lock.EnterScope())
+        {
+          if (_root._singletonXyzDependency44 is null)
+          {
+            _root._singletonXyzDependency44 = new XyzDependency();
+          }
+        }
+      }
+
+      return _root._singletonXyzDependency44;
+    }
+  }
+
+  public IService Root
+  {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get
+    {
+      if (_root._singletonXyzDependency44 is null)
+      {
+        using (_lock.EnterScope())
+        {
+          if (_root._singletonXyzDependency44 is null)
+          {
+            _root._singletonXyzDependency44 = new XyzDependency();
+          }
+        }
+      }
+
+      return new Service(new AbcDependency(), _root._singletonXyzDependency44, new AbcDependency());
+    }
+  }
+}
+```
 
 Class diagram:
 

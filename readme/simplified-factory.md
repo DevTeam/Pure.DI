@@ -75,6 +75,40 @@ You are ready to run the example!
 
 </details>
 
+The following partial class will be generated:
+
+```c#
+partial class Composition
+{
+  private readonly Composition _root;
+
+  [OrdinalAttribute(256)]
+  public Composition()
+  {
+    _root = this;
+  }
+
+  internal Composition(Composition parentScope)
+  {
+    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
+  }
+
+  public IService MyService
+  {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get
+    {
+      Dependency transientDependency1;
+      Dependency localDependency53 = new Dependency();
+      DateTimeOffset transientDateTimeOffset3 = DateTimeOffset.Now;
+      DateTimeOffset localTime54 = transientDateTimeOffset3;
+      localDependency53.Initialize(localTime54);
+      transientDependency1 = localDependency53;
+      return new Service(transientDependency1);
+    }
+  }
+}
+```
 
 Class diagram:
 

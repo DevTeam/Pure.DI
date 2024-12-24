@@ -49,5 +49,33 @@ You are ready to run the example!
 
 </details>
 
+The following partial class will be generated:
+
+```c#
+partial class Composition
+{
+  private readonly Composition _root;
+
+  [OrdinalAttribute(128)]
+  public Composition()
+  {
+    _root = this;
+  }
+
+  internal Composition(Composition parentScope)
+  {
+    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
+  }
+
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public Program GetProgram(OtherAssembly.CompositionInOtherProject baseComposition)
+  {
+    OtherAssembly.IMyService transientIMyService1;
+    OtherAssembly.CompositionInOtherProject localInstance_1182D1277 = baseComposition;
+    transientIMyService1 = localInstance_1182D1277.MyService;
+    return new Program(transientIMyService1);
+  }
+}
+```
 
 

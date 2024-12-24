@@ -73,6 +73,38 @@ You are ready to run the example!
 The `OnCannotResolveContractTypeNameRegularExpression` hint helps define the set of types that require manual dependency resolution. You can use it to specify a regular expression to filter the full type name.
 For more hints, see [this](README.md#setup-hints) page.
 
+The following partial class will be generated:
+
+```c#
+partial class Composition
+{
+  private readonly Composition _root;
+
+  [OrdinalAttribute(256)]
+  public Composition()
+  {
+    _root = this;
+  }
+
+  internal Composition(Composition parentScope)
+  {
+    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
+  }
+
+  public IService Root
+  {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get
+    {
+      string transientString2 = OnCannotResolve<string>(null, Lifetime.Transient);
+      return new Service(new Dependency(transientString2));
+    }
+  }
+
+
+  private partial T OnCannotResolve<T>(object? tag, Lifetime lifetime);
+}
+```
 
 Class diagram:
 

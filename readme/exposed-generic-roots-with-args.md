@@ -52,5 +52,50 @@ You are ready to run the example!
 
 </details>
 
+The following partial class will be generated:
+
+```c#
+partial class Composition
+{
+  private readonly Composition _root;
+  private readonly Lock _lock;
+
+  private OtherAssembly.CompositionWithGenericRootsAndArgsInOtherProject? _singletonCompositionWithGenericRootsAndArgsInOtherProject44;
+
+  [OrdinalAttribute(128)]
+  public Composition()
+  {
+    _root = this;
+    _lock = new Lock();
+  }
+
+  internal Composition(Composition parentScope)
+  {
+    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
+    _lock = _root._lock;
+  }
+
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public Program GetProgram(int id)
+  {
+    if (_root._singletonCompositionWithGenericRootsAndArgsInOtherProject44 is null)
+    {
+      using (_lock.EnterScope())
+      {
+        if (_root._singletonCompositionWithGenericRootsAndArgsInOtherProject44 is null)
+        {
+          _root._singletonCompositionWithGenericRootsAndArgsInOtherProject44 = new OtherAssembly.CompositionWithGenericRootsAndArgsInOtherProject();
+        }
+      }
+    }
+
+    OtherAssembly.IMyGenericService<int> transientIMyGenericService1;
+    int localId3 = id;
+    OtherAssembly.CompositionWithGenericRootsAndArgsInOtherProject localInstance_1182D1274 = _root._singletonCompositionWithGenericRootsAndArgsInOtherProject44;
+    transientIMyGenericService1 = localInstance_1182D1274.GetMyService<int>(localId3);
+    return new Program(transientIMyGenericService1);
+  }
+}
+```
 
 

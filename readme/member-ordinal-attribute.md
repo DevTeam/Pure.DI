@@ -82,6 +82,48 @@ You are ready to run the example!
 
 The attribute `Ordinal` is part of the API, but you can use your own attribute at any time, and this allows you to define them in the assembly and namespace you want.
 
+The following partial class will be generated:
+
+```c#
+partial class PersonComposition
+{
+  private readonly PersonComposition _root;
+
+  private readonly int _argPersonId;
+  private readonly string _argPersonName;
+  private readonly DateTime _argPersonBirthday;
+
+  [OrdinalAttribute(128)]
+  public PersonComposition(int personId, string personName, DateTime personBirthday)
+  {
+    _argPersonId = personId;
+    _argPersonName = personName ?? throw new ArgumentNullException(nameof(personName));
+    _argPersonBirthday = personBirthday;
+    _root = this;
+  }
+
+  internal PersonComposition(PersonComposition parentScope)
+  {
+    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
+    _argPersonId = _root._argPersonId;
+    _argPersonName = _root._argPersonName;
+    _argPersonBirthday = _root._argPersonBirthday;
+  }
+
+  public IPerson Person
+  {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get
+    {
+      Person transientPerson0 = new Person();
+      transientPerson0.Id = _argPersonId;
+      transientPerson0.FirstName = _argPersonName;
+      transientPerson0.Birthday = _argPersonBirthday;
+      return transientPerson0;
+    }
+  }
+}
+```
 
 Class diagram:
 

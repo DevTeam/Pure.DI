@@ -70,6 +70,37 @@ You are ready to run the example!
 
 </details>
 
+The following partial class will be generated:
+
+```c#
+partial class Composition
+{
+  private readonly Composition _root;
+
+  [OrdinalAttribute(128)]
+  public Composition()
+  {
+    _root = this;
+  }
+
+  internal Composition(Composition parentScope)
+  {
+    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
+  }
+
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public IService GetMyService(string name)
+  {
+    Guid transientGuid2 = Guid.NewGuid();
+    Dependency transientDependency1;
+    var localDependency47= new Dependency();
+    localDependency47.SetId(transientGuid2);
+    localDependency47.Name = name;
+    transientDependency1 = localDependency47;
+    return new Service(transientDependency1);
+  }
+}
+```
 
 Class diagram:
 

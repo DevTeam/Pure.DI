@@ -85,6 +85,40 @@ You are ready to run the example!
 > [!IMPORTANT]
 > The method `Inject()`cannot be used outside of the binding setup.
 
+The following partial class will be generated:
+
+```c#
+partial class Composition
+{
+  private readonly Composition _root;
+
+  [OrdinalAttribute(128)]
+  public Composition()
+  {
+    _root = this;
+  }
+
+  internal Composition(Composition parentScope)
+  {
+    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
+  }
+
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public IService GetRoot(CancellationToken cancellationToken)
+  {
+    Func<IDependency> perBlockFunc2 = new Func<IDependency>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
+    {
+      IDependency localValue60 = new Dependency();
+      return localValue60;
+    });
+    Task<IDependency> transientTask1;
+    Func<IDependency> localFactory61 = perBlockFunc2;
+    CancellationToken localCancellationToken62 = cancellationToken;
+    transientTask1 = new Task<IDependency>(localFactory61, localCancellationToken62);
+    return new Service(transientTask1);
+  }
+}
+```
 
 Class diagram:
 

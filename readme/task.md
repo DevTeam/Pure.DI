@@ -75,6 +75,52 @@ You are ready to run the example!
 
 </details>
 
+The following partial class will be generated:
+
+```c#
+partial class Composition
+{
+  private readonly Composition _root;
+
+  [OrdinalAttribute(128)]
+  public Composition()
+  {
+    _root = this;
+  }
+
+  internal Composition(Composition parentScope)
+  {
+    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
+  }
+
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public IService GetRoot(CancellationToken cancellationToken)
+  {
+    TaskFactory<IDependency> perBlockTaskFactory3;
+    CancellationToken localCancellationToken63 = cancellationToken;
+    TaskCreationOptions transientTaskCreationOptions4 = TaskCreationOptions.None;
+    TaskCreationOptions localTaskCreationOptions64 = transientTaskCreationOptions4;
+    TaskContinuationOptions transientTaskContinuationOptions5 = TaskContinuationOptions.None;
+    TaskContinuationOptions localTaskContinuationOptions65 = transientTaskContinuationOptions5;
+    TaskScheduler transientTaskScheduler6 = TaskScheduler.Current;
+    TaskScheduler localTaskScheduler66 = transientTaskScheduler6;
+    perBlockTaskFactory3 = new TaskFactory<IDependency>(localCancellationToken63, localTaskCreationOptions64, localTaskContinuationOptions65, localTaskScheduler66);
+    Func<IDependency> perBlockFunc2 = new Func<IDependency>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
+    {
+      IDependency localValue67 = new Dependency();
+      return localValue67;
+    });
+    Task<IDependency> transientTask1;
+    // Injects an instance factory
+    Func<IDependency> localFactory68 = perBlockFunc2;
+    // Injects a task factory creating and scheduling task objects
+    TaskFactory<IDependency> localTaskFactory69 = perBlockTaskFactory3;
+    // Creates and starts a task using the instance factory
+    transientTask1 = localTaskFactory69.StartNew(localFactory68);
+    return new Service(transientTask1);
+  }
+}
+```
 
 Class diagram:
 

@@ -106,6 +106,34 @@ internal interface TTDisposable: IDisposable { }
 internal interface TTEnumerator<out T>: IEnumerator<T> { }
 ```
 
+The following partial class will be generated:
+
+```c#
+partial class Composition
+{
+  private readonly Composition _root;
+
+  [OrdinalAttribute(256)]
+  public Composition()
+  {
+    _root = this;
+  }
+
+  internal Composition(Composition parentScope)
+  {
+    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
+  }
+
+  public IService Root
+  {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get
+    {
+      return new Service(new Dependency<int>(), new Dependency<string>());
+    }
+  }
+}
+```
 
 Class diagram:
 

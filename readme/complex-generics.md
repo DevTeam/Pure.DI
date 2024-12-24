@@ -83,6 +83,51 @@ You are ready to run the example!
 
 It can also be useful in a very simple scenario where, for example, the sequence of type arguments does not match the sequence of arguments of the contract that implements the type.
 
+The following partial class will be generated:
+
+```c#
+partial class Composition
+{
+  private readonly Composition _root;
+  private readonly Lock _lock;
+
+  private DependencyStruct<int> _singletonDependencyStruct51;
+  private bool _singletonDependencyStruct51Created;
+
+  [OrdinalAttribute(128)]
+  public Composition()
+  {
+    _root = this;
+    _lock = new Lock();
+  }
+
+  internal Composition(Composition parentScope)
+  {
+    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
+    _lock = _root._lock;
+  }
+
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public Program<T1> GetRoot<T1>(T1 depArg)
+    where T1: notnull
+  {
+    if (!_root._singletonDependencyStruct51Created)
+    {
+      using (_lock.EnterScope())
+      {
+        if (!_root._singletonDependencyStruct51Created)
+        {
+          _root._singletonDependencyStruct51 = new DependencyStruct<int>();
+          Thread.MemoryBarrier();
+          _root._singletonDependencyStruct51Created = true;
+        }
+      }
+    }
+
+    return new Program<T1>(new Service<T1, int, List<T1>, Dictionary<T1, int>>(new Dependency<T1>(depArg), _root._singletonDependencyStruct51));
+  }
+}
+```
 
 Class diagram:
 
