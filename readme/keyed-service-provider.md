@@ -53,14 +53,28 @@ partial class Composition : IKeyedServiceProvider
 <summary>Running this code sample locally</summary>
 
 - Make sure you have the [.NET SDK 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) or later is installed
+```bash
+dotnet --list-sdk
+```
 - Create a net9.0 (or later) console application
+```bash
+dotnet new console -n Sample
+```
 - Add references to NuGet packages
   - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
   - [Microsoft.Extensions.DependencyInjection](https://www.nuget.org/packages/Microsoft.Extensions.DependencyInjection)
+```bash
+dotnet add package Pure.DI
+dotnet add package Shouldly
+dotnet add package Microsoft.Extensions.DependencyInjection
+```
 - Copy the example code into the _Program.cs_ file
 
-You are ready to run the example!
+You are ready to run the example 🚀
+```bash
+dotnet run
+```
 
 </details>
 

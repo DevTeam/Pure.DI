@@ -82,7 +82,7 @@ The [project file](/samples/WebAPI/WebAPI.csproj) looks like this:
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.1.41" />
+        <PackageReference Include="Pure.DI.MS" Version="2.1.45" />
     </ItemGroup>
 
 </Project>

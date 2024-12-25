@@ -134,7 +134,13 @@ internal class ReadmeTarget(
                 await examplesWriter.WriteLineAsync("<summary>Running this code sample locally</summary>");
                 await examplesWriter.WriteLineAsync("");
                 await examplesWriter.WriteLineAsync($"- Make sure you have the [.NET SDK {settings.BaseDotNetFrameworkVersion}](https://dotnet.microsoft.com/en-us/download/dotnet/{settings.BaseDotNetFrameworkVersion}) or later is installed");
+                await examplesWriter.WriteLineAsync("```bash");
+                await examplesWriter.WriteLineAsync("dotnet --list-sdk");
+                await examplesWriter.WriteLineAsync("```");
                 await examplesWriter.WriteLineAsync($"- Create a net{settings.BaseDotNetFrameworkVersion} (or later) console application");
+                await examplesWriter.WriteLineAsync("```bash");
+                await examplesWriter.WriteLineAsync("dotnet new console -n Sample");
+                await examplesWriter.WriteLineAsync("```");
                 var references = vars[CreateExamplesTarget.ReferencesKey].Split(";", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                 var refs = references.Length > 0 ? "s" : "";
                 await examplesWriter.WriteLineAsync($"- Add reference{refs} to NuGet package{refs}");
@@ -143,10 +149,19 @@ internal class ReadmeTarget(
                 {
                     await examplesWriter.WriteLineAsync($"  - [{reference}](https://www.nuget.org/packages/{reference})");
                 }
-                
+                await examplesWriter.WriteLineAsync("```bash");
+                await examplesWriter.WriteLineAsync("dotnet add package Pure.DI");
+                foreach (var reference in references)
+                {
+                    await examplesWriter.WriteLineAsync($"dotnet add package {reference}");
+                }
+                await examplesWriter.WriteLineAsync("```");
                 await examplesWriter.WriteLineAsync("- Copy the example code into the _Program.cs_ file");
                 await examplesWriter.WriteLineAsync("");
-                await examplesWriter.WriteLineAsync("You are ready to run the example!");
+                await examplesWriter.WriteLineAsync("You are ready to run the example 🚀");
+                await examplesWriter.WriteLineAsync("```bash");
+                await examplesWriter.WriteLineAsync("dotnet run");
+                await examplesWriter.WriteLineAsync("```");
                 await examplesWriter.WriteLineAsync("");
                 await examplesWriter.WriteLineAsync("</details>");
                 await examplesWriter.WriteLineAsync("");

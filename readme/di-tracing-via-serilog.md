@@ -73,14 +73,28 @@ partial class Composition
 <summary>Running this code sample locally</summary>
 
 - Make sure you have the [.NET SDK 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) or later is installed
+```bash
+dotnet --list-sdk
+```
 - Create a net9.0 (or later) console application
+```bash
+dotnet new console -n Sample
+```
 - Add references to NuGet packages
   - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
   - [Serilog.Core](https://www.nuget.org/packages/Serilog.Core)
   - [Serilog.Events](https://www.nuget.org/packages/Serilog.Events)
+```bash
+dotnet add package Pure.DI
+dotnet add package Serilog.Core
+dotnet add package Serilog.Events
+```
 - Copy the example code into the _Program.cs_ file
 
-You are ready to run the example!
+You are ready to run the example 🚀
+```bash
+dotnet run
+```
 
 </details>
 
