@@ -41,6 +41,9 @@ internal sealed class Hints : Dictionary<Hint, string>, IHints
     public bool IsResolveEnabled =>
         IsEnabled(Hint.Resolve, SettingState.On);
 
+    public bool IsSystemThreadingLockEnabled => 
+        IsEnabled(Hint.SystemThreadingLock, SettingState.On);
+
     public string ResolveMethodName =>
         GetValueOrDefault(Hint.ResolveMethodName, Names.ResolveMethodName);
 

@@ -27,6 +27,8 @@ internal interface IHints : IReadOnlyDictionary<Hint, string>
     bool IsFormatCodeEnabled { get; }
 
     bool IsResolveEnabled { get; }
+    
+    bool IsSystemThreadingLockEnabled { get; }
 
     string ResolveMethodName { get; }
 

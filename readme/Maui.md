@@ -215,7 +215,7 @@ The [project file](/samples/MAUIApp/MAUIApp.csproj) looks like this:
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.1.45" />
+        <PackageReference Include="Pure.DI.MS" Version="2.1.46" />
     </ItemGroup>
 
 </Project>

@@ -2,9 +2,9 @@
 
 internal interface ILocks
 {
-    string GetLockType(Compilation compilation);
+    string GetLockType(MdSetup setup);
 
-    void AddLockStatements(Compilation compilation, LinesBuilder lines, bool isAsync);
+    void AddLockStatements(MdSetup setup, LinesBuilder lines, bool isAsync);
     
-    void AddUnlockStatements(LinesBuilder lines, bool isAsync);
+    void AddUnlockStatements(MdSetup setup, LinesBuilder lines, bool isAsync);
 }

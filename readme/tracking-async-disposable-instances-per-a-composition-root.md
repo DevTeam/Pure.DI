@@ -57,6 +57,7 @@ partial class Composition
 {
     static void Setup() =>
         DI.Setup()
+
             .Bind().To<Dependency>()
             .Bind().To<Service>()
 
@@ -99,13 +100,13 @@ The following partial class will be generated:
 partial class Composition
 {
   private readonly Composition _root;
-  private readonly Lock _lock;
+  private readonly Object _lock;
 
   [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;
-    _lock = new Lock();
+    _lock = new Object();
   }
 
   internal Composition(Composition parentScope)
@@ -121,7 +122,7 @@ partial class Composition
     {
       var accumulator46 = new Owned();
       Dependency transientDependency3 = new Dependency();
-      using (_lock.EnterScope())
+      lock (_lock)
       {
         accumulator46.Add(transientDependency3);
       }
@@ -130,14 +131,14 @@ partial class Composition
       Owned transientOwned1;
       Owned localOwned15 = accumulator46;
       transientOwned1 = localOwned15;
-      using (_lock.EnterScope())
+      lock (_lock)
       {
         accumulator46.Add(transientOwned1);
       }
       IOwned localOwned13 = transientOwned1;
       IService localValue14 = new Service(transientDependency3);
       perBlockOwned0 = new Owned<IService>(localValue14, localOwned13);
-      using (_lock.EnterScope())
+      lock (_lock)
       {
         accumulator46.Add(perBlockOwned0);
       }

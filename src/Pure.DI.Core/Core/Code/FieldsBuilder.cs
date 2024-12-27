@@ -22,7 +22,7 @@ internal sealed class FieldsBuilder(
         if (composition.IsThreadSafe)
         {
             // _lock field
-            code.AppendLine($"private readonly {locks.GetLockType(compilation)} {Names.LockFieldName};");
+            code.AppendLine($"private readonly {locks.GetLockType(composition.Source.Source)} {Names.LockFieldName};");
             membersCounter++;
         }
 

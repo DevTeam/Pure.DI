@@ -798,7 +798,27 @@ namespace Pure.DI
         /// </example>
         /// </summary>
         /// <seealso cref="IConfiguration.Hint"/>
-        Comments
+        Comments,
+
+        /// <summary>
+        /// <c>On</c> or <c>Off</c>. Indicates whether <see cref="System.Threading.Lock"/> should be used whenever possible instead of the classic approach of synchronizing object access using <see cref="System.Threading.Monitor"/>. <c>On</c> by default.
+        /// <example>
+        /// <code>
+        /// // SystemThreadingLock = Off
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// <br/>
+        /// or using the API call <see cref="IConfiguration.Hint"/>:
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Hint(Hint.SystemThreadingLock, "Off")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <seealso cref="IConfiguration.Hint"/>
+        SystemThreadingLock
     }
 
     /// <summary>

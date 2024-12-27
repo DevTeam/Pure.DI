@@ -80,6 +80,9 @@ partial class Composition
 {
     static void Setup() =>
         DI.Setup()
+// }
+            .Hint(Hint.SystemThreadingLock, "Off")
+// {
             .Bind().To<Dependency>()
             .Bind().To<Service>()
 

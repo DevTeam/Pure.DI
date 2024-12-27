@@ -32,7 +32,7 @@ internal sealed class DefaultConstructorBuilder(
             code.AppendLine($"{Names.RootFieldName} = this;");
             if (composition.IsThreadSafe)
             {
-                code.AppendLine($"{Names.LockFieldName} = new {locks.GetLockType(composition.Compilation)}();");
+                code.AppendLine($"{Names.LockFieldName} = new {locks.GetLockType(composition.Source.Source)}();");
             }
 
             if (composition.TotalDisposablesCount > 0)

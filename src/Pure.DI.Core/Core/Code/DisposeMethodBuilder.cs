@@ -208,7 +208,7 @@ internal sealed class DisposeMethodBuilder(
     {
         code.AppendLine("int disposeIndex;");
         code.AppendLine("object[] disposables;");
-        locks.AddLockStatements(composition.Compilation, code, isAsync);
+        locks.AddLockStatements(composition.Source.Source, code, isAsync);
         code.AppendLine("{");
         using (code.Indent())
         {
@@ -226,6 +226,6 @@ internal sealed class DisposeMethodBuilder(
         }
 
         code.AppendLine("}");
-        locks.AddUnlockStatements(code, isAsync);
+        locks.AddUnlockStatements(composition.Source.Source, code, isAsync);
     }
 }

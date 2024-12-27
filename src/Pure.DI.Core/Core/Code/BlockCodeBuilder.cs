@@ -57,7 +57,7 @@ internal class BlockCodeBuilder(
                     code.AppendLine($"if ({checkExpression})");
                     code.AppendLine("{");
                     code.IncIndent();
-                    locks.AddLockStatements(compilation, code, false);
+                    locks.AddLockStatements(ctx.DependencyGraph.Source, code, false);
                     code.AppendLine("{");
                     code.IncIndent();
                     ctx = ctx with { LockIsRequired = false };
@@ -124,7 +124,7 @@ internal class BlockCodeBuilder(
             code.AppendLine("}");
             if (!lockIsRequired)
             {
-                locks.AddUnlockStatements(code, false);
+                locks.AddUnlockStatements(ctx.DependencyGraph.Source, code, false);
                 code.AppendLine();
                 return;
             }

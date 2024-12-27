@@ -1,32 +1,38 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
-internal class Locks(ITypes types) : ILocks
+internal class Locks(
+    ITypes types)
+    : ILocks
 {
-    public string GetLockType(Compilation compilation) =>
-        types.TryGet(SpecialType.Lock, compilation) is not null
+    public string GetLockType(MdSetup setup) =>
+        IsSystemThreadingLockEnabled(setup)
             ? Names.LockTypeName
             : Names.ObjectTypeName;
 
-    public void AddLockStatements(Compilation compilation, LinesBuilder lines, bool isAsync)
+    public void AddLockStatements(MdSetup setup, LinesBuilder lines, bool isAsync)
     {
         if (!isAsync)
         {
             lines.AppendLine(
-                types.TryGet(SpecialType.Lock, compilation) is not null
+                IsSystemThreadingLockEnabled(setup)
                     ? $"using ({Names.LockFieldName}.EnterScope())"
                     : $"lock ({Names.LockFieldName})");
         }
         else
         {
-            lines.AppendLine($"{Names.LockFieldName}.Enter();");
-            lines.AppendLine("try");
+            // ReSharper disable once InvertIf
+            if (IsSystemThreadingLockEnabled(setup))
+            {
+                lines.AppendLine($"{Names.LockFieldName}.Enter();");
+                lines.AppendLine("try");
+            }
         }
     }
 
-    public void AddUnlockStatements(LinesBuilder lines, bool isAsync)
+    public void AddUnlockStatements(MdSetup setup, LinesBuilder lines, bool isAsync)
     {
-        if (!isAsync)
+        if (!isAsync || !IsSystemThreadingLockEnabled(setup))
         {
             return;
         }
@@ -40,4 +46,8 @@ internal class Locks(ITypes types) : ILocks
 
         lines.AppendLine("}");
     }
+
+    private bool IsSystemThreadingLockEnabled(MdSetup setup) => 
+        setup.Hints.IsSystemThreadingLockEnabled
+        && types.TryGet(SpecialType.Lock, setup.SemanticModel.Compilation) is not null;
 }

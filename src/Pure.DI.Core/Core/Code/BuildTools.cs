@@ -105,10 +105,9 @@ internal class BuildTools(
             .Select(i => new Line(0, $"{i.Name}.Add({variable.VariableName});"))
             .ToList();
 
-        var compilation = variable.Node.Binding.SemanticModel.Compilation;
         if (lockIsRequired && accLines.Count > 0)
         {
-            locks.AddLockStatements(compilation, code, false);
+            locks.AddLockStatements(ctx.DependencyGraph.Source, code, false);
             code.AppendLine("{");
             code.IncIndent();
         }
@@ -119,7 +118,7 @@ internal class BuildTools(
         {
             code.DecIndent();
             code.AppendLine("}");
-            locks.AddUnlockStatements(code, false);
+            locks.AddUnlockStatements(ctx.DependencyGraph.Source, code, false);
         }
 
         if (!ctx.DependencyGraph.Source.Hints.IsOnNewInstanceEnabled)
