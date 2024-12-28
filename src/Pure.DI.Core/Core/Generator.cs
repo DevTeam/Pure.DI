@@ -13,15 +13,10 @@ internal sealed class Generator(
     ISmartTags smartTags,
     IGeneratorSources sources,
     CancellationToken cancellationToken)
-    : IBuilder<ImmutableArray<SyntaxUpdate>, Generation>
+    : IBuilder<IEnumerable<SyntaxUpdate>, Generation>
 {
-    public Generation Build(ImmutableArray<SyntaxUpdate> updates)
+    public Generation Build(IEnumerable<SyntaxUpdate> updates)
     {
-        if (updates.IsDefaultOrEmpty)
-        {
-            return new Generation();
-        }
-
         profiler.Profile();
         using var logObserverToken = observersRegistry.Register(logObserver);
         try
@@ -36,7 +31,7 @@ internal sealed class Generator(
         return new Generation();
     }
 
-    private Unit ProcessUpdates(ImmutableArray<SyntaxUpdate> updates)
+    private Unit ProcessUpdates(IEnumerable<SyntaxUpdate> updates)
     {
         var compositions = new List<CompositionCode>();
         foreach (var setup in metadataBuilder.Build(updates))

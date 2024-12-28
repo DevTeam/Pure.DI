@@ -18,11 +18,9 @@ internal sealed class MetadataBuilder(
 {
     public IEnumerable<MdSetup> Build(IEnumerable<SyntaxUpdate> updates)
     {
-        var actualUpdates =
-            updates
-                .GroupBy(i => i.Node.SyntaxTree.GetRoot())
-                .Select(i => new SyntaxUpdate(i.Key, i.First().SemanticModel))
-                .ToList();
+        var actualUpdates = updates
+            .GroupBy(i => i.Node.SyntaxTree.GetRoot())
+            .Select(i => new SyntaxUpdate(i.Key, i.First().SemanticModel));
 
         var setups = new List<MdSetup>();
         foreach (var update in actualUpdates)

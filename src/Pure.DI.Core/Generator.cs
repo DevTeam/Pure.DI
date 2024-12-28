@@ -20,7 +20,7 @@ public sealed partial class Generator
             new GeneratorOptions(parseOptions, analyzerConfigOptionsProvider),
             new GeneratorSources(sourceProductionContext),
             new GeneratorDiagnostic(sourceProductionContext),
-            changes.Select(change => new SyntaxUpdate(change.Node, change.SemanticModel)).ToImmutableArray(),
+            changes.Select(change => new SyntaxUpdate(change.Node, change.SemanticModel)),
             cancellationToken);
     
     [Conditional("DI")]
@@ -31,12 +31,12 @@ public sealed partial class Generator
             .Root<IEnumerable<Source>>(nameof(Api))
             .Root<IObserversRegistry>(nameof(Observers))
             .RootBind<Generation>(nameof(Generate), kind: Internal)
-                .To((IBuilder<ImmutableArray<SyntaxUpdate>, Generation> generator, ImmutableArray<SyntaxUpdate> updates) => generator.Build(updates))
+                .To((IBuilder<IEnumerable<SyntaxUpdate>, Generation> generator, IEnumerable<SyntaxUpdate> updates) => generator.Build(updates))
 
             .RootArg<IGeneratorOptions>("options")
             .RootArg<IGeneratorSources>("sources")
             .RootArg<IGeneratorDiagnostic>("diagnostic")
-            .RootArg<ImmutableArray<SyntaxUpdate>>("updates")
+            .RootArg<IEnumerable<SyntaxUpdate>>("updates")
             .RootArg<CancellationToken>("cancellationToken")
 
                 .Bind().To<ApiInvocationProcessor>()
