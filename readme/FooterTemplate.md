@@ -729,6 +729,7 @@ Examples of how to set up a composition
 - [MSBuild logger](https://github.com/JetBrains/teamcity-msbuild-logger/blob/master/TeamCity.MSBuild.Logger/Composition.cs)
 
 Articles
+- [RU New in Pure.DI by the end of 2024](https://habr.com/ru/articles/868744/)
 - [RU New in Pure.DI](https://habr.com/ru/articles/808297/)
 - [RU Pure.DI v2.1](https://habr.com/ru/articles/795809/)
 - [RU Pure.DI next step](https://habr.com/ru/articles/554236/)
