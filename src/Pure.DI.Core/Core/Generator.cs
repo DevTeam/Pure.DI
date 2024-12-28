@@ -3,7 +3,6 @@
 namespace Pure.DI.Core;
 
 internal sealed class Generator(
-    IGlobalOptions globalOptions,
     IProfiler profiler,
     IExceptionHandler exceptionHandler,
     IObserversRegistry observersRegistry,
@@ -23,11 +22,7 @@ internal sealed class Generator(
             return new Generation();
         }
 
-        if (globalOptions.TryGetProfilePath(out var profilePath))
-        {
-            profiler.Profiling(profilePath);
-        }
-
+        profiler.Profile();
         using var logObserverToken = observersRegistry.Register(logObserver);
         try
         {

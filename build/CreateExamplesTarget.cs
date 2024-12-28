@@ -84,7 +84,7 @@ internal class CreateExamplesTarget(
                 [HeaderKey] = string.Empty,
                 [FooterKey] = string.Empty,
                 [SourceKey] = relativePath,
-                [ReferencesKey] = string.Empty,
+                [ReferencesKey] = string.Empty
             };
             items.Add(vars);
             var body = new List<string>();

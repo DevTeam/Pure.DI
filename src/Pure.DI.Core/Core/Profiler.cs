@@ -5,12 +5,20 @@ namespace Pure.DI.Core;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-internal class Profiler(ILogger logger, CancellationToken cancellationToken) : IProfiler
+internal class Profiler(
+    ILogger logger,
+    IGlobalOptions globalOptions,
+    CancellationToken cancellationToken) : IProfiler
 {
     private CancellationToken _cancellationToken = cancellationToken;
 
-    public void Profiling(string path)
+    public void Profile()
     {
+        if (!globalOptions.TryGetProfilePath(out var profilePath))
+        {
+            return;
+        }
+
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             logger.Log(
@@ -23,8 +31,8 @@ internal class Profiler(ILogger logger, CancellationToken cancellationToken) : I
             return;
         }
 
-        Directory.CreateDirectory(path);
-        var traceFile = Path.Combine(path, $"pure_di_{Guid.NewGuid().ToString()[..4]}.dtt");
+        Directory.CreateDirectory(profilePath);
+        var traceFile = Path.Combine(profilePath, $"pure_di_{Guid.NewGuid().ToString()[..4]}.dtt");
         var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         var profiler = Path.Combine(userProfile, ".dotnet", "tools", "dottrace.exe");
         if (!File.Exists(profiler))

@@ -2,5 +2,5 @@
 
 internal interface IProfiler
 {
-    void Profiling(string path);
+    void Profile();
 }
