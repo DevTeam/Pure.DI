@@ -188,69 +188,69 @@ partial class Composition: IDisposable, IAsyncDisposable
       disposables = _disposables;
       _disposables = new object[1];
       _scopedDependency43 = null;
-    }
+      }
 
-    while (disposeIndex-- > 0)
-    {
-      switch (disposables[disposeIndex])
+      while (disposeIndex-- > 0)
       {
-        case IAsyncDisposable asyncDisposableInstance:
-          try
-          {
-            var valueTask = asyncDisposableInstance.DisposeAsync();
-            if (!valueTask.IsCompleted)
+        switch (disposables[disposeIndex])
+        {
+          case IAsyncDisposable asyncDisposableInstance:
+            try
             {
-              valueTask.AsTask().Wait();
+              var valueTask = asyncDisposableInstance.DisposeAsync();
+              if (!valueTask.IsCompleted)
+              {
+                valueTask.AsTask().Wait();
+              }
             }
-          }
-          catch (Exception exception)
-          {
-            OnDisposeAsyncException(asyncDisposableInstance, exception);
-          }
-          break;
+            catch (Exception exception)
+            {
+              OnDisposeAsyncException(asyncDisposableInstance, exception);
+            }
+            break;
+        }
       }
     }
-  }
 
-  partial void OnDisposeException<T>(T disposableInstance, Exception exception) where T : IDisposable;
+    partial void OnDisposeException<T>(T disposableInstance, Exception exception) where T : IDisposable;
 
-  public async ValueTask DisposeAsync()
-  {
-    int disposeIndex;
-    object[] disposables;
-    _lock.Enter();
-    try
+    public async ValueTask DisposeAsync()
     {
-      disposeIndex = _disposeIndex;
-      _disposeIndex = 0;
-      disposables = _disposables;
-      _disposables = new object[1];
-      _scopedDependency43 = null;
-    }
-    finally
-    {
-      _lock.Exit();
-    }
-
-    while (disposeIndex-- > 0)
-    {
-      switch (disposables[disposeIndex])
+      int disposeIndex;
+      object[] disposables;
+      _lock.Enter();
+      try
       {
-        case IAsyncDisposable asyncDisposableInstance:
-          try
-          {
-            await asyncDisposableInstance.DisposeAsync();
-          }
-          catch (Exception exception)
-          {
-            OnDisposeAsyncException(asyncDisposableInstance, exception);
-          }
-          break;
-      }
-    }
-  }
+        disposeIndex = _disposeIndex;
+        _disposeIndex = 0;
+        disposables = _disposables;
+        _disposables = new object[1];
+        _scopedDependency43 = null;
+        }
+        finally
+        {
+          _lock.Exit();
+        }
 
-  partial void OnDisposeAsyncException<T>(T asyncDisposableInstance, Exception exception) where T : IAsyncDisposable;
+        while (disposeIndex-- > 0)
+        {
+          switch (disposables[disposeIndex])
+          {
+            case IAsyncDisposable asyncDisposableInstance:
+              try
+              {
+                await asyncDisposableInstance.DisposeAsync();
+              }
+              catch (Exception exception)
+              {
+                OnDisposeAsyncException(asyncDisposableInstance, exception);
+              }
+              break;
+          }
+        }
+      }
+
+      partial void OnDisposeAsyncException<T>(T asyncDisposableInstance, Exception exception) where T : IAsyncDisposable;
 }
 ```
 

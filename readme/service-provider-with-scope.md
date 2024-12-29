@@ -250,104 +250,104 @@ partial class Composition: IDisposable
       _disposables = new object[1];
       _scopedService44 = null;
       _singletonDependency43 = null;
-    }
+      }
 
-    while (disposeIndex-- > 0)
-    {
-      switch (disposables[disposeIndex])
+      while (disposeIndex-- > 0)
       {
-        case IDisposable disposableInstance:
-          try
-          {
-            disposableInstance.Dispose();
-          }
-          catch (Exception exception)
-          {
-            OnDisposeException(disposableInstance, exception);
-          }
-          break;
+        switch (disposables[disposeIndex])
+        {
+          case IDisposable disposableInstance:
+            try
+            {
+              disposableInstance.Dispose();
+            }
+            catch (Exception exception)
+            {
+              OnDisposeException(disposableInstance, exception);
+            }
+            break;
+        }
       }
     }
-  }
 
-  partial void OnDisposeException<T>(T disposableInstance, Exception exception) where T : IDisposable;
+    partial void OnDisposeException<T>(T disposableInstance, Exception exception) where T : IDisposable;
 
-  private readonly static int _bucketSize;
-  private readonly static Pair<Type, IResolver<Composition, object>>[] _buckets;
+    private readonly static int _bucketSize;
+    private readonly static Pair<Type, IResolver<Composition, object>>[] _buckets;
 
-  static Composition()
-  {
-    var valResolver_0000 = new Resolver_0000();
-    Resolver<IDependency>.Value = valResolver_0000;
-    var valResolver_0001 = new Resolver_0001();
-    Resolver<IService>.Value = valResolver_0001;
-    _buckets = Buckets<Type, IResolver<Composition, object>>.Create(
-      4,
-      out _bucketSize,
-      new Pair<Type, IResolver<Composition, object>>[2]
+    static Composition()
+    {
+      var valResolver_0000 = new Resolver_0000();
+      Resolver<IDependency>.Value = valResolver_0000;
+      var valResolver_0001 = new Resolver_0001();
+      Resolver<IService>.Value = valResolver_0001;
+      _buckets = Buckets<Type, IResolver<Composition, object>>.Create(
+        4,
+        out _bucketSize,
+        new Pair<Type, IResolver<Composition, object>>[2]
+        {
+           new Pair<Type, IResolver<Composition, object>>(typeof(IDependency), valResolver_0000)
+          ,new Pair<Type, IResolver<Composition, object>>(typeof(IService), valResolver_0001)
+        });
+    }
+
+    private const string CannotResolveMessage = "Cannot resolve composition root ";
+    private const string OfTypeMessage = "of type ";
+
+    private class Resolver<T>: IResolver<Composition, T>
+    {
+      public static IResolver<Composition, T> Value = new Resolver<T>();
+
+      public virtual T Resolve(Composition composite)
       {
-         new Pair<Type, IResolver<Composition, object>>(typeof(IDependency), valResolver_0000)
-        ,new Pair<Type, IResolver<Composition, object>>(typeof(IService), valResolver_0001)
-      });
-  }
+        throw new InvalidOperationException($"{CannotResolveMessage}{OfTypeMessage}{typeof(T)}.");
+      }
 
-  private const string CannotResolveMessage = "Cannot resolve composition root ";
-  private const string OfTypeMessage = "of type ";
-
-  private class Resolver<T>: IResolver<Composition, T>
-  {
-    public static IResolver<Composition, T> Value = new Resolver<T>();
-
-    public virtual T Resolve(Composition composite)
-    {
-      throw new InvalidOperationException($"{CannotResolveMessage}{OfTypeMessage}{typeof(T)}.");
-    }
-
-    public virtual T ResolveByTag(Composition composite, object tag)
-    {
-      throw new InvalidOperationException($"{CannotResolveMessage}\"{tag}\" {OfTypeMessage}{typeof(T)}.");
-    }
-  }
-
-  private sealed class Resolver_0000: Resolver<IDependency>
-  {
-    public override IDependency Resolve(Composition composition)
-    {
-      return composition.Root2;
-    }
-
-    public override IDependency ResolveByTag(Composition composition, object tag)
-    {
-      switch (tag)
+      public virtual T ResolveByTag(Composition composite, object tag)
       {
-        case null:
-          return composition.Root2;
-
-        default:
-          return base.ResolveByTag(composition, tag);
+        throw new InvalidOperationException($"{CannotResolveMessage}\"{tag}\" {OfTypeMessage}{typeof(T)}.");
       }
     }
-  }
 
-  private sealed class Resolver_0001: Resolver<IService>
-  {
-    public override IService Resolve(Composition composition)
+    private sealed class Resolver_0000: Resolver<IDependency>
     {
-      return composition.Root1;
-    }
-
-    public override IService ResolveByTag(Composition composition, object tag)
-    {
-      switch (tag)
+      public override IDependency Resolve(Composition composition)
       {
-        case null:
-          return composition.Root1;
+        return composition.Root2;
+      }
 
-        default:
-          return base.ResolveByTag(composition, tag);
+      public override IDependency ResolveByTag(Composition composition, object tag)
+      {
+        switch (tag)
+        {
+          case null:
+            return composition.Root2;
+
+          default:
+            return base.ResolveByTag(composition, tag);
+        }
       }
     }
-  }
+
+    private sealed class Resolver_0001: Resolver<IService>
+    {
+      public override IService Resolve(Composition composition)
+      {
+        return composition.Root1;
+      }
+
+      public override IService ResolveByTag(Composition composition, object tag)
+      {
+        switch (tag)
+        {
+          case null:
+            return composition.Root1;
+
+          default:
+            return base.ResolveByTag(composition, tag);
+        }
+      }
+    }
 }
 ```
 
