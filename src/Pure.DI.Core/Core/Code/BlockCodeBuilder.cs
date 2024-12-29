@@ -99,7 +99,7 @@ internal class BlockCodeBuilder(
                 return;
             }
 
-            if (variable.Node.Lifetime is Lifetime.Singleton or Lifetime.Scoped && nodeInfo.IsDisposable(variable.Node))
+            if (variable.Node.Lifetime is Lifetime.Singleton or Lifetime.Scoped && nodeInfo.IsDisposableAny(variable.Node))
             {
                 var parent = "";
                 if (variable.Node.Lifetime == Lifetime.Singleton)

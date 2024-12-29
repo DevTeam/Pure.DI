@@ -3,13 +3,20 @@
 public class ShroedingersCatTests
 {
     [Theory]
-    [InlineData(NullableContextOptions.Disable)]
-    [InlineData(NullableContextOptions.Annotations)]
-    [InlineData(NullableContextOptions.Warnings)]
-    [InlineData(NullableContextOptions.Enable)]
-    public async Task ShroedingersCatScenario(NullableContextOptions nullableContextOptions)
+    [InlineData(NullableContextOptions.Disable, 1)]
+    [InlineData(NullableContextOptions.Annotations, 1)]
+    [InlineData(NullableContextOptions.Warnings, 1)]
+    [InlineData(NullableContextOptions.Enable, 1)]
+    [InlineData(NullableContextOptions.Enable, 1, "Hint(Hint.FormatCode, \"On\")")]
+    [InlineData(NullableContextOptions.Enable, 2, "Hint(Hint.ThreadSafe, \"Off\")")]
+    public async Task ShroedingersCatScenario(NullableContextOptions nullableContextOptions, int randomInstanceCount, params string[] additionalCalls)
     {
         // Given
+        var additionalCallsStr = string.Join(".", additionalCalls);
+        if (additionalCallsStr.Length > 0)
+        {
+            additionalCallsStr = "." + additionalCallsStr;
+        }
 
         // When
         var result = await """
@@ -57,8 +64,8 @@ public class ShroedingersCatTests
                                {
                                    void Setup()
                                    {
-                                       // FormatCode = On
                                        DI.Setup(nameof(Composition))
+                                           #additionalCalls#
                                            // Models a random subatomic event that may or may not occur
                                            .Bind<Random>().As(Singleton).To(_ => 
                                            {
@@ -96,7 +103,7 @@ public class ShroedingersCatTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options
+                           """.Replace("#additionalCalls#", additionalCallsStr).RunAsync(new Options
         {
             LanguageVersion = LanguageVersion.CSharp9,
             NullableContextOptions = nullableContextOptions
@@ -106,7 +113,10 @@ public class ShroedingersCatTests
         result.Success.ShouldBeTrue(result);
         (result.StdOut.Contains("[Dead cat]") || result.StdOut.Contains("[Alive cat]")).ShouldBeTrue(result);
         var lines = result.GeneratedCode.Split(Environment.NewLine);
-        lines.Count(i => i.Contains(" = new Random();")).ShouldBe(1, result);
-        lines.Count(i => i.Contains("EnsureExistenceOf_")).ShouldBe(3, result);
+        lines.Count(i => i.Contains(" = new Random();")).ShouldBe(randomInstanceCount, result);
+        if (randomInstanceCount < 2)
+        {
+            lines.Count(i => i.Contains("EnsureExistenceOf_")).ShouldBe(3, result);
+        }
     }
 }

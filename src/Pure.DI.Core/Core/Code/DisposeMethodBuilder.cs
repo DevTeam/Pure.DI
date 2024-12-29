@@ -15,7 +15,7 @@ internal sealed class DisposeMethodBuilder(
             return composition with { MembersCount = membersCounter };
         }
 
-        var hasDisposable = composition.TotalDisposablesCount > composition.AsyncDisposableCount;
+        var hasDisposable = composition.DisposablesCount > 0;
         var hasAsyncDisposable = composition.AsyncDisposableCount > 0;
         var hints = composition.Source.Source.Hints;
         var isCommentsEnabled = hints.IsCommentsEnabled;
@@ -208,24 +208,30 @@ internal sealed class DisposeMethodBuilder(
     {
         code.AppendLine("int disposeIndex;");
         code.AppendLine("object[] disposables;");
-        locks.AddLockStatements(composition.Source.Source, code, isAsync);
-        code.AppendLine("{");
-        using (code.Indent())
+        if (composition.IsThreadSafe)
         {
-            code.AppendLine($"disposeIndex = {Names.DisposeIndexFieldName};");
-            code.AppendLine($"{Names.DisposeIndexFieldName} = 0;");
-            code.AppendLine($"disposables = {Names.DisposablesFieldName};");
-            code.AppendLine($"{Names.DisposablesFieldName} = new object[{composition.TotalDisposablesCount.ToString()}];");
-            foreach (var singletonField in composition.Singletons)
-            {
-                code.AppendLine(
-                    singletonField.InstanceType.IsValueType
-                        ? $"{singletonField.VariableDeclarationName}Created = false;"
-                        : $"{singletonField.VariableDeclarationName} = null;");
-            }
+            locks.AddLockStatements(composition.Source.Source, code, isAsync);
+            code.AppendLine("{");
+            code.IncIndent();
+        }
+        
+        code.AppendLine($"disposeIndex = {Names.DisposeIndexFieldName};");
+        code.AppendLine($"{Names.DisposeIndexFieldName} = 0;");
+        code.AppendLine($"disposables = {Names.DisposablesFieldName};");
+        code.AppendLine($"{Names.DisposablesFieldName} = new object[{composition.TotalDisposablesCount.ToString()}];");
+        foreach (var singletonField in composition.Singletons)
+        {
+            code.AppendLine(
+                singletonField.InstanceType.IsValueType
+                    ? $"{singletonField.VariableDeclarationName}Created = false;"
+                    : $"{singletonField.VariableDeclarationName} = null;");
         }
 
-        code.AppendLine("}");
-        locks.AddUnlockStatements(composition.Source.Source, code, isAsync);
+        // ReSharper disable once InvertIf
+        if (composition.IsThreadSafe)
+        {
+            code.AppendLine("}");
+            locks.AddUnlockStatements(composition.Source.Source, code, isAsync);
+        }
     }
 }

@@ -7,6 +7,7 @@ internal record CompositionCode(
     in ImmutableArray<Variable> Args,
     in ImmutableArray<Root> Roots,
     int TotalDisposablesCount,
+    int DisposablesCount,
     int AsyncDisposableCount,
     int DisposablesScopedCount,
     bool IsThreadSafe,

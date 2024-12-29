@@ -12,10 +12,13 @@ internal class NodeInfo(ITypes types) : INodeInfo
     public bool IsLazy(DependencyNode node) =>
         IsDelegate(node) || IsEnumerable(node) || IsAsyncEnumerable(node);
 
-    public bool IsDisposable(DependencyNode node) =>
+    public bool IsDisposableAny(DependencyNode node) =>
         node.Type.AllInterfaces.Any(i =>
             i.SpecialType == SpecialType.System_IDisposable
             || IsAsyncDisposable(node.Binding.SemanticModel.Compilation, i));
+    
+    public bool IsDisposable(DependencyNode node) =>
+        node.Type.AllInterfaces.Any(i => i.SpecialType == SpecialType.System_IDisposable);
 
     public bool IsAsyncDisposable(DependencyNode node) =>
         node.Type.AllInterfaces.Any(i => IsAsyncDisposable(node.Binding.SemanticModel.Compilation, i));

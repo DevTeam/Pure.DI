@@ -80,7 +80,8 @@ internal class CompositionBuilder(
         }
 
         var singletons = map.GetSingletons().ToImmutableArray();
-        var totalDisposables = singletons.Where(i => nodeInfo.IsDisposable(i.Node)).ToArray();
+        var totalDisposables = singletons.Where(i => nodeInfo.IsDisposableAny(i.Node)).ToArray();
+        var disposables = singletons.Where(i => nodeInfo.IsDisposable(i.Node)).ToArray();
         var asyncDisposables = singletons.Where(i => nodeInfo.IsAsyncDisposable(i.Node)).ToArray();
         var publicRoots = roots
             .OrderByDescending(i => i.IsPublic)
@@ -95,6 +96,7 @@ internal class CompositionBuilder(
             GetRootArgs(allArgs).ToImmutableArray(),
             publicRoots,
             totalDisposables.Length,
+            disposables.Length,
             asyncDisposables.Length,
             totalDisposables.Count(i => i.Node.Lifetime == Lifetime.Scoped),
             isThreadSafe,
