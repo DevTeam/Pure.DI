@@ -21,7 +21,9 @@ internal class ReadmeTarget(
     private const string HeaderTemplateFile = "HEaderTemplate.md";
     private const string ReadmeTemplateFile = "ReadmeTemplate.md";
     private const string FooterTemplateFile = "FooterTemplate.md";
+    private const string ContributingTemplateFile = "ContributingTemplate.md";
     private const string ReadmeFile = "README.md";
+    private const string ContributingFile = "CONTRIBUTING.md";
 
     public Task InitializeAsync(CancellationToken cancellationToken) => commands.RegisterAsync(
         this, $"Generates {CommonReadmeFile}", "readme", "r");
@@ -55,7 +57,26 @@ internal class ReadmeTarget(
         
         await GenerateExamplesAsync(examplesSet, readmeWriter, logsDirectory);
 
-        await AddContentAsync(FooterTemplateFile, readmeWriter, onLine: async line =>
+        await AddContentAsync(FooterTemplateFile, readmeWriter);
+        
+        await AddContributingAsync(readmeWriter);
+
+        await AddBenchmarksAsync(logsDirectory, readmeWriter);
+
+        await readmeWriter.FlushAsync(cancellationToken);
+        
+        await using var contributingWriter = File.CreateText(ContributingFile);
+        
+        await AddContributingAsync(contributingWriter);
+        
+        await contributingWriter.FlushAsync(cancellationToken);
+        
+        return 0;
+    }
+
+    private async Task AddContributingAsync(StreamWriter readmeWriter)
+    {
+        await AddContentAsync(ContributingTemplateFile, readmeWriter, onLine: async line =>
         {
             switch (line.ToLowerInvariant().Trim())
             {
@@ -71,13 +92,6 @@ internal class ReadmeTarget(
                     return false;
             }
         });
-
-        await readmeWriter.WriteLineAsync("");
-
-        await AddBenchmarksAsync(logsDirectory, readmeWriter);
-
-        await readmeWriter.FlushAsync(cancellationToken);
-        return 0;
     }
 
     private static async Task AddContentAsync(string sourceFile, TextWriter readmeWriter, string readmeDir = ReadmeDir, Func<string, Task<bool>>? onLine = null)
