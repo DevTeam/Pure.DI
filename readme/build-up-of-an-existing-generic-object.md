@@ -142,7 +142,7 @@ classDiagram
 		}
 		class DependencyᐸGuidᐳ {
 			+String Name
-			+SetId(T id) : Void
+			+SetId(T1 id) : Void
 		}
 		class IDependencyᐸGuidᐳ {
 			<<interface>>

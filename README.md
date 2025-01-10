@@ -254,6 +254,7 @@ dotnet run
 - [Custom generic argument](readme/custom-generic-argument.md)
 - [Build up of an existing generic object](readme/build-up-of-an-existing-generic-object.md)
 - [Generic root arguments](readme/generic-root-arguments.md)
+- [Complex generic root arguments](readme/complex-generic-root-arguments.md)
 ### Attributes
 - [Constructor ordinal attribute](readme/constructor-ordinal-attribute.md)
 - [Member ordinal attribute](readme/member-ordinal-attribute.md)

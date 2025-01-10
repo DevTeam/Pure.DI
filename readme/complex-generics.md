@@ -121,8 +121,8 @@ partial class Composition
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public Program<T1> GetRoot<T1>(T1 depArg)
-    where T1: notnull
+  public Program<T2> GetRoot<T2>(T2 depArg)
+    where T2: notnull
   {
     if (!_root._singletonDependencyStruct51Created)
     {
@@ -137,7 +137,7 @@ partial class Composition
       }
     }
 
-    return new Program<T1>(new Service<T1, int, List<T1>, Dictionary<T1, int>>(new Dependency<T1>(depArg), _root._singletonDependencyStruct51));
+    return new Program<T2>(new Service<T2, int, List<T2>, Dictionary<T2, int>>(new Dependency<T2>(depArg), _root._singletonDependencyStruct51));
   }
 }
 ```
@@ -151,39 +151,39 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	ServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ --|> IServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ
+	ServiceᐸT2ˏInt32ˏListᐸT2ᐳˏDictionaryᐸT2ˏInt32ᐳᐳ --|> IServiceᐸT2ˏInt32ˏListᐸT2ᐳˏDictionaryᐸT2ˏInt32ᐳᐳ
+	DependencyᐸT2ᐳ --|> IDependencyᐸT2ᐳ
 	DependencyStructᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ : "value type" 
-	DependencyᐸT1ᐳ --|> IDependencyᐸT1ᐳ
-	Composition ..> ProgramᐸT1ᐳ : ProgramᐸT1ᐳ GetRootᐸT1ᐳ(T1 depArg)
-	ProgramᐸT1ᐳ *--  ServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ : IServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ
-	ServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ *--  DependencyᐸT1ᐳ : IDependencyᐸT1ᐳ
-	ServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ o-- "Singleton" DependencyStructᐸInt32ᐳ : "value type"  IDependencyᐸInt32ᐳ
-	DependencyᐸT1ᐳ o-- T1 : Argument "depArg"
+	Composition ..> ProgramᐸT2ᐳ : ProgramᐸT2ᐳ GetRootᐸT2ᐳ(T2 depArg)
+	ProgramᐸT2ᐳ *--  ServiceᐸT2ˏInt32ˏListᐸT2ᐳˏDictionaryᐸT2ˏInt32ᐳᐳ : IServiceᐸT2ˏInt32ˏListᐸT2ᐳˏDictionaryᐸT2ˏInt32ᐳᐳ
+	ServiceᐸT2ˏInt32ˏListᐸT2ᐳˏDictionaryᐸT2ˏInt32ᐳᐳ *--  DependencyᐸT2ᐳ : IDependencyᐸT2ᐳ
+	ServiceᐸT2ˏInt32ˏListᐸT2ᐳˏDictionaryᐸT2ˏInt32ᐳᐳ o-- "Singleton" DependencyStructᐸInt32ᐳ : "value type"  IDependencyᐸInt32ᐳ
+	DependencyᐸT2ᐳ o-- T2 : Argument "depArg"
 	namespace Pure.DI.UsageTests.Generics.ComplexGenericsScenario {
 		class Composition {
 		<<partial>>
-		+ProgramᐸT1ᐳ GetRootᐸT1ᐳ(T1 depArg)
+		+ProgramᐸT2ᐳ GetRootᐸT2ᐳ(T2 depArg)
 		}
 		class DependencyStructᐸInt32ᐳ {
 				<<struct>>
 			+DependencyStruct()
 		}
-		class DependencyᐸT1ᐳ {
-			+Dependency(T1 value)
+		class DependencyᐸT2ᐳ {
+			+Dependency(T2 value)
 		}
 		class IDependencyᐸInt32ᐳ {
 			<<interface>>
 		}
-		class IDependencyᐸT1ᐳ {
+		class IDependencyᐸT2ᐳ {
 			<<interface>>
 		}
-		class IServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ {
+		class IServiceᐸT2ˏInt32ˏListᐸT2ᐳˏDictionaryᐸT2ˏInt32ᐳᐳ {
 			<<interface>>
 		}
-		class ProgramᐸT1ᐳ {
+		class ProgramᐸT2ᐳ {
 		}
-		class ServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ {
-			+Service(IDependencyᐸT1ᐳ dependency1, IDependencyᐸInt32ᐳ dependency2)
+		class ServiceᐸT2ˏInt32ˏListᐸT2ᐳˏDictionaryᐸT2ˏInt32ᐳᐳ {
+			+Service(IDependencyᐸT2ᐳ dependency1, IDependencyᐸInt32ᐳ dependency2)
 		}
 	}
 ```

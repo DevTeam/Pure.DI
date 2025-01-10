@@ -100,18 +100,18 @@ partial class Composition
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public IService<T1> GetOtherService<T1>()
+  public IService<T2> GetOtherService<T2>()
   {
-    OtherService<T1> transientOtherService0;
-    IDependency<T1> localDependency87 = new Dependency<T1>();
-    transientOtherService0 = new OtherService<T1>(localDependency87);
+    OtherService<T2> transientOtherService0;
+    IDependency<T2> localDependency87 = new Dependency<T2>();
+    transientOtherService0 = new OtherService<T2>(localDependency87);
     return transientOtherService0;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public IService<T1> GetMyRoot<T1>()
+  public IService<T2> GetMyRoot<T2>()
   {
-    return new Service<T1>(new Dependency<T1>());
+    return new Service<T2>(new Dependency<T2>());
   }
 }
 ```
@@ -125,32 +125,32 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	OtherServiceᐸT1ᐳ --|> IServiceᐸT1ᐳ : "Other" 
-	ServiceᐸT1ᐳ --|> IServiceᐸT1ᐳ
-	DependencyᐸT1ᐳ --|> IDependencyᐸT1ᐳ
-	Composition ..> OtherServiceᐸT1ᐳ : IServiceᐸT1ᐳ GetOtherServiceᐸT1ᐳ()
-	Composition ..> ServiceᐸT1ᐳ : IServiceᐸT1ᐳ GetMyRootᐸT1ᐳ()
-	OtherServiceᐸT1ᐳ *--  DependencyᐸT1ᐳ : IDependencyᐸT1ᐳ
-	ServiceᐸT1ᐳ *--  DependencyᐸT1ᐳ : IDependencyᐸT1ᐳ
+	OtherServiceᐸT2ᐳ --|> IServiceᐸT2ᐳ : "Other" 
+	ServiceᐸT2ᐳ --|> IServiceᐸT2ᐳ
+	DependencyᐸT2ᐳ --|> IDependencyᐸT2ᐳ
+	Composition ..> OtherServiceᐸT2ᐳ : IServiceᐸT2ᐳ GetOtherServiceᐸT2ᐳ()
+	Composition ..> ServiceᐸT2ᐳ : IServiceᐸT2ᐳ GetMyRootᐸT2ᐳ()
+	OtherServiceᐸT2ᐳ *--  DependencyᐸT2ᐳ : IDependencyᐸT2ᐳ
+	ServiceᐸT2ᐳ *--  DependencyᐸT2ᐳ : IDependencyᐸT2ᐳ
 	namespace Pure.DI.UsageTests.Generics.GenericsCompositionRootsScenario {
 		class Composition {
 		<<partial>>
-		+IServiceᐸT1ᐳ GetMyRootᐸT1ᐳ()
-		+IServiceᐸT1ᐳ GetOtherServiceᐸT1ᐳ()
+		+IServiceᐸT2ᐳ GetMyRootᐸT2ᐳ()
+		+IServiceᐸT2ᐳ GetOtherServiceᐸT2ᐳ()
 		}
-		class DependencyᐸT1ᐳ {
+		class DependencyᐸT2ᐳ {
 			+Dependency()
 		}
-		class IDependencyᐸT1ᐳ {
+		class IDependencyᐸT2ᐳ {
 			<<interface>>
 		}
-		class IServiceᐸT1ᐳ {
+		class IServiceᐸT2ᐳ {
 			<<interface>>
 		}
-		class OtherServiceᐸT1ᐳ {
+		class OtherServiceᐸT2ᐳ {
 		}
-		class ServiceᐸT1ᐳ {
-			+Service(IDependencyᐸT1ᐳ dependency)
+		class ServiceᐸT2ᐳ {
+			+Service(IDependencyᐸT2ᐳ dependency)
 		}
 	}
 ```

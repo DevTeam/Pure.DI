@@ -60,12 +60,12 @@ internal class Formatter(
         if (typeArgs.Count > 0)
         {
             sb.Append('{');
-            sb.Append(string.Join(", ", typeArgs.Select(i => i.Name)));
+            sb.Append(string.Join(", ", typeArgs.Select(i => FormatTypeName(i.Name))));
             sb.Append('}');
         }
 
         sb.Append('(');
-        sb.Append(string.Join(", ", root.Args.Select(i => typeResolver.Resolve(setup, i.ContractType))));
+        sb.Append(string.Join(", ", root.Args.Select(i => FormatTypeName(typeResolver.Resolve(setup, i.ContractType).Name))));
         sb.Append(')');
         return FormatRef(sb.ToString());
     }
@@ -80,9 +80,12 @@ internal class Formatter(
     {
 #if ROSLYN4_8_OR_GREATER
         var originalDefinitionTypeName = type.OriginalDefinition.ToDisplayString(NullableFlowState.None, RefFormat);
-        return FormatRef(comments.Escape(originalDefinitionTypeName.Replace('<', '{').Replace('>', '}')));
+        return FormatRef(FormatTypeName(originalDefinitionTypeName));
 #else
         return comments.Escape(type.OriginalDefinition.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.MinimallyQualifiedFormat));
 #endif
     }
+
+    private string FormatTypeName(string typeName) => 
+        comments.Escape(typeName.Replace('<', '{').Replace('>', '}'));
 }

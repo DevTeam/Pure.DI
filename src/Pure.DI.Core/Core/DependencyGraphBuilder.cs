@@ -91,7 +91,7 @@ internal sealed class DependencyGraphBuilder(
                     registryManager.Register(setup, sourceNode.Binding);
                     if (!marker.IsMarkerBased(setup, sourceNode.Type))
                     {
-                        queue.Enqueue(CreateNewProcessingNode(setup, injection, sourceNode));
+                        queue.Enqueue(CreateNewProcessingNode(setup, injection.Tag, sourceNode));
                         continue;
                     }
                 }
@@ -112,13 +112,18 @@ internal sealed class DependencyGraphBuilder(
 
                 switch (injection.Type)
                 {
-                    case INamedTypeSymbol { IsGenericType: true } geneticType:
+                    case INamedTypeSymbol namedTypeSymbol
+                        when namedTypeSymbol.IsGenericType || marker.IsMarkerBased(setup, namedTypeSymbol):
                     {
-                        // Generic
-                        var isGenericOk = false;
+                        var isDone = false;
                         foreach (var item in map)
                         {
-                            if (item.Key.Type is not INamedTypeSymbol { IsGenericType: true })
+                            if (item.Key.Type is not INamedTypeSymbol nextNamedTypeSymbol)
+                            {
+                                continue;
+                            }
+
+                            if (nextNamedTypeSymbol.IsGenericType != namedTypeSymbol.IsGenericType)
                             {
                                 continue;
                             }
@@ -136,7 +141,7 @@ internal sealed class DependencyGraphBuilder(
                             sourceNode = item.Value;
                             registryManager.Register(setup, sourceNode.Binding);
                             var contextTag = GetContextTag(injection, sourceNode);
-                            var newInjection = injection with { Tag = contextTag ?? injection.Tag }; 
+                            var newInjection = injection with { Tag = contextTag ?? injection.Tag };
                             var genericBinding = CreateGenericBinding(
                                 setup,
                                 targetNode,
@@ -147,6 +152,7 @@ internal sealed class DependencyGraphBuilder(
 
                             var genericNode = CreateNodes(setup, typeConstructor, genericBinding).Single(i => i.Variation == sourceNode.Variation);
                             UpdateMap(newInjection, genericNode);
+                            queue.Enqueue(CreateNewProcessingNode(setup, newInjection.Tag, genericNode));
                             foreach (var contract in genericBinding.Contracts.Where(i => i.ContractType is not null))
                             {
                                 foreach (var tag in contract.Tags.Select(i => i.Value).DefaultIfEmpty(null))
@@ -155,21 +161,20 @@ internal sealed class DependencyGraphBuilder(
                                     UpdateMap(newInjection, genericNode);
                                 }
                             }
-
-                            queue.Enqueue(CreateNewProcessingNode(setup, newInjection, genericNode));
-                            isGenericOk = true;
+                                
+                            isDone = true;
                             break;
                         }
 
-                        if (isGenericOk)
+                        if (isDone)
                         {
                             continue;
                         }
 
                         // Construct
-                        if (geneticType.TypeArguments is [{ } constructType])
+                        if (namedTypeSymbol.TypeArguments is [{ } constructType])
                         {
-                            var constructKind = GetConstructKind(geneticType);
+                            var constructKind = GetConstructKind(namedTypeSymbol);
                             // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
                             switch (constructKind)
                             {
@@ -192,7 +197,7 @@ internal sealed class DependencyGraphBuilder(
                                         var contextTag = GetContextTag(injection, newNode);
                                         var newInjection = injection with { Tag = contextTag ?? injection.Tag };
                                         UpdateMap(newInjection, newNode);
-                                        var processingNode = CreateNewProcessingNode(setup, newInjection, newNode);
+                                        var processingNode = CreateNewProcessingNode(setup, newInjection.Tag, newNode);
                                         queue.Enqueue(processingNode);
                                     }
 
@@ -226,7 +231,7 @@ internal sealed class DependencyGraphBuilder(
                             var contextTag = GetContextTag(injection, newNode);
                             var newInjection = injection with { Tag = contextTag ?? injection.Tag };
                             UpdateMap(newInjection, newNode);
-                            queue.Enqueue(CreateNewProcessingNode(setup, newInjection, newNode));
+                            queue.Enqueue(CreateNewProcessingNode(setup, newInjection.Tag, newNode));
                         }
 
                         continue;
@@ -281,7 +286,7 @@ internal sealed class DependencyGraphBuilder(
                         var contextTag = GetContextTag(injection, newNode);
                         var newInjection = injection with { Tag = contextTag ?? injection.Tag };
                         UpdateMap(newInjection, newNode);
-                        queue.Enqueue(CreateNewProcessingNode(setup, newInjection, newNode));
+                        queue.Enqueue(CreateNewProcessingNode(setup, newInjection.Tag, newNode));
                     }
 
                     continue;
@@ -415,7 +420,7 @@ internal sealed class DependencyGraphBuilder(
             foreach (var onCannotResolveNode in onCannotResolveNodes)
             {
                 map[unresolvedInjection] = onCannotResolveNode;
-                processed.Add(CreateNewProcessingNode(setup, unresolvedInjection, onCannotResolveNode));
+                processed.Add(CreateNewProcessingNode(setup, unresolvedInjection.Tag, onCannotResolveNode));
                 return true;
             }
         }
@@ -639,10 +644,10 @@ internal sealed class DependencyGraphBuilder(
         }
     }
 
-    private ProcessingNode CreateNewProcessingNode(MdSetup setup, in Injection injection, DependencyNode dependencyNode)
+    private ProcessingNode CreateNewProcessingNode(MdSetup setup, object? contextTag, DependencyNode dependencyNode)
     {
         registryManager.Register(setup, dependencyNode.Binding);
-        var contracts = contractsBuilder.Build(new ContractsBuildContext(dependencyNode.Binding, injection.Tag));
+        var contracts = contractsBuilder.Build(new ContractsBuildContext(dependencyNode.Binding, contextTag));
         return new ProcessingNode(dependencyNode, contracts);
     }
 

@@ -630,4 +630,243 @@ public class GenericRootsTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["7", "49"], result);
     }
+    
+    [Fact]
+    public async Task ShouldSupportGenericRootArg()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+                           using static Pure.DI.Lifetime;
+
+                           namespace Sample
+                           {
+                               class Dep<T> { }
+                           
+                               interface IBox<T> { T? Content { get; set; } }
+                           
+                               class CardboardBox<T> : IBox<T>
+                               {
+                                   public CardboardBox(Dep<T> dep, T arg)
+                                   {
+                                        Content = arg;
+                                   }
+                                   
+                                   public T? Content { get; set; }
+                               }
+                           
+                               internal partial class Composition
+                               {
+                                   void Setup()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Hint(Hint.Resolve, "Off")
+                                           .RootArg<TT>("myArg")
+                                           .Bind<IBox<TT>>().To<CardboardBox<TT>>() 
+                                           // Composition Root
+                                           .Root<IBox<TT>>("GetRoot");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root = composition.GetRoot<int>(99);
+                                       Console.WriteLine(root.Content);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["99"], result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportGenericRootArgWhenDifferentMarkers()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+                           using static Pure.DI.Lifetime;
+
+                           namespace Sample
+                           {
+                               class Dep<T> { }
+                           
+                               interface IBox<T> { T? Content { get; set; } }
+                           
+                               class CardboardBox<T> : IBox<T>
+                               {
+                                   public CardboardBox(Dep<T> dep, T arg)
+                                   {
+                                        Content = arg;
+                                   }
+                                   
+                                   public T? Content { get; set; }
+                               }
+                           
+                               internal partial class Composition
+                               {
+                                   void Setup()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Hint(Hint.Resolve, "Off")
+                                           .RootArg<TT2>("myArg")
+                                           .Bind<IBox<TT1>>().To<CardboardBox<TT1>>() 
+                                           // Composition Root
+                                           .Root<IBox<TT3>>("GetRoot");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root = composition.GetRoot<int>(99);
+                                       Console.WriteLine(root.Content);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["99"], result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportComplexGenericRootArg()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using Pure.DI;
+                           using static Pure.DI.Lifetime;
+
+                           namespace Sample
+                           {
+                               class Dep<T> { }
+                           
+                               interface IBox<T> { T? Content { get; set; } }
+                           
+                               class CardboardBox<T> : IBox<T>
+                               {
+                                   public CardboardBox(Dep<T> dep, IList<T> arg)
+                                   {
+                                        Content = arg[0];
+                                   }
+                                   
+                                   public T? Content { get; set; }
+                               }
+                           
+                               internal partial class Composition
+                               {
+                                   void Setup()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Hint(Hint.Resolve, "Off")
+                                           .RootArg<IList<TT>>("myArg")
+                                           .Bind<IBox<TT>>().To<CardboardBox<TT>>() 
+                                           // Composition Root
+                                           .Root<IBox<TT>>("GetRoot");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root = composition.GetRoot<int>(new List<int> { 99 });
+                                       Console.WriteLine(root.Content);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["99"], result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportComplexGenericRootArgWhenDifferentMarkers()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+                           using static Pure.DI.Lifetime;
+
+                           namespace Sample
+                           {
+                               class Holder<T>
+                               {
+                                    public Holder(T val)
+                                    {
+                                        Val = val;
+                                    }
+                                    
+                                    public T Val {get; set;}
+                               }
+                           
+                               class Dep<T> { }
+                           
+                               interface IBox<T> { T? Content { get; set; } }
+                           
+                               class CardboardBox<T> : IBox<T>
+                               {
+                                   public CardboardBox(Dep<T> dep, Holder<T> arg)
+                                   {
+                                        Content = arg.Val;
+                                   }
+                                   
+                                   public T? Content { get; set; }
+                               }
+                           
+                               internal partial class Composition
+                               {
+                                   void Setup()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Hint(Hint.Resolve, "Off")
+                                           .RootArg<Holder<TT1>>("myArg")
+                                           .Bind<IBox<TT2>>().To<CardboardBox<TT2>>() 
+                                           // Composition Root
+                                           .Root<IBox<TT3>>("GetRoot");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root = composition.GetRoot<int>(new Holder<int>(99));
+                                       Console.WriteLine(root.Content);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["99"], result);
+    }
 }

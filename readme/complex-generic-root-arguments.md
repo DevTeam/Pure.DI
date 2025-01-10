@@ -1,24 +1,26 @@
-#### Generic root arguments
+#### Complex generic root arguments
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Generics/GenericRootArgScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Generics/ComplexGenericRootArgScenario.cs)
 
 
 ```c#
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .RootArg<TT>("someArg")
-    .Bind<IService<TT>>().To<Service<TT>>()
+    .RootArg<MyData<TT>>("complexArg")
+    .Bind<IService<TT2>>().To<Service<TT2>>()
 
     // Composition root
-    .Root<IService<TT>>("GetMyService");
+    .Root<IService<TT3>>("GetMyService");
 
 var composition = new Composition();
-IService<int> service = composition.GetMyService<int>(someArg: 33);
+IService<int> service = composition.GetMyService<int>(complexArg: new MyData<int>(33, "aa"));
+
+record MyData<T>(T Value, string Description);
 
 interface IService<out T>
 {
-    T? Dependency { get; }
+    T? Val { get; }
 }
 
 class Service<T> : IService<T>
@@ -27,10 +29,10 @@ class Service<T> : IService<T>
     // the integer value in the argument specifies
     // the ordinal of injection
     [Ordinal(0)]
-    public void SetDependency(T dependency) =>
-        Dependency = dependency;
+    public void SetDependency(MyData<T> data) =>
+        Val = data.Value;
 
-    public T? Dependency { get; private set; }
+    public T? Val { get; private set; }
 }
 ```
 
@@ -78,10 +80,10 @@ partial class Composition
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public IService<T2> GetMyService<T2>(T2 someArg)
+  public IService<T> GetMyService<T>(MyData<T> complexArg)
   {
-    Service<T2> transientService0 = new Service<T2>();
-    transientService0.SetDependency(someArg);
+    Service<T> transientService0 = new Service<T>();
+    transientService0.SetDependency(complexArg);
     return transientService0;
   }
 }
@@ -96,20 +98,23 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	ServiceᐸT2ᐳ --|> IServiceᐸT2ᐳ
-	Composition ..> ServiceᐸT2ᐳ : IServiceᐸT2ᐳ GetMyServiceᐸT2ᐳ(T2 someArg)
-	ServiceᐸT2ᐳ o-- T2 : Argument "someArg"
-	namespace Pure.DI.UsageTests.Basics.GenericRootArgScenario {
+	ServiceᐸTᐳ --|> IServiceᐸTᐳ
+	Composition ..> ServiceᐸTᐳ : IServiceᐸTᐳ GetMyServiceᐸTᐳ(Pure.DI.UsageTests.Basics.ComplexGenericRootArgScenario.MyData<T> complexArg)
+	ServiceᐸTᐳ o-- MyDataᐸTᐳ : Argument "complexArg"
+	namespace Pure.DI.UsageTests.Basics.ComplexGenericRootArgScenario {
 		class Composition {
 		<<partial>>
-		+IServiceᐸT2ᐳ GetMyServiceᐸT2ᐳ(T2 someArg)
+		+IServiceᐸTᐳ GetMyServiceᐸTᐳ(Pure.DI.UsageTests.Basics.ComplexGenericRootArgScenario.MyData<T> complexArg)
 		}
-		class IServiceᐸT2ᐳ {
+		class IServiceᐸTᐳ {
 			<<interface>>
 		}
-		class ServiceᐸT2ᐳ {
+		class MyDataᐸTᐳ {
+				<<record>>
+		}
+		class ServiceᐸTᐳ {
 			+Service()
-			+SetDependency(T2 dependency) : Void
+			+SetDependency(MyDataᐸTᐳ data) : Void
 		}
 	}
 ```

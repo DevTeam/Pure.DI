@@ -108,10 +108,10 @@ partial class Composition
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public Task<IService<T2, bool>> GetOtherServiceAsync<T2>(CancellationToken cancellationToken)
-    where T2: IDisposable
+  public Task<IService<T3, bool>> GetOtherServiceAsync<T3>(CancellationToken cancellationToken)
+    where T3: IDisposable
   {
-    TaskFactory<IService<T2, bool>> perBlockTaskFactory2;
+    TaskFactory<IService<T3, bool>> perBlockTaskFactory2;
     CancellationToken localCancellationToken71 = cancellationToken;
     TaskCreationOptions transientTaskCreationOptions3 = TaskCreationOptions.None;
     TaskCreationOptions localTaskCreationOptions72 = transientTaskCreationOptions3;
@@ -119,31 +119,31 @@ partial class Composition
     TaskContinuationOptions localTaskContinuationOptions73 = transientTaskContinuationOptions4;
     TaskScheduler transientTaskScheduler5 = TaskScheduler.Default;
     TaskScheduler localTaskScheduler74 = transientTaskScheduler5;
-    perBlockTaskFactory2 = new TaskFactory<IService<T2, bool>>(localCancellationToken71, localTaskCreationOptions72, localTaskContinuationOptions73, localTaskScheduler74);
-    Func<IService<T2, bool>> perBlockFunc1 = new Func<IService<T2, bool>>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
+    perBlockTaskFactory2 = new TaskFactory<IService<T3, bool>>(localCancellationToken71, localTaskCreationOptions72, localTaskContinuationOptions73, localTaskScheduler74);
+    Func<IService<T3, bool>> perBlockFunc1 = new Func<IService<T3, bool>>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
     {
-      OtherService<T2> transientOtherService6;
-      IDependency<T2> localDependency76 = new Dependency<T2>();
-      transientOtherService6 = new OtherService<T2>(localDependency76);
-      IService<T2, bool> localValue75 = transientOtherService6;
+      OtherService<T3> transientOtherService6;
+      IDependency<T3> localDependency76 = new Dependency<T3>();
+      transientOtherService6 = new OtherService<T3>(localDependency76);
+      IService<T3, bool> localValue75 = transientOtherService6;
       return localValue75;
     });
-    Task<IService<T2, bool>> transientTask0;
+    Task<IService<T3, bool>> transientTask0;
     // Injects an instance factory
-    Func<IService<T2, bool>> localFactory77 = perBlockFunc1;
+    Func<IService<T3, bool>> localFactory77 = perBlockFunc1;
     // Injects a task factory creating and scheduling task objects
-    TaskFactory<IService<T2, bool>> localTaskFactory78 = perBlockTaskFactory2;
+    TaskFactory<IService<T3, bool>> localTaskFactory78 = perBlockTaskFactory2;
     // Creates and starts a task using the instance factory
     transientTask0 = localTaskFactory78.StartNew(localFactory77);
     return transientTask0;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public Task<IService<T2, T>> GetMyRootAsync<T2, T>(CancellationToken cancellationToken)
-    where T2: IDisposable
-    where T: struct
+  public Task<IService<T3, T1>> GetMyRootAsync<T3, T1>(CancellationToken cancellationToken)
+    where T3: IDisposable
+    where T1: struct
   {
-    TaskFactory<IService<T2, T>> perBlockTaskFactory2;
+    TaskFactory<IService<T3, T1>> perBlockTaskFactory2;
     CancellationToken localCancellationToken79 = cancellationToken;
     TaskCreationOptions transientTaskCreationOptions3 = TaskCreationOptions.None;
     TaskCreationOptions localTaskCreationOptions80 = transientTaskCreationOptions3;
@@ -151,17 +151,17 @@ partial class Composition
     TaskContinuationOptions localTaskContinuationOptions81 = transientTaskContinuationOptions4;
     TaskScheduler transientTaskScheduler5 = TaskScheduler.Default;
     TaskScheduler localTaskScheduler82 = transientTaskScheduler5;
-    perBlockTaskFactory2 = new TaskFactory<IService<T2, T>>(localCancellationToken79, localTaskCreationOptions80, localTaskContinuationOptions81, localTaskScheduler82);
-    Func<IService<T2, T>> perBlockFunc1 = new Func<IService<T2, T>>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
+    perBlockTaskFactory2 = new TaskFactory<IService<T3, T1>>(localCancellationToken79, localTaskCreationOptions80, localTaskContinuationOptions81, localTaskScheduler82);
+    Func<IService<T3, T1>> perBlockFunc1 = new Func<IService<T3, T1>>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
     {
-      IService<T2, T> localValue83 = new Service<T2, T>(new Dependency<T2>());
+      IService<T3, T1> localValue83 = new Service<T3, T1>(new Dependency<T3>());
       return localValue83;
     });
-    Task<IService<T2, T>> transientTask0;
+    Task<IService<T3, T1>> transientTask0;
     // Injects an instance factory
-    Func<IService<T2, T>> localFactory84 = perBlockFunc1;
+    Func<IService<T3, T1>> localFactory84 = perBlockFunc1;
     // Injects a task factory creating and scheduling task objects
-    TaskFactory<IService<T2, T>> localTaskFactory85 = perBlockTaskFactory2;
+    TaskFactory<IService<T3, T1>> localTaskFactory85 = perBlockTaskFactory2;
     // Creates and starts a task using the instance factory
     transientTask0 = localTaskFactory85.StartNew(localFactory84);
     return transientTask0;
@@ -178,56 +178,56 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	OtherServiceᐸT2ᐳ --|> IServiceᐸT2ˏBooleanᐳ : "Other" 
-	ServiceᐸT2ˏTᐳ --|> IServiceᐸT2ˏTᐳ
-	DependencyᐸT2ᐳ --|> IDependencyᐸT2ᐳ
-	Composition ..> TaskᐸIServiceᐸT2ˏBooleanᐳᐳ : TaskᐸIServiceᐸT2ˏBooleanᐳᐳ GetOtherServiceAsyncᐸT2ᐳ(System.Threading.CancellationToken cancellationToken)
-	Composition ..> TaskᐸIServiceᐸT2ˏTᐳᐳ : TaskᐸIServiceᐸT2ˏTᐳᐳ GetMyRootAsyncᐸT2ˏTᐳ(System.Threading.CancellationToken cancellationToken)
-	TaskᐸIServiceᐸT2ˏBooleanᐳᐳ o-- "PerBlock" FuncᐸIServiceᐸT2ˏBooleanᐳᐳ : "Other"  FuncᐸIServiceᐸT2ˏBooleanᐳᐳ
-	TaskᐸIServiceᐸT2ˏBooleanᐳᐳ o-- "PerBlock" TaskFactoryᐸIServiceᐸT2ˏBooleanᐳᐳ : TaskFactoryᐸIServiceᐸT2ˏBooleanᐳᐳ
-	TaskᐸIServiceᐸT2ˏTᐳᐳ o-- "PerBlock" FuncᐸIServiceᐸT2ˏTᐳᐳ : FuncᐸIServiceᐸT2ˏTᐳᐳ
-	TaskᐸIServiceᐸT2ˏTᐳᐳ o-- "PerBlock" TaskFactoryᐸIServiceᐸT2ˏTᐳᐳ : TaskFactoryᐸIServiceᐸT2ˏTᐳᐳ
-	FuncᐸIServiceᐸT2ˏBooleanᐳᐳ *--  OtherServiceᐸT2ᐳ : "Other"  IServiceᐸT2ˏBooleanᐳ
-	TaskFactoryᐸIServiceᐸT2ˏBooleanᐳᐳ o-- CancellationToken : Argument "cancellationToken"
-	TaskFactoryᐸIServiceᐸT2ˏBooleanᐳᐳ *--  TaskCreationOptions : TaskCreationOptions
-	TaskFactoryᐸIServiceᐸT2ˏBooleanᐳᐳ *--  TaskContinuationOptions : TaskContinuationOptions
-	TaskFactoryᐸIServiceᐸT2ˏBooleanᐳᐳ *--  TaskScheduler : TaskScheduler
-	FuncᐸIServiceᐸT2ˏTᐳᐳ *--  ServiceᐸT2ˏTᐳ : IServiceᐸT2ˏTᐳ
-	TaskFactoryᐸIServiceᐸT2ˏTᐳᐳ o-- CancellationToken : Argument "cancellationToken"
-	TaskFactoryᐸIServiceᐸT2ˏTᐳᐳ *--  TaskCreationOptions : TaskCreationOptions
-	TaskFactoryᐸIServiceᐸT2ˏTᐳᐳ *--  TaskContinuationOptions : TaskContinuationOptions
-	TaskFactoryᐸIServiceᐸT2ˏTᐳᐳ *--  TaskScheduler : TaskScheduler
-	OtherServiceᐸT2ᐳ *--  DependencyᐸT2ᐳ : IDependencyᐸT2ᐳ
-	ServiceᐸT2ˏTᐳ *--  DependencyᐸT2ᐳ : IDependencyᐸT2ᐳ
+	OtherServiceᐸT3ᐳ --|> IServiceᐸT3ˏBooleanᐳ : "Other" 
+	ServiceᐸT3ˏT1ᐳ --|> IServiceᐸT3ˏT1ᐳ
+	DependencyᐸT3ᐳ --|> IDependencyᐸT3ᐳ
+	Composition ..> TaskᐸIServiceᐸT3ˏBooleanᐳᐳ : TaskᐸIServiceᐸT3ˏBooleanᐳᐳ GetOtherServiceAsyncᐸT3ᐳ(System.Threading.CancellationToken cancellationToken)
+	Composition ..> TaskᐸIServiceᐸT3ˏT1ᐳᐳ : TaskᐸIServiceᐸT3ˏT1ᐳᐳ GetMyRootAsyncᐸT3ˏT1ᐳ(System.Threading.CancellationToken cancellationToken)
+	TaskᐸIServiceᐸT3ˏBooleanᐳᐳ o-- "PerBlock" FuncᐸIServiceᐸT3ˏBooleanᐳᐳ : "Other"  FuncᐸIServiceᐸT3ˏBooleanᐳᐳ
+	TaskᐸIServiceᐸT3ˏBooleanᐳᐳ o-- "PerBlock" TaskFactoryᐸIServiceᐸT3ˏBooleanᐳᐳ : TaskFactoryᐸIServiceᐸT3ˏBooleanᐳᐳ
+	TaskᐸIServiceᐸT3ˏT1ᐳᐳ o-- "PerBlock" FuncᐸIServiceᐸT3ˏT1ᐳᐳ : FuncᐸIServiceᐸT3ˏT1ᐳᐳ
+	TaskᐸIServiceᐸT3ˏT1ᐳᐳ o-- "PerBlock" TaskFactoryᐸIServiceᐸT3ˏT1ᐳᐳ : TaskFactoryᐸIServiceᐸT3ˏT1ᐳᐳ
+	FuncᐸIServiceᐸT3ˏBooleanᐳᐳ *--  OtherServiceᐸT3ᐳ : "Other"  IServiceᐸT3ˏBooleanᐳ
+	TaskFactoryᐸIServiceᐸT3ˏBooleanᐳᐳ o-- CancellationToken : Argument "cancellationToken"
+	TaskFactoryᐸIServiceᐸT3ˏBooleanᐳᐳ *--  TaskCreationOptions : TaskCreationOptions
+	TaskFactoryᐸIServiceᐸT3ˏBooleanᐳᐳ *--  TaskContinuationOptions : TaskContinuationOptions
+	TaskFactoryᐸIServiceᐸT3ˏBooleanᐳᐳ *--  TaskScheduler : TaskScheduler
+	FuncᐸIServiceᐸT3ˏT1ᐳᐳ *--  ServiceᐸT3ˏT1ᐳ : IServiceᐸT3ˏT1ᐳ
+	TaskFactoryᐸIServiceᐸT3ˏT1ᐳᐳ o-- CancellationToken : Argument "cancellationToken"
+	TaskFactoryᐸIServiceᐸT3ˏT1ᐳᐳ *--  TaskCreationOptions : TaskCreationOptions
+	TaskFactoryᐸIServiceᐸT3ˏT1ᐳᐳ *--  TaskContinuationOptions : TaskContinuationOptions
+	TaskFactoryᐸIServiceᐸT3ˏT1ᐳᐳ *--  TaskScheduler : TaskScheduler
+	OtherServiceᐸT3ᐳ *--  DependencyᐸT3ᐳ : IDependencyᐸT3ᐳ
+	ServiceᐸT3ˏT1ᐳ *--  DependencyᐸT3ᐳ : IDependencyᐸT3ᐳ
 	namespace Pure.DI.UsageTests.Generics.GenericAsyncCompositionRootsWithConstraintsScenario {
 		class Composition {
 		<<partial>>
-		+TaskᐸIServiceᐸT2ˏTᐳᐳ GetMyRootAsyncᐸT2ˏTᐳ(System.Threading.CancellationToken cancellationToken)
-		+TaskᐸIServiceᐸT2ˏBooleanᐳᐳ GetOtherServiceAsyncᐸT2ᐳ(System.Threading.CancellationToken cancellationToken)
+		+TaskᐸIServiceᐸT3ˏT1ᐳᐳ GetMyRootAsyncᐸT3ˏT1ᐳ(System.Threading.CancellationToken cancellationToken)
+		+TaskᐸIServiceᐸT3ˏBooleanᐳᐳ GetOtherServiceAsyncᐸT3ᐳ(System.Threading.CancellationToken cancellationToken)
 		}
-		class DependencyᐸT2ᐳ {
+		class DependencyᐸT3ᐳ {
 			+Dependency()
 		}
-		class IDependencyᐸT2ᐳ {
+		class IDependencyᐸT3ᐳ {
 			<<interface>>
 		}
-		class IServiceᐸT2ˏBooleanᐳ {
+		class IServiceᐸT3ˏBooleanᐳ {
 			<<interface>>
 		}
-		class IServiceᐸT2ˏTᐳ {
+		class IServiceᐸT3ˏT1ᐳ {
 			<<interface>>
 		}
-		class OtherServiceᐸT2ᐳ {
+		class OtherServiceᐸT3ᐳ {
 		}
-		class ServiceᐸT2ˏTᐳ {
-			+Service(IDependencyᐸT2ᐳ dependency)
+		class ServiceᐸT3ˏT1ᐳ {
+			+Service(IDependencyᐸT3ᐳ dependency)
 		}
 	}
 	namespace System {
-		class FuncᐸIServiceᐸT2ˏBooleanᐳᐳ {
+		class FuncᐸIServiceᐸT3ˏBooleanᐳᐳ {
 				<<delegate>>
 		}
-		class FuncᐸIServiceᐸT2ˏTᐳᐳ {
+		class FuncᐸIServiceᐸT3ˏT1ᐳᐳ {
 				<<delegate>>
 		}
 	}
@@ -243,16 +243,16 @@ classDiagram
 		class TaskCreationOptions {
 				<<enum>>
 		}
-		class TaskFactoryᐸIServiceᐸT2ˏBooleanᐳᐳ {
+		class TaskFactoryᐸIServiceᐸT3ˏBooleanᐳᐳ {
 		}
-		class TaskFactoryᐸIServiceᐸT2ˏTᐳᐳ {
+		class TaskFactoryᐸIServiceᐸT3ˏT1ᐳᐳ {
 		}
 		class TaskScheduler {
 				<<abstract>>
 		}
-		class TaskᐸIServiceᐸT2ˏBooleanᐳᐳ {
+		class TaskᐸIServiceᐸT3ˏBooleanᐳᐳ {
 		}
-		class TaskᐸIServiceᐸT2ˏTᐳᐳ {
+		class TaskᐸIServiceᐸT3ˏT1ᐳᐳ {
 		}
 	}
 ```
