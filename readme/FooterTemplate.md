@@ -697,22 +697,19 @@ Contribution prerequisites: [.NET SDK 9.0](https://dotnet.microsoft.com/en-us/do
 
 The entire build logic is a regular [console .NET application](/build). You can use the [build.cmd](/build.cmd) and [build.sh](/build.sh) files with the appropriate command in the parameters to perform all basic actions on the project, e.g:
 
-| Command        | Description                                                       |
-|----------------|-------------------------------------------------------------------|
-| g, generator   | Builds and tests generator                                        |
-| l, libs        | Builds and tests libraries                                        |
-| c, check       | Compatibility checks                                              |
-| p, pack        | Creates NuGet packages                                            |
-| r, readme      | Generates README.md                                               |
-| benchmarks, bm | Runs benchmarks                                                   |
-| deploy, dp     | Deploys packages                                                  |
-| t, template    | Creates and deploys templates                                     |
-| u, upgrade     | Upgrading the internal version of DI to the latest public version |
+| Commands | Description |
+|----------|-------------|
+$(commands)
 
 For example:
 
-```
+```shell
 ./build.sh pack
+```
+
+or
+
+```shell
 ./build.cmd benchmarks
 ```
 

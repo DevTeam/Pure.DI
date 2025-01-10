@@ -11,6 +11,7 @@ internal class ReadmeTarget(
     Env env,
     Versions versions,
     Settings settings,
+    RootCommand rootCommand,
     [Tag(typeof(CreateExamplesTarget))] ITarget<IReadOnlyCollection<ExampleGroup>> createExamplesTarget,
     [Tag(typeof(BenchmarksTarget))] ITarget<int> benchmarksTarget)
     : IInitializable, ITarget<int>
@@ -54,7 +55,22 @@ internal class ReadmeTarget(
         
         await GenerateExamplesAsync(examplesSet, readmeWriter, logsDirectory);
 
-        await AddContentAsync(FooterTemplateFile, readmeWriter);
+        await AddContentAsync(FooterTemplateFile, readmeWriter, onLine: async line =>
+        {
+            switch (line.ToLowerInvariant().Trim())
+            {
+                case "$(commands)":
+                    foreach (var command in rootCommand.Subcommands.OrderBy(i => i.Name))
+                    {
+                        await readmeWriter.WriteLineAsync($"| {string.Join(", ", new []{ command.Name }.Concat(command.Aliases).OrderBy(i => i.Length).ThenBy(i => i))} | {command.Description} |");
+                    }
+
+                    return true;
+                
+                default:
+                    return false;
+            }
+        });
 
         await readmeWriter.WriteLineAsync("");
 
@@ -64,12 +80,15 @@ internal class ReadmeTarget(
         return 0;
     }
 
-    private static async Task AddContentAsync(string sourceFile, TextWriter readmeWriter, string readmeDir = ReadmeDir)
+    private static async Task AddContentAsync(string sourceFile, TextWriter readmeWriter, string readmeDir = ReadmeDir, Func<string, Task<bool>>? onLine = null)
     {
         Info($"Adding a content from \"{sourceFile}\"");
         foreach (var line in await File.ReadAllLinesAsync(Path.Combine(readmeDir, sourceFile)))
         {
-            await readmeWriter.WriteLineAsync(line);
+            if (onLine == null || !await onLine(line))
+            {
+                await readmeWriter.WriteLineAsync(line);
+            }
         }
     }
 
