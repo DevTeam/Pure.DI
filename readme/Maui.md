@@ -39,7 +39,7 @@ internal partial class Composition: ServiceProviderFactory<Composition>
 
 The composition class inherits from the `ServiceProviderFactory<T>` class, where T is the composition class itself. It depends on the `Base` setup.
 
-Te web application entry point is in the [MauiProgram.cs](/samples/MAUIApp/MauiProgram.cs) file:
+The web application entry point is in the [MauiProgram.cs](/samples/MAUIApp/MauiProgram.cs) file:
 
 ```c#
 public static class MauiProgram

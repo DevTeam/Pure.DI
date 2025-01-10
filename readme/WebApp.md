@@ -29,7 +29,7 @@ internal partial class Composition: ServiceProviderFactory<Composition>
 
 The composition class inherits from the `ServiceProviderFactory<T>` class, where T is the composition class itself. It depends on the `Base` setup.
 
-Te web application entry point is in the [Program.cs](/samples/WebApp/Program.cs) file:
+The web application entry point is in the [Program.cs](/samples/WebApp/Program.cs) file:
 
 ```c#
 var builder = WebApplication.CreateBuilder(args);
