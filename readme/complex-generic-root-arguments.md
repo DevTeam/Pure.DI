@@ -14,7 +14,8 @@ DI.Setup(nameof(Composition))
     .Root<IService<TT3>>("GetMyService");
 
 var composition = new Composition();
-IService<int> service = composition.GetMyService<int>(complexArg: new MyData<int>(33, "aa"));
+IService<int> service = composition.GetMyService<int>(
+    new MyData<int>(33, "Just contains an integer value 33"));
 
 record MyData<T>(T Value, string Description);
 
