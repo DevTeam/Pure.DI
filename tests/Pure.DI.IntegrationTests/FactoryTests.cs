@@ -2078,4 +2078,78 @@ public class FactoryTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Initialize Abc"], result);
     }
+    
+    [Theory]
+    [InlineData(Lifetime.Transient)]
+    [InlineData(Lifetime.PerBlock)]
+    [InlineData(Lifetime.PerResolve)]
+    [InlineData(Lifetime.Scoped)]
+    [InlineData(Lifetime.Singleton)]
+    internal async Task ShouldSupportBuildUpWhenLifetime(Lifetime lifetime)
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class ClientScript
+                               {
+                                   [Ordinal(1)] public IService1? service1;
+                                   
+                                   [Ordinal(2)] public IService2? service2;
+                               }
+                               
+                               interface IService1
+                               {
+                               };
+                               
+                               internal class Service1 : IService1
+                               {
+                               };
+                               
+                               interface IService2
+                               {
+                               };
+                               
+                               internal class Service2 : IService2
+                               {
+                               };
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind().To<Service1>()
+                                           .Bind().As(Lifetime.#lifetime#).To<Service2>()
+                                           .Bind().To<ClientScript>(ctx =>
+                                           {
+                                               ctx.Inject("from arg", out ClientScript script);
+                                               ctx.BuildUp(script);
+                                               return script;
+                                           })
+                                           .RootArg<ClientScript>("clientScript", "from arg")
+                                           .Root<ClientScript>("Initialize");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var script = new ClientScript();
+                                       script = composition.Initialize(script);
+                                   }
+                               }
+                           }
+                           """.Replace("#lifetime#", lifetime.ToString()).RunAsync();
+
+        // Then
+        result.Errors.Count.ShouldBe(0, result);
+    }
 }

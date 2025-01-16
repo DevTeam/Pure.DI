@@ -220,7 +220,7 @@ internal class FactoryCodeBuilder(
             .Zip(factory.Initializers, (initialization, initializer) => (initialization, initializer))
             .GetEnumerator();
 
-        var  initializationArgsEnum = initializationArgs.OfType<Variable>().GetEnumerator();
+        var initializationArgsEnum = initializationArgs.Select(i => i.Current).GetEnumerator();
         
         var injectionsCtx = ctx;
         if (variable.IsLazy && variable.Node.Accumulators.Count > 0)
