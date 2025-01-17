@@ -8,7 +8,8 @@ using Microsoft.CodeAnalysis.Operations;
 internal class ApiInvocationProcessor(
     IComments comments,
     IArguments arguments,
-    ISemantic semantic)
+    ISemantic semantic,
+    ISymbolNames symbolNames)
     : IApiInvocationProcessor
 {
     private static readonly char[] TypeNamePartsSeparators = ['.'];
@@ -66,7 +67,7 @@ internal class ApiInvocationProcessor(
                                 if (type is INamedTypeSymbol symbol)
                                 {
                                     if (symbol.TypeArguments.Length > 1
-                                        && symbol.TypeArguments[0].ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat) != Names.ContextInterfaceName)
+                                        && symbolNames.GetDisplayName(symbol.TypeArguments[0]) != Names.ContextInterfaceName)
                                     {
                                         switch (invocation.ArgumentList.Arguments[0].Expression)
                                         {

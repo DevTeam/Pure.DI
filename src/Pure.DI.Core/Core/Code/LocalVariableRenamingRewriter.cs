@@ -11,9 +11,13 @@ internal class LocalVariableRenamingRewriter(
     : CSharpSyntaxRewriter
 {
     private readonly Dictionary<string, string> _identifierNames = new();
+    private BuildContext? _ctx;
 
-    public LambdaExpressionSyntax Rewrite(LambdaExpressionSyntax lambda) =>
-        (LambdaExpressionSyntax)Visit(lambda);
+    public LambdaExpressionSyntax Rewrite(BuildContext ctx, LambdaExpressionSyntax lambda)
+    {
+        _ctx = ctx;
+        return (LambdaExpressionSyntax)Visit(lambda);
+    }
 
     public override SyntaxNode? VisitVariableDeclarator(VariableDeclaratorSyntax node) =>
         base.VisitVariableDeclarator(node.WithIdentifier(SyntaxFactory.Identifier(GetUniqueName(node.Identifier.Text))));
@@ -28,7 +32,7 @@ internal class LocalVariableRenamingRewriter(
             && token.Parent is { } parent
             && (semanticModel.SyntaxTree != parent.SyntaxTree || semanticModel.GetSymbolInfo(parent).Symbol is ILocalSymbol))
         {
-            token = triviaTools.PreserveTrivia(SyntaxFactory.Identifier(newName), token);
+            token = triviaTools.PreserveTrivia(_ctx!.DependencyGraph.Source.Hints, SyntaxFactory.Identifier(newName), token);
         }
 
         return base.VisitToken(token);

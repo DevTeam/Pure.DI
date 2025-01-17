@@ -3,7 +3,9 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal class Attributes(ISemantic semantic)
+internal class Attributes(
+    ISemantic semantic,
+    ISymbolNames symbolNames)
     : IAttributes
 {
     public T GetAttribute<TMdAttribute, T>(
@@ -97,12 +99,24 @@ internal class Attributes(ISemantic semantic)
         return defaultValue;
     }
 
-    private static IReadOnlyList<AttributeData> GetAttributes(ISymbol member, INamedTypeSymbol attributeType) =>
+    private IReadOnlyList<AttributeData> GetAttributes(ISymbol member, INamedTypeSymbol attributeType) =>
         member
             .GetAttributes()
             .Where(attr =>
-                attr.AttributeClass != null
-                && GetUnboundTypeSymbol(attr.AttributeClass)?.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat) == attributeType.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat))
+            {
+                if (attr.AttributeClass is null)
+                {
+                    return false;
+                }
+
+                var unboundTypeSymbol = GetUnboundTypeSymbol(attr.AttributeClass);
+                if (unboundTypeSymbol is null)
+                {
+                    return false;
+                }
+
+                return symbolNames.GetDisplayName(unboundTypeSymbol) == symbolNames.GetDisplayName(attributeType);
+            })
             .ToArray();
 
     private static INamedTypeSymbol? GetUnboundTypeSymbol(INamedTypeSymbol? typeSymbol) =>

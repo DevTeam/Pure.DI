@@ -127,7 +127,9 @@ partial class Composition
     get
     {
       var accumulator47 = new Owned();
-      Func<Owned<IDependency>> perBlockFunc1 = new Func<Owned<IDependency>>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
+      Func<Owned<IDependency>> perBlockFunc1 = new Func<Owned<IDependency>>(
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      () =>
       {
         var accumulator47 = new Owned();
         Dependency transientDependency4 = new Dependency();
@@ -135,6 +137,7 @@ partial class Composition
         {
           accumulator47.Add(transientDependency4);
         }
+
         Owned transientOwned3;
         Owned localOwned10 = accumulator47;
         transientOwned3 = localOwned10;
@@ -142,6 +145,7 @@ partial class Composition
         {
           accumulator47.Add(transientOwned3);
         }
+
         Owned<IDependency> perBlockOwned2;
         // Creates the owner of an instance
         IOwned localOwned11 = transientOwned3;
@@ -151,6 +155,7 @@ partial class Composition
         {
           accumulator47.Add(perBlockOwned2);
         }
+
         Owned<IDependency> localValue9 = perBlockOwned2;
         return localValue9;
       });
@@ -159,6 +164,7 @@ partial class Composition
       {
         accumulator47.Add(transientService0);
       }
+
       return transientService0;
     }
   }

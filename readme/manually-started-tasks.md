@@ -118,7 +118,9 @@ partial class Composition
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public IService GetRoot(CancellationToken cancellationToken)
   {
-    Func<IDependency> perBlockFunc2 = new Func<IDependency>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
+    Func<IDependency> perBlockFunc2 = new Func<IDependency>(
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    () =>
     {
       IDependency localValue60 = new Dependency();
       return localValue60;

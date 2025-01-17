@@ -1,9 +1,9 @@
 ﻿namespace Pure.DI.Core.Code;
 
-public interface ITriviaTools
+internal interface ITriviaTools
 {
-    T PreserveTrivia<T>(T newNode, SyntaxNode prevNode)
+    T PreserveTrivia<T>(IHints hints, T newNode, SyntaxNode prevNode)
         where T: SyntaxNode;
 
-    SyntaxToken PreserveTrivia(SyntaxToken newToken, SyntaxToken prevToken);
+    SyntaxToken PreserveTrivia(IHints hints, SyntaxToken newToken, SyntaxToken prevToken);
 }

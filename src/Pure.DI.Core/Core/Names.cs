@@ -86,23 +86,22 @@ internal static class Names
 
     public static string GetVariableName(this DependencyNode Node, int PerLifetimeId)
     {
-        var baseName = Node.Type.Name.ToTitleCase();
         switch (Node)
         {
             case { Lifetime: Lifetime.Singleton }:
             {
                 var binding = Node.Binding;
-                return $"{SingletonVariablePrefix}{baseName}{Salt}{binding.Id}";
+                return $"{SingletonVariablePrefix}{Node.Type.Name.ToTitleCase()}{Salt}{binding.Id}";
             }
 
             case { Lifetime: Lifetime.Scoped }:
             {
                 var binding = Node.Binding;
-                return $"{ScopedVariablePrefix}{baseName}{Salt}{binding.Id}";
+                return $"{ScopedVariablePrefix}{Node.Type.Name.ToTitleCase()}{Salt}{binding.Id}";
             }
 
             case { Lifetime: Lifetime.PerResolve }:
-                return $"{PerResolveVariablePrefix}{baseName}{Salt}{PerLifetimeId}";
+                return $"{PerResolveVariablePrefix}{Node.Type.Name.ToTitleCase()}{Salt}{PerLifetimeId}";
 
             case { Arg: { Source.Kind: ArgKind.Class } arg }:
                 return $"{ArgVariablePrefix}{ToTitleCase(arg.Source.ArgName)}{Salt}";
@@ -111,10 +110,10 @@ internal static class Names
                 return arg.Source.ArgName;
 
             case { Lifetime: Lifetime.PerBlock }:
-                return $"{PerBlockVariablePrefix}{baseName}{Salt}{PerLifetimeId}";
+                return $"{PerBlockVariablePrefix}{Node.Type.Name.ToTitleCase()}{Salt}{PerLifetimeId}";
 
             default:
-                return $"{TransientVariablePrefix}{baseName}{Salt}{PerLifetimeId}";
+                return $"{TransientVariablePrefix}{Node.Type.Name.ToTitleCase()}{Salt}{PerLifetimeId}";
         }
     }
 
@@ -123,9 +122,26 @@ internal static class Names
 
     public static string ToTitleCase(this string title)
     {
-        return new string(title
-            .Where(i => i != '@')
-            .Select((ch, index) => index == 0 ? char.ToUpper(ch) : ch)
-            .ToArray());
+        if (title.Length == 0)
+        {
+            return title;
+        }
+
+        var firstChar = title[0];
+        if (firstChar == '@')
+        {
+            // ReSharper disable once TailRecursiveCall
+            return ToTitleCase(title[1..]);
+        }
+        
+        // ReSharper disable once InvertIf
+        if (char.IsLower(firstChar))
+        {
+            var chars = title.ToArray();
+            chars[0] = char.ToUpper(firstChar);
+            return new string(chars);
+        }
+
+        return title;
     }
 }

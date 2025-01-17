@@ -28,7 +28,7 @@ class MyGlobalComposition
     static void Setup() =>
         DI.Setup(kind: Global)
             .Hint(Hint.ToString, "Off")
-            .Hint(Hint.FormatCode, "Off");
+            .Hint(Hint.FormatCode, "On");
 }
 
 class MyGlobalComposition2

@@ -113,7 +113,10 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new Service() { Dependency = new Dependency() };
+      return new Service()
+      {
+        Dependency = new Dependency()
+      };
     }
   }
 

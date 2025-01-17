@@ -11,7 +11,8 @@ internal sealed class FactoryRewriter(
     string finishLabel,
     ICollection<FactoryRewriter.Injection> injections,
     ICollection<FactoryRewriter.Initializer> initializers,
-    ITriviaTools triviaTools)
+    ITriviaTools triviaTools,
+    ISymbolNames symbolNames)
     : CSharpSyntaxRewriter
 {
     private static readonly AttributeListSyntax MethodImplAttribute = SyntaxFactory.AttributeList().AddAttributes(
@@ -126,6 +127,7 @@ internal sealed class FactoryRewriter(
 
     private ExpressionStatementSyntax CreateAssignmentExpression(SyntaxNode returnBody, StatementSyntax owner) =>
         triviaTools.PreserveTrivia(
+            _ctx!.DependencyGraph.Source.Hints,
             SyntaxFactory.ExpressionStatement(
                 SyntaxFactory.AssignmentExpression(
                     SyntaxKind.SimpleAssignmentExpression,
@@ -176,7 +178,7 @@ internal sealed class FactoryRewriter(
             newNode = SyntaxFactory.Block().AddStatements(SyntaxFactory.ExpressionStatement(expressionSyntax).WithLeadingTrivia(SyntaxFactory.LineFeed).WithTrailingTrivia(SyntaxFactory.LineFeed));
         }
 
-        return triviaTools.PreserveTrivia(newNode, node);
+        return triviaTools.PreserveTrivia(_ctx!.DependencyGraph.Source.Hints, newNode, node);
     }
 
     private bool TryInject(
@@ -195,14 +197,14 @@ internal sealed class FactoryRewriter(
             case IdentifierNameSyntax identifierName:
                 injections.Add(new Injection(identifierName.Identifier.Text, false));
             {
-                expressionSyntax = triviaTools.PreserveTrivia(InjectionMarkerExpression, invocation);
+                expressionSyntax = triviaTools.PreserveTrivia(_ctx!.DependencyGraph.Source.Hints, InjectionMarkerExpression, invocation);
                 return true;
             }
 
             case DeclarationExpressionSyntax { Designation: SingleVariableDesignationSyntax singleVariableDesignationSyntax }:
                 injections.Add(new Injection(singleVariableDesignationSyntax.Identifier.Text, true));
             {
-                expressionSyntax = triviaTools.PreserveTrivia(InjectionMarkerExpression, invocation);
+                expressionSyntax = triviaTools.PreserveTrivia(_ctx!.DependencyGraph.Source.Hints, InjectionMarkerExpression, invocation);
                 return true;
             }
         }
@@ -226,14 +228,14 @@ internal sealed class FactoryRewriter(
             case IdentifierNameSyntax identifierName:
                 initializers.Add(new Initializer(identifierName.Identifier.Text));
             {
-                expressionSyntax = triviaTools.PreserveTrivia(InitializationMarkerExpression, invocation);
+                expressionSyntax = triviaTools.PreserveTrivia(_ctx!.DependencyGraph.Source.Hints, InitializationMarkerExpression, invocation);
                 return true;
             }
 
             case DeclarationExpressionSyntax { Designation: SingleVariableDesignationSyntax singleVariableDesignationSyntax }:
                 initializers.Add(new Initializer(singleVariableDesignationSyntax.Identifier.Text));
             {
-                expressionSyntax = triviaTools.PreserveTrivia(InitializationMarkerExpression, invocation);
+                expressionSyntax = triviaTools.PreserveTrivia(_ctx!.DependencyGraph.Source.Hints, InitializationMarkerExpression, invocation);
                 return true;
             }
         }
@@ -254,7 +256,7 @@ internal sealed class FactoryRewriter(
                     return Visit(SyntaxFactory.ParseExpression($" {variable.Injection.Tag.ValueToString()}"));
                 
                 case nameof(IContext.ConsumerTypes):
-                    var consumers = variable.Info.GetTargetNodes().Select(targetNode => $"typeof({targetNode.Type.ToDisplayString()})").ToList();
+                    var consumers = variable.Info.GetTargetNodes().Select(targetNode => $"typeof({symbolNames.GetDisplayName(targetNode.Type)})").ToList();
                     if (consumers.Count == 0 && _ctx is not null)
                     {
                         consumers.Add($"typeof({_ctx.DependencyGraph.Source.Name.FullName})");

@@ -11,7 +11,8 @@ internal class FactoryCodeBuilder(
     ITypeResolver typeResolver,
     ICompilations compilations,
     ITriviaTools triviaTools,
-    IInjections injectionsTool)
+    IInjections injectionsTool,
+    ISymbolNames symbolNames)
     : ICodeBuilder<DpFactory>
 {
     public static readonly ParenthesizedLambdaExpressionSyntax DefaultBindAttrParenthesizedLambda = SyntaxFactory.ParenthesizedLambdaExpression();
@@ -69,7 +70,7 @@ internal class FactoryCodeBuilder(
                 ExpressionSyntax? value = null;
                 var type = memberResolver.ContractType;
                 ExpressionSyntax instance = member.IsStatic
-                    ? SyntaxFactory.ParseTypeName(type.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat))
+                    ? SyntaxFactory.ParseTypeName(symbolNames.GetDisplayName(type))
                     : SyntaxFactory.IdentifierName(DefaultInstanceValueName);
 
                 switch (member)
@@ -101,7 +102,7 @@ internal class FactoryCodeBuilder(
                                     argType = bindingTypeConstructor.Construct(setup, binding.SemanticModel.Compilation, argType);
                                 }
 
-                                var typeName = argType.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat);
+                                var typeName = symbolNames.GetDisplayName(argType);
                                 typeArgs.Add(SyntaxFactory.ParseTypeName(typeName));
                             }
 
@@ -152,10 +153,10 @@ internal class FactoryCodeBuilder(
         // Rewrites syntax tree
         var finishLabel = $"{variable.VariableDeclarationName}Finish";
         var localVariableRenamingRewriter = new LocalVariableRenamingRewriter(idGenerator, factory.Source.SemanticModel, triviaTools);
-        var factoryExpression = localVariableRenamingRewriter.Rewrite(originalLambda);
+        var factoryExpression = localVariableRenamingRewriter.Rewrite(ctx, originalLambda);
         var injections = new List<FactoryRewriter.Injection>();
         var inits = new List<FactoryRewriter.Initializer>();
-        var factoryRewriter = new FactoryRewriter(arguments, compilations, factory, variable, finishLabel, injections, inits, triviaTools);
+        var factoryRewriter = new FactoryRewriter(arguments, compilations, factory, variable, finishLabel, injections, inits, triviaTools, symbolNames);
         var lambda = factoryRewriter.Rewrite(ctx, factoryExpression);
         new FactoryValidator(factory).Validate(lambda);
         SyntaxNode syntaxNode = lambda.Block is not null ? lambda.Block : SyntaxFactory.ExpressionStatement((ExpressionSyntax)lambda.Body);

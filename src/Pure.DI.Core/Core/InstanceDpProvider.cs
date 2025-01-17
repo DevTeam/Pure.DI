@@ -153,6 +153,11 @@ internal class InstanceDpProvider(
         MdSetup setup,
         ISymbol symbol)
     {
+        if (setup.TagOn.Count == 0)
+        {
+            return null;
+        }
+
         var injectionSite = injectionSiteFactory.CreateInjectionSite(symbol.ContainingSymbol, symbol.Name);
         var injectionSiteSpan = injectionSite.AsSpan();
         foreach (var tagOnSite in setup.TagOn)

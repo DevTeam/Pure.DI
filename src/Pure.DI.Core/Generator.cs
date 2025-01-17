@@ -156,5 +156,7 @@ public sealed partial class Generator
                 .Bind().To<Registry<TT>>()
                 .Bind().To<Locks>()
                 .Bind().To<RootAccessModifierResolver>()
-                .Bind().To<SmartTags>();
+                .Bind().To<SmartTags>()
+                .Bind().To<GenericTypeArguments>()
+                .Bind().To<SymbolNames>();
 }

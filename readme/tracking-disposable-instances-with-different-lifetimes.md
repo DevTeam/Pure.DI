@@ -150,7 +150,9 @@ partial class Composition: IDisposable
     get
     {
       var accumulator50 = new Owned();
-      Func<Owned<IDependency>> perBlockFunc2 = new Func<Owned<IDependency>>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
+      Func<Owned<IDependency>> perBlockFunc2 = new Func<Owned<IDependency>>(
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      () =>
       {
         var accumulator50 = new Owned();
         if (_root._singletonDependency44 is null)
@@ -172,6 +174,7 @@ partial class Composition: IDisposable
         {
           accumulator50.Add(transientOwned4);
         }
+
         Owned<IDependency> perBlockOwned3;
         // Creates the owner of an instance
         IOwned localOwned31 = transientOwned4;
@@ -181,10 +184,13 @@ partial class Composition: IDisposable
         {
           accumulator50.Add(perBlockOwned3);
         }
+
         Owned<IDependency> localValue29 = perBlockOwned3;
         return localValue29;
       });
-      Func<Owned<IDependency>> perBlockFunc1 = new Func<Owned<IDependency>>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
+      Func<Owned<IDependency>> perBlockFunc1 = new Func<Owned<IDependency>>(
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      () =>
       {
         var accumulator50 = new Owned();
         Dependency transientDependency8 = new Dependency();
@@ -192,6 +198,7 @@ partial class Composition: IDisposable
         {
           accumulator50.Add(transientDependency8);
         }
+
         Owned transientOwned7;
         Owned localOwned34 = accumulator50;
         transientOwned7 = localOwned34;
@@ -199,6 +206,7 @@ partial class Composition: IDisposable
         {
           accumulator50.Add(transientOwned7);
         }
+
         Owned<IDependency> perBlockOwned6;
         // Creates the owner of an instance
         IOwned localOwned35 = transientOwned7;
@@ -208,6 +216,7 @@ partial class Composition: IDisposable
         {
           accumulator50.Add(perBlockOwned6);
         }
+
         Owned<IDependency> localValue33 = perBlockOwned6;
         return localValue33;
       });
@@ -216,6 +225,7 @@ partial class Composition: IDisposable
       {
         accumulator50.Add(transientService0);
       }
+
       return transientService0;
     }
   }

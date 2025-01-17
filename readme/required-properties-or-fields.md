@@ -99,7 +99,11 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new Service() { ServiceNameField = _argName, Dependency = new Dependency() };
+      return new Service()
+      {
+        ServiceNameField = _argName,
+        Dependency = new Dependency()
+      };
     }
   }
 }

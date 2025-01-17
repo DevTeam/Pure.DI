@@ -997,6 +997,37 @@ You can set project properties to save generated files and control their storage
 
 </details>
 
+<details>
+<summary>Performance profiling</summary>
+
+Please install the [JetBrains.dotTrace.GlobalTools](https://www.nuget.org/packages/JetBrains.dotTrace.GlobalTools) dotnet tool globally, for example:
+
+```shell
+dotnet tool install --global JetBrains.dotTrace.GlobalTools --version 2024.3.3
+```
+
+Or make sure it is installed. Add the following sections to the project:
+
+```xml
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PureDIProfilePath>c:\profiling</PureDIProfilePath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <CompilerVisibleProperty Include="PureDIProfilePath" />
+  </ItemGroup>
+
+</Project>
+```
+
+Replace the path like *c:\profiling* with the path where the profiling results will be saved.
+
+Start the project build and wait until a file like *c:\profiling\pure_di_????.dtt* appears in the directory.
+
+</details>
+
 ### Additional resources
 
 Examples of how to set up a composition

@@ -123,13 +123,15 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<IService> perBlockFunc1 = new Func<IService>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
+      Func<IService> perBlockFunc1 = new Func<IService>(
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      () =>
       {
         Composition transientComposition3 = this;
         IService transientIService2;
         Composition localBaseComposition91 = transientComposition3;
         // Creates a session
-        var localSession92= new Composition(localBaseComposition91);
+        var localSession92 = new Composition(localBaseComposition91);
         // Provides a root
         transientIService2 = localSession92.SessionRoot;
         IService localValue90 = transientIService2;

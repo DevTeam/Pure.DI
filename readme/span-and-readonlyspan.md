@@ -97,7 +97,12 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      ReadOnlySpan<Dependency> transientReadOnlySpan1 = stackalloc Dependency[3] { new Dependency(), new Dependency(), new Dependency() };
+      ReadOnlySpan<Dependency> transientReadOnlySpan1 = stackalloc Dependency[3]
+      {
+        new Dependency(),
+        new Dependency(),
+        new Dependency()
+      };
       return new Service(transientReadOnlySpan1);
     }
   }

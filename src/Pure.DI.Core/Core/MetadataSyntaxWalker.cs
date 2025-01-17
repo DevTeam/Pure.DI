@@ -11,6 +11,7 @@ namespace Pure.DI.Core;
 
 internal sealed class MetadataSyntaxWalker(
     IApiInvocationProcessor invocationProcessor,
+    ISymbolNames symbolNames,
     CancellationToken cancellationToken)
     : CSharpSyntaxWalker, IMetadataSyntaxWalker
 {
@@ -99,7 +100,7 @@ internal sealed class MetadataSyntaxWalker(
 
                     if (_semanticModel?.GetTypeInfo(curInvocation) is { } typeInfo
                         && (typeInfo.Type ?? typeInfo.ConvertedType) is { } type
-                        && type.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat) == Names.ConfigurationInterfaceName)
+                        && symbolNames.GetDisplayName(type) == Names.ConfigurationInterfaceName)
                     {
                         return true;
                     }

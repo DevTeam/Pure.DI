@@ -120,7 +120,9 @@ partial class Composition
     TaskScheduler transientTaskScheduler5 = TaskScheduler.Default;
     TaskScheduler localTaskScheduler74 = transientTaskScheduler5;
     perBlockTaskFactory2 = new TaskFactory<IService<T3, bool>>(localCancellationToken71, localTaskCreationOptions72, localTaskContinuationOptions73, localTaskScheduler74);
-    Func<IService<T3, bool>> perBlockFunc1 = new Func<IService<T3, bool>>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
+    Func<IService<T3, bool>> perBlockFunc1 = new Func<IService<T3, bool>>(
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    () =>
     {
       OtherService<T3> transientOtherService6;
       IDependency<T3> localDependency76 = new Dependency<T3>();
@@ -152,7 +154,9 @@ partial class Composition
     TaskScheduler transientTaskScheduler5 = TaskScheduler.Default;
     TaskScheduler localTaskScheduler82 = transientTaskScheduler5;
     perBlockTaskFactory2 = new TaskFactory<IService<T3, T1>>(localCancellationToken79, localTaskCreationOptions80, localTaskContinuationOptions81, localTaskScheduler82);
-    Func<IService<T3, T1>> perBlockFunc1 = new Func<IService<T3, T1>>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
+    Func<IService<T3, T1>> perBlockFunc1 = new Func<IService<T3, T1>>(
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    () =>
     {
       IService<T3, T1> localValue83 = new Service<T3, T1>(new Dependency<T3>());
       return localValue83;

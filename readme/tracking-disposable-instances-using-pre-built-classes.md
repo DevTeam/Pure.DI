@@ -163,7 +163,9 @@ partial class Composition: IDisposable
     get
     {
       var accumulator50 = new Abstractions.Own();
-      Func<Abstractions.Own<IDependency>> perBlockFunc2 = new Func<Abstractions.Own<IDependency>>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
+      Func<Abstractions.Own<IDependency>> perBlockFunc2 = new Func<Abstractions.Own<IDependency>>(
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      () =>
       {
         var accumulator50 = new Abstractions.Own();
         if (_root._singletonDependency44 is null)
@@ -187,10 +189,13 @@ partial class Composition: IDisposable
         {
           accumulator50.Add(perBlockOwn3);
         }
+
         Abstractions.Own<IDependency> localValue23 = perBlockOwn3;
         return localValue23;
       });
-      Func<Abstractions.Own<IDependency>> perBlockFunc1 = new Func<Abstractions.Own<IDependency>>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
+      Func<Abstractions.Own<IDependency>> perBlockFunc1 = new Func<Abstractions.Own<IDependency>>(
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      () =>
       {
         var accumulator50 = new Abstractions.Own();
         Dependency transientDependency7 = new Dependency();
@@ -198,6 +203,7 @@ partial class Composition: IDisposable
         {
           accumulator50.Add(transientDependency7);
         }
+
         Abstractions.Own<IDependency> perBlockOwn5;
         // Creates the owner of an instance
         Abstractions.Own localOwn27 = accumulator50;
@@ -207,6 +213,7 @@ partial class Composition: IDisposable
         {
           accumulator50.Add(perBlockOwn5);
         }
+
         Abstractions.Own<IDependency> localValue26 = perBlockOwn5;
         return localValue26;
       });
@@ -215,6 +222,7 @@ partial class Composition: IDisposable
       {
         accumulator50.Add(transientService0);
       }
+
       return transientService0;
     }
   }

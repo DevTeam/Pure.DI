@@ -118,7 +118,9 @@ partial class Composition
     TaskScheduler transientTaskScheduler6 = TaskScheduler.Current;
     TaskScheduler localTaskScheduler66 = transientTaskScheduler6;
     perBlockTaskFactory3 = new TaskFactory<IDependency>(localCancellationToken63, localTaskCreationOptions64, localTaskContinuationOptions65, localTaskScheduler66);
-    Func<IDependency> perBlockFunc2 = new Func<IDependency>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
+    Func<IDependency> perBlockFunc2 = new Func<IDependency>(
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    () =>
     {
       IDependency localValue67 = new Dependency();
       return localValue67;

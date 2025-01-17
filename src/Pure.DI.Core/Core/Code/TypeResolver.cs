@@ -6,7 +6,8 @@ using static Tag;
 
 internal class TypeResolver(
     IMarker marker,
-    [Tag(GenericType)] IIdGenerator idGenerator)
+    [Tag(GenericType)] IIdGenerator idGenerator,
+    ISymbolNames symbolNames)
     : ITypeResolver
 {
     private readonly Dictionary<ITypeSymbol, string> _names = new(SymbolEqualityComparer.Default);
@@ -32,7 +33,7 @@ internal class TypeResolver(
                 }
                 else
                 {
-                    description = new TypeDescription(type.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat), ImmutableArray<TypeDescription>.Empty, typeParam);
+                    description = new TypeDescription(symbolNames.GetDisplayName(type), ImmutableArray<TypeDescription>.Empty, typeParam);
                 }
 
                 break;
@@ -72,7 +73,7 @@ internal class TypeResolver(
                 break;
 
             default:
-                description = new TypeDescription(type.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat), ImmutableArray<TypeDescription>.Empty, typeParam);
+                description = new TypeDescription(symbolNames.GetDisplayName(type), ImmutableArray<TypeDescription>.Empty, typeParam);
                 break;
         }
 

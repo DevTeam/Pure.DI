@@ -86,7 +86,9 @@ partial class Composition
     TaskScheduler transientTaskScheduler5 = TaskScheduler.Default;
     TaskScheduler localTaskScheduler40 = transientTaskScheduler5;
     perBlockTaskFactory2 = new TaskFactory<IService>(localCancellationToken37, localTaskCreationOptions38, localTaskContinuationOptions39, localTaskScheduler40);
-    Func<IService> perBlockFunc1 = new Func<IService>([MethodImpl(MethodImplOptions.AggressiveInlining)] () =>
+    Func<IService> perBlockFunc1 = new Func<IService>(
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    () =>
     {
       IService localValue41 = new Service(new Dependency());
       return localValue41;

@@ -10,7 +10,8 @@ internal class BuildTools(
     ITypeResolver typeResolver,
     IBaseSymbolsProvider baseSymbolsProvider,
     [Tag(Injection)] IIdGenerator idGenerator,
-    ILocks locks)
+    ILocks locks,
+    ISymbolNames symbolNames)
     : IBuildTools
 {
     public void AddPureHeader(LinesBuilder code)
@@ -73,7 +74,7 @@ internal class BuildTools(
         if (!filter.IsMeetRegularExpression(
                 ctx.DependencyGraph.Source,
                 (Hint.OnDependencyInjectionImplementationTypeNameRegularExpression, typeResolver.Resolve(variable.Setup, variable.InstanceType).Name),
-                (Hint.OnDependencyInjectionContractTypeNameRegularExpression, variable.ContractType.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat)),
+                (Hint.OnDependencyInjectionContractTypeNameRegularExpression, symbolNames.GetDisplayName(variable.ContractType)),
                 (Hint.OnDependencyInjectionTagRegularExpression, tag.ValueToString()),
                 (Hint.OnDependencyInjectionLifetimeRegularExpression, variable.Node.Lifetime.ValueToString())))
         {
@@ -90,15 +91,15 @@ internal class BuildTools(
             return Array.Empty<Line>();
         }
 
-        var baseTypes =
+        var baseTypes = new Lazy<ImmutableHashSet<ISymbol?>>(() =>
             baseSymbolsProvider.GetBaseSymbols(variable.InstanceType, (_, _) => true)
-                .ToImmutableHashSet(SymbolEqualityComparer.Default);
+                .ToImmutableHashSet(SymbolEqualityComparer.Default));
 
         var code = new LinesBuilder();
         var lockIsRequired = ctx.LockIsRequired ?? ctx.DependencyGraph.Source.Hints.IsThreadSafeEnabled;
         var accLines = ctx.Accumulators
             .Where(i => FilterAccumulator(i, variable.Node.Lifetime))
-            .Where(i => baseTypes.Contains(i.Type))
+            .Where(i => baseTypes.Value.Contains(i.Type))
             .GroupBy(i => i.Name)
             .Select(i => i.First())
             .OrderBy(i => i.Name)

@@ -23,15 +23,8 @@ internal record MdSetup(
     IReadOnlyCollection<MdTagOnSites> TagOn,
     IReadOnlyCollection<string> Comments)
 {
-    private readonly Lazy<HashSet<string>> _genericTypeArgumentTypes =
-        new(() => [..GenericTypeArguments.Select(i => i.Type.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat))]);
+    public virtual bool Equals(MdSetup? other) => 
+        other is not null && (ReferenceEquals(this, other) || Name.Equals(other.Name));
 
-    private readonly Lazy<HashSet<string>> _genericTypeArgumentAttributesTypes =
-        new(() => [..GenericTypeArgumentAttributes.Select(i => i.AttributeType.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat))]);
-
-    public bool IsGenericTypeArgument(ITypeSymbol typeSymbol) =>
-        _genericTypeArgumentTypes.Value.Contains(typeSymbol.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat));
-
-    public bool IsGenericTypeArgumentAttribute(ITypeSymbol typeSymbol) =>
-        _genericTypeArgumentAttributesTypes.Value.Contains(typeSymbol.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat));
+    public override int GetHashCode() => Name.GetHashCode();
 }

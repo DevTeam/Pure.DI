@@ -222,6 +222,7 @@ public class FactoryTests
                                {
                                    private static void SetupComposition()
                                    {
+                                       // FormatCode = On
                                        DI.Setup("Composition")
                                            .Bind<IDependency>().To(ctx => 
                                                { 

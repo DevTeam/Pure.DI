@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core;
 
-internal sealed class Marker : IMarker
+internal sealed class Marker(IGenericTypeArguments genericTypeArguments) : IMarker
 {
     public bool IsMarkerBased(MdSetup setup, ITypeSymbol type) =>
         IsMarker(setup, type) || type switch
@@ -14,8 +14,8 @@ internal sealed class Marker : IMarker
         };
 
     public bool IsMarker(MdSetup setup, ITypeSymbol type) =>
-        setup.IsGenericTypeArgument(type)
+        genericTypeArguments.IsGenericTypeArgument(setup, type)
         || type.GetAttributes()
             .Where(i => i.AttributeClass is not null)
-            .Any(i => setup.IsGenericTypeArgumentAttribute(i.AttributeClass!));
+            .Any(i => genericTypeArguments.IsGenericTypeArgumentAttribute(setup, i.AttributeClass!));
 }

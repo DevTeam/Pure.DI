@@ -8,7 +8,8 @@ internal sealed class SetupsBuilder(
     Func<IBindingBuilder> bindingBuilderFactory,
     IArguments arguments,
     Func<ITypeConstructor> typeConstructorFactory,
-    ISemantic semantic)
+    ISemantic semantic,
+    ISymbolNames symbolNames)
     : IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>, IMetadataVisitor, ISetupFinalizer
 {
     private readonly List<MdSetup> _setups = [];
@@ -203,7 +204,7 @@ internal sealed class SetupsBuilder(
             from member in type.GetMembers()
             where member.DeclaredAccessibility >= Accessibility.Internal && member.CanBeReferencedByName && member is IFieldSymbol or IPropertySymbol or IMethodSymbol
             from attribute in member.GetAttributes()
-            where attribute.AttributeClass?.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat) == Names.BindAttributeName
+            where attribute.AttributeClass is not null && symbolNames.GetDisplayName(attribute.AttributeClass) == Names.BindAttributeName
             select (attribute, member);
 
         var typeConstructor = typeConstructorFactory();
@@ -345,7 +346,7 @@ internal sealed class SetupsBuilder(
 
             MdResolver CreateResolver(ITypeConstructor constructor, string name, ITypeSymbol injectedType, object? tag, ref int curPosition)
             {
-                var typeSyntax = SyntaxFactory.ParseTypeName(injectedType.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat));
+                var typeSyntax = SyntaxFactory.ParseTypeName(symbolNames.GetDisplayName(injectedType));
                 if (semantic.IsValidNamespace(injectedType.ContainingNamespace))
                 {
                     namespaces.Add(injectedType.ContainingNamespace.ToString());
