@@ -13,66 +13,65 @@ internal sealed class Filter(
     public static Regex RegexFactory(string filter) =>
         new(filter, RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline | RegexOptions.IgnoreCase);
 
-    public bool IsMeetRegularExpressions(MdSetup setup, params (Hint setting, Lazy<string> textProvider)[] settings) =>
-        settings.All(i => IsMeetRegularExpression(setup, i.setting, i.textProvider));
-    
-    public bool IsMeetWildcards(MdSetup setup, params (Hint setting, Lazy<string> textProvider)[] settings) =>
-        settings.All(i => IsMeetWildcard(setup, i.setting, i.textProvider));
-
-    private bool IsMeetRegularExpression(
+    public bool IsMeet(
         MdSetup setup,
-        Hint hint,
-        Lazy<string> textProvider)
-    {
-        if (!setup.Hints.TryGetValue(hint, out var regularExpression)
-            || string.IsNullOrWhiteSpace(regularExpression))
-        {
-            {
-                return true;
-            }
-        }
+        params (Hint regularExpressionSetting, Hint wildcardSettings, Func<string> textProvider)[] settings) =>
+        settings.All(i => IsMeet(setup, i.regularExpressionSetting, i.wildcardSettings, i.textProvider));
 
-        try
-        {
-            var regex = regexCache.Get(regularExpression.Trim(), RegexFactory);
-            if (!regex.IsMatch(textProvider.Value))
-            {
-                return false;
-            }
-        }
-        catch (ArgumentException ex)
-        {
-            logger.CompileError($"Invalid regular expression {regularExpression}. {ex.Message}", setup.Source.GetLocation(), LogId.ErrorInvalidMetadata);
-        }
-
-        return true;
-    }
-
-    private bool IsMeetWildcard(
+    private bool IsMeet(
         MdSetup setup,
-        Hint hint,
-        Lazy<string> textProvider)
+        Hint regularExpressionSetting,
+        Hint wildcardSettings,
+        Func<string> textProvider)
     {
-        if (!setup.Hints.TryGetValue(hint, out var wildcard)
-            || string.IsNullOrWhiteSpace(wildcard))
+        var hasRegularExpressions = setup.Hints.TryGetValue(regularExpressionSetting, out var regularExpressions) && regularExpressions.Count > 0;
+        var hasWildcards = setup.Hints.TryGetValue(wildcardSettings, out var wildcards) && wildcards.Count > 0;
+        
+        // ReSharper disable once ConvertIfStatementToSwitchStatement
+        if (!hasRegularExpressions && !hasWildcards)
         {
+            return true;
+        }
+
+        var text = textProvider().Trim();
+        if (hasRegularExpressions)
+        {
+            foreach (var regularExpression in regularExpressions!.Where(regularExpression => !string.IsNullOrWhiteSpace(regularExpression)))
             {
-                return true;
+                try
+                {
+                    var regex = regexCache.Get(regularExpression.Trim(), RegexFactory);
+                    if (regex.IsMatch(text))
+                    {
+                        return true;
+                    }
+                }
+                catch (ArgumentException ex)
+                {
+                    logger.CompileError($"Invalid regular expression {regularExpression}. {ex.Message}", setup.Source.GetLocation(), LogId.ErrorInvalidMetadata);
+                }
             }
         }
 
-        try
+        // ReSharper disable once InvertIf
+        if (hasWildcards)
         {
-            if (!wildcardMatcher.Match(wildcard.Trim().AsSpan(), textProvider.Value.AsSpan()))
+            foreach (var wildcard in wildcards!.Where(wildcard => !string.IsNullOrWhiteSpace(wildcard)))
             {
-                return false;
+                try
+                {
+                    if (wildcardMatcher.Match(wildcard.Trim().AsSpan(), text.AsSpan()))
+                    {
+                        return true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logger.CompileError($"Invalid wildcard {wildcard}. {ex.Message}", setup.Source.GetLocation(), LogId.ErrorInvalidMetadata);
+                }
             }
         }
-        catch (Exception ex)
-        {
-            logger.CompileError($"Invalid wildcard {wildcard}. {ex.Message}", setup.Source.GetLocation(), LogId.ErrorInvalidMetadata);
-        }
 
-        return true;
+        return false;
     }
 }

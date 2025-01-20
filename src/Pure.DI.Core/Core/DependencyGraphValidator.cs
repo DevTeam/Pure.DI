@@ -25,19 +25,14 @@ internal sealed class DependencyGraphValidator(
             var setup = dependencyGraph.Source;
             if (setup.Hints.IsOnCannotResolveEnabled)
             {
-                var contractName = new Lazy<string>(() => typeResolver.Resolve(setup, unresolvedInjection.Type).Name);
-                var tagName = new Lazy<string>(() => unresolvedInjection.Tag.ValueToString());
-                var lifetimeName = new Lazy<string>(() => dependencyNode.Lifetime.ValueToString());
-                if (filter.IsMeetRegularExpressions(
-                        setup,
-                        (Hint.OnCannotResolveContractTypeNameRegularExpression, contractName),
-                        (Hint.OnCannotResolveTagRegularExpression, tagName),
-                        (Hint.OnCannotResolveLifetimeRegularExpression, lifetimeName))
-                    && filter.IsMeetWildcards(
-                        setup,
-                        (Hint.OnCannotResolveContractTypeNameWildcard, contractName),
-                        (Hint.OnCannotResolveTagWildcard, tagName),
-                        (Hint.OnCannotResolveLifetimeWildcard, lifetimeName)))
+                string GetContractName() => typeResolver.Resolve(setup, unresolvedInjection.Type).Name;
+                string GetTagName() => unresolvedInjection.Tag.ValueToString();
+                string GetLifetimeName() => dependencyNode.Lifetime.ValueToString();
+                if (filter.IsMeet(
+                        setup, 
+                        (Hint.OnCannotResolveContractTypeNameRegularExpression, Hint.OnCannotResolveContractTypeNameWildcard, GetContractName),
+                        (Hint.OnCannotResolveTagRegularExpression, Hint.OnCannotResolveTagWildcard, GetTagName),
+                        (Hint.OnCannotResolveLifetimeRegularExpression, Hint.OnCannotResolveLifetimeWildcard, GetLifetimeName)))
                 {
                     continue;
                 }

@@ -13,6 +13,7 @@ using static Pure.DI.Hint;
 
 DI.Setup(nameof(Composition))
     .Hint(OnNewInstance, "On")
+    .Hint(OnNewInstanceImplementationTypeNameWildcard, "*Dependency")
     .Hint(OnNewInstanceImplementationTypeNameWildcard, "*Service")
     .Bind().As(Lifetime.Singleton).To<Dependency>()
     .Bind().To<Service>()
@@ -24,6 +25,7 @@ var service1 = composition.Root;
 var service2 = composition.Root;
 
 log.ShouldBe([
+    "Dependency created",
     "Service created",
     "Service created"]);
 
@@ -125,7 +127,11 @@ partial class Composition
         {
           if (_root._singletonDependency43 is null)
           {
-            _root._singletonDependency43 = new Dependency();
+            Dependency _singletonDependency43Temp;
+            _singletonDependency43Temp = new Dependency();
+            OnNewInstance<Dependency>(ref _singletonDependency43Temp, null, Lifetime.Singleton);
+            Thread.MemoryBarrier();
+            _root._singletonDependency43 = _singletonDependency43Temp;
           }
         }
       }

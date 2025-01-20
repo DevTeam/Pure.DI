@@ -402,19 +402,14 @@ internal sealed class DependencyGraphBuilder(
     {
         if (setup.Hints.IsOnCannotResolveEnabled)
         {
-            var contractName = new Lazy<string>(() => symbolNames.GetName(unresolvedInjection.Type));
-            var tagName = new Lazy<string>(() => unresolvedInjection.Tag.ValueToString());
-            var lifetimeName = new Lazy<string>(() => ownerNode.Lifetime.ValueToString());
-            if (filter.IsMeetRegularExpressions(
-                    setup,
-                    (Hint.OnCannotResolveContractTypeNameRegularExpression, contractName),
-                    (Hint.OnCannotResolveTagRegularExpression, tagName),
-                    (Hint.OnCannotResolveLifetimeRegularExpression, lifetimeName))
-                && filter.IsMeetWildcards(
-                    setup,
-                    (Hint.OnCannotResolveContractTypeNameWildcard, contractName),
-                    (Hint.OnCannotResolveTagWildcard, tagName),
-                    (Hint.OnCannotResolveLifetimeWildcard, lifetimeName)))
+            string GetContractName() => symbolNames.GetName(unresolvedInjection.Type);
+            string GetTagName() => unresolvedInjection.Tag.ValueToString();
+            string GetLifetimeName() => ownerNode.Lifetime.ValueToString();
+            if (filter.IsMeet(
+                    setup, 
+                    (Hint.OnCannotResolveContractTypeNameRegularExpression, Hint.OnCannotResolveContractTypeNameWildcard, GetContractName),
+                    (Hint.OnCannotResolveTagRegularExpression, Hint.OnCannotResolveTagWildcard, GetTagName),
+                    (Hint.OnCannotResolveLifetimeRegularExpression, Hint.OnCannotResolveLifetimeWildcard, GetLifetimeName)))
             {
                 var onCannotResolveBinding = CreateConstructBinding(
                     setup,

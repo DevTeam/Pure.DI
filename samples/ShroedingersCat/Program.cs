@@ -1,6 +1,4 @@
-﻿using Pure.DI;
-using static Pure.DI.Lifetime;
-// ReSharper disable ArrangeTypeMemberModifiers
+﻿// ReSharper disable ArrangeTypeMemberModifiers
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedMember.Local
 // ReSharper disable UnusedMemberInSuper.Global
@@ -8,6 +6,8 @@ using static Pure.DI.Lifetime;
 namespace Sample;
 
 using System.Diagnostics;
+using Pure.DI;
+using static Pure.DI.Lifetime;
 
 // Let's create an abstraction
 

@@ -1,8 +1,9 @@
-﻿using Pure.DI;
+﻿// ReSharper disable UnusedMemberInSuper.Global
+// ReSharper disable UnusedMember.Global
+
+using Pure.DI;
 using System.Diagnostics;
 using static Pure.DI.Lifetime;
-// ReSharper disable UnusedMemberInSuper.Global
-// ReSharper disable UnusedMember.Global
 
 // Composition root
 new Composition().Root.Run();

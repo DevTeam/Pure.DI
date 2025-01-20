@@ -37,18 +37,6 @@ namespace Pure.DI.MS
         private static readonly ParameterExpression TagParameter = Expression.Parameter(typeof(object));
     
         /// <summary>
-        /// The name of the Pure.DI setup to use as a dependency in other setups.
-        /// <example>
-        /// For example:
-        /// <code>
-        /// void Setup() =&amp;gt;
-        ///     DI.Setup(nameof(Composition)).DependsOn(Base);
-        /// </code>
-        /// </example>
-        /// </summary>
-        protected const string Base = "Pure.DI.MS.ServiceProviderFactory";
-    
-        /// <summary>
         /// An instance of <see cref="Pure.DI.MS.ServiceCollectionFactory"/>.
         /// </summary>
         private static readonly ServiceCollectionFactory<TComposition> ServiceCollectionFactory = new ServiceCollectionFactory<TComposition>();
@@ -63,11 +51,16 @@ namespace Pure.DI.MS
         /// </summary>
         [global::System.Diagnostics.Conditional("A2768DE22DE3E430C9653990D516CC9B")]
         private static void HintsSetup() =>
-            global::Pure.DI.DI.Setup(Base, global::Pure.DI.CompositionKind.Internal)
+            global::Pure.DI.DI.Setup("", global::Pure.DI.CompositionKind.Global)
                 .Hint(global::Pure.DI.Hint.OnCannotResolve, "On")
                 .Hint(global::Pure.DI.Hint.OnCannotResolvePartial, "Off")
                 .Hint(global::Pure.DI.Hint.OnNewRoot, "On")
-                .Hint(global::Pure.DI.Hint.OnNewRootPartial, "Off");
+                .Hint(global::Pure.DI.Hint.OnNewRootPartial, "Off")
+                // Specifies not to attempt to resolve types whose fully qualified name
+                // begins with Microsoft.Extensions, Microsoft.AspNetCore
+                // since ServiceProvider will be used to retrieve them.
+                .Hint(Hint.OnCannotResolveContractTypeNameWildcard, "Microsoft.Extensions.*")
+                .Hint(Hint.OnCannotResolveContractTypeNameWildcard, "Microsoft.AspNetCore.*");
 
         /// <summary>
         /// Creates a service collection <see cref="Microsoft.Extensions.DependencyInjection.ServiceCollection"/> based on the registered composition.

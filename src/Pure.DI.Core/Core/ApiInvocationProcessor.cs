@@ -117,7 +117,9 @@ internal class ApiInvocationProcessor(
                         var hintArgs = arguments.GetArgs(invocation.ArgumentList, "hint", "value");
                         if (hintArgs is [{ Expression: { } hintNameExpression }, { Expression: { } hintValueExpression }])
                         {
-                            metadataVisitor.VisitHint(new MdHint(semantic.GetConstantValue<Hint>(semanticModel, hintNameExpression), semantic.GetRequiredConstantValue<string>(semanticModel, hintValueExpression)));
+                            var values = new LinkedList<string>();
+                            values.AddLast(semantic.GetRequiredConstantValue<string>(semanticModel, hintValueExpression));
+                            metadataVisitor.VisitHint(new MdHint(semantic.GetConstantValue<Hint>(semanticModel, hintNameExpression), values));
                         }
 
                         break;

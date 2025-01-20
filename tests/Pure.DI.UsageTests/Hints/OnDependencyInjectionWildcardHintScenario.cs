@@ -39,6 +39,7 @@ public class Scenario
         // OnDependencyInjection = On
         DI.Setup(nameof(Composition))
             .Hint(OnDependencyInjectionContractTypeNameWildcard, "*IDependency")
+            .Hint(OnDependencyInjectionContractTypeNameWildcard, "*IService")
             .RootArg<int>("id")
             .Bind().To<Dependency>()
             .Bind().To<Service>()
@@ -48,7 +49,9 @@ public class Scenario
         var composition = new Composition(log);
         var service = composition.GetRoot(33);
 
-        log.ShouldBe(["Dependency injected"]);
+        log.ShouldBe([
+            "Dependency injected",
+            "Service injected"]);
 // }
         composition.SaveClassDiagram();
     }

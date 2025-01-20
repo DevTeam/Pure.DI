@@ -37,6 +37,7 @@ public class Scenario
 // {
         DI.Setup(nameof(Composition))
             .Hint(OnNewInstance, "On")
+            .Hint(OnNewInstanceImplementationTypeNameWildcard, "*Dependency")
             .Hint(OnNewInstanceImplementationTypeNameWildcard, "*Service")
             .Bind().As(Lifetime.Singleton).To<Dependency>()
             .Bind().To<Service>()
@@ -48,6 +49,7 @@ public class Scenario
         var service2 = composition.Root;
 
         log.ShouldBe([
+            "Dependency created",
             "Service created",
             "Service created"]);
 // }

@@ -1,6 +1,8 @@
 namespace Pure.DI.Core;
 
-internal sealed class Hints : Dictionary<Hint, string>, IHints
+using System.Collections.Concurrent;
+
+internal sealed class Hints : ConcurrentDictionary<Hint, LinkedList<string>>, IHints
 {
     public bool IsCommentsEnabled =>
         IsEnabled(Hint.Comments, SettingState.On);
@@ -82,12 +84,12 @@ internal sealed class Hints : Dictionary<Hint, string>, IHints
 
     private T GetHint<T>(Hint hint, T defaultValue = default)
         where T : struct =>
-        TryGetValue(hint, out var valueStr) && Enum.TryParse<T>(valueStr, true, out var value)
+        TryGetValue(hint, out var values) && values.Count > 0 && Enum.TryParse<T>(values.Last.Value, true, out var value)
             ? value
             : defaultValue;
 
     private string GetValueOrDefault(Hint hint, string defaultValue) =>
-        TryGetValue(hint, out var value) && !string.IsNullOrWhiteSpace(value)
-            ? value
+        TryGetValue(hint, out var values) && values.Count > 0 && !string.IsNullOrWhiteSpace(values.Last.Value)
+            ? values.Last.Value
             : defaultValue;
 }

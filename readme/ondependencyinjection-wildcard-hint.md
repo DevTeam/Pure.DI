@@ -14,6 +14,7 @@ using static Pure.DI.Hint;
 // OnDependencyInjection = On
 DI.Setup(nameof(Composition))
     .Hint(OnDependencyInjectionContractTypeNameWildcard, "*IDependency")
+    .Hint(OnDependencyInjectionContractTypeNameWildcard, "*IService")
     .RootArg<int>("id")
     .Bind().To<Dependency>()
     .Bind().To<Service>()
@@ -23,7 +24,9 @@ var log = new List<string>();
 var composition = new Composition(log);
 var service = composition.GetRoot(33);
 
-log.ShouldBe(["Dependency injected"]);
+log.ShouldBe([
+    "Dependency injected",
+    "Service injected"]);
 
 interface IDependency;
 
@@ -108,7 +111,7 @@ partial class Composition
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public IService GetRoot(int id)
   {
-    return new Service(OnDependencyInjection<IDependency>(new Dependency(id), null, Lifetime.Transient));
+    return OnDependencyInjection<IService>(new Service(OnDependencyInjection<IDependency>(new Dependency(id), null, Lifetime.Transient)), null, Lifetime.Transient);
   }
 
 

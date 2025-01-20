@@ -41,7 +41,7 @@ internal class Comments : IComments
                 continue;
             }
 
-            result[setting] = hint.Groups[2].Value;
+            result.GetOrAdd(setting, _ => new LinkedList<string>()).AddLast(hint.Groups[2].Value);
         }
 
         return result;

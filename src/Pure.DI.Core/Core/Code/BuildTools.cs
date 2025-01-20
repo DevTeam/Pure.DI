@@ -1,6 +1,7 @@
 ﻿// ReSharper disable InvertIf
 // ReSharper disable ClassNeverInstantiated.Global
 
+// ReSharper disable MoveLocalFunctionAfterJumpStatement
 namespace Pure.DI.Core.Code;
 
 using static Tag;
@@ -70,22 +71,17 @@ internal class BuildTools(
         }
 
         var tag = GetTag(ctx, variable);
-        var typeName = new Lazy<string>(() => typeResolver.Resolve(variable.Setup, variable.InstanceType).Name);
-        var contractName = new Lazy<string>(() => symbolNames.GetName(variable.ContractType));
-        var tagName = new Lazy<string>(() => tag.ValueToString());
-        var lifetimeName = new Lazy<string>(() => variable.Node.Lifetime.ValueToString());
-        if (!filter.IsMeetRegularExpressions(
+        string GetTypeName() => typeResolver.Resolve(variable.Setup, variable.InstanceType).Name;
+        string GetContractName() => symbolNames.GetName(variable.ContractType);
+        string GetTagName() => tag.ValueToString();
+        string GetLifetimeName() => variable.Node.Lifetime.ValueToString();
+        // ReSharper disable once ConvertIfStatementToReturnStatement
+        if (!filter.IsMeet(
                 ctx.DependencyGraph.Source,
-                (Hint.OnDependencyInjectionImplementationTypeNameRegularExpression, typeName),
-                (Hint.OnDependencyInjectionContractTypeNameRegularExpression, contractName),
-                (Hint.OnDependencyInjectionTagRegularExpression, tagName),
-                (Hint.OnDependencyInjectionLifetimeRegularExpression, lifetimeName))
-            || !filter.IsMeetWildcards(
-                ctx.DependencyGraph.Source,
-                (Hint.OnDependencyInjectionImplementationTypeNameWildcard, typeName),
-                (Hint.OnDependencyInjectionContractTypeNameWildcard, contractName),
-                (Hint.OnDependencyInjectionTagWildcard, tagName),
-                (Hint.OnDependencyInjectionLifetimeWildcard, lifetimeName)))
+                (Hint.OnDependencyInjectionImplementationTypeNameRegularExpression, Hint.OnDependencyInjectionImplementationTypeNameWildcard, GetTypeName),
+                (Hint.OnDependencyInjectionContractTypeNameRegularExpression, Hint.OnDependencyInjectionContractTypeNameWildcard, GetContractName),
+                (Hint.OnDependencyInjectionTagRegularExpression, Hint.OnDependencyInjectionTagWildcard, GetTagName),
+                (Hint.OnDependencyInjectionLifetimeRegularExpression, Hint.OnDependencyInjectionLifetimeWildcard, GetLifetimeName)))
         {
             return variableCode;
         }
@@ -137,19 +133,14 @@ internal class BuildTools(
         }
 
         var tag = GetTag(ctx, variable);
-        var typeName = new Lazy<string>(() => symbolNames.GetName(variable.Node.Type));
-        var tagName = new Lazy<string>(() => tag.ValueToString());
-        var lifetimeName = new Lazy<string>(() => variable.Node.Lifetime.ValueToString());
-        if (!filter.IsMeetRegularExpressions(
+        string GetTypeName() => symbolNames.GetName(variable.Node.Type);
+        string GetTagName() => tag.ValueToString();
+        string GetLifetimeName() => variable.Node.Lifetime.ValueToString();
+        if (!filter.IsMeet(
                 ctx.DependencyGraph.Source,
-                (Hint.OnNewInstanceImplementationTypeNameRegularExpression, typeName),
-                (Hint.OnNewInstanceTagRegularExpression, tagName),
-                (Hint.OnNewInstanceLifetimeRegularExpression, lifetimeName))
-            || !filter.IsMeetWildcards(
-                ctx.DependencyGraph.Source,
-                (Hint.OnNewInstanceImplementationTypeNameWildcard, typeName),
-                (Hint.OnNewInstanceTagWildcard, tagName),
-                (Hint.OnNewInstanceLifetimeWildcard, lifetimeName)))
+                (Hint.OnNewInstanceImplementationTypeNameRegularExpression, Hint.OnNewInstanceImplementationTypeNameWildcard, GetTypeName),
+                (Hint.OnNewInstanceTagRegularExpression, Hint.OnNewInstanceTagWildcard, GetTagName),
+                (Hint.OnNewInstanceLifetimeRegularExpression, Hint.OnNewInstanceLifetimeWildcard, GetLifetimeName)))
         {
             return code.Lines;
         }

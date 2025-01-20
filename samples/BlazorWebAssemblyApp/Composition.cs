@@ -1,5 +1,4 @@
 // ReSharper disable UnusedMember.Local
-
 // ReSharper disable ArrangeTypeMemberModifiers
 
 namespace BlazorWebAssemblyApp;
@@ -14,14 +13,6 @@ using static Pure.DI.Lifetime;
 internal partial class Composition : ServiceProviderFactory<Composition>
 {
     void Setup() => DI.Setup()
-        .DependsOn(Base)
-        // Specifies not to attempt to resolve types whose fully qualified name
-        // begins with Microsoft.Extensions., Microsoft.AspNetCore.
-        // since ServiceProvider will be used to retrieve them.
-        .Hint(
-            Hint.OnCannotResolveContractTypeNameRegularExpression,
-            @"^Microsoft\.(Extensions|AspNetCore)\..+$")
-
         // View Models
         .Bind().As(Singleton).To<ClockViewModel>()
         // Provides the composition root for Clock view model

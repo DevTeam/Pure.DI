@@ -2,6 +2,7 @@
 // ReSharper disable UnusedMember.Global
 // ReSharper disable RedundantNameQualifier
 // ReSharper disable ArrangeTypeMemberModifiers
+
 namespace WpfAppNetCore;
 
 using Pure.DI;

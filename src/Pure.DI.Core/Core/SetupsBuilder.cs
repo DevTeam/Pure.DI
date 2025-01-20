@@ -124,8 +124,14 @@ internal sealed class SetupsBuilder(
     public void VisitAccumulator(in MdAccumulator accumulator) =>
         _accumulators.Add(accumulator);
 
-    public void VisitHint(in MdHint hint) =>
-        _hints[hint.Key] = hint.Value;
+    public void VisitHint(in MdHint hint)
+    {
+        var values = _hints.GetOrAdd(hint.Key, _ => new LinkedList<string>());
+        foreach (var value in hint.Values)
+        {
+            values.AddLast(value);
+        }
+    }
 
     public void VisitFinish() => FinishSetup(_setup);
 

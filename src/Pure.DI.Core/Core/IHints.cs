@@ -1,6 +1,6 @@
 namespace Pure.DI.Core;
 
-internal interface IHints : IReadOnlyDictionary<Hint, string>
+internal interface IHints : IReadOnlyDictionary<Hint, LinkedList<string>>
 {
     bool IsCommentsEnabled { get; }
 
