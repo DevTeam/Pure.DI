@@ -204,7 +204,7 @@ internal sealed class SetupsBuilder(
             from member in type.GetMembers()
             where member.DeclaredAccessibility >= Accessibility.Internal && member.CanBeReferencedByName && member is IFieldSymbol or IPropertySymbol or IMethodSymbol
             from attribute in member.GetAttributes()
-            where attribute.AttributeClass is not null && symbolNames.GetDisplayName(attribute.AttributeClass) == Names.BindAttributeName
+            where attribute.AttributeClass is not null && symbolNames.GetGlobalName(attribute.AttributeClass) == Names.BindAttributeName
             select (attribute, member);
 
         var typeConstructor = typeConstructorFactory();
@@ -346,7 +346,7 @@ internal sealed class SetupsBuilder(
 
             MdResolver CreateResolver(ITypeConstructor constructor, string name, ITypeSymbol injectedType, object? tag, ref int curPosition)
             {
-                var typeSyntax = SyntaxFactory.ParseTypeName(symbolNames.GetDisplayName(injectedType));
+                var typeSyntax = SyntaxFactory.ParseTypeName(symbolNames.GetGlobalName(injectedType));
                 if (semantic.IsValidNamespace(injectedType.ContainingNamespace))
                 {
                     namespaces.Add(injectedType.ContainingNamespace.ToString());

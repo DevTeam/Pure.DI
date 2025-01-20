@@ -1,7 +1,7 @@
 ﻿/*
 $v=true
 $p=4
-$d=OnNewInstance hint
+$d=OnNewInstance regular expression hint
 $h=Hints are used to fine-tune code generation. The _OnNewInstance_ hint determines whether to generate partial _OnNewInstance_ method.
 $h=In addition, setup hints can be comments before the _Setup_ method in the form ```hint = value```, for example: `// OnNewInstance = On`.
 $f=The `OnNewInstanceLifetimeRegularExpression` hint helps you define a set of lifetimes that require instance creation control. You can use it to specify a regular expression to filter bindings by lifetime name.
@@ -17,7 +17,7 @@ $r=Shouldly
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable UnusedMember.Global
 
-namespace Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario;
+namespace Pure.DI.UsageTests.Hints.OnNewInstanceRegularExpressionHintScenario;
 
 using Shouldly;
 using Xunit;
@@ -37,8 +37,9 @@ public class Scenario
 // {
         DI.Setup(nameof(Composition))
             .Hint(OnNewInstance, "On")
+            .Hint(OnNewInstanceLifetimeRegularExpression, "(Singleton|PerBlock)")
             .Bind().As(Lifetime.Singleton).To<Dependency>()
-            .Bind().To<Service>()
+            .Bind().As(Lifetime.PerBlock).To<Service>()
             .Root<IService>("Root");
 
         var log = new List<string>();

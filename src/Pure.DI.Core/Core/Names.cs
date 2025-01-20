@@ -31,23 +31,25 @@ internal static class Names
     public static readonly string ResolverClassName = $"Resolver{Salt}";
     public const string DefaultApiMethodModifiers = "public";
     public const string ParentScopeArgName = "parentScope";
-
-    // Interfaces
     public const string ResolverPropertyName = "Value";
-    public const string IDisposableInterfaceName = $"{SystemNamespace}{nameof(IDisposable)}";
-    public const string IAsyncDisposableInterfaceName = $"{SystemNamespace}IAsyncDisposable";
-    public const string ResolverInterfaceName = $"{ApiNamespace}{nameof(IResolver<object, object>)}";
-    public const string ContextInterfaceName = $"{ApiNamespace}{nameof(IContext)}";
-    public const string ConfigurationInterfaceName = $"{ApiNamespace}{nameof(IConfiguration)}";
 
     // Attributes
     public const string OrdinalAttributeName = $"{ApiNamespace}{nameof(OrdinalAttribute)}";
     public const string BindAttributeName = $"{ApiNamespace}{nameof(BindAttribute)}";
 
     // Types
+    public const string IDisposableTypeName = $"{SystemNamespace}{nameof(IDisposable)}";
+    public const string IAsyncDisposableTypeName = $"{SystemNamespace}IAsyncDisposable";
+    public const string IResolverTypeName = $"{ApiNamespace}{nameof(IResolver<object, object>)}";
+    public const string IContextTypeName = $"{ApiNamespace}{nameof(IContext)}";
+    public const string IConfigurationTypeName = $"{ApiNamespace}{nameof(IConfiguration)}";
     public const string ObjectTypeName = $"{SystemNamespace}Object";
     public const string ValueTaskTypeName = $"{SystemNamespace}Threading.Tasks.ValueTask";
     public const string LockTypeName = $"{SystemNamespace}Threading.Lock";
+    public const string SpanTypeName = $"{SystemNamespace}Span<>";
+    public const string ReadOnlySpanTypeName = $"{SystemNamespace}ReadOnlySpan<>";
+    public const string IEnumerableTypeName = $"{SystemNamespace}Collections.Generic.IEnumerable<>";
+    public const string IAsyncEnumerableTypeName = $"{SystemNamespace}Collections.Generic.IAsyncEnumerable<>";
 
     // Members
     public const string ResolveMethodName = nameof(IResolver<object, object>.Resolve);

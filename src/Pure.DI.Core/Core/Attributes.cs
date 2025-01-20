@@ -115,7 +115,7 @@ internal class Attributes(
                     return false;
                 }
 
-                return symbolNames.GetDisplayName(unboundTypeSymbol) == symbolNames.GetDisplayName(attributeType);
+                return symbolNames.GetGlobalName(unboundTypeSymbol) == symbolNames.GetGlobalName(attributeType);
             })
             .ToArray();
 

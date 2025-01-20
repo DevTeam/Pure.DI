@@ -9,10 +9,10 @@ internal class GenericTypeArguments(ISymbolNames symbolNames) : IGenericTypeArgu
     private readonly ConcurrentDictionary<MdSetup, HashSet<string>> _genericTypeArgumentAttributesTypes = new();
     
     public bool IsGenericTypeArgument(MdSetup setup, ITypeSymbol typeSymbol) => 
-        _genericTypeArgumentTypes.GetOrAdd(setup, k => [..k.GenericTypeArguments.Select(i => symbolNames.GetDisplayName(i.Type))])
-            .Contains(symbolNames.GetDisplayName(typeSymbol));
+        _genericTypeArgumentTypes.GetOrAdd(setup, k => [..k.GenericTypeArguments.Select(i => symbolNames.GetGlobalName(i.Type))])
+            .Contains(symbolNames.GetGlobalName(typeSymbol));
 
     public bool IsGenericTypeArgumentAttribute(MdSetup setup, ITypeSymbol typeSymbol) => 
-        _genericTypeArgumentAttributesTypes.GetOrAdd(setup, k => [..k.GenericTypeArgumentAttributes.Select(i => symbolNames.GetDisplayName(i.AttributeType))])
-            .Contains(symbolNames.GetDisplayName(typeSymbol));
+        _genericTypeArgumentAttributesTypes.GetOrAdd(setup, k => [..k.GenericTypeArgumentAttributes.Select(i => symbolNames.GetGlobalName(i.AttributeType))])
+            .Contains(symbolNames.GetGlobalName(typeSymbol));
 }

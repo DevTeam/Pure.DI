@@ -23,14 +23,24 @@ internal sealed class DependencyGraphValidator(
         {
             cancellationToken.ThrowIfCancellationRequested();
             var setup = dependencyGraph.Source;
-            if (setup.Hints.IsOnCannotResolveEnabled
-                && filter.IsMeetRegularExpression(
-                    setup,
-                    (Hint.OnCannotResolveContractTypeNameRegularExpression, typeResolver.Resolve(setup, unresolvedInjection.Type).Name),
-                    (Hint.OnCannotResolveTagRegularExpression, unresolvedInjection.Tag.ValueToString()),
-                    (Hint.OnCannotResolveLifetimeRegularExpression, dependencyNode.Lifetime.ValueToString())))
+            if (setup.Hints.IsOnCannotResolveEnabled)
             {
-                continue;
+                var contractName = new Lazy<string>(() => typeResolver.Resolve(setup, unresolvedInjection.Type).Name);
+                var tagName = new Lazy<string>(() => unresolvedInjection.Tag.ValueToString());
+                var lifetimeName = new Lazy<string>(() => dependencyNode.Lifetime.ValueToString());
+                if (filter.IsMeetRegularExpressions(
+                        setup,
+                        (Hint.OnCannotResolveContractTypeNameRegularExpression, contractName),
+                        (Hint.OnCannotResolveTagRegularExpression, tagName),
+                        (Hint.OnCannotResolveLifetimeRegularExpression, lifetimeName))
+                    && filter.IsMeetWildcards(
+                        setup,
+                        (Hint.OnCannotResolveContractTypeNameWildcard, contractName),
+                        (Hint.OnCannotResolveTagWildcard, tagName),
+                        (Hint.OnCannotResolveLifetimeWildcard, lifetimeName)))
+                {
+                    continue;
+                }
             }
 
             isResolved = false;

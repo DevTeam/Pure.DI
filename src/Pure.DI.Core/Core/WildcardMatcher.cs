@@ -70,8 +70,8 @@ internal class WildcardMatcher : IWildcardMatcher
     //       DOS_DOT matches either a . or zero characters beyond name string.
 
     public bool Match(
-        ReadOnlySpan<char> expression,
-        ReadOnlySpan<char> name,
+        ReadOnlySpan<char> wildcard,
+        ReadOnlySpan<char> text,
         bool ignoreCase = false,
         bool useExtendedWildcards = false)
     {
@@ -79,33 +79,33 @@ internal class WildcardMatcher : IWildcardMatcher
         // in the regular expression that are matching the name. When the name has been exhausted,
         // if one of the locations in the expression is also just exhausted, the name is in the
         // language defined by the regular expression.
-        if (expression.Length == 0 || name.Length == 0)
+        if (wildcard.Length == 0 || text.Length == 0)
         {
             return false;
         }
 
-        if (expression[0] == '*')
+        if (wildcard[0] == '*')
         {
             // Just * matches everything
-            if (expression.Length == 1)
+            if (wildcard.Length == 1)
             {
                 return true;
             }
 
-            var expressionEnd = expression[1..];
+            var expressionEnd = wildcard[1..];
             if (expressionEnd.IndexOfAny(useExtendedWildcards ? WildcardChars : SimpleWildcardChars) == -1)
             {
                 // Handle the special case of a single starting *, which essentially means "ends with"
 
                 // If the name doesn't have enough characters to match the remaining expression, it can't be a match.
                 // ReSharper disable once ConvertIfStatementToReturnStatement
-                if (name.Length < expressionEnd.Length)
+                if (text.Length < expressionEnd.Length)
                 {
                     return false;
                 }
 
                 // See if we end with the expression
-                return name.EndsWith(expressionEnd, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
+                return text.EndsWith(expressionEnd, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
             }
         }
 
@@ -120,7 +120,7 @@ internal class WildcardMatcher : IWildcardMatcher
         Span<int> priorMatches = stackalloc int[16];
         priorMatches[0] = 0;
 
-        var maxState = expression.Length * 2;
+        var maxState = wildcard.Length * 2;
         int currentState;
         var nameFinished = false;
 
@@ -142,14 +142,14 @@ internal class WildcardMatcher : IWildcardMatcher
         //  offset.  Each character in the expression can represent one or two
         //  states.  * and DOS_STAR generate two states: expressionOffset * 2 and
         //  expressionOffset * 2 + 1.  All other expression characters can produce
-        //  only a single state.  Thus expressionOffset = currentState / 2.
+        //  only a single state. Thus, expressionOffset = currentState / 2.
 
         while (!nameFinished)
         {
-            if (nameOffset < name.Length)
+            if (nameOffset < text.Length)
             {
                 // Not at the end of the name. Grab the current character and move the offset forward.
-                nameChar = name[nameOffset++];
+                nameChar = text[nameOffset++];
             }
             else
             {
@@ -172,10 +172,10 @@ internal class WildcardMatcher : IWildcardMatcher
                 // character of name, so we loop here until the expression stops matching.
                 var expressionOffset = (priorMatches[priorMatch++] + 1) / 2;
 
-                while (expressionOffset < expression.Length)
+                while (expressionOffset < wildcard.Length)
                 {
                     currentState = expressionOffset * 2;
-                    var expressionChar = expression[expressionOffset];
+                    var expressionChar = wildcard[expressionOffset];
 
                     // We may be about to exhaust the local space for matches,
                     // so we have to reallocate if this is the case.
@@ -207,10 +207,10 @@ internal class WildcardMatcher : IWildcardMatcher
                         var notLastPeriod = false;
                         if (!nameFinished && nameChar == '.')
                         {
-                            for (var offset = nameOffset; offset < name.Length; offset++)
+                            for (var offset = nameOffset; offset < text.Length; offset++)
                             {
                                 // ReSharper disable once InvertIf
-                                if (name[offset] == '.')
+                                if (text[offset] == '.')
                                 {
                                     notLastPeriod = true;
                                     break;
@@ -269,14 +269,14 @@ internal class WildcardMatcher : IWildcardMatcher
                             if (expressionChar == '\\')
                             {
                                 // Escape character, try to move the expression forward again and match literally.
-                                if (++expressionOffset == expression.Length)
+                                if (++expressionOffset == wildcard.Length)
                                 {
                                     currentMatches[currentMatch++] = maxState;
                                     goto ExpressionFinished;
                                 }
 
                                 currentState = expressionOffset * 2 + 2;
-                                expressionChar = expression[expressionOffset];
+                                expressionChar = wildcard[expressionOffset];
                             }
 
                             // From this point on a name character is required to even
@@ -311,7 +311,7 @@ internal class WildcardMatcher : IWildcardMatcher
                     MatchZero:
                     currentMatches[currentMatch++] = currentState + 1;
                     NextExpressionCharacter:
-                    if (++expressionOffset == expression.Length)
+                    if (++expressionOffset == wildcard.Length)
                     {
                         currentMatches[currentMatch++] = maxState;
                     }

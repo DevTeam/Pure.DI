@@ -200,6 +200,26 @@ namespace Pure.DI
         OnNewInstanceImplementationTypeNameRegularExpression,
         
         /// <summary>
+        /// The wildcard to filter OnNewInstance by the instance type name. "*" by default.
+        /// <example>
+        /// <code>
+        /// // OnNewInstanceImplementationTypeNameWildcard = *Dependency
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// <br/>
+        /// or using the API call <see cref="IConfiguration.Hint"/>:
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Hint(Hint.OnNewInstanceImplementationTypeNameWildcard, "*Dependency")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <seealso cref="IConfiguration.Hint"/>
+        OnNewInstanceImplementationTypeNameWildcard,
+        
+        /// <summary>
         /// The regular expression to filter OnNewInstance by the tag. ".+" by default.
         /// <example>
         /// <code>
@@ -220,6 +240,26 @@ namespace Pure.DI
         OnNewInstanceTagRegularExpression,
         
         /// <summary>
+        /// The wildcard to filter OnNewInstance by the tag. "*" by default.
+        /// <example>
+        /// <code>
+        /// // OnNewInstanceTagWildcard = *IDependency
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// <br/>
+        /// or using the API call <see cref="IConfiguration.Hint"/>:
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Hint(Hint.OnNewInstanceTagWildcard, "*IDependency")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <seealso cref="IConfiguration.Hint"/>
+        OnNewInstanceTagWildcard,
+        
+        /// <summary>
         /// The regular expression to filter OnNewInstance by the lifetime. ".+" by default.
         /// <example>
         /// <code>
@@ -238,6 +278,26 @@ namespace Pure.DI
         /// </summary>
         /// <seealso cref="IConfiguration.Hint"/>
         OnNewInstanceLifetimeRegularExpression,
+        
+        /// <summary>
+        /// The wildcard to filter OnNewInstance by the lifetime. "*" by default.
+        /// <example>
+        /// <code>
+        /// // OnNewInstanceLifetimeWildcard = *Singleton
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// <br/>
+        /// or using the API call <see cref="IConfiguration.Hint"/>:
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Hint(Hint.OnNewInstanceLifetimeWildcard, "*Singleton")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <seealso cref="IConfiguration.Hint"/>
+        OnNewInstanceLifetimeWildcard,
         
         /// <summary>
         /// <c>On</c> or <c>Off</c>. Determines whether to use partial <c>OnDependencyInjection</c> method to control of dependency injection. <c>Off</c> by default.
@@ -300,6 +360,26 @@ namespace Pure.DI
         OnDependencyInjectionImplementationTypeNameRegularExpression,
         
         /// <summary>
+        /// The wildcard to filter OnDependencyInjection by the instance type name. "*" by default.
+        /// <example>
+        /// <code>
+        /// // OnDependencyInjectionImplementationTypeNameWildcard = *Dependency
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// <br/>
+        /// or using the API call <see cref="IConfiguration.Hint"/>:
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Hint(Hint.OnDependencyInjectionImplementationTypeNameWildcard, "*Dependency")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <seealso cref="IConfiguration.Hint"/>
+        OnDependencyInjectionImplementationTypeNameWildcard,
+        
+        /// <summary>
         /// The regular expression to filter OnDependencyInjection by the resolving type name. ".+" by default.
         /// <example>
         /// <code>
@@ -318,6 +398,26 @@ namespace Pure.DI
         /// </summary>
         /// <seealso cref="IConfiguration.Hint"/>
         OnDependencyInjectionContractTypeNameRegularExpression,
+        
+        /// <summary>
+        /// The wildcard to filter OnDependencyInjection by the resolving type name. "*" by default.
+        /// <example>
+        /// <code>
+        /// // OnDependencyInjectionContractTypeNameWildcard = *IDependency
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// <br/>
+        /// or using the API call <see cref="IConfiguration.Hint"/>:
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Hint(Hint.OnDependencyInjectionContractTypeName, "*IDependency")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <seealso cref="IConfiguration.Hint"/>
+        OnDependencyInjectionContractTypeNameWildcard,
         
         /// <summary>
         /// The regular expression to filter OnDependencyInjection by the tag. ".+" by default.
@@ -340,6 +440,26 @@ namespace Pure.DI
         OnDependencyInjectionTagRegularExpression,
         
         /// <summary>
+        /// The wildcard to filter OnDependencyInjection by the tag. "*" by default.
+        /// <example>
+        /// <code>
+        /// // OnDependencyInjectionTagWildcard = MyTag
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IDependency&gt;("MyTag").To&lt;Dependency&gt;();
+        /// </code>
+        /// <br/>
+        /// or using the API call <see cref="IConfiguration.Hint"/>:
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Hint(Hint.OnDependencyInjectionTagWildcard, "MyTag")
+        ///     .Bind&lt;IDependency&gt;("MyTag").To&lt;Dependency&gt;();
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <seealso cref="IConfiguration.Hint"/>
+        OnDependencyInjectionTagWildcard,
+        
+        /// <summary>
         /// The regular expression to filter OnDependencyInjection by the lifetime. ".+" by default.
         /// <example>
         /// <code>
@@ -358,6 +478,26 @@ namespace Pure.DI
         /// </summary>
         /// <seealso cref="IConfiguration.Hint"/>
         OnDependencyInjectionLifetimeRegularExpression,
+        
+        /// <summary>
+        /// The wildcard to filter OnDependencyInjection by the lifetime. ".+" by default.
+        /// <example>
+        /// <code>
+        /// // OnDependencyInjectionLifetimeWildcard = *Singleton
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// <br/>
+        /// or using the API call <see cref="IConfiguration.Hint"/>:
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Hint(Hint.OnDependencyInjectionLifetimeWildcard, "*Singleton")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <seealso cref="IConfiguration.Hint"/>
+        OnDependencyInjectionLifetimeWildcard,
         
         /// <summary>
         /// <c>On</c> or <c>Off</c>. Determines whether to use a partial <c>OnCannotResolve&lt;T&gt;(...)</c> method to handle a scenario in which the dependency cannot be resolved. <c>Off</c> by default.
@@ -420,6 +560,26 @@ namespace Pure.DI
         OnCannotResolveContractTypeNameRegularExpression,
         
         /// <summary>
+        /// The wildcard to filter OnCannotResolve by the resolving type name. "*" by default.
+        /// <example>
+        /// <code>
+        /// // OnCannotResolveContractTypeNameWildcard = *OtherType
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// <br/>
+        /// or using the API call <see cref="IConfiguration.Hint"/>:
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Hint(Hint.OnCannotResolveContractTypeNameWildcard, "*OtherType")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <seealso cref="IConfiguration.Hint"/>
+        OnCannotResolveContractTypeNameWildcard,
+        
+        /// <summary>
         /// The regular expression to filter OnCannotResolve by the tag. ".+" by default.
         /// <example>
         /// <code>
@@ -440,6 +600,26 @@ namespace Pure.DI
         OnCannotResolveTagRegularExpression,
         
         /// <summary>
+        /// The wildcard to filter OnCannotResolve by the tag. "*" by default.
+        /// <example>
+        /// <code>
+        /// // OnCannotResolveTagWildcard = MyTag
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// <br/>
+        /// or using the API call <see cref="IConfiguration.Hint"/>:
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Hint(Hint.OnCannotResolveTagWildcard, "MyTag")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <seealso cref="IConfiguration.Hint"/>
+        OnCannotResolveTagWildcard,
+        
+        /// <summary>
         /// The regular expression to filter OnCannotResolve by the lifetime. ".+" by default.
         /// <example>
         /// <code>
@@ -458,6 +638,26 @@ namespace Pure.DI
         /// </summary>
         /// <seealso cref="IConfiguration.Hint"/>
         OnCannotResolveLifetimeRegularExpression,
+        
+        /// <summary>
+        /// The wildcard to filter OnCannotResolve by the lifetime. "*" by default.
+        /// <example>
+        /// <code>
+        /// // OnCannotResolveLifetimeWildcard = *Singleton
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// <br/>
+        /// or using the API call <see cref="IConfiguration.Hint"/>:
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Hint(Hint.OnCannotResolveLifetimeWildcard, "*Singleton")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <seealso cref="IConfiguration.Hint"/>
+        OnCannotResolveLifetimeWildcard,
         
         /// <summary>
         /// <c>On</c> or <c>Off</c>. Determines whether to use a static partial <c>OnNewRoot&lt;T&gt;(...)</c> method to handle the new Composition root registration event. <c>Off</c> by default.

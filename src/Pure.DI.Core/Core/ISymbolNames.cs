@@ -2,5 +2,7 @@ namespace Pure.DI.Core;
 
 internal interface ISymbolNames
 {
-    string GetDisplayName(ITypeSymbol typeSymbol);
+    string GetName(ITypeSymbol typeSymbol);
+    
+    string GetGlobalName(ITypeSymbol typeSymbol);
 }

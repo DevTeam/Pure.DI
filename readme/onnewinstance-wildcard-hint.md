@@ -1,6 +1,6 @@
-#### OnNewInstance hint
+#### OnNewInstance wildcard hint
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Hints/OnNewInstanceHintScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Hints/OnNewInstanceWildcardHintScenario.cs)
 
 Hints are used to fine-tune code generation. The _OnNewInstance_ hint determines whether to generate partial _OnNewInstance_ method.
 In addition, setup hints can be comments before the _Setup_ method in the form ```hint = value```, for example: `// OnNewInstance = On`.
@@ -13,6 +13,7 @@ using static Pure.DI.Hint;
 
 DI.Setup(nameof(Composition))
     .Hint(OnNewInstance, "On")
+    .Hint(OnNewInstanceImplementationTypeNameWildcard, "*Service")
     .Bind().As(Lifetime.Singleton).To<Dependency>()
     .Bind().To<Service>()
     .Root<IService>("Root");
@@ -23,7 +24,6 @@ var service1 = composition.Root;
 var service2 = composition.Root;
 
 log.ShouldBe([
-    "Dependency created",
     "Service created",
     "Service created"]);
 
@@ -88,7 +88,7 @@ dotnet run
 
 </details>
 
-The `OnNewInstanceLifetimeRegularExpression` hint helps you define a set of lifetimes that require instance creation control. You can use it to specify a regular expression to filter bindings by lifetime name.
+The `OnNewInstanceImplementationTypeNameWildcard` hint helps you define a set of implementation types that require instance creation control. You can use it to specify a wildcard to filter bindings by implementation name.
 For more hints, see [this](README.md#setup-hints) page.
 
 The following partial class will be generated:
@@ -125,11 +125,7 @@ partial class Composition
         {
           if (_root._singletonDependency43 is null)
           {
-            Dependency _singletonDependency43Temp;
-            _singletonDependency43Temp = new Dependency();
-            OnNewInstance<Dependency>(ref _singletonDependency43Temp, null, Lifetime.Singleton);
-            Thread.MemoryBarrier();
-            _root._singletonDependency43 = _singletonDependency43Temp;
+            _root._singletonDependency43 = new Dependency();
           }
         }
       }
@@ -158,7 +154,7 @@ classDiagram
 	Dependency --|> IDependency
 	Composition ..> Service : IService Root
 	Service o-- "Singleton" Dependency : IDependency
-	namespace Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario {
+	namespace Pure.DI.UsageTests.Hints.OnNewInstanceWildcardHintScenario {
 		class Composition {
 		<<partial>>
 		+IService Root

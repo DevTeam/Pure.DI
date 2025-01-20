@@ -70,12 +70,12 @@ internal sealed class CompositionClassBuilder(
         var implementingInterfaces = new List<string>();
         if (composition.TotalDisposablesCount > 0)
         {
-            implementingInterfaces.Add(Names.IDisposableInterfaceName);
+            implementingInterfaces.Add(Names.IDisposableTypeName);
         }
 
         if (composition.AsyncDisposableCount > 0)
         {
-            implementingInterfaces.Add(Names.IAsyncDisposableInterfaceName);
+            implementingInterfaces.Add(Names.IAsyncDisposableTypeName);
         }
 
         code.AppendLine($"partial class {name.ClassName}{(implementingInterfaces.Count > 0 ? ": " + string.Join(", ", implementingInterfaces) : "")}");

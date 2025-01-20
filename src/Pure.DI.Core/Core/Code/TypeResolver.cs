@@ -33,7 +33,7 @@ internal class TypeResolver(
                 }
                 else
                 {
-                    description = new TypeDescription(symbolNames.GetDisplayName(type), ImmutableArray<TypeDescription>.Empty, typeParam);
+                    description = new TypeDescription(symbolNames.GetGlobalName(type), ImmutableArray<TypeDescription>.Empty, typeParam);
                 }
 
                 break;
@@ -73,7 +73,7 @@ internal class TypeResolver(
                 break;
 
             default:
-                description = new TypeDescription(symbolNames.GetDisplayName(type), ImmutableArray<TypeDescription>.Empty, typeParam);
+                description = new TypeDescription(symbolNames.GetGlobalName(type), ImmutableArray<TypeDescription>.Empty, typeParam);
                 break;
         }
 

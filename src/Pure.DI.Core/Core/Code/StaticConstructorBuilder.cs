@@ -20,7 +20,7 @@ internal sealed class StaticConstructorBuilder(
         // ReSharper disable once InvertIf
         if (hasOnNewRoot && composition.Source.Source.Hints.IsOnNewRootPartial)
         {
-            code.AppendLine($"private static partial void {Names.OnNewRootMethodName}<TContract, T>({Names.ResolverInterfaceName}<{composition.Source.Source.Name.ClassName}, TContract> resolver, string name, object? tag, {Names.ApiNamespace}{nameof(Lifetime)} lifetime);");
+            code.AppendLine($"private static partial void {Names.OnNewRootMethodName}<TContract, T>({Names.IResolverTypeName}<{composition.Source.Source.Name.ClassName}, TContract> resolver, string name, object? tag, {Names.ApiNamespace}{nameof(Lifetime)} lifetime);");
             code.AppendLine();
             membersCounter++;
         }
@@ -51,7 +51,7 @@ internal sealed class StaticConstructorBuilder(
             }
 
             var divisor = Buckets<object, object>.GetDivisor((uint)resolvers.Length);
-            var pairs = $"{Names.SystemNamespace}Type, {Names.ResolverInterfaceName}<{composition.Source.Source.Name.ClassName}, object>";
+            var pairs = $"{Names.SystemNamespace}Type, {Names.IResolverTypeName}<{composition.Source.Source.Name.ClassName}, object>";
             var bucketsTypeName = $"{Names.ApiNamespace}Buckets<{pairs}>";
             var pairTypeName = $"{Names.ApiNamespace}Pair<{pairs}>";
             code.AppendLine($"{Names.BucketsFieldName} = {bucketsTypeName}.{nameof(Buckets<object, object>.Create)}(");

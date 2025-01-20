@@ -67,7 +67,7 @@ internal class ApiInvocationProcessor(
                                 if (type is INamedTypeSymbol symbol)
                                 {
                                     if (symbol.TypeArguments.Length > 1
-                                        && symbolNames.GetDisplayName(symbol.TypeArguments[0]) != Names.ContextInterfaceName)
+                                        && symbolNames.GetGlobalName(symbol.TypeArguments[0]) != Names.IContextTypeName)
                                     {
                                         switch (invocation.ArgumentList.Arguments[0].Expression)
                                         {

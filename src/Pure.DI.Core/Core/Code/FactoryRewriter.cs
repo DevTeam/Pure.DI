@@ -256,7 +256,7 @@ internal sealed class FactoryRewriter(
                     return Visit(SyntaxFactory.ParseExpression($" {variable.Injection.Tag.ValueToString()}"));
                 
                 case nameof(IContext.ConsumerTypes):
-                    var consumers = variable.Info.GetTargetNodes().Select(targetNode => $"typeof({symbolNames.GetDisplayName(targetNode.Type)})").ToList();
+                    var consumers = variable.Info.GetTargetNodes().Select(targetNode => $"typeof({symbolNames.GetGlobalName(targetNode.Type)})").ToList();
                     if (consumers.Count == 0 && _ctx is not null)
                     {
                         consumers.Add($"typeof({_ctx.DependencyGraph.Source.Name.FullName})");

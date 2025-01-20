@@ -100,7 +100,7 @@ internal sealed class MetadataSyntaxWalker(
 
                     if (_semanticModel?.GetTypeInfo(curInvocation) is { } typeInfo
                         && (typeInfo.Type ?? typeInfo.ConvertedType) is { } type
-                        && symbolNames.GetDisplayName(type) == Names.ConfigurationInterfaceName)
+                        && symbolNames.GetGlobalName(type) == Names.IConfigurationTypeName)
                     {
                         return true;
                     }

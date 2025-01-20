@@ -1,6 +1,6 @@
-#### OnDependencyInjection hint
+#### OnDependencyInjection regular expression hint
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Hints/OnDependencyInjectionHintScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Hints/OnDependencyInjectionRegularExpressionHintScenario.cs)
 
 Hints are used to fine-tune code generation. The _OnDependencyInjection_ hint determines whether to generate partial _OnDependencyInjection_ method to control of dependency injection.
 In addition, setup hints can be comments before the _Setup_ method in the form ```hint = value```, for example: `// OnDependencyInjection = On`.
@@ -134,7 +134,7 @@ classDiagram
 	Composition ..> Service : IService GetRoot(int id)
 	Service *--  Dependency : IDependency
 	Dependency o-- Int32 : Argument "id"
-	namespace Pure.DI.UsageTests.Hints.OnDependencyInjectionHintScenario {
+	namespace Pure.DI.UsageTests.Hints.OnDependencyInjectionRegularExpressionHintScenario {
 		class Composition {
 		<<partial>>
 		+IService GetRoot(int id)

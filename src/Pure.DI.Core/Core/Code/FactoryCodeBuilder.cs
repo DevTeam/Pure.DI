@@ -70,7 +70,7 @@ internal class FactoryCodeBuilder(
                 ExpressionSyntax? value = null;
                 var type = memberResolver.ContractType;
                 ExpressionSyntax instance = member.IsStatic
-                    ? SyntaxFactory.ParseTypeName(symbolNames.GetDisplayName(type))
+                    ? SyntaxFactory.ParseTypeName(symbolNames.GetGlobalName(type))
                     : SyntaxFactory.IdentifierName(DefaultInstanceValueName);
 
                 switch (member)
@@ -102,7 +102,7 @@ internal class FactoryCodeBuilder(
                                     argType = bindingTypeConstructor.Construct(setup, binding.SemanticModel.Compilation, argType);
                                 }
 
-                                var typeName = symbolNames.GetDisplayName(argType);
+                                var typeName = symbolNames.GetGlobalName(argType);
                                 typeArgs.Add(SyntaxFactory.ParseTypeName(typeName));
                             }
 

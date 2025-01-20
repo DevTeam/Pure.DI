@@ -70,13 +70,22 @@ internal class BuildTools(
         }
 
         var tag = GetTag(ctx, variable);
-        // ReSharper disable once ConvertIfStatementToReturnStatement
-        if (!filter.IsMeetRegularExpression(
+        var typeName = new Lazy<string>(() => typeResolver.Resolve(variable.Setup, variable.InstanceType).Name);
+        var contractName = new Lazy<string>(() => symbolNames.GetName(variable.ContractType));
+        var tagName = new Lazy<string>(() => tag.ValueToString());
+        var lifetimeName = new Lazy<string>(() => variable.Node.Lifetime.ValueToString());
+        if (!filter.IsMeetRegularExpressions(
                 ctx.DependencyGraph.Source,
-                (Hint.OnDependencyInjectionImplementationTypeNameRegularExpression, typeResolver.Resolve(variable.Setup, variable.InstanceType).Name),
-                (Hint.OnDependencyInjectionContractTypeNameRegularExpression, symbolNames.GetDisplayName(variable.ContractType)),
-                (Hint.OnDependencyInjectionTagRegularExpression, tag.ValueToString()),
-                (Hint.OnDependencyInjectionLifetimeRegularExpression, variable.Node.Lifetime.ValueToString())))
+                (Hint.OnDependencyInjectionImplementationTypeNameRegularExpression, typeName),
+                (Hint.OnDependencyInjectionContractTypeNameRegularExpression, contractName),
+                (Hint.OnDependencyInjectionTagRegularExpression, tagName),
+                (Hint.OnDependencyInjectionLifetimeRegularExpression, lifetimeName))
+            || !filter.IsMeetWildcards(
+                ctx.DependencyGraph.Source,
+                (Hint.OnDependencyInjectionImplementationTypeNameWildcard, typeName),
+                (Hint.OnDependencyInjectionContractTypeNameWildcard, contractName),
+                (Hint.OnDependencyInjectionTagWildcard, tagName),
+                (Hint.OnDependencyInjectionLifetimeWildcard, lifetimeName)))
         {
             return variableCode;
         }
@@ -128,11 +137,19 @@ internal class BuildTools(
         }
 
         var tag = GetTag(ctx, variable);
-        if (!filter.IsMeetRegularExpression(
+        var typeName = new Lazy<string>(() => symbolNames.GetName(variable.Node.Type));
+        var tagName = new Lazy<string>(() => tag.ValueToString());
+        var lifetimeName = new Lazy<string>(() => variable.Node.Lifetime.ValueToString());
+        if (!filter.IsMeetRegularExpressions(
                 ctx.DependencyGraph.Source,
-                (Hint.OnNewInstanceImplementationTypeNameRegularExpression, variable.Node.Type.ToString()),
-                (Hint.OnNewInstanceTagRegularExpression, tag.ValueToString()),
-                (Hint.OnNewInstanceLifetimeRegularExpression, variable.Node.Lifetime.ValueToString())))
+                (Hint.OnNewInstanceImplementationTypeNameRegularExpression, typeName),
+                (Hint.OnNewInstanceTagRegularExpression, tagName),
+                (Hint.OnNewInstanceLifetimeRegularExpression, lifetimeName))
+            || !filter.IsMeetWildcards(
+                ctx.DependencyGraph.Source,
+                (Hint.OnNewInstanceImplementationTypeNameWildcard, typeName),
+                (Hint.OnNewInstanceTagWildcard, tagName),
+                (Hint.OnNewInstanceLifetimeWildcard, lifetimeName)))
         {
             return code.Lines;
         }

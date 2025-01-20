@@ -17,6 +17,7 @@ internal sealed class DependencyGraphBuilder(
     IFilter filter,
     ICache<INamedTypeSymbol, MdConstructKind> constructKinds,
     IRegistryManager<MdBinding> registryManager,
+    ISymbolNames symbolNames,
     CancellationToken cancellationToken)
     : IDependencyGraphBuilder
 {
@@ -269,7 +270,7 @@ internal sealed class DependencyGraphBuilder(
                     continue;
                 }
 
-                if (injection.Type.ToString() == setup.Name.FullName)
+                if (symbolNames.GetName(injection.Type) == setup.Name.FullName)
                 {
                     // Composition
                     var compositionBinding = CreateConstructBinding(
@@ -380,12 +381,12 @@ internal sealed class DependencyGraphBuilder(
     private MdConstructKind GetConstructKind(INamedTypeSymbol geneticType)
     {
         var unboundGenericType = geneticType.ConstructUnboundGenericType();
-        return constructKinds.Get(unboundGenericType, type => type.ToString() switch
+        return constructKinds.Get(unboundGenericType, type => symbolNames.GetGlobalName(type) switch
         {
-            "System.Span<>" => MdConstructKind.Span,
-            "System.ReadOnlySpan<>" => MdConstructKind.Span,
-            "System.Collections.Generic.IEnumerable<>" => MdConstructKind.Enumerable,
-            "System.Collections.Generic.IAsyncEnumerable<>" => MdConstructKind.AsyncEnumerable,
+            Names.SpanTypeName => MdConstructKind.Span,
+            Names.ReadOnlySpanTypeName => MdConstructKind.Span,
+            Names.IEnumerableTypeName => MdConstructKind.Enumerable,
+            Names.IAsyncEnumerableTypeName => MdConstructKind.AsyncEnumerable,
             _ => MdConstructKind.None
         });
     }
@@ -399,29 +400,39 @@ internal sealed class DependencyGraphBuilder(
         IDictionary<Injection, DependencyNode> map,
         ISet<ProcessingNode> processed)
     {
-        if (setup.Hints.IsOnCannotResolveEnabled
-            && filter.IsMeetRegularExpression(
-                setup,
-                (Hint.OnCannotResolveContractTypeNameRegularExpression, unresolvedInjection.Type.ToString()),
-                (Hint.OnCannotResolveTagRegularExpression, unresolvedInjection.Tag.ValueToString()),
-                (Hint.OnCannotResolveLifetimeRegularExpression, ownerNode.Lifetime.ValueToString())))
+        if (setup.Hints.IsOnCannotResolveEnabled)
         {
-            var onCannotResolveBinding = CreateConstructBinding(
-                setup,
-                ownerNode,
-                unresolvedInjection,
-                unresolvedInjection.Type,
-                Lifetime.Transient,
-                ++maxId,
-                MdConstructKind.OnCannotResolve,
-                unresolvedInjection.Tag);
-
-            var onCannotResolveNodes = CreateNodes(setup, typeConstructor, onCannotResolveBinding);
-            foreach (var onCannotResolveNode in onCannotResolveNodes)
+            var contractName = new Lazy<string>(() => symbolNames.GetName(unresolvedInjection.Type));
+            var tagName = new Lazy<string>(() => unresolvedInjection.Tag.ValueToString());
+            var lifetimeName = new Lazy<string>(() => ownerNode.Lifetime.ValueToString());
+            if (filter.IsMeetRegularExpressions(
+                    setup,
+                    (Hint.OnCannotResolveContractTypeNameRegularExpression, contractName),
+                    (Hint.OnCannotResolveTagRegularExpression, tagName),
+                    (Hint.OnCannotResolveLifetimeRegularExpression, lifetimeName))
+                && filter.IsMeetWildcards(
+                    setup,
+                    (Hint.OnCannotResolveContractTypeNameWildcard, contractName),
+                    (Hint.OnCannotResolveTagWildcard, tagName),
+                    (Hint.OnCannotResolveLifetimeWildcard, lifetimeName)))
             {
-                map[unresolvedInjection] = onCannotResolveNode;
-                processed.Add(CreateNewProcessingNode(setup, unresolvedInjection.Tag, onCannotResolveNode));
-                return true;
+                var onCannotResolveBinding = CreateConstructBinding(
+                    setup,
+                    ownerNode,
+                    unresolvedInjection,
+                    unresolvedInjection.Type,
+                    Lifetime.Transient,
+                    ++maxId,
+                    MdConstructKind.OnCannotResolve,
+                    unresolvedInjection.Tag);
+
+                var onCannotResolveNodes = CreateNodes(setup, typeConstructor, onCannotResolveBinding);
+                foreach (var onCannotResolveNode in onCannotResolveNodes)
+                {
+                    map[unresolvedInjection] = onCannotResolveNode;
+                    processed.Add(CreateNewProcessingNode(setup, unresolvedInjection.Tag, onCannotResolveNode));
+                    return true;
+                }
             }
         }
 

@@ -5,8 +5,12 @@ using System.Collections.Concurrent;
 
 internal class SymbolNames : ISymbolNames
 {
-    private readonly ConcurrentDictionary<ITypeSymbol, string> _displayNames = new(SymbolEqualityComparer.Default);
-    
-    public string GetDisplayName(ITypeSymbol typeSymbol) => 
-        _displayNames.GetOrAdd(typeSymbol, symbol => symbol.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat));
+    private readonly ConcurrentDictionary<ITypeSymbol, string> _names = new(SymbolEqualityComparer.Default);
+    private readonly ConcurrentDictionary<ITypeSymbol, string> _globalNames = new(SymbolEqualityComparer.Default);
+
+    public string GetName(ITypeSymbol typeSymbol) =>
+        _names.GetOrAdd(typeSymbol, symbol => symbol.ToString());
+
+    public string GetGlobalName(ITypeSymbol typeSymbol) => 
+        _globalNames.GetOrAdd(typeSymbol, symbol => symbol.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat));
 }

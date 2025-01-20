@@ -72,7 +72,7 @@ internal sealed class DisposeMethodBuilder(
         code.AppendLine("/// <param name=\"disposableInstance\">The disposable instance.</param>");
         code.AppendLine("/// <param name=\"exception\">Exception occurring during disposal.</param>");
         code.AppendLine("/// <typeparam name=\"T\">The actual type of instance being disposed of.</typeparam>");
-        code.AppendLine($"partial void {Names.OnDisposeExceptionMethodName}<T>(T disposableInstance, Exception exception) where T : {Names.IDisposableInterfaceName};");
+        code.AppendLine($"partial void {Names.OnDisposeExceptionMethodName}<T>(T disposableInstance, Exception exception) where T : {Names.IDisposableTypeName};");
         membersCounter++;
 
         // ReSharper disable once InvertIf
@@ -132,7 +132,7 @@ internal sealed class DisposeMethodBuilder(
             code.AppendLine("/// <param name=\"asyncDisposableInstance\">The disposable instance.</param>");
             code.AppendLine("/// <param name=\"exception\">Exception occurring during disposal.</param>");
             code.AppendLine("/// <typeparam name=\"T\">The actual type of instance being disposed of.</typeparam>");
-            code.AppendLine($"partial void {Names.OnDisposeAsyncExceptionMethodName}<T>(T asyncDisposableInstance, Exception exception) where T : {Names.IAsyncDisposableInterfaceName};");
+            code.AppendLine($"partial void {Names.OnDisposeAsyncExceptionMethodName}<T>(T asyncDisposableInstance, Exception exception) where T : {Names.IAsyncDisposableTypeName};");
             membersCounter++;
         }
 
@@ -141,7 +141,7 @@ internal sealed class DisposeMethodBuilder(
 
     private static void AddDisposeAsyncPart(LinesBuilder code, bool makeAsyncCall)
     {
-        code.AppendLine($"case {Names.IAsyncDisposableInterfaceName} asyncDisposableInstance:");
+        code.AppendLine($"case {Names.IAsyncDisposableTypeName} asyncDisposableInstance:");
         using (code.Indent())
         {
             code.AppendLine("try");
@@ -181,7 +181,7 @@ internal sealed class DisposeMethodBuilder(
 
     private static void AddDisposePart(LinesBuilder code)
     {
-        code.AppendLine($"case {Names.IDisposableInterfaceName} disposableInstance:");
+        code.AppendLine($"case {Names.IDisposableTypeName} disposableInstance:");
         using (code.Indent())
         {
             code.AppendLine("try");

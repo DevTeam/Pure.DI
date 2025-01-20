@@ -23,11 +23,11 @@ internal sealed class ResolverClassesBuilder(IBuilder<RootContext, IEnumerable<R
         membersCount++;
         code.AppendLine();
 
-        code.AppendLine($"private class {Names.ResolverClassName}<T>: {Names.ResolverInterfaceName}<{composition.Source.Source.Name.ClassName}, T>");
+        code.AppendLine($"private class {Names.ResolverClassName}<T>: {Names.IResolverTypeName}<{composition.Source.Source.Name.ClassName}, T>");
         code.AppendLine("{");
         using (code.Indent())
         {
-            code.AppendLine($"public static {Names.ResolverInterfaceName}<{composition.Source.Source.Name.ClassName}, T> {Names.ResolverPropertyName} = new {Names.ResolverClassName}<T>();");
+            code.AppendLine($"public static {Names.IResolverTypeName}<{composition.Source.Source.Name.ClassName}, T> {Names.ResolverPropertyName} = new {Names.ResolverClassName}<T>();");
             code.AppendLine();
             code.AppendLine($"public virtual T {Names.ResolveMethodName}({composition.Source.Source.Name.ClassName} composite)");
             code.AppendLine("{");
@@ -60,7 +60,7 @@ internal sealed class ResolverClassesBuilder(IBuilder<RootContext, IEnumerable<R
             var objectTypeName = "";
             if (resolver.Type.IsValueType)
             {
-                objectTypeName = $"{Names.ResolverInterfaceName}<{composition.Source.Source.Name.ClassName}, object>";
+                objectTypeName = $"{Names.IResolverTypeName}<{composition.Source.Source.Name.ClassName}, object>";
                 baseTypes.Add(objectTypeName);
             }
 

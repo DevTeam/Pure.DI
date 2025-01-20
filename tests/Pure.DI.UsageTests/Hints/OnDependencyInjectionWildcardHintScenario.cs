@@ -1,10 +1,10 @@
 ﻿/*
 $v=true
 $p=2
-$d=OnDependencyInjection hint
+$d=OnDependencyInjection wildcard hint
 $h=Hints are used to fine-tune code generation. The _OnDependencyInjection_ hint determines whether to generate partial _OnDependencyInjection_ method to control of dependency injection.
 $h=In addition, setup hints can be comments before the _Setup_ method in the form ```hint = value```, for example: `// OnDependencyInjection = On`.
-$f=The `OnDependencyInjectionContractTypeNameRegularExpression` hint helps identify the set of types that require injection control. You can use it to specify a regular expression to filter the full name of a type.
+$f=The `OnDependencyInjectionContractTypeNameWildcard` hint helps identify the set of types that require injection control. You can use it to specify a wildcard to filter the full name of a type.
 $f=For more hints, see [this](README.md#setup-hints) page.
 $r=Shouldly
 */
@@ -18,7 +18,7 @@ $r=Shouldly
 // ReSharper disable UnusedMember.Global
 
 // ReSharper disable NotAccessedPositionalProperty.Global
-namespace Pure.DI.UsageTests.Hints.OnDependencyInjectionHintScenario;
+namespace Pure.DI.UsageTests.Hints.OnDependencyInjectionWildcardHintScenario;
 
 using Shouldly;
 using Xunit;
@@ -38,7 +38,7 @@ public class Scenario
 // {
         // OnDependencyInjection = On
         DI.Setup(nameof(Composition))
-            .Hint(OnDependencyInjectionContractTypeNameRegularExpression, "(.*IDependency|int)$")
+            .Hint(OnDependencyInjectionContractTypeNameWildcard, "*IDependency")
             .RootArg<int>("id")
             .Bind().To<Dependency>()
             .Bind().To<Service>()
@@ -48,10 +48,7 @@ public class Scenario
         var composition = new Composition(log);
         var service = composition.GetRoot(33);
 
-        log.ShouldBe([
-            "Int32 injected",
-            "Dependency injected"
-        ]);
+        log.ShouldBe(["Dependency injected"]);
 // }
         composition.SaveClassDiagram();
     }
