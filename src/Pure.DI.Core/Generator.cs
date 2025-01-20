@@ -30,8 +30,8 @@ public sealed partial class Generator
         // Roots
             .Root<IEnumerable<Source>>(nameof(Api))
             .Root<IObserversRegistry>(nameof(Observers))
-            .RootBind<Generation>(nameof(Generate), kind: Internal)
-                .To((IBuilder<IEnumerable<SyntaxUpdate>, Generation> generator, IEnumerable<SyntaxUpdate> updates) => generator.Build(updates))
+            .RootBind<Unit>(nameof(Generate), kind: Internal)
+                .To((IBuilder<IEnumerable<SyntaxUpdate>, Unit> generator, IEnumerable<SyntaxUpdate> updates) => generator.Build(updates))
 
             .RootArg<IGeneratorOptions>("options")
             .RootArg<IGeneratorSources>("sources")

@@ -13,9 +13,9 @@ internal sealed class Generator(
     ISmartTags smartTags,
     IGeneratorSources sources,
     CancellationToken cancellationToken)
-    : IBuilder<IEnumerable<SyntaxUpdate>, Generation>
+    : IBuilder<IEnumerable<SyntaxUpdate>, Unit>
 {
-    public Generation Build(IEnumerable<SyntaxUpdate> updates)
+    public Unit Build(IEnumerable<SyntaxUpdate> updates)
     {
         profiler.Profile();
         using var logObserverToken = observersRegistry.Register(logObserver);
@@ -28,7 +28,7 @@ internal sealed class Generator(
             logObserver.OnCompleted();
         }
 
-        return new Generation();
+        return Unit.Shared;
     }
 
     private Unit ProcessUpdates(IEnumerable<SyntaxUpdate> updates)

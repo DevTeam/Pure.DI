@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core.Code;
 
-public interface ICompilations
+internal interface ICompilations
 {
     LanguageVersion GetLanguageVersion(Compilation compilation);
 }

@@ -6,14 +6,12 @@
 #pragma warning disable CA1822
 namespace Pure.DI.Benchmarks.Benchmarks;
 
-using System.Diagnostics.CodeAnalysis;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
 using Model;
 
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
 [MemoryDiagnoser]
-[SuppressMessage("Usage", "CA2263:Предпочитать универсальную перегрузку, если тип известен")]
 public partial class Array : BenchmarkBase
 {
     private static void SetupDI() =>

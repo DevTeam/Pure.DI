@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core.Code;
 
-public readonly record struct TypeDescription(
+internal readonly record struct TypeDescription(
     string Name,
     IReadOnlyCollection<TypeDescription> TypeArgs,
     ITypeParameterSymbol? TypeParam)

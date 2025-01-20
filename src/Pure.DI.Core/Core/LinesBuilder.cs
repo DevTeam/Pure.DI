@@ -82,6 +82,7 @@ internal sealed class LinesBuilder : IEnumerable<string>
 
     public IDisposable SaveToArray(Encoding encoding, out byte[] buffer, out int size)
     {
+        FlushLines();
         var charCount = 0;
         var newLine = Environment.NewLine;
         foreach (var line in _lines)

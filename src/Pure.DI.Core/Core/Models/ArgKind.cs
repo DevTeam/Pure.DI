@@ -1,6 +1,6 @@
 namespace Pure.DI.Core.Models;
 
-public enum ArgKind
+internal enum ArgKind
 {
     Class,
     Root

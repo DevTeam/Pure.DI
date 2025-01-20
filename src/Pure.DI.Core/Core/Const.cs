@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core;
 
-public static class Const
+internal static class Const
 {
     public const int MaxIterationsCount = 0x8FFFF;
 }
