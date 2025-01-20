@@ -13,7 +13,7 @@ internal class BenchmarksTarget(
     private static readonly string[] Filters = ["Pure.DI.Benchmarks.Benchmarks.*"];
 
     public Task InitializeAsync(CancellationToken cancellationToken) => commands.RegisterAsync(
-        this, "Runs benchmarks", "benchmarks", "bm");
+        this, "Run benchmarks", "benchmarks", "bm");
 
     public async Task<int> RunAsync(CancellationToken cancellationToken)
     {

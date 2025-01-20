@@ -13,7 +13,7 @@ internal class PublishBlazorTarget(
 {
     public Task InitializeAsync(CancellationToken cancellationToken) => commands.RegisterAsync(
         this,
-        "Publish balazor web sssembly example",
+        "Publish the balazor web sssembly example",
         "publish",
         "pb");
 

@@ -16,7 +16,7 @@ internal class LibrariesTarget(
     : IInitializable, ITarget<IReadOnlyCollection<Library>>
 {
     public Task InitializeAsync(CancellationToken cancellationToken) => commands.RegisterAsync(
-        this, "Builds and tests libraries", "libs", "l");
+        this, "Build and test libraries", "libs", "l");
 
     [SuppressMessage("Performance", "CA1861:Avoid constant arrays as arguments")]
     public async Task<IReadOnlyCollection<Library>> RunAsync(CancellationToken cancellationToken)

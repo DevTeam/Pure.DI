@@ -9,7 +9,7 @@ internal class InstallTemplateTarget(
     : IInitializable, ITarget<Package>
 {
     public Task InitializeAsync(CancellationToken cancellationToken) => commands.RegisterAsync(
-        this, "Install template", "install", "i");
+        this, "Install templates", "install", "i");
 
     public async Task<Package> RunAsync(CancellationToken cancellationToken)
     {

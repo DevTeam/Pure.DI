@@ -15,7 +15,7 @@ internal class PackTarget(
     : IInitializable, ITarget<IReadOnlyCollection<Package>>
 {
     public Task InitializeAsync(CancellationToken cancellationToken) => commands.RegisterAsync(
-        this, "Creates NuGet packages", "pack", "p");
+        this, "Create NuGet packages", "pack", "p");
 
     [SuppressMessage("Performance", "CA1861:Avoid constant arrays as arguments")]
     public async Task<IReadOnlyCollection<Package>> RunAsync(CancellationToken cancellationToken)

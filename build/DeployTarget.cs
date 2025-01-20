@@ -9,7 +9,7 @@ internal class DeployTarget(
     : IInitializable, ITarget<int>
 {
     public Task InitializeAsync(CancellationToken cancellationToken) => commands.RegisterAsync(
-        this, "Deploys packages", "deploy", "dp");
+        this, "Package deployment", "deploy", "dp");
 
     public async Task<int> RunAsync(CancellationToken cancellationToken)
     {

@@ -13,7 +13,7 @@ internal class GeneratorTarget(
     private string PackageName => $"Pure.DI.{settings.NextVersion}.nupkg";
 
     public Task InitializeAsync(CancellationToken cancellationToken) => commands.RegisterAsync(
-        this, "Builds and tests generator", "generator", "g");
+        this, "Build and test the source code generator", "generator", "g");
 
     [SuppressMessage("Performance", "CA1861:Avoid constant arrays as arguments")]
     public async Task<Package> RunAsync(CancellationToken cancellationToken)

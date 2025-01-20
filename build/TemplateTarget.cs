@@ -13,7 +13,7 @@ internal class TemplateTarget(
     public const string ProjectName = "Pure.DI.Templates";
 
     public Task InitializeAsync(CancellationToken cancellationToken) => commands.RegisterAsync(
-        this, "Creates and deploys template", "template", "t");
+        this, "Create and deploy templates", "template", "t");
 
     public async Task<Package> RunAsync(CancellationToken cancellationToken)
     {

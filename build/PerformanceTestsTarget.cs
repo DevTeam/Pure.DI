@@ -20,7 +20,7 @@ internal class PerformanceTestsTarget(
     ];
 
     public Task InitializeAsync(CancellationToken cancellationToken) => commands.RegisterAsync(
-        this, "Runs performance tests", "performance", "perf");
+        this, "Performance tests", "performance", "perf");
 
     public async Task<bool> RunAsync(CancellationToken cancellationToken)
     {

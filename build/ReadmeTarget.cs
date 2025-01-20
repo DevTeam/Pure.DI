@@ -26,7 +26,7 @@ internal class ReadmeTarget(
     private const string ContributingFile = "CONTRIBUTING.md";
 
     public Task InitializeAsync(CancellationToken cancellationToken) => commands.RegisterAsync(
-        this, $"Generates {CommonReadmeFile}", "readme", "r");
+        this, $"Generate {CommonReadmeFile}", "readme", "r");
 
     public async Task<int> RunAsync(CancellationToken cancellationToken)
     {
