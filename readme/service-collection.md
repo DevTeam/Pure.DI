@@ -39,6 +39,7 @@ partial class Composition : ServiceProviderFactory<Composition>
 
     static void Setup() =>
         DI.Setup()
+            // Use the DI setup from the base class
             .DependsOn(Base)
             .Bind<IDependency>("Dependency Key").As(Lifetime.Singleton).To<Dependency>()
             .Bind<IService>().To<Service>()

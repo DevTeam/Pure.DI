@@ -18,6 +18,7 @@ namespace Pure.DI.MS
     /// {
     ///     void Setup() =&gt;
     ///         DI.Setup(nameof(Composition))
+    ///             // Use the DI setup from the base class
     ///             .DependsOn(Base)
     ///             .Root&lt;HomeController&gt;();
     /// }
@@ -42,7 +43,9 @@ namespace Pure.DI.MS
         /// For example:
         /// <code>
         /// void Setup() =&amp;gt;
-        ///     DI.Setup(nameof(Composition)).DependsOn(Base);
+        ///     DI.Setup(nameof(Composition))
+        ///         // Use the DI setup from the base class
+        ///         .DependsOn(Base);
         /// </code>
         /// </example>
         /// </summary>
