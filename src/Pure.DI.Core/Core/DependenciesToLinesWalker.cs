@@ -51,7 +51,7 @@ internal sealed class DependenciesToLinesWalker(int indent)
     public override void VisitMethod(in Unit ctx, in DpMethod method)
     {
         var typeArgs = "";
-        if (method.Method.ContainingType.TypeArguments.Any())
+        if (method.Method.ContainingType.TypeArguments.Length > 0)
         {
             typeArgs = $"<{string.Join(", ", method.Method.ContainingType.TypeArguments)}>";
         }

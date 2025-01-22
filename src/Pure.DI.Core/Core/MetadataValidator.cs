@@ -12,7 +12,7 @@ internal sealed class MetadataValidator(
 {
     public bool Validate(MdSetup setup)
     {
-        if (setup.Kind == CompositionKind.Public && !setup.Roots.Any())
+        if (setup is { Kind: CompositionKind.Public, Roots.Length: 0 })
         {
             logger.CompileWarning("None of the composition roots are declared. Add at least one root.", setup.Source.GetLocation(), LogId.WarningMetadataDefect);
         }
@@ -48,8 +48,8 @@ internal sealed class MetadataValidator(
 
         foreach (var routeGroups in setup.Roots.GroupBy(root => new Injection(InjectionKind.Root, root.RootType, root.Tag?.Value)))
         {
-            var roots = routeGroups.ToArray();
-            if (roots.Length <= 1)
+            var roots = routeGroups.ToList();
+            if (roots.Count <= 1)
             {
                 continue;
             }
@@ -149,7 +149,7 @@ internal sealed class MetadataValidator(
             var notSupportedContracts = binding.Contracts
                 .Where(contract => contract.ContractType != null && !supportedContracts.Contains(contract.ContractType))
                 .Select(i => i.ContractType!)
-                .ToArray();
+                .ToList();
 
             // ReSharper disable once InvertIf
             if (notSupportedContracts.Any())

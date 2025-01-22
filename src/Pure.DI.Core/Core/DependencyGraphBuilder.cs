@@ -297,7 +297,7 @@ internal sealed class DependencyGraphBuilder(
                 if (injection.Type is { IsAbstract: false, SpecialType: Microsoft.CodeAnalysis.SpecialType.None })
                 {
                     var autoBinding = CreateAutoBinding(setup, targetNode, injection, ++maxId);
-                    return CreateNodes(setup, typeConstructor, autoBinding).ToArray();
+                    return CreateNodes(setup, typeConstructor, autoBinding).ToList();
                 }
 
                 // OnCannotResolve
@@ -323,7 +323,7 @@ internal sealed class DependencyGraphBuilder(
             map[item.Key] = item.Value;
         }
 
-        foreach (var key in map.Keys.Where(i => ReferenceEquals(i.Tag, MdTag.ContextTag)).ToArray())
+        foreach (var key in map.Keys.Where(i => ReferenceEquals(i.Tag, MdTag.ContextTag)).ToList())
         {
             map.Remove(key);
         }
@@ -569,8 +569,8 @@ internal sealed class DependencyGraphBuilder(
         var contracts = new HashSet<Injection>();
         foreach (var nestedBinding in setup.Bindings.Where(i => i != targetNode.Binding))
         {
-            var matchedContracts = GetMatchedMdContracts(setup, targetNode.Binding.SemanticModel.Compilation, elementType, nestedBinding).ToArray();
-            if (matchedContracts.Length == 0)
+            var matchedContracts = GetMatchedMdContracts(setup, targetNode.Binding.SemanticModel.Compilation, elementType, nestedBinding).ToList();
+            if (matchedContracts.Count == 0)
             {
                 continue;
             }

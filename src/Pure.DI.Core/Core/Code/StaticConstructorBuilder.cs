@@ -25,8 +25,8 @@ internal sealed class StaticConstructorBuilder(
             membersCounter++;
         }
 
-        var resolvers = resolversBuilder.Build(new RootContext(composition.Source.Source, composition.Roots)).ToArray();
-        if (!resolvers.Any())
+        var resolvers = resolversBuilder.Build(new RootContext(composition.Source.Source, composition.Roots)).ToList();
+        if (resolvers.Count == 0)
         {
             return composition;
         }
@@ -50,7 +50,7 @@ internal sealed class StaticConstructorBuilder(
                 code.AppendLine($"{Names.ResolverClassName}<{typeResolver.Resolve(composition.Source.Source, resolver.Type)}>.{Names.ResolverPropertyName} = val{className};");
             }
 
-            var divisor = Buckets<object, object>.GetDivisor((uint)resolvers.Length);
+            var divisor = Buckets<object, object>.GetDivisor((uint)resolvers.Count);
             var pairs = $"{Names.SystemNamespace}Type, {Names.IResolverTypeName}<{composition.Source.Source.Name.ClassName}, object>";
             var bucketsTypeName = $"{Names.ApiNamespace}Buckets<{pairs}>";
             var pairTypeName = $"{Names.ApiNamespace}Pair<{pairs}>";
@@ -59,7 +59,7 @@ internal sealed class StaticConstructorBuilder(
             {
                 code.AppendLine($"{divisor.ToString()},");
                 code.AppendLine($"out {Names.BucketSizeFieldName},");
-                code.AppendLine($"new {pairTypeName}[{resolvers.Length.ToString()}]");
+                code.AppendLine($"new {pairTypeName}[{resolvers.Count.ToString()}]");
                 code.AppendLine("{");
                 using (code.Indent())
                 {

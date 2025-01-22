@@ -31,7 +31,7 @@ internal sealed class ClassDiagramBuilder(
             var hasResolveMethods = composition.Source.Source.Hints.IsResolveEnabled;
             var rootProperties = composition.Roots.ToDictionary(i => i.Injection, i => i);
             var compositionLines = new LinesBuilder();
-            if (hasResolveMethods || rootProperties.Any())
+            if (hasResolveMethods || rootProperties.Count > 0)
             {
                 compositionLines.AppendLine($"class {composition.Source.Source.Name.ClassName} {{");
                 using (lines.Indent())
@@ -134,8 +134,8 @@ internal sealed class ClassDiagramBuilder(
 
                     if (dependency.Source.Arg is { } arg)
                     {
-                        var tags = arg.Binding.Contracts.SelectMany(i => i.Tags.Select(tag => tag.Value)).ToArray();
-                        lines.AppendLine($"{targetType} o-- {sourceType} : {(tags.Any() ? FormatTags(tags) + " " : "")}Argument \\\"{arg.Source.ArgName}\\\"");
+                        var tags = arg.Binding.Contracts.SelectMany(i => i.Tags.Select(tag => tag.Value)).ToList();
+                        lines.AppendLine($"{targetType} o-- {sourceType} : {(tags.Count > 0 ? FormatTags(tags) + " " : "")}Argument \\\"{arg.Source.ArgName}\\\"");
                     }
                     else
                     {

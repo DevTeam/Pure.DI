@@ -54,7 +54,7 @@ internal sealed class ImplementationDependencyNodeBuilder(
                         instanceDpProvider.GetParameters(setup, constructor.Parameters, compilation, ctx.TypeConstructor)));
             }
 
-            if (!constructors.Any())
+            if (constructors.Count == 0)
             {
                 throw new CompileErrorException($"The instance of {implementationType} cannot be instantiated due to no accessible constructor available.", implementation.Source.GetLocation(), LogId.ErrorInvalidMetadata);
             }
@@ -69,13 +69,13 @@ internal sealed class ImplementationDependencyNodeBuilder(
                         instanceDp.Methods,
                         instanceDp.Properties,
                         instanceDp.Fields))
-                .ToArray();
+                .ToList();
 
             var implementationsWithOrdinal = implementations
                 .Where(i => i.Constructor.Ordinal.HasValue)
-                .ToArray();
+                .ToList();
 
-            if (implementationsWithOrdinal.Any())
+            if (implementationsWithOrdinal.Count > 0)
             {
                 foreach (var node in CreateNodes(injectionsWalker, implementationsWithOrdinal.OrderBy(i => i.Constructor.Ordinal)))
                 {

@@ -11,14 +11,14 @@ internal sealed class ParameterizedConstructorBuilder(
 {
     public CompositionCode Build(CompositionCode composition)
     {
-        if (!composition.Args.Any())
+        if (composition.Args.Length == 0)
         {
             return composition;
         }
 
         var code = composition.Code;
         var membersCounter = composition.MembersCount;
-        if (!composition.Args.Any())
+        if (composition.Args.Length == 0)
         {
             return composition;
         }
@@ -26,7 +26,7 @@ internal sealed class ParameterizedConstructorBuilder(
         constructorCommenter.AddComments(composition, Unit.Shared);
 
         code.AppendLine($"[{Names.OrdinalAttributeName}(128)]");
-        var classArgs = composition.Args.GetArgsOfKind(ArgKind.Class).ToArray();
+        var classArgs = composition.Args.GetArgsOfKind(ArgKind.Class).ToList();
         code.AppendLine($"public {composition.Source.Source.Name.ClassName}({string.Join(", ", classArgs.Select(arg => $"{typeResolver.Resolve(composition.Source.Source, arg.InstanceType)} {arg.Node.Arg?.Source.ArgName}"))})");
         code.AppendLine("{");
         using (code.Indent())

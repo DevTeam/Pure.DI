@@ -15,7 +15,7 @@ internal sealed class ImplementationVariantsBuilder(
             implementation.Methods.Select(method => CreateVariants(method, ImplementationVariantKind.Method))
                 .Concat(Enumerable.Repeat(CreateVariants(implementation.Constructor, ImplementationVariantKind.Ctor), 1))
                 .Select(i => new SafeEnumerator<ImplementationVariant>(i.GetEnumerator()))
-                .ToArray();
+                .ToList();
 
         try
         {

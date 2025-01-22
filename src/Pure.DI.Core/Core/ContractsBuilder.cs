@@ -33,7 +33,7 @@ internal sealed class ContractsBuilder : IBuilder<ContractsBuildContext, ISet<In
                 contractTags.Add(context.ContextTag);
             }
 
-            if (!contractTags.Any())
+            if (contractTags.Count == 0)
             {
                 contractTags.Add(null);
             }

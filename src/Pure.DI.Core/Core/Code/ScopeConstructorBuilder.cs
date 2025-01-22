@@ -23,8 +23,8 @@ internal sealed class ScopeConstructorBuilder : IBuilder<CompositionCode, Compos
         using (code.Indent())
         {
             code.AppendLine($"{Names.RootFieldName} = ({Names.ParentScopeArgName} ?? throw new {Names.SystemNamespace}ArgumentNullException(nameof({Names.ParentScopeArgName}))).{Names.RootFieldName};");
-            var classArgs = composition.Args.GetArgsOfKind(ArgKind.Class).ToArray();
-            if (classArgs.Any())
+            var classArgs = composition.Args.GetArgsOfKind(ArgKind.Class).ToList();
+            if (classArgs.Count > 0)
             {
                 foreach (var argsField in classArgs)
                 {

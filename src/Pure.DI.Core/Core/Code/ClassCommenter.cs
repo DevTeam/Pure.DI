@@ -39,9 +39,9 @@ internal class ClassCommenter(
                 .OrderByDescending(root => root.IsPublic)
                 .ThenBy(root => root.DisplayName)
                 .ThenBy(root => root.Node.Binding)
-                .ToArray();
+                .ToList();
 
-            if (orderedRoots.Length > 0)
+            if (orderedRoots.Count > 0)
             {
                 var rootComments = comments.FormatList(
                     "<b>Composition roots:</b>",

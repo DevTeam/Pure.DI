@@ -12,7 +12,7 @@ internal class VariablesMap : Dictionary<MdBinding, Variable>
         var classBindings = this
             .Where(i => i.Value.Node.Arg is not null || i.Value.Node.Lifetime is not (Lifetime.Singleton or Lifetime.Scoped))
             .Select(i => i.Key)
-            .ToArray();
+            .ToList();
 
         foreach (var singletonBinding in classBindings)
         {

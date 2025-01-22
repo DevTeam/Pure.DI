@@ -8,7 +8,7 @@ internal sealed class DefaultConstructorBuilder(
 {
     public CompositionCode Build(CompositionCode composition)
     {
-        if (composition.Args.Any())
+        if (composition.Args.Length > 0)
         {
             return composition;
         }

@@ -25,13 +25,12 @@ internal class Comments : IComments
 
     public IHints GetHints(IEnumerable<string> comments)
     {
-        var hints = (
-                from comment in comments
-                select HintCommentRegex.Match(comment)
-                into match
-                where match.Success
-                select match)
-            .ToArray();
+        var hints = 
+            from comment in comments
+            select HintCommentRegex.Match(comment)
+            into match
+            where match.Success
+            select match;
 
         var result = new Hints();
         foreach (var hint in hints)
@@ -49,8 +48,8 @@ internal class Comments : IComments
 
     public IEnumerable<string> Format(IEnumerable<string> comments, bool escape)
     {
-        var allComments = comments.ToArray();
-        var count = allComments.Length;
+        var allComments = comments.ToList();
+        var count = allComments.Count;
         for (var i = 0; i < count; i++)
         {
             var comment = allComments[i];

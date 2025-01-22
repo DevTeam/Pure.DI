@@ -8,7 +8,7 @@ internal sealed class UsingDeclarationsBuilder : IBuilder<CompositionCode, Compo
     public CompositionCode Build(CompositionCode composition)
     {
         var code = composition.Code;
-        if (!composition.Source.Source.UsingDirectives.Any())
+        if (composition.Source.Source.UsingDirectives.Length == 0)
         {
             return composition;
         }

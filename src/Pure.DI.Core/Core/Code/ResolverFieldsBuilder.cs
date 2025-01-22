@@ -12,8 +12,8 @@ internal sealed class ResolversFieldsBuilder(IBuilder<RootContext, IEnumerable<R
             return composition;
         }
 
-        var resolvers = resolversBuilder.Build(new RootContext(composition.Source.Source, composition.Roots)).ToArray();
-        if (!resolvers.Any())
+        var resolvers = resolversBuilder.Build(new RootContext(composition.Source.Source, composition.Roots)).ToList();
+        if (resolvers.Count == 0)
         {
             return composition;
         }

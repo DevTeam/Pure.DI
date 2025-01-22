@@ -7,8 +7,8 @@ internal sealed class ArgFieldsBuilder(ITypeResolver typeResolver)
 {
     public CompositionCode Build(CompositionCode composition)
     {
-        var classArgs = composition.Args.GetArgsOfKind(ArgKind.Class).ToArray();
-        if (!classArgs.Any())
+        var classArgs = composition.Args.GetArgsOfKind(ArgKind.Class).ToList();
+        if (classArgs.Count == 0)
         {
             return composition;
         }

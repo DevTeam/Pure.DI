@@ -697,8 +697,8 @@ internal class ApiInvocationProcessor(
     {
         var namespacesSyntaxWalker = new NamespacesSyntaxWalker(semanticModel, semantic);
         namespacesSyntaxWalker.Visit(node);
-        var namespaces = namespacesSyntaxWalker.ToArray();
-        if (namespaces.Any())
+        var namespaces = namespacesSyntaxWalker.ToList();
+        if (namespaces.Count > 0)
         {
             metadataVisitor.VisitUsingDirectives(new MdUsingDirectives(namespaces.ToImmutableArray(), ImmutableArray<string>.Empty));
         }

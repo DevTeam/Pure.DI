@@ -94,8 +94,8 @@ internal class ConstructCodeBuilder(
     {
         var variable = ctx.Variable;
         var instantiation = $"new {typeResolver.Resolve(ctx.DependencyGraph.Source, array.Source.ElementType)}[{variable.Args.Count.ToString()}] {{ {string.Join(", ", variable.Args.Select(i => ctx.BuildTools.OnInjected(ctx, i.Current)))} }}";
-        var onCreated = ctx.BuildTools.OnCreated(ctx, variable).ToArray();
-        if (onCreated.Any())
+        var onCreated = ctx.BuildTools.OnCreated(ctx, variable).ToList();
+        if (onCreated.Count > 0)
         {
             ctx.Code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VariableName} = {instantiation};");
             ctx.Code.AppendLines(onCreated);

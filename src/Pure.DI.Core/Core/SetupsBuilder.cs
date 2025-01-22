@@ -36,7 +36,7 @@ internal sealed class SetupsBuilder(
         }
 
         metadataSyntaxWalkerFactory().Visit(this, update);
-        if (!_setups.Any())
+        if (_setups.Count == 0)
         {
             setupCache.Set(checkSum, false);
         }

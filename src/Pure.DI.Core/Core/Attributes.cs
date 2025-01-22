@@ -117,7 +117,7 @@ internal class Attributes(
 
                 return symbolNames.GetGlobalName(unboundTypeSymbol) == symbolNames.GetGlobalName(attributeType);
             })
-            .ToArray();
+            .ToList();
 
     private static INamedTypeSymbol? GetUnboundTypeSymbol(INamedTypeSymbol? typeSymbol) =>
         typeSymbol is null

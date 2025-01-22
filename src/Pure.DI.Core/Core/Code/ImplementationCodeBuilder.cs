@@ -60,9 +60,9 @@ internal class ImplementationCodeBuilder(
             void VisitMethodAction(BuildContext context) => injections.MethodInjection(variable.VariableName, context, method, methodArgs);
         }
 
-        var onCreatedStatements = ctx.BuildTools.OnCreated(ctx, ctx.Variable).ToArray();
+        var onCreatedStatements = ctx.BuildTools.OnCreated(ctx, ctx.Variable).ToList();
         var hasOnCreatedStatements = ctx.BuildTools.OnCreated(ctx, variable).Any();
-        var hasAlternativeInjections = visits.Any();
+        var hasAlternativeInjections = visits.Count > 0;
         var tempVariableInit =
             ctx.DependencyGraph.Source.Hints.IsThreadSafeEnabled
             && ctx.Variable.Node.Lifetime is not Lifetime.Transient and not Lifetime.PerBlock
@@ -72,9 +72,9 @@ internal class ImplementationCodeBuilder(
         {
             ctx = ctx with { Variable = variable with { NameOverride = variable.VariableDeclarationName + "Temp" } };
             ctx.Code.AppendLine($"{typeResolver.Resolve(ctx.Variable.Setup, ctx.Variable.InstanceType)} {ctx.Variable.VariableDeclarationName};");
-            if (onCreatedStatements.Any())
+            if (onCreatedStatements.Count > 0)
             {
-                onCreatedStatements = ctx.BuildTools.OnCreated(ctx, ctx.Variable).ToArray();
+                onCreatedStatements = ctx.BuildTools.OnCreated(ctx, ctx.Variable).ToList();
             }
         }
 
@@ -117,17 +117,17 @@ internal class ImplementationCodeBuilder(
         var variable = ctx.Variable;
         var required = requiredFields.Select(i => (Variable: i.RequiredVariable, i.RequiredField.Field.Name))
             .Concat(requiredProperties.Select(i => (Variable: i.RequiredVariable, i.RequiredProperty.Property.Name)))
-            .ToArray();
+            .ToList();
 
         var args = string.Join(", ", constructorArgs.Select(i => ctx.BuildTools.OnInjected(ctx, i)));
         code.Append(variable.InstanceType.IsTupleType ? $"({args})" : $"new {typeResolver.Resolve(variable.Setup, variable.InstanceType)}({args})");
-        if (required.Any())
+        if (required.Count > 0)
         {
             code.Append(" { ");
-            for (var index = 0; index < required.Length; index++)
+            for (var index = 0; index < required.Count; index++)
             {
                 var (v, name) = required[index];
-                code.Append($"{name} = {ctx.BuildTools.OnInjected(ctx, v)}{(index < required.Length - 1 ? ", " : "")}");
+                code.Append($"{name} = {ctx.BuildTools.OnInjected(ctx, v)}{(index < required.Count - 1 ? ", " : "")}");
             }
 
             code.Append(" }");

@@ -62,7 +62,7 @@ internal sealed class ApiMembersBuilder(
             membersCounter++;
 
             apiCode.AppendLine();
-            var resolvers = resolversBuilder.Build(new RootContext(composition.Source.Source, composition.Roots)).ToArray();
+            var resolvers = resolversBuilder.Build(new RootContext(composition.Source.Source, composition.Roots)).ToList();
             if (isCommentsEnabled)
             {
                 apiCode.AppendLine("/// <summary>");
@@ -84,7 +84,7 @@ internal sealed class ApiMembersBuilder(
 
             membersCounter++;
 
-            if (resolvers.Length > 0)
+            if (resolvers.Count > 0)
             {
                 apiCode.AppendLine();
                 CreateObjectConflictsResolverMethod($"{Names.SystemNamespace}Type type",
@@ -119,7 +119,7 @@ internal sealed class ApiMembersBuilder(
 
             membersCounter++;
 
-            if (resolvers.Length > 0)
+            if (resolvers.Count > 0)
             {
                 apiCode.AppendLine();
                 CreateObjectConflictsResolverMethod($"{Names.SystemNamespace}Type type, object{nullable} tag",

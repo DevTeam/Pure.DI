@@ -61,7 +61,7 @@ internal sealed class VariationalDependencyGraphBuilder(
                 }
             }
 
-            if (isRoot || contracts.Any())
+            if (isRoot || contracts.Count > 0)
             {
                 allNodes.Add(new ProcessingNode(node, contracts));
             }
@@ -92,7 +92,7 @@ internal sealed class VariationalDependencyGraphBuilder(
                     .Select(CreateProcessingNode)
                     .ToArray();
 
-                if (newNodes.Any())
+                if (newNodes.Length > 0)
                 {
                     var newVariants = CreateVariants(newNodes);
                     foreach (var newVariant in newVariants)

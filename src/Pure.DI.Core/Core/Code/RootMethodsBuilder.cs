@@ -13,7 +13,7 @@ internal sealed class RootMethodsBuilder(
 {
     public CompositionCode Build(CompositionCode composition)
     {
-        if (!composition.Roots.Any())
+        if (composition.Roots.Length == 0)
         {
             return composition;
         }

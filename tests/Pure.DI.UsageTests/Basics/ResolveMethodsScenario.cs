@@ -21,6 +21,7 @@ $f=- Lead to performance degradation because they search for the root of a compo
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Basics.ResolveMethodsScenario;
 
+using System.Diagnostics.CodeAnalysis;
 using Shouldly;
 using Xunit;
 
