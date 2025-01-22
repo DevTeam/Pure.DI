@@ -10,6 +10,7 @@ using Services;
 internal partial class Composition : ServiceProviderFactory<Composition>
 {
     static void Setup() => DI.Setup()
+        .DependsOn(Base)
         // Provides the composition root for Greeter service
         .Root<GreeterService>();
 }

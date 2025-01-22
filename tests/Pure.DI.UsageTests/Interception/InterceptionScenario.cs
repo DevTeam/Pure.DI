@@ -47,7 +47,7 @@ public class Scenario
         // Resolve = Off
 // {    
         // OnDependencyInjection = On
-        // OnDependencyInjectionContractTypeNameRegularExpression = IService
+        // OnDependencyInjectionContractTypeNameWildcard = *IService
         DI.Setup(nameof(Composition))
             .Bind().To<Service>()
             .Root<IService>("Root");

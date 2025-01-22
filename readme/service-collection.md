@@ -38,8 +38,8 @@ partial class Composition : ServiceProviderFactory<Composition>
         CreateServiceCollection(this);
 
     static void Setup() =>
-
         DI.Setup()
+            .DependsOn(Base)
             .Bind<IDependency>("Dependency Key").As(Lifetime.Singleton).To<Dependency>()
             .Bind<IService>().To<Service>()
             .Root<IDependency>(tag: "Dependency Key")

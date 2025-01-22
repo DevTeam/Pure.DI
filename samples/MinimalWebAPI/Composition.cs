@@ -11,6 +11,7 @@ using static Pure.DI.Lifetime;
 internal partial class Composition : ServiceProviderFactory<Composition>
 {
     void Setup() => DI.Setup()
+        .DependsOn(Base)
         .Bind().As(Singleton).To<WeatherForecastService>()
         .Root<IWeatherForecastService>()
 

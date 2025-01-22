@@ -14,6 +14,7 @@ using static Pure.DI.Lifetime;
 internal partial class Composition : ServiceProviderFactory<Composition>
 {
     void Setup() => DI.Setup()
+        .DependsOn(Base)
         // View Models
         .Bind().To<ClockViewModel>()
         // Provides the composition root for Clock view model

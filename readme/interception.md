@@ -12,7 +12,7 @@ using System.Runtime.CompilerServices;
 using Pure.DI;
 
 // OnDependencyInjection = On
-// OnDependencyInjectionContractTypeNameRegularExpression = IService
+// OnDependencyInjectionContractTypeNameWildcard = *IService
 DI.Setup(nameof(Composition))
     .Bind().To<Service>()
     .Root<IService>("Root");

@@ -23,10 +23,6 @@ class MyGlobalComposition2
 {
     static void Setup() =>
         DI.Setup("Some name", kind: Global)
-            .Hint(Hint.OnCannotResolve, "Off")
-            .Hint(Hint.OnCannotResolvePartial, "On")
-            .Hint(Hint.OnNewRoot, "Off")
-            .Hint(Hint.OnNewRootPartial, "On")
             .Hint(Hint.ToString, "On");
 }
 ```
