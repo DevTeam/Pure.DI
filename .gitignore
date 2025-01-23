@@ -15,4 +15,6 @@ _ReSharper.Caches/
 .idea
 .logs
 .packages
-
+samples/UnityApp/Library
+samples/UnityApp/UserSettings
+samples/UnityApp/Temp
