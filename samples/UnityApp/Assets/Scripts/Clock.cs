@@ -15,11 +15,12 @@ public class Clock : MonoBehaviour
     [SerializeField]
     private Transform secondsPivot;
 
-    [Ordinal(0)]
+    [Dependency]
     public IClockViewModel ClockViewModel { private get; set; }
 
     void Start()
     {
+        // Injects dependencies
         Composition.Shared.BuildUp(this);
     }
 

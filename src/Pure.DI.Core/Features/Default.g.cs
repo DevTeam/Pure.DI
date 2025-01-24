@@ -14,6 +14,8 @@ namespace Pure.DI
                 .TypeAttribute<TypeAttribute>()
                 .TagAttribute<TagAttribute>()
                 .OrdinalAttribute<OrdinalAttribute>()
+                .TagAttribute<DependencyAttribute>()
+                .OrdinalAttribute<DependencyAttribute>(1)
                 .Accumulate<global::System.IDisposable, Owned>(
                     Lifetime.Transient,
                     Lifetime.PerResolve,

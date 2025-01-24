@@ -1227,7 +1227,26 @@ namespace Pure.DI
         /// <param name="type">The injection type. See also <see cref="IConfiguration.Bind{T}"/> and <see cref="IBinding.Bind{T}"/>.</param>
         public TypeAttribute(global::System.Type type) { }
     }
-    
+
+    /// <summary>
+    /// A universal DI attribute that allows to specify the tag and ordinal of an injection.
+    /// </summary>
+    /// <param name="tag">The injection tag. See also <see cref="IBinding.Tags"/></param>.
+    /// <param name="ordinal">The injection ordinal.</param>
+    [global::System.AttributeUsage(global::System.AttributeTargets.Constructor | global::System.AttributeTargets.Method | global::System.AttributeTargets.Parameter | global::System.AttributeTargets.Property | global::System.AttributeTargets.Field)]
+#if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
+    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
+    internal class DependencyAttribute : global::System.Attribute
+    {
+        /// <summary>
+        /// Creates an attribute instance.
+        /// </summary>
+        /// <param name="tag">The injection tag. See also <see cref="IBinding.Tags"/></param>.
+        /// <param name="ordinal">The injection ordinal.</param>
+        public DependencyAttribute(object? tag = null, int ordinal = 0) { }
+    };
+
     /// <summary>
     /// Indicates that a property or method can be automatically added as a binding.
     /// <example>
