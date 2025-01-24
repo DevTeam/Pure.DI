@@ -60,14 +60,14 @@ interface IDependency
 
 class Dependency : IDependency
 {
-    // The Ordinal attribute specifies to perform an injection and its order
-    [Ordinal(1)]
+    // The Dependency attribute specifies to perform an injection and its order
+    [Dependency]
     public string Name { get; set; } = "";
     
     public Guid Id { get; private set; } = Guid.Empty;
 
-    // The Ordinal attribute specifies to perform an injection and its order
-    [Ordinal(0)]
+    // The Dependency attribute specifies to perform an injection and its order
+    [Dependency]
     public void SetId(Guid id) => Id = id;
 }
 

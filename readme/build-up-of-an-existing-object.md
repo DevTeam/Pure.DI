@@ -37,14 +37,14 @@ interface IDependency
 
 class Dependency : IDependency
 {
-    // The Ordinal attribute specifies to perform an injection and its order
-    [Ordinal(1)]
+    // The Dependency attribute specifies to perform an injection and its order
+    [Dependency]
     public string Name { get; set; } = "";
 
     public Guid Id { get; private set; } = Guid.Empty;
 
-    // The Ordinal attribute specifies to perform an injection and its order
-    [Ordinal(0)]
+    // The Dependency attribute specifies to perform an injection and its order
+    [Dependency]
     public void SetId(Guid id) => Id = id;
 }
 
@@ -107,8 +107,8 @@ partial class Composition
     Guid transientGuid2 = Guid.NewGuid();
     Dependency transientDependency1;
     var localDependency50 = new Dependency();
-    localDependency50.SetId(transientGuid2);
     localDependency50.Name = name;
+    localDependency50.SetId(transientGuid2);
     transientDependency1 = localDependency50;
     return new Service(transientDependency1);
   }

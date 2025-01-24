@@ -66,11 +66,12 @@ record Service1: IService
 {
     public Guid Id { get; private set; } = Guid.Empty;
     
-    [Ordinal(1)]
+    // The Dependency attribute specifies to perform an injection
+    [Dependency]
     public IDependency? Dependency { get; set; }
 
-    // The Ordinal attribute specifies to perform an injection and its order
-    [Ordinal(2)]
+    // The Dependency attribute specifies to perform an injection
+    [Dependency]
     public void SetId(Guid id) => Id = id;
 }
 
@@ -78,14 +79,13 @@ record Service2: IService
 {
     public Guid Id { get; private set; } = Guid.Empty;
 
-    [Ordinal(1)]
+    [Dependency]
     public IDependency? Dependency => DependencyFactory?.Invoke();
     
-    [Ordinal(2)]
+    [Dependency]
     public Func<IDependency>? DependencyFactory { get; set; }
 
-    // The Ordinal attribute specifies to perform an injection and its order
-    [Ordinal(3)]
+    [Dependency]
     public void SetId(Guid id) => Id = id;
 }
 // }

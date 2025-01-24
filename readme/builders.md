@@ -44,11 +44,12 @@ record Service1: IService
 {
     public Guid Id { get; private set; } = Guid.Empty;
 
-    [Ordinal(1)]
+    // The Dependency attribute specifies to perform an injection
+    [Dependency]
     public IDependency? Dependency { get; set; }
 
-    // The Ordinal attribute specifies to perform an injection and its order
-    [Ordinal(2)]
+    // The Dependency attribute specifies to perform an injection
+    [Dependency]
     public void SetId(Guid id) => Id = id;
 }
 
@@ -56,14 +57,13 @@ record Service2: IService
 {
     public Guid Id { get; private set; } = Guid.Empty;
 
-    [Ordinal(1)]
+    [Dependency]
     public IDependency? Dependency => DependencyFactory?.Invoke();
 
-    [Ordinal(2)]
+    [Dependency]
     public Func<IDependency>? DependencyFactory { get; set; }
 
-    // The Ordinal attribute specifies to perform an injection and its order
-    [Ordinal(3)]
+    [Dependency]
     public void SetId(Guid id) => Id = id;
 }
 ```
@@ -200,10 +200,10 @@ classDiagram
 	Dependency --|> IDependency
 	Composition ..> Service2 : Service2 BuildUp(Pure.DI.UsageTests.Basics.BuilderScenario.Service2 instance)
 	Composition ..> Service1 : Service1 BuildUp(Pure.DI.UsageTests.Basics.BuilderScenario.Service1 instance)
-	Service2 o-- Service2 : "2M01D24di"  Argument "instance"
+	Service2 o-- Service2 : "0M01D24di"  Argument "instance"
 	Service2 o-- "PerBlock" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
 	Service2 *--  Guid : Guid
-	Service1 o-- Service1 : "0M01D24di"  Argument "instance"
+	Service1 o-- Service1 : "2M01D24di"  Argument "instance"
 	Service1 *--  Dependency : IDependency
 	Service1 *--  Guid : Guid
 	FuncᐸIDependencyᐳ *--  Dependency : IDependency

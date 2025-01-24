@@ -65,7 +65,7 @@ interface IService
 
 class Service : IService
 {
-    [Ordinal(1)]
+    [Dependency]
     public void Initialize(IDependency dep) =>
         Dependency = dep;
 

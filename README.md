@@ -259,6 +259,7 @@ dotnet run
 - [Generic builders](readme/generic-builders.md)
 ### Attributes
 - [Constructor ordinal attribute](readme/constructor-ordinal-attribute.md)
+- [Dependency attribute](readme/dependency-attribute.md)
 - [Member ordinal attribute](readme/member-ordinal-attribute.md)
 - [Tag attribute](readme/tag-attribute.md)
 - [Type attribute](readme/type-attribute.md)

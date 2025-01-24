@@ -54,10 +54,10 @@ interface IService
 
 class Service : IService
 {
-    // The Ordinal attribute specifies to perform an injection,
+    // The Dependency attribute specifies to perform an injection,
     // the integer value in the argument specifies
     // the ordinal of injection
-    [Ordinal(0)]
+    [Dependency]
     public IDependency? Dependency { get; set; }
 }
 // }

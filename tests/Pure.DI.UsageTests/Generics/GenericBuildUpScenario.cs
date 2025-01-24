@@ -62,14 +62,14 @@ interface IDependency<out T>
 class Dependency<T> : IDependency<T>
     where T: struct
 {
-    // The Ordinal attribute specifies to perform an injection and its order
-    [Ordinal(1)]
+    // The Dependency attribute specifies to perform an injection
+    [Dependency]
     public string Name { get; set; } = "";
     
     public T Id { get; private set; }
 
-    // The Ordinal attribute specifies to perform an injection and its order
-    [Ordinal(0)]
+    // The Dependency attribute specifies to perform an injection
+    [Dependency]
     public void SetId(T id) => Id = id;
 }
 

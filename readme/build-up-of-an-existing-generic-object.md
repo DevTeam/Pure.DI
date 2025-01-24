@@ -39,14 +39,14 @@ interface IDependency<out T>
 class Dependency<T> : IDependency<T>
     where T: struct
 {
-    // The Ordinal attribute specifies to perform an injection and its order
-    [Ordinal(1)]
+    // The Dependency attribute specifies to perform an injection
+    [Dependency]
     public string Name { get; set; } = "";
 
     public T Id { get; private set; }
 
-    // The Ordinal attribute specifies to perform an injection and its order
-    [Ordinal(0)]
+    // The Dependency attribute specifies to perform an injection
+    [Dependency]
     public void SetId(T id) => Id = id;
 }
 
@@ -111,8 +111,8 @@ partial class Composition
     Guid transientGuid2 = Guid.NewGuid();
     Dependency<Guid> transientDependency1;
     Dependency<Guid> localDependency56 = new Dependency<Guid>();
-    localDependency56.SetId(transientGuid2);
     localDependency56.Name = name;
+    localDependency56.SetId(transientGuid2);
     transientDependency1 = localDependency56;
     return new Service<Guid>(transientDependency1);
   }

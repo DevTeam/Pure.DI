@@ -57,11 +57,10 @@ record Service<T, T2>: IService<T, T2>
 {
     public T Id { get; private set; } = default(T);
     
-    [Ordinal(1)]
+    [Dependency]
     public IDependency<T2>? Dependency { get; set; }
 
-    // The Ordinal attribute specifies to perform an injection and its order
-    [Ordinal(2)]
+    [Dependency]
     public void SetId([Tag(Tag.Id)] T id) => Id = id;
 }
 // }
