@@ -7,15 +7,7 @@ internal partial class Composition
     
     private void Setup() =>
         DI.Setup()
-            .Hint(Hint.Resolve, "Off")
             .Bind().As(Singleton).To<ClockService>()
             .Bind().To<ClockViewModel>()
-            .RootArg<Clock>("clock", "arg")
-            .Bind().To(ctx =>
-            {
-                ctx.Inject("arg", out Clock clock);
-                ctx.BuildUp(clock);
-                return clock;
-            })
-            .Root<Clock>("BuildUp");
+            .Builder<Clock>("BuildUp");
 }

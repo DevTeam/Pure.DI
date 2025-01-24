@@ -1,6 +1,8 @@
 using System;
 using Pure.DI;
 using UnityEngine;
+#pragma warning disable CS8618
+#pragma warning disable CS0649
 
 public class Clock : MonoBehaviour
 {
@@ -13,13 +15,8 @@ public class Clock : MonoBehaviour
     [SerializeField]
     private Transform secondsPivot;
 
-    private IClockViewModel clockViewModel;
-
     [Ordinal(0)]
-    public void Inject(IClockViewModel clockViewModel)
-    {
-        this.clockViewModel = clockViewModel;
-    }
+    public IClockViewModel ClockViewModel { private get; set; }
 
     void Start()
     {
@@ -28,9 +25,9 @@ public class Clock : MonoBehaviour
 
     void Update()
     {
-        clockViewModel.Update();
-        hoursPivot.localRotation = clockViewModel.HoursRotation;
-        minutesPivot.localRotation = clockViewModel.MinutesRotation;
-        secondsPivot.localRotation = clockViewModel.SecondsRotation;
+        ClockViewModel.Update();
+        hoursPivot.localRotation = ClockViewModel.HoursRotation;
+        minutesPivot.localRotation = ClockViewModel.MinutesRotation;
+        secondsPivot.localRotation = ClockViewModel.SecondsRotation;
     }
 }

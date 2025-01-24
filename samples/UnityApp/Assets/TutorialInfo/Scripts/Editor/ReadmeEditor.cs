@@ -6,6 +6,9 @@ using System;
 using System.IO;
 using System.Reflection;
 
+#pragma warning disable CS8603
+#pragma warning disable CS8618
+
 [CustomEditor(typeof(Readme))]
 [InitializeOnLoad]
 public class ReadmeEditor : Editor
