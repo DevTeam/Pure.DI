@@ -439,6 +439,132 @@ public class FactoryTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["True"], result);
     }
+    
+    [Fact]
+    public async Task ShouldSupportInjectWithTag()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                              interface IDependency {}
+                           
+                              class Dependency: IDependency {}
+                           
+                              interface IService
+                              {
+                                  IDependency Dep { get; }
+                              }
+                           
+                              class Service: IService
+                              {
+                                  public Service(IDependency dep)
+                                  {
+                                      Dep = dep;
+                                  }
+                           
+                                  public IDependency Dep { get; }
+                              }
+                           
+                              static class Setup
+                              {
+                                  private static void SetupComposition()
+                                  {
+                                      DI.Setup("Composition")
+                                          .Bind<IDependency>("my tag").To(ctx => new Dependency())
+                                          .Bind<IService>().To(ctx => {
+                                              ctx.Inject<IDependency>("my tag", out var dependency);
+                                              return new Service(dependency);
+                                          })
+                                          .Root<IService>("Service");
+                                  }
+                              }
+                           
+                              public class Program
+                              {
+                                  public static void Main()
+                                  {
+                                      var composition = new Composition();
+                                      var service1 = composition.Service;
+                                      var service2 = composition.Service;
+                                      Console.WriteLine(service1.Dep != service2.Dep);
+                                  }
+                              }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportInjectWithSmartTag()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                              interface IDependency {}
+                           
+                              class Dependency: IDependency {}
+                           
+                              interface IService
+                              {
+                                  IDependency Dep { get; }
+                              }
+                           
+                              class Service: IService
+                              {
+                                  public Service(IDependency dep)
+                                  {
+                                      Dep = dep;
+                                  }
+                           
+                                  public IDependency Dep { get; }
+                              }
+                           
+                              static class Setup
+                              {
+                                  private static void SetupComposition()
+                                  {
+                                      DI.Setup("Composition")
+                                          .Bind<IDependency>(Tag.MyTag).To(ctx => new Dependency())
+                                          .Bind<IService>().To(ctx => {
+                                              ctx.Inject<IDependency>(Tag.MyTag, out var dependency);
+                                              return new Service(dependency);
+                                          })
+                                          .Root<IService>("Service");
+                                  }
+                              }
+                           
+                              public class Program
+                              {
+                                  public static void Main()
+                                  {
+                                      var composition = new Composition();
+                                      var service1 = composition.Service;
+                                      var service2 = composition.Service;
+                                      Console.WriteLine(service1.Dep != service2.Dep);
+                                  }
+                              }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
 
     [Fact]
     public async Task ShouldSupportFactoryWithInjectWhenBlocks()
@@ -630,7 +756,7 @@ public class FactoryTests
                                {
                                    private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime) 
                                    {
-                                       return value;      
+                                       return value;
                                    }
                                }
                            
@@ -1638,6 +1764,76 @@ public class FactoryTests
                                    {
                                        var composition = new Composition();
                                        var service = composition.Service;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Initialize Abc"], result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportBuildUpWhenRoot()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                           
+                               class Dependency: IDependency
+                               {
+                               }
+                           
+                               interface IService
+                               {
+                                   IDependency? Dep { get; }
+                               }
+                           
+                               class Service: IService 
+                               {
+                                   [Ordinal(1)]
+                                   internal void Initialize([Tag(374)] string depName)
+                                   {
+                                       Console.WriteLine($"Initialize {depName}");
+                                   }
+                           
+                                   [Ordinal(0)]
+                                   public IDependency? Dep { get; set; }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       // Resolve = Off
+                                       DI.Setup("Composition")
+                                           .Bind(374).To(_ => "Abc")
+                                           .Bind().To<Dependency>()
+                                           .RootArg<Service>("service", "arg")
+                                           .Bind().To<Service>(ctx => 
+                                           {
+                                               ctx.Inject("arg", out Service service);
+                                               ctx.BuildUp(service);
+                                               return service;
+                                           })
+                                           .Root<IService>("BuildUpService");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.BuildUpService(new Service());
                                    }
                                }
                            }

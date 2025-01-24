@@ -627,16 +627,32 @@ internal class ApiInvocationProcessor(
                                     ? null
                                     : semantic.GetConstantValue<object>(semanticModel, tag));
 
-                        if (args[1] is { } valueArg
-                            && semanticModel.GetOperation(valueArg) is IArgumentOperation { Value.Type: { } valueType })
+                        
+                        if (args[1] is { } valueArg)
                         {
-                            return new MdResolver(
-                                semanticModel,
-                                invocation,
-                                position++,
-                                valueType,
-                                resolverTag,
-                                valueArg.Expression);
+                            ITypeSymbol? argType = null;
+                            if (semanticModel.GetOperation(valueArg) is IArgumentOperation { Value.Type: { } valueType })
+                            {
+                                argType = valueType;
+                            }
+                            
+                            if (argType is null
+                                && semanticModel.GetOperation(invocation) is {} invocationOperation
+                                && invocationOperation.ChildOperations.OfType<IDeclarationExpressionOperation>().FirstOrDefault() is { Type: {} declarationType })
+                            {
+                                argType = declarationType;
+                            }
+
+                            if (argType is not null)
+                            {
+                                return new MdResolver(
+                                    semanticModel,
+                                    invocation,
+                                    position++,
+                                    argType,
+                                    resolverTag,
+                                    valueArg.Expression);
+                            }
                         }
 
                         break;

@@ -19,6 +19,7 @@ namespace Pure.DI.UsageTests.Basics.RootArgumentsScenario;
 
 using Shouldly;
 using Xunit;
+using static Tag;
 
 // {
 //# using Pure.DI;
@@ -42,7 +43,7 @@ public class Scenario
 
             // An argument can be tagged (e.g., tag "forService")
             // to be injectable by type and this tag
-            .RootArg<string>("serviceName", "forService")
+            .RootArg<string>("serviceName", ForService)
 
             // Composition root
             .Root<IService>("CreateServiceWithArgs");
@@ -83,7 +84,7 @@ interface IService
 }
 
 class Service(
-    [Tag("forService")] string name,
+    [Tag(ForService)] string name,
     IDependency dependency)
     : IService
 {
