@@ -238,11 +238,6 @@ internal class FactoryCodeBuilder(
         foreach (var textLine in lines)
         {
             var line = textLine.ToString();
-            if (string.IsNullOrWhiteSpace(line))
-            {
-                continue;
-            }
-
             var prefix = new string(line.TakeWhile(char.IsWhiteSpace).ToArray());
             if (prefix.Length > 0)
             {

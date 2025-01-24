@@ -2032,6 +2032,20 @@ namespace Pure.DI
         /// <typeparam name="T">The Composition root type.</typeparam>
         /// <returns>Reference to the setup continuation chain.</returns>
         IConfiguration Root<T>(string name = "", object tag = null, RootKinds kind = RootKinds.Default);
+        
+        /// <summary>
+        /// Specifying the root builder of the Composition.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Builder&lt;Service&gt;("BuildUpMyService");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <param name="name">Specifies the unique name of the builder.</param>
+        /// <typeparam name="T">The Composition root type.</typeparam>
+        /// <returns>Reference to the setup continuation chain.</returns>
+        IConfiguration Builder<T>(string name, RootKinds kind = RootKinds.Default);
 
         /// <summary>
         /// Defines a hint for fine-tuning code generation.
@@ -2900,6 +2914,12 @@ namespace Pure.DI
 
             /// <inheritdoc />
             public IConfiguration Root<T>(string name, object tag, RootKinds rootKind)
+            {
+                return Configuration.Shared;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration Builder<T>(string name, RootKinds kind = RootKinds.Default)
             {
                 return Configuration.Shared;
             }

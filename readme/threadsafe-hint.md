@@ -86,8 +86,8 @@ partial class Composition
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         () =>
         {
-          IDependency localValue88 = new Dependency();
-          return localValue88;
+          IDependency localValue92 = new Dependency();
+          return localValue92;
         });
         _root._singletonService44 = new Service(perBlockFunc0);
       }

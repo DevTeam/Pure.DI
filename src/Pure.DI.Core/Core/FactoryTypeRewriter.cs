@@ -65,9 +65,19 @@ internal sealed class FactoryTypeRewriter(
         }
 
         var semanticModel = _context.State.SemanticModel;
-        if (semanticModel.GetSymbolInfo(node).Symbol is ITypeSymbol type)
+        if (node.SyntaxTree == semanticModel.SyntaxTree)
         {
-            return TryGetNewTypeName(type, true, out newTypeName);
+            if (semanticModel.GetSymbolInfo(node).Symbol is ITypeSymbol type)
+            {
+                return TryGetNewTypeName(type, true, out newTypeName);
+            }
+        }
+        else
+        {
+            if (semanticModel.Compilation.GetTypeByMetadataName(node.ToString()) is {} parsedType)
+            {
+                return TryGetNewTypeName(parsedType, true, out newTypeName);
+            }
         }
 
         return false;

@@ -24,7 +24,7 @@ DI.Setup(nameof(Composition))
 
     // An argument can be tagged (e.g., tag "forService")
     // to be injectable by type and this tag
-    .RootArg<string>("serviceName", "forService")
+    .RootArg<string>("serviceName", ForService)
 
     // Composition root
     .Root<IService>("CreateServiceWithArgs");
@@ -60,7 +60,7 @@ interface IService
 }
 
 class Service(
-    [Tag("forService")] string name,
+    [Tag(ForService)] string name,
     IDependency dependency)
     : IService
 {
@@ -137,7 +137,7 @@ classDiagram
 	Service --|> IService
 	Dependency --|> IDependency
 	Composition ..> Service : IService CreateServiceWithArgs(int id, string dependencyName, string serviceName)
-	Service o-- String : "forService"  Argument "serviceName"
+	Service o-- String : "ForService"  Argument "serviceName"
 	Service *--  Dependency : IDependency
 	Dependency o-- Int32 : Argument "id"
 	Dependency o-- String : Argument "dependencyName"

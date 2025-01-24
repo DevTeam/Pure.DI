@@ -51,7 +51,7 @@ The [project file](/samples/WebApp/WebApp.csproj) looks like this:
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.1.51" />
+        <PackageReference Include="Pure.DI.MS" Version="2.1.52" />
     </ItemGroup>
 
 </Project>

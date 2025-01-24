@@ -112,11 +112,11 @@ partial class Composition
     get
     {
       Dependency transientDependency1;
-      Dependency localDependency53 = new Dependency();
+      Dependency localDependency57 = new Dependency();
       DateTimeOffset transientDateTimeOffset3 = DateTimeOffset.Now;
-      DateTimeOffset localTime54 = transientDateTimeOffset3;
-      localDependency53.Initialize(localTime54);
-      transientDependency1 = localDependency53;
+      DateTimeOffset localTime58 = transientDateTimeOffset3;
+      localDependency57.Initialize(localTime58);
+      transientDependency1 = localDependency57;
       return new Service(transientDependency1);
     }
   }

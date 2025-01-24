@@ -38,7 +38,7 @@ internal class ClassCommenter(
             var orderedRoots = composition.Roots
                 .OrderByDescending(root => root.IsPublic)
                 .ThenBy(root => root.DisplayName)
-                .ThenBy(root => root.Node.Binding)
+                .ThenBy(root => root.Node.Binding.Id)
                 .ToList();
 
             if (orderedRoots.Count > 0)

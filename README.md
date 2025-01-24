@@ -204,6 +204,7 @@ dotnet run
 - [Tags](readme/tags.md)
 - [Smart tags](readme/smart-tags.md)
 - [Build up of an existing object](readme/build-up-of-an-existing-object.md)
+- [Builders](readme/builders.md)
 - [Field injection](readme/field-injection.md)
 - [Method injection](readme/method-injection.md)
 - [Property injection](readme/property-injection.md)
@@ -255,6 +256,7 @@ dotnet run
 - [Build up of an existing generic object](readme/build-up-of-an-existing-generic-object.md)
 - [Generic root arguments](readme/generic-root-arguments.md)
 - [Complex generic root arguments](readme/complex-generic-root-arguments.md)
+- [Generic builders](readme/generic-builders.md)
 ### Attributes
 - [Constructor ordinal attribute](readme/constructor-ordinal-attribute.md)
 - [Member ordinal attribute](readme/member-ordinal-attribute.md)

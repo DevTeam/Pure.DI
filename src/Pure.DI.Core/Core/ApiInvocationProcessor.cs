@@ -9,7 +9,8 @@ internal class ApiInvocationProcessor(
     IComments comments,
     IArguments arguments,
     ISemantic semantic,
-    ISymbolNames symbolNames)
+    ISymbolNames symbolNames,
+    [Tag(Tag.UniqueTag)] IdGenerator idGenerator)
     : IApiInvocationProcessor
 {
     private static readonly char[] TypeNamePartsSeparators = ['.'];
@@ -285,6 +286,39 @@ internal class ApiInvocationProcessor(
                         var rootSymbol = semantic.GetTypeSymbol<INamedTypeSymbol>(semanticModel, rootType);
                         VisitRoot(metadataVisitor, semanticModel, invocation, invocationComments, rootSymbol);
                         break;
+                    
+                    case nameof(IConfiguration.Builder):
+                        if (genericName.TypeArgumentList.Arguments is not [{ } builderRootType])
+                        {
+                            return;
+                        }
+
+                        var builderRootSymbol = semantic.GetTypeSymbol<INamedTypeSymbol>(semanticModel, builderRootType);
+                        var builderArgTag = new MdTag(0, idGenerator.Generate() + Names.Salt);
+                        var builderTag = new MdTag(0, idGenerator.Generate() + Names.Salt);
+                        
+                        // RootArg
+                        metadataVisitor.VisitContract(new MdContract(semanticModel, invocation, builderRootSymbol, ContractKind.Explicit, ImmutableArray.Create(builderArgTag)));
+                        metadataVisitor.VisitArg(new MdArg(semanticModel, builderRootType, builderRootSymbol, "instance", ArgKind.Root, ["Instance for the build-up."]));
+
+                        // Factory
+                        var str = new StringBuilder();
+                        str.AppendLine("(Pure.DI.IContext ctx) => {");
+                        str.AppendLine($"ctx.Inject({builderArgTag.Value.ValueToString()}, out {symbolNames.GetName(builderRootSymbol)} instance);");
+                        str.AppendLine("ctx.BuildUp(instance);");
+                        str.AppendLine("return instance;");
+                        str.AppendLine("}");
+                        var builderLambdaExpression = (LambdaExpressionSyntax)SyntaxFactory.ParseExpression(str.ToString());
+
+                        metadataVisitor.VisitContract(new MdContract(semanticModel, invocation, builderRootSymbol, ContractKind.Explicit, ImmutableArray.Create(builderTag)));
+                        VisitFactory(metadataVisitor, semanticModel, builderRootSymbol, builderLambdaExpression, true);
+
+                        // Root
+                        var rootArgs = arguments.GetArgs(invocation.ArgumentList, "name", "tag", "kind");
+                        var builderName = rootArgs[0] is { } nameArg ? semantic.GetConstantValue<string>(semanticModel, nameArg.Expression) ?? "" : "";
+                        var kind = rootArgs[2] is { } kindArg ? semantic.GetConstantValue<RootKinds>(semanticModel, kindArg.Expression) : RootKinds.Default;
+                        metadataVisitor.VisitRoot(new MdRoot(invocation, semanticModel, builderRootSymbol, builderName, builderTag, kind, invocationComments, true));
+                        break;
 
                     case nameof(IConfiguration.GenericTypeArgument):
                         if (TryGetAttributeType(genericName, semanticModel, out var genericTypeArgumentType))
@@ -490,7 +524,7 @@ internal class ApiInvocationProcessor(
         var name = rootArgs[0] is { } nameArg ? semantic.GetConstantValue<string>(semanticModel, nameArg.Expression) ?? "" : "";
         var tag = rootArgs[1] is { } tagArg ? semantic.GetConstantValue<object>(semanticModel, tagArg.Expression) : null;
         var kind = rootArgs[2] is { } kindArg ? semantic.GetConstantValue<RootKinds>(semanticModel, kindArg.Expression) : RootKinds.Default;
-        metadataVisitor.VisitRoot(new MdRoot(invocation, semanticModel, rootSymbol, name, new MdTag(0, tag), kind, invocationComments));
+        metadataVisitor.VisitRoot(new MdRoot(invocation, semanticModel, rootSymbol, name, new MdTag(0, tag), kind, invocationComments, false));
     }
 
     private void VisitRoot(
@@ -505,7 +539,7 @@ internal class ApiInvocationProcessor(
         var rootArgs = arguments.GetArgs(invocation.ArgumentList, "name", "kind");
         var name = rootArgs[0] is { } nameArg ? semantic.GetConstantValue<string>(semanticModel, nameArg.Expression) ?? "" : "";
         var kind = rootArgs[1] is { } kindArg ? semantic.GetConstantValue<RootKinds>(semanticModel, kindArg.Expression) : RootKinds.Default;
-        metadataVisitor.VisitRoot(new MdRoot(invocation, semanticModel, rootSymbol, name, tag, kind, invocationComments));
+        metadataVisitor.VisitRoot(new MdRoot(invocation, semanticModel, rootSymbol, name, tag, kind, invocationComments, false));
     }
 
     private void VisitBind(
@@ -595,13 +629,14 @@ internal class ApiInvocationProcessor(
                 switch (invArguments)
                 {
                     case [{ RefOrOutKeyword.IsMissing: false } targetValue]:
-                        if (semanticModel.GetOperation(invArguments[0]) is IArgumentOperation argumentOperation)
+                        var argSymbol = GetArgSymbol(semanticModel, invArguments[0], resultType);
+                        if (argSymbol is not null)
                         {
                             return new MdResolver(
                                 semanticModel,
                                 invocation,
                                 position++,
-                                argumentOperation.Value.Type!,
+                                argSymbol,
                                 null,
                                 targetValue.Expression);
                         }
@@ -627,17 +662,11 @@ internal class ApiInvocationProcessor(
                                     ? null
                                     : semantic.GetConstantValue<object>(semanticModel, tag));
 
-                        
                         if (args[1] is { } valueArg)
                         {
-                            ITypeSymbol? argType = null;
-                            if (semanticModel.GetOperation(valueArg) is IArgumentOperation { Value.Type: { } valueType })
-                            {
-                                argType = valueType;
-                            }
-                            
+                            var argType = GetArgSymbol(semanticModel, valueArg, resultType);
                             if (argType is null
-                                && semanticModel.GetOperation(invocation) is {} invocationOperation
+                                && invocation.SyntaxTree == semanticModel.SyntaxTree && semanticModel.GetOperation(invocation) is {} invocationOperation
                                 && invocationOperation.ChildOperations.OfType<IDeclarationExpressionOperation>().FirstOrDefault() is { Type: {} declarationType })
                             {
                                 argType = declarationType;
@@ -665,8 +694,13 @@ internal class ApiInvocationProcessor(
         
         var initializers = walker.Initializers.Select(invocation =>
             {
-                if (invocation.ArgumentList.Arguments is not [{} targetArg]
-                    || semanticModel.GetOperation(targetArg) is not IArgumentOperation targetOperation)
+                if (invocation.ArgumentList.Arguments is not [{ } targetArg])
+                {
+                    return default;
+                }
+                
+                var targetType = GetArgSymbol(semanticModel, targetArg, resultType);
+                if (targetType is null)
                 {
                     return default;
                 }
@@ -674,7 +708,7 @@ internal class ApiInvocationProcessor(
                 return new MdInitializer(
                     semanticModel,
                     invocation,
-                    targetOperation.Value.Type!,
+                    targetType,
                     targetArg.Expression);
             })
             .Where(i => i != default)
@@ -696,6 +730,37 @@ internal class ApiInvocationProcessor(
                 resolvers,
                 initializers,
                 hasContextTag));
+    }
+
+    private static ITypeSymbol? GetArgSymbol(SemanticModel semanticModel, ArgumentSyntax argumentSyntax, ITypeSymbol defaultType)
+    {
+        ITypeSymbol? argType = null;
+        if (argumentSyntax.SyntaxTree != semanticModel.SyntaxTree)
+        {
+            ExpressionSyntax? typeSyntax = null;
+            switch (argumentSyntax.Expression)
+            {
+                case DeclarationExpressionSyntax declarationExpressionSyntax:
+                    typeSyntax = declarationExpressionSyntax.Type;
+                    break;
+                
+                default:
+                    argType = defaultType;
+                    break;
+            }
+
+            if (typeSyntax is not null)
+            {
+                argType = semanticModel.Compilation.GetTypeByMetadataName(typeSyntax.ToString()) ?? defaultType;
+            }
+        }
+
+        if (argType is null && semanticModel.GetOperation(argumentSyntax) is IArgumentOperation { Value.Type: { } valueType })
+        {
+            argType = valueType;
+        }
+
+        return argType;
     }
 
     private static void CheckNotAsync(LambdaExpressionSyntax lambdaExpression)

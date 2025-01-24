@@ -78,9 +78,9 @@ partial class Composition
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public IService<T2> GetMyService<T2>(T2 someArg)
+  public IService<T3> GetMyService<T3>(T3 someArg)
   {
-    Service<T2> transientService0 = new Service<T2>();
+    Service<T3> transientService0 = new Service<T3>();
     transientService0.SetDependency(someArg);
     return transientService0;
   }
@@ -96,20 +96,20 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	ServiceᐸT2ᐳ --|> IServiceᐸT2ᐳ
-	Composition ..> ServiceᐸT2ᐳ : IServiceᐸT2ᐳ GetMyServiceᐸT2ᐳ(T2 someArg)
-	ServiceᐸT2ᐳ o-- T2 : Argument "someArg"
+	ServiceᐸT3ᐳ --|> IServiceᐸT3ᐳ
+	Composition ..> ServiceᐸT3ᐳ : IServiceᐸT3ᐳ GetMyServiceᐸT3ᐳ(T3 someArg)
+	ServiceᐸT3ᐳ o-- T3 : Argument "someArg"
 	namespace Pure.DI.UsageTests.Basics.GenericRootArgScenario {
 		class Composition {
 		<<partial>>
-		+IServiceᐸT2ᐳ GetMyServiceᐸT2ᐳ(T2 someArg)
+		+IServiceᐸT3ᐳ GetMyServiceᐸT3ᐳ(T3 someArg)
 		}
-		class IServiceᐸT2ᐳ {
+		class IServiceᐸT3ᐳ {
 			<<interface>>
 		}
-		class ServiceᐸT2ᐳ {
+		class ServiceᐸT3ᐳ {
 			+Service()
-			+SetDependency(T2 dependency) : Void
+			+SetDependency(T3 dependency) : Void
 		}
 	}
 ```

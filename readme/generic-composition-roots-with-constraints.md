@@ -106,21 +106,21 @@ partial class Composition
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public IService<T3, bool> GetOtherService<T3>()
-    where T3: IDisposable
+  public IService<T4, bool> GetOtherService<T4>()
+    where T4: IDisposable
   {
-    OtherService<T3> transientOtherService0;
-    IDependency<T3> localDependency86 = new Dependency<T3>();
-    transientOtherService0 = new OtherService<T3>(localDependency86);
+    OtherService<T4> transientOtherService0;
+    IDependency<T4> localDependency90 = new Dependency<T4>();
+    transientOtherService0 = new OtherService<T4>(localDependency90);
     return transientOtherService0;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public IService<T3, T1> GetMyRoot<T3, T1>()
-    where T3: IDisposable
+  public IService<T4, T1> GetMyRoot<T4, T1>()
+    where T4: IDisposable
     where T1: struct
   {
-    return new Service<T3, T1>(new Dependency<T3>());
+    return new Service<T4, T1>(new Dependency<T4>());
   }
 }
 ```
@@ -134,35 +134,35 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	OtherServiceᐸT3ᐳ --|> IServiceᐸT3ˏBooleanᐳ : "Other" 
-	ServiceᐸT3ˏT1ᐳ --|> IServiceᐸT3ˏT1ᐳ
-	DependencyᐸT3ᐳ --|> IDependencyᐸT3ᐳ
-	Composition ..> OtherServiceᐸT3ᐳ : IServiceᐸT3ˏBooleanᐳ GetOtherServiceᐸT3ᐳ()
-	Composition ..> ServiceᐸT3ˏT1ᐳ : IServiceᐸT3ˏT1ᐳ GetMyRootᐸT3ˏT1ᐳ()
-	OtherServiceᐸT3ᐳ *--  DependencyᐸT3ᐳ : IDependencyᐸT3ᐳ
-	ServiceᐸT3ˏT1ᐳ *--  DependencyᐸT3ᐳ : IDependencyᐸT3ᐳ
+	OtherServiceᐸT4ᐳ --|> IServiceᐸT4ˏBooleanᐳ : "Other" 
+	ServiceᐸT4ˏT1ᐳ --|> IServiceᐸT4ˏT1ᐳ
+	DependencyᐸT4ᐳ --|> IDependencyᐸT4ᐳ
+	Composition ..> OtherServiceᐸT4ᐳ : IServiceᐸT4ˏBooleanᐳ GetOtherServiceᐸT4ᐳ()
+	Composition ..> ServiceᐸT4ˏT1ᐳ : IServiceᐸT4ˏT1ᐳ GetMyRootᐸT4ˏT1ᐳ()
+	OtherServiceᐸT4ᐳ *--  DependencyᐸT4ᐳ : IDependencyᐸT4ᐳ
+	ServiceᐸT4ˏT1ᐳ *--  DependencyᐸT4ᐳ : IDependencyᐸT4ᐳ
 	namespace Pure.DI.UsageTests.Generics.GenericCompositionRootsWithConstraintsScenario {
 		class Composition {
 		<<partial>>
-		+IServiceᐸT3ˏT1ᐳ GetMyRootᐸT3ˏT1ᐳ()
-		+IServiceᐸT3ˏBooleanᐳ GetOtherServiceᐸT3ᐳ()
+		+IServiceᐸT4ˏT1ᐳ GetMyRootᐸT4ˏT1ᐳ()
+		+IServiceᐸT4ˏBooleanᐳ GetOtherServiceᐸT4ᐳ()
 		}
-		class DependencyᐸT3ᐳ {
+		class DependencyᐸT4ᐳ {
 			+Dependency()
 		}
-		class IDependencyᐸT3ᐳ {
+		class IDependencyᐸT4ᐳ {
 			<<interface>>
 		}
-		class IServiceᐸT3ˏBooleanᐳ {
+		class IServiceᐸT4ˏBooleanᐳ {
 			<<interface>>
 		}
-		class IServiceᐸT3ˏT1ᐳ {
+		class IServiceᐸT4ˏT1ᐳ {
 			<<interface>>
 		}
-		class OtherServiceᐸT3ᐳ {
+		class OtherServiceᐸT4ᐳ {
 		}
-		class ServiceᐸT3ˏT1ᐳ {
-			+Service(IDependencyᐸT3ᐳ dependency)
+		class ServiceᐸT4ˏT1ᐳ {
+			+Service(IDependencyᐸT4ᐳ dependency)
 		}
 	}
 ```

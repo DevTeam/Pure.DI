@@ -15,6 +15,7 @@ internal class RootValidator(
         }
 
         var rootArgs = composition.Roots
+            .Where(root => !root.Source.IsBuilder)
             .Select(root => (root, args: root.Args.GetArgsOfKind(ArgKind.Root).ToList()))
             .Where(i => i.args.Count > 0)
             .GroupBy(i => i.root.Node.Binding.Id)
@@ -29,6 +30,7 @@ internal class RootValidator(
         }
 
         var genericRoots = composition.Roots
+            .Where(root => !root.Source.IsBuilder)
             .Where(i => i.TypeDescription.TypeArgs.Count > 0)
             .GroupBy(i => i.Node.Binding.Id)
             .Select(i => i.First());
