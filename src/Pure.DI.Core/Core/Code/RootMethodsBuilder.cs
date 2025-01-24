@@ -47,10 +47,19 @@ internal sealed class RootMethodsBuilder(
         rootCommenter.AddComments(composition, root);
         var code = composition.Code;
         var rootArgsStr = "";
+        var args = new List<Variable>();
         if (root.IsMethod)
         {
-            rootArgsStr = $"({string.Join(", ", root.Args.Select(arg => $"{typeResolver.Resolve(composition.Source.Source, arg.InstanceType)} {arg.VariableDeclarationName}"))})";
-            buildTools.AddPureHeader(code);
+            args.AddRange(
+                root.Args
+                .OrderBy(i => !(i.Node.Arg?.Source.IsBuildUpInstance ?? false))
+                .ThenBy(i => i.Node.Binding.Id));
+            
+            rootArgsStr = $"({string.Join(", ", args.Select(arg => $"{typeResolver.Resolve(composition.Source.Source, arg.InstanceType)} {arg.VariableDeclarationName}"))})";
+            if (args.Count == 0)
+            {
+                buildTools.AddPureHeader(code);
+            }
         }
         
         var name = new StringBuilder();
@@ -175,7 +184,14 @@ internal sealed class RootMethodsBuilder(
         using (code.Indent())
         {
             var indentToken = Disposables.Empty;
-            if (!root.IsMethod)
+            if (root.IsMethod)
+            {
+                foreach (var arg in args.Where(i => i.InstanceType.IsReferenceType))
+                {
+                    code.AppendLine($"if ({Names.ObjectTypeName}.ReferenceEquals({arg.VariableName}, null)) throw new {Names.SystemNamespace}ArgumentException(nameof({arg.VariableName}));");
+                }
+            }
+            else
             {
                 code.AppendLine($"[{Names.MethodImplAttributeName}({Names.MethodImplAggressiveInlining})]");
                 code.AppendLine("get");

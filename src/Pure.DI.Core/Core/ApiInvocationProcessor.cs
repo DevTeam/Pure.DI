@@ -299,7 +299,7 @@ internal class ApiInvocationProcessor(
                         
                         // RootArg
                         metadataVisitor.VisitContract(new MdContract(semanticModel, invocation, builderRootSymbol, ContractKind.Explicit, ImmutableArray.Create(builderArgTag)));
-                        metadataVisitor.VisitArg(new MdArg(semanticModel, builderRootType, builderRootSymbol, "instance", ArgKind.Root, ["Instance for the build-up."]));
+                        metadataVisitor.VisitArg(new MdArg(semanticModel, builderRootType, builderRootSymbol, "instance", ArgKind.Root, true, ["Instance for the build-up."]));
 
                         // Factory
                         var str = new StringBuilder();
@@ -588,7 +588,7 @@ internal class ApiInvocationProcessor(
             var tags = BuildTags(semanticModel, args.Skip(1));
             var argType = semantic.GetTypeSymbol<ITypeSymbol>(semanticModel, argTypeSyntax);
             metadataVisitor.VisitContract(new MdContract(semanticModel, invocation, argType, ContractKind.Explicit, tags.ToImmutableArray()));
-            metadataVisitor.VisitArg(new MdArg(semanticModel, argTypeSyntax, argType, name, kind, argComments));
+            metadataVisitor.VisitArg(new MdArg(semanticModel, argTypeSyntax, argType, name, kind, false, argComments));
         }
     }
 
