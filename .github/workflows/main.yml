@@ -32,6 +32,31 @@ jobs:
 
       - name: Test examples
         run: dotnet run --project ./build -- te
+        
+#  benchmarks:
+
+#    runs-on: ubuntu-latest
+
+#    steps:
+#      - uses: actions/checkout@v4
+
+#      - name: Setup dotnet
+#        uses: actions/setup-dotnet@v3
+#        with:
+#          dotnet-version: '9.0.x'
+          
+#      - name: Clean 
+#        run: rm -rf benchmarks/data
+
+#      - name: Benchmarks
+#        run: dotnet run --project ./build -- benchmarks
+        
+#      - name: Archive production artifacts
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: benchmarks
+#          path: |
+#            .logs/*.html
 
   deploy-examples:
 
