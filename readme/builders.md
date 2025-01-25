@@ -160,7 +160,6 @@ Class diagram:
 classDiagram
 	Dependency --|> IDependency
 	Composition ..> Service : Service BuildUp(Pure.DI.UsageTests.Basics.BuilderScenario.Service buildingInstance)
-	Service o-- Service : "0BuilderArgM01D25di"  Argument "buildingInstance"
 	Service *--  Dependency : IDependency
 	Service *--  Guid : Guid
 	namespace Pure.DI.UsageTests.Basics.BuilderScenario {

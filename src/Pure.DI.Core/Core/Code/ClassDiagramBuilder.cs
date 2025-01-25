@@ -134,6 +134,11 @@ internal sealed class ClassDiagramBuilder(
 
                     if (dependency.Source.Arg is { } arg)
                     {
+                        if (arg.Source.IsBuildUpInstance)
+                        {
+                            continue;
+                        }
+
                         var tags = arg.Binding.Contracts.SelectMany(i => i.Tags.Select(tag => tag.Value)).ToList();
                         lines.AppendLine($"{targetType} o-- {sourceType} : {(tags.Count > 0 ? FormatTags(tags) + " " : "")}Argument \\\"{arg.Source.ArgName}\\\"");
                     }

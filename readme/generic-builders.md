@@ -156,7 +156,6 @@ Class diagram:
 classDiagram
 	DependencyᐸT2ᐳ --|> IDependencyᐸT2ᐳ
 	Composition ..> ServiceᐸT1ˏT2ᐳ : ServiceᐸT1ˏT2ᐳ BuildUpGenericᐸT1ˏT2ᐳ(Pure.DI.UsageTests.Basics.GenericBuilderScenario.Service<T1, T2> buildingInstance)
-	ServiceᐸT1ˏT2ᐳ o-- ServiceᐸT1ˏT2ᐳ : "2BuilderArgM01D25di"  Argument "buildingInstance"
 	ServiceᐸT1ˏT2ᐳ *--  DependencyᐸT2ᐳ : IDependencyᐸT2ᐳ
 	ServiceᐸT1ˏT2ᐳ *--  T1 : "Id"  T1
 	namespace Pure.DI.UsageTests.Basics.GenericBuilderScenario {
