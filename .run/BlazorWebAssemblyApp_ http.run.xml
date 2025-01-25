@@ -1,7 +1,7 @@
 ﻿<component name="ProjectRunConfigurationManager">
   <configuration default="false" name="BlazorWebAssemblyApp: http" type="LaunchSettings" factoryName=".NET Launch Settings Profile" folderName="Examples">
     <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/samples/BlazorServerApp/BlazorServerApp.csproj" />
-    <option name="LAUNCH_PROFILE_TFM" value="net8.0" />
+    <option name="LAUNCH_PROFILE_TFM" value="net9.0" />
     <option name="LAUNCH_PROFILE_NAME" value="IIS Express" />
     <option name="USE_EXTERNAL_CONSOLE" value="0" />
     <option name="USE_MONO" value="0" />
@@ -14,9 +14,9 @@
       <option name="Build" />
     </method>
   </configuration>
-  <configuration default="false" name="BlazorWebAssemblyApp: http" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
+  <configuration default="false" name="BlazorWebAssemblyApp: http" type="LaunchSettings" factoryName=".NET Launch Settings Profile" folderName="Examples">
     <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/samples/BlazorWebAssemblyApp/BlazorWebAssemblyApp.csproj" />
-    <option name="LAUNCH_PROFILE_TFM" value="net8.0" />
+    <option name="LAUNCH_PROFILE_TFM" value="net9.0" />
     <option name="LAUNCH_PROFILE_NAME" value="http" />
     <option name="USE_EXTERNAL_CONSOLE" value="0" />
     <option name="USE_MONO" value="0" />
