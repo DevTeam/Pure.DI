@@ -3,6 +3,7 @@ $v=true
 $p=9
 $d=Builders
 $h=Sometimes you need to build up an existing composition root and inject all of its dependencies, in which case the `Builder` method will be useful, as in the example below:
+$f=The default builder method name is `BuildUp`. The first argument to this method will always be the instance to be built.
 $r=Shouldly
 */
 
@@ -10,7 +11,7 @@ $r=Shouldly
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable ArrangeTypeModifiers
-
+// ReSharper disable RedundantArgumentDefaultValue
 namespace Pure.DI.UsageTests.Basics.BuilderScenario;
 
 using Shouldly;

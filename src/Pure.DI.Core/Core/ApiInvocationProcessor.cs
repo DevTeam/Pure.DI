@@ -300,14 +300,15 @@ internal class ApiInvocationProcessor(
                         
                         // RootArg
                         metadataVisitor.VisitContract(new MdContract(semanticModel, invocation, builderRootSymbol, ContractKind.Explicit, ImmutableArray.Create(builderArgTag)));
-                        metadataVisitor.VisitArg(new MdArg(semanticModel, builderRootType, builderRootSymbol, "instance", ArgKind.Root, true, ["Instance for the build-up."]));
+                        metadataVisitor.VisitArg(new MdArg(semanticModel, builderRootType, builderRootSymbol, Names.BuildingInstance, ArgKind.Root, true, ["Instance for the build-up."]));
 
                         // Factory
                         var factory = new StringBuilder();
-                        factory.AppendLine("(Pure.DI.IContext ctx) => {");
-                        factory.AppendLine($"ctx.Inject({builderArgTag.Value.ValueToString()}, out {symbolNames.GetName(builderRootSymbol)} instance);");
-                        factory.AppendLine("ctx.BuildUp(instance);");
-                        factory.AppendLine("return instance;");
+                        factory.AppendLine($"({Names.IContextTypeName} {Names.ContextInstance}) =>");
+                        factory.AppendLine("{");
+                        factory.AppendLine($"{Names.ContextInstance}.{nameof(IContext.Inject)}({builderArgTag.Value.ValueToString()}, out {symbolNames.GetName(builderRootSymbol)} {Names.BuildingInstance});");
+                        factory.AppendLine($"{Names.ContextInstance}.{nameof(IContext.BuildUp)}({Names.BuildingInstance});");
+                        factory.AppendLine($"return {Names.BuildingInstance};");
                         factory.AppendLine("}");
                         var builderLambdaExpression = (LambdaExpressionSyntax)SyntaxFactory.ParseExpression(factory.ToString());
 
@@ -316,7 +317,7 @@ internal class ApiInvocationProcessor(
 
                         // Root
                         var rootArgs = arguments.GetArgs(invocation.ArgumentList, "name", "tag", "kind");
-                        var builderName = rootArgs[0] is { } nameArg ? semantic.GetConstantValue<string>(semanticModel, nameArg.Expression) ?? "" : "";
+                        var builderName = rootArgs[0] is { } nameArg ? semantic.GetConstantValue<string>(semanticModel, nameArg.Expression) ?? Names.DefaultBuilderName : Names.DefaultBuilderName;
                         var kind = rootArgs[2] is { } kindArg ? semantic.GetConstantValue<RootKinds>(semanticModel, kindArg.Expression) : RootKinds.Default;
                         metadataVisitor.VisitRoot(new MdRoot(invocation, semanticModel, builderRootSymbol, builderName, builderTag, kind, invocationComments, true));
                         break;

@@ -32,6 +32,9 @@ internal static class Names
     public const string DefaultApiMethodModifiers = "public";
     public const string ParentScopeArgName = "parentScope";
     public const string ResolverPropertyName = "Value";
+    public const string DefaultBuilderName= "BuildUp";
+    public const string BuildingInstance = "buildingInstance";
+    public const string ContextInstance = "ctx";
 
     // Attributes
     public const string OrdinalAttributeName = $"{ApiNamespace}{nameof(OrdinalAttribute)}";

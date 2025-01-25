@@ -88,16 +88,16 @@ partial class Composition
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public Service<T1, T2> BuildUpGeneric<T1, T2>(Service<T1, T2> instance)
+  public Service<T1, T2> BuildUpGeneric<T1, T2>(Service<T1, T2> buildingInstance)
     where T1: struct
   {
-    if (Object.ReferenceEquals(instance, null)) throw new ArgumentNullException(nameof(instance));
+    if (Object.ReferenceEquals(buildingInstance, null)) throw new ArgumentNullException(nameof(buildingInstance));
     T1 transientTTS2 = (T1)(object)Guid.NewGuid();
     Service<T1, T2> transientService0;
-    Service<T1, T2> localInstance54 = instance;
-    localInstance54.Dependency = new Dependency<T2>();
-    localInstance54.SetId(transientTTS2);
-    transientService0 = localInstance54;
+    Service<T1, T2> localBuildingInstance54 = buildingInstance;
+    localBuildingInstance54.Dependency = new Dependency<T2>();
+    localBuildingInstance54.SetId(transientTTS2);
+    transientService0 = localBuildingInstance54;
     return transientService0;
   }
 
@@ -155,14 +155,14 @@ Class diagram:
 ---
 classDiagram
 	DependencyᐸT2ᐳ --|> IDependencyᐸT2ᐳ
-	Composition ..> ServiceᐸT1ˏT2ᐳ : ServiceᐸT1ˏT2ᐳ BuildUpGenericᐸT1ˏT2ᐳ(Pure.DI.UsageTests.Basics.GenericBuilderScenario.Service<T1, T2> instance)
-	ServiceᐸT1ˏT2ᐳ o-- ServiceᐸT1ˏT2ᐳ : "2BuilderArgM01D25di"  Argument "instance"
+	Composition ..> ServiceᐸT1ˏT2ᐳ : ServiceᐸT1ˏT2ᐳ BuildUpGenericᐸT1ˏT2ᐳ(Pure.DI.UsageTests.Basics.GenericBuilderScenario.Service<T1, T2> buildingInstance)
+	ServiceᐸT1ˏT2ᐳ o-- ServiceᐸT1ˏT2ᐳ : "2BuilderArgM01D25di"  Argument "buildingInstance"
 	ServiceᐸT1ˏT2ᐳ *--  DependencyᐸT2ᐳ : IDependencyᐸT2ᐳ
 	ServiceᐸT1ˏT2ᐳ *--  T1 : "Id"  T1
 	namespace Pure.DI.UsageTests.Basics.GenericBuilderScenario {
 		class Composition {
 		<<partial>>
-		+ServiceᐸT1ˏT2ᐳ BuildUpGenericᐸT1ˏT2ᐳ(Pure.DI.UsageTests.Basics.GenericBuilderScenario.Service<T1, T2> instance)
+		+ServiceᐸT1ˏT2ᐳ BuildUpGenericᐸT1ˏT2ᐳ(Pure.DI.UsageTests.Basics.GenericBuilderScenario.Service<T1, T2> buildingInstance)
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
 		+ object Resolve(Type type)

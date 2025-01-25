@@ -11,7 +11,7 @@ Sometimes it is necessary to pass some state to the composition to use it when r
 ```c#
 using Shouldly;
 using Pure.DI;
-using static Tag;
+using static Pure.DI.Tag;
 
 DI.Setup(nameof(Composition))
     // This hint indicates to not generate methods such as Resolve
