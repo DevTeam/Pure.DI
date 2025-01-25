@@ -73,6 +73,8 @@ dotnet run
 
 </details>
 
+The default builder method name is `BuildUp`. The first argument to this method will always be the instance to be built. The remaining arguments of this method will be listed in the order in which they are defined in the setup.
+
 The following partial class will be generated:
 
 ```c#
@@ -92,14 +94,14 @@ partial class Composition
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public Service BuildUp(Service instance, Guid serviceId)
+  public Service BuildUp(Service buildingInstance, Guid serviceId)
   {
-    if (Object.ReferenceEquals(instance, null)) throw new ArgumentNullException(nameof(instance));
+    if (Object.ReferenceEquals(buildingInstance, null)) throw new ArgumentNullException(nameof(buildingInstance));
     Service transientService0;
-    Service localInstance48 = instance;
-    localInstance48.Dependency = new Dependency();
-    localInstance48.SetId(serviceId);
-    transientService0 = localInstance48;
+    Service localBuildingInstance48 = buildingInstance;
+    localBuildingInstance48.Dependency = new Dependency();
+    localBuildingInstance48.SetId(serviceId);
+    transientService0 = localBuildingInstance48;
     return transientService0;
   }
 
@@ -157,14 +159,14 @@ Class diagram:
 ---
 classDiagram
 	Dependency --|> IDependency
-	Composition ..> Service : Service BuildUp(Pure.DI.UsageTests.Basics.BuilderWithArgumentsScenario.Service instance, System.Guid serviceId)
-	Service o-- Service : "1BuilderArgM01D25di"  Argument "instance"
+	Composition ..> Service : Service BuildUp(Pure.DI.UsageTests.Basics.BuilderWithArgumentsScenario.Service buildingInstance, System.Guid serviceId)
+	Service o-- Service : "1BuilderArgM01D25di"  Argument "buildingInstance"
 	Service *--  Dependency : IDependency
 	Service o-- Guid : Argument "serviceId"
 	namespace Pure.DI.UsageTests.Basics.BuilderWithArgumentsScenario {
 		class Composition {
 		<<partial>>
-		+Service BuildUp(Pure.DI.UsageTests.Basics.BuilderWithArgumentsScenario.Service instance, System.Guid serviceId)
+		+Service BuildUp(Pure.DI.UsageTests.Basics.BuilderWithArgumentsScenario.Service buildingInstance, System.Guid serviceId)
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
 		+ object Resolve(Type type)

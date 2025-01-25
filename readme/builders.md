@@ -72,6 +72,8 @@ dotnet run
 
 </details>
 
+The default builder method name is `BuildUp`. The first argument to this method will always be the instance to be built.
+
 The following partial class will be generated:
 
 ```c#
@@ -91,15 +93,15 @@ partial class Composition
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public Service BuildUp(Service instance)
+  public Service BuildUp(Service buildingInstance)
   {
-    if (Object.ReferenceEquals(instance, null)) throw new ArgumentNullException(nameof(instance));
+    if (Object.ReferenceEquals(buildingInstance, null)) throw new ArgumentNullException(nameof(buildingInstance));
     Guid transientGuid2 = Guid.NewGuid();
     Service transientService0;
-    Service localInstance47 = instance;
-    localInstance47.Dependency = new Dependency();
-    localInstance47.SetId(transientGuid2);
-    transientService0 = localInstance47;
+    Service localBuildingInstance47 = buildingInstance;
+    localBuildingInstance47.Dependency = new Dependency();
+    localBuildingInstance47.SetId(transientGuid2);
+    transientService0 = localBuildingInstance47;
     return transientService0;
   }
 
@@ -157,14 +159,14 @@ Class diagram:
 ---
 classDiagram
 	Dependency --|> IDependency
-	Composition ..> Service : Service BuildUp(Pure.DI.UsageTests.Basics.BuilderScenario.Service instance)
-	Service o-- Service : "0BuilderArgM01D25di"  Argument "instance"
+	Composition ..> Service : Service BuildUp(Pure.DI.UsageTests.Basics.BuilderScenario.Service buildingInstance)
+	Service o-- Service : "0BuilderArgM01D25di"  Argument "buildingInstance"
 	Service *--  Dependency : IDependency
 	Service *--  Guid : Guid
 	namespace Pure.DI.UsageTests.Basics.BuilderScenario {
 		class Composition {
 		<<partial>>
-		+Service BuildUp(Pure.DI.UsageTests.Basics.BuilderScenario.Service instance)
+		+Service BuildUp(Pure.DI.UsageTests.Basics.BuilderScenario.Service buildingInstance)
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
 		+ object Resolve(Type type)
