@@ -28,6 +28,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{2862E47E-F5EB-4346-A87B-E94C1A72A80C}"
 	ProjectSection(SolutionItems) = preProject
 		docs\icon.png = docs\icon.png
+		docs\cat.png = docs\cat.png
+		docs\cat.webp = docs\cat.webp
+		docs\icon.ico = docs\icon.ico
+		docs\README.md = docs\README.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pure.DI.UsageTests", "tests\Pure.DI.UsageTests\Pure.DI.UsageTests.csproj", "{C375B7B7-A505-4E91-A421-8944FD3F2B10}"
