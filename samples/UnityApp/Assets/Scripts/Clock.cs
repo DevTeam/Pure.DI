@@ -1,7 +1,5 @@
-using System;
 using Pure.DI;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI.Table;
 #pragma warning disable CS8618
 #pragma warning disable CS0649
 
