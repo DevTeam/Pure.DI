@@ -1883,7 +1883,6 @@ public class FactoryTests
                                {
                                    private static void SetupComposition()
                                    {
-                                       // Resolve = Off
                                        DI.Setup("Composition")
                                            .Bind(374).To(_ => "Abc")
                                            .Bind().To<Dependency>()
@@ -1946,7 +1945,6 @@ public class FactoryTests
                                {
                                    private static void SetupComposition()
                                    {
-                                       // Resolve = Off
                                        DI.Setup("Composition")
                                            .Bind(374).To(_ => "Abc")
                                            .Bind().To<Dependency>()
@@ -2021,7 +2019,6 @@ public class FactoryTests
                                {
                                    private static void SetupComposition()
                                    {
-                                       // Resolve = Off
                                        DI.Setup("Composition")
                                            .Bind(374).To(_ => "Abc")
                                            .Bind().To<Dependency>()
@@ -2086,7 +2083,6 @@ public class FactoryTests
                                {
                                    private static void SetupComposition()
                                    {
-                                       // Resolve = Off
                                        DI.Setup("Composition")
                                            .Bind(374).To(_ => "Abc")
                                            .Bind().To<Dependency>()
