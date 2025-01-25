@@ -121,8 +121,8 @@ partial class Composition
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public IService CreateServiceWithArgs(int id, string dependencyName, string serviceName)
   {
-    if (Object.ReferenceEquals(dependencyName, null)) throw new ArgumentNullException(nameof(dependencyName));
-    if (Object.ReferenceEquals(serviceName, null)) throw new ArgumentNullException(nameof(serviceName));
+    if (dependencyName is null) throw new ArgumentNullException(nameof(dependencyName));
+    if (serviceName is null) throw new ArgumentNullException(nameof(serviceName));
     return new Service(serviceName, new Dependency(id, dependencyName));
   }
 }

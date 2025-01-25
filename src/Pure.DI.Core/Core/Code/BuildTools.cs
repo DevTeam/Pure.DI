@@ -12,9 +12,18 @@ internal class BuildTools(
     IBaseSymbolsProvider baseSymbolsProvider,
     [Tag(Injection)] IIdGenerator idGenerator,
     ILocks locks,
-    ISymbolNames symbolNames)
+    ISymbolNames symbolNames,
+    ICompilations compilations)
     : IBuildTools
 {
+    public string NullCheck(Compilation compilation, string variableName)
+    {
+        var languageVersion = compilations.GetLanguageVersion(compilation);
+        return languageVersion >= LanguageVersion.CSharp9
+            ? $"{variableName} is null"
+            : $"{Names.ObjectTypeName}.ReferenceEquals({variableName}, null)";
+    }
+    
     public void AddPureHeader(LinesBuilder code)
     {
         code.AppendLine("#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET");

@@ -12,6 +12,7 @@ $r=Shouldly
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable RedundantArgumentDefaultValue
+// ReSharper disable UnusedMemberInSuper.Global
 namespace Pure.DI.UsageTests.Basics.BuilderScenario;
 
 using Shouldly;

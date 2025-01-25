@@ -182,7 +182,7 @@ internal sealed class RootMethodsBuilder(
             {
                 foreach (var arg in root.Args.Where(i => i.InstanceType.IsReferenceType))
                 {
-                    code.AppendLine($"if ({Names.ObjectTypeName}.ReferenceEquals({arg.VariableName}, null)) throw new {Names.SystemNamespace}ArgumentNullException(nameof({arg.VariableName}));");
+                    code.AppendLine($"if ({buildTools.NullCheck(composition.Source.Source.SemanticModel.Compilation, arg.VariableName)}) throw new {Names.SystemNamespace}ArgumentNullException(nameof({arg.VariableName}));");
                 }
             }
             else

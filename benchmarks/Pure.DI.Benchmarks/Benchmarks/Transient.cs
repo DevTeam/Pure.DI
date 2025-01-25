@@ -5,12 +5,14 @@
 #pragma warning disable CA1822
 namespace Pure.DI.Benchmarks.Benchmarks;
 
+using System.Diagnostics.CodeAnalysis;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
 using Model;
 
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
 [MemoryDiagnoser]
+[SuppressMessage("Usage", "CA2263:Prefer generic overload when type is known")]
 public partial class Transient : BenchmarkBase
 {
     private static void SetupDI() =>

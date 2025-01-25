@@ -5,14 +5,14 @@ namespace Pure.DI.Core.Code;
 internal class BlockCodeBuilder(
     INodeInfo nodeInfo,
     ICompilations compilations,
-    ILocks locks)
+    ILocks locks,
+    IBuildTools buildTools)
     : ICodeBuilder<Block>
 {
     public void Build(BuildContext ctx, in Block block)
     {
         var variable = ctx.Variable;
         var compilation = variable.Node.Binding.SemanticModel.Compilation;
-        var languageVersion = compilations.GetLanguageVersion(compilation);
         if (!IsNewInstanceRequired(variable))
         {
             return;
@@ -48,9 +48,7 @@ internal class BlockCodeBuilder(
             {
                 var checkExpression = variable.InstanceType.IsValueType
                     ? $"!{variable.VariableName}Created"
-                    : languageVersion >= LanguageVersion.CSharp9
-                        ? $"{variable.VariableName} is null"
-                        : $"{Names.ObjectTypeName}.ReferenceEquals({variable.VariableName}, null)";
+                    : buildTools.NullCheck(compilation, variable.VariableName);
 
                 if (lockIsRequired)
                 {
@@ -144,7 +142,7 @@ internal class BlockCodeBuilder(
                     && code.Count > 11)
                 {
                     var localMethodCode = ctx.LocalFunctionsCode;
-                    if (languageVersion >= LanguageVersion.CSharp9)
+                    if (compilations.GetLanguageVersion(compilation) >= LanguageVersion.CSharp9)
                     {
                         localMethodCode.AppendLine($"[{Names.MethodImplAttributeName}({Names.MethodImplAggressiveInlining})]");
                     }

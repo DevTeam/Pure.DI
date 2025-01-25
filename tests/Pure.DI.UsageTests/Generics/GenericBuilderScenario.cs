@@ -9,7 +9,8 @@ $r=Shouldly
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable ArrangeTypeModifiers
-
+// ReSharper disable UnusedTypeParameter
+// ReSharper disable UnusedMemberInSuper.Global
 namespace Pure.DI.UsageTests.Basics.GenericBuilderScenario;
 
 using Shouldly;
@@ -55,7 +56,7 @@ interface IService<out T, T2>
 record Service<T, T2>: IService<T, T2>
     where T: struct
 {
-    public T Id { get; private set; } = default(T);
+    public T Id { get; private set; }
     
     [Dependency]
     public IDependency<T2>? Dependency { get; set; }

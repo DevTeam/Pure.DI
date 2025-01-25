@@ -124,7 +124,7 @@ partial class Composition
   public Program<T3> GetRoot<T3>(T3 depArg)
     where T3: notnull
   {
-    if (Object.ReferenceEquals(depArg, null)) throw new ArgumentNullException(nameof(depArg));
+    if (depArg is null) throw new ArgumentNullException(nameof(depArg));
     if (!_root._singletonDependencyStruct51Created)
     {
       using (_lock.EnterScope())

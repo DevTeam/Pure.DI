@@ -32,7 +32,7 @@ interface IService<out T, T2>
 record Service<T, T2>: IService<T, T2>
     where T: struct
 {
-    public T Id { get; private set; } = default(T);
+    public T Id { get; private set; }
 
     [Dependency]
     public IDependency<T2>? Dependency { get; set; }
@@ -91,7 +91,7 @@ partial class Composition
   public Service<T1, T2> BuildUpGeneric<T1, T2>(Service<T1, T2> buildingInstance)
     where T1: struct
   {
-    if (Object.ReferenceEquals(buildingInstance, null)) throw new ArgumentNullException(nameof(buildingInstance));
+    if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
     T1 transientTTS2 = (T1)(object)Guid.NewGuid();
     Service<T1, T2> transientService0;
     Service<T1, T2> localBuildingInstance54 = buildingInstance;

@@ -96,7 +96,7 @@ partial class Composition
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Service BuildUp(Service buildingInstance, Guid serviceId)
   {
-    if (Object.ReferenceEquals(buildingInstance, null)) throw new ArgumentNullException(nameof(buildingInstance));
+    if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
     Service transientService0;
     Service localBuildingInstance48 = buildingInstance;
     localBuildingInstance48.Dependency = new Dependency();

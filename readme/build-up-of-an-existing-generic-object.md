@@ -108,7 +108,7 @@ partial class Composition
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public IService<Guid> GetMyService(string name)
   {
-    if (Object.ReferenceEquals(name, null)) throw new ArgumentNullException(nameof(name));
+    if (name is null) throw new ArgumentNullException(nameof(name));
     Guid transientGuid2 = Guid.NewGuid();
     Dependency<Guid> transientDependency1;
     Dependency<Guid> localDependency55 = new Dependency<Guid>();

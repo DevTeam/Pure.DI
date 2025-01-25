@@ -29,6 +29,7 @@ using Xunit;
 //# using Pure.DI;
 // }
 
+[SuppressMessage("Usage", "CA2263:Prefer generic overload when type is known")]
 public class Scenario
 {
     [Fact]
