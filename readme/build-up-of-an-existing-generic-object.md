@@ -108,12 +108,13 @@ partial class Composition
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public IService<Guid> GetMyService(string name)
   {
+    if (Object.ReferenceEquals(name, null)) throw new ArgumentNullException(nameof(name));
     Guid transientGuid2 = Guid.NewGuid();
     Dependency<Guid> transientDependency1;
-    Dependency<Guid> localDependency56 = new Dependency<Guid>();
-    localDependency56.Name = name;
-    localDependency56.SetId(transientGuid2);
-    transientDependency1 = localDependency56;
+    Dependency<Guid> localDependency55 = new Dependency<Guid>();
+    localDependency55.Name = name;
+    localDependency55.SetId(transientGuid2);
+    transientDependency1 = localDependency55;
     return new Service<Guid>(transientDependency1);
   }
 }

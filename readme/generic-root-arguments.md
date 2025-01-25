@@ -80,6 +80,7 @@ partial class Composition
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public IService<T3> GetMyService<T3>(T3 someArg)
   {
+    if (Object.ReferenceEquals(someArg, null)) throw new ArgumentNullException(nameof(someArg));
     Service<T3> transientService0 = new Service<T3>();
     transientService0.SetDependency(someArg);
     return transientService0;

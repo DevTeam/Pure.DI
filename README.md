@@ -205,6 +205,7 @@ dotnet run
 - [Smart tags](readme/smart-tags.md)
 - [Build up of an existing object](readme/build-up-of-an-existing-object.md)
 - [Builders](readme/builders.md)
+- [Builders with arguments](readme/builders-with-arguments.md)
 - [Field injection](readme/field-injection.md)
 - [Method injection](readme/method-injection.md)
 - [Property injection](readme/property-injection.md)

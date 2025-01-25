@@ -82,6 +82,7 @@ partial class Composition
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Program GetProgram(OtherAssembly.CompositionInOtherProject baseComposition)
   {
+    if (Object.ReferenceEquals(baseComposition, null)) throw new ArgumentNullException(nameof(baseComposition));
     OtherAssembly.IMyService transientIMyService1;
     OtherAssembly.CompositionInOtherProject localInstance_1182D1277 = baseComposition;
     transientIMyService1 = localInstance_1182D1277.MyService;

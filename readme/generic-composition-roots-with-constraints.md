@@ -110,8 +110,8 @@ partial class Composition
     where T4: IDisposable
   {
     OtherService<T4> transientOtherService0;
-    IDependency<T4> localDependency90 = new Dependency<T4>();
-    transientOtherService0 = new OtherService<T4>(localDependency90);
+    IDependency<T4> localDependency89 = new Dependency<T4>();
+    transientOtherService0 = new OtherService<T4>(localDependency89);
     return transientOtherService0;
   }
 

@@ -47,16 +47,10 @@ internal sealed class RootMethodsBuilder(
         rootCommenter.AddComments(composition, root);
         var code = composition.Code;
         var rootArgsStr = "";
-        var args = new List<Variable>();
         if (root.IsMethod)
         {
-            args.AddRange(
-                root.Args
-                .OrderBy(i => !(i.Node.Arg?.Source.IsBuildUpInstance ?? false))
-                .ThenBy(i => i.Node.Binding.Id));
-            
-            rootArgsStr = $"({string.Join(", ", args.Select(arg => $"{typeResolver.Resolve(composition.Source.Source, arg.InstanceType)} {arg.VariableDeclarationName}"))})";
-            if (args.Count == 0)
+            rootArgsStr = $"({string.Join(", ", root.Args.Select(arg => $"{typeResolver.Resolve(composition.Source.Source, arg.InstanceType)} {arg.VariableDeclarationName}"))})";
+            if (root.Args.Length == 0)
             {
                 buildTools.AddPureHeader(code);
             }
@@ -186,9 +180,9 @@ internal sealed class RootMethodsBuilder(
             var indentToken = Disposables.Empty;
             if (root.IsMethod)
             {
-                foreach (var arg in args.Where(i => i.InstanceType.IsReferenceType))
+                foreach (var arg in root.Args.Where(i => i.InstanceType.IsReferenceType))
                 {
-                    code.AppendLine($"if ({Names.ObjectTypeName}.ReferenceEquals({arg.VariableName}, null)) throw new {Names.SystemNamespace}ArgumentException(nameof({arg.VariableName}));");
+                    code.AppendLine($"if ({Names.ObjectTypeName}.ReferenceEquals({arg.VariableName}, null)) throw new {Names.SystemNamespace}ArgumentNullException(nameof({arg.VariableName}));");
                 }
             }
             else
@@ -205,7 +199,7 @@ internal sealed class RootMethodsBuilder(
                 {
                     var codeText = string.Join(Environment.NewLine, root.Lines);
                     var syntaxTree = CSharpSyntaxTree.ParseText(codeText, cancellationToken: cancellationToken);
-                    foreach (var line in syntaxTree.GetRoot().NormalizeWhitespace("\t", "\n").GetText().Lines)
+                    foreach (var line in syntaxTree.GetRoot().NormalizeWhitespace("\t", Environment.NewLine).GetText().Lines)
                     {
                         code.AppendLine(line.ToString());
                     }

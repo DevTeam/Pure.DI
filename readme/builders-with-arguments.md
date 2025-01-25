@@ -1,6 +1,8 @@
-#### Generic builders
+#### Builders with arguments
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Generics/GenericBuilderScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/BuilderWithArgumentsScenario.cs)
+
+Builders can be used with arguments as in the example below:
 
 
 ```c#
@@ -8,37 +10,39 @@ using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Bind(Tag.Id).To<TT>(_ => (TT)(object)Guid.NewGuid())
-    .Bind().To<Dependency<TT>>()
-    // Generic service builder
-    .Builder<Service<TTS, TT2>>("BuildUpGeneric");
+    .RootArg<Guid>("serviceId")
+    .Bind().To<Dependency>()
+    .Builder<Service>("BuildUp");
 
 var composition = new Composition();
-var service = composition.BuildUpGeneric(new Service<Guid, string>());
-service.Id.ShouldNotBe(Guid.Empty);
-service.Dependency.ShouldBeOfType<Dependency<string>>();
 
-interface IDependency<T>;
+var id = Guid.NewGuid();
+var service = composition.BuildUp(new Service(), id);
+service.Id.ShouldBe(id);
+service.Dependency.ShouldBeOfType<Dependency>();
 
-class Dependency<T> : IDependency<T>;
+interface IDependency;
 
-interface IService<out T, T2>
+class Dependency : IDependency;
+
+interface IService
 {
-    T Id { get; }
+    Guid Id { get; }
 
-    IDependency<T2>? Dependency { get; }
+    IDependency? Dependency { get; }
 }
 
-record Service<T, T2>: IService<T, T2>
-    where T: struct
+record Service: IService
 {
-    public T Id { get; private set; } = default(T);
+    public Guid Id { get; private set; } = Guid.Empty;
 
+    // The Dependency attribute specifies to perform an injection
     [Dependency]
-    public IDependency<T2>? Dependency { get; set; }
+    public IDependency? Dependency { get; set; }
 
+    // The Dependency attribute specifies to perform an injection
     [Dependency]
-    public void SetId([Tag(Tag.Id)] T id) => Id = id;
+    public void SetId(Guid id) => Id = id;
 }
 ```
 
@@ -88,16 +92,14 @@ partial class Composition
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public Service<T1, T2> BuildUpGeneric<T1, T2>(Service<T1, T2> instance)
-    where T1: struct
+  public Service BuildUp(Service instance, Guid serviceId)
   {
     if (Object.ReferenceEquals(instance, null)) throw new ArgumentNullException(nameof(instance));
-    T1 transientTTS2 = (T1)(object)Guid.NewGuid();
-    Service<T1, T2> transientService0;
-    Service<T1, T2> localInstance54 = instance;
-    localInstance54.Dependency = new Dependency<T2>();
-    localInstance54.SetId(transientTTS2);
-    transientService0 = localInstance54;
+    Service transientService0;
+    Service localInstance48 = instance;
+    localInstance48.Dependency = new Dependency();
+    localInstance48.SetId(serviceId);
+    transientService0 = localInstance48;
     return transientService0;
   }
 
@@ -154,28 +156,33 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	DependencyᐸT2ᐳ --|> IDependencyᐸT2ᐳ
-	Composition ..> ServiceᐸT1ˏT2ᐳ : ServiceᐸT1ˏT2ᐳ BuildUpGenericᐸT1ˏT2ᐳ(Pure.DI.UsageTests.Basics.GenericBuilderScenario.Service<T1, T2> instance)
-	ServiceᐸT1ˏT2ᐳ o-- ServiceᐸT1ˏT2ᐳ : "2BuilderArgM01D25di"  Argument "instance"
-	ServiceᐸT1ˏT2ᐳ *--  DependencyᐸT2ᐳ : IDependencyᐸT2ᐳ
-	ServiceᐸT1ˏT2ᐳ *--  T1 : "Id"  T1
-	namespace Pure.DI.UsageTests.Basics.GenericBuilderScenario {
+	Dependency --|> IDependency
+	Composition ..> Service : Service BuildUp(Pure.DI.UsageTests.Basics.BuilderWithArgumentsScenario.Service instance, System.Guid serviceId)
+	Service o-- Service : "1BuilderArgM01D25di"  Argument "instance"
+	Service *--  Dependency : IDependency
+	Service o-- Guid : Argument "serviceId"
+	namespace Pure.DI.UsageTests.Basics.BuilderWithArgumentsScenario {
 		class Composition {
 		<<partial>>
-		+ServiceᐸT1ˏT2ᐳ BuildUpGenericᐸT1ˏT2ᐳ(Pure.DI.UsageTests.Basics.GenericBuilderScenario.Service<T1, T2> instance)
+		+Service BuildUp(Pure.DI.UsageTests.Basics.BuilderWithArgumentsScenario.Service instance, System.Guid serviceId)
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
 		}
-		class DependencyᐸT2ᐳ {
+		class Dependency {
 			+Dependency()
 		}
-		class IDependencyᐸT2ᐳ {
+		class IDependency {
 			<<interface>>
 		}
-		class ServiceᐸT1ˏT2ᐳ {
+		class Service {
 			<<record>>
+		}
+	}
+	namespace System {
+		class Guid {
+				<<struct>>
 		}
 	}
 ```

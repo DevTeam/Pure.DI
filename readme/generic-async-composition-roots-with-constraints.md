@@ -112,31 +112,31 @@ partial class Composition
     where T4: IDisposable
   {
     TaskFactory<IService<T4, bool>> perBlockTaskFactory2;
-    CancellationToken localCancellationToken75 = cancellationToken;
+    CancellationToken localCancellationToken74 = cancellationToken;
     TaskCreationOptions transientTaskCreationOptions3 = TaskCreationOptions.None;
-    TaskCreationOptions localTaskCreationOptions76 = transientTaskCreationOptions3;
+    TaskCreationOptions localTaskCreationOptions75 = transientTaskCreationOptions3;
     TaskContinuationOptions transientTaskContinuationOptions4 = TaskContinuationOptions.None;
-    TaskContinuationOptions localTaskContinuationOptions77 = transientTaskContinuationOptions4;
+    TaskContinuationOptions localTaskContinuationOptions76 = transientTaskContinuationOptions4;
     TaskScheduler transientTaskScheduler5 = TaskScheduler.Default;
-    TaskScheduler localTaskScheduler78 = transientTaskScheduler5;
-    perBlockTaskFactory2 = new TaskFactory<IService<T4, bool>>(localCancellationToken75, localTaskCreationOptions76, localTaskContinuationOptions77, localTaskScheduler78);
+    TaskScheduler localTaskScheduler77 = transientTaskScheduler5;
+    perBlockTaskFactory2 = new TaskFactory<IService<T4, bool>>(localCancellationToken74, localTaskCreationOptions75, localTaskContinuationOptions76, localTaskScheduler77);
     Func<IService<T4, bool>> perBlockFunc1 = new Func<IService<T4, bool>>(
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     () =>
     {
       OtherService<T4> transientOtherService6;
-      IDependency<T4> localDependency80 = new Dependency<T4>();
-      transientOtherService6 = new OtherService<T4>(localDependency80);
-      IService<T4, bool> localValue79 = transientOtherService6;
-      return localValue79;
+      IDependency<T4> localDependency79 = new Dependency<T4>();
+      transientOtherService6 = new OtherService<T4>(localDependency79);
+      IService<T4, bool> localValue78 = transientOtherService6;
+      return localValue78;
     });
     Task<IService<T4, bool>> transientTask0;
     // Injects an instance factory
-    Func<IService<T4, bool>> localFactory81 = perBlockFunc1;
+    Func<IService<T4, bool>> localFactory80 = perBlockFunc1;
     // Injects a task factory creating and scheduling task objects
-    TaskFactory<IService<T4, bool>> localTaskFactory82 = perBlockTaskFactory2;
+    TaskFactory<IService<T4, bool>> localTaskFactory81 = perBlockTaskFactory2;
     // Creates and starts a task using the instance factory
-    transientTask0 = localTaskFactory82.StartNew(localFactory81);
+    transientTask0 = localTaskFactory81.StartNew(localFactory80);
     return transientTask0;
   }
 
@@ -146,28 +146,28 @@ partial class Composition
     where T1: struct
   {
     TaskFactory<IService<T4, T1>> perBlockTaskFactory2;
-    CancellationToken localCancellationToken83 = cancellationToken;
+    CancellationToken localCancellationToken82 = cancellationToken;
     TaskCreationOptions transientTaskCreationOptions3 = TaskCreationOptions.None;
-    TaskCreationOptions localTaskCreationOptions84 = transientTaskCreationOptions3;
+    TaskCreationOptions localTaskCreationOptions83 = transientTaskCreationOptions3;
     TaskContinuationOptions transientTaskContinuationOptions4 = TaskContinuationOptions.None;
-    TaskContinuationOptions localTaskContinuationOptions85 = transientTaskContinuationOptions4;
+    TaskContinuationOptions localTaskContinuationOptions84 = transientTaskContinuationOptions4;
     TaskScheduler transientTaskScheduler5 = TaskScheduler.Default;
-    TaskScheduler localTaskScheduler86 = transientTaskScheduler5;
-    perBlockTaskFactory2 = new TaskFactory<IService<T4, T1>>(localCancellationToken83, localTaskCreationOptions84, localTaskContinuationOptions85, localTaskScheduler86);
+    TaskScheduler localTaskScheduler85 = transientTaskScheduler5;
+    perBlockTaskFactory2 = new TaskFactory<IService<T4, T1>>(localCancellationToken82, localTaskCreationOptions83, localTaskContinuationOptions84, localTaskScheduler85);
     Func<IService<T4, T1>> perBlockFunc1 = new Func<IService<T4, T1>>(
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     () =>
     {
-      IService<T4, T1> localValue87 = new Service<T4, T1>(new Dependency<T4>());
-      return localValue87;
+      IService<T4, T1> localValue86 = new Service<T4, T1>(new Dependency<T4>());
+      return localValue86;
     });
     Task<IService<T4, T1>> transientTask0;
     // Injects an instance factory
-    Func<IService<T4, T1>> localFactory88 = perBlockFunc1;
+    Func<IService<T4, T1>> localFactory87 = perBlockFunc1;
     // Injects a task factory creating and scheduling task objects
-    TaskFactory<IService<T4, T1>> localTaskFactory89 = perBlockTaskFactory2;
+    TaskFactory<IService<T4, T1>> localTaskFactory88 = perBlockTaskFactory2;
     // Creates and starts a task using the instance factory
-    transientTask0 = localTaskFactory89.StartNew(localFactory88);
+    transientTask0 = localTaskFactory88.StartNew(localFactory87);
     return transientTask0;
   }
 }

@@ -294,21 +294,22 @@ internal class ApiInvocationProcessor(
                         }
 
                         var builderRootSymbol = semantic.GetTypeSymbol<INamedTypeSymbol>(semanticModel, builderRootType);
-                        var builderArgTag = new MdTag(0, idGenerator.Generate() + Names.Salt);
-                        var builderTag = new MdTag(0, idGenerator.Generate() + Names.Salt);
+                        var id = idGenerator.Generate();
+                        var builderArgTag = new MdTag(0, id + "BuilderArg" + Names.Salt);
+                        var builderTag = new MdTag(0, id + "Builder" + Names.Salt);
                         
                         // RootArg
                         metadataVisitor.VisitContract(new MdContract(semanticModel, invocation, builderRootSymbol, ContractKind.Explicit, ImmutableArray.Create(builderArgTag)));
                         metadataVisitor.VisitArg(new MdArg(semanticModel, builderRootType, builderRootSymbol, "instance", ArgKind.Root, true, ["Instance for the build-up."]));
 
                         // Factory
-                        var str = new StringBuilder();
-                        str.AppendLine("(Pure.DI.IContext ctx) => {");
-                        str.AppendLine($"ctx.Inject({builderArgTag.Value.ValueToString()}, out {symbolNames.GetName(builderRootSymbol)} instance);");
-                        str.AppendLine("ctx.BuildUp(instance);");
-                        str.AppendLine("return instance;");
-                        str.AppendLine("}");
-                        var builderLambdaExpression = (LambdaExpressionSyntax)SyntaxFactory.ParseExpression(str.ToString());
+                        var factory = new StringBuilder();
+                        factory.AppendLine("(Pure.DI.IContext ctx) => {");
+                        factory.AppendLine($"ctx.Inject({builderArgTag.Value.ValueToString()}, out {symbolNames.GetName(builderRootSymbol)} instance);");
+                        factory.AppendLine("ctx.BuildUp(instance);");
+                        factory.AppendLine("return instance;");
+                        factory.AppendLine("}");
+                        var builderLambdaExpression = (LambdaExpressionSyntax)SyntaxFactory.ParseExpression(factory.ToString());
 
                         metadataVisitor.VisitContract(new MdContract(semanticModel, invocation, builderRootSymbol, ContractKind.Explicit, ImmutableArray.Create(builderTag)));
                         VisitFactory(metadataVisitor, semanticModel, builderRootSymbol, builderLambdaExpression, true);

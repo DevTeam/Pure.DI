@@ -11,6 +11,7 @@ Sometimes it is necessary to pass some state to the composition to use it when r
 ```c#
 using Shouldly;
 using Pure.DI;
+using static Tag;
 
 DI.Setup(nameof(Composition))
     // This hint indicates to not generate methods such as Resolve
@@ -120,6 +121,8 @@ partial class Composition
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public IService CreateServiceWithArgs(int id, string dependencyName, string serviceName)
   {
+    if (Object.ReferenceEquals(dependencyName, null)) throw new ArgumentNullException(nameof(dependencyName));
+    if (Object.ReferenceEquals(serviceName, null)) throw new ArgumentNullException(nameof(serviceName));
     return new Service(serviceName, new Dependency(id, dependencyName));
   }
 }

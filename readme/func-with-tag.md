@@ -93,8 +93,8 @@ partial class Composition
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        IDependency localValue61 = new Dependency();
-        return localValue61;
+        IDependency localValue60 = new Dependency();
+        return localValue60;
       });
       return new Service(perBlockFunc1);
     }

@@ -54,7 +54,11 @@ internal class CompositionBuilder(
             var processedRoot = root with
             {
                 Lines = ctx.Code.Lines.ToImmutableArray(),
-                Args = args.GetArgsOfKind(ArgKind.Root).ToImmutableArray()
+                Args = args
+                    .GetArgsOfKind(ArgKind.Root)
+                    .OrderBy(i => !(i.Node.Arg?.Source.IsBuildUpInstance ?? false))
+                    .ThenBy(i => i.Node.Binding.Id)
+                    .ToImmutableArray()
             };
 
             foreach (var rootArg in args)

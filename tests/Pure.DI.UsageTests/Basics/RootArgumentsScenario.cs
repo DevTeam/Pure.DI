@@ -23,6 +23,7 @@ using static Tag;
 
 // {
 //# using Pure.DI;
+//# using static Tag;
 // }
 
 public class Scenario

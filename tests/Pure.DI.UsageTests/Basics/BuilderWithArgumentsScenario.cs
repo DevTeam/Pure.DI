@@ -1,8 +1,8 @@
 ﻿/*
 $v=true
 $p=9
-$d=Builders
-$h=Sometimes you need to build up an existing composition root and inject all of its dependencies, in which case the `Builder` method will be useful, as in the example below:
+$d=Builders with arguments
+$h=Builders can be used with arguments as in the example below:
 $r=Shouldly
 */
 
@@ -11,7 +11,7 @@ $r=Shouldly
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable ArrangeTypeModifiers
 
-namespace Pure.DI.UsageTests.Basics.BuilderScenario;
+namespace Pure.DI.UsageTests.Basics.BuilderWithArgumentsScenario;
 
 using Shouldly;
 using Xunit;
@@ -27,14 +27,15 @@ public class Scenario
     {
 // {
         DI.Setup(nameof(Composition))
-            .Bind().To(_ => Guid.NewGuid())
+            .RootArg<Guid>("serviceId")
             .Bind().To<Dependency>()
             .Builder<Service>("BuildUp");
 
         var composition = new Composition();
-        
-        var service = composition.BuildUp(new Service());
-        service.Id.ShouldNotBe(Guid.Empty);
+
+        var id = Guid.NewGuid();
+        var service = composition.BuildUp(new Service(), id);
+        service.Id.ShouldBe(id);
         service.Dependency.ShouldBeOfType<Dependency>();
 // }
         composition.SaveClassDiagram();
