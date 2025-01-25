@@ -1,11 +1,14 @@
 using System;
 using Pure.DI;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI.Table;
 #pragma warning disable CS8618
 #pragma warning disable CS0649
 
 public class Clock : MonoBehaviour
 {
+    const float HoursToDegrees = -30f, MinutesToDegrees = -6f, SecondsToDegrees = -6f;
+
     [SerializeField]
     private Transform hoursPivot;
     
@@ -16,7 +19,7 @@ public class Clock : MonoBehaviour
     private Transform secondsPivot;
 
     [Dependency]
-    public IClockViewModel ClockViewModel { private get; set; }
+    public IClockService ClockService { private get; set; }
 
     void Start()
     {
@@ -26,9 +29,9 @@ public class Clock : MonoBehaviour
 
     void Update()
     {
-        ClockViewModel.Update();
-        hoursPivot.localRotation = ClockViewModel.HoursRotation;
-        minutesPivot.localRotation = ClockViewModel.MinutesRotation;
-        secondsPivot.localRotation = ClockViewModel.SecondsRotation;
+        var now = ClockService.Now.TimeOfDay;
+        hoursPivot.localRotation = Quaternion.Euler(0f, 0f, HoursToDegrees * (float)now.TotalHours);
+        minutesPivot.localRotation = Quaternion.Euler(0f, 0f, MinutesToDegrees * (float)now.TotalMinutes);
+        secondsPivot.localRotation = Quaternion.Euler(0f, 0f, SecondsToDegrees * (float)now.TotalSeconds);
     }
 }
