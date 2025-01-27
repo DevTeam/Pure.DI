@@ -31,11 +31,11 @@ public class Scenario
         DI.Setup(nameof(Composition))
             .Bind().To(_ => Guid.NewGuid())
             .Bind().To<Dependency>()
-            .Builder<Service>("BuildUp");
+            .Builder<Service>("BuildUpService");
 
         var composition = new Composition();
         
-        var service = composition.BuildUp(new Service());
+        var service = composition.BuildUpService(new Service());
         service.Id.ShouldNotBe(Guid.Empty);
         service.Dependency.ShouldBeOfType<Dependency>();
 // }
@@ -63,7 +63,6 @@ record Service: IService
     [Dependency]
     public IDependency? Dependency { get; set; }
 
-    // The Dependency attribute specifies to perform an injection
     [Dependency]
     public void SetId(Guid id) => Id = id;
 }

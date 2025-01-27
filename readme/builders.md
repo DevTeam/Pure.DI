@@ -12,11 +12,11 @@ using Pure.DI;
 DI.Setup(nameof(Composition))
     .Bind().To(_ => Guid.NewGuid())
     .Bind().To<Dependency>()
-    .Builder<Service>("BuildUp");
+    .Builder<Service>("BuildUpService");
 
 var composition = new Composition();
         
-var service = composition.BuildUp(new Service());
+var service = composition.BuildUpService(new Service());
 service.Id.ShouldNotBe(Guid.Empty);
 service.Dependency.ShouldBeOfType<Dependency>();
 
@@ -39,7 +39,6 @@ record Service: IService
     [Dependency]
     public IDependency? Dependency { get; set; }
 
-    // The Dependency attribute specifies to perform an injection
     [Dependency]
     public void SetId(Guid id) => Id = id;
 }
@@ -93,7 +92,7 @@ partial class Composition
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public Service BuildUp(Service buildingInstance)
+  public Service BuildUpService(Service buildingInstance)
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
     Guid transientGuid2 = Guid.NewGuid();
@@ -159,13 +158,13 @@ Class diagram:
 ---
 classDiagram
 	Dependency --|> IDependency
-	Composition ..> Service : Service BuildUp(Pure.DI.UsageTests.Basics.BuilderScenario.Service buildingInstance)
+	Composition ..> Service : Service BuildUpService(Pure.DI.UsageTests.Basics.BuilderScenario.Service buildingInstance)
 	Service *--  Dependency : IDependency
 	Service *--  Guid : Guid
 	namespace Pure.DI.UsageTests.Basics.BuilderScenario {
 		class Composition {
 		<<partial>>
-		+Service BuildUp(Pure.DI.UsageTests.Basics.BuilderScenario.Service buildingInstance)
+		+Service BuildUpService(Pure.DI.UsageTests.Basics.BuilderScenario.Service buildingInstance)
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
 		+ object Resolve(Type type)
