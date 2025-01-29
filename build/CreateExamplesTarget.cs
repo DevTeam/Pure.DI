@@ -12,6 +12,7 @@ internal class CreateExamplesTarget(
     private const string TitleKey = "t";
     private const string PriorityKey = "p";
     public const string DescriptionKey = "d";
+    public const string IntegrationTestKey = "i";
     public const string HeaderKey = "h";
     public const string FooterKey = "f";
     public const string SourceKey = "s";
@@ -27,7 +28,8 @@ internal class CreateExamplesTarget(
         "Attributes",
         "Interception",
         "Hints",
-        "Advanced"
+        "Advanced",
+        "Unity"
     ];
 
     private static readonly char[] Separator = ['='];
@@ -77,10 +79,11 @@ internal class CreateExamplesTarget(
             Part? part = null;
             var vars = new Dictionary<string, string>
             {
-                [VisibleKey] = "False",
+                [VisibleKey] = "false",
                 [TitleKey] = Path.GetDirectoryName(Path.GetRelativePath(testsDir, file)) ?? "",
                 [PriorityKey] = string.Empty,
                 [DescriptionKey] = string.Empty,
+                [IntegrationTestKey] = "true",
                 [HeaderKey] = string.Empty,
                 [FooterKey] = string.Empty,
                 [SourceKey] = relativePath,

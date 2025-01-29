@@ -313,6 +313,8 @@ dotnet run
 - [Exposed generic roots](readme/exposed-generic-roots.md)
 - [Exposed generic roots with args](readme/exposed-generic-roots-with-args.md)
 - [DI tracing via serilog](readme/di-tracing-via-serilog.md)
+### Unity
+- [Basic Unity use case](readme/basic-unity-use-case.md)
 ### Applications
 - Console
   - [Schrödinger's cat](readme/Console.md)

@@ -35,14 +35,21 @@ internal class TestExamplesTarget(
             {
                 foreach (var vars in groupExamples)
                 {
+                    if (!HasIntegrationTest(vars))
+                    {
+                        continue;
+                    }
+
                     var description = vars[CreateExamplesTarget.DescriptionKey];
                     var code = vars[CreateExamplesTarget.BodyKey];
                     await File.WriteAllTextAsync(programFile, code, cancellationToken);
                     var result = new DotNetBuild()
+                        .WithShortName(description)
                         .WithProject(Path.Combine(appDir, "App.csproj"))
                         .WithWorkingDirectory(solutionDir)
                         .WithProps(("SolutionDir", solutionDir))
                         .Build();
+
                     if (result.ExitCode != 0)
                     {
                         WriteLine($"Test \"{description}\"", Color.Header);
@@ -64,4 +71,8 @@ internal class TestExamplesTarget(
 
         return 0;
     }
+
+    private static bool HasIntegrationTest(Example example) =>
+        !example.TryGetValue(CreateExamplesTarget.IntegrationTestKey, out var integrationTestStr) 
+        || (bool.TryParse(integrationTestStr, out var integrationTest) && integrationTest);
 }
