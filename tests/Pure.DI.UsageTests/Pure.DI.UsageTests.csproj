@@ -16,6 +16,7 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Update="Microsoft.Extensions.DependencyInjection" Version="9.0.1" />
+        <PackageReference Update="Shouldly" Version="4.3.0" />
     </ItemGroup>
 
 </Project>
