@@ -278,13 +278,36 @@ internal class ApiInvocationProcessor(
                         VisitArg(metadataVisitor, semanticModel, ArgKind.Root, invocation, genericName, invocationComments);
                         break;
 
-                    case nameof(IConfiguration.Root):
-                        if (genericName.TypeArgumentList.Arguments is not [{ } rootType])
+                    case nameof(IConfiguration.Roots):
+                        if (genericName.TypeArgumentList.Arguments is not [{ } rootsTypeSyntax]
+                            || semantic.TryGetTypeSymbol<ITypeSymbol>(semanticModel, rootsTypeSyntax) is not {} rootsType)
                         {
                             return;
                         }
 
-                        var rootSymbol = semantic.GetTypeSymbol<INamedTypeSymbol>(semanticModel, rootType);
+                        var rootsArgs = arguments.GetArgs(invocation.ArgumentList, "kind");
+                        var kind = rootsArgs[0] is { } kindArg ? semantic.GetConstantValue<RootKinds>(semanticModel, kindArg.Expression) : RootKinds.Default;
+                        var rootTypes = semanticModel
+                            .LookupNamespacesAndTypes(invocation.Span.Start)
+                            .OfType<INamedTypeSymbol>()
+                            .Where(i => !i.IsAbstract && !i.IsUnboundGenericType)
+                            .Where(type => baseSymbolsProvider.GetBaseSymbols(type, (_, _) => true).Any(typeSymbol => SymbolEqualityComparer.Default.Equals(rootsType, typeSymbol)))
+                            .ToList();
+
+                        foreach (var rootType in rootTypes)
+                        {
+                            metadataVisitor.VisitRoot(new MdRoot(invocation, semanticModel, rootType, "", new MdTag(0, null), kind, invocationComments, false));
+                        }
+
+                        break;
+
+                    case nameof(IConfiguration.Root):
+                        if (genericName.TypeArgumentList.Arguments is not [{ } rootTypeSyntax])
+                        {
+                            return;
+                        }
+
+                        var rootSymbol = semantic.GetTypeSymbol<INamedTypeSymbol>(semanticModel, rootTypeSyntax);
                         VisitRoot(metadataVisitor, semanticModel, invocation, invocationComments, rootSymbol);
                         break;
                     

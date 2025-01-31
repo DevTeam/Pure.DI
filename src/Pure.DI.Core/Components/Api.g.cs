@@ -2048,9 +2048,24 @@ namespace Pure.DI
         /// </summary>
         /// <param name="name">Specifies the unique name of the root of the composition. If the value is empty, a private root will be created, which can be used when calling <c>Resolve</c> methods.</param>
         /// <param name="tag">Optional argument specifying the tag for the root of the Composition.</param>
+        /// <param name="kind">The Optional argument specifying the kind for the root of the Composition.</param>
         /// <typeparam name="T">The Composition root type.</typeparam>
         /// <returns>Reference to the setup continuation chain.</returns>
         IConfiguration Root<T>(string name = "", object tag = null, RootKinds kind = RootKinds.Default);
+
+        /// <summary>
+        /// Specifying the roots of the Composition.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Roots&lt;IService&gt;();
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <param name="kind">The Optional argument specifying the kind for the root of the Composition.</param>
+        /// <typeparam name="T">The Composition root base type.</typeparam>
+        /// <returns>Reference to the setup continuation chain.</returns>
+        IConfiguration Roots<T>(RootKinds kind = RootKinds.Default);
 
         /// <summary>
         /// Specifies the method of the composition builder. The first argument to the method will always be the instance to be built. The remaining arguments to this method will be listed in the order in which they are defined in the setup.Specifies to create a composition builder method. The first argument to the method will always be the instance to be built. The remaining arguments to this method will be listed in the order in which they are defined in the setup.
@@ -2062,6 +2077,7 @@ namespace Pure.DI
         /// </example>
         /// </summary>
         /// <param name="name">Specifies the unique name of the builder. The default name is "BuildUp".</param>
+        /// <param name="kind">The Optional argument specifying the kind for the root of the Composition.</param>
         /// <typeparam name="T">The Composition root type.</typeparam>
         /// <returns>Reference to the setup continuation chain.</returns>
         IConfiguration Builder<T>(string name = "BuildUp", RootKinds kind = RootKinds.Default);
@@ -2076,6 +2092,7 @@ namespace Pure.DI
         /// </example>
         /// </summary>
         /// <param name="name">Specifies the unique name of the builders. The default name is "BuildUp".</param>
+        /// <param name="kind">The Optional argument specifying the kind for the root of the Composition.</param>
         /// <typeparam name="T">The Composition root base type.</typeparam>
         /// <returns>Reference to the setup continuation chain.</returns>
         IConfiguration Builders<T>(string name = "BuildUp", RootKinds kind = RootKinds.Default);
@@ -2945,8 +2962,15 @@ namespace Pure.DI
                 return Configuration.Shared;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Root<T>(string name, object tag, RootKinds rootKind)
+            {
+                return Configuration.Shared;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration Roots<T>(RootKinds kind = RootKinds.Default)
             {
                 return Configuration.Shared;
             }
