@@ -2051,7 +2051,7 @@ namespace Pure.DI
         /// <typeparam name="T">The Composition root type.</typeparam>
         /// <returns>Reference to the setup continuation chain.</returns>
         IConfiguration Root<T>(string name = "", object tag = null, RootKinds kind = RootKinds.Default);
-        
+
         /// <summary>
         /// Specifies the method of the composition builder. The first argument to the method will always be the instance to be built. The remaining arguments to this method will be listed in the order in which they are defined in the setup.Specifies to create a composition builder method. The first argument to the method will always be the instance to be built. The remaining arguments to this method will be listed in the order in which they are defined in the setup.
         /// <example>
@@ -2065,6 +2065,20 @@ namespace Pure.DI
         /// <typeparam name="T">The Composition root type.</typeparam>
         /// <returns>Reference to the setup continuation chain.</returns>
         IConfiguration Builder<T>(string name = "BuildUp", RootKinds kind = RootKinds.Default);
+        
+        /// <summary>
+        /// Specifies the methods of the composition builders. The first argument to the method will always be the instance to be built. The remaining arguments to this method will be listed in the order in which they are defined in the setup.Specifies to create a composition builder method. The first argument to the method will always be the instance to be built. The remaining arguments to this method will be listed in the order in which they are defined in the setup.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Builder&lt;Service&gt;("BuildUpMyService");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <param name="name">Specifies the unique name of the builders. The default name is "BuildUp".</param>
+        /// <typeparam name="T">The Composition root base type.</typeparam>
+        /// <returns>Reference to the setup continuation chain.</returns>
+        IConfiguration Builders<T>(string name = "BuildUp", RootKinds kind = RootKinds.Default);
 
         /// <summary>
         /// Defines a hint for fine-tuning code generation.
@@ -2939,6 +2953,12 @@ namespace Pure.DI
 
             /// <inheritdoc />
             public IConfiguration Builder<T>(string name = "BuildUp", RootKinds kind = RootKinds.Default)
+            {
+                return Configuration.Shared;
+            }
+            
+            /// <inheritdoc />
+            public IConfiguration Builders<T>(string name = "BuildUp", RootKinds kind = RootKinds.Default)
             {
                 return Configuration.Shared;
             }
