@@ -1,8 +1,8 @@
 #### Builders
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/BuilderScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/BuildersScenario.cs)
 
-Sometimes you need to build up an existing composition root and inject all of its dependencies, in which case the `Builder` method will be useful, as in the example below:
+Sometimes you need builders for all types inherited from <see cref=“T”/> available at compile time at the point where the method is called.
 
 
 ```c#
@@ -12,13 +12,19 @@ using Pure.DI;
 DI.Setup(nameof(Composition))
     .Bind().To(_ => Guid.NewGuid())
     .Bind().To<Dependency>()
-    .Builder<Service>("BuildUpService");
+    // Creates a builder for each type inherited from IService.
+    // These types must be available at this point in the code.
+    .Builders<IService>("BuildUp");
 
 var composition = new Composition();
         
-var service = composition.BuildUpService(new Service());
-service.Id.ShouldNotBe(Guid.Empty);
-service.Dependency.ShouldBeOfType<Dependency>();
+var service1 = composition.BuildUp(new Service1());
+service1.Id.ShouldNotBe(Guid.Empty);
+service1.Dependency.ShouldBeOfType<Dependency>();
+
+var service2 = composition.BuildUp(new Service2());
+service2.Id.ShouldBe(Guid.Empty);
+service2.Dependency.ShouldBeOfType<Dependency>();
 
 interface IDependency;
 
@@ -31,7 +37,7 @@ interface IService
     IDependency? Dependency { get; }
 }
 
-record Service: IService
+record Service1: IService
 {
     public Guid Id { get; private set; } = Guid.Empty;
 
@@ -41,6 +47,14 @@ record Service: IService
 
     [Dependency]
     public void SetId(Guid id) => Id = id;
+}
+
+record Service2 : IService
+{
+    public Guid Id => Guid.Empty;
+
+    [Dependency]
+    public IDependency? Dependency { get; set; }
 }
 ```
 
@@ -92,16 +106,27 @@ partial class Composition
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public Service BuildUpService(Service buildingInstance)
+  public Service1 BuildUp(Service1 buildingInstance)
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
     Guid transientGuid2 = Guid.NewGuid();
-    Service transientService0;
-    Service localBuildingInstance47 = buildingInstance;
-    localBuildingInstance47.Dependency = new Dependency();
-    localBuildingInstance47.SetId(transientGuid2);
-    transientService0 = localBuildingInstance47;
-    return transientService0;
+    Service1 transientService10;
+    Service1 localBuildingInstance49 = buildingInstance;
+    localBuildingInstance49.Dependency = new Dependency();
+    localBuildingInstance49.SetId(transientGuid2);
+    transientService10 = localBuildingInstance49;
+    return transientService10;
+  }
+
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public Service2 BuildUp(Service2 buildingInstance)
+  {
+    if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
+    Service2 transientService20;
+    Service2 localBuildingInstance48 = buildingInstance;
+    localBuildingInstance48.Dependency = new Dependency();
+    transientService20 = localBuildingInstance48;
+    return transientService20;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -158,13 +183,16 @@ Class diagram:
 ---
 classDiagram
 	Dependency --|> IDependency
-	Composition ..> Service : Service BuildUpService(Pure.DI.UsageTests.Basics.BuilderScenario.Service buildingInstance)
-	Service *--  Dependency : IDependency
-	Service *--  Guid : Guid
-	namespace Pure.DI.UsageTests.Basics.BuilderScenario {
+	Composition ..> Service2 : Service2 BuildUp(Pure.DI.UsageTests.Basics.BuildersScenario.Service2 buildingInstance)
+	Composition ..> Service1 : Service1 BuildUp(Pure.DI.UsageTests.Basics.BuildersScenario.Service1 buildingInstance)
+	Service2 *--  Dependency : IDependency
+	Service1 *--  Dependency : IDependency
+	Service1 *--  Guid : Guid
+	namespace Pure.DI.UsageTests.Basics.BuildersScenario {
 		class Composition {
 		<<partial>>
-		+Service BuildUpService(Pure.DI.UsageTests.Basics.BuilderScenario.Service buildingInstance)
+		+Service1 BuildUp(Pure.DI.UsageTests.Basics.BuildersScenario.Service1 buildingInstance)
+		+Service2 BuildUp(Pure.DI.UsageTests.Basics.BuildersScenario.Service2 buildingInstance)
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
 		+ object Resolve(Type type)
@@ -176,7 +204,10 @@ classDiagram
 		class IDependency {
 			<<interface>>
 		}
-		class Service {
+		class Service1 {
+			<<record>>
+		}
+		class Service2 {
 			<<record>>
 		}
 	}

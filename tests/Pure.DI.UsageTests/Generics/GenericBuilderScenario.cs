@@ -1,7 +1,7 @@
 ﻿/*
 $v=true
 $p=9
-$d=Generic builders
+$d=Generic builder
 $r=Shouldly
 */
 

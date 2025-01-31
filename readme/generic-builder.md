@@ -1,8 +1,6 @@
-#### Builders with arguments
+#### Generic builder
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/BuilderWithArgumentsScenario.cs)
-
-Builders can be used with arguments as in the example below:
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Generics/GenericBuilderScenario.cs)
 
 
 ```c#
@@ -10,38 +8,37 @@ using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .RootArg<Guid>("serviceId")
-    .Bind().To<Dependency>()
-    .Builder<Service>("BuildUpService");
+    .Bind(Tag.Id).To<TT>(_ => (TT)(object)Guid.NewGuid())
+    .Bind().To<Dependency<TT>>()
+    // Generic service builder
+    .Builder<Service<TTS, TT2>>("BuildUpGeneric");
 
 var composition = new Composition();
+var service = composition.BuildUpGeneric(new Service<Guid, string>());
+service.Id.ShouldNotBe(Guid.Empty);
+service.Dependency.ShouldBeOfType<Dependency<string>>();
 
-var id = Guid.NewGuid();
-var service = composition.BuildUpService(new Service(), id);
-service.Id.ShouldBe(id);
-service.Dependency.ShouldBeOfType<Dependency>();
+interface IDependency<T>;
 
-interface IDependency;
+class Dependency<T> : IDependency<T>;
 
-class Dependency : IDependency;
-
-interface IService
+interface IService<out T, T2>
 {
-    Guid Id { get; }
+    T Id { get; }
 
-    IDependency? Dependency { get; }
+    IDependency<T2>? Dependency { get; }
 }
 
-record Service: IService
+record Service<T, T2>: IService<T, T2>
+    where T: struct
 {
-    public Guid Id { get; private set; } = Guid.Empty;
-
-    // The Dependency attribute specifies to perform an injection
-    [Dependency]
-    public IDependency? Dependency { get; set; }
+    public T Id { get; private set; }
 
     [Dependency]
-    public void SetId(Guid id) => Id = id;
+    public IDependency<T2>? Dependency { get; set; }
+
+    [Dependency]
+    public void SetId([Tag(Tag.Id)] T id) => Id = id;
 }
 ```
 
@@ -72,8 +69,6 @@ dotnet run
 
 </details>
 
-The default builder method name is `BuildUp`. The first argument to this method will always be the instance to be built. The remaining arguments of this method will be listed in the order in which they are defined in the setup.
-
 The following partial class will be generated:
 
 ```c#
@@ -93,14 +88,16 @@ partial class Composition
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public Service BuildUpService(Service buildingInstance, Guid serviceId)
+  public Service<T1, T2> BuildUpGeneric<T1, T2>(Service<T1, T2> buildingInstance)
+    where T1: struct
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    Service transientService0;
-    Service localBuildingInstance48 = buildingInstance;
-    localBuildingInstance48.Dependency = new Dependency();
-    localBuildingInstance48.SetId(serviceId);
-    transientService0 = localBuildingInstance48;
+    T1 transientTTS2 = (T1)(object)Guid.NewGuid();
+    Service<T1, T2> transientService0;
+    Service<T1, T2> localBuildingInstance58 = buildingInstance;
+    localBuildingInstance58.Dependency = new Dependency<T2>();
+    localBuildingInstance58.SetId(transientTTS2);
+    transientService0 = localBuildingInstance58;
     return transientService0;
   }
 
@@ -157,32 +154,27 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Composition ..> Service : Service BuildUpService(Pure.DI.UsageTests.Basics.BuilderWithArgumentsScenario.Service buildingInstance, System.Guid serviceId)
-	Service *--  Dependency : IDependency
-	Service o-- Guid : Argument "serviceId"
-	namespace Pure.DI.UsageTests.Basics.BuilderWithArgumentsScenario {
+	DependencyᐸT2ᐳ --|> IDependencyᐸT2ᐳ
+	Composition ..> ServiceᐸT1ˏT2ᐳ : ServiceᐸT1ˏT2ᐳ BuildUpGenericᐸT1ˏT2ᐳ(Pure.DI.UsageTests.Basics.GenericBuilderScenario.Service<T1, T2> buildingInstance)
+	ServiceᐸT1ˏT2ᐳ *--  DependencyᐸT2ᐳ : IDependencyᐸT2ᐳ
+	ServiceᐸT1ˏT2ᐳ *--  T1 : "Id"  T1
+	namespace Pure.DI.UsageTests.Basics.GenericBuilderScenario {
 		class Composition {
 		<<partial>>
-		+Service BuildUpService(Pure.DI.UsageTests.Basics.BuilderWithArgumentsScenario.Service buildingInstance, System.Guid serviceId)
+		+ServiceᐸT1ˏT2ᐳ BuildUpGenericᐸT1ˏT2ᐳ(Pure.DI.UsageTests.Basics.GenericBuilderScenario.Service<T1, T2> buildingInstance)
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
 		}
-		class Dependency {
+		class DependencyᐸT2ᐳ {
 			+Dependency()
 		}
-		class IDependency {
+		class IDependencyᐸT2ᐳ {
 			<<interface>>
 		}
-		class Service {
+		class ServiceᐸT1ˏT2ᐳ {
 			<<record>>
-		}
-	}
-	namespace System {
-		class Guid {
-				<<struct>>
 		}
 	}
 ```

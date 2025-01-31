@@ -660,7 +660,7 @@ namespace Pure.DI
         OnCannotResolveLifetimeWildcard,
         
         /// <summary>
-        /// <c>On</c> or <c>Off</c>. Determines whether to use a static partial <c>OnNewRoot&lt;T&gt;(...)</c> method to handle the new Composition root registration event. <c>Off</c> by default.
+        /// <c>On</c> or <c>Off</c>. Determines whether to use a static partial <c>OnNewRoot&lt;T&gt;(...)</c> method to handle the new composition root registration event. <c>Off</c> by default.
         /// <example>
         /// <code>
         /// // OnNewRoot = On
@@ -680,7 +680,7 @@ namespace Pure.DI
         OnNewRoot,
         
         /// <summary>
-        /// <c>On</c> or <c>Off</c>. Determines whether to generate a static partial <c>OnNewRoot&lt;T&gt;(...)</c> method when the <c>OnNewRoot</c> hint is <c>On</c> to handle the new Composition root registration event. <c>On</c> by default.
+        /// <c>On</c> or <c>Off</c>. Determines whether to generate a static partial <c>OnNewRoot&lt;T&gt;(...)</c> method when the <c>OnNewRoot</c> hint is <c>On</c> to handle the new composition root registration event. <c>On</c> by default.
         /// <example>
         /// <code>
         /// // OnNewRootPartial = On
@@ -720,7 +720,7 @@ namespace Pure.DI
         ToString,
         
         /// <summary>
-        /// <c>On</c> or <c>Off</c>. This hint determines whether object Composition will be created in a thread-safe manner. <c>On</c> by default. 
+        /// <c>On</c> or <c>Off</c>. This hint determines whether object composition will be created in a thread-safe manner. <c>On</c> by default.
         /// <example>
         /// <code>
         /// // ThreadSafe = Off
@@ -1879,8 +1879,31 @@ namespace Pure.DI
         /// </example>
         /// </summary>
         /// <typeparam name="T">The type of dependency to be bound.</typeparam>
-        /// <param name="name">Specifies the unique name of the root of the composition. If the value is empty, a private root will be created, which can be used when calling <c>Resolve</c> methods.</param>
-        /// <param name="kind">The Optional argument specifying the kind for the root of the Composition.</param>
+        /// <param name="name">
+        /// Specifies the name of the root of the composition. If the value is empty, a private root will be created, which can be used when calling <c>Resolve</c> methods.
+        /// <para>
+        /// The name supports templating:
+        /// <list type="table">
+        /// <listheader>
+        /// <term>Template</term>
+        /// <description>Description</description>
+        /// </listheader>
+        /// <item>
+        /// <term>{type}</term>
+        /// <description>Will be replaced by the short name of the root type without its namespaces.</description>
+        /// </item>
+        /// <item>
+        /// <term>{TYPE}</term>
+        /// <description>Will be replaced with the full name of the root type.</description>
+        /// </item>
+        /// <item>
+        /// <term>{tag}</term>
+        /// <description>Will be replaced with the first tag name.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </param>
+        /// <param name="kind">The optional argument specifying the kind for the root of the composition.</param>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding. If is is not empty, the first tag is used for the root.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="To{T}()"/>
@@ -2000,7 +2023,7 @@ namespace Pure.DI
         /// </example>
         /// </summary>
         /// <param name="lifetime">The default lifetime.</param>
-        /// <param name="tags">Optional argument specifying the binding tags for which it will set the default lifetime. If not specified, the default lifetime will be set for any tags.</param>
+        /// <param name="tags">The optional argument specifying the binding tags for which it will set the default lifetime. If not specified, the default lifetime will be set for any tags.</param>
         /// <typeparam name="T">The default lifetime will be applied to bindings if the implementation class can be cast to type <typeparamref name="T"/>.</typeparam>
         /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="Lifetime"/>
@@ -2016,7 +2039,30 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <param name="name">The argument name.</param>
+        /// <param name="name">
+        /// The argument name.
+        /// <para>
+        /// The name supports templating:
+        /// <list type="table">
+        /// <listheader>
+        /// <term>Template</term>
+        /// <description>Description</description>
+        /// </listheader>
+        /// <item>
+        /// <term>{type}</term>
+        /// <description>Will be replaced by the short name of the argument type without its namespaces.</description>
+        /// </item>
+        /// <item>
+        /// <term>{TYPE}</term>
+        /// <description>Will be replaced with the full name of the argument type.</description>
+        /// </item>
+        /// <item>
+        /// <term>{tag}</term>
+        /// <description>Will be replaced with the first tag name.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </param>
         /// <param name="tags">The optional argument that specifies the tags for the argument.</param>
         /// <typeparam name="T">The argument type.</typeparam>
         /// <returns>Reference to the setup continuation chain.</returns>
@@ -2031,27 +2077,120 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <param name="name">The argument name.</param>
+        /// <param name="name">
+        /// The argument name.
+        /// <para>
+        /// The name supports templating:
+        /// <list type="table">
+        /// <listheader>
+        /// <term>Template</term>
+        /// <description>Description</description>
+        /// </listheader>
+        /// <item>
+        /// <term>{type}</term>
+        /// <description>Will be replaced by the short name of the argument type without its namespaces.</description>
+        /// </item>
+        /// <item>
+        /// <term>{TYPE}</term>
+        /// <description>Will be replaced with the full name of the argument type.</description>
+        /// </item>
+        /// <item>
+        /// <term>{tag}</term>
+        /// <description>Will be replaced with the first tag name.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </param>
         /// <param name="tags">The optional argument that specifies the tags for the argument.</param>
         /// <typeparam name="T">The argument type.</typeparam>
         /// <returns>Reference to the setup continuation chain.</returns>
         IConfiguration RootArg<T>(string name, params object[] tags);
         
         /// <summary>
-        /// Specifying the root of the Composition.
+        /// Specifying the root of the composition.
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
         ///     .Root&lt;Service&gt;("MyService");
         /// </code>
         /// </example>
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Root&lt;Service&gt;("My{type}");
+        /// </code>
+        /// </example>
         /// </summary>
-        /// <param name="name">Specifies the unique name of the root of the composition. If the value is empty, a private root will be created, which can be used when calling <c>Resolve</c> methods.</param>
-        /// <param name="tag">Optional argument specifying the tag for the root of the Composition.</param>
-        /// <typeparam name="T">The Composition root type.</typeparam>
+        /// <param name="name">
+        /// Specifies the name of the root of the composition. If the value is empty, a private root will be created, which can be used when calling <c>Resolve</c> methods.
+        /// <para>
+        /// The name supports templating:
+        /// <list type="table">
+        /// <listheader>
+        /// <term>Template</term>
+        /// <description>Description</description>
+        /// </listheader>
+        /// <item>
+        /// <term>{type}</term>
+        /// <description>Will be replaced by the short name of the root type without its namespaces.</description>
+        /// </item>
+        /// <item>
+        /// <term>{TYPE}</term>
+        /// <description>Will be replaced with the full name of the root type.</description>
+        /// </item>
+        /// <item>
+        /// <term>{tag}</term>
+        /// <description>Will be replaced with the root tag name.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </param>
+        /// <param name="tag">The optional argument specifying the tag for the root of the composition.</param>
+        /// <param name="kind">The optional argument specifying the kind for the root of the composition.</param>
+        /// <typeparam name="T">The composition root type.</typeparam>
         /// <returns>Reference to the setup continuation chain.</returns>
         IConfiguration Root<T>(string name = "", object tag = null, RootKinds kind = RootKinds.Default);
-        
+
+        /// <summary>
+        /// Specifies to define composition roots for all types inherited from <see cref="T"/> available at compile time at the point where the method is called.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Roots&lt;IService&gt;();
+        /// </code>
+        /// </example>
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Roots&lt;IService&gt;("Root{type}");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <param name="name">
+        /// Specifies the name of the roots of the composition. If the value is empty, private roots will be created, which can be used when calling <c>Resolve</c> methods.
+        /// <para>
+        /// The name supports templating:
+        /// <list type="table">
+        /// <listheader>
+        /// <term>Template</term>
+        /// <description>Description</description>
+        /// </listheader>
+        /// <item>
+        /// <term>{type}</term>
+        /// <description>Will be replaced by the short name of the type without its namespaces.</description>
+        /// </item>
+        /// <item>
+        /// <term>{TYPE}</term>
+        /// <description>Will be replaced with the full name of the type.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </param>
+        /// <param name="kind">The optional argument specifying the kind for the root of the composition.</param>
+        /// <typeparam name="T">The composition root base type.</typeparam>
+        /// <returns>Reference to the setup continuation chain.</returns>
+        IConfiguration Roots<T>(string name = "", RootKinds kind = RootKinds.Default);
+
         /// <summary>
         /// Specifies the method of the composition builder. The first argument to the method will always be the instance to be built. The remaining arguments to this method will be listed in the order in which they are defined in the setup.Specifies to create a composition builder method. The first argument to the method will always be the instance to be built. The remaining arguments to this method will be listed in the order in which they are defined in the setup.
         /// <example>
@@ -2061,10 +2200,76 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <param name="name">Specifies the unique name of the builder. The default name is "BuildUp".</param>
-        /// <typeparam name="T">The Composition root type.</typeparam>
+        /// <param name="name">
+        /// Specifies the name of the builder. The default name is "BuildUp".
+        /// <para>
+        /// The name supports templating:
+        /// <list type="table">
+        /// <listheader>
+        /// <term>Template</term>
+        /// <description>Description</description>
+        /// </listheader>
+        /// <item>
+        /// <term>{type}</term>
+        /// <description>Will be replaced by the short name of the type without its namespaces.</description>
+        /// </item>
+        /// <item>
+        /// <term>{TYPE}</term>
+        /// <description>Will be replaced with the full name of the type.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </param>
+        /// <param name="kind">The optional argument specifying the kind for the root of the composition.</param>
+        /// <typeparam name="T">The composition root type.</typeparam>
         /// <returns>Reference to the setup continuation chain.</returns>
         IConfiguration Builder<T>(string name = "BuildUp", RootKinds kind = RootKinds.Default);
+        
+        /// <summary>
+        /// Specifies to define builders for all types inherited from <see cref="T"/> available at compile time at the point where the method is called.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Builders&lt;Service&gt;();
+        /// </code>
+        /// </example>
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Builder&lt;Service&gt;("BuildUp");
+        /// </code>
+        /// </example>
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Builder&lt;Service&gt;("BuildUp{type}");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <param name="name">
+        /// Specifies the name of the builders. The default name is "BuildUp".
+        /// <para>
+        /// The name supports templating:
+        /// <list type="table">
+        /// <listheader>
+        /// <term>Template</term>
+        /// <description>Description</description>
+        /// </listheader>
+        /// <item>
+        /// <term>{type}</term>
+        /// <description>Will be replaced by the short name of the type without its namespaces.</description>
+        /// </item>
+        /// <item>
+        /// <term>{TYPE}</term>
+        /// <description>Will be replaced with the full name of the type.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </param>
+        /// <param name="kind">The optional argument specifying the kind for the root of the composition.</param>
+        /// <typeparam name="T">The composition root base type.</typeparam>
+        /// <returns>Reference to the setup continuation chain.</returns>
+        IConfiguration Builders<T>(string name = "BuildUp", RootKinds kind = RootKinds.Default);
 
         /// <summary>
         /// Defines a hint for fine-tuning code generation.
@@ -2938,7 +3143,19 @@ namespace Pure.DI
             }
 
             /// <inheritdoc />
-            public IConfiguration Builder<T>(string name = "BuildUp", RootKinds kind = RootKinds.Default)
+            public IConfiguration Roots<T>(string name, RootKinds kind)
+            {
+                return Configuration.Shared;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration Builder<T>(string name, RootKinds kind)
+            {
+                return Configuration.Shared;
+            }
+            
+            /// <inheritdoc />
+            public IConfiguration Builders<T>(string name, RootKinds kind = RootKinds.Default)
             {
                 return Configuration.Shared;
             }

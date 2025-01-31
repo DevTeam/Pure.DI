@@ -89,6 +89,92 @@ public class RootBindTests
     }
 
     [Fact]
+    public async Task ShouldSupportRootBindWithRootNameTemplate()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                           
+                               class Dependency: IDependency {}
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .RootBind<IDependency>("Root{type}").To<Dependency>();
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.RootIDependency;
+                                       Console.WriteLine(service.GetType() == typeof(Dependency));
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportRootBindWithRootNameTemplateWithTag()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                           
+                               class Dependency: IDependency {}
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .RootBind<IDependency>("Root{type}_{tag}", RootKinds.Property, "Xyz", 99).To<Dependency>();
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.RootIDependency_Xyz;
+                                       Console.WriteLine(service.GetType() == typeof(Dependency));
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
     public async Task ShouldSupportRootBindWithRootKind()
     {
         // Given

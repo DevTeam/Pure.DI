@@ -11,16 +11,10 @@ internal class InjectionSiteFactory : IInjectionSiteFactory
     static InjectionSiteFactory()
     {
         NameTagQualifiedFormat = new SymbolDisplayFormat(
-            genericsOptions:
-            SymbolDisplayGenericsOptions.IncludeTypeParameters,
-            typeQualificationStyle:
-            SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
-            memberOptions:
-            SymbolDisplayMemberOptions.IncludeType |
-            SymbolDisplayMemberOptions.IncludeContainingType,
-            miscellaneousOptions:
-            SymbolDisplayMiscellaneousOptions.UseSpecialTypes
-            | SymbolDisplayMiscellaneousOptions.CollapseTupleTypes
+            genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters,
+            typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
+            memberOptions: SymbolDisplayMemberOptions.IncludeType | SymbolDisplayMemberOptions.IncludeContainingType,
+            miscellaneousOptions: SymbolDisplayMiscellaneousOptions.UseSpecialTypes | SymbolDisplayMiscellaneousOptions.CollapseTupleTypes
         );
 
         var qualifiedNameArityFormat = NameTagQualifiedFormat.GetType().GetField("QualifiedNameArityFormat", BindingFlags.Static | BindingFlags.NonPublic);

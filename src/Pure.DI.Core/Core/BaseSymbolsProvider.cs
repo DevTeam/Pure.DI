@@ -21,6 +21,11 @@ internal class BaseSymbolsProvider : IBaseSymbolsProvider
             yield break;
         }
 
+        if (symbol.SpecialType == Microsoft.CodeAnalysis.SpecialType.System_Object)
+        {
+            yield break;
+        }
+
         while (true)
         {
             if (predicate(symbol, deepness))

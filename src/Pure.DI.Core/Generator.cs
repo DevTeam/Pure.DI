@@ -83,6 +83,7 @@ public sealed partial class Generator
                 .Bind().To<TriviaTools>()
                 .Bind().To<InstanceDpProvider>()
                 .Bind().To<Injections>()
+                .Bind().To<NameFormatter>()
 
                 // Validators
                 .Bind(Type).To<MetadataValidator>()

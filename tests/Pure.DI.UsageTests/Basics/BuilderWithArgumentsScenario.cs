@@ -1,7 +1,7 @@
 ﻿/*
 $v=true
 $p=9
-$d=Builders with arguments
+$d=Builder with arguments
 $h=Builders can be used with arguments as in the example below:
 $f=The default builder method name is `BuildUp`. The first argument to this method will always be the instance to be built. The remaining arguments of this method will be listed in the order in which they are defined in the setup.
 $r=Shouldly

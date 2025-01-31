@@ -107,6 +107,70 @@ public class ArgsTests
     }
 
     [Fact]
+    public async Task ShouldSupportArgWithNameTemplate()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                           
+                               class Dependency: IDependency {}
+                           
+                               interface IService
+                               {
+                                   IDependency Dep { get; }
+                           
+                                   string Name { get; }
+                               }
+                           
+                               class Service: IService 
+                               {
+                                   public Service(IDependency dep, string name)
+                                   { 
+                                       Dep = dep;
+                                       Name = name;
+                                   }
+                           
+                                   public IDependency Dep { get; }
+                           
+                                   public string Name { get; private set; }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
+                                           .Bind<IService>().To<Service>()
+                                           .Arg<string>("serviceName_{type}")
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition(serviceName_string: "Some Name");
+                                       Console.WriteLine(composition.Service.Name);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Some Name"], result);
+    }
+
+    [Fact]
     public async Task ShouldSupportArgWhenFewDeps()
     {
         // Given
@@ -392,6 +456,92 @@ public class ArgsTests
                               }
                            }
                            """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(2, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningRootArgInResolveMethod).ShouldBe(2, result);
+        result.StdOut.ShouldBe(["Some Name_99"], result);
+    }
+
+    [Theory]
+    [InlineData("\"my_id\"", "id_int_my_id")]
+    [InlineData("null", "id_int_")]
+    [InlineData("\"\"", "id_int_")]
+    [InlineData("\"1my_id\"", "id_int_1my_id")]
+    [InlineData("\"my   Id\"", "id_int_myId")]
+    [InlineData("\"my.Id\"", "id_int_myId")]
+    [InlineData("\"my<Id\"", "id_int_my_Id")]
+    [InlineData("\"my>Id\"", "id_int_myId")]
+    [InlineData("\"my[Id\"", "id_int_my_Id")]
+    [InlineData("\"my]Id\"", "id_int_myId")]
+    [InlineData("\"my`Id\"", "id_int_myId")]
+    public async Task ShouldSupportRootArgWithNameTemplate(string tag, string argName)
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                              interface IDependency {}
+                           
+                              class Dependency: IDependency {}
+                              
+                              class Dependency2
+                              {
+                                   public Dependency2([Tag(#tag#)] int id) {}
+                              }
+                           
+                              interface IService
+                              {
+                                  IDependency Dep { get; }
+                           
+                                  string Name { get; }
+                              }
+                           
+                              class Service: IService
+                              {
+                                  public Service(IDependency dep, [Tag(#tag#)] int id, string name)
+                                  {
+                                      Dep = dep;
+                                      Name = name + "_" + id;
+                                  }
+                           
+                                  public IDependency Dep { get; }
+                           
+                                  public string Name { get; private set; }
+                              }
+                           
+                              static class Setup
+                              {
+                                  private static void SetupComposition()
+                                  {
+                                      // ToString = On
+                                      DI.Setup("Composition")
+                                          .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
+                                          .Bind<IService>().To<Service>()
+                                          .Root<Dependency2>()
+                                          .RootArg<string>("serviceName_{type}")
+                                          .RootArg<int>("id_{type}_{tag}", #tag#)
+                                          .Root<IService>("GetService");
+                                  }
+                              }
+                           
+                              public class Program
+                              {
+                                  public static void Main()
+                                  {
+                                      var composition = new Composition();
+                                      Console.WriteLine(composition.GetService(serviceName_string: "Some Name", #argName#: 99).Name);
+                                  }
+                              }
+                           }
+                           """.Replace("#tag#", tag).Replace("#argName#", argName).RunAsync();
 
         // Then
         result.Success.ShouldBeFalse(result);

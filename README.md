@@ -204,8 +204,10 @@ dotnet run
 - [Tags](readme/tags.md)
 - [Smart tags](readme/smart-tags.md)
 - [Build up of an existing object](readme/build-up-of-an-existing-object.md)
+- [Builder](readme/builder.md)
+- [Builder with arguments](readme/builder-with-arguments.md)
 - [Builders](readme/builders.md)
-- [Builders with arguments](readme/builders-with-arguments.md)
+- [Builders with a name template](readme/builders-with-a-name-template.md)
 - [Field injection](readme/field-injection.md)
 - [Method injection](readme/method-injection.md)
 - [Property injection](readme/property-injection.md)
@@ -214,6 +216,7 @@ dotnet run
 - [Root binding](readme/root-binding.md)
 - [Async Root](readme/async-root.md)
 - [Consumer types](readme/consumer-types.md)
+- [Roots](readme/roots.md)
 ### Lifetimes
 - [Transient](readme/transient.md)
 - [Singleton](readme/singleton.md)
@@ -257,7 +260,9 @@ dotnet run
 - [Build up of an existing generic object](readme/build-up-of-an-existing-generic-object.md)
 - [Generic root arguments](readme/generic-root-arguments.md)
 - [Complex generic root arguments](readme/complex-generic-root-arguments.md)
+- [Generic builder](readme/generic-builder.md)
 - [Generic builders](readme/generic-builders.md)
+- [Generic roots](readme/generic-roots.md)
 ### Attributes
 - [Constructor ordinal attribute](readme/constructor-ordinal-attribute.md)
 - [Dependency attribute](readme/dependency-attribute.md)
@@ -288,6 +293,7 @@ dotnet run
 - [Check for a root](readme/check-for-a-root.md)
 ### Advanced
 - [Composition root kinds](readme/composition-root-kinds.md)
+- [Root with mame template](readme/root-with-mame-template.md)
 - [Tag Type](readme/tag-type.md)
 - [Tag Unique](readme/tag-unique.md)
 - [Tag on injection site](readme/tag-on-injection-site.md)
@@ -315,6 +321,7 @@ dotnet run
 - [DI tracing via serilog](readme/di-tracing-via-serilog.md)
 ### Unity
 - [Basic Unity use case](readme/basic-unity-use-case.md)
+- [Unity MonoBehaviours](readme/unity-monobehaviours.md)
 ### Applications
 - Console
   - [Schrödinger's cat](readme/Console.md)
