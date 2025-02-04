@@ -1,4 +1,5 @@
 using Pure.DI;
+using UnityEngine;
 using static Pure.DI.Lifetime;
 
 internal partial class Composition
@@ -7,5 +8,5 @@ internal partial class Composition
     
     private void Setup() => DI.Setup()
         .Bind().As(Singleton).To<ClockService>()
-        .Builder<Clock>();
+        .Builders<MonoBehaviour>();
 }

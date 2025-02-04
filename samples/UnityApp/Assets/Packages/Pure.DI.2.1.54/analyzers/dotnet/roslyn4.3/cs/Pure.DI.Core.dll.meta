@@ -1,7 +1,8 @@
 fileFormatVersion: 2
-guid: c95ef7a9c5e83c646b0b13e5aa50eee7
+guid: 634ade03d75824f4d818f9f45832ed93
 labels:
 - NuGetForUnity
+- RoslynAnalyzer
 PluginImporter:
   externalObjects: {}
   serializedVersion: 3

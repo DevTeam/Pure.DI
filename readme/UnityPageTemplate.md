@@ -6,10 +6,11 @@ This example demonstrates the creation of a [Unity](https://unity.com/) applicat
 
 ![Unity](https://cdn.sanity.io/images/fuvbjjlp/production/01c082f3046cc45548249c31406aeffd0a9a738e-296x100.png)
 
-The definition of the composition is in [Composition.cs](/samples/UnityApp/Assets/Scripts/Composition.cs). This class setups how the composition of objects will be created for the application. You must not forget to define any necessary composition builders:
+The definition of the composition is in [Composition.cs](/samples/UnityApp/Assets/Scripts/Composition.cs). This class setups how the composition of objects will be created for the application. Don't forget to define builders for types inherited from `MonoBehaviour`:
 
 ```csharp
 using Pure.DI;
+using UnityEngine;
 using static Pure.DI.Lifetime;
 
 internal partial class Composition
@@ -18,7 +19,7 @@ internal partial class Composition
 
     private void Setup() => DI.Setup()
         .Bind().As(Singleton).To<ClockService>()
-        .Builder<Clock>();
+        .Builders<MonoBehaviour>();
 }
 ```
 
@@ -28,7 +29,7 @@ Advantages over classical DI container libraries:
 - Does not add dependencies to any additional assembly.
 - Since the generated code uses primitive language constructs to create object compositions and does not use any libraries, you can easily debug the object composition code as regular code in your application.
 
-The `BuildUp` composition method will be generated for each call to the `Builder<T>()` method when setting up the dependency graph. Its name can be overridden as desired. This method will look like this:
+For types inherited from `MonoBehaviour`, a `BuildUp` composition method will be generated. This method will look as follows:
 
 ```csharp
 [CompilerServices.MethodImpl(MethodImplOptions.AggressiveInlining)]
