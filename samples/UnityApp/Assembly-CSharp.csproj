@@ -41,8 +41,8 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
-    <Analyzer Include="C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Assets\Packages\Pure.DI.2.1.54\analyzers\dotnet\roslyn4.3\cs\Pure.DI.Core.dll" />
-    <Analyzer Include="C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Assets\Packages\Pure.DI.2.1.54\analyzers\dotnet\roslyn4.3\cs\Pure.DI.dll" />
+    <Analyzer Include="C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Assets\Packages\Pure.DI.2.1.55\analyzers\dotnet\roslyn4.3\cs\Pure.DI.Core.dll" />
+    <Analyzer Include="C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Assets\Packages\Pure.DI.2.1.55\analyzers\dotnet\roslyn4.3\cs\Pure.DI.dll" />
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.0.35f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.SourceGenerators.dll" />
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.0.35f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.Properties.SourceGenerator.dll" />
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.0.35f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll" />
