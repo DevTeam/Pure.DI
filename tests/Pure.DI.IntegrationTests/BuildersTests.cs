@@ -613,4 +613,85 @@ public class BuildersTests
         result.Success.ShouldBeFalse(result);
         result.Errors.Count(i => i.Id == LogId.ErrorInvalidMetadata).ShouldBe(1, result);
     }
+
+    [Fact]
+    public async Task ShouldSupportBuilderForInheritedTypesOnly()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                           
+                               class Dependency: IDependency
+                               {
+                               }
+                           
+                               class BaseService
+                               {
+                                   public BaseService(int num)
+                                   {
+                                   }
+                               }
+                           
+                               class Service: BaseService 
+                               {
+                                   public Service(): base(1) {}
+                                   
+                                   [Ordinal(1)]
+                                   internal void Initialize([Tag(374)] string depName)
+                                   {
+                                       Console.WriteLine($"Initialize 1 {depName}");
+                                   }
+                           
+                                   [Ordinal(0)]
+                                   public IDependency? Dep { get; set; }
+                               }
+                               
+                               class Service2: BaseService 
+                               {
+                                   public Service2(): base(1) {}
+                               
+                                   [Ordinal(1)]
+                                   internal void Initialize([Tag(374)] string depName)
+                                   {
+                                       Console.WriteLine($"Initialize 2 {depName}");
+                                   }
+                               
+                                   [Ordinal(0)]
+                                   public IDependency? Dep { get; set; }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind(374).To(_ => "Abc")
+                                           .Bind().To<Dependency>()
+                                           .Builders<BaseService>();
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.BuildUp(new Service());
+                                       var service2 = composition.BuildUp(new Service2());
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Initialize 1 Abc", "Initialize 2 Abc"], result);
+    }
 }

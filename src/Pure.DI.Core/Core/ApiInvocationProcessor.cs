@@ -487,12 +487,13 @@ internal class ApiInvocationProcessor(
         return semanticModel
             .LookupNamespacesAndTypes(invocation.Span.Start)
             .OfType<INamedTypeSymbol>()
-            .Where(i => !i.IsAbstract)
+            .Where(type => !type.IsAbstract)
             .Where(type =>
                 baseSymbolsProvider.GetBaseSymbols(type, (t, _) => t is INamedTypeSymbol)
                     .OfType<INamedTypeSymbol>()
                     .Select(typeSymbol => typeSymbol.IsGenericType ? typeSymbol.ConstructUnboundGenericType() : typeSymbol)
                     .Any(typeSymbol => SymbolEqualityComparer.Default.Equals(baseType, typeSymbol)))
+            .Where(type => !SymbolEqualityComparer.Default.Equals(baseType, type))
             .Select(typeSymbol =>
             {
                 if (!typeSymbol.IsGenericType)
