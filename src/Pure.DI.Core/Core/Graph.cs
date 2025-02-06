@@ -19,6 +19,11 @@ internal sealed class Graph<TVertex, TEdge> : IGraph<TVertex, TEdge>
         var outInEdges = new Dictionary<TVertex, List<TEdge>>(comparer);
         foreach (var entry in entries)
         {
+            if (_inOutEdges.ContainsKey(entry.Target))
+            {
+                continue;
+            }
+
             _inOutEdges.Add(entry.Target, entry);
             foreach (var edge in entry.Edges)
             {
