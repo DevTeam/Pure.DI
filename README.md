@@ -217,6 +217,7 @@ dotnet run
 - [Async Root](readme/async-root.md)
 - [Consumer types](readme/consumer-types.md)
 - [Roots](readme/roots.md)
+- [Roots with filter](readme/roots-with-filter.md)
 ### Lifetimes
 - [Transient](readme/transient.md)
 - [Singleton](readme/singleton.md)
