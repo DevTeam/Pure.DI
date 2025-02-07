@@ -13,7 +13,8 @@ internal class ApiInvocationProcessor(
     [Tag(Tag.UniqueTag)] IdGenerator idGenerator,
     IBaseSymbolsProvider baseSymbolsProvider,
     INameFormatter nameFormatter,
-    ITypes types)
+    ITypes types,
+    IWildcardMatcher wildcardMatcher)
     : IApiInvocationProcessor
 {
     private static readonly char[] TypeNamePartsSeparators = ['.'];
@@ -289,20 +290,21 @@ internal class ApiInvocationProcessor(
                             throw new CompileErrorException("Invalid roots type.", invocation.GetLocation(), LogId.ErrorInvalidMetadata);
                         }
 
-                        var rootsArgs = arguments.GetArgs(invocation.ArgumentList, "name", "kind");
-                        var rootsName = rootsArgs[0] is { } nameArg ? semantic.GetConstantValue<string>(semanticModel, nameArg.Expression) ?? "" : "";
-                        var kind = rootsArgs[1] is { } kindArg ? semantic.GetConstantValue<RootKinds>(semanticModel, kindArg.Expression) : RootKinds.Default;
+                        var rootsArgs = arguments.GetArgs(invocation.ArgumentList, "name", "kind", "filter");
+                        var rootsName = rootsArgs[0] is { } rootsNameArg ? semantic.GetConstantValue<string>(semanticModel, rootsNameArg.Expression) ?? "" : "";
+                        var rootsKind = rootsArgs[1] is { } rootsKindArg ? semantic.GetConstantValue<RootKinds>(semanticModel, rootsKindArg.Expression) : RootKinds.Default;
+                        var rootsWildcardFilter = (rootsArgs[2] is { } rootsFilterArg ? semantic.GetConstantValue<string>(semanticModel, rootsFilterArg.Expression) : "*") ?? "*";
                         var hasRootsType = false;
-                        foreach (var rootType in GetRelatedTypes(semanticModel, invocation, rootsType))
+                        foreach (var rootType in GetRelatedTypes(semanticModel, invocation, rootsType, rootsWildcardFilter))
                         {
                             var rootName = GetName((SyntaxNode?)rootsArgs[1] ?? invocation, rootsName, rootType) ?? "";
-                            metadataVisitor.VisitRoot(new MdRoot(invocation, semanticModel, rootType, rootName, new MdTag(0, null), kind, invocationComments, false));
+                            metadataVisitor.VisitRoot(new MdRoot(invocation, semanticModel, rootType, rootName, new MdTag(0, null), rootsKind, invocationComments, false));
                             hasRootsType = true;
                         }
 
                         if (!hasRootsType)
                         {
-                            throw new CompileErrorException($"No type that inherits from {symbolNames.GetName(rootsType)} was found.", invocation.GetLocation(), LogId.ErrorInvalidMetadata);
+                            throw new CompileErrorException($"There is no type found that inherits from {symbolNames.GetName(rootsType)} whose name matches the \"{rootsWildcardFilter}\" filter.", invocation.GetLocation(), LogId.ErrorInvalidMetadata);
                         }
 
                         break;
@@ -326,15 +328,22 @@ internal class ApiInvocationProcessor(
                             throw new CompileErrorException("Invalid builders type.", invocation.GetLocation(), LogId.ErrorInvalidMetadata);
                         }
 
+                        var buildersArgs = arguments.GetArgs(invocation.ArgumentList, "name", "kind", "filter");
+                        var buildersName = buildersArgs[0] is { } buildersNameArg ? semantic.GetConstantValue<string>(semanticModel, buildersNameArg.Expression) ?? Names.DefaultBuilderName : Names.DefaultBuilderName;
+                        var buildersKind = buildersArgs[1] is { } buildersKindArg ? semantic.GetConstantValue<RootKinds>(semanticModel, buildersKindArg.Expression) : RootKinds.Default;
+                        var buildersWildcardFilter = (buildersArgs[2] is { } buildersFilterArg ? semantic.GetConstantValue<string>(semanticModel, buildersFilterArg.Expression) : "*") ?? "*";
                         var hasBuildersType = false;
-                        foreach (var builderType in GetRelatedTypes(semanticModel, invocation, buildersRootType))
+                        foreach (var buildersType in GetRelatedTypes(semanticModel, invocation, buildersRootType, buildersWildcardFilter))
                         {
+                            var buildersItemName = GetName((SyntaxNode?)buildersArgs[0] ?? invocation, buildersName, buildersType) ?? Names.DefaultBuilderName;
                             VisitBuilder(
                                 metadataVisitor,
                                 semanticModel,
                                 invocation,
                                 buildersRootTypeSyntax,
-                                builderType,
+                                buildersType,
+                                buildersItemName,
+                                buildersKind,
                                 invocationComments);
 
                             hasBuildersType = true;
@@ -342,7 +351,7 @@ internal class ApiInvocationProcessor(
 
                         if (!hasBuildersType)
                         {
-                            throw new CompileErrorException($"No type that inherits from {symbolNames.GetName(buildersRootType)} was found.", invocation.GetLocation(), LogId.ErrorInvalidMetadata);
+                            throw new CompileErrorException($"There is no type found that inherits from {symbolNames.GetName(buildersRootType)} whose name matches the \"{buildersWildcardFilter}\" filter.", invocation.GetLocation(), LogId.ErrorInvalidMetadata);
                         }
 
                         break;
@@ -353,12 +362,18 @@ internal class ApiInvocationProcessor(
                             throw new CompileErrorException("Invalid builder type.", invocation.GetLocation(), LogId.ErrorInvalidMetadata);
                         }
 
+                        var builderType = semantic.GetTypeSymbol<INamedTypeSymbol>(semanticModel, builderRootTypeSyntax);
+                        var builderArgs = arguments.GetArgs(invocation.ArgumentList, "name", "kind");
+                        var builderName = builderArgs[0] is { } builderNameArg ? GetName(builderNameArg, semantic.GetConstantValue<string>(semanticModel, builderNameArg.Expression), builderType) ?? Names.DefaultBuilderName : Names.DefaultBuilderName;
+                        var builderKind = builderArgs[1] is { } builderKindArg ? semantic.GetConstantValue<RootKinds>(semanticModel, builderKindArg.Expression) : RootKinds.Default;
                         VisitBuilder(
                             metadataVisitor,
                             semanticModel,
                             invocation,
                             builderRootTypeSyntax,
-                            semantic.GetTypeSymbol<INamedTypeSymbol>(semanticModel, builderRootTypeSyntax),
+                            builderType,
+                            builderName,
+                            builderKind,
                             invocationComments);
 
                         break;
@@ -477,7 +492,8 @@ internal class ApiInvocationProcessor(
     private IEnumerable<INamedTypeSymbol> GetRelatedTypes(
         SemanticModel semanticModel,
         InvocationExpressionSyntax invocation,
-        INamedTypeSymbol baseType)
+        INamedTypeSymbol baseType,
+        string wildcardFilter)
     {
         if (baseType.IsGenericType)
         {
@@ -494,6 +510,7 @@ internal class ApiInvocationProcessor(
                     .Select(typeSymbol => typeSymbol.IsGenericType ? typeSymbol.ConstructUnboundGenericType() : typeSymbol)
                     .Any(typeSymbol => SymbolEqualityComparer.Default.Equals(baseType, typeSymbol)))
             .Where(type => !SymbolEqualityComparer.Default.Equals(baseType, type))
+            .Where(type => wildcardMatcher.Match(wildcardFilter.AsSpan(), symbolNames.GetName(type).AsSpan()))
             .Select(typeSymbol =>
             {
                 if (!typeSymbol.IsGenericType)
@@ -524,6 +541,8 @@ internal class ApiInvocationProcessor(
         InvocationExpressionSyntax invocationSource,
         SyntaxNode typeSource,
         INamedTypeSymbol builderType,
+        string builderName,
+        RootKinds kind,
         List<string> invocationComments)
     {
         var id = idGenerator.Generate();
@@ -548,11 +567,6 @@ internal class ApiInvocationProcessor(
         VisitFactory(metadataVisitor, semanticModel, builderType, builderLambdaExpression, true);
 
         // Root
-        var rootArgs = arguments.GetArgs(invocationSource.ArgumentList, "name", "tag", "kind");
-        var builderName = rootArgs[0] is { } nameArg ?
-            GetName(nameArg, semantic.GetConstantValue<string>(semanticModel, nameArg.Expression), builderType) ?? Names.DefaultBuilderName
-            : Names.DefaultBuilderName;
-        var kind = rootArgs[2] is { } kindArg ? semantic.GetConstantValue<RootKinds>(semanticModel, kindArg.Expression) : RootKinds.Default;
         metadataVisitor.VisitRoot(new MdRoot(invocationSource, semanticModel, builderType, builderName, builderTag, kind, invocationComments, true));
     }
 

@@ -2162,7 +2162,7 @@ namespace Pure.DI
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
-        ///     .Roots&lt;IService&gt;("Root{type}");
+        ///     .Roots&lt;IService&gt;("Root{type}", filter: "*MyService");
         /// </code>
         /// </example>
         /// </summary>
@@ -2187,9 +2187,10 @@ namespace Pure.DI
         /// </para>
         /// </param>
         /// <param name="kind">The optional argument specifying the kind for the root of the composition.</param>
+        /// <param name="filter">A wildcard to filter root types by their full name.</param>
         /// <typeparam name="T">The composition root base type.</typeparam>
         /// <returns>Reference to the setup continuation chain.</returns>
-        IConfiguration Roots<T>(string name = "", RootKinds kind = RootKinds.Default);
+        IConfiguration Roots<T>(string name = "", RootKinds kind = RootKinds.Default, string filter = "*");
 
         /// <summary>
         /// Specifies the method of the composition builder. The first argument to the method will always be the instance to be built. The remaining arguments to this method will be listed in the order in which they are defined in the setup.Specifies to create a composition builder method. The first argument to the method will always be the instance to be built. The remaining arguments to this method will be listed in the order in which they are defined in the setup.
@@ -2242,7 +2243,7 @@ namespace Pure.DI
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
-        ///     .Builder&lt;Service&gt;("BuildUp{type}");
+        ///     .Builder&lt;Service&gt;("BuildUp{type}", filter: "*MyService");
         /// </code>
         /// </example>
         /// </summary>
@@ -2267,9 +2268,10 @@ namespace Pure.DI
         /// </para>
         /// </param>
         /// <param name="kind">The optional argument specifying the kind for the root of the composition.</param>
+        /// <param name="filter">A wildcard to filter builder types by their full name.</param>
         /// <typeparam name="T">The composition root base type.</typeparam>
         /// <returns>Reference to the setup continuation chain.</returns>
-        IConfiguration Builders<T>(string name = "BuildUp", RootKinds kind = RootKinds.Default);
+        IConfiguration Builders<T>(string name = "BuildUp", RootKinds kind = RootKinds.Default, string filter = "*");
 
         /// <summary>
         /// Defines a hint for fine-tuning code generation.
@@ -3077,7 +3079,7 @@ namespace Pure.DI
             }
 
             /// <inheritdoc />
-            public IBinding RootBind<T>(string name = "", RootKinds kind = RootKinds.Default, params object[] tags)
+            public IBinding RootBind<T>(string name, RootKinds kind, params object[] tags)
             {
                 return Binding.Shared;
             }
@@ -3089,25 +3091,29 @@ namespace Pure.DI
             }
 
             /// <inheritdoc />
-            public IConfiguration GenericTypeArgumentAttribute<T>() where T : global::System.Attribute
+            public IConfiguration GenericTypeArgumentAttribute<T>()
+                where T : global::System.Attribute
             {
                 return Configuration.Shared;
             }
             
             /// <inheritdoc />
-            public IConfiguration TypeAttribute<T>(int typeArgumentPosition = 0) where T : global::System.Attribute
+            public IConfiguration TypeAttribute<T>(int typeArgumentPosition)
+                where T : global::System.Attribute
             {
                 return Configuration.Shared;
             }
 
             /// <inheritdoc />
-            public IConfiguration TagAttribute<T>(int tagArgumentPosition = 0) where T : global::System.Attribute
+            public IConfiguration TagAttribute<T>(int tagArgumentPosition)
+                where T : global::System.Attribute
             {
                 return Configuration.Shared;
             }
 
             /// <inheritdoc />
-            public IConfiguration OrdinalAttribute<T>(int ordinalArgumentPosition = 0) where T : global::System.Attribute
+            public IConfiguration OrdinalAttribute<T>(int ordinalArgumentPosition)
+                where T : global::System.Attribute
             {
                 return Configuration.Shared;
             }
@@ -3143,7 +3149,7 @@ namespace Pure.DI
             }
 
             /// <inheritdoc />
-            public IConfiguration Roots<T>(string name, RootKinds kind)
+            public IConfiguration Roots<T>(string name, RootKinds kind, string filter)
             {
                 return Configuration.Shared;
             }
@@ -3155,7 +3161,7 @@ namespace Pure.DI
             }
             
             /// <inheritdoc />
-            public IConfiguration Builders<T>(string name, RootKinds kind = RootKinds.Default)
+            public IConfiguration Builders<T>(string name, RootKinds kind, string filter)
             {
                 return Configuration.Shared;
             }
