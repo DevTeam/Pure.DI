@@ -13,10 +13,19 @@ internal class Commands(RootCommand rootCommand)
         params string[] aliases)
     {
         var command = new Command(name, description);
-        command.SetHandler(ctx =>
+        command.SetHandler(async ctx =>
         {
-            WriteLine($"---------- {description} ----------", Color.Highlighted);
-            return target.RunAsync(ctx.GetCancellationToken());
+            Summary($"\"{description}\" started");
+            try
+            {
+                var result = await target.RunAsync(ctx.GetCancellationToken());
+                Summary($"\"{description}\" finished with result: {result}");
+            }
+            catch (Exception)
+            {
+                Error($"\"{description}\" failed");
+                throw;
+            }
         });
         
         foreach (var alias in aliases)
