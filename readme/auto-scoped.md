@@ -1,7 +1,5 @@
 #### Auto scoped
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Lifetimes/AutoScopedScenario.cs)
-
 You can use the following example to automatically create a session when creating instances of a particular type:
 
 

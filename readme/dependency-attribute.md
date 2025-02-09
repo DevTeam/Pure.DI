@@ -1,7 +1,5 @@
 #### Dependency attribute
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Attributes/DependencyAttributeScenario.cs)
-
 When applied to a property or field, these type members will also participate in dependency injection in the appropriate order from smallest value to largest.
 
 

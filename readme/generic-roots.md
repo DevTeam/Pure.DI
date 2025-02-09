@@ -1,7 +1,5 @@
 #### Generic roots
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Generics/GenericsRootsScenario.cs)
-
 
 ```c#
 using Pure.DI;

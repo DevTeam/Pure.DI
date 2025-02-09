@@ -1,7 +1,5 @@
 #### Tracking disposable instances using pre-built classes
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Advanced/TrackingDisposableWithAbstractionsScenario.cs)
-
 If you want ready-made classes for tracking disposable objects in your libraries but don't want to create your own, you can add this package to your projects:
 
 [![NuGet](https://img.shields.io/nuget/v/Pure.DI.Abstractions)](https://www.nuget.org/packages/Pure.DI.Abstractions)

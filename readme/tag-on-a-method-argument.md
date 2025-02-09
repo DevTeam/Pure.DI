@@ -1,7 +1,5 @@
 #### Tag on a method argument
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Advanced/TagOnMethodArgScenario.cs)
-
 The wildcards ‘*’ and ‘?’ are supported.
 
 

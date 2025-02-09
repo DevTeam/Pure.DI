@@ -1,7 +1,5 @@
 #### Array
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/BaseClassLibrary/ArrayScenario.cs)
-
 Specifying `T[]` as the injection type allows instances from all bindings that implement the `T` type to be injected.
 
 

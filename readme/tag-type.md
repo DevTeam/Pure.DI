@@ -1,7 +1,5 @@
 #### Tag Type
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Advanced/TagTypeScenario.cs)
-
 `Tag.Type` in bindings replaces the expression `typeof(T)`, where `T` is the type of the implementation in a binding.
 
 

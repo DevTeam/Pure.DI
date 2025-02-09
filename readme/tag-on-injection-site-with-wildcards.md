@@ -1,7 +1,5 @@
 #### Tag on injection site with wildcards
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Advanced/TagOnInjectionSiteWithWildcardsScenario.cs)
-
 The wildcards ‘*’ and ‘?’ are supported.
 
 

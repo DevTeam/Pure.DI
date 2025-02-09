@@ -1,7 +1,5 @@
 #### Bind attribute for a generic type
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Attributes/BindAttributeForGenericTypeScenario.cs)
-
 
 ```c#
 using Shouldly;

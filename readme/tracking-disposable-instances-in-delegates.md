@@ -1,7 +1,5 @@
 #### Tracking disposable instances in delegates
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Advanced/TrackingDisposableInDelegatesScenario.cs)
-
 
 ```c#
 using Shouldly;

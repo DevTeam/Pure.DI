@@ -1,7 +1,5 @@
 #### Default values
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/DefaultValuesScenario.cs)
-
 
 ```c#
 using Shouldly;

@@ -1,7 +1,5 @@
 #### Generic builder
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Generics/GenericBuilderScenario.cs)
-
 
 ```c#
 using Shouldly;

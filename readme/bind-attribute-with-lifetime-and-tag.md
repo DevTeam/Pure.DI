@@ -1,7 +1,5 @@
 #### Bind attribute with lifetime and tag
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Attributes/BindAttributeWithLifetimeAndTagScenario.cs)
-
 
 ```c#
 using Pure.DI;

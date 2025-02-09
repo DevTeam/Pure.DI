@@ -1,7 +1,5 @@
 #### Basic Unity use case
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Unity/UnityBasicScenario.cs)
-
 
 ```c#
 using Pure.DI;

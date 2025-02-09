@@ -1,7 +1,5 @@
 #### Tracking disposable instances per a composition root
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Advanced/TrackingDisposableScenario.cs)
-
 
 ```c#
 using Shouldly;

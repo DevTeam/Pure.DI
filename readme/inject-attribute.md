@@ -1,7 +1,5 @@
 #### Inject attribute
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Attributes/InjectAttributeScenario.cs)
-
 If you want to use attributes in your libraries but don't want to create your own, you can add this package to your projects:
 
 [![NuGet](https://img.shields.io/nuget/v/Pure.DI.Abstractions)](https://www.nuget.org/packages/Pure.DI.Abstractions)

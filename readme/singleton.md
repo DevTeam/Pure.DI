@@ -1,7 +1,5 @@
 #### Singleton
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Lifetimes/SingletonScenario.cs)
-
 The _Singleton_ lifetime ensures that there will be a single instance of the dependency for each composition.
 
 

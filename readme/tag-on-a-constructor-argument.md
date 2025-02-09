@@ -1,7 +1,5 @@
 #### Tag on a constructor argument
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Advanced/TagOnConstructorArgScenario.cs)
-
 The wildcards ‘*’ and ‘?’ are supported.
 
 

@@ -1,7 +1,5 @@
 #### Dependent compositions
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Advanced/DependentCompositionsScenario.cs)
-
 The _Setup_ method has an additional argument _kind_, which defines the type of composition:
 - _CompositionKind.Public_ - will create a normal composition class, this is the default setting and can be omitted, it can also use the _DependsOn_ method to use it as a dependency in other compositions
 - _CompositionKind.Internal_ - the composition class will not be created, but that composition can be used to create other compositions by calling the _DependsOn_ method with its name

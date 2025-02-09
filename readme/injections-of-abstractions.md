@@ -1,7 +1,5 @@
 #### Injections of abstractions
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/InjectionsOfAbstractionsScenario.cs)
-
 This example demonstrates the recommended approach of using abstractions instead of implementations when injecting dependencies.
 
 

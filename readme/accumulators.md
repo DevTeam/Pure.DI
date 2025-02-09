@@ -1,7 +1,5 @@
 #### Accumulators
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Advanced/AccumulatorScenario.cs)
-
 Accumulators allow you to accumulate instances of certain types and lifetimes.
 
 

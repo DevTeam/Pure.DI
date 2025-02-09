@@ -1,7 +1,5 @@
 #### Default lifetime
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Lifetimes/DefaultLifetimeScenario.cs)
-
 For example, if some lifetime is used more often than others, you can make it the default lifetime:
 
 

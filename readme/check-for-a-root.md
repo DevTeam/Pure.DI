@@ -1,7 +1,5 @@
 #### Check for a root
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Hints/CheckForRootScenario.cs)
-
 Sometimes you need to check if you can get the root of a composition using the _Resolve_ method before calling it, this example will show you how to do it:
 
 

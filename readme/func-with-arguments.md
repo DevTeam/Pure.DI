@@ -1,7 +1,5 @@
 #### Func with arguments
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/BaseClassLibrary/FuncWithArgumentsScenario.cs)
-
 
 ```c#
 using Shouldly;

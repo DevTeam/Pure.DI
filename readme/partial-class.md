@@ -1,7 +1,5 @@
 #### Partial class
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Advanced/PartialClassScenario.cs)
-
 A partial class can contain setup code.
 
 

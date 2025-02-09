@@ -1,7 +1,5 @@
 #### Bind attribute
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Attributes/BindAttributeScenario.cs)
-
 `BindAttribute` allows you to perform automatic binding to properties, fields or methods that belong to the type of the binding involved.
 
 

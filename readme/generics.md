@@ -1,7 +1,5 @@
 #### Generics
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Generics/GenericsScenario.cs)
-
 Generic types are also supported.
 > [!IMPORTANT]
 > Instead of open generic types, as in classical DI container libraries, regular generic types with _marker_ types as type parameters are used here. Such "marker" types allow to define dependency graph more precisely.

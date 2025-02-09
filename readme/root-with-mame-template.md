@@ -1,7 +1,5 @@
 #### Root with mame template
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Advanced/RootWithNameTemplateScenario.cs)
-
 
 ```c#
 using Pure.DI;

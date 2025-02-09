@@ -1,7 +1,5 @@
 #### Keyed service provider
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/BaseClassLibrary/KeyedServiceProviderScenario.cs)
-
 
 ```c#
 using Shouldly;

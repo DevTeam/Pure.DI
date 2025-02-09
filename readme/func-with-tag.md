@@ -1,7 +1,5 @@
 #### Func with tag
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/BaseClassLibrary/FuncWithTagScenario.cs)
-
 
 ```c#
 using Shouldly;

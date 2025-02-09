@@ -1,7 +1,5 @@
 #### Generic composition roots with constraints
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Generics/GenericCompositionRootsWithConstraintsScenario.cs)
-
 > [!IMPORTANT]
 > `Resolve' methods cannot be used to resolve generic composition roots.
 

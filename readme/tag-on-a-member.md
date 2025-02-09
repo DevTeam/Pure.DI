@@ -1,7 +1,5 @@
 #### Tag on a member
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Advanced/TagOnMemberScenario.cs)
-
 The wildcards ‘*’ and ‘?’ are supported.
 
 

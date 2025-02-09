@@ -1,7 +1,5 @@
 #### A few partial classes
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Advanced/SeveralPartialClassesScenario.cs)
-
 The setting code for one Composition can be located in several methods and/or in several partial classes.
 
 

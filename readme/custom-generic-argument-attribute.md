@@ -1,7 +1,5 @@
 #### Custom generic argument attribute
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Attributes/CustomGenericArgumentAttributeScenario.cs)
-
 
 ```c#
 using Shouldly;

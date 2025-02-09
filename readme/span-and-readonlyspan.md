@@ -1,7 +1,5 @@
 #### Span and ReadOnlySpan
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/BaseClassLibrary/SpanScenario.cs)
-
 Specifying `Span<T>` and `ReadOnlySpan<T>` work the same as with the array `T[]`.
 
 

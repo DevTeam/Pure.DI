@@ -1,7 +1,5 @@
 #### Tracking disposable instances with different lifetimes
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Advanced/TrackingDisposableWithDifferentLifetimesScenario.cs)
-
 
 ```c#
 using Shouldly;

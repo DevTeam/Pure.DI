@@ -1,7 +1,5 @@
 #### Custom attributes
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Attributes/CustomAttributesScenario.cs)
-
 It's very easy to use your attributes. To do this, you need to create a descendant of the `System.Attribute` class and register it using one of the appropriate methods:
 - `TagAttribute`
 - `OrdinalAttribute`

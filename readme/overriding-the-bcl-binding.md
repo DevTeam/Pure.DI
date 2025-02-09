@@ -1,7 +1,5 @@
 #### Overriding the BCL binding
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/BaseClassLibrary/OverridingBclBindingScenario.cs)
-
 At any time, the default binding to the BCL type can be changed to your own:
 
 

@@ -1,7 +1,5 @@
 #### Required properties or fields
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/RequiredPropertiesOrFieldsScenario.cs)
-
 All properties or fields marked with the _required_ keyword automatically become injected dependencies.
 
 

@@ -1,7 +1,5 @@
 #### Advanced interception
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Interception/AdvancedInterceptionScenario.cs)
-
 This approach of interception maximizes performance by precompiling the proxy object factory.
 
 

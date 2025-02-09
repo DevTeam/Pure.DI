@@ -1,7 +1,5 @@
 #### Lazy
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/BaseClassLibrary/LazyScenario.cs)
-
 
 ```c#
 using Shouldly;

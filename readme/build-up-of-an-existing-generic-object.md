@@ -1,7 +1,5 @@
 #### Build up of an existing generic object
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Generics/GenericBuildUpScenario.cs)
-
 In other words, injecting the necessary dependencies via methods, properties, or fields into an existing object.
 
 

@@ -1,7 +1,5 @@
 #### Interception
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Interception/InterceptionScenario.cs)
-
 Interception allows you to enrich or change the behavior of a certain set of objects from the object graph being created without changing the code of the corresponding types.
 
 

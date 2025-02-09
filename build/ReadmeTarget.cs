@@ -149,8 +149,6 @@ internal class ReadmeTarget(
                 await readmeWriter.WriteLineAsync($"- [{description}]({ReadmeDir}/{exampleFile})");
                 await examplesWriter.WriteLineAsync($"#### {description}");
                 await examplesWriter.WriteLineAsync("");
-                await examplesWriter.WriteLineAsync($"[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../{vars[CreateExamplesTarget.SourceKey].Replace('\\', '/')})");
-                await examplesWriter.WriteLineAsync("");
                 var header = vars[CreateExamplesTarget.HeaderKey];
                 if (!string.IsNullOrWhiteSpace(header))
                 {

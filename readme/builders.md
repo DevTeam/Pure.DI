@@ -1,7 +1,5 @@
 #### Builders
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/BuildersScenario.cs)
-
 Sometimes you need builders for all types inherited from <see cref=“T”/> available at compile time at the point where the method is called.
 
 

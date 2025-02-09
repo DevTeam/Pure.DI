@@ -1,7 +1,5 @@
 #### Complex generic root arguments
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Generics/ComplexGenericRootArgScenario.cs)
-
 
 ```c#
 using Pure.DI;

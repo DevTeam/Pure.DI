@@ -1,7 +1,5 @@
 #### Roots with filter
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/RootsWithFilterScenario.cs)
-
 
 ```c#
 using Shouldly;

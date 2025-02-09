@@ -1,7 +1,5 @@
 #### DI tracing via serilog
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Advanced/DITracingViaSerilogScenario.cs)
-
 
 ```c#
 using Serilog.Core;

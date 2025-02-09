@@ -1,7 +1,5 @@
 #### Disposable singleton
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Lifetimes/DisposableSingletonScenario.cs)
-
 To dispose all created singleton instances, simply dispose the composition instance:
 
 

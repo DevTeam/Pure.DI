@@ -1,7 +1,5 @@
 #### Composition roots
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/CompositionRootsScenario.cs)
-
 This example demonstrates several ways to create a composition root.
 > [!TIP]
 > There is no limit to the number of roots, but you should consider limiting the number of roots. Ideally, an application should have a single composition root.

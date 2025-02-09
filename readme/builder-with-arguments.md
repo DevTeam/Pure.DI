@@ -1,7 +1,5 @@
 #### Builder with arguments
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/BuilderWithArgumentsScenario.cs)
-
 Builders can be used with arguments as in the example below:
 
 

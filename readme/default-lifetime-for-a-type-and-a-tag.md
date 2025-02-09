@@ -1,7 +1,5 @@
 #### Default lifetime for a type and a tag
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Lifetimes/DefaultLifetimeForTypeAndTagScenario.cs)
-
 For example, if a certain lifetime is used more often than others, you can make it the default lifetime for a certain type:
 
 

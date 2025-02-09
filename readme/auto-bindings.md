@@ -1,7 +1,5 @@
 #### Auto-bindings
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/AutoBindingsScenario.cs)
-
 Injection of non-abstract types is possible without any additional effort.
 
 

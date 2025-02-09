@@ -1,7 +1,5 @@
 #### Generic composition roots
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Generics/GenericsCompositionRootsScenario.cs)
-
 Sometimes you want to be able to create composition roots with type parameters. In this case, the composition root can only be represented by a method.
 > [!IMPORTANT]
 > `Resolve()' methods cannot be used to resolve generic composition roots.

@@ -1,7 +1,5 @@
 #### Generic async composition roots with constraints
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Generics/GenericAsyncCompositionRootsWithConstraintsScenario.cs)
-
 > [!IMPORTANT]
 > `Resolve' methods cannot be used to resolve generic composition roots.
 

@@ -1,7 +1,5 @@
 #### Builders with a name template
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/BuildersWithNameTemplateScenario.cs)
-
 Sometimes you need to build up an existing composition root and inject all of its dependencies, in which case the `Builder` method will be useful, as in the example below:
 
 

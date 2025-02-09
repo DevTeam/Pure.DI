@@ -1,7 +1,5 @@
 #### Unity MonoBehaviours
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Unity/UnityMonoBehavioursScenario.cs)
-
 
 ```c#
 using Pure.DI;

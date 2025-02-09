@@ -1,7 +1,5 @@
 #### Transient
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Lifetimes/TransientScenario.cs)
-
 The _Transient_ lifetime specifies to create a new dependency instance each time. It is the default lifetime and can be omitted.
 
 
