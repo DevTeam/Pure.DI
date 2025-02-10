@@ -276,7 +276,8 @@ internal class ReadmeTarget(
                         .Replace("System.", "")
                         .Replace("Pure.DI.", "")
                         .Replace("Benchmarks.Model.", "")
-                        .Replace(salt, "")));
+                        .Replace(salt, "")
+                        .Replace("(MethodImplOptions)256", "MethodImplOptions.AggressiveInlining")));
 
             await examplesWriter.WriteLineAsync(generatedCode);
             await examplesWriter.WriteLineAsync("```");

@@ -14,8 +14,8 @@ $f=
 // ReSharper disable UnusedMember.Local
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable ArrangeTypeMemberModifiers
-
 // ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable ClassNeverInstantiated.Global
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Basics.InjectionsOfAbstractionsScenario;
 
