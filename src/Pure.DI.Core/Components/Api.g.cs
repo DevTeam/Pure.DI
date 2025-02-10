@@ -3018,230 +3018,167 @@ namespace Pure.DI
 #if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
         [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 #endif
-        private sealed class Configuration : IConfiguration
+        private sealed class Configuration : IConfiguration, IBinding
         {
-            public static readonly IConfiguration Shared = new Configuration();
-
-            private Configuration() { }
+            public static readonly Configuration Shared = new Configuration();
             
             /// <inheritdoc />
             public IBinding Bind(params object[] tags)
             {
-                return Binding.Shared;
+                return Shared;
             }
 
             /// <inheritdoc />
             public IBinding Bind<T>(params object[] tags)
             {
-                return Binding.Shared;
+                return Shared;
             }
 
             /// <inheritdoc />
             public IBinding Bind<T1, T2>(params object[] tags)
             {
-                return Binding.Shared;
+                return Shared;
             }
 
             /// <inheritdoc />
             public IBinding Bind<T1, T2, T3>(params object[] tags)
             {
-                return Binding.Shared;
+                return Shared;
             }
 
             /// <inheritdoc />
             public IBinding Bind<T1, T2, T3, T4>(params object[] tags)
             {
-                return Binding.Shared;
+                return Shared;
             }
             
             /// <inheritdoc />
             public IBinding Bind<T1, T2, T3, T4, T5>(params object[] tags)
             {
-                return Binding.Shared;
+                return Shared;
             }
 
             /// <inheritdoc />
             public IBinding Bind<T1, T2, T3, T4, T5, T6>(params object[] tags)
             {
-                return Binding.Shared;
+                return Shared;
             }
 
             /// <inheritdoc />
             public IBinding Bind<T1, T2, T3, T4, T5, T6, T7>(params object[] tags)
             {
-                return Binding.Shared;
+                return Shared;
             }
 
             /// <inheritdoc />
             public IBinding Bind<T1, T2, T3, T4, T5, T6, T7, T8>(params object[] tags)
             {
-                return Binding.Shared;
+                return Shared;
             }
 
             /// <inheritdoc />
             public IBinding RootBind<T>(string name, RootKinds kind, params object[] tags)
             {
-                return Binding.Shared;
+                return Shared;
             }
 
             /// <inheritdoc />
             public IConfiguration DependsOn(params string[] setupNames)
             {
-                return Configuration.Shared;
+                return Shared;
             }
 
             /// <inheritdoc />
             public IConfiguration GenericTypeArgumentAttribute<T>()
                 where T : global::System.Attribute
             {
-                return Configuration.Shared;
+                return Shared;
             }
             
             /// <inheritdoc />
             public IConfiguration TypeAttribute<T>(int typeArgumentPosition)
                 where T : global::System.Attribute
             {
-                return Configuration.Shared;
+                return Shared;
             }
 
             /// <inheritdoc />
             public IConfiguration TagAttribute<T>(int tagArgumentPosition)
                 where T : global::System.Attribute
             {
-                return Configuration.Shared;
+                return Shared;
             }
 
             /// <inheritdoc />
             public IConfiguration OrdinalAttribute<T>(int ordinalArgumentPosition)
                 where T : global::System.Attribute
             {
-                return Configuration.Shared;
+                return Shared;
             }
 
             /// <inheritdoc />
             public IConfiguration DefaultLifetime(Pure.DI.Lifetime lifetime)
             {
-                return Configuration.Shared;
+                return Shared;
             }
 
             /// <inheritdoc />
             public IConfiguration DefaultLifetime<T>(Lifetime lifetime, params object[] tags)
             {
-                return Configuration.Shared;
+                return Shared;
             }
 
             /// <inheritdoc />
             public IConfiguration Arg<T>(string name, params object[] tags)
             {
-                return Configuration.Shared;
+                return Shared;
             }
             
             /// <inheritdoc />
             public IConfiguration RootArg<T>(string name, params object[] tags)
             {
-                return Configuration.Shared;
+                return Shared;
             }
 
             /// <inheritdoc />
             public IConfiguration Root<T>(string name, object tag, RootKinds rootKind)
             {
-                return Configuration.Shared;
+                return Shared;
             }
 
             /// <inheritdoc />
             public IConfiguration Roots<T>(string name, RootKinds kind, string filter)
             {
-                return Configuration.Shared;
+                return Shared;
             }
 
             /// <inheritdoc />
             public IConfiguration Builder<T>(string name, RootKinds kind)
             {
-                return Configuration.Shared;
+                return Shared;
             }
             
             /// <inheritdoc />
             public IConfiguration Builders<T>(string name, RootKinds kind, string filter)
             {
-                return Configuration.Shared;
+                return Shared;
             }
 
             /// <inheritdoc />
             public IConfiguration Hint(Hint hint, string value)
             {
-                return Configuration.Shared;
+                return Shared;
             }
 
             /// <inheritdoc />
             public IConfiguration Accumulate<T, TAccumulator>(params Lifetime[] lifetimes)
                 where TAccumulator: new()
             {
-                return Configuration.Shared;
+                return Shared;
             }
 
             /// <inheritdoc />
             public IConfiguration GenericTypeArgument<T>()
-            {
-                return Configuration.Shared;
-            }
-        }
-
-        private sealed class Binding : IBinding
-        {
-            public static readonly IBinding Shared = new Binding();
-
-            private Binding() { }
-            
-            /// <inheritdoc />
-            public IBinding Bind(params object[] tags)
-            {
-                return Shared;
-            }
-
-            /// <inheritdoc />
-            public IBinding Bind<T>(params object[] tags)
-            {
-                return Shared;
-            }
-
-            /// <inheritdoc />
-            public IBinding Bind<T1, T2>(params object[] tags)
-            {
-                return Shared;
-            }
-
-            /// <inheritdoc />
-            public IBinding Bind<T1, T2, T3>(params object[] tags)
-            {
-                return Shared;
-            }
-
-            /// <inheritdoc />
-            public IBinding Bind<T1, T2, T3, T4>(params object[] tags)
-            {
-                return Shared;
-            }
-
-            /// <inheritdoc />
-            public IBinding Bind<T1, T2, T3, T4, T5>(params object[] tags)
-            {
-                return Shared;
-            }
-
-            /// <inheritdoc />
-            public IBinding Bind<T1, T2, T3, T4, T5, T6>(params object[] tags)
-            {
-                return Shared;
-            }
-
-            /// <inheritdoc />
-            public IBinding Bind<T1, T2, T3, T4, T5, T6, T7>(params object[] tags)
-            {
-                return Shared;
-            }
-
-            /// <inheritdoc />
-            public IBinding Bind<T1, T2, T3, T4, T5, T6, T7, T8>(params object[] tags)
             {
                 return Shared;
             }
@@ -3261,67 +3198,67 @@ namespace Pure.DI
             /// <inheritdoc />
             public IConfiguration To<T>()
             {
-                return Configuration.Shared;
+                return Shared;
             }
 
             /// <inheritdoc />
             public IConfiguration To<T>(global::System.Func<IContext, T> factory)
             {
-                return Configuration.Shared;
+                return Shared;
             }
 
             /// <inheritdoc />
             public IConfiguration To<T>(string sourceCodeStatement)
             {
-                return Configuration.Shared;
+                return Shared;
             }
 
             /// <inheritdoc />
             public IConfiguration To<T1, T>(global::System.Func<T1, T> factory)
             {
-                return Configuration.Shared;
+                return Shared;
             }
 
             /// <inheritdoc />
             public IConfiguration To<T1, T2, T>(global::System.Func<T1, T2, T> factory)
             {
-                return Configuration.Shared;
+                return Shared;
             }
 
             /// <inheritdoc />
             public IConfiguration To<T1, T2, T3, T>(global::System.Func<T1, T2, T3, T> factory)
             {
-                return Configuration.Shared;
+                return Shared;
             }
 
             /// <inheritdoc />
             public IConfiguration To<T1, T2, T3, T4, T>(Func<T1, T2, T3, T4, T> factory)
             {
-                return Configuration.Shared;
+                return Shared;
             }
 
             /// <inheritdoc />
             public IConfiguration To<T1, T2, T3, T4, T5, T>(Func<T1, T2, T3, T4, T5, T> factory)
             {
-                return Configuration.Shared;
+                return Shared;
             }
 
             /// <inheritdoc />
             public IConfiguration To<T1, T2, T3, T4, T5, T6, T>(Func<T1, T2, T3, T4, T5, T6, T> factory)
             {
-                return Configuration.Shared;
+                return Shared;
             }
 
             /// <inheritdoc />
             public IConfiguration To<T1, T2, T3, T4, T5, T6, T7, T>(Func<T1, T2, T3, T4, T5, T6, T7, T> factory)
             {
-                return Configuration.Shared;
+                return Shared;
             }
 
             /// <inheritdoc />
             public IConfiguration To<T1, T2, T3, T4, T5, T6, T7, T8, T>(Func<T1, T2, T3, T4, T5, T6, T7, T8, T> factory)
             {
-                return Configuration.Shared;
+                return Shared;
             }
         }
     }
@@ -3358,6 +3295,7 @@ namespace Pure.DI
 #endif
     internal static class Buckets<TKey, TValue>
     {
+        [global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         public static uint GetDivisor(uint count)
         {
             return count < 2 ? count : count << 1;
