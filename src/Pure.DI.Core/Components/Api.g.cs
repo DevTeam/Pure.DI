@@ -3295,7 +3295,7 @@ namespace Pure.DI
 #endif
     internal static class Buckets<TKey, TValue>
     {
-        [global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+        [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
         public static uint GetDivisor(uint count)
         {
             return count < 2 ? count : count << 1;

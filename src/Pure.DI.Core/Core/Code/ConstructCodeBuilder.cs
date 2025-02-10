@@ -4,7 +4,8 @@ namespace Pure.DI.Core.Code;
 
 internal class ConstructCodeBuilder(
     ITypeResolver typeResolver,
-    ICompilations compilations)
+    ICompilations compilations,
+    IBuildTools buildTools)
     : ICodeBuilder<DpConstruct>
 {
     public void Build(BuildContext ctx, in DpConstruct construct)
@@ -56,7 +57,7 @@ internal class ConstructCodeBuilder(
         var localMethodName = $"{Names.EnumerateMethodNamePrefix}_{variable.VariableDeclarationName}".Replace("__", "_");
         if (compilations.GetLanguageVersion(enumerable.Source.SemanticModel.Compilation) >= LanguageVersion.CSharp9)
         {
-            code.AppendLine($"[{Names.MethodImplAttributeName}({Names.MethodImplAggressiveInlining})]");
+            buildTools.AddAggressiveInlining(code);
         }
 
         code.AppendLine($"{methodPrefix}{typeResolver.Resolve(ctx.DependencyGraph.Source, variable.InstanceType)} {localMethodName}()");

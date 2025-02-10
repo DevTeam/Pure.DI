@@ -122,7 +122,7 @@ internal sealed class RootMethodsBuilder(
 
         if (root.IsMethod)
         {
-            code.AppendLine($"[{Names.MethodImplAttributeName}({Names.MethodImplAggressiveInlining})]");
+            buildTools.AddAggressiveInlining(code);
         }
 
         code.AppendLine(name.ToString());
@@ -187,7 +187,7 @@ internal sealed class RootMethodsBuilder(
             }
             else
             {
-                code.AppendLine($"[{Names.MethodImplAttributeName}({Names.MethodImplAggressiveInlining})]");
+                buildTools.AddAggressiveInlining(code);
                 code.AppendLine("get");
                 code.AppendLine("{");
                 indentToken = code.Indent();

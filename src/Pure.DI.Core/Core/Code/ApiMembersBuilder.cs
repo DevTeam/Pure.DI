@@ -27,7 +27,7 @@ internal sealed class ApiMembersBuilder(
             }
 
             buildTools.AddPureHeader(apiCode);
-            apiCode.AppendLine($"[{Names.MethodImplAttributeName}({Names.MethodImplAggressiveInlining})]");
+            buildTools.AddAggressiveInlining(apiCode);
             apiCode.AppendLine($"{hints.ResolveMethodModifiers} T {hints.ResolveMethodName}<T>()");
             apiCode.AppendLine("{");
             using (apiCode.Indent())
@@ -50,7 +50,7 @@ internal sealed class ApiMembersBuilder(
             }
 
             buildTools.AddPureHeader(apiCode);
-            apiCode.AppendLine($"[{Names.MethodImplAttributeName}({Names.MethodImplAggressiveInlining})]");
+            buildTools.AddAggressiveInlining(apiCode);
             apiCode.AppendLine($"{hints.ResolveByTagMethodModifiers} T {hints.ResolveByTagMethodName}<T>(object{nullable} tag)");
             apiCode.AppendLine("{");
             using (apiCode.Indent())
@@ -175,7 +175,7 @@ internal sealed class ApiMembersBuilder(
         LinesBuilder code)
     {
         buildTools.AddPureHeader(code);
-        code.AppendLine($"[{Names.MethodImplAttributeName}({Names.MethodImplAggressiveInlining})]");
+        buildTools.AddAggressiveInlining(code);
         code.AppendLine($"{methodModifiers} object {methodName}({methodArgs})");
         code.AppendLine("{");
         using (code.Indent())

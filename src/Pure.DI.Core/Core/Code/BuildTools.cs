@@ -163,6 +163,11 @@ internal class BuildTools(
         return lines;
     }
 
+    public void AddAggressiveInlining(LinesBuilder code)
+    {
+        code.AppendLine($"[{Names.MethodImplAttributeName}(({Names.MethodImplOptionsName})256)]");
+    }
+
     private static bool FilterAccumulator(Accumulator accumulator, Lifetime lifetime)
     {
         if (accumulator.Lifetime != lifetime)

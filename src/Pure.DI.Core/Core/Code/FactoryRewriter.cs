@@ -20,8 +20,8 @@ internal sealed class FactoryRewriter(
                 SyntaxFactory.IdentifierName(Names.MethodImplAttributeName),
                 SyntaxFactory.AttributeArgumentList().AddArguments(
                     SyntaxFactory.AttributeArgument(
-                        SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.ParseTypeName(Names.MethodImplOptionsName), SyntaxFactory.IdentifierName(Names.MethodImplAggressiveInliningOptionsName))))))
-        .WithTrailingTrivia(SyntaxTriviaList.Create(SyntaxFactory.SyntaxTrivia(SyntaxKind.WhitespaceTrivia, " ")));
+                        SyntaxFactory.CastExpression(SyntaxFactory.ParseTypeName($"{Names.MethodImplOptionsName}"), SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(256)))))
+        .WithTrailingTrivia(SyntaxTriviaList.Create(SyntaxFactory.SyntaxTrivia(SyntaxKind.WhitespaceTrivia, " ")))));
 
     private static readonly IdentifierNameSyntax InjectionMarkerExpression = SyntaxFactory.IdentifierName(Names.InjectionMarker);
     private static readonly IdentifierNameSyntax InitializationMarkerExpression = SyntaxFactory.IdentifierName(Names.InitializationMarker);

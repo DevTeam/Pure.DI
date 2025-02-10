@@ -144,7 +144,7 @@ internal class BlockCodeBuilder(
                     var localMethodCode = ctx.LocalFunctionsCode;
                     if (compilations.GetLanguageVersion(compilation) >= LanguageVersion.CSharp9)
                     {
-                        localMethodCode.AppendLine($"[{Names.MethodImplAttributeName}({Names.MethodImplAggressiveInlining})]");
+                        buildTools.AddAggressiveInlining(localMethodCode);
                     }
 
                     localMethodCode.AppendLine($"void {localMethodName}()");

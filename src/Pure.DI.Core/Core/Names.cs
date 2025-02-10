@@ -19,8 +19,6 @@ internal static class Names
     // Attributes
     public const string MethodImplAttributeName = $"{SystemNamespace}Runtime.CompilerServices.MethodImpl";
     public const string MethodImplOptionsName = $"{SystemNamespace}Runtime.CompilerServices.{nameof(MethodImplOptions)}";
-    public const string MethodImplAggressiveInliningOptionsName = nameof(MethodImplOptions.AggressiveInlining);
-    public const string MethodImplAggressiveInlining = $"{MethodImplOptionsName}.{MethodImplAggressiveInliningOptionsName}";
     public const string MethodImplNoInlining = $"{MethodImplOptionsName}.{nameof(MethodImplOptions.NoInlining)}";
 
     // Messages
