@@ -7,6 +7,7 @@ using static Hint;
 using static Lifetime;
 using static RootKinds;
 using static Tag;
+using Metadata = Core.Metadata;
 
 public sealed partial class Generator
 {
@@ -55,6 +56,7 @@ public sealed partial class Generator
                 .Bind().To<Cache<TT1, TT2>>()
                 .Bind().To<ObserversRegistry>()
                 .Bind().To((IBuilder<Unit, IEnumerable<Source>> api) => api.Build(Unit.Shared))
+                .Bind().To<Metadata>()
 
             .DefaultLifetime(PerBlock)
                 .Bind().To<Arguments>()

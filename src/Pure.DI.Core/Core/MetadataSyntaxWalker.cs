@@ -11,7 +11,7 @@ namespace Pure.DI.Core;
 
 internal sealed class MetadataSyntaxWalker(
     IApiInvocationProcessor invocationProcessor,
-    ISymbolNames symbolNames,
+    IMetadata metadata,
     CancellationToken cancellationToken)
     : CSharpSyntaxWalker, IMetadataSyntaxWalker
 {
@@ -66,7 +66,7 @@ internal sealed class MetadataSyntaxWalker(
     public override void VisitInvocationExpression(InvocationExpressionSyntax invocation)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        if (_isMetadata || IsMetadata(invocation))
+        if (_isMetadata || metadata.IsMetadata(invocation, _semanticModel, cancellationToken))
         {
             _invocations.Push(invocation);
         }
@@ -82,33 +82,5 @@ internal sealed class MetadataSyntaxWalker(
     {
         _namespace = namespaceDeclaration.Name.ToString().Trim();
         base.VisitNamespaceDeclaration(namespaceDeclaration);
-    }
-
-    [SuppressMessage("ReSharper", "SuggestBaseTypeForParameter")]
-    private bool IsMetadata(InvocationExpressionSyntax invocation)
-    {
-        foreach (var curInvocation in invocation.DescendantNodesAndSelf().OfType<InvocationExpressionSyntax>().Reverse())
-        {
-            switch (curInvocation.Expression)
-            {
-                case IdentifierNameSyntax { Identifier.Text: nameof(DI.Setup) }:
-                case MemberAccessExpressionSyntax memberAccess
-                    when memberAccess.Kind() == SyntaxKind.SimpleMemberAccessExpression
-                         && memberAccess.Name.Identifier.Text == nameof(DI.Setup)
-                         && (memberAccess.Expression is IdentifierNameSyntax { Identifier.Text: nameof(DI) }
-                             || memberAccess.Expression is MemberAccessExpressionSyntax firstMemberAccess && firstMemberAccess.Kind() == SyntaxKind.SimpleMemberAccessExpression && firstMemberAccess.Name.Identifier.Text == nameof(DI)):
-
-                    if (_semanticModel?.GetTypeInfo(curInvocation) is { } typeInfo
-                        && (typeInfo.Type ?? typeInfo.ConvertedType) is { } type
-                        && symbolNames.GetGlobalName(type) == Names.IConfigurationTypeName)
-                    {
-                        return true;
-                    }
-
-                    break;
-            }
-        }
-
-        return false;
     }
 }

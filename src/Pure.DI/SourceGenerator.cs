@@ -5,7 +5,7 @@ namespace Pure.DI;
 [Generator(LanguageNames.CSharp)]
 public class SourceGenerator : IIncrementalGenerator
 {
-    private readonly Generator _generator = new();
+    private static readonly Generator Generator = new();
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
@@ -15,7 +15,7 @@ public class SourceGenerator : IIncrementalGenerator
 
         context.RegisterPostInitializationOutput(initializationContext =>
         {
-            foreach (var apiSource in _generator.Api)
+            foreach (var apiSource in Generator.Api)
             {
                 initializationContext.AddSource(apiSource.HintName, apiSource.SourceText);
             }
@@ -28,7 +28,7 @@ public class SourceGenerator : IIncrementalGenerator
                 static (syntaxContext, _) => syntaxContext).Collect());
 
         context.RegisterSourceOutput(valuesProvider, (sourceProductionContext, options) =>
-            _generator.Generate(
+            Generator.Generate(
                 options.Left.Right,
                 options.Left.Left,
                 sourceProductionContext,
