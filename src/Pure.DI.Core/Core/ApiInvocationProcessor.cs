@@ -5,7 +5,7 @@ namespace Pure.DI.Core;
 
 using Microsoft.CodeAnalysis.Operations;
 
-internal class ApiInvocationProcessor(
+internal sealed class ApiInvocationProcessor(
     IComments comments,
     IArguments arguments,
     ISemantic semantic,
@@ -508,8 +508,8 @@ internal class ApiInvocationProcessor(
                 baseSymbolsProvider.GetBaseSymbols(type, (t, _) => t is INamedTypeSymbol)
                     .OfType<INamedTypeSymbol>()
                     .Select(typeSymbol => typeSymbol.IsGenericType ? typeSymbol.ConstructUnboundGenericType() : typeSymbol)
-                    .Any(typeSymbol => SymbolEqualityComparer.Default.Equals(baseType, typeSymbol)))
-            .Where(type => !SymbolEqualityComparer.Default.Equals(baseType, type))
+                    .Any(typeSymbol => types.TypeEquals(baseType, typeSymbol)))
+            .Where(type => !types.TypeEquals(baseType, type))
             .Where(type => wildcardMatcher.Match(wildcardFilter.AsSpan(), symbolNames.GetName(type).AsSpan()))
             .Select(typeSymbol =>
             {

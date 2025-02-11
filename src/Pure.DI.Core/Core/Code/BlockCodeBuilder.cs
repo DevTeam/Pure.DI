@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core.Code;
 
-internal class BlockCodeBuilder(
+internal sealed class BlockCodeBuilder(
     INodeInfo nodeInfo,
     ICompilations compilations,
     ILocks locks,

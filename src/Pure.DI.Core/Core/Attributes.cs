@@ -3,7 +3,7 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal class Attributes(
+internal sealed class Attributes(
     ISemantic semantic,
     ISymbolNames symbolNames)
     : IAttributes

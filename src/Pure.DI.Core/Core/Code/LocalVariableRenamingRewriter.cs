@@ -4,7 +4,7 @@ namespace Pure.DI.Core.Code;
 
 using System.Collections.Generic;
 
-internal class LocalVariableRenamingRewriter(
+internal sealed class LocalVariableRenamingRewriter(
     IIdGenerator idGenerator,
     SemanticModel semanticModel,
     ITriviaTools triviaTools)

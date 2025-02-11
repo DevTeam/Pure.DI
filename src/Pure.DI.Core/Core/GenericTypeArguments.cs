@@ -3,7 +3,7 @@ namespace Pure.DI.Core;
 
 using System.Collections.Concurrent;
 
-internal class GenericTypeArguments(ISymbolNames symbolNames) : IGenericTypeArguments
+internal sealed class GenericTypeArguments(ISymbolNames symbolNames) : IGenericTypeArguments
 {
     private readonly ConcurrentDictionary<MdSetup, HashSet<string>> _genericTypeArgumentTypes = new();
     private readonly ConcurrentDictionary<MdSetup, HashSet<string>> _genericTypeArgumentAttributesTypes = new();

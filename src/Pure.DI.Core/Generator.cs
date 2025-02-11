@@ -71,7 +71,6 @@ public sealed partial class Generator
                 .Bind().To<BaseSymbolsProvider>()
                 .Bind().To<Formatter>()
                 .Bind().To<NodeInfo>()
-                .Bind<IEqualityComparer<INamedTypeSymbol>>().To<NamedTypeSymbolEqualityComparer>()
                 .Bind().To<ExceptionHandler>()
                 .Bind().To<WildcardMatcher>()
                 .Bind().To<InjectionSiteFactory>()
@@ -160,6 +159,5 @@ public sealed partial class Generator
                 .Bind().To<Locks>()
                 .Bind().To<RootAccessModifierResolver>()
                 .Bind().To<SmartTags>()
-                .Bind().To<GenericTypeArguments>()
-                .Bind().To<SymbolNames>();
+                .Bind().To<GenericTypeArguments>();
 }

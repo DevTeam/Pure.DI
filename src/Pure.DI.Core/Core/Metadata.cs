@@ -1,7 +1,7 @@
 ﻿namespace Pure.DI.Core;
 
-internal class Metadata(
-    ISymbolNames symbolNames)
+internal sealed class Metadata(
+    ITypes types)
     : IMetadata
 {
     public bool IsMetadata(SyntaxNode node, SemanticModel? semanticModel, CancellationToken cancellationToken)
@@ -44,5 +44,5 @@ internal class Metadata(
     private bool ReturnConfiguration(InvocationExpressionSyntax invocation, SemanticModel semanticModel) =>
         semanticModel.GetTypeInfo(invocation) is var typeInfo
         && (typeInfo.Type ?? typeInfo.ConvertedType) is { } type
-        && symbolNames.GetGlobalName(type) == Names.IConfigurationTypeName;
+        && types.TypeEquals(type, types.TryGet(SpecialType.IConfiguration, semanticModel.Compilation));
 }

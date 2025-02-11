@@ -6,7 +6,7 @@ namespace Pure.DI.Core.Code;
 
 using static Tag;
 
-internal class BuildTools(
+internal sealed class BuildTools(
     IFilter filter,
     ITypeResolver typeResolver,
     IBaseSymbolsProvider baseSymbolsProvider,

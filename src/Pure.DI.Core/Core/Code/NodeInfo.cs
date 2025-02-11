@@ -4,7 +4,7 @@ namespace Pure.DI.Core.Code;
 
 using SpecialType = Microsoft.CodeAnalysis.SpecialType;
 
-internal class NodeInfo(ITypes types) : INodeInfo
+internal sealed class NodeInfo(ITypes types) : INodeInfo
 {
     public bool IsDelegate(DependencyNode node) =>
         node.Type.TypeKind == TypeKind.Delegate;
@@ -31,5 +31,5 @@ internal class NodeInfo(ITypes types) : INodeInfo
 
     private bool IsAsyncDisposable(Compilation compilation, ISymbol type) =>
         types.TryGet(Core.SpecialType.IAsyncDisposable, compilation) is { } asyncDisposableType
-        && SymbolEqualityComparer.Default.Equals(type, asyncDisposableType);
+        && types.TypeEquals(type, asyncDisposableType);
 }

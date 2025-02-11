@@ -18,6 +18,7 @@ internal sealed class DependencyGraphBuilder(
     ICache<INamedTypeSymbol, MdConstructKind> constructKinds,
     IRegistryManager<MdBinding> registryManager,
     ISymbolNames symbolNames,
+    ITypes types,
     CancellationToken cancellationToken)
     : IDependencyGraphBuilder
 {
@@ -643,7 +644,7 @@ internal sealed class DependencyGraphBuilder(
                 }
             }
 
-            if (SymbolEqualityComparer.Default.Equals(contractType, elementType))
+            if (types.TypeEquals(contractType, elementType))
             {
                 yield return contract;
             }

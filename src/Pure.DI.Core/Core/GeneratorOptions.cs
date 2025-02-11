@@ -1,6 +1,6 @@
 namespace Pure.DI.Core;
 
-internal class GeneratorOptions(
+internal sealed class GeneratorOptions(
     ParseOptions parseOptions,
     AnalyzerConfigOptionsProvider analyzerConfigOptionsProvider)
     : IGeneratorOptions

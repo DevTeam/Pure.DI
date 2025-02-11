@@ -1,6 +1,6 @@
 namespace Pure.DI.Core.Code;
 
-internal class VariablesMap : Dictionary<MdBinding, Variable>
+internal sealed class VariablesMap : Dictionary<MdBinding, Variable>
 {
     public void Reset()
     {

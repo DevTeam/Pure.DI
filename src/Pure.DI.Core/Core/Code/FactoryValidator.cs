@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core.Code;
 
-internal class FactoryValidator(DpFactory factory) : CSharpSyntaxWalker
+internal sealed class FactoryValidator(DpFactory factory) : CSharpSyntaxWalker
 {
     private readonly string _contextParameterName = factory.Source.Context.Identifier.Text;
 

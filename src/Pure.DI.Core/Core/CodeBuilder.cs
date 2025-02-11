@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core;
 
-internal class CodeBuilder(
+internal sealed class CodeBuilder(
     IObserversProvider observersProvider,
     IBuilder<MdSetup, DependencyGraph?> dependencyGraphBuilder,
     IEnumerable<IValidator<MdSetup>> metadataValidators,

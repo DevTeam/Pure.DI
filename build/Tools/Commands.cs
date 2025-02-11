@@ -19,7 +19,7 @@ internal class Commands(RootCommand rootCommand)
             try
             {
                 var result = await target.RunAsync(ctx.GetCancellationToken());
-                Summary($"\"{description}\" finished with result: {result}");
+                Summary($"\"{description}\" ", "finished".WithColor(Color.Success), " with result ", result.WithColor(Color.Details));
             }
             catch (Exception)
             {

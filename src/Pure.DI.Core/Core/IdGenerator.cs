@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core;
 
-internal class IdGenerator : IIdGenerator
+internal sealed class IdGenerator : IIdGenerator
 {
     private int _id = -1;
 

@@ -3,7 +3,7 @@
 
 namespace Pure.DI.Core;
 
-internal class Registry<T> : IRegistryManager<T>, IRegistry<T>
+internal sealed class Registry<T> : IRegistryManager<T>, IRegistry<T>
 {
     private readonly HashSet<Key> _registered = [];
 

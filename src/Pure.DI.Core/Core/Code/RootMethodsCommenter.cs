@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core.Code;
 
-internal class RootMethodsCommenter(
+internal sealed class RootMethodsCommenter(
     IFormatter formatter,
     IComments comments)
     : ICommenter<Root>

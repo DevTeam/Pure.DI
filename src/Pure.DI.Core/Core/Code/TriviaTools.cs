@@ -2,7 +2,7 @@
 // ReSharper disable ConvertIfStatementToReturnStatement
 namespace Pure.DI.Core.Code;
 
-internal class TriviaTools : ITriviaTools
+internal sealed class TriviaTools : ITriviaTools
 {
     public T PreserveTrivia<T>(IHints hints, T newNode, SyntaxNode prevNode)
         where T: SyntaxNode

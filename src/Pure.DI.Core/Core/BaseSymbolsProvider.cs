@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core;
 
-internal class BaseSymbolsProvider : IBaseSymbolsProvider
+internal sealed class BaseSymbolsProvider : IBaseSymbolsProvider
 {
     public IEnumerable<ITypeSymbol> GetBaseSymbols(
         ITypeSymbol symbol,

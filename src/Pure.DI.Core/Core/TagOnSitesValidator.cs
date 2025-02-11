@@ -2,7 +2,7 @@
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.Core;
 
-internal class TagOnSitesValidator(ILogger logger, IRegistry<MdInjectionSite> registry)
+internal sealed class TagOnSitesValidator(ILogger logger, IRegistry<MdInjectionSite> registry)
     : IValidator<DependencyGraph>
 {
     public bool Validate(DependencyGraph data)

@@ -2,7 +2,7 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal class SmartTags : ISmartTags
+internal sealed class SmartTags : ISmartTags
 {
     private readonly HashSet<SmartTag> _tags = [];
     

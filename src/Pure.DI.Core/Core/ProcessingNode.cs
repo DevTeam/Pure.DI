@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core;
 
-internal class ProcessingNode : IEquatable<ProcessingNode>
+internal sealed class ProcessingNode : IEquatable<ProcessingNode>
 {
     public readonly DependencyNode Node;
     private readonly Lazy<ImmutableArray<InjectionInfo>> _injections;

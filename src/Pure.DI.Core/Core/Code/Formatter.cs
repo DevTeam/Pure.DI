@@ -3,7 +3,7 @@
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.Core.Code;
 
-internal class Formatter(
+internal sealed class Formatter(
     IComments comments,
     ITypeResolver typeResolver)
     : IFormatter

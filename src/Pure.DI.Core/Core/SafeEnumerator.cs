@@ -1,7 +1,7 @@
 ﻿#pragma warning disable CS8766 // Nullability of reference types in return type doesn't match implicitly implemented member (possibly because of nullability attributes).
 namespace Pure.DI.Core;
 
-internal class SafeEnumerator<T>(IEnumerator<T> source): IEnumerator<T>
+internal sealed class SafeEnumerator<T>(IEnumerator<T> source): IEnumerator<T>
     where T: class
 {
     private T? _current;

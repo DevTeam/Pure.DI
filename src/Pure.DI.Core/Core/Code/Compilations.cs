@@ -1,7 +1,7 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
-internal class Compilations : ICompilations
+internal sealed class Compilations : ICompilations
 {
     public LanguageVersion GetLanguageVersion(Compilation compilation) =>
         compilation is CSharpCompilation sharpCompilation

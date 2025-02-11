@@ -3,7 +3,7 @@
 
 namespace Pure.DI.Core.Code;
 
-internal class CompositionBuilder(
+internal sealed class CompositionBuilder(
     IBuildTools buildTools,
     INodeInfo nodeInfo,
     ITypeResolver typeResolver,

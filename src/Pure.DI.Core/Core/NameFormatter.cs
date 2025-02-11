@@ -1,7 +1,7 @@
 ﻿// ReSharper disable MemberCanBePrivate.Global
 namespace Pure.DI.Core;
 
-internal class NameFormatter : INameFormatter
+internal sealed class NameFormatter : INameFormatter
 {
     private static readonly SymbolDisplayFormat TypeFormat = new(
         globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.Omitted,

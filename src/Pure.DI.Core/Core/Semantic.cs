@@ -4,7 +4,7 @@ namespace Pure.DI.Core;
 
 using Microsoft.CodeAnalysis.Operations;
 
-internal class Semantic(
+internal sealed class Semantic(
     IInjectionSiteFactory injectionSiteFactory,
     IWildcardMatcher wildcardMatcher,
     ITypes types,
@@ -243,7 +243,7 @@ internal class Semantic(
 
     private bool IsSpecialType(SemanticModel semanticModel, SyntaxNode node, SpecialType specialType) =>
         semanticModel.GetTypeInfo(node).Type is { } type
-        && type.Equals(types.TryGet(specialType, semanticModel.Compilation), SymbolEqualityComparer.Default);
+        && types.TypeEquals(type, types.TryGet(specialType, semanticModel.Compilation));
 
     public bool IsValidNamespace(INamespaceSymbol? namespaceSymbol) => 
         namespaceSymbol is { IsImplicitlyDeclared: false };

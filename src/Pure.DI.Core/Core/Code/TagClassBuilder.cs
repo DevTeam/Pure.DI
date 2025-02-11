@@ -2,11 +2,12 @@
 // ReSharper disable UnusedVariable
 namespace Pure.DI.Core.Code;
 
-internal class TagClassBuilder(
+internal sealed class TagClassBuilder(
     IInformation information,
     ISmartTags smartTags,
     IFormatter formatter,
     IComments comments,
+    ITypes types,
     CancellationToken cancellationToken)
     : IBuilder<TagContext, TagCode>
 {
@@ -28,7 +29,7 @@ internal class TagClassBuilder(
                         .Select(k => (
                             tag: comments.Escape(k.Injection.Tag != null && k.Injection.Tag is not MdTagOnSites ? $"({k.Injection.Tag})" : ""),
                             target: formatter.FormatRef(k.Target.Type),
-                            injectin: k.Injection.Type.Equals(k.Source.Type, SymbolEqualityComparer.Default) ? "" : formatter.FormatRef(k.Injection.Type),
+                            injectin: types.TypeEquals(k.Injection.Type, k.Source.Type) ? "" : formatter.FormatRef(k.Injection.Type),
                             source: formatter.FormatRef(k.Source.Type),
                             sourceLifetime: formatter.FormatRef(k.Source.Lifetime)))
                         .Select(k => $"/// <item>{k.target} &lt;-- {k.injectin}{k.tag} -- {k.source} as {k.sourceLifetime}</item>")

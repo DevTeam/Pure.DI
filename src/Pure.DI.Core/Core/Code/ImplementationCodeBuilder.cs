@@ -3,7 +3,7 @@
 
 namespace Pure.DI.Core.Code;
 
-internal class ImplementationCodeBuilder(
+internal sealed class ImplementationCodeBuilder(
     ITypeResolver typeResolver,
     IInjections injections,
     CancellationToken cancellationToken)

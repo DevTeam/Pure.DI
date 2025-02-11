@@ -4,7 +4,8 @@ namespace Pure.DI.Core;
 
 internal sealed class FactoryTypeRewriter(
     IMarker marker,
-    ITypeResolver typeResolver)
+    ITypeResolver typeResolver,
+    ITypes types)
     : CSharpSyntaxRewriter, IBuilder<RewriterContext<MdFactory>, MdFactory>
 {
     private RewriterContext<MdFactory> _context;
@@ -92,7 +93,7 @@ internal sealed class FactoryTypeRewriter(
         }
 
         var newType = _context.TypeConstructor.Construct(_context.Setup, _context.State.SemanticModel.Compilation, type);
-        if (!inTree && SymbolEqualityComparer.Default.Equals(newType, type))
+        if (!inTree && types.TypeEquals(newType, type))
         {
             return false;
         }

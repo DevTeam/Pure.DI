@@ -1,7 +1,7 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal class RootAccessModifierResolver : IRootAccessModifierResolver
+internal sealed class RootAccessModifierResolver : IRootAccessModifierResolver
 {
     public Accessibility Resolve(Root root) =>
         root.IsPublic switch

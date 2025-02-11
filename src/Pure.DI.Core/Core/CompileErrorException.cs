@@ -1,6 +1,6 @@
 namespace Pure.DI.Core;
 
-internal class CompileErrorException(string errorMessage, in Location location, string id)
+internal sealed class CompileErrorException(string errorMessage, in Location location, string id)
     : Exception
 {
     public string ErrorMessage { get; } = errorMessage;

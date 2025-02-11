@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core.Models;
 
-internal class SmartTag(string name)
+internal sealed class SmartTag(string name)
 {
     public string Name { get; } = name;
 

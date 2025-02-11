@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core.Code;
 
-internal class ParameterizedConstructorCommenter(
+internal sealed class ParameterizedConstructorCommenter(
     IComments comments)
     : ICommenter<Unit>
 {

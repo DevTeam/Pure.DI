@@ -4,7 +4,7 @@
 
 namespace Pure.DI.Core.Code;
 
-internal class FactoryCodeBuilder(
+internal sealed class FactoryCodeBuilder(
     IIdGenerator idGenerator,
     INodeInfo nodeInfo,
     IArguments arguments,

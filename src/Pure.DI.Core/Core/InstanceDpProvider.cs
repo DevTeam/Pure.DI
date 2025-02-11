@@ -1,7 +1,7 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal class InstanceDpProvider(
+internal sealed class InstanceDpProvider(
     ISemantic semantic,
     IAttributes attributes,
     IWildcardMatcher wildcardMatcher,

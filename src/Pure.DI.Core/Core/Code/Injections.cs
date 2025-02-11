@@ -1,7 +1,7 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
-internal class Injections : IInjections
+internal sealed class Injections : IInjections
 {
     public void FieldInjection(string targetName, BuildContext ctx, DpField field, Variable fieldVariable)
     {

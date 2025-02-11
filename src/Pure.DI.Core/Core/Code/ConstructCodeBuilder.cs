@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core.Code;
 
-internal class ConstructCodeBuilder(
+internal sealed class ConstructCodeBuilder(
     ITypeResolver typeResolver,
     ICompilations compilations,
     IBuildTools buildTools)

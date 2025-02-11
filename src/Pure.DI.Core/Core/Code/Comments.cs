@@ -4,7 +4,7 @@ namespace Pure.DI.Core.Code;
 
 using System.Text.RegularExpressions;
 
-internal class Comments : IComments
+internal sealed class Comments : IComments
 {
     private static readonly Regex CommentRegex = new(@"//\s*(.+)", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Singleline);
     private static readonly Regex HintCommentRegex = new($@"\s*({string.Join("|", Enum.GetNames(typeof(Hint)))})\s*=\s*(.+)\s*", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Singleline);

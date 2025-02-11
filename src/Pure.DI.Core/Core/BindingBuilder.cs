@@ -5,9 +5,10 @@ namespace Pure.DI.Core;
 
 using static Tag;
 
-internal class BindingBuilder(
+internal sealed class BindingBuilder(
     [Tag(Tag.UniqueTag)] IIdGenerator idGenerator,
-    IBaseSymbolsProvider baseSymbolsProvider)
+    IBaseSymbolsProvider baseSymbolsProvider,
+    ITypes types)
     : IBindingBuilder
 {
     private readonly LinkedList<MdDefaultLifetime> _defaultLifetimes = [];
@@ -198,7 +199,7 @@ internal class BindingBuilder(
                     if (!tags.IsEmpty)
                     {
                         var bindingTags = implementationTags.ToImmutableHashSet();
-                        var contractTags = _contracts.FirstOrDefault(j => SymbolEqualityComparer.Default.Equals(j.ContractType, i)).Tags;
+                        var contractTags = _contracts.FirstOrDefault(j => types.TypeEquals(j.ContractType, i)).Tags;
                         if (!contractTags.IsDefaultOrEmpty)
                         {
                             bindingTags = bindingTags.Union(contractTags);
@@ -210,7 +211,7 @@ internal class BindingBuilder(
                         }
                     }
 
-                    return SymbolEqualityComparer.Default.Equals(defaultLifetime.Type, i);
+                    return types.TypeEquals(defaultLifetime.Type, i);
                 });
 
                 if (baseSymbols.Any())

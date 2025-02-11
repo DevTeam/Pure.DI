@@ -1,7 +1,7 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal class LifetimeAnalyzer : ILifetimeAnalyzer
+internal sealed class LifetimeAnalyzer : ILifetimeAnalyzer
 {
     // Lifetimes sorted by potential state storage duration from least to greatest.
     private static readonly List<Lifetime> LifetimesByPriority =

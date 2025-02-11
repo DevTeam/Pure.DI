@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core;
 
-internal class Arguments : IArguments
+internal sealed class Arguments : IArguments
 {
     public ArgumentSyntax?[] GetArgs(
         BaseArgumentListSyntax argumentListSyntax,

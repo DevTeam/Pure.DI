@@ -4,7 +4,7 @@ namespace Pure.DI.Core.Code;
 
 using static Tag;
 
-internal class TypeResolver(
+internal sealed class TypeResolver(
     IMarker marker,
     [Tag(GenericType)] IIdGenerator idGenerator,
     ISymbolNames symbolNames)

@@ -9,6 +9,7 @@ internal sealed class ClassDiagramBuilder(
     IMarker marker,
     ITypeResolver typeResolver,
     IRootAccessModifierResolver rootAccessModifierResolver,
+    ITypes types,
     CancellationToken cancellationToken)
     : IBuilder<CompositionCode, LinesBuilder>
 {
@@ -75,7 +76,7 @@ internal sealed class ClassDiagramBuilder(
                 lines.AppendLine($"{composition.Source.Source.Name.ClassName} --|> IAsyncDisposable");
             }
 
-            var types = new HashSet<ITypeSymbol>(SymbolEqualityComparer.Default);
+            var typeSymbols = new HashSet<ITypeSymbol>(SymbolEqualityComparer.Default);
             var graph = composition.Source.Graph;
             foreach (var node in graph.Vertices.GroupBy(i => i.Type, SymbolEqualityComparer.Default).Select(i => i.First()))
             {
@@ -88,12 +89,12 @@ internal sealed class ClassDiagramBuilder(
                 var contracts = injectionsBuilder.Build(new ContractsBuildContext(node.Binding, MdTag.ContextTag));
                 foreach (var contract in contracts)
                 {
-                    if (node.Type.Equals(contract.Type, SymbolEqualityComparer.Default))
+                    if (types.TypeEquals(node.Type, contract.Type))
                     {
                         continue;
                     }
 
-                    types.Add(contract.Type);
+                    typeSymbols.Add(contract.Type);
                     var tag = FormatTag(contract.Tag);
                     lines.AppendLine($"{FormatType(setup, node.Type, DefaultFormatOptions)} --|> {FormatType(setup, contract.Type, DefaultFormatOptions)}{(string.IsNullOrWhiteSpace(tag) ? "" : $" : {tag}")}");
                 }
@@ -103,7 +104,7 @@ internal sealed class ClassDiagramBuilder(
             }
 
             // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
-            foreach (var type in types)
+            foreach (var type in typeSymbols)
             {
                 if (!marker.IsMarker(setup, type))
                 {
@@ -144,7 +145,7 @@ internal sealed class ClassDiagramBuilder(
                     }
                     else
                     {
-                        if (SymbolEqualityComparer.Default.Equals(dependency.Source.Type, dependency.Target.Type))
+                        if (types.TypeEquals(dependency.Source.Type, dependency.Target.Type))
                         {
                             continue;
                         }

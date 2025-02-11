@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core.Code;
 
-internal class VariableInfo
+internal sealed class VariableInfo
 {
     private readonly HashSet<int> _perBlockRefCounts = [];
     private readonly HashSet<int> _variableParentBlocks = [];

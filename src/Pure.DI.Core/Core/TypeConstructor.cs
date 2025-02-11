@@ -6,7 +6,10 @@
 namespace Pure.DI.Core;
 
 [SuppressMessage("MicrosoftCodeAnalysisCorrectness", "RS1024:Symbols should be compared for equality")]
-internal sealed class TypeConstructor(IMarker marker) : ITypeConstructor
+internal sealed class TypeConstructor(
+    IMarker marker,
+    ITypes types)
+    : ITypeConstructor
 {
     private readonly Dictionary<ITypeSymbol, ITypeSymbol> _map = new(SymbolEqualityComparer.Default);
     private readonly Dictionary<ITypeSymbol, ITypeSymbol> _reversedMap = new(SymbolEqualityComparer.Default);
@@ -25,14 +28,14 @@ internal sealed class TypeConstructor(IMarker marker) : ITypeConstructor
         {
             case INamedTypeSymbol sourceNamedType when target is INamedTypeSymbol targetNamedType:
             {
-                if (!SymbolEqualityComparer.Default.Equals(source.OriginalDefinition, target.OriginalDefinition))
+                if (!types.TypeEquals(source.OriginalDefinition, target.OriginalDefinition))
                 {
                     return false;
                 }
 
                 if (!sourceNamedType.IsGenericType)
                 {
-                    return SymbolEqualityComparer.Default.Equals(source, target);
+                    return types.TypeEquals(source, target);
                 }
 
                 if (_map.ContainsKey(source))
@@ -49,7 +52,7 @@ internal sealed class TypeConstructor(IMarker marker) : ITypeConstructor
                 // Constructed generic
                 if (sourceNamedType.IsGenericType && targetNamedType.IsGenericType)
                 {
-                    if (sourceNamedType.ConstructUnboundGenericType().Equals(targetNamedType.ConstructUnboundGenericType(), SymbolEqualityComparer.Default))
+                    if (types.TypeEquals(sourceNamedType.ConstructUnboundGenericType(), targetNamedType.ConstructUnboundGenericType()))
                     {
                         _map[source] = target;
                         var sourceArgs = sourceNamedType.TypeArguments;
@@ -80,7 +83,7 @@ internal sealed class TypeConstructor(IMarker marker) : ITypeConstructor
                 break;
 
             default:
-                result &= result && SymbolEqualityComparer.Default.Equals(source.OriginalDefinition, target.OriginalDefinition);
+                result &= result && types.TypeEquals(source.OriginalDefinition, target.OriginalDefinition);
                 break;
         }
 
@@ -91,7 +94,7 @@ internal sealed class TypeConstructor(IMarker marker) : ITypeConstructor
 
         foreach (var implementationInterfaceType in target.Interfaces)
         {
-            if (!SymbolEqualityComparer.Default.Equals(source.OriginalDefinition, implementationInterfaceType.OriginalDefinition))
+            if (!types.TypeEquals(source.OriginalDefinition, implementationInterfaceType.OriginalDefinition))
             {
                 continue;
             }
@@ -105,7 +108,7 @@ internal sealed class TypeConstructor(IMarker marker) : ITypeConstructor
 
         foreach (var dependencyInterfaceType in source.Interfaces)
         {
-            if (!SymbolEqualityComparer.Default.Equals(target.OriginalDefinition, dependencyInterfaceType.OriginalDefinition))
+            if (!types.TypeEquals(target.OriginalDefinition, dependencyInterfaceType.OriginalDefinition))
             {
                 continue;
             }

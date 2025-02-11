@@ -1,7 +1,7 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
-internal class Locks(
+internal sealed class Locks(
     ITypes types)
     : ILocks
 {

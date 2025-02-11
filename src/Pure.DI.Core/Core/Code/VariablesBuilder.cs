@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core.Code;
 
-internal class VariablesBuilder(
+internal sealed class VariablesBuilder(
     INodeInfo nodeInfo,
     CancellationToken cancellationToken)
     : IVariablesBuilder

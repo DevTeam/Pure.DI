@@ -4,7 +4,7 @@
         <ProjectReference Include="..\..\src\Pure.DI\Pure.DI.csproj"/>
         <ProjectReference Include="..\..\src\Pure.DI.Core\Pure.DI.Core.csproj"/>
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="$(AnalyzerRoslynPackageVersion)" PrivateAssets="all"/>
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
         <PackageReference Include="Shouldly" Version="4.3.0" />
         <PackageReference Include="Moq" Version="4.20.72" />
         <PackageReference Include="xunit" Version="2.9.3" />

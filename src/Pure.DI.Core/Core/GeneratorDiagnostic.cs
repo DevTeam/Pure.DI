@@ -1,6 +1,6 @@
 namespace Pure.DI.Core;
 
-internal class GeneratorDiagnostic(SourceProductionContext sourceProductionContext)
+internal sealed class GeneratorDiagnostic(SourceProductionContext sourceProductionContext)
     : IGeneratorDiagnostic
 {
     public void ReportDiagnostic(Diagnostic diagnostic) =>
