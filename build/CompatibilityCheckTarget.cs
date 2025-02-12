@@ -79,7 +79,7 @@ internal class CompatibilityCheckTarget(
         CancellationToken cancellationToken)
     {
         var tempDirectory = env.GetPath(PathType.TempDirectory);
-        Info($"Compatibility check for {framework}.");
+        Summary("Compatibility check for ", framework.WithColor(Color.Details));
         try
         {
             tempDirectory = Path.Combine(tempDirectory, "src", framework);
@@ -135,7 +135,7 @@ internal class CompatibilityCheckTarget(
             foreach (var templateName in library.TemplateNames)
             foreach (var framework in library.Frameworks)
             {
-                Info($"Testing {library.Name} library under {framework}.");
+                Summary($"Testing {library.Name} library under {framework}.");
                 var tempDirForFramework = tempDirectory + "_" + framework;
                 Directory.CreateDirectory(tempDirForFramework);
                 await new DotNetNew()

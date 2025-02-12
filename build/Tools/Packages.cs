@@ -9,7 +9,7 @@ public class Packages
     [SuppressMessage("Performance", "CA1822:Mark members as static")]
     public async Task<string> MergeAsync(IAsyncEnumerable<string> mergingPackages, string targetPackage, CancellationToken cancellationToken)
     {
-        Info($"Creating NuGet package {targetPackage}");
+        Summary("Creating NuGet package ", targetPackage.WithColor(Color.Details));
         var targetDir = Path.GetDirectoryName(targetPackage);
         if (!string.IsNullOrWhiteSpace(targetDir))
         {

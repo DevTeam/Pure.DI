@@ -37,7 +37,7 @@ internal class GeneratorTarget(
     {
         var analyzerRoslynPackageVersion = codeAnalysis.AnalyzerRoslynPackageVersion;
         var analyzerRoslynVersion = new Version(analyzerRoslynPackageVersion.Major, analyzerRoslynPackageVersion.Minor);
-        Info($"Build package for Roslyn {analyzerRoslynVersion}.");
+        Summary("Build package for Roslyn ", analyzerRoslynVersion.WithColor(Color.Details));
 
         var rolsynVersions = string.Join(
             ';',
