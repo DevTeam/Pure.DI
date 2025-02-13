@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
         <Library>MS</Library>
-        <Description>Tools for working with Microsoft DI using $(BasePackageId). $(Description)</Description>
+        <Description>Add-ons on Pure.DI to work with Microsoft DI using $(BasePackageId). $(Description)</Description>
         <DefineConstants>$(DefineConstants);PUREDI_NET_ANY</DefineConstants>
     </PropertyGroup>
 

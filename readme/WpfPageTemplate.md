@@ -123,6 +123,6 @@ The [project file](/samples/WpfAppNetCore/WpfAppNetCore.csproj) looks like this:
 
 It contains an additional reference to the NuGet package:
 
-|            |                                                                                                 |                                     |
-|------------|-------------------------------------------------------------------------------------------------|:------------------------------------|
-| Pure.DI    | [![NuGet](https://img.shields.io/nuget/v/Pure.DI)](https://www.nuget.org/packages/Pure.DI)       | DI Source code generator            |
+|         |                                                                                            |                          |
+|---------|--------------------------------------------------------------------------------------------|:-------------------------|
+| Pure.DI | [![NuGet](https://img.shields.io/nuget/v/Pure.DI)](https://www.nuget.org/packages/Pure.DI) | DI source code generator |

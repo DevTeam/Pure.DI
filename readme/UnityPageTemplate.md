@@ -90,8 +90,8 @@ public class Clock : MonoBehaviour
 
 The Unity project should reference the NuGet package:
 
-|            |                                                                                                 |                                     |
-|------------|-------------------------------------------------------------------------------------------------|:------------------------------------|
-| Pure.DI    | [![NuGet](https://img.shields.io/nuget/v/Pure.DI)](https://www.nuget.org/packages/Pure.DI)       | DI Source code generator            |
+|         |                                                                                            |                          |
+|---------|--------------------------------------------------------------------------------------------|:-------------------------|
+| Pure.DI | [![NuGet](https://img.shields.io/nuget/v/Pure.DI)](https://www.nuget.org/packages/Pure.DI) | DI source code generator |
 
 The Unity example uses the Unity editor version 6000.0.35f1
