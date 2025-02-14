@@ -4,6 +4,6 @@ internal interface IDependencyGraphBuilder
 {
     IEnumerable<DependencyNode> TryBuild(
         MdSetup setup,
-        IReadOnlyCollection<ProcessingNode> nodes,
+        IReadOnlyCollection<IProcessingNode> nodes,
         out DependencyGraph? dependencyGraph);
 }

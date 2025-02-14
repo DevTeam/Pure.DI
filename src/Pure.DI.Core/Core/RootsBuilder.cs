@@ -55,20 +55,17 @@ internal sealed class RootsBuilder(IBuilder<ContractsBuildContext, ISet<Injectio
             }
         }
 
-        var index = 1;
         return rootsPairs
             .GroupBy(i => i.Key)
+            .Select((byInjection, index) => (byInjection, index))
             .ToDictionary(
-                i => i.Key,
-                i => CreateRoot(i, ref index));
+                group => group.byInjection.Key,
+                group => CreateRoot(group));
     }
 
-    private static Root CreateRoot(IEnumerable<KeyValuePair<Injection, Root>> routesGroup, ref int index) =>
-        routesGroup
+    private static Root CreateRoot((IEnumerable<KeyValuePair<Injection, Root>> byInjection, int index) group) =>
+        group.byInjection
                 .OrderByDescending(j => j.Value.IsPublic)
                 .Select(j => j.Value)
-                .First() with
-            {
-                Index = index++
-            };
+                .First() with { Index = group.index + 1 };
 }

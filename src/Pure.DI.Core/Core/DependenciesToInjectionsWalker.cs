@@ -1,8 +1,8 @@
 namespace Pure.DI.Core;
 
-internal sealed class DependenciesToInjectionsWalker : DependenciesWalker<Unit>, IEnumerable<InjectionInfo>
+internal sealed class DependenciesToInjectionsWalker : DependenciesWalker<Unit>, IDependenciesToInjectionsWalker
 {
-    private readonly List<InjectionInfo> _injections = [];
+    private readonly List<InjectionInfo> _result = [];
 
     public override void VisitInjection(
         in Unit ctx,
@@ -11,11 +11,9 @@ internal sealed class DependenciesToInjectionsWalker : DependenciesWalker<Unit>,
         object? explicitDefaultValue,
         in ImmutableArray<Location> locations)
     {
-        _injections.Add(new InjectionInfo(injection, hasExplicitDefaultValue, explicitDefaultValue));
+        _result.Add(new InjectionInfo(injection, hasExplicitDefaultValue, explicitDefaultValue));
         base.VisitInjection(Unit.Shared, in injection, hasExplicitDefaultValue, explicitDefaultValue, locations);
     }
 
-    public IEnumerator<InjectionInfo> GetEnumerator() => _injections.GetEnumerator();
-
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    public IReadOnlyList<InjectionInfo> GetResult() => _result;
 }

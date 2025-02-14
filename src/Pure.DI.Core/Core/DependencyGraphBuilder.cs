@@ -19,19 +19,20 @@ internal sealed class DependencyGraphBuilder(
     IRegistryManager<MdBinding> registryManager,
     ISymbolNames symbolNames,
     ITypes types,
+    Func<DependencyNode, ISet<Injection>, IProcessingNode> processingNodeFactory,
     CancellationToken cancellationToken)
     : IDependencyGraphBuilder
 {
     public IEnumerable<DependencyNode> TryBuild(
         MdSetup setup,
-        IReadOnlyCollection<ProcessingNode> nodes,
+        IReadOnlyCollection<IProcessingNode> nodes,
         out DependencyGraph? dependencyGraph)
     {
         dependencyGraph = null;
         var maxId = 0;
         var map = new Dictionary<Injection, DependencyNode>(nodes.Count);
         var contextMap = new Dictionary<Injection, DependencyNode>(nodes.Count);
-        var queue = new Queue<ProcessingNode>();
+        var queue = new Queue<IProcessingNode>();
         foreach (var processingNode in nodes)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -67,12 +68,13 @@ internal sealed class DependencyGraphBuilder(
         }
 
         var processedInjection = new HashSet<Injection>();
-        var processed = new HashSet<ProcessingNode>();
-        var notProcessed = new HashSet<ProcessingNode>();
-        var edgesMap = new Dictionary<ProcessingNode, List<Dependency>>();
+        var processed = new HashSet<IProcessingNode>();
+        var notProcessed = new HashSet<IProcessingNode>();
+        var edgesMap = new Dictionary<IProcessingNode, List<Dependency>>();
         var counter = 0;
-        while (queue.TryDequeue(out var node))
+        while (queue.Count > 0)
         {
+            var node = queue.Dequeue();
             cancellationToken.ThrowIfCancellationRequested();
             if (counter++ > Const.MaxIterationsCount)
             {
@@ -399,7 +401,7 @@ internal sealed class DependencyGraphBuilder(
         Injection unresolvedInjection,
         ref int maxId,
         IDictionary<Injection, DependencyNode> map,
-        ISet<ProcessingNode> processed)
+        ISet<IProcessingNode> processed)
     {
         if (setup.Hints.IsOnCannotResolveEnabled)
         {
@@ -651,11 +653,11 @@ internal sealed class DependencyGraphBuilder(
         }
     }
 
-    private ProcessingNode CreateNewProcessingNode(MdSetup setup, object? contextTag, DependencyNode dependencyNode)
+    private IProcessingNode CreateNewProcessingNode(MdSetup setup, object? contextTag, DependencyNode dependencyNode)
     {
         registryManager.Register(setup, dependencyNode.Binding);
         var contracts = contractsBuilder.Build(new ContractsBuildContext(dependencyNode.Binding, contextTag));
-        return new ProcessingNode(dependencyNode, contracts);
+        return processingNodeFactory(dependencyNode, contracts);
     }
 
     private IEnumerable<DependencyNode> CreateNodes(MdSetup setup, ITypeConstructor typeConstructor, MdBinding binding)

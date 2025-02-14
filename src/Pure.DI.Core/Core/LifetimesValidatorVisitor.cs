@@ -38,7 +38,4 @@ internal sealed class LifetimesValidatorVisitor(
 
         return true;
     }
-
-    [SuppressMessage("ReSharper", "NotAccessedPositionalProperty.Local")]
-    private record ErrorKey(DependencyNode TargetNode, DependencyNode SourceNode);
 }

@@ -6,13 +6,11 @@ using System.Text.RegularExpressions;
 
 internal sealed class Filter(
     ILogger logger,
+    Func<string, Regex> regexFactory,
     ICache<string, Regex> regexCache,
     IWildcardMatcher wildcardMatcher)
     : IFilter
 {
-    public static Regex RegexFactory(string filter) =>
-        new(filter, RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline | RegexOptions.IgnoreCase);
-
     public bool IsMeet(
         MdSetup setup,
         params (Hint regularExpressionSetting, Hint wildcardSettings, Func<string> textProvider)[] settings) =>
@@ -40,7 +38,7 @@ internal sealed class Filter(
             {
                 try
                 {
-                    var regex = regexCache.Get(regularExpression.Trim(), RegexFactory);
+                    var regex = regexCache.Get(regularExpression.Trim(), regexFactory);
                     if (regex.IsMatch(text))
                     {
                         return true;

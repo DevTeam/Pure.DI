@@ -3,6 +3,7 @@
 namespace Pure.DI;
 
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 using static Hint;
 using static Lifetime;
 using static RootKinds;
@@ -51,6 +52,9 @@ public sealed partial class Generator
                     ctx.Inject<Logger>(out var logger);
                     return logger.WithTargetType(ctx.ConsumerTypes[0]);
                 })
+                .Bind<IDependenciesToVariablesWalker>().To<DependenciesToVariablesWalker>()
+                .Bind<IDependenciesToInjectionsWalker>().To<DependenciesToInjectionsWalker>()
+                .Bind<INamespacesWalker>().To<NamespacesWalker>()
 
             .DefaultLifetime(Singleton)
                 .Bind().To<Cache<TT1, TT2>>()
@@ -59,6 +63,7 @@ public sealed partial class Generator
                 .Bind().To<Metadata>()
 
             .DefaultLifetime(PerBlock)
+                .Bind().To(_ => typeof(Core.Generator).Assembly)
                 .Bind().To<Arguments>()
                 .Bind().To<Comments>()
                 .Bind().To<BuildTools>()
@@ -85,6 +90,12 @@ public sealed partial class Generator
                 .Bind().To<InstanceDpProvider>()
                 .Bind().To<Injections>()
                 .Bind().To<NameFormatter>()
+                .Bind().To(_ => new Func<string, Regex>(pattern => new Regex(pattern, RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline | RegexOptions.IgnoreCase)))
+                .Bind().To(ctx => new Func<DependencyNode, ISet<Injection>, IProcessingNode>((node, contracts) =>
+                {
+                    ctx.Inject(out IDependenciesToInjectionsWalker injectionsWalker);
+                    return new ProcessingNode(injectionsWalker, node, contracts);
+                }))
 
                 // Validators
                 .Bind(Type).To<MetadataValidator>()

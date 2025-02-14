@@ -6,34 +6,35 @@ namespace Pure.DI.Core.Code;
 internal sealed class ImplementationCodeBuilder(
     ITypeResolver typeResolver,
     IInjections injections,
+    Func<IDependenciesToVariablesWalker> variablesWalkerFactory,
     CancellationToken cancellationToken)
     : ICodeBuilder<DpImplementation>
 {
     public void Build(BuildContext ctx, in DpImplementation implementation)
     {
         var variable = ctx.Variable;
-        var argsWalker = new DependenciesToVariablesWalker(variable.Args.Select(i => i.Current).ToList());
-        argsWalker.VisitConstructor(Unit.Shared, implementation.Constructor);
-        var ctorArgs = argsWalker.GetResult();
+        var variablesWalker = variablesWalkerFactory().Initialize(variable.Args.Select(i => i.Current).ToList());
+        variablesWalker.VisitConstructor(Unit.Shared, implementation.Constructor);
+        var ctorArgs = variablesWalker.GetResult();
         var requiredFields = ImmutableArray.CreateBuilder<(Variable RequiredVariable, DpField RequiredField)>();
         foreach (var requiredField in implementation.Fields.Where(i => i.Field.IsRequired).OrderBy(i => i.Ordinal ?? int.MaxValue - 1))
         {
-            argsWalker.VisitField(Unit.Shared, requiredField);
-            requiredFields.Add((argsWalker.GetResult().Single(), requiredField));
+            variablesWalker.VisitField(Unit.Shared, requiredField);
+            requiredFields.Add((variablesWalker.GetResult().Single(), requiredField));
         }
 
         var requiredProperties = ImmutableArray.CreateBuilder<(Variable RequiredVariable, DpProperty RequiredProperty)>();
         foreach (var requiredProperty in implementation.Properties.Where(i => i.Property.IsRequired || i.Property.SetMethod?.IsInitOnly == true).OrderBy(i => i.Ordinal ?? int.MaxValue))
         {
-            argsWalker.VisitProperty(Unit.Shared, requiredProperty);
-            requiredProperties.Add((argsWalker.GetResult().Single(), requiredProperty));
+            variablesWalker.VisitProperty(Unit.Shared, requiredProperty);
+            requiredProperties.Add((variablesWalker.GetResult().Single(), requiredProperty));
         }
 
         var visits = new List<(Action<BuildContext> Run, int? Ordinal)>();
         foreach (var field in implementation.Fields.Where(i => i.Field.IsRequired != true))
         {
-            argsWalker.VisitField(Unit.Shared, field);
-            var fieldVariable = argsWalker.GetResult().Single();
+            variablesWalker.VisitField(Unit.Shared, field);
+            var fieldVariable = variablesWalker.GetResult().Single();
             visits.Add((VisitFieldAction, field.Ordinal));
             continue;
 
@@ -42,8 +43,8 @@ internal sealed class ImplementationCodeBuilder(
 
         foreach (var property in implementation.Properties.Where(i => !i.Property.IsRequired && i.Property.SetMethod?.IsInitOnly != true))
         {
-            argsWalker.VisitProperty(Unit.Shared, property);
-            var propertyVariable = argsWalker.GetResult().Single();
+            variablesWalker.VisitProperty(Unit.Shared, property);
+            var propertyVariable = variablesWalker.GetResult().Single();
             visits.Add((VisitFieldAction, property.Ordinal));
             continue;
 
@@ -52,8 +53,8 @@ internal sealed class ImplementationCodeBuilder(
 
         foreach (var method in implementation.Methods)
         {
-            argsWalker.VisitMethod(Unit.Shared, method);
-            var methodArgs = argsWalker.GetResult();
+            variablesWalker.VisitMethod(Unit.Shared, method);
+            var methodArgs = variablesWalker.GetResult();
             visits.Add((VisitMethodAction, method.Ordinal));
             continue;
 

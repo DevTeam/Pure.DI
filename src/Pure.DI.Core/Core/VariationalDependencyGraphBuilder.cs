@@ -7,16 +7,17 @@
 
 namespace Pure.DI.Core;
 
-using Variation = IEnumerator<ProcessingNode>;
+using Variation = IEnumerator<IProcessingNode>;
 
 internal sealed class VariationalDependencyGraphBuilder(
     ILogger logger,
     IGlobalOptions globalOptions,
     Func<ITypeConstructor> typeConstructorFactory,
     IEnumerable<IBuilder<DependencyNodeBuildContext, IEnumerable<DependencyNode>>> dependencyNodeBuilders,
-    IVariator<ProcessingNode> variator,
+    IVariator<IProcessingNode> variator,
     IBuilder<ContractsBuildContext, ISet<Injection>> contractsBuilder,
     IDependencyGraphBuilder graphBuilder,
+    Func<DependencyNode, ISet<Injection>, IProcessingNode> processingNodeFactory,
     CancellationToken cancellationToken)
     : IBuilder<MdSetup, DependencyGraph?>
 {
@@ -24,7 +25,7 @@ internal sealed class VariationalDependencyGraphBuilder(
     {
         var dependencyNodeBuildContext = new DependencyNodeBuildContext(setup, typeConstructorFactory());
         var rawNodes = SortByPriority(dependencyNodeBuilders.SelectMany(builder => builder.Build(dependencyNodeBuildContext))).Reverse();
-        var allNodes = new List<ProcessingNode>();
+        var allNodes = new List<IProcessingNode>();
         var injections = new Dictionary<Injection, DependencyNode>();
         var allOverriddenInjections = new HashSet<Injection>();
         foreach (var node in rawNodes)
@@ -63,7 +64,7 @@ internal sealed class VariationalDependencyGraphBuilder(
 
             if (isRoot || contracts.Count > 0)
             {
-                allNodes.Add(new ProcessingNode(node, contracts));
+                allNodes.Add(processingNodeFactory(node, contracts));
             }
         }
 
@@ -111,9 +112,10 @@ internal sealed class VariationalDependencyGraphBuilder(
                 first ??= dependencyGraph;
                 continue;
 
-                ProcessingNode CreateProcessingNode(DependencyNode dependencyNode) => new(
-                    dependencyNode,
-                    contractsBuilder.Build(new ContractsBuildContext(dependencyNode.Binding, MdTag.ContextTag)));
+                IProcessingNode CreateProcessingNode(DependencyNode dependencyNode) =>
+                    processingNodeFactory(
+                        dependencyNode,
+                        contractsBuilder.Build(new ContractsBuildContext(dependencyNode.Binding, MdTag.ContextTag)));
             }
 
             return first;
@@ -128,9 +130,9 @@ internal sealed class VariationalDependencyGraphBuilder(
     }
 
     [SuppressMessage("ReSharper", "NotDisposedResourceIsReturned")]
-    private static IEnumerable<Variation> CreateVariants(IEnumerable<ProcessingNode> nodes) =>
+    private static IEnumerable<Variation> CreateVariants(IEnumerable<IProcessingNode> nodes) =>
         nodes.GroupBy(i => i.Node.Binding)
-            .Select(i => new SafeEnumerator<ProcessingNode>(i.GetEnumerator()));
+            .Select(i => new SafeEnumerator<IProcessingNode>(i.GetEnumerator()));
 
     private static IEnumerable<DependencyNode> SortByPriority(IEnumerable<DependencyNode> nodes) =>
         nodes.GroupBy(i => i.Binding)

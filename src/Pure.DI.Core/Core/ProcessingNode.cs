@@ -2,31 +2,19 @@
 
 namespace Pure.DI.Core;
 
-internal sealed class ProcessingNode : IEquatable<ProcessingNode>
+internal sealed class ProcessingNode(
+    IDependenciesToInjectionsWalker injectionsWalker,
+    DependencyNode node,
+    ISet<Injection> contracts)
+    : IEquatable<ProcessingNode>, IProcessingNode
 {
-    public readonly DependencyNode Node;
-    private readonly Lazy<ImmutableArray<InjectionInfo>> _injections;
+    private readonly Lazy<IReadOnlyCollection<InjectionInfo>> _injections = new(() => GetInjections(injectionsWalker, node));
 
-    public ProcessingNode(
-        DependencyNode node,
-        ISet<Injection> contracts)
-    {
-        Node = node;
-        Contracts = contracts;
-        _injections = new Lazy<ImmutableArray<InjectionInfo>>(GetInjections);
-        return;
+    public DependencyNode Node => node;
 
-        ImmutableArray<InjectionInfo> GetInjections()
-        {
-            var injectionsWalker = new DependenciesToInjectionsWalker();
-            injectionsWalker.VisitDependencyNode(Unit.Shared, node);
-            return injectionsWalker.ToImmutableArray();
-        }
-    }
+    public ISet<Injection> Contracts { get; } = contracts;
 
-    public ISet<Injection> Contracts { get; }
-
-    public ImmutableArray<InjectionInfo> Injections => _injections.Value;
+    public IReadOnlyCollection<InjectionInfo> Injections => _injections.Value;
 
     public override string ToString() => Node.ToString();
 
@@ -35,4 +23,10 @@ internal sealed class ProcessingNode : IEquatable<ProcessingNode>
     public override bool Equals(object? obj) => obj is ProcessingNode other && Equals(other);
 
     public override int GetHashCode() => Node.GetHashCode();
+
+    private static IReadOnlyCollection<InjectionInfo> GetInjections(IDependenciesToInjectionsWalker injectionsWalker, DependencyNode node)
+    {
+        injectionsWalker.VisitDependencyNode(Unit.Shared, node);
+        return injectionsWalker.GetResult();
+    }
 }

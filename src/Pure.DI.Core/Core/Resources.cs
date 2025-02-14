@@ -1,13 +1,18 @@
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
+using System.Reflection;
 using System.Text.RegularExpressions;
 
-internal sealed class Resources(ICache<string, Regex> regexCache) : IResources
+internal sealed class Resources(
+    Assembly assembly,
+    Func<string, Regex> regexFactory,
+    ICache<string, Regex> regexCache)
+    : IResources
 {
     public IEnumerable<Resource> GetResource(string filter)
     {
-        var filterRegex = regexCache.Get(filter, Filter.RegexFactory);
-        var assembly = typeof(Resources).Assembly;
+        var filterRegex = regexCache.Get(filter, regexFactory);
         return assembly
             .GetManifestResourceNames()
             .Where(name => filterRegex.IsMatch(name))

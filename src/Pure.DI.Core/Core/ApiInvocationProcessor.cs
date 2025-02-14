@@ -14,7 +14,8 @@ internal sealed class ApiInvocationProcessor(
     IBaseSymbolsProvider baseSymbolsProvider,
     INameFormatter nameFormatter,
     ITypes types,
-    IWildcardMatcher wildcardMatcher)
+    IWildcardMatcher wildcardMatcher,
+    Func<INamespacesWalker> namespacesWalkerFactory)
     : IApiInvocationProcessor
 {
     private static readonly char[] TypeNamePartsSeparators = ['.'];
@@ -925,9 +926,9 @@ internal sealed class ApiInvocationProcessor(
         SemanticModel semanticModel,
         SyntaxNode node)
     {
-        var namespacesSyntaxWalker = new NamespacesSyntaxWalker(semanticModel, semantic);
-        namespacesSyntaxWalker.Visit(node);
-        var namespaces = namespacesSyntaxWalker.ToList();
+        var namespacesWalker = namespacesWalkerFactory().Initialize(semanticModel);
+        namespacesWalker.Visit(node);
+        var namespaces = namespacesWalker.GetResult();
         if (namespaces.Count > 0)
         {
             metadataVisitor.VisitUsingDirectives(new MdUsingDirectives(namespaces.ToImmutableArray(), ImmutableArray<string>.Empty));

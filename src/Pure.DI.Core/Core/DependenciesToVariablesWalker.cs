@@ -1,23 +1,24 @@
 namespace Pure.DI.Core;
 
-internal sealed class DependenciesToVariablesWalker : DependenciesWalker<Unit>
+internal sealed class DependenciesToVariablesWalker : DependenciesWalker<Unit>, IDependenciesToVariablesWalker
 {
-    private readonly ICollection<Variable> _variables;
-    private readonly Dictionary<Injection, LinkedList<Variable>> _variablesMap;
-    private readonly ImmutableArray<Variable>.Builder _resultBuilder = ImmutableArray.CreateBuilder<Variable>();
+    private readonly List<Variable> _result = [];
+    private ICollection<Variable> _variables = [];
+    private Dictionary<Injection, LinkedList<Variable>> _variablesMap = [];
 
-    public DependenciesToVariablesWalker(ICollection<Variable> variables)
+    public IDependenciesToVariablesWalker Initialize(ICollection<Variable> variables)
     {
         _variables = variables;
         _variablesMap = variables
             .GroupBy(i => i.Injection)
             .ToDictionary(i => i.Key, i => new LinkedList<Variable>(i));
+        return this;
     }
 
     public IReadOnlyList<Variable> GetResult()
     {
-        var result = _resultBuilder.ToList();
-        _resultBuilder.Clear();
+        var result = _result.ToList();
+        _result.Clear();
         return result;
     }
 
@@ -38,7 +39,7 @@ internal sealed class DependenciesToVariablesWalker : DependenciesWalker<Unit>
                 _variablesMap.Remove(injection);
             }
 
-            _resultBuilder.Add(variable);
+            _result.Add(variable);
         }
 
         base.VisitInjection(ctx, in injection, hasExplicitDefaultValue, explicitDefaultValue, locations);
