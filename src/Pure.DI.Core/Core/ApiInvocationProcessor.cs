@@ -15,7 +15,8 @@ internal sealed class ApiInvocationProcessor(
     INameFormatter nameFormatter,
     ITypes types,
     IWildcardMatcher wildcardMatcher,
-    Func<INamespacesWalker> namespacesWalkerFactory)
+    Func<INamespacesWalker> namespacesWalkerFactory,
+    Func<IFactoryResolversWalker> factoryResolversWalkerFactory)
     : IApiInvocationProcessor
 {
     private static readonly char[] TypeNamePartsSeparators = ['.'];
@@ -765,11 +766,11 @@ internal sealed class ApiInvocationProcessor(
                 return;
         }
 
-        var walker = new FactoryResolversAndInitializersSyntaxWalker();
-        walker.Visit(lambdaExpression);
+        var factoryResolversWalker = factoryResolversWalkerFactory();
+        factoryResolversWalker.Visit(lambdaExpression);
         var position = 0;
         var hasContextTag = false;
-        var resolvers = walker.Resolvers.Select(invocation =>
+        var resolvers = factoryResolversWalker.Resolvers.Select(invocation =>
             {
                 if (invocation.ArgumentList.Arguments is not { Count: > 0 } invArguments)
                 {
@@ -841,8 +842,8 @@ internal sealed class ApiInvocationProcessor(
             })
             .Where(i => i != default)
             .ToImmutableArray();
-        
-        var initializers = walker.Initializers.Select(invocation =>
+
+        var initializers = factoryResolversWalker.Initializers.Select(invocation =>
             {
                 if (invocation.ArgumentList.Arguments is not [{ } targetArg])
                 {

@@ -1,8 +1,8 @@
 ﻿namespace Pure.DI.Core;
 
-internal interface IDependenciesToVariablesWalker
+internal interface IVariablesWalker
 {
-    IDependenciesToVariablesWalker Initialize(ICollection<Variable> variables);
+    IVariablesWalker Initialize(ICollection<Variable> variables);
 
     IReadOnlyList<Variable> GetResult();
 

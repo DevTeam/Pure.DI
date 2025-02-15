@@ -1,11 +1,13 @@
 // ReSharper disable ClassNeverInstantiated.Global
 
-namespace Pure.DI.Core.Code;
+namespace Pure.DI.Core.Code.Parts;
 
 internal sealed class DisposeMethodBuilder(
     ILocks locks)
-    : IBuilder<CompositionCode, CompositionCode>
+    : IClassPartBuilder
 {
+    public ClassPart Part => ClassPart.DisposeMethod;
+
     public CompositionCode Build(CompositionCode composition)
     {
         var code = composition.Code;

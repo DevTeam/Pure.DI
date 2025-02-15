@@ -1,12 +1,12 @@
 namespace Pure.DI.Core;
 
-internal sealed class DependenciesToVariablesWalker : DependenciesWalker<Unit>, IDependenciesToVariablesWalker
+internal sealed class VariablesWalker : DependenciesWalker<Unit>, IVariablesWalker
 {
     private readonly List<Variable> _result = [];
     private ICollection<Variable> _variables = [];
     private Dictionary<Injection, LinkedList<Variable>> _variablesMap = [];
 
-    public IDependenciesToVariablesWalker Initialize(ICollection<Variable> variables)
+    public IVariablesWalker Initialize(ICollection<Variable> variables)
     {
         _variables = variables;
         _variablesMap = variables

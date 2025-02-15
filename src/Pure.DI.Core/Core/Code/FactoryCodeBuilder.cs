@@ -11,8 +11,9 @@ internal sealed class FactoryCodeBuilder(
     ITypeResolver typeResolver,
     ICompilations compilations,
     ITriviaTools triviaTools,
-    IInjections injectionsTool,
-    ISymbolNames symbolNames)
+    ISymbolNames symbolNames,
+    Func<IFactoryValidator> factoryValidatorFactory,
+    Func<IInitializersWalker> initializersWalkerFactory)
     : ICodeBuilder<DpFactory>
 {
     public static readonly ParenthesizedLambdaExpressionSyntax DefaultBindAttrParenthesizedLambda = SyntaxFactory.ParenthesizedLambdaExpression();
@@ -158,7 +159,7 @@ internal sealed class FactoryCodeBuilder(
         var inits = new List<FactoryRewriter.Initializer>();
         var factoryRewriter = new FactoryRewriter(arguments, compilations, factory, variable, finishLabel, injections, inits, triviaTools, symbolNames);
         var lambda = factoryRewriter.Rewrite(ctx, factoryExpression);
-        new FactoryValidator(factory).Validate(lambda);
+        factoryValidatorFactory().Initialize(factory).Visit(lambda);
         SyntaxNode syntaxNode = lambda.Block is not null ? lambda.Block : SyntaxFactory.ExpressionStatement((ExpressionSyntax)lambda.Body);
         var lines = new List<TextLine>();
         if (!variable.IsDeclared && variable.HasCycledReference)
@@ -276,7 +277,7 @@ internal sealed class FactoryCodeBuilder(
             if (line.Contains(InitializationStatement) && initializers.MoveNext())
             {
                 var (initialization, initializer) = initializers.Current;
-                var initializersWalker = new InitializersWalker(initialization.VariableName, initializationArgsEnum, injectionsTool);
+                var initializersWalker = initializersWalkerFactory().Ininitialize(initialization.VariableName, initializationArgsEnum);
                 initializersWalker.VisitInitializer(injectionsCtx, initializer);
                 continue;
             }

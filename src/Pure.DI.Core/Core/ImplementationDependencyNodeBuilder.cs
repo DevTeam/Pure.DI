@@ -8,12 +8,13 @@ namespace Pure.DI.Core;
 internal sealed class ImplementationDependencyNodeBuilder(
     IBuilder<DpImplementation, IEnumerable<DpImplementation>> implementationVariantsBuilder,
     IAttributes attributes,
-    IInstanceDpProvider instanceDpProvider)
+    IInstanceDpProvider instanceDpProvider,
+    Func<IConstructorInjectionsCounterWalker> constructorInjectionsCounterWalkerFactory)
     : IBuilder<DependencyNodeBuildContext, IEnumerable<DependencyNode>>
 {
     public IEnumerable<DependencyNode> Build(DependencyNodeBuildContext ctx)
     {
-        var injectionsWalker = new DependenciesToInjectionsCountWalker();
+        var injectionsCounter = constructorInjectionsCounterWalkerFactory();
         var setup = ctx.Setup;
         foreach (var binding in setup.Bindings)
         {
@@ -77,7 +78,7 @@ internal sealed class ImplementationDependencyNodeBuilder(
 
             if (implementationsWithOrdinal.Count > 0)
             {
-                foreach (var node in CreateNodes(injectionsWalker, implementationsWithOrdinal.OrderBy(i => i.Constructor.Ordinal)))
+                foreach (var node in CreateNodes(injectionsCounter, implementationsWithOrdinal.OrderBy(i => i.Constructor.Ordinal)))
                 {
                     yield return node;
                 }
@@ -85,41 +86,23 @@ internal sealed class ImplementationDependencyNodeBuilder(
                 continue;
             }
 
-            foreach (var node in CreateNodes(injectionsWalker, implementations))
+            foreach (var node in CreateNodes(injectionsCounter, implementations))
             {
                 yield return node;
             }
         }
     }
 
-    private IEnumerable<DependencyNode> CreateNodes(DependenciesToInjectionsCountWalker walker, IEnumerable<DpImplementation> implementations) =>
+    private IEnumerable<DependencyNode> CreateNodes(IConstructorInjectionsCounterWalker walker, IEnumerable<DpImplementation> implementations) =>
         implementations
             .OrderByDescending(i => GetInjectionsCount(walker, i.Constructor))
             .ThenByDescending(i => i.Constructor.Method.DeclaredAccessibility)
             .SelectMany(implementationVariantsBuilder.Build)
             .Select((implementation, variantId) => new DependencyNode(variantId, implementation.Binding, Implementation: implementation));
 
-    private static int GetInjectionsCount(DependenciesToInjectionsCountWalker walker, in DpMethod constructor)
+    private static int GetInjectionsCount(IConstructorInjectionsCounterWalker walker, in DpMethod constructor)
     {
         walker.VisitConstructor(Unit.Shared, constructor);
         return walker.Count;
-    }
-    
-    private sealed class DependenciesToInjectionsCountWalker : DependenciesWalker<Unit>
-    {
-        public int Count { get; private set; }
-
-        public override void VisitConstructor(in Unit ctx, in DpMethod constructor)
-        {
-            Count = 0;
-            base.VisitConstructor(in ctx, in constructor);
-        }
-
-        public override void VisitInjection(
-            in Unit ctx,
-            in Injection injection,
-            bool hasExplicitDefaultValue,
-            object? explicitDefaultValue,
-            in ImmutableArray<Location> locations) => Count++;
     }
 }

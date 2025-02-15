@@ -1,10 +1,14 @@
 ﻿namespace Pure.DI.Core.Code;
 
-internal sealed class FactoryValidator(DpFactory factory) : CSharpSyntaxWalker
+internal sealed class FactoryValidator : CSharpSyntaxWalker, IFactoryValidator
 {
-    private readonly string _contextParameterName = factory.Source.Context.Identifier.Text;
+    private string? _contextParameterName;
 
-    public void Validate(LambdaExpressionSyntax lambda) => Visit(lambda);
+    public IFactoryValidator Initialize(DpFactory factory)
+    {
+        _contextParameterName = factory.Source.Context.Identifier.Text;
+        return this;
+    }
 
     public override void VisitIdentifierName(IdentifierNameSyntax node)
     {

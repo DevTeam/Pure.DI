@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core;
 
-internal sealed class Generator(
+internal sealed class CodeGenerator(
     IProfiler profiler,
     IExceptionHandler exceptionHandler,
     IObserversRegistry observersRegistry,
@@ -11,7 +11,7 @@ internal sealed class Generator(
     Func<IBuilder<MdSetup, CompositionCode?>> codeBuilderFactory,
     IBuilder<TagContext, TagCode> tagClassBuildr,
     ISmartTags smartTags,
-    IGeneratorSources sources,
+    ISources sources,
     CancellationToken cancellationToken)
     : IBuilder<IEnumerable<SyntaxUpdate>, Unit>
 {

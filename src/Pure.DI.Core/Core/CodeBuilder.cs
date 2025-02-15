@@ -2,6 +2,8 @@
 
 namespace Pure.DI.Core;
 
+using static Tag;
+
 internal sealed class CodeBuilder(
     IObserversProvider observersProvider,
     IBuilder<MdSetup, DependencyGraph?> dependencyGraphBuilder,
@@ -10,8 +12,8 @@ internal sealed class CodeBuilder(
     IEnumerable<IValidator<CompositionCode>> compositionValidators,
     IBuilder<DependencyGraph, IReadOnlyDictionary<Injection, Root>> rootsBuilder,
     IBuilder<DependencyGraph, CompositionCode> compositionBuilder,
-    IBuilder<CompositionCode, CompositionCode> compositionClassBuilder,
-    IGeneratorSources sources,
+    [Tag(CompositionClass)] IBuilder<CompositionCode, CompositionCode> compositionClassBuilder,
+    ISources sources,
     CancellationToken cancellationToken)
     : IBuilder<MdSetup, CompositionCode?>
 {

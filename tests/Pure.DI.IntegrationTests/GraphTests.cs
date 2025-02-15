@@ -660,9 +660,10 @@ public class GraphTests
     }
 
     [Theory]
-    [InlineData(5)]
-    [InlineData(300)]
-    public async Task ShouldSupportLongSetup(int count)
+    [InlineData(5, false)]
+    [InlineData(300, false)]
+    [InlineData(300, true)]
+    public async Task ShouldSupportLongSetup(int count, bool randomLifetime)
     {
         // Given
         var graphText = new StringBuilder();
@@ -671,7 +672,16 @@ public class GraphTests
         bindingCode.AppendLine();
         for (var i = 0; i <= count; i++)
         {
-            bindingCode.AppendLine($"                        .Bind<IDependency{i}>().To<Dependency{i}>()");
+            if (randomLifetime)
+            {
+                // Excluding Lifetime.Scoped
+                var lifetime = (Lifetime)Random.Shared.Next(Enum.GetValues<Lifetime>().Cast<int>().Max());
+                bindingCode.AppendLine($"                        .Bind<IDependency{i}>().As(Lifetime.{lifetime.ToString()}).To<Dependency{i}>()");
+            }
+            else
+            {
+                bindingCode.AppendLine($"                        .Bind<IDependency{i}>().To<Dependency{i}>()");
+            }
             resolveCode.AppendLine($"composition.Resolve<IDependency{i}>();");
             resolveCode.AppendLine($"composition.Resolve(typeof(IDependency{i}));");
         }
@@ -739,14 +749,17 @@ public class GraphTests
 
         // Then
         result.Success.ShouldBeTrue(result);
-        var graphs = GetGraphs(result);
-        graphs.Length.ShouldBe(1, result);
-        graphs[0].ConvertToString().ShouldBe(("""
-                                              Sample.IService() 
-                                                +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency0 dependency<--Sample.IDependency0))]
-                                              Service(Sample.IDependency0 dependency<--Sample.IDependency0))
-                                                +[Service(Sample.IDependency0 dependency<--Sample.IDependency0))]<--[Sample.IDependency0]--[Dependency0(Sample.IDependency1 dep<--Sample.IDependency1))]
-                                              """ + graphText).Replace("\r", ""));
+        if (!randomLifetime)
+        {
+            var graphs = GetGraphs(result);
+            graphs.Length.ShouldBe(1, result);
+            graphs[0].ConvertToString().ShouldBe(("""
+                                                  Sample.IService() 
+                                                    +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency0 dependency<--Sample.IDependency0))]
+                                                  Service(Sample.IDependency0 dependency<--Sample.IDependency0))
+                                                    +[Service(Sample.IDependency0 dependency<--Sample.IDependency0))]<--[Sample.IDependency0]--[Dependency0(Sample.IDependency1 dep<--Sample.IDependency1))]
+                                                  """ + graphText).Replace("\r", ""));
+        }
     }
 
     [Fact]

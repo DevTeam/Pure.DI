@@ -1,10 +1,12 @@
 // ReSharper disable ClassNeverInstantiated.Global
 
-namespace Pure.DI.Core.Code;
+namespace Pure.DI.Core.Code.Parts;
 
 internal sealed class ToStringMethodBuilder
-    : IBuilder<CompositionCode, CompositionCode>
+    : IClassPartBuilder
 {
+    public ClassPart Part => ClassPart.ToStringMethod;
+
     public CompositionCode Build(CompositionCode composition)
     {
         if (composition.Diagram.IsEmpty)

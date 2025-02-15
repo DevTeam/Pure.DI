@@ -8,19 +8,25 @@
 
 namespace Pure.DI.Core;
 
+using System.Runtime.CompilerServices;
+
 [ExcludeFromCodeCoverage]
 internal static class Disposables
 {
     public static readonly IDisposable Empty = EmptyDisposable.Shared;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IDisposable Create(Action action) => new DisposableAction(action);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IDisposable Create(params IDisposable[] disposables) =>
         Create(disposables.ToList());
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IDisposable Create(in IReadOnlyCollection<IDisposable> disposables) =>
         new CompositeDisposable(disposables);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IDisposable Create(IEnumerable<IDisposable> disposables) =>
         new CompositeDisposable(disposables.ToImmutableArray());
 

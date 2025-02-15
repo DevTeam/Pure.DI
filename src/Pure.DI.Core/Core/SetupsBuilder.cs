@@ -3,7 +3,7 @@
 namespace Pure.DI.Core;
 
 internal sealed class SetupsBuilder(
-    Func<IMetadataSyntaxWalker> metadataSyntaxWalkerFactory,
+    Func<IMetadataWalker> metadataSyntaxWalkerFactory,
     ICache<ImmutableArray<byte>, bool> setupCache,
     Func<IBindingBuilder> bindingBuilderFactory,
     IArguments arguments,

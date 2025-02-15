@@ -2,45 +2,17 @@
 
 namespace Pure.DI.Core.Code;
 
+using Parts;
+using static Tag;
+
 internal sealed class CompositionClassBuilder(
-    [Tag(typeof(UsingDeclarationsBuilder))]
-    IBuilder<CompositionCode, CompositionCode> usingDeclarations,
-    [Tag(typeof(FieldsBuilder))] IBuilder<CompositionCode, CompositionCode> fields,
-    [Tag(typeof(ArgFieldsBuilder))] IBuilder<CompositionCode, CompositionCode> argFields,
-    [Tag(typeof(ParameterizedConstructorBuilder))]
-    IBuilder<CompositionCode, CompositionCode> parameterizedConstructor,
-    [Tag(typeof(DefaultConstructorBuilder))]
-    IBuilder<CompositionCode, CompositionCode> defaultConstructor,
-    [Tag(typeof(ScopeConstructorBuilder))] IBuilder<CompositionCode, CompositionCode> scopeConstructor,
-    [Tag(typeof(RootMethodsBuilder))] IBuilder<CompositionCode, CompositionCode> rootProperties,
-    [Tag(typeof(ApiMembersBuilder))] IBuilder<CompositionCode, CompositionCode> apiMembers,
-    [Tag(typeof(DisposeMethodBuilder))] IBuilder<CompositionCode, CompositionCode> disposeMethod,
-    [Tag(typeof(ResolversFieldsBuilder))] IBuilder<CompositionCode, CompositionCode> resolversFields,
-    [Tag(typeof(StaticConstructorBuilder))]
-    IBuilder<CompositionCode, CompositionCode> staticConstructor,
-    [Tag(typeof(ResolverClassesBuilder))] IBuilder<CompositionCode, CompositionCode> resolversClasses,
-    [Tag(typeof(ToStringMethodBuilder))] IBuilder<CompositionCode, CompositionCode> toString,
+    [Tag(UsingDeclarations)]  IBuilder<CompositionCode, CompositionCode> usingDeclarations,
+    IReadOnlyCollection<IClassPartBuilder> classPartBuilders,
     [Tag(typeof(ClassCommenter))] ICommenter<Unit> classCommenter,
     IInformation information,
     CancellationToken cancellationToken)
     : IBuilder<CompositionCode, CompositionCode>
 {
-    private readonly IBuilder<CompositionCode, CompositionCode>[] _codeBuilders =
-    [
-        fields,
-        argFields,
-        parameterizedConstructor,
-        defaultConstructor,
-        scopeConstructor,
-        rootProperties,
-        apiMembers,
-        disposeMethod,
-        resolversFields,
-        staticConstructor,
-        resolversClasses,
-        toString
-    ];
-
     public CompositionCode Build(CompositionCode composition)
     {
         var code = composition.Code;
@@ -85,7 +57,7 @@ internal sealed class CompositionClassBuilder(
         {
             var prevCount = composition.MembersCount;
             // Generate class members
-            foreach (var builder in _codeBuilders)
+            foreach (var builder in classPartBuilders)
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 if (prevCount != composition.MembersCount)

@@ -1,10 +1,12 @@
 // ReSharper disable ClassNeverInstantiated.Global
 
-namespace Pure.DI.Core.Code;
+namespace Pure.DI.Core.Code.Parts;
 
 internal sealed class ResolversFieldsBuilder(IBuilder<RootContext, IEnumerable<ResolverInfo>> resolversBuilder)
-    : IBuilder<CompositionCode, CompositionCode>
+    : IClassPartBuilder
 {
+    public ClassPart Part => ClassPart.ResolversFields;
+
     public CompositionCode Build(CompositionCode composition)
     {
         if (!composition.Source.Source.Hints.IsResolveEnabled)

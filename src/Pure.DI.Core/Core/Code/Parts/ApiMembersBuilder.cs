@@ -1,12 +1,14 @@
 // ReSharper disable ClassNeverInstantiated.Global
 
-namespace Pure.DI.Core.Code;
+namespace Pure.DI.Core.Code.Parts;
 
 internal sealed class ApiMembersBuilder(
     IBuilder<RootContext, IEnumerable<ResolverInfo>> resolversBuilder,
     IBuildTools buildTools)
-    : IBuilder<CompositionCode, CompositionCode>
+    : IClassPartBuilder
 {
+    public ClassPart Part => ClassPart.ApiMembers;
+
     public CompositionCode Build(CompositionCode composition)
     {
         var code = composition.Code;

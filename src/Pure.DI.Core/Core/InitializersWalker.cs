@@ -1,13 +1,20 @@
 ﻿// ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
 namespace Pure.DI.Core;
 
-internal sealed class InitializersWalker(
-    string variableName,
-    IEnumerator<Variable> variables,
-    IInjections injections):  DependenciesWalker<BuildContext>
+internal sealed class InitializersWalker(IInjections injections)
+    :  DependenciesWalker<BuildContext>, IInitializersWalker
 {
     private readonly List<Variable> _variables = [];
     private readonly List<(Action Run, int? Ordinal)> _actions = [];
+    private string _variableName = string.Empty;
+    private IEnumerator<Variable> _variablesEnumerator = Enumerable.Empty<Variable>().GetEnumerator();
+
+    public IInitializersWalker Ininitialize(string variableName, IEnumerator<Variable> variables)
+    {
+        _variableName = variableName;
+        _variablesEnumerator = variables;
+        return this;
+    }
 
     public override void VisitInitializer(in BuildContext ctx, DpInitializer initializer)
     {
@@ -20,9 +27,9 @@ internal sealed class InitializersWalker(
 
     public override void VisitInjection(in BuildContext ctx, in Injection injection, bool hasExplicitDefaultValue, object? explicitDefaultValue, in ImmutableArray<Location> locations)
     {
-        if (variables.MoveNext())
+        if (_variablesEnumerator.MoveNext())
         {
-            _variables.Add(variables.Current);
+            _variables.Add(_variablesEnumerator.Current);
         }
 
         base.VisitInjection(in ctx, in injection, hasExplicitDefaultValue, explicitDefaultValue, in locations);
@@ -34,7 +41,7 @@ internal sealed class InitializersWalker(
         var curCtx = ctx;
         var curMethod = method;
         var curVariables = _variables.ToList();
-        _actions.Add(new (() => injections.MethodInjection(variableName, curCtx, curMethod, curVariables), curMethod.Ordinal));
+        _actions.Add(new (() => injections.MethodInjection(_variableName, curCtx, curMethod, curVariables), curMethod.Ordinal));
         _variables.Clear();
     }
 
@@ -44,7 +51,7 @@ internal sealed class InitializersWalker(
         var curCtx = ctx;
         var curProperty = property;
         var curVariable = _variables.Single();
-        _actions.Add(new (() => injections.PropertyInjection(variableName, curCtx, curProperty, curVariable), curProperty.Ordinal));
+        _actions.Add(new (() => injections.PropertyInjection(_variableName, curCtx, curProperty, curVariable), curProperty.Ordinal));
         _variables.Clear();
     }
 
@@ -54,7 +61,7 @@ internal sealed class InitializersWalker(
         var curCtx = ctx;
         var curField = field;
         var curVariable = _variables.Single();
-        _actions.Add(new (() => injections.FieldInjection(variableName, curCtx, curField, curVariable), curField.Ordinal));
+        _actions.Add(new (() => injections.FieldInjection(_variableName, curCtx, curField, curVariable), curField.Ordinal));
         _variables.Clear();
     }
 }

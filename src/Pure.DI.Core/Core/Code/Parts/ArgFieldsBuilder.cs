@@ -1,10 +1,12 @@
 // ReSharper disable ClassNeverInstantiated.Global
 
-namespace Pure.DI.Core.Code;
+namespace Pure.DI.Core.Code.Parts;
 
 internal sealed class ArgFieldsBuilder(ITypeResolver typeResolver)
-    : IBuilder<CompositionCode, CompositionCode>
+    : IClassPartBuilder
 {
+    public ClassPart Part => ClassPart.ArgFields;
+
     public CompositionCode Build(CompositionCode composition)
     {
         var classArgs = composition.Args.GetArgsOfKind(ArgKind.Class).ToList();

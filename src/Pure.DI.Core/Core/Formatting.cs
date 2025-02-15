@@ -4,7 +4,7 @@ namespace Pure.DI.Core;
 
 internal static class Formatting
 {
-    private const int IndentsCount = 256;
+    private const int IndentsCount = 64;
     private static readonly string[] Indents;
 
     static Formatting()

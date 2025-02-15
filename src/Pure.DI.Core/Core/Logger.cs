@@ -17,7 +17,7 @@ internal sealed class Logger : ILogger
     }
     
     public Logger(IObserversProvider observersProvider)
-        : this(observersProvider, typeof(Generator))
+        : this(observersProvider, typeof(CodeGenerator))
     {
     }
 

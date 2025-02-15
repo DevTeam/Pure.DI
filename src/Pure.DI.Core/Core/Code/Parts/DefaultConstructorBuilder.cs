@@ -1,11 +1,13 @@
 // ReSharper disable ClassNeverInstantiated.Global
 
-namespace Pure.DI.Core.Code;
+namespace Pure.DI.Core.Code.Parts;
 
 internal sealed class DefaultConstructorBuilder(
     ILocks locks)
-    : IBuilder<CompositionCode, CompositionCode>
+    : IClassPartBuilder
 {
+    public ClassPart Part => ClassPart.DefaultConstructor;
+
     public CompositionCode Build(CompositionCode composition)
     {
         if (composition.Args.Length > 0)

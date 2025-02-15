@@ -6,7 +6,7 @@ internal sealed class NamespacesWalker(ISemantic semantic)
     private readonly HashSet<string> _namespaces = [];
     private SemanticModel? _semanticModel;
 
-    public NamespacesWalker Initialize(SemanticModel semanticModel)
+    public INamespacesWalker Initialize(SemanticModel semanticModel)
     {
         _semanticModel = semanticModel;
         return this;

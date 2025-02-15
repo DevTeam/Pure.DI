@@ -1,9 +1,13 @@
 namespace Pure.DI.Core;
 
-internal sealed class FactoryResolversAndInitializersSyntaxWalker : CSharpSyntaxWalker
+internal sealed class FactoryResolversWalker : CSharpSyntaxWalker, IFactoryResolversWalker
 {
-    public readonly List<InvocationExpressionSyntax> Resolvers = [];
-    public readonly List<InvocationExpressionSyntax> Initializers = [];
+    private readonly List<InvocationExpressionSyntax> _resolvers = [];
+    private readonly List<InvocationExpressionSyntax> _initializers = [];
+
+    public IReadOnlyCollection<InvocationExpressionSyntax> Resolvers => _resolvers;
+
+    public IReadOnlyCollection<InvocationExpressionSyntax> Initializers => _initializers;
 
     public override void VisitInvocationExpression(InvocationExpressionSyntax invocation)
     {
@@ -23,12 +27,12 @@ internal sealed class FactoryResolversAndInitializersSyntaxWalker : CSharpSyntax
                         when invocation.ArgumentList.Arguments.Count is 1 or 2
                              && memberAccess is { Expression: IdentifierNameSyntax contextIdentifierName }
                              && contextIdentifierName.IsKind(SyntaxKind.IdentifierName):
-                        Resolvers.Add(invocation);
+                        _resolvers.Add(invocation);
                         break;
                     
                     case nameof(IContext.BuildUp)
                         when invocation.ArgumentList.Arguments.Count is 1:
-                        Initializers.Add(invocation);
+                        _initializers.Add(invocation);
                         break;
                 }
 
@@ -41,12 +45,12 @@ internal sealed class FactoryResolversAndInitializersSyntaxWalker : CSharpSyntax
                         when invocation.ArgumentList.Arguments.Count is 1 or 2
                              && memberAccess is { Expression: IdentifierNameSyntax contextIdentifierName } 
                              && contextIdentifierName.IsKind(SyntaxKind.IdentifierName):
-                        Resolvers.Add(invocation);
+                        _resolvers.Add(invocation);
                         break;
                     
                     case nameof(IContext.BuildUp)
                         when invocation.ArgumentList.Arguments.Count is 1:
-                        Initializers.Add(invocation);
+                        _initializers.Add(invocation);
                         break;
                 }
 

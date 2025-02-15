@@ -1,6 +1,6 @@
 // ReSharper disable ClassNeverInstantiated.Global
 
-namespace Pure.DI.Core.Code;
+namespace Pure.DI.Core.Code.Parts;
 
 internal sealed class RootMethodsBuilder(
     IBuildTools buildTools,
@@ -9,8 +9,10 @@ internal sealed class RootMethodsBuilder(
     IMarker marker,
     IRootAccessModifierResolver rootAccessModifierResolver,
     CancellationToken cancellationToken)
-    : IBuilder<CompositionCode, CompositionCode>
+    : IClassPartBuilder
 {
+    public ClassPart Part => ClassPart.RootMethods;
+
     public CompositionCode Build(CompositionCode composition)
     {
         if (composition.Roots.Length == 0)

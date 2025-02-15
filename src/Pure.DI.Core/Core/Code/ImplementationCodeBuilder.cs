@@ -6,7 +6,7 @@ namespace Pure.DI.Core.Code;
 internal sealed class ImplementationCodeBuilder(
     ITypeResolver typeResolver,
     IInjections injections,
-    Func<IDependenciesToVariablesWalker> variablesWalkerFactory,
+    Func<IVariablesWalker> variablesWalkerFactory,
     CancellationToken cancellationToken)
     : ICodeBuilder<DpImplementation>
 {

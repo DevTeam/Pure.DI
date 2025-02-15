@@ -57,9 +57,9 @@ public static class TestExtensions
         var generatedSources = new List<Source>();
         var contextOptions = new Mock<IGeneratorOptions>();
         contextOptions.SetupGet(i => i.GlobalOptions).Returns(() => globalOptions);
-        var contextProducer = new Mock<IGeneratorSources>();
+        var sources = new Mock<ISources>();
         var contextDiagnostic = new Mock<IGeneratorDiagnostic>();
-        contextProducer.Setup(i => i.AddSource(It.IsAny<string>(), It.IsAny<SourceText>()))
+        sources.Setup(i => i.AddSource(It.IsAny<string>(), It.IsAny<SourceText>()))
             .Callback<string, SourceText>((hintName, sourceText) => { generatedSources.Add(new Source(hintName, sourceText)); });
 
         var compilationCopy = compilation;
@@ -72,7 +72,7 @@ public static class TestExtensions
         using var logEntryObserverToken = generator.Observers.Register(logEntryObserver);
 
         // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-        generator.Generate(contextOptions.Object, contextProducer.Object, contextDiagnostic.Object, [..updates], CancellationToken.None);
+        generator.Generate(contextOptions.Object, sources.Object, contextDiagnostic.Object, [..updates], CancellationToken.None);
 
         var logs = logEntryObserver.Values;
         var errors = logs.Where(i => i.Severity == DiagnosticSeverity.Error).ToImmutableArray();

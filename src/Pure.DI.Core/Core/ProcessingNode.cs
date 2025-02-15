@@ -3,7 +3,7 @@
 namespace Pure.DI.Core;
 
 internal sealed class ProcessingNode(
-    IDependenciesToInjectionsWalker injectionsWalker,
+    IInjectionsWalker injectionsWalker,
     DependencyNode node,
     ISet<Injection> contracts)
     : IEquatable<ProcessingNode>, IProcessingNode
@@ -24,7 +24,7 @@ internal sealed class ProcessingNode(
 
     public override int GetHashCode() => Node.GetHashCode();
 
-    private static IReadOnlyCollection<InjectionInfo> GetInjections(IDependenciesToInjectionsWalker injectionsWalker, DependencyNode node)
+    private static IReadOnlyCollection<InjectionInfo> GetInjections(IInjectionsWalker injectionsWalker, DependencyNode node)
     {
         injectionsWalker.VisitDependencyNode(Unit.Shared, node);
         return injectionsWalker.GetResult();

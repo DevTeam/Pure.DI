@@ -9,11 +9,11 @@
 
 namespace Pure.DI.Core;
 
-internal sealed class MetadataSyntaxWalker(
+internal sealed class MetadataWalker(
     IApiInvocationProcessor invocationProcessor,
     IMetadata metadata,
     CancellationToken cancellationToken)
-    : CSharpSyntaxWalker, IMetadataSyntaxWalker
+    : CSharpSyntaxWalker, IMetadataWalker
 {
     private readonly Stack<InvocationExpressionSyntax> _invocations = new();
     private string _namespace = string.Empty;

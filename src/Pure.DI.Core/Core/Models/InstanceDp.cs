@@ -1,4 +1,4 @@
-﻿namespace Pure.DI.Core;
+﻿namespace Pure.DI.Core.Models;
 
 internal record InstanceDp(
     ImmutableArray<DpMethod> Methods,

@@ -2,19 +2,13 @@ namespace Pure.DI.Core;
 
 using System.Reflection;
 
-internal sealed class Information : IInformation
+internal sealed class Information(Assembly assembly) : IInformation
 {
-    private static readonly string CurrentDescription = Names.GeneratorName;
-
-    static Information()
+    private readonly Lazy<string> _description = new(() =>
     {
-        var assembly = typeof(Information).Assembly;
         var version = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
-        if (!string.IsNullOrWhiteSpace(version))
-        {
-            CurrentDescription = $"{Names.GeneratorName} {version}";
-        }
-    }
+        return !string.IsNullOrWhiteSpace(version) ? $"{Names.GeneratorName} {version}" : Names.GeneratorName;
+    });
 
-    public string Description => CurrentDescription;
+    public string Description => _description.Value;
 }

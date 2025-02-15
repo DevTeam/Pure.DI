@@ -1,6 +1,7 @@
 namespace Pure.DI.Core;
 
-internal sealed class MetadataToLinesWalker(int indent) : MetadataWalkerBase, IEnumerable<string>
+internal sealed class MetadataToLinesWalker(int indent)
+    : MetadataWalkerBase, IEnumerable<string>
 {
     private readonly LinesBuilder _lb = new(indent);
 

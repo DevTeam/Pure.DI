@@ -1,13 +1,15 @@
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable InvertIf
 
-namespace Pure.DI.Core.Code;
+namespace Pure.DI.Core.Code.Parts;
 
 internal sealed class FieldsBuilder(
     ITypeResolver typeResolver,
     ILocks locks)
-    : IBuilder<CompositionCode, CompositionCode>
+    : IClassPartBuilder
 {
+    public ClassPart Part => ClassPart.Fields;
+
     public CompositionCode Build(CompositionCode composition)
     {
         var code = composition.Code;

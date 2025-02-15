@@ -1,12 +1,14 @@
 // ReSharper disable ClassNeverInstantiated.Global
 
-namespace Pure.DI.Core.Code;
+namespace Pure.DI.Core.Code.Parts;
 
 internal sealed class StaticConstructorBuilder(
     ITypeResolver typeResolver,
     IBuilder<RootContext, IEnumerable<ResolverInfo>> resolversBuilder)
-    : IBuilder<CompositionCode, CompositionCode>
+    : IClassPartBuilder
 {
+    public ClassPart Part => ClassPart.StaticConstructor;
+
     public CompositionCode Build(CompositionCode composition)
     {
         if (!composition.Source.Source.Hints.IsResolveEnabled)

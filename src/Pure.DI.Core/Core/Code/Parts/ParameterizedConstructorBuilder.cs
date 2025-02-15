@@ -1,14 +1,16 @@
 // ReSharper disable ClassNeverInstantiated.Global
 
-namespace Pure.DI.Core.Code;
+namespace Pure.DI.Core.Code.Parts;
 
 internal sealed class ParameterizedConstructorBuilder(
     ITypeResolver typeResolver,
     [Tag(typeof(ParameterizedConstructorCommenter))]
     ICommenter<Unit> constructorCommenter,
     ILocks locks)
-    : IBuilder<CompositionCode, CompositionCode>
+    : IClassPartBuilder
 {
+    public ClassPart Part => ClassPart.ParameterizedConstructor;
+
     public CompositionCode Build(CompositionCode composition)
     {
         if (composition.Args.Length == 0)

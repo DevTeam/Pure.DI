@@ -2,11 +2,13 @@
 // ReSharper disable InvertIf
 // ReSharper disable ClassNeverInstantiated.Global
 
-namespace Pure.DI.Core.Code;
+namespace Pure.DI.Core.Code.Parts;
 
 internal sealed class ResolverClassesBuilder(IBuilder<RootContext, IEnumerable<ResolverInfo>> resolversBuilder)
-    : IBuilder<CompositionCode, CompositionCode>
+    : IClassPartBuilder
 {
+    public ClassPart Part => ClassPart.ResolverClasses;
+
     public CompositionCode Build(CompositionCode composition)
     {
         if (!composition.Source.Source.Hints.IsResolveEnabled)
