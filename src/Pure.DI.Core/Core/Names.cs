@@ -79,72 +79,14 @@ internal static class Names
     public static readonly string OfTypeFieldName = "OfTypeMessage" + Salt;
 
     // Vars
-    private const string TransientVariablePrefix = "transient";
-    private const string PerBlockVariablePrefix = "perBlock";
-    private const string PerResolveVariablePrefix = "perResolve";
-    private const string SingletonVariablePrefix = "_singleton";
-    private const string ScopedVariablePrefix = "_scoped";
-    private const string ArgVariablePrefix = "_arg";
+    public const string TransientVariablePrefix = "transient";
+    public const string PerBlockVariablePrefix = "perBlock";
+    public const string PerResolveVariablePrefix = "perResolve";
+    public const string SingletonVariablePrefix = "_singleton";
+    public const string ScopedVariablePrefix = "_scoped";
+    public const string ArgVariablePrefix = "_arg";
     public const string LocalVariablePrefix = "local";
-
-    public static string GetVariableName(this DependencyNode Node, int PerLifetimeId)
-    {
-        switch (Node)
-        {
-            case { Lifetime: Lifetime.Singleton }:
-            {
-                var binding = Node.Binding;
-                return $"{SingletonVariablePrefix}{Node.Type.Name.ToTitleCase()}{Salt}{binding.Id}";
-            }
-
-            case { Lifetime: Lifetime.Scoped }:
-            {
-                var binding = Node.Binding;
-                return $"{ScopedVariablePrefix}{Node.Type.Name.ToTitleCase()}{Salt}{binding.Id}";
-            }
-
-            case { Lifetime: Lifetime.PerResolve }:
-                return $"{PerResolveVariablePrefix}{Node.Type.Name.ToTitleCase()}{Salt}{PerLifetimeId}";
-
-            case { Arg: { Source.Kind: ArgKind.Class } arg }:
-                return $"{ArgVariablePrefix}{ToTitleCase(arg.Source.ArgName)}{Salt}";
-
-            case { Arg: { Source.Kind: ArgKind.Root } arg }:
-                return arg.Source.ArgName;
-
-            case { Lifetime: Lifetime.PerBlock }:
-                return $"{PerBlockVariablePrefix}{Node.Type.Name.ToTitleCase()}{Salt}{PerLifetimeId}";
-
-            default:
-                return $"{TransientVariablePrefix}{Node.Type.Name.ToTitleCase()}{Salt}{PerLifetimeId}";
-        }
-    }
 
     public static string GetPropertyName(this Root root) =>
         root.IsPublic ? root.Name : $"Root{Salt}{root.Index}";
-
-    public static string ToTitleCase(this string title)
-    {
-        if (title.Length == 0)
-        {
-            return title;
-        }
-
-        var firstChar = title[0];
-        if (firstChar == '@')
-        {
-            // ReSharper disable once TailRecursiveCall
-            return ToTitleCase(title[1..]);
-        }
-        
-        // ReSharper disable once InvertIf
-        if (char.IsLower(firstChar))
-        {
-            var chars = title.ToArray();
-            chars[0] = char.ToUpper(firstChar);
-            return new string(chars);
-        }
-
-        return title;
-    }
 }

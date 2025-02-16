@@ -5,7 +5,6 @@
 namespace Pure.DI.Core.Code;
 
 internal sealed class FactoryCodeBuilder(
-    IIdGenerator idGenerator,
     INodeInfo nodeInfo,
     IArguments arguments,
     ITypeResolver typeResolver,
@@ -13,7 +12,8 @@ internal sealed class FactoryCodeBuilder(
     ITriviaTools triviaTools,
     ISymbolNames symbolNames,
     Func<IFactoryValidator> factoryValidatorFactory,
-    Func<IInitializersWalker> initializersWalkerFactory)
+    Func<IInitializersWalker> initializersWalkerFactory,
+    Func<ILocalVariableRenamingRewriter> localVariableRenamingRewriterFactory)
     : ICodeBuilder<DpFactory>
 {
     public static readonly ParenthesizedLambdaExpressionSyntax DefaultBindAttrParenthesizedLambda = SyntaxFactory.ParenthesizedLambdaExpression();
@@ -153,7 +153,7 @@ internal sealed class FactoryCodeBuilder(
 
         // Rewrites syntax tree
         var finishLabel = $"{variable.VariableDeclarationName}Finish";
-        var localVariableRenamingRewriter = new LocalVariableRenamingRewriter(idGenerator, factory.Source.SemanticModel, triviaTools);
+        var localVariableRenamingRewriter = localVariableRenamingRewriterFactory();
         var factoryExpression = localVariableRenamingRewriter.Rewrite(ctx, originalLambda);
         var injections = new List<FactoryRewriter.Injection>();
         var inits = new List<FactoryRewriter.Initializer>();

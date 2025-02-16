@@ -1,6 +1,7 @@
 namespace Pure.DI.Core.Code;
 
 internal record Variable(
+    IVariableNameProvider VariableNameProvider,
     MdSetup Setup,
     IStatement? Parent,
     int PerLifetimeId,
@@ -26,11 +27,11 @@ internal record Variable(
 
     public string VariableDeclarationName =>
         string.IsNullOrEmpty(NameOverride)
-            ? Node.GetVariableName(PerLifetimeId)
+            ? VariableNameProvider.GetVariableName(Node, PerLifetimeId)
             : NameOverride;
 
     public string VariableName => string.IsNullOrEmpty(NameOverride)
-        ? (Node.Lifetime == Lifetime.Singleton ? $"{Names.RootFieldName}." : "") + Node.GetVariableName(PerLifetimeId)
+        ? (Node.Lifetime == Lifetime.Singleton ? $"{Names.RootFieldName}." : "") + VariableNameProvider.GetVariableName(Node, PerLifetimeId)
         : NameOverride;
 
     public string VariableCode

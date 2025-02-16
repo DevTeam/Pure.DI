@@ -11,7 +11,7 @@ using Variation = IEnumerator<IProcessingNode>;
 
 internal sealed class VariationalDependencyGraphBuilder(
     ILogger logger,
-    IGlobalOptions globalOptions,
+    IGlobalProperties globalProperties,
     Func<ITypeConstructor> typeConstructorFactory,
     IEnumerable<IBuilder<DependencyNodeBuildContext, IEnumerable<DependencyNode>>> dependencyNodeBuilders,
     IVariator<IProcessingNode> variator,
@@ -72,7 +72,7 @@ internal sealed class VariationalDependencyGraphBuilder(
         var variants = new LinkedList<Variation>(CreateVariants(allNodes));
         try
         {
-            var maxIterations = globalOptions.MaxIterations;
+            var maxIterations = globalProperties.MaxIterations;
             DependencyGraph? first = null;
             var maxAttempts = 0x2000;
             while (variator.TryGetNextVariants(variants, out var nodes))
@@ -84,7 +84,7 @@ internal sealed class VariationalDependencyGraphBuilder(
 
                 if (maxIterations-- <= 0)
                 {
-                    logger.CompileError($"The maximum number of iterations {globalOptions.MaxIterations.ToString()} was exceeded when building the optimal dependency graph. Try to specify the dependency graph more accurately.", setup.Source.GetLocation(), LogId.ErrorInvalidMetadata);
+                    logger.CompileError($"The maximum number of iterations {globalProperties.MaxIterations.ToString()} was exceeded when building the optimal dependency graph. Try to specify the dependency graph more accurately.", setup.Source.GetLocation(), LogId.ErrorInvalidMetadata);
                 }
 
                 cancellationToken.ThrowIfCancellationRequested();

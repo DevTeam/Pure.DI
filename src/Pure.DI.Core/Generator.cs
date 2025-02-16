@@ -62,6 +62,7 @@ public sealed partial class Generator
             .Bind<IFactoryValidator>().To<FactoryValidator>()
             .Bind<IInitializersWalker>().To<InitializersWalker>()
             .Bind<IConstructorInjectionsCounterWalker>().To<ConstructorInjectionsCounterWalker>()
+            .Bind<ILocalVariableRenamingRewriter>().To<LocalVariableRenamingRewriter>()
 
         .DefaultLifetime(Singleton)
             .Bind().To<Cache<TT1, TT2>>()
@@ -76,7 +77,7 @@ public sealed partial class Generator
             .Bind().To<Comments>()
             .Bind().To<BuildTools>()
             .Bind().To<Resources>()
-            .Bind().To<GlobalOptions>()
+            .Bind().To<GlobalProperties>()
             .Bind().To<Marker>()
             .Bind().To<Variator<TT>>()
             .Bind().To<Profiler>()
@@ -185,5 +186,6 @@ public sealed partial class Generator
             .Bind().To<Locks>()
             .Bind().To<RootAccessModifierResolver>()
             .Bind().To<SmartTags>()
-            .Bind().To<GenericTypeArguments>();
+            .Bind().To<GenericTypeArguments>()
+            .Bind().To<VariableNameProvider>();
 }

@@ -50,8 +50,8 @@ public static class TestExtensions
 
         var globalOptions = new TestAnalyzerConfigOptions(new Dictionary<string, string>
         {
-            { GlobalSettings.Severity, DiagnosticSeverity.Info.ToString() },
-            { GlobalSettings.LogFile, ".logs\\IntegrationTests.log" }
+            { GlobalProperties.SeverityProperty, DiagnosticSeverity.Info.ToString() },
+            { GlobalProperties.LogFileProperty, ".logs\\IntegrationTests.log" }
         });
 
         var generatedSources = new List<Source>();

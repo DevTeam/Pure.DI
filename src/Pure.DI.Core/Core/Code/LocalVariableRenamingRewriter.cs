@@ -5,16 +5,17 @@ namespace Pure.DI.Core.Code;
 using System.Collections.Generic;
 
 internal sealed class LocalVariableRenamingRewriter(
-    IIdGenerator idGenerator,
-    SemanticModel semanticModel,
-    ITriviaTools triviaTools)
-    : CSharpSyntaxRewriter
+    ITriviaTools triviaTools,
+    IVariableNameProvider variableNameProvider)
+    : CSharpSyntaxRewriter, ILocalVariableRenamingRewriter
 {
-    private readonly Dictionary<string, string> _identifierNames = new();
+    private readonly Dictionary<string, string> _names = new();
     private BuildContext? _ctx;
+    private SemanticModel? _semanticModel;
 
     public LambdaExpressionSyntax Rewrite(BuildContext ctx, LambdaExpressionSyntax lambda)
     {
+        _semanticModel = ctx.DependencyGraph.Source.SemanticModel;
         _ctx = ctx;
         return (LambdaExpressionSyntax)Visit(lambda);
     }
@@ -27,10 +28,10 @@ internal sealed class LocalVariableRenamingRewriter(
 
     public override SyntaxToken VisitToken(SyntaxToken token)
     {
-        if (_identifierNames.TryGetValue(token.Text, out var newName)
+        if (_names.TryGetValue(token.Text, out var newName)
             && token.IsKind(SyntaxKind.IdentifierToken)
             && token.Parent is { } parent
-            && (semanticModel.SyntaxTree != parent.SyntaxTree || semanticModel.GetSymbolInfo(parent).Symbol is ILocalSymbol))
+            && (_semanticModel?.SyntaxTree != parent.SyntaxTree || _semanticModel.GetSymbolInfo(parent).Symbol is ILocalSymbol))
         {
             token = triviaTools.PreserveTrivia(_ctx!.DependencyGraph.Source.Hints, SyntaxFactory.Identifier(newName), token);
         }
@@ -38,12 +39,12 @@ internal sealed class LocalVariableRenamingRewriter(
         return base.VisitToken(token);
     }
 
-    private string GetUniqueName(string name)
+    private string GetUniqueName(string baseName)
     {
-        if (!_identifierNames.TryGetValue(name, out var newName))
+        if (!_names.TryGetValue(baseName, out var newName))
         {
-            newName = $"{Names.LocalVariablePrefix}{name.ToTitleCase()}{Names.Salt}{idGenerator.Generate()}";
-            _identifierNames.Add(name, newName);
+            newName = variableNameProvider.GetLocalUniqueVariableName(baseName);
+            _names.Add(baseName, newName);
         }
 
         return newName;

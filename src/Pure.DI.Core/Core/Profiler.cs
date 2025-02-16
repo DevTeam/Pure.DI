@@ -7,14 +7,14 @@ using System.Runtime.InteropServices;
 
 internal sealed class Profiler(
     ILogger logger,
-    IGlobalOptions globalOptions,
+    IGlobalProperties globalProperties,
     CancellationToken cancellationToken) : IProfiler
 {
     private CancellationToken _cancellationToken = cancellationToken;
 
     public void Profile()
     {
-        if (!globalOptions.TryGetProfilePath(out var profilePath))
+        if (!globalProperties.TryGetProfilePath(out var profilePath))
         {
             return;
         }

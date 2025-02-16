@@ -3,6 +3,7 @@
 namespace Pure.DI.Core.Code;
 
 internal sealed class VariablesBuilder(
+    IVariableNameProvider variableNameProvider,
     INodeInfo nodeInfo,
     CancellationToken cancellationToken)
     : IVariablesBuilder
@@ -219,7 +220,7 @@ internal sealed class VariablesBuilder(
             {
                 case Lifetime.Transient:
                 {
-                    var transientVariable = new Variable(setup, parentBlock, transientId++, node, injection, new List<IStatement>(), new VariableInfo(), nodeInfo.IsLazy(node), false);
+                    var transientVariable = new Variable(variableNameProvider, setup, parentBlock, transientId++, node, injection, new List<IStatement>(), new VariableInfo(), nodeInfo.IsLazy(node), false);
                     if (node.Construct?.Source.Kind == MdConstructKind.Accumulator)
                     {
                         transientVariable.VariableCode = GetAccumulatorName(transientVariable);
@@ -241,7 +242,7 @@ internal sealed class VariablesBuilder(
                         };
                     }
 
-                    blockVariable = new Variable(setup, parentBlock, transientId++, node, injection, new List<IStatement>(), new VariableInfo(), nodeInfo.IsLazy(node), false);
+                    blockVariable = new Variable(variableNameProvider, setup, parentBlock, transientId++, node, injection, new List<IStatement>(), new VariableInfo(), nodeInfo.IsLazy(node), false);
                     blockMap.Add(perBlockKey, blockVariable);
                     return blockVariable;
                 }
@@ -260,7 +261,7 @@ internal sealed class VariablesBuilder(
             };
         }
 
-        variable = new Variable(setup, parentBlock, node.Binding.Id, node, injection, new List<IStatement>(), new VariableInfo(), nodeInfo.IsLazy(node), false);
+        variable = new Variable(variableNameProvider, setup, parentBlock, node.Binding.Id, node, injection, new List<IStatement>(), new VariableInfo(), nodeInfo.IsLazy(node), false);
         map.Add(key, variable);
         return variable;
     }
