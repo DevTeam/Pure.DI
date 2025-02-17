@@ -4,7 +4,7 @@ namespace Pure.DI.Core;
 
 using static Tag;
 
-internal sealed class CodeBuilder(
+sealed class CodeBuilder(
     IObserversProvider observersProvider,
     IBuilder<MdSetup, DependencyGraph?> dependencyGraphBuilder,
     IEnumerable<IValidator<MdSetup>> metadataValidators,

@@ -9,7 +9,6 @@ using System.Diagnostics.CodeAnalysis;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
 using Model;
-
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
 [MemoryDiagnoser]
 [SuppressMessage("Usage", "CA2263:Prefer generic overload when type is known")]
@@ -22,7 +21,7 @@ public partial class Transient : BenchmarkBase
             .Bind().To<Service3>()
             .Bind().To<Service4>()
             .Root<CompositionRoot>(nameof(TestPureDIByCR), kind: RootKinds.Method | RootKinds.Partial);
-    
+
     protected override TActualContainer? CreateContainer<TActualContainer, TAbstractContainer>()
         where TActualContainer : class =>
         new TAbstractContainer()
@@ -35,7 +34,7 @@ public partial class Transient : BenchmarkBase
 
     [Benchmark(Description = "Pure.DI Resolve<T>()")]
     public CompositionRoot TestPureDI() => Resolve<CompositionRoot>();
-    
+
     [Benchmark(Description = "Pure.DI Resolve(Type)")]
     public object TestPureDINonGeneric() => Resolve(typeof(CompositionRoot));
 

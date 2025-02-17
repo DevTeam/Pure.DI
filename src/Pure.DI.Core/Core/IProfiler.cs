@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core;
 
-internal interface IProfiler
+interface IProfiler
 {
     void Profile();
 }

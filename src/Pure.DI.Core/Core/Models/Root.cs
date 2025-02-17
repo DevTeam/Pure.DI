@@ -1,6 +1,6 @@
 namespace Pure.DI.Core.Models;
 
-internal record Root(
+record Root(
     int Index,
     DependencyNode Node,
     MdRoot Source,

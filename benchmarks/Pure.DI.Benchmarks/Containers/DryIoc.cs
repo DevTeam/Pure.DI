@@ -3,7 +3,7 @@ namespace Pure.DI.Benchmarks.Containers;
 
 using global::DryIoc;
 
-internal sealed class DryIoc : BaseAbstractContainer<Container>
+sealed class DryIoc : BaseAbstractContainer<Container>
 {
     private readonly Container _container = new();
 

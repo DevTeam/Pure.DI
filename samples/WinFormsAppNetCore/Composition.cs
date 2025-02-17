@@ -5,13 +5,12 @@
 
 namespace WinFormsAppNetCore;
 
-using System;
 using Clock.Models;
 using Clock.ViewModels;
 using Pure.DI;
 using static Pure.DI.Lifetime;
 
-internal partial class Composition
+partial class Composition
 {
     void Setup() => DI.Setup()
         // Provides the composition root for main form
@@ -19,16 +18,16 @@ internal partial class Composition
 
         // Forms
         .Bind().As(Singleton).To<FormMain>()
-        
+
         // View Models
         .Bind().To<ClockViewModel>()
 
         // Models
         .Bind().To<Log<TT>>()
         .Bind().To(_ => TimeSpan.FromSeconds(1))
-        .Bind().To<Clock.Models.Timer>()
+        .Bind().To<Timer>()
         .Bind().As(PerBlock).To<SystemClock>()
-    
+
         // Infrastructure
         .Bind().To<Dispatcher>();
 }

@@ -1,5 +1,5 @@
 ﻿namespace Pure.DI.Core.Models;
 
-internal record DependencyNodeBuildContext(
+record DependencyNodeBuildContext(
     MdSetup Setup,
     ITypeConstructor TypeConstructor);

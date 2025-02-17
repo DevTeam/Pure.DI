@@ -1,6 +1,6 @@
 namespace Build;
 
-internal interface ITarget<T>
+interface ITarget<T>
 {
     Task<T> RunAsync(CancellationToken cancellationToken);
 }

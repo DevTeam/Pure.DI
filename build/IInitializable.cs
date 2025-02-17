@@ -1,6 +1,6 @@
 ﻿namespace Build;
 
-internal interface IInitializable
+interface IInitializable
 {
     Task InitializeAsync(CancellationToken cancellationToken);
 }

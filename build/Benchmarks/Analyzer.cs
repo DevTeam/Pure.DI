@@ -3,7 +3,7 @@
 namespace Build.Benchmarks;
 
 [SuppressMessage("Performance", "CA1822:Mark members as static")]
-internal class Analyzer
+class Analyzer
 {
     public bool Analyze(IEnumerable<Benchmark> benchmarks, params Thresholds[] thresholds)
     {

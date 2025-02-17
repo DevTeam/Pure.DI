@@ -7,7 +7,7 @@ using System.Collections.Immutable;
 using NuGet.Versioning;
 
 [SuppressMessage("Performance", "CA1822:Mark members as static")]
-internal class Settings(Properties properties, Versions versions)
+class Settings(Properties properties, Versions versions)
 {
     public static readonly VersionRange VersionRange = VersionRange.Parse("2.1.*");
 
@@ -41,10 +41,10 @@ internal class Settings(Properties properties, Versions versions)
         new(new Version(4, 8, 0)),
         new(new Version(4, 3, 1))
     ];
-    
+
     // Make sure that /Directory.Build.props has been updated.
     public int BaseDotNetFrameworkMajorVersion => 9;
-    
+
     public string BaseDotNetFrameworkVersion => $"{BaseDotNetFrameworkMajorVersion}.0";
 
     private static NuGetVersion GetVersion(Versions versions) =>

@@ -1,6 +1,6 @@
 namespace Pure.DI.Core.Models;
 
-internal enum ImplementationVariantKind
+enum ImplementationVariantKind
 {
     Ctor,
     Method

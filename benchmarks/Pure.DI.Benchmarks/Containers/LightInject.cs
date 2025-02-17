@@ -4,7 +4,7 @@ namespace Pure.DI.Benchmarks.Containers;
 using global::LightInject;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-internal sealed class LightInject : BaseAbstractContainer<ServiceContainer>
+sealed class LightInject : BaseAbstractContainer<ServiceContainer>
 {
     private readonly ServiceContainer _container = new();
 

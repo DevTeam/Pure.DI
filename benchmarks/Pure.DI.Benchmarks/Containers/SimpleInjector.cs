@@ -4,11 +4,8 @@ namespace Pure.DI.Benchmarks.Containers;
 using global::SimpleInjector;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-internal sealed class SimpleInjector : BaseAbstractContainer<Container>
+sealed class SimpleInjector : BaseAbstractContainer<Container>
 {
-    private readonly Container _container = new();
-    private readonly Lazy<Container> _containerProvider;
-    private readonly Dictionary<Type, List<Type>> _collections = new();
 
     public SimpleInjector()
     {
@@ -16,8 +13,7 @@ internal sealed class SimpleInjector : BaseAbstractContainer<Container>
         _container.Options.UseStrictLifestyleMismatchBehavior = false;
         _container.Options.SuppressLifestyleMismatchVerification = true;
 
-        _containerProvider = new Lazy<Container>(() =>
-        {
+        _containerProvider = new Lazy<Container>(() => {
             foreach (var (contractType, implementations) in _collections.Where(i => i.Value.Count > 1))
             {
                 _container.Collection.Register(contractType, implementations);
@@ -26,6 +22,9 @@ internal sealed class SimpleInjector : BaseAbstractContainer<Container>
             return _container;
         });
     }
+    private readonly Dictionary<Type, List<Type>> _collections = new();
+    private readonly Container _container = new();
+    private readonly Lazy<Container> _containerProvider;
 
     public override Container CreateContainer() => _containerProvider.Value;
 

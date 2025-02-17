@@ -2,9 +2,9 @@
 
 namespace Pure.DI.Core.Code;
 
-using SpecialType = Microsoft.CodeAnalysis.SpecialType;
+using SpecialType=Microsoft.CodeAnalysis.SpecialType;
 
-internal sealed class NodeInfo(ITypes types) : INodeInfo
+sealed class NodeInfo(ITypes types) : INodeInfo
 {
     public bool IsDelegate(DependencyNode node) =>
         node.Type.TypeKind == TypeKind.Delegate;
@@ -16,7 +16,7 @@ internal sealed class NodeInfo(ITypes types) : INodeInfo
         node.Type.AllInterfaces.Any(i =>
             i.SpecialType == SpecialType.System_IDisposable
             || IsAsyncDisposable(node.Binding.SemanticModel.Compilation, i));
-    
+
     public bool IsDisposable(DependencyNode node) =>
         node.Type.AllInterfaces.Any(i => i.SpecialType == SpecialType.System_IDisposable);
 
@@ -30,6 +30,6 @@ internal sealed class NodeInfo(ITypes types) : INodeInfo
         node.Construct is { Source.Kind: MdConstructKind.AsyncEnumerable };
 
     private bool IsAsyncDisposable(Compilation compilation, ISymbol type) =>
-        types.TryGet(Core.SpecialType.IAsyncDisposable, compilation) is { } asyncDisposableType
+        types.TryGet(Core.SpecialType.IAsyncDisposable, compilation) is {} asyncDisposableType
         && types.TypeEquals(type, asyncDisposableType);
 }

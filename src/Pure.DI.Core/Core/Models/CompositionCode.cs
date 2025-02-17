@@ -1,6 +1,6 @@
 namespace Pure.DI.Core.Models;
 
-internal record CompositionCode(
+record CompositionCode(
     DependencyGraph Source,
     LinesBuilder Code,
     in ImmutableArray<Variable> Singletons,

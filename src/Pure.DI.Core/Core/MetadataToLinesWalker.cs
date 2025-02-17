@@ -1,9 +1,14 @@
 namespace Pure.DI.Core;
 
-internal sealed class MetadataToLinesWalker(int indent)
+sealed class MetadataToLinesWalker(int indent)
     : MetadataWalkerBase, IEnumerable<string>
 {
     private readonly LinesBuilder _lb = new(indent);
+
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+    // ReSharper disable once NotDisposedResourceIsReturned
+    public IEnumerator<string> GetEnumerator() => _lb.GetEnumerator();
 
     public override void VisitSetup(in MdSetup setup)
     {
@@ -59,9 +64,4 @@ internal sealed class MetadataToLinesWalker(int indent)
     public override void VisitFinish()
     {
     }
-
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-    // ReSharper disable once NotDisposedResourceIsReturned
-    public IEnumerator<string> GetEnumerator() => _lb.GetEnumerator();
 }

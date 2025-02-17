@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core;
 
-internal interface ISmartTags
+interface ISmartTags
 {
     object Register(string name);
 

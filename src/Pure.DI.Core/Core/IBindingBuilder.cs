@@ -1,8 +1,7 @@
 ﻿namespace Pure.DI.Core;
 
-internal interface IBindingBuilder
+interface IBindingBuilder
 {
-    void AddDefaultLifetime(MdDefaultLifetime defaultLifetime);
 
     MdLifetime Lifetime { set; }
 
@@ -11,6 +10,7 @@ internal interface IBindingBuilder
     MdFactory Factory { set; }
 
     MdArg Arg { set; }
+    void AddDefaultLifetime(MdDefaultLifetime defaultLifetime);
 
     void AddContract(in MdContract contract);
 

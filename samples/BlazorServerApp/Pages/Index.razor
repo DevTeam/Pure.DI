@@ -1,6 +1,6 @@
 ﻿@page "/"
-@using Clock.ViewModels
 @using System.ComponentModel
+@using Clock.ViewModels
 @inject IClockViewModel ClockViewModel
 
 <PageTitle>Index</PageTitle>
@@ -18,7 +18,7 @@ Welcome to your Pure.DI Blazor server example.
 
 <img src="https://github.com/DevTeam/Pure.DI/blob/master/readme/di.gif?raw=true" alt="Pure.DI" width="800"/>
 
-@code {                             
+@code {
     protected override void OnInitialized()
     {
         ((INotifyPropertyChanged)ClockViewModel).PropertyChanged += (_, _) => InvokeAsync(StateHasChanged);

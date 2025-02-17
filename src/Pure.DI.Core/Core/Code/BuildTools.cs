@@ -6,7 +6,7 @@ namespace Pure.DI.Core.Code;
 
 using static Tag;
 
-internal sealed class BuildTools(
+sealed class BuildTools(
     IFilter filter,
     ITypeResolver typeResolver,
     IBaseSymbolsProvider baseSymbolsProvider,
@@ -23,7 +23,7 @@ internal sealed class BuildTools(
             ? $"{variableName} is null"
             : $"{Names.ObjectTypeName}.ReferenceEquals({variableName}, null)";
     }
-    
+
     public void AddPureHeader(LinesBuilder code)
     {
         code.AppendLine("#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET");
@@ -56,46 +56,6 @@ internal sealed class BuildTools(
         }
 
         return injection;
-    }
-
-    private string OnInjectedInternal(BuildContext ctx, Variable variable)
-    {
-        var variableCode = variable.VariableCode;
-        if (variableCode == variable.VariableName)
-        {
-            var skipNotNullCheck =
-                variable.InstanceType.IsReferenceType
-                && ctx.DependencyGraph.Source.SemanticModel.Compilation.Options.NullableContextOptions != NullableContextOptions.Disable
-                && (variable.HasCycle || variable.Node.Lifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve);
-
-            if (skipNotNullCheck && (variable.HasCycle || variable.Node.Lifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve))
-            {
-                variableCode = $"{variableCode}";
-            }
-        }
-
-        if (!ctx.DependencyGraph.Source.Hints.IsOnDependencyInjectionEnabled)
-        {
-            return variableCode;
-        }
-
-        var tag = GetTag(ctx, variable);
-        string GetTypeName() => typeResolver.Resolve(variable.Setup, variable.InstanceType).Name;
-        string GetContractName() => symbolNames.GetName(variable.ContractType);
-        string GetTagName() => tag.ValueToString();
-        string GetLifetimeName() => variable.Node.Lifetime.ValueToString();
-        // ReSharper disable once ConvertIfStatementToReturnStatement
-        if (!filter.IsMeet(
-                ctx.DependencyGraph.Source,
-                (Hint.OnDependencyInjectionImplementationTypeNameRegularExpression, Hint.OnDependencyInjectionImplementationTypeNameWildcard, GetTypeName),
-                (Hint.OnDependencyInjectionContractTypeNameRegularExpression, Hint.OnDependencyInjectionContractTypeNameWildcard, GetContractName),
-                (Hint.OnDependencyInjectionTagRegularExpression, Hint.OnDependencyInjectionTagWildcard, GetTagName),
-                (Hint.OnDependencyInjectionLifetimeRegularExpression, Hint.OnDependencyInjectionLifetimeWildcard, GetLifetimeName)))
-        {
-            return variableCode;
-        }
-        
-        return $"{Names.OnDependencyInjectionMethodName}<{typeResolver.Resolve(variable.Setup, variable.ContractType)}>({variableCode}, {tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()})";
     }
 
     public IEnumerable<Line> OnCreated(BuildContext ctx, Variable variable)
@@ -153,7 +113,7 @@ internal sealed class BuildTools(
         {
             return code.Lines;
         }
-        
+
         var lines = new List<Line>
         {
             new(0, $"{Names.OnNewInstanceMethodName}<{typeResolver.Resolve(variable.Setup, variable.InstanceType)}>(ref {variable.VariableName}, {tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()});")
@@ -166,6 +126,46 @@ internal sealed class BuildTools(
     public void AddAggressiveInlining(LinesBuilder code)
     {
         code.AppendLine($"[{Names.MethodImplAttributeName}(({Names.MethodImplOptionsName})256)]");
+    }
+
+    private string OnInjectedInternal(BuildContext ctx, Variable variable)
+    {
+        var variableCode = variable.VariableCode;
+        if (variableCode == variable.VariableName)
+        {
+            var skipNotNullCheck =
+                variable.InstanceType.IsReferenceType
+                && ctx.DependencyGraph.Source.SemanticModel.Compilation.Options.NullableContextOptions != NullableContextOptions.Disable
+                && (variable.HasCycle || variable.Node.Lifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve);
+
+            if (skipNotNullCheck && (variable.HasCycle || variable.Node.Lifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve))
+            {
+                variableCode = $"{variableCode}";
+            }
+        }
+
+        if (!ctx.DependencyGraph.Source.Hints.IsOnDependencyInjectionEnabled)
+        {
+            return variableCode;
+        }
+
+        var tag = GetTag(ctx, variable);
+        string GetTypeName() => typeResolver.Resolve(variable.Setup, variable.InstanceType).Name;
+        string GetContractName() => symbolNames.GetName(variable.ContractType);
+        string GetTagName() => tag.ValueToString();
+        string GetLifetimeName() => variable.Node.Lifetime.ValueToString();
+        // ReSharper disable once ConvertIfStatementToReturnStatement
+        if (!filter.IsMeet(
+                ctx.DependencyGraph.Source,
+                (Hint.OnDependencyInjectionImplementationTypeNameRegularExpression, Hint.OnDependencyInjectionImplementationTypeNameWildcard, GetTypeName),
+                (Hint.OnDependencyInjectionContractTypeNameRegularExpression, Hint.OnDependencyInjectionContractTypeNameWildcard, GetContractName),
+                (Hint.OnDependencyInjectionTagRegularExpression, Hint.OnDependencyInjectionTagWildcard, GetTagName),
+                (Hint.OnDependencyInjectionLifetimeRegularExpression, Hint.OnDependencyInjectionLifetimeWildcard, GetLifetimeName)))
+        {
+            return variableCode;
+        }
+
+        return $"{Names.OnDependencyInjectionMethodName}<{typeResolver.Resolve(variable.Setup, variable.ContractType)}>({variableCode}, {tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()})";
     }
 
     private static bool FilterAccumulator(Accumulator accumulator, Lifetime lifetime)

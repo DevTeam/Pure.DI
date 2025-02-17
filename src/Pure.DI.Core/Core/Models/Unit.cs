@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core.Models;
 
-internal readonly struct Unit
+readonly struct Unit
 {
     public static readonly Unit Shared = new();
 

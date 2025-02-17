@@ -1,6 +1,6 @@
 namespace Pure.DI.Core;
 
-internal static class LogId
+static class LogId
 {
     public const string ErrorUnableToResolve = "DIE000";
     public const string ErrorInvalidMetadata = "DIE001";

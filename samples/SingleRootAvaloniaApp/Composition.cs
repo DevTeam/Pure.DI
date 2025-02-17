@@ -10,7 +10,7 @@ using Clock.ViewModels;
 using Pure.DI;
 using static Pure.DI.Lifetime;
 
-internal partial class Composition
+partial class Composition
 {
     void Setup() => DI.Setup()
         // Single composition root for the application

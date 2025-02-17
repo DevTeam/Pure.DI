@@ -5,7 +5,7 @@ namespace Pure.DI.Core;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-internal sealed class Profiler(
+sealed class Profiler(
     ILogger logger,
     IGlobalProperties globalProperties,
     CancellationToken cancellationToken) : IProfiler
@@ -27,7 +27,7 @@ internal sealed class Profiler(
                     Message = "Profiling is only supported on Windows.",
                     Severity = DiagnosticSeverity.Warning
                 });
-            
+
             return;
         }
 
@@ -43,7 +43,7 @@ internal sealed class Profiler(
                     Message = $"Unable to find the \"{profiler}\" profiler. Please install the dotnet tool \"https://www.nuget.org/packages/JetBrains.dotTrace.GlobalTools\" globally.",
                     Severity = DiagnosticSeverity.Warning
                 });
-            
+
             return;
         }
 
@@ -58,8 +58,7 @@ internal sealed class Profiler(
             }
         };
 
-        _cancellationToken.Register(state =>
-        {
+        _cancellationToken.Register(state => {
             var process = (Process)state;
             if (!process.HasExited)
             {

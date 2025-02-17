@@ -3,7 +3,7 @@
 // ReSharper disable NotAccessedPositionalProperty.Global
 namespace Pure.DI.Core.Models;
 
-internal readonly record struct LogEntry(
+readonly record struct LogEntry(
     DiagnosticSeverity Severity,
     string Message,
     Location? Location = null,

@@ -1,6 +1,6 @@
 namespace Pure.DI.Core;
 
-internal readonly struct Indent(int value)
+readonly struct Indent(int value)
 {
     public int Value { get; } = value;
 

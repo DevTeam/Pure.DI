@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core.Models;
 
-internal record DpProperty(
+record DpProperty(
     IPropertySymbol Property,
     int? Ordinal,
     in Injection Injection)

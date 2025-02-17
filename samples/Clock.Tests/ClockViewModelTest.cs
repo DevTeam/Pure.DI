@@ -4,11 +4,37 @@ using Models;
 
 public class ClockViewModelTest
 {
-    private readonly Mock<IDispatcher> _dispatcher = new();
 
     public ClockViewModelTest() =>
         _dispatcher.Setup(i => i.Dispatch(It.IsAny<Action>()))
             .Callback<Action>(action => action());
+    private readonly Mock<IDispatcher> _dispatcher = new();
+
+    [Fact]
+    public void ShouldDisposeTimerSubscriptionWhenDispose()
+    {
+        // Given
+        var subscription = new Mock<IDisposable>();
+        var timer = new Mock<ITimer>();
+        timer
+            .Setup(i => i.Subscribe(It.IsAny<IObserver<Tick>>()))
+            .Returns(subscription.Object);
+
+        var viewModel = new ClockViewModel(
+            Mock.Of<ILog<ClockViewModel>>(),
+            Mock.Of<IClock>(),
+            timer.Object)
+        {
+            Dispatcher = _dispatcher.Object,
+            Log = Mock.Of<ILog<ViewModel>>()
+        };
+
+        // When
+        ((IDisposable)viewModel).Dispose();
+
+        // Then
+        subscription.Verify(i => i.Dispose(), Times.Once);
+    }
 
     [Fact]
     public void ShouldProvideDateTimeToDisplay()
@@ -66,31 +92,5 @@ public class ClockViewModelTest
         // Then
         propertyNames.Count(i => i == nameof(IClockViewModel.Date)).ShouldBe(2);
         propertyNames.Count(i => i == nameof(IClockViewModel.Time)).ShouldBe(2);
-    }
-
-    [Fact]
-    public void ShouldDisposeTimerSubscriptionWhenDispose()
-    {
-        // Given
-        var subscription = new Mock<IDisposable>();
-        var timer = new Mock<ITimer>();
-        timer
-            .Setup(i => i.Subscribe(It.IsAny<IObserver<Tick>>()))
-            .Returns(subscription.Object);
-
-        var viewModel = new ClockViewModel(
-            Mock.Of<ILog<ClockViewModel>>(),
-            Mock.Of<IClock>(),
-            timer.Object)
-        {
-            Dispatcher = _dispatcher.Object,
-            Log = Mock.Of<ILog<ViewModel>>()
-        };
-
-        // When
-        ((IDisposable)viewModel).Dispose();
-
-        // Then
-        subscription.Verify(i => i.Dispose(), Times.Once);
     }
 }

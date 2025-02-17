@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core.Models;
 
-internal readonly record struct MdFactory(
+readonly record struct MdFactory(
     SemanticModel SemanticModel,
     SyntaxNode Source,
     ITypeSymbol Type,

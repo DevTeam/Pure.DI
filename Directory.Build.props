@@ -33,7 +33,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <CompilerVisibleProperty Include="ImmutypeAPI" />
+        <CompilerVisibleProperty Include="ImmutypeAPI"/>
     </ItemGroup>
 
 </Project>

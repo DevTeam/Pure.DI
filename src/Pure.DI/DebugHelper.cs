@@ -1,13 +1,15 @@
 namespace Pure.DI;
 
-internal static class DebugHelper
+using System.Diagnostics;
+
+static class DebugHelper
 {
-    [System.Diagnostics.Conditional("DEBUG_MODE")]
+    [Conditional("DEBUG_MODE")]
     public static void Debug()
     {
-        if (!System.Diagnostics.Debugger.IsAttached)
+        if (!Debugger.IsAttached)
         {
-            System.Diagnostics.Debugger.Launch();
+            Debugger.Launch();
         }
     }
 }

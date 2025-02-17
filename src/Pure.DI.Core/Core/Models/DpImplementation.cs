@@ -3,7 +3,7 @@
 // ReSharper disable NotAccessedPositionalProperty.Global
 namespace Pure.DI.Core.Models;
 
-internal record DpImplementation(
+record DpImplementation(
     in MdImplementation Source,
     in MdBinding Binding,
     in DpMethod Constructor,

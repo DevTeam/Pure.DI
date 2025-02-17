@@ -3,7 +3,7 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal sealed class Attributes(
+sealed class Attributes(
     ISemantic semantic,
     ISymbolNames symbolNames)
     : IAttributes
@@ -30,7 +30,7 @@ internal sealed class Attributes(
                     if (typeof(ITypeSymbol).IsAssignableFrom(typeof(T)) && attr.AttributeClass is { IsGenericType: true, TypeArguments.Length: > 0 } attributeClass)
                     {
                         if (attributeMetadata.ArgumentPosition < attributeClass.TypeArguments.Length
-                            && attributeClass.TypeArguments[attributeMetadata.ArgumentPosition] is { } typeSymbol)
+                            && attributeClass.TypeArguments[attributeMetadata.ArgumentPosition] is {} typeSymbol)
                         {
                             return (T)typeSymbol;
                         }
@@ -102,8 +102,7 @@ internal sealed class Attributes(
     private IReadOnlyList<AttributeData> GetAttributes(ISymbol member, INamedTypeSymbol attributeType) =>
         member
             .GetAttributes()
-            .Where(attr =>
-            {
+            .Where(attr => {
                 if (attr.AttributeClass is null)
                 {
                     return false;

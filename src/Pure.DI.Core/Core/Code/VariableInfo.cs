@@ -1,18 +1,18 @@
 ﻿namespace Pure.DI.Core.Code;
 
-internal sealed class VariableInfo
+sealed class VariableInfo
 {
-    private readonly HashSet<int> _perBlockRefCounts = [];
-    private readonly HashSet<int> _variableParentBlocks = [];
     private readonly HashSet<int> _blockParentBlocks = [];
+    private readonly HashSet<int> _perBlockRefCounts = [];
     private readonly List<DependencyNode> _targetNodes = [];
+    private readonly HashSet<int> _variableParentBlocks = [];
     public bool HasLocalMethod;
 
     public int RefCount { get; private set; } = 1;
 
     public int PerBlockRefCount => _perBlockRefCounts.Count + 1;
 
-    public void AddTargetNode(DependencyNode targetNode) => 
+    public void AddTargetNode(DependencyNode targetNode) =>
         _targetNodes.Add(targetNode);
 
     public IEnumerable<DependencyNode> GetTargetNodes() =>

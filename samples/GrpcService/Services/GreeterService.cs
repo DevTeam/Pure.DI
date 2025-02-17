@@ -1,6 +1,6 @@
-using Grpc.Core;
-
 namespace GrpcService.Services;
+
+using Grpc.Core;
 
 public class GreeterService(ILogger<GreeterService> logger) : Greeter.GreeterBase
 {

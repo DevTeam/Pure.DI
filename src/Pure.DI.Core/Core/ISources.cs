@@ -1,6 +1,6 @@
 namespace Pure.DI.Core;
 
-internal interface ISources
+interface ISources
 {
     void AddSource(string hintName, SourceText sourceText);
 }

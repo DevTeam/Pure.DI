@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core.Models;
 
-internal interface IMdAttribute
+interface IMdAttribute
 {
     SemanticModel SemanticModel { get; }
 

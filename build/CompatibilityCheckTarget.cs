@@ -9,7 +9,7 @@ namespace Build;
 
 using NuGet.Versioning;
 
-internal class CompatibilityCheckTarget(
+class CompatibilityCheckTarget(
     Settings settings,
     Commands commands,
     Env env,
@@ -105,7 +105,7 @@ internal class CompatibilityCheckTarget(
                     .WithShortName($"adding the package Microsoft.NETFramework.ReferenceAssemblies for {framework}")
                     .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
             }
-            
+
             await new DotNetAddPackage()
                 .WithProject(tempDirectory)
                 .WithPackage("Pure.DI")
@@ -158,7 +158,7 @@ internal class CompatibilityCheckTarget(
 
                 var libraryPackageDir = Path.GetDirectoryName(library.Package.Path)!;
                 DeleteNuGetPackageFromCache(library.Name, settings.NextVersion, libraryPackageDir);
-                
+
                 await new DotNetAddPackage()
                     .WithProject(tempDirForFramework)
                     .WithPackage(library.Name)

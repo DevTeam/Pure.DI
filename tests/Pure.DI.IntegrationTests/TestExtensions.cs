@@ -10,21 +10,17 @@
 namespace Pure.DI.IntegrationTests;
 
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using Core;
 using Core.Models;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
 using Moq;
-using Generator = Generator;
+using Generator=Generator;
 
 public static class TestExtensions
 {

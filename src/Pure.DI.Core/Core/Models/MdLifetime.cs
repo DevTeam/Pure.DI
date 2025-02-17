@@ -3,7 +3,7 @@
 
 namespace Pure.DI.Core.Models;
 
-internal readonly record struct MdLifetime(
+readonly record struct MdLifetime(
     SemanticModel SemanticModel,
     SyntaxNode Source,
     Lifetime Value)

@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core;
 
-internal interface IAttributes
+interface IAttributes
 {
     T GetAttribute<TMdAttribute, T>(
         SemanticModel semanticModel,

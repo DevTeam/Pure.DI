@@ -4,7 +4,7 @@ namespace Pure.DI.Core;
 
 using System.Text.RegularExpressions;
 
-internal sealed class Filter(
+sealed class Filter(
     ILogger logger,
     Func<string, Regex> regexFactory,
     ICache<string, Regex> regexCache,
@@ -24,7 +24,7 @@ internal sealed class Filter(
     {
         var hasRegularExpressions = setup.Hints.TryGetValue(regularExpressionSetting, out var regularExpressions) && regularExpressions.Count > 0;
         var hasWildcards = setup.Hints.TryGetValue(wildcardSettings, out var wildcards) && wildcards.Count > 0;
-        
+
         // ReSharper disable once ConvertIfStatementToSwitchStatement
         if (!hasRegularExpressions && !hasWildcards)
         {

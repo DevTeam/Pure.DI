@@ -1,8 +1,8 @@
+namespace AvaloniaApp;
+
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-
-namespace AvaloniaApp;
 
 public class App : Application
 {

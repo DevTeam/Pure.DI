@@ -3,7 +3,7 @@
 namespace Build.Tools;
 
 [SuppressMessage("Performance", "CA1822:Mark members as static")]
-internal class Env
+class Env
 {
     public string GetPath(PathType pathType) =>
         pathType switch

@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core.Code;
 
-internal sealed class VariablesBuilder(
+sealed class VariablesBuilder(
     IVariableNameProvider variableNameProvider,
     INodeInfo nodeInfo,
     CancellationToken cancellationToken)
@@ -128,7 +128,7 @@ internal sealed class VariablesBuilder(
                                 depInjection,
                                 ref transientId,
                                 cycleVariable);
-                            
+
                             depVariable.Info.AddTargetNode(variable.Node);
 
                             var isBlock = depNode.Lifetime is not Lifetime.Transient and not Lifetime.PerBlock

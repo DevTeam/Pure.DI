@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core;
 
-internal interface IInjectionsWalker
+interface IInjectionsWalker
 {
     IReadOnlyCollection<InjectionInfo> GetResult();
 

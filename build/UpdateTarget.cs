@@ -7,7 +7,7 @@ namespace Build;
 
 using NuGet.Versioning;
 
-internal class UpdateTarget(
+class UpdateTarget(
     Settings settings,
     Commands commands,
     Env env)

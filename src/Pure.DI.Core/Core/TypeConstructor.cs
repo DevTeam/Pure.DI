@@ -6,7 +6,7 @@
 namespace Pure.DI.Core;
 
 [SuppressMessage("MicrosoftCodeAnalysisCorrectness", "RS1024:Symbols should be compared for equality")]
-internal sealed class TypeConstructor(
+sealed class TypeConstructor(
     IMarker marker,
     ITypes types)
     : ITypeConstructor

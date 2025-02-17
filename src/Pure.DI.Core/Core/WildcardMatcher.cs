@@ -3,9 +3,9 @@
 namespace Pure.DI.Core;
 
 /// <summary>
-/// Provides methods for matching file system names.
+///     Provides methods for matching file system names.
 /// </summary>
-internal sealed class WildcardMatcher : IWildcardMatcher
+sealed class WildcardMatcher : IWildcardMatcher
 {
     // [MS - FSA] 2.1.4.4 Algorithm for Determining if a FileName Is in an Expression
     // https://msdn.microsoft.com/en-us/library/ff469270.aspx

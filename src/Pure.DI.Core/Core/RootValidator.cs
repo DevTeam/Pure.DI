@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core;
 
-internal sealed class RootValidator(
+sealed class RootValidator(
     ILogger logger)
     : IValidator<CompositionCode>
 {

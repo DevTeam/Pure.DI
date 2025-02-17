@@ -19,7 +19,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Templates\Pure.DI.Template.ClassLibrary\GlobalUsings.cs" />
+        <Compile Include="Templates\Pure.DI.Template.ClassLibrary\GlobalUsings.cs"/>
         <Content Include="Templates\**\*" Exclude="Templates\**\bin\**;Templates\**\obj\**">
             <PackagePath>content</PackagePath>
         </Content>

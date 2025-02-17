@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core.Code.Parts;
 
-internal sealed class RootMethodsBuilder(
+sealed class RootMethodsBuilder(
     IBuildTools buildTools,
     ITypeResolver typeResolver,
     [Tag(typeof(RootMethodsCommenter))] ICommenter<Root> rootCommenter,
@@ -57,7 +57,7 @@ internal sealed class RootMethodsBuilder(
                 buildTools.AddPureHeader(code);
             }
         }
-        
+
         var name = new StringBuilder();
         var accessModifier = rootAccessModifierResolver.Resolve(root) switch
         {
@@ -135,7 +135,7 @@ internal sealed class RootMethodsBuilder(
             {
                 foreach (var typeArg in typeArgs)
                 {
-                    if (typeArg.TypeParam is not { } typeParam)
+                    if (typeArg.TypeParam is not {} typeParam)
                     {
                         continue;
                     }

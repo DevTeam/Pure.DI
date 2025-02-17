@@ -5,7 +5,7 @@ using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-internal sealed class CastleWindsor : BaseAbstractContainer<WindsorContainer>
+sealed class CastleWindsor : BaseAbstractContainer<WindsorContainer>
 {
     private readonly WindsorContainer _container = new();
 

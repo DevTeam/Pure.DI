@@ -1,6 +1,6 @@
 namespace Pure.DI.Core;
 
-internal sealed class ProductionContextToSourcesAdapter(SourceProductionContext sourceProductionContext)
+sealed class ProductionContextToSourcesAdapter(SourceProductionContext sourceProductionContext)
     : ISources
 {
     public void AddSource(string hintName, SourceText sourceText) =>

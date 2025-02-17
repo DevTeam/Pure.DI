@@ -7,7 +7,7 @@ namespace Build.Tools;
 using NuGet.Versioning;
 
 [SuppressMessage("Performance", "CA1822:Mark members as static")]
-internal class Sdk
+class Sdk
 {
     private readonly Lazy<IReadOnlyCollection<NuGetVersion>> _versions = new(GetVersions);
 
@@ -17,8 +17,7 @@ internal class Sdk
     {
         bool? getVersions = null;
         var versions = new List<NuGetVersion>();
-        new DotNetCustom("--info").Run(output =>
-        {
+        new DotNetCustom("--info").Run(output => {
             switch (getVersions)
             {
                 case null when output.Line.Contains(".NET SDKs installed:"):

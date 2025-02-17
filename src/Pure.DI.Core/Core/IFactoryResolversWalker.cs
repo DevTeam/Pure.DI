@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core;
 
-internal interface IFactoryResolversWalker
+interface IFactoryResolversWalker
 {
     IReadOnlyCollection<InvocationExpressionSyntax> Resolvers { get; }
 

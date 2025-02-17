@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core;
 
-internal interface ISetupFinalizer
+interface ISetupFinalizer
 {
     MdSetup Finalize(MdSetup setup);
 }

@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core.Models;
 
-internal readonly record struct MdTypeAttribute(
+readonly record struct MdTypeAttribute(
     SemanticModel SemanticModel,
     SyntaxNode Source,
     INamedTypeSymbol AttributeType,

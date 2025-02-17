@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core;
 
-internal sealed class RootsBuilder(IBuilder<ContractsBuildContext, ISet<Injection>> contractsBuilder)
+sealed class RootsBuilder(IBuilder<ContractsBuildContext, ISet<Injection>> contractsBuilder)
     : IBuilder<DependencyGraph, IReadOnlyDictionary<Injection, Root>>
 {
     public IReadOnlyDictionary<Injection, Root> Build(DependencyGraph dependencyGraph)
@@ -19,7 +19,7 @@ internal sealed class RootsBuilder(IBuilder<ContractsBuildContext, ISet<Injectio
             string name;
             RootKinds kind;
             MdRoot source;
-            if (node.Root is { } root)
+            if (node.Root is {} root)
             {
                 if (dependencyGraph.Graph.TryGetInEdges(node, out var rootDependencies) && rootDependencies.Count == 1)
                 {
@@ -67,5 +67,8 @@ internal sealed class RootsBuilder(IBuilder<ContractsBuildContext, ISet<Injectio
         group.byInjection
                 .OrderByDescending(j => j.Value.IsPublic)
                 .Select(j => j.Value)
-                .First() with { Index = group.index + 1 };
+                .First() with
+            {
+                Index = group.index + 1
+            };
 }

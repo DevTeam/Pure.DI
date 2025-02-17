@@ -1,9 +1,11 @@
-﻿using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
-using WebApp.Models;
+﻿
 // ReSharper disable WithExpressionModifiesAllMembers
 
 namespace WebApp.Controllers;
+
+using System.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
+using Models;
 
 public class HomeController(
     ILogger<HomeController> logger,

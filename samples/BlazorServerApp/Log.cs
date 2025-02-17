@@ -4,11 +4,10 @@ namespace BlazorServerApp;
 
 using System.Diagnostics.CodeAnalysis;
 using Clock.Models;
-using Microsoft.Extensions.Logging;
 
-internal class Log<T>(ILogger<T> logger) : ILog<T>
+class Log<T>(ILogger<T> logger) : ILog<T>
 {
     [SuppressMessage("Usage", "CA2254:Template should be a static expression")]
-    public void Info(string message) => 
+    public void Info(string message) =>
         logger.LogInformation(message);
 }

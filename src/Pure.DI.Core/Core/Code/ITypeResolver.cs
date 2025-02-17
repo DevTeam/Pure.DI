@@ -1,6 +1,6 @@
 namespace Pure.DI.Core.Code;
 
-internal interface ITypeResolver
+interface ITypeResolver
 {
     TypeDescription Resolve(MdSetup setup, ITypeSymbol type);
 }

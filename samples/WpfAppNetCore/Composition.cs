@@ -7,22 +7,23 @@ namespace WpfAppNetCore;
 
 using Pure.DI;
 using static Pure.DI.Lifetime;
+using Timer=Clock.Models.Timer;
 
-internal partial class Composition
+partial class Composition
 {
     void Setup() => DI.Setup()
         // Provides the composition root for clock view model
         .Root<IClockViewModel>(nameof(ClockViewModel))
-        
+
         // View Models
         .Bind().As(Singleton).To<ClockViewModel>()
 
         // Models
         .Bind().To<Log<TT>>()
         .Bind().To(_ => TimeSpan.FromSeconds(1))
-        .Bind().As(Singleton).To<Clock.Models.Timer>()
+        .Bind().As(Singleton).To<Timer>()
         .Bind().As(PerBlock).To<SystemClock>()
-    
+
         // Infrastructure
         .Bind().To<Dispatcher>();
 }

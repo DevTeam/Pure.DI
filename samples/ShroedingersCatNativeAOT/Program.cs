@@ -44,7 +44,7 @@ public enum State
 
 public record CardboardBox<T>(T Content) : IBox<T>;
 
-public class ShroedingersCat(Lazy<State> superposition): ICat
+public class ShroedingersCat(Lazy<State> superposition) : ICat
 {
     // The decoherence of the superposition
     // at the time of observation via an irreversible process

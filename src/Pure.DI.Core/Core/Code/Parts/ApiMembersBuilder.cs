@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core.Code.Parts;
 
-internal sealed class ApiMembersBuilder(
+sealed class ApiMembersBuilder(
     IBuilder<RootContext, IEnumerable<ResolverInfo>> resolversBuilder,
     IBuildTools buildTools)
     : IClassPartBuilder

@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using MinimalWebAPI;
 using WeatherForecast;
-
 var composition = new Composition();
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +14,7 @@ var app = builder.Build();
 var compositionRoot = composition.Root;
 compositionRoot.Run(app);
 
-internal partial class Program(
+partial class Program(
     // Dependencies could be injected here
     ILogger<Program> logger,
     IWeatherForecastService weatherForecast)
@@ -24,8 +23,7 @@ internal partial class Program(
     {
         app.MapGet("/", async (
             // Dependencies can be injected here as well
-            [FromServices] IWeatherForecastService anotherOneWeatherForecast) =>
-        {
+            [FromServices] IWeatherForecastService anotherOneWeatherForecast) => {
             logger.LogInformation("Start of request execution");
             return await anotherOneWeatherForecast.CreateWeatherForecastAsync().ToListAsync();
         });

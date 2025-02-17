@@ -4,7 +4,7 @@
 
 namespace Build;
 
-internal class TestExamplesTarget(
+class TestExamplesTarget(
     Commands commands,
     Env env,
     [Tag(typeof(CreateExamplesTarget))] ITarget<IReadOnlyCollection<ExampleGroup>> createExamplesTarget)
@@ -27,7 +27,7 @@ internal class TestExamplesTarget(
                 .WithTemplateName("console")
                 .WithName("App")
                 .Run().EnsureSuccess();
-            
+
             var appDir = Path.Combine(tempDir, "App");
             File.Copy(Path.Combine(solutionDir, "tests", "Pure.DI.UsageTests", "Test.props"), Path.Combine(appDir, "Directory.Build.props"));
             var programFile = Path.Combine(appDir, "Program.cs");
@@ -73,6 +73,6 @@ internal class TestExamplesTarget(
     }
 
     private static bool HasIntegrationTest(Example example) =>
-        !example.TryGetValue(CreateExamplesTarget.IntegrationTestKey, out var integrationTestStr) 
-        || (bool.TryParse(integrationTestStr, out var integrationTest) && integrationTest);
+        !example.TryGetValue(CreateExamplesTarget.IntegrationTestKey, out var integrationTestStr)
+        || bool.TryParse(integrationTestStr, out var integrationTest) && integrationTest;
 }

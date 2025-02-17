@@ -9,15 +9,15 @@
 
 namespace Pure.DI.Core;
 
-internal sealed class MetadataWalker(
+sealed class MetadataWalker(
     IApiInvocationProcessor invocationProcessor,
     IMetadata metadata,
     CancellationToken cancellationToken)
     : CSharpSyntaxWalker, IMetadataWalker
 {
     private readonly Stack<InvocationExpressionSyntax> _invocations = new();
-    private string _namespace = string.Empty;
     private bool _isMetadata;
+    private string _namespace = string.Empty;
     private SemanticModel? _semanticModel;
 
     [SuppressMessage("MicrosoftCodeAnalysisCorrectness", "RS1024:Symbols should be compared for equality")]

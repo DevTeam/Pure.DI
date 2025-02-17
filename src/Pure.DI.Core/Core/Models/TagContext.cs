@@ -1,4 +1,4 @@
 ﻿namespace Pure.DI.Core.Models;
 
-internal record TagContext(
+record TagContext(
     IReadOnlyCollection<CompositionCode> Compositions);

@@ -1,6 +1,6 @@
 namespace Pure.DI.Core.Models;
 
-internal record MdBinding(
+record MdBinding(
     int Id,
     in SyntaxNode Source,
     in MdSetup SourceSetup,
@@ -14,6 +14,10 @@ internal record MdBinding(
     in MdConstruct? Construct = null,
     ITypeConstructor? TypeConstructor = null)
 {
+
+    public ITypeSymbol Type => Implementation?.Type ?? Factory?.Type ?? Arg?.Type ?? Construct?.Type!;
+
+    public virtual bool Equals(MdBinding? other) => Id == other?.Id;
     public override string ToString()
     {
         var walker = new MetadataToLinesWalker(0);
@@ -21,9 +25,5 @@ internal record MdBinding(
         return string.Join(Environment.NewLine, walker);
     }
 
-    public virtual bool Equals(MdBinding? other) => Id == other?.Id;
-
     public override int GetHashCode() => Id;
-
-    public ITypeSymbol Type => Implementation?.Type ?? Factory?.Type ?? Arg?.Type ?? Construct?.Type!;
 }

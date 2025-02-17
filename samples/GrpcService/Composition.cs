@@ -7,7 +7,7 @@ using Pure.DI;
 using Pure.DI.MS;
 using Services;
 
-internal partial class Composition : ServiceProviderFactory<Composition>
+partial class Composition : ServiceProviderFactory<Composition>
 {
     static void Setup() => DI.Setup()
         // Use the DI setup from the base class

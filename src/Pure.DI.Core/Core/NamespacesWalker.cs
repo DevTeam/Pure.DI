@@ -1,6 +1,6 @@
 namespace Pure.DI.Core;
 
-internal sealed class NamespacesWalker(ISemantic semantic)
+sealed class NamespacesWalker(ISemantic semantic)
     : CSharpSyntaxWalker, INamespacesWalker
 {
     private readonly HashSet<string> _namespaces = [];

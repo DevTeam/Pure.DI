@@ -1,9 +1,9 @@
 namespace Pure.DI.Core;
 
-internal sealed class FactoryResolversWalker : CSharpSyntaxWalker, IFactoryResolversWalker
+sealed class FactoryResolversWalker : CSharpSyntaxWalker, IFactoryResolversWalker
 {
-    private readonly List<InvocationExpressionSyntax> _resolvers = [];
     private readonly List<InvocationExpressionSyntax> _initializers = [];
+    private readonly List<InvocationExpressionSyntax> _resolvers = [];
 
     public IReadOnlyCollection<InvocationExpressionSyntax> Resolvers => _resolvers;
 
@@ -29,7 +29,7 @@ internal sealed class FactoryResolversWalker : CSharpSyntaxWalker, IFactoryResol
                              && contextIdentifierName.IsKind(SyntaxKind.IdentifierName):
                         _resolvers.Add(invocation);
                         break;
-                    
+
                     case nameof(IContext.BuildUp)
                         when invocation.ArgumentList.Arguments.Count is 1:
                         _initializers.Add(invocation);
@@ -43,11 +43,11 @@ internal sealed class FactoryResolversWalker : CSharpSyntaxWalker, IFactoryResol
                 {
                     case nameof(IContext.Inject)
                         when invocation.ArgumentList.Arguments.Count is 1 or 2
-                             && memberAccess is { Expression: IdentifierNameSyntax contextIdentifierName } 
+                             && memberAccess is { Expression: IdentifierNameSyntax contextIdentifierName }
                              && contextIdentifierName.IsKind(SyntaxKind.IdentifierName):
                         _resolvers.Add(invocation);
                         break;
-                    
+
                     case nameof(IContext.BuildUp)
                         when invocation.ArgumentList.Arguments.Count is 1:
                         _initializers.Add(invocation);

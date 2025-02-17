@@ -3,7 +3,7 @@
 
 namespace Pure.DI.Core.Models;
 
-internal readonly record struct MdArg(
+readonly record struct MdArg(
     SemanticModel SemanticModel,
     SyntaxNode Source,
     ITypeSymbol Type,

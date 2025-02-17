@@ -1,6 +1,6 @@
 namespace Pure.DI.Core;
 
-internal interface IInformation
+interface IInformation
 {
     string Description { get; }
 }

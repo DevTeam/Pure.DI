@@ -1,9 +1,9 @@
 namespace Pure.DI.Core.Code;
 
-internal interface IBuildTools
+interface IBuildTools
 {
     string NullCheck(Compilation compilation, string variableName);
-    
+
     void AddPureHeader(LinesBuilder code);
 
     string GetDeclaration(Variable variable, string separator = " ");

@@ -1,5 +1,4 @@
 using WebAPI;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Uses Composition as an alternative IServiceProviderFactory

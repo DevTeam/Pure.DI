@@ -6,7 +6,7 @@ namespace Build.Tools;
 using Newtonsoft.Json;
 
 [ExcludeFromCodeCoverage]
-internal class Json
+class Json
 {
     private readonly JsonSerializer _serializer = JsonSerializer.Create();
 

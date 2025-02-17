@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core.Code.Parts;
 
-internal sealed class DisposeMethodBuilder(
+sealed class DisposeMethodBuilder(
     ILocks locks)
     : IClassPartBuilder
 {
@@ -216,7 +216,7 @@ internal sealed class DisposeMethodBuilder(
             code.AppendLine("{");
             code.IncIndent();
         }
-        
+
         code.AppendLine($"disposeIndex = {Names.DisposeIndexFieldName};");
         code.AppendLine($"{Names.DisposeIndexFieldName} = 0;");
         code.AppendLine($"disposables = {Names.DisposablesFieldName};");

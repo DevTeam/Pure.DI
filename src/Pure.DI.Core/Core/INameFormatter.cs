@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core;
 
-internal interface INameFormatter
+interface INameFormatter
 {
     string Format(
         string nameTemplate,

@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core;
 
-internal interface IRootAccessModifierResolver
+interface IRootAccessModifierResolver
 {
     Accessibility Resolve(Root root);
 }

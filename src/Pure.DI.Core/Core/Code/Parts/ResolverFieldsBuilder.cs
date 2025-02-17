@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core.Code.Parts;
 
-internal sealed class ResolversFieldsBuilder(IBuilder<RootContext, IEnumerable<ResolverInfo>> resolversBuilder)
+sealed class ResolversFieldsBuilder(IBuilder<RootContext, IEnumerable<ResolverInfo>> resolversBuilder)
     : IClassPartBuilder
 {
     public ClassPart Part => ClassPart.ResolversFields;

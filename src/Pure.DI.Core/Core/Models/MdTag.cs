@@ -2,15 +2,15 @@
 
 namespace Pure.DI.Core.Models;
 
-internal readonly record struct MdTag(
+readonly record struct MdTag(
     int Position,
     object? Value)
 {
+
+    public static readonly object ContextTag = new ContextTagObject();
     public bool Equals(MdTag other) => Equals(Value, other.Value);
 
     public override int GetHashCode() => Value != null ? Value.GetHashCode() : 0;
-
-    public static readonly object ContextTag = new ContextTagObject();
 
     public static MdTag CreateTypeTag(MdTag baseTag, ITypeSymbol? type) =>
         baseTag with { Value = type };

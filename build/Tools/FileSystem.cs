@@ -4,7 +4,7 @@
 namespace Build.Tools;
 
 [SuppressMessage("Performance", "CA1822:Mark members as static")]
-internal class FileSystem
+class FileSystem
 {
     private readonly Lazy<HashSet<char>> _invalidFileNameChars = new(() => Path.GetInvalidFileNameChars().ToHashSet());
 

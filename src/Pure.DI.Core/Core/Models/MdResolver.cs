@@ -3,7 +3,7 @@
 
 namespace Pure.DI.Core.Models;
 
-internal readonly record struct MdResolver(
+readonly record struct MdResolver(
     SemanticModel SemanticModel,
     SyntaxNode Source,
     int Position,

@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core.Code;
 
-internal interface INodeInfo
+interface INodeInfo
 {
     bool IsDelegate(DependencyNode node);
 

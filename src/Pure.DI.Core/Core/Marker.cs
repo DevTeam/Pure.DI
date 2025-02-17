@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core;
 
-internal sealed class Marker(IGenericTypeArguments genericTypeArguments) : IMarker
+sealed class Marker(IGenericTypeArguments genericTypeArguments) : IMarker
 {
     public bool IsMarkerBased(MdSetup setup, ITypeSymbol type) =>
         IsMarker(setup, type) || type switch

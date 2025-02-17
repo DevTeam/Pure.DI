@@ -9,7 +9,7 @@
 
 namespace Pure.DI.Core;
 
-internal sealed class MetadataBuilder(
+sealed class MetadataBuilder(
     Func<IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>> setupsBuilderFactory,
     Func<ISetupFinalizer> setupFinalizerFactory,
     ICompilations compilations,
@@ -48,8 +48,7 @@ internal sealed class MetadataBuilder(
         var setupMap = setups
             .Where(i => i.Kind != CompositionKind.Global)
             .GroupBy(i => i.Name)
-            .Select(setupGroup =>
-            {
+            .Select(setupGroup => {
                 MergeSetups(setupGroup, out var mergedSetup, false);
                 return mergedSetup;
             })

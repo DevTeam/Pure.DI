@@ -5,7 +5,7 @@ namespace Pure.DI.Core;
 
 using System.Collections.Concurrent;
 
-internal sealed class Cache<TKey, TValue>(
+sealed class Cache<TKey, TValue>(
     IEqualityComparer<TKey> comparer)
     : ICache<TKey, TValue>
 {

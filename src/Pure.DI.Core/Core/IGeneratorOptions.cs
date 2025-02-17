@@ -3,7 +3,7 @@
 
 namespace Pure.DI.Core;
 
-internal interface IGeneratorOptions
+interface IGeneratorOptions
 {
     ParseOptions ParseOptions { get; }
 

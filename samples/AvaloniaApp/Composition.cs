@@ -11,7 +11,7 @@ using Pure.DI;
 using Views;
 using static Pure.DI.Lifetime;
 
-internal partial class Composition
+partial class Composition
 {
     void Setup() => DI.Setup()
         // Provides the composition root for main window

@@ -7,31 +7,31 @@
 
 namespace Pure.DI.Core;
 
-internal class DependenciesWalker<TContext>
+class DependenciesWalker<TContext>
 {
     public virtual void VisitDependencyNode(in TContext ctx, DependencyNode node)
     {
-        if (node.Root is { } root)
+        if (node.Root is {} root)
         {
             VisitRoot(ctx, root);
         }
 
-        if (node.Implementation is { } implementation)
+        if (node.Implementation is {} implementation)
         {
             VisitImplementation(ctx, implementation);
         }
 
-        if (node.Factory is { } factory)
+        if (node.Factory is {} factory)
         {
             VisitFactory(ctx, factory);
         }
 
-        if (node.Arg is { } arg)
+        if (node.Arg is {} arg)
         {
             VisitArg(ctx, arg);
         }
 
-        if (node.Construct is { } construction)
+        if (node.Construct is {} construction)
         {
             VisitConstruct(ctx, construction);
         }
@@ -71,7 +71,7 @@ internal class DependenciesWalker<TContext>
         {
             VisitInjection(ctx, injection, false, null, ImmutableArray.Create(factory.Source.Source.GetLocation()));
         }
-        
+
         foreach (var initializer in factory.Initializers)
         {
             VisitInitializer(ctx, initializer);
@@ -100,12 +100,12 @@ internal class DependenciesWalker<TContext>
 
     public virtual void VisitProperty(in TContext ctx, in DpProperty property)
     {
-        if (property.Property.SetMethod is not { } setMethod)
+        if (property.Property.SetMethod is not {} setMethod)
         {
             return;
         }
 
-        if (setMethod.Parameters is not [{ } parameter])
+        if (setMethod.Parameters is not [{} parameter])
         {
             return;
         }
@@ -154,7 +154,7 @@ internal class DependenciesWalker<TContext>
         in ImmutableArray<Location> locations)
     {
     }
-    
+
     public virtual void VisitInitializer(in TContext ctx, DpInitializer initializer)
     {
         foreach (var field in initializer.Fields)

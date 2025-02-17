@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core;
 
-internal class MetadataWalkerBase : IMetadataVisitor
+class MetadataWalkerBase : IMetadataVisitor
 {
     public virtual void VisitSetup(in MdSetup setup)
     {
@@ -48,7 +48,7 @@ internal class MetadataWalkerBase : IMetadataVisitor
             VisitContract(md);
         }
 
-        if (binding.Lifetime is { } lifetime)
+        if (binding.Lifetime is {} lifetime)
         {
             VisitLifetime(lifetime);
         }
@@ -58,22 +58,22 @@ internal class MetadataWalkerBase : IMetadataVisitor
             VisitTag(tag);
         }
 
-        if (binding.Implementation is { } implementation)
+        if (binding.Implementation is {} implementation)
         {
             VisitImplementation(implementation);
         }
 
-        if (binding.Factory is { } factory)
+        if (binding.Factory is {} factory)
         {
             VisitFactory(factory);
         }
 
-        if (binding.Arg is { } arg)
+        if (binding.Arg is {} arg)
         {
             VisitArg(arg);
         }
 
-        if (binding.Construct is { } construction)
+        if (binding.Construct is {} construction)
         {
             VisitConstruction(construction);
         }
@@ -97,7 +97,7 @@ internal class MetadataWalkerBase : IMetadataVisitor
         {
             VisitResolver(md);
         }
-        
+
         foreach (var md in factory.Initializers)
         {
             VisitInitializer(md);
@@ -110,7 +110,7 @@ internal class MetadataWalkerBase : IMetadataVisitor
 
     public virtual void VisitRoot(in MdRoot root)
     {
-        if (root.Tag is { } tag)
+        if (root.Tag is {} tag)
         {
             VisitTag(tag);
         }
@@ -126,17 +126,13 @@ internal class MetadataWalkerBase : IMetadataVisitor
 
     public virtual void VisitResolver(in MdResolver resolver)
     {
-        if (resolver.Tag is { } tag)
+        if (resolver.Tag is {} tag)
         {
             VisitTag(tag);
         }
     }
 
     public virtual void VisitArg(in MdArg arg)
-    {
-    }
-
-    public virtual void VisitConstruction(in MdConstruct construct)
     {
     }
 
@@ -177,6 +173,10 @@ internal class MetadataWalkerBase : IMetadataVisitor
     }
 
     public virtual void VisitFinish()
+    {
+    }
+
+    public virtual void VisitConstruction(in MdConstruct construct)
     {
     }
 }

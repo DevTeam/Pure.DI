@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core.Models;
 
-internal sealed class SmartTag(string name)
+sealed class SmartTag(string name)
 {
     public string Name { get; } = name;
 
@@ -15,6 +15,6 @@ internal sealed class SmartTag(string name)
         return Name == other.Name;
     }
 
-    public override int GetHashCode() => 
+    public override int GetHashCode() =>
         Name.GetHashCode();
 }

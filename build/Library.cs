@@ -1,6 +1,6 @@
 ﻿namespace Build;
 
-internal record Library(
+record Library(
     string Name,
     Package Package,
     string[] Frameworks,

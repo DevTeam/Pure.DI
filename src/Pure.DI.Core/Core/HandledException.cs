@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core;
 
-internal sealed class HandledException : Exception
+sealed class HandledException : Exception
 {
     public static readonly HandledException Shared = new();
 

@@ -2,7 +2,7 @@
 
 using System.Runtime.CompilerServices;
 
-internal readonly record struct InvocationVisitor(
+readonly record struct InvocationVisitor(
     SemanticModel SemanticModel,
     InvocationExpressionSyntax Invocation,
     IMetadataVisitor BaseVisitor,
@@ -10,15 +10,6 @@ internal readonly record struct InvocationVisitor(
     : IMetadataVisitor
 {
     private readonly List<IRunnable> _actions = [];
-
-    public void Apply()
-    {
-        foreach (var action in _actions)
-        {
-            CancellationToken.ThrowIfCancellationRequested();
-            action.Run();
-        }
-    }
 
     public void VisitSetup(in MdSetup setup) =>
         AddAction((visitor, i) => visitor.VisitSetup(i), BaseVisitor, setup);
@@ -85,6 +76,15 @@ internal readonly record struct InvocationVisitor(
 
     public void VisitFinish() =>
         AddAction((visitor, _) => visitor.VisitFinish(), BaseVisitor, 0);
+
+    public void Apply()
+    {
+        foreach (var action in _actions)
+        {
+            CancellationToken.ThrowIfCancellationRequested();
+            action.Run();
+        }
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void AddAction<T>(Action<IMetadataVisitor, T> action, IMetadataVisitor visitor, in T state) =>

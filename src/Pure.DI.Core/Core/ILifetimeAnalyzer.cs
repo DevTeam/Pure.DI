@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core;
 
-internal interface ILifetimeAnalyzer
+interface ILifetimeAnalyzer
 {
     Lifetime GetActualDependencyLifetime(Lifetime targetLifetime, Lifetime dependencyLifetime);
 

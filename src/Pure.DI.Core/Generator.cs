@@ -1,5 +1,6 @@
 // ReSharper disable UnusedMember.Local
 // ReSharper disable ReturnValueOfPureMethodIsNotUsed
+// @formatter:off
 namespace Pure.DI;
 
 using System.Diagnostics;
@@ -32,7 +33,7 @@ public sealed partial class Generator
 
         .Root<IEnumerable<Source>>(nameof(Api))
         .Root<IObserversRegistry>(nameof(Observers))
-        .RootBind<Unit>(nameof(Generate), kind: Internal)
+        .RootBind<Unit>(nameof(Generate), Internal)
             .To((IBuilder<IEnumerable<SyntaxUpdate>, Unit> generator, IEnumerable<SyntaxUpdate> updates) => generator.Build(updates))
 
         .RootArg<IGeneratorOptions>("options")
@@ -189,5 +190,5 @@ public sealed partial class Generator
             .Bind().To<RootAccessModifierResolver>()
             .Bind().To<SmartTags>()
             .Bind().To<GenericTypeArguments>()
-            .Bind().To<VariableNameProvider>();
-}
+            .Bind().To<VariableNameProvider>();}
+// @formatter:on

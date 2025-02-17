@@ -3,7 +3,7 @@
 
 namespace Pure.DI.Core;
 
-internal sealed class LogInfoBuilder : IBuilder<LogEntry, LogInfo>
+sealed class LogInfoBuilder : IBuilder<LogEntry, LogInfo>
 {
     public LogInfo Build(LogEntry logEntry)
     {
@@ -20,7 +20,7 @@ internal sealed class LogInfoBuilder : IBuilder<LogEntry, LogInfo>
         if (!string.IsNullOrWhiteSpace(logEntry.Id))
         {
             var message = new StringBuilder(logEntry.Message);
-            if (logEntry.Exception is { } exception)
+            if (logEntry.Exception is {} exception)
             {
                 message.Append(", Message: \"");
                 message.Append(exception.Message);

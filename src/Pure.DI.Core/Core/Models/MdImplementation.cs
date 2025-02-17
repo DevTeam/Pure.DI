@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core.Models;
 
-internal readonly record struct MdImplementation(
+readonly record struct MdImplementation(
     SemanticModel SemanticModel,
     SyntaxNode Source,
     ITypeSymbol Type)

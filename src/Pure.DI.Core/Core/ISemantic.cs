@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core;
 
-internal interface ISemantic
+interface ISemantic
 {
     bool IsAccessible(ISymbol symbol);
 

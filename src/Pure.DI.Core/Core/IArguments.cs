@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core;
 
-internal interface IArguments
+interface IArguments
 {
     ArgumentSyntax?[] GetArgs(
         BaseArgumentListSyntax argumentListSyntax,

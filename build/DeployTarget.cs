@@ -2,7 +2,7 @@
 
 namespace Build;
 
-internal class DeployTarget(
+class DeployTarget(
     Settings settings,
     Commands commands,
     [Tag(typeof(PackTarget))] ITarget<IReadOnlyCollection<Package>> packTarget)

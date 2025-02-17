@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core.Code;
 
-internal sealed class FactoryValidator : CSharpSyntaxWalker, IFactoryValidator
+sealed class FactoryValidator : CSharpSyntaxWalker, IFactoryValidator
 {
     private string? _contextParameterName;
 

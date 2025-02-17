@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core.Models;
 
-internal readonly record struct MdConstruct(
+readonly record struct MdConstruct(
     SemanticModel SemanticModel,
     SyntaxNode Source,
     ITypeSymbol Type,

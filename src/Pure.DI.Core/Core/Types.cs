@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core;
 
-internal sealed class Types(
+sealed class Types(
     ICache<SpecialTypeKey, INamedTypeSymbol?> specialTypes,
     ICache<MarkerTypeKey, INamedTypeSymbol?> markerTypes,
     ICache<NameKey, string> names)
@@ -17,6 +17,12 @@ internal sealed class Types(
         { SpecialType.Tag, $"{Names.GeneratorName}.{nameof(Tag)}" },
         { SpecialType.IConfiguration, $"{Names.GeneratorName}.{nameof(IConfiguration)}" }
     };
+
+    public string GetName(ITypeSymbol typeSymbol) =>
+        names.Get(new NameKey(typeSymbol, false), key => key.TypeSymbol.ToString());
+
+    public string GetGlobalName(ITypeSymbol typeSymbol) =>
+        names.Get(new NameKey(typeSymbol, true), key => key.TypeSymbol.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat));
 
     public INamedTypeSymbol? TryGet(SpecialType specialType, Compilation compilation) =>
         specialTypes.Get(
@@ -33,10 +39,4 @@ internal sealed class Types(
         var comparer = SymbolEqualityComparer.Default;
         return comparer.GetHashCode(type1) == comparer.GetHashCode(type2) && comparer.Equals(type1, type2);
     }
-
-    public string GetName(ITypeSymbol typeSymbol) =>
-        names.Get(new NameKey(typeSymbol, false), key => key.TypeSymbol.ToString());
-
-    public string GetGlobalName(ITypeSymbol typeSymbol) =>
-        names.Get(new NameKey(typeSymbol, true), key => key.TypeSymbol.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat));
 }

@@ -4,7 +4,7 @@
 
 namespace Pure.DI.Core.Code;
 
-internal sealed class FactoryCodeBuilder(
+sealed class FactoryCodeBuilder(
     INodeInfo nodeInfo,
     IArguments arguments,
     ITypeResolver typeResolver,
@@ -16,9 +16,9 @@ internal sealed class FactoryCodeBuilder(
     Func<ILocalVariableRenamingRewriter> localVariableRenamingRewriterFactory)
     : ICodeBuilder<DpFactory>
 {
+    public const string DefaultInstanceValueName = "instance_1182D127";
     public static readonly ParenthesizedLambdaExpressionSyntax DefaultBindAttrParenthesizedLambda = SyntaxFactory.ParenthesizedLambdaExpression();
     public static readonly ParameterSyntax DefaultCtxParameter = SyntaxFactory.Parameter(SyntaxFactory.Identifier("ctx_1182D127"));
-    public const string DefaultInstanceValueName = "instance_1182D127";
     private static readonly string InjectionStatement = $"{Names.InjectionMarker};";
     private static readonly string InitializationStatement = $"{Names.InitializationMarker};";
 
@@ -41,7 +41,7 @@ internal sealed class FactoryCodeBuilder(
             var block = new List<StatementSyntax>();
             foreach (var resolver in factory.Source.Resolvers)
             {
-                if (resolver.ArgumentType is not { } argumentType || resolver.Parameter is not { } parameter)
+                if (resolver.ArgumentType is not {} argumentType || resolver.Parameter is not {} parameter)
                 {
                     continue;
                 }
@@ -64,9 +64,9 @@ internal sealed class FactoryCodeBuilder(
                 block.Add(SyntaxFactory.ExpressionStatement(injection));
             }
 
-            if (factory.Source.MemberResolver is { } memberResolver
-                && memberResolver.Member is { } member
-                && memberResolver.TypeConstructor is { } typeConstructor)
+            if (factory.Source.MemberResolver is {} memberResolver
+                && memberResolver.Member is {} member
+                && memberResolver.TypeConstructor is {} typeConstructor)
             {
                 ExpressionSyntax? value = null;
                 var type = memberResolver.ContractType;
@@ -98,7 +98,7 @@ internal sealed class FactoryCodeBuilder(
                             foreach (var typeArg in methodSymbol.TypeArguments)
                             {
                                 var argType = typeConstructor.ConstructReversed(typeArg);
-                                if (binding.TypeConstructor is { } bindingTypeConstructor)
+                                if (binding.TypeConstructor is {} bindingTypeConstructor)
                                 {
                                     argType = bindingTypeConstructor.Construct(setup, binding.SemanticModel.Compilation, argType);
                                 }
@@ -134,13 +134,13 @@ internal sealed class FactoryCodeBuilder(
             }
             else
             {
-                if (originalLambda.Block is { } lambdaBlock)
+                if (originalLambda.Block is {} lambdaBlock)
                 {
                     block.AddRange(lambdaBlock.Statements);
                 }
                 else
                 {
-                    if (originalLambda.ExpressionBody is { } body)
+                    if (originalLambda.ExpressionBody is {} body)
                     {
                         block.Add(SyntaxFactory.ReturnStatement(body));
                     }
@@ -205,7 +205,7 @@ internal sealed class FactoryCodeBuilder(
                 factory.Source.Source.GetLocation(),
                 LogId.ErrorInvalidMetadata);
         }
-        
+
         if (factory.Initializers.Length != inits.Count)
         {
             throw new CompileErrorException(
@@ -223,7 +223,7 @@ internal sealed class FactoryCodeBuilder(
             .GetEnumerator();
 
         var initializationArgsEnum = initializationArgs.Select(i => i.Current).GetEnumerator();
-        
+
         var injectionsCtx = ctx;
         if (variable.IsLazy && variable.Node.Accumulators.Count > 0)
         {
@@ -270,7 +270,7 @@ internal sealed class FactoryCodeBuilder(
                     ctx.StatementBuilder.Build(injectionsCtx with { Level = level, Variable = argument.Current, LockIsRequired = lockIsRequired, IsFactory = true }, argument);
                     code.AppendLine($"{(resolver.DeclarationRequired ? $"{typeResolver.Resolve(ctx.DependencyGraph.Source, argument.Current.Injection.Type)} " : "")}{resolver.VariableName} = {ctx.BuildTools.OnInjected(ctx, argument.Current)};");
                 }
-                
+
                 continue;
             }
 

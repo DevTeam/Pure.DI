@@ -1,6 +1,6 @@
 ﻿namespace Build.Tools;
 
-internal enum PathType
+enum PathType
 {
     SolutionDirectory,
     TempDirectory,

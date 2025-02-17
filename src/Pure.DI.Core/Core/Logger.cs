@@ -3,11 +3,8 @@
 // ReSharper disable UnusedMember.Global
 namespace Pure.DI.Core;
 
-internal sealed class Logger : ILogger
+sealed class Logger : ILogger
 {
-    private readonly Lazy<IObserver<LogEntry>[]> _logEntryObservers;
-    private readonly Type _targetType;
-    private readonly IObserversProvider _observersProvider;
 
     private Logger(IObserversProvider observersProvider, Type targetType)
     {
@@ -15,19 +12,22 @@ internal sealed class Logger : ILogger
         _targetType = targetType;
         _logEntryObservers = new Lazy<IObserver<LogEntry>[]>(() => observersProvider.GetObservers<LogEntry>().ToArray());
     }
-    
+
     public Logger(IObserversProvider observersProvider)
         : this(observersProvider, typeof(CodeGenerator))
     {
     }
-
-    public Logger WithTargetType(Type type) => new(_observersProvider, type);
+    private readonly Lazy<IObserver<LogEntry>[]> _logEntryObservers;
+    private readonly IObserversProvider _observersProvider;
+    private readonly Type _targetType;
 
     public void Log(in LogEntry logEntry)
     {
         foreach (var logEntryObserver in _logEntryObservers.Value)
         {
-            logEntryObserver.OnNext(logEntry with {TargetType = _targetType});
+            logEntryObserver.OnNext(logEntry with { TargetType = _targetType });
         }
     }
+
+    public Logger WithTargetType(Type type) => new(_observersProvider, type);
 }

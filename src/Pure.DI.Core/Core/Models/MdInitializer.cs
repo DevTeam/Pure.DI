@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core.Models;
 
-internal readonly record struct MdInitializer(
+readonly record struct MdInitializer(
     SemanticModel SemanticModel,
     SyntaxNode Source,
     ITypeSymbol Type,

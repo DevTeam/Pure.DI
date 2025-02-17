@@ -1,6 +1,6 @@
 namespace Pure.DI.Core.Code;
 
-internal record Variable(
+record Variable(
     IVariableNameProvider VariableNameProvider,
     MdSetup Setup,
     IStatement? Parent,
@@ -16,8 +16,6 @@ internal record Variable(
     : IStatement
 {
     private string? _variableCode;
-
-    public Variable Current => this;
 
     public Block ParentBlock => this.GetPath().OfType<Block>().First();
 
@@ -43,6 +41,8 @@ internal record Variable(
     public ITypeSymbol InstanceType => Node.Type;
 
     public ITypeSymbol ContractType => Injection.Type;
+
+    public Variable Current => this;
 
     public override string ToString() => $"{InstanceType.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.FullyQualifiedFormat)} {VariableName}";
 }

@@ -9,7 +9,7 @@ namespace Build;
 
 using NuGet.Versioning;
 
-internal class LibrariesTarget(
+class LibrariesTarget(
     Settings settings,
     Commands commands,
     Sdk sdk)

@@ -1,6 +1,6 @@
 namespace Pure.DI.Core.Code;
 
-internal record BuildContext(
+record BuildContext(
     int Level,
     IBuildTools BuildTools,
     ICodeBuilder<IStatement> StatementBuilder,

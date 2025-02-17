@@ -10,7 +10,6 @@ using System.Diagnostics.CodeAnalysis;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
 using Model;
-
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
 [MemoryDiagnoser]
 [SuppressMessage("Usage", "CA2263:Prefer generic overload when type is known")]
@@ -47,9 +46,8 @@ public partial class Func : BenchmarkBase
     public CompositionRoot TestHandCoded()
     {
         var func = new Func<IService3>(
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            () => new Service3(new Service4(), new Service4()));
-        
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]() => new Service3(new Service4(), new Service4()));
+
         return new CompositionRoot(
             new Service1(new Service2Func(func)),
             new Service2Func(func),

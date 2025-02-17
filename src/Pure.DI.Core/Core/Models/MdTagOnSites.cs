@@ -3,7 +3,7 @@
 
 namespace Pure.DI.Core.Models;
 
-internal record MdTagOnSites(
+record MdTagOnSites(
     SyntaxNode Source,
     ImmutableArray<MdInjectionSite> InjectionSites)
 {

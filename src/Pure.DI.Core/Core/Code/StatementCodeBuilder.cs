@@ -4,7 +4,7 @@
 
 namespace Pure.DI.Core.Code;
 
-internal sealed class StatementCodeBuilder(
+sealed class StatementCodeBuilder(
     ICodeBuilder<Block> blockBuilder,
     ICodeBuilder<Variable> variableBuilder)
     : ICodeBuilder<IStatement>

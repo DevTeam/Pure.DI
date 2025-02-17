@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core.Code;
 
-internal interface IFactoryValidator
+interface IFactoryValidator
 {
     IFactoryValidator Initialize(DpFactory factory);
 

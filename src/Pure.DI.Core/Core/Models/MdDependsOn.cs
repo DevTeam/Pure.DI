@@ -3,7 +3,7 @@
 
 namespace Pure.DI.Core.Models;
 
-internal readonly record struct MdDependsOn(
+readonly record struct MdDependsOn(
     SemanticModel SemanticModel,
     SyntaxNode Source,
     in ImmutableArray<CompositionName> CompositionTypeNames)

@@ -3,7 +3,7 @@
 
 namespace Pure.DI.Core.Models;
 
-internal readonly record struct MdContract(
+readonly record struct MdContract(
     SemanticModel SemanticModel,
     SyntaxNode Source,
     ITypeSymbol? ContractType,

@@ -1,7 +1,7 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
-internal sealed class Locks(
+sealed class Locks(
     ITypes types)
     : ILocks
 {
@@ -47,7 +47,7 @@ internal sealed class Locks(
         lines.AppendLine("}");
     }
 
-    private bool IsSystemThreadingLockEnabled(MdSetup setup) => 
+    private bool IsSystemThreadingLockEnabled(MdSetup setup) =>
         setup.Hints.IsSystemThreadingLockEnabled
         && types.TryGet(SpecialType.Lock, setup.SemanticModel.Compilation) is not null;
 }

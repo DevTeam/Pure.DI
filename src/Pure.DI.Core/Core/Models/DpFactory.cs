@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core.Models;
 
-internal record DpFactory(
+record DpFactory(
     in MdFactory Source,
     in MdBinding Binding,
     in ImmutableArray<Injection> ResolversInjections,

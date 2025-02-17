@@ -1,3 +1,4 @@
-﻿namespace Pure.DI.Core.Models;
+﻿// ReSharper disable NotAccessedPositionalProperty.Global
+namespace Pure.DI.Core.Models;
 
-internal record NameKey(ITypeSymbol TypeSymbol, bool IsGlobal);
+record NameKey(ITypeSymbol TypeSymbol, bool IsGlobal);

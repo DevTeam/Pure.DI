@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core.Models;
 
-internal record DpMethod(
+record DpMethod(
     IMethodSymbol Method,
     int? Ordinal,
     in ImmutableArray<DpParameter> Parameters)

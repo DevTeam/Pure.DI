@@ -3,7 +3,7 @@
 
 namespace Pure.DI.Core.Models;
 
-internal readonly record struct MdAccumulator(
+readonly record struct MdAccumulator(
     SemanticModel SemanticModel,
     SyntaxNode Source,
     ITypeSymbol Type,
@@ -20,8 +20,8 @@ internal readonly record struct MdAccumulator(
         unchecked
         {
             var hashCode = SymbolEqualityComparer.Default.GetHashCode(Type);
-            hashCode = (hashCode * 397) ^ SymbolEqualityComparer.Default.GetHashCode(AccumulatorType);
-            hashCode = (hashCode * 397) ^ (int)Lifetime;
+            hashCode = hashCode * 397 ^ SymbolEqualityComparer.Default.GetHashCode(AccumulatorType);
+            hashCode = hashCode * 397 ^ (int)Lifetime;
             return hashCode;
         }
     }

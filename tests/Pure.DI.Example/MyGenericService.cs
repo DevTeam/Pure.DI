@@ -2,7 +2,7 @@
 
 namespace OtherAssembly;
 
-internal class MyGenericService<T>(IMyDependency dependency, int id) : IMyGenericService<T>
+class MyGenericService<T>(IMyDependency dependency, int id) : IMyGenericService<T>
 {
     public int Id { get; } = id;
 

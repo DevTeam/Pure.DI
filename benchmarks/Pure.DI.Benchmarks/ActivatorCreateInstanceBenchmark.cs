@@ -8,9 +8,8 @@ using Model;
 public class ActivatorCreateInstanceBenchmark
 {
     [Benchmark(Description = "Activator.CreateInstance")]
-    public CompositionRoot ActivatorCreateInstance()
-    {
-        return CreateInstance<CompositionRoot>(
+    public CompositionRoot ActivatorCreateInstance() =>
+        CreateInstance<CompositionRoot>(
             CreateInstance<Service1>(
                 CreateInstance<Service2>(
                     CreateInstance<Service3>(),
@@ -37,9 +36,8 @@ public class ActivatorCreateInstanceBenchmark
                 CreateInstance<Service3>(),
                 CreateInstance<Service3>()),
             CreateInstance<Service3>());
-    }
-    
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static T CreateInstance<T>(params object[] args) => 
+    private static T CreateInstance<T>(params object[] args) =>
         (T)Activator.CreateInstance(typeof(T), args)!;
 }

@@ -4,12 +4,12 @@ namespace Pure.DI.Benchmarks.Containers;
 using global::Autofac;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-internal sealed class Autofac : BaseAbstractContainer<IContainer>
+sealed class Autofac : BaseAbstractContainer<IContainer>
 {
-    private readonly ContainerBuilder _builder = new();
-    private readonly Lazy<IContainer> _container;
 
     public Autofac() => _container = new Lazy<IContainer>(() => _builder.Build());
+    private readonly ContainerBuilder _builder = new();
+    private readonly Lazy<IContainer> _container;
 
     public override IContainer CreateContainer() => _container.Value;
 

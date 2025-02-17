@@ -2,12 +2,9 @@
 
 public class MainViewModel : IMainViewModel
 {
-    private readonly IBusinessService _businessService;
 
-    public MainViewModel(IBusinessService businessService)
-    {
-        _businessService = businessService;
-    }
+    public MainViewModel(IBusinessService businessService) => _businessService = businessService;
+    private readonly IBusinessService _businessService;
 
     public string Title => "Avalonia application";
 

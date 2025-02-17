@@ -3,14 +3,14 @@
 
 namespace Pure.DI.Core;
 
-internal sealed class ConstructDependencyNodeBuilder : IBuilder<DependencyNodeBuildContext, IEnumerable<DependencyNode>>
+sealed class ConstructDependencyNodeBuilder : IBuilder<DependencyNodeBuildContext, IEnumerable<DependencyNode>>
 {
     public IEnumerable<DependencyNode> Build(DependencyNodeBuildContext ctx)
     {
         var setup = ctx.Setup;
         foreach (var binding in setup.Bindings)
         {
-            if (binding.Construct is not { } construct)
+            if (binding.Construct is not {} construct)
             {
                 continue;
             }

@@ -1,18 +1,18 @@
 ﻿namespace Pure.DI.Core.Models;
 
-internal enum InjectionKind
+enum InjectionKind
 {
     Field,
-    
+
     Property,
-    
+
     Parameter,
-    
+
     Root,
-    
+
     FactoryInjection,
-    
+
     Contract,
-    
+
     Construct
 }

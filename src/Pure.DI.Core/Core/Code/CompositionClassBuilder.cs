@@ -5,8 +5,8 @@ namespace Pure.DI.Core.Code;
 using Parts;
 using static Tag;
 
-internal sealed class CompositionClassBuilder(
-    [Tag(UsingDeclarations)]  IBuilder<CompositionCode, CompositionCode> usingDeclarations,
+sealed class CompositionClassBuilder(
+    [Tag(UsingDeclarations)] IBuilder<CompositionCode, CompositionCode> usingDeclarations,
     IReadOnlyCollection<IClassPartBuilder> classPartBuilders,
     [Tag(typeof(ClassCommenter))] ICommenter<Unit> classCommenter,
     IInformation information,

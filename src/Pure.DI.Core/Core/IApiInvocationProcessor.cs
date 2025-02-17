@@ -1,6 +1,6 @@
 namespace Pure.DI.Core;
 
-internal interface IApiInvocationProcessor
+interface IApiInvocationProcessor
 {
     void ProcessInvocation(
         IMetadataVisitor metadataVisitor,

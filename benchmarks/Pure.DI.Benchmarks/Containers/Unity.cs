@@ -5,7 +5,7 @@ using global::Unity;
 using global::Unity.Lifetime;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-internal sealed class Unity : BaseAbstractContainer<UnityContainer>
+sealed class Unity : BaseAbstractContainer<UnityContainer>
 {
     private readonly UnityContainer _container = new();
 

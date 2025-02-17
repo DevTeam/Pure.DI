@@ -1,6 +1,6 @@
 namespace Pure.DI.Core.Code;
 
-internal interface IFormatter
+interface IFormatter
 {
     string Format(Root root);
 

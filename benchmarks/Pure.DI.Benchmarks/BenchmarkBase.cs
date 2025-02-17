@@ -19,9 +19,9 @@ using LightInject;
 using Microsoft.Extensions.DependencyInjection;
 using Ninject;
 using Unity;
-using Container = IoC.Container;
-using ICompositionRoot = Model.ICompositionRoot;
-using IContainer = Autofac.IContainer;
+using Container=IoC.Container;
+using ICompositionRoot=Model.ICompositionRoot;
+using IContainer=Autofac.IContainer;
 
 public abstract class BenchmarkBase
 {
@@ -57,7 +57,7 @@ public abstract class BenchmarkBase
         _iocRootResolver = CreateContainer<Func<ICompositionRoot>, IoCContainerByCompositionRoot<ICompositionRoot>>();
 #endif
 #endif
-    } 
+    }
 
 #if !DEBUG
     [Benchmark]

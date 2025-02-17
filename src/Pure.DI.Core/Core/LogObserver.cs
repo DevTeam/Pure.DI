@@ -3,7 +3,7 @@
 
 namespace Pure.DI.Core;
 
-internal sealed class LogObserver(
+sealed class LogObserver(
     IBuilder<LogEntry, LogInfo> logInfoBuilder,
     IGeneratorDiagnostic diagnostic)
     : IObserver<LogEntry>
@@ -13,7 +13,7 @@ internal sealed class LogObserver(
     public void OnNext(LogEntry logEntry)
     {
         var logInfo = logInfoBuilder.Build(logEntry);
-        if (logInfo.DiagnosticDescriptor is { } descriptor)
+        if (logInfo.DiagnosticDescriptor is {} descriptor)
         {
             lock (_diagnostics)
             {

@@ -2,7 +2,7 @@
 
 using NuGet.Versioning;
 
-internal record Package(
+record Package(
     string Path,
     bool Deploy,
     NuGetVersion Version);

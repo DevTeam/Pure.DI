@@ -1,6 +1,6 @@
 namespace Pure.DI.Core;
 
-internal static class StackExtensions
+static class StackExtensions
 {
     public static bool TryPop<T>(this Stack<T> stack, [NotNullWhen(true)] out T? value)
     {

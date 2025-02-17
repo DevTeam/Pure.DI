@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core.Models;
 
-internal enum MdConstructKind
+enum MdConstructKind
 {
     None,
     Enumerable,

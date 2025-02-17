@@ -3,7 +3,7 @@
 
 namespace Pure.DI.Core.Code;
 
-internal sealed class FactoryRewriter(
+sealed class FactoryRewriter(
     IArguments arguments,
     ICompilations compilations,
     DpFactory factory,
@@ -16,18 +16,18 @@ internal sealed class FactoryRewriter(
     : CSharpSyntaxRewriter
 {
     private static readonly AttributeListSyntax MethodImplAttribute = SyntaxFactory.AttributeList().AddAttributes(
-            SyntaxFactory.Attribute(
-                SyntaxFactory.IdentifierName(Names.MethodImplAttributeName),
-                SyntaxFactory.AttributeArgumentList().AddArguments(
+        SyntaxFactory.Attribute(
+            SyntaxFactory.IdentifierName(Names.MethodImplAttributeName),
+            SyntaxFactory.AttributeArgumentList().AddArguments(
                     SyntaxFactory.AttributeArgument(
                         SyntaxFactory.CastExpression(SyntaxFactory.ParseTypeName($"{Names.MethodImplOptionsName}"), SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(256)))))
-        .WithTrailingTrivia(SyntaxTriviaList.Create(SyntaxFactory.SyntaxTrivia(SyntaxKind.WhitespaceTrivia, " ")))));
+                .WithTrailingTrivia(SyntaxTriviaList.Create(SyntaxFactory.SyntaxTrivia(SyntaxKind.WhitespaceTrivia, " ")))));
 
     private static readonly IdentifierNameSyntax InjectionMarkerExpression = SyntaxFactory.IdentifierName(Names.InjectionMarker);
     private static readonly IdentifierNameSyntax InitializationMarkerExpression = SyntaxFactory.IdentifierName(Names.InitializationMarker);
-    private int _nestedLambdaCounter;
-    private int _nestedBlockCounter;
     private BuildContext? _ctx;
+    private int _nestedBlockCounter;
+    private int _nestedLambdaCounter;
 
     public bool IsFinishMarkRequired { get; private set; }
 
@@ -82,7 +82,7 @@ internal sealed class FactoryRewriter(
                 foreach (var statement in block.Statements)
                 {
                     var curStatement = statement;
-                    if (curStatement is ReturnStatementSyntax { Expression: { } returnBody })
+                    if (curStatement is ReturnStatementSyntax { Expression: {} returnBody })
                     {
                         curStatement = CreateAssignmentExpression(returnBody, statement);
                     }
@@ -109,15 +109,15 @@ internal sealed class FactoryRewriter(
 
     public override SyntaxNode? VisitReturnStatement(ReturnStatementSyntax node)
     {
-        if (_nestedLambdaCounter == 1 && node.Expression is { } returnBody)
+        if (_nestedLambdaCounter == 1 && node.Expression is {} returnBody)
         {
             IsFinishMarkRequired = true;
             return SyntaxFactory.Block(
-                CreateAssignmentExpression(returnBody, node),
-                SyntaxFactory.GotoStatement(
-                    SyntaxKind.GotoStatement,
-                    SyntaxFactory.IdentifierName(finishLabel).WithLeadingTrivia(SyntaxFactory.Space)).WithLeadingTrivia(SyntaxFactory.Space).WithTrailingTrivia(SyntaxFactory.Space)
-            )
+                    CreateAssignmentExpression(returnBody, node),
+                    SyntaxFactory.GotoStatement(
+                        SyntaxKind.GotoStatement,
+                        SyntaxFactory.IdentifierName(finishLabel).WithLeadingTrivia(SyntaxFactory.Space)).WithLeadingTrivia(SyntaxFactory.Space).WithTrailingTrivia(SyntaxFactory.Space)
+                )
                 .WithLeadingTrivia(node.GetLeadingTrivia())
                 .WithTrailingTrivia(node.GetTrailingTrivia());
         }
@@ -134,7 +134,7 @@ internal sealed class FactoryRewriter(
                     SyntaxFactory.IdentifierName(variable.VariableName).WithLeadingTrivia(SyntaxFactory.Space).WithTrailingTrivia(SyntaxFactory.Space),
                     (ExpressionSyntax)Visit(returnBody).WithLeadingTrivia(SyntaxFactory.Space))),
             owner);
-    
+
     public override SyntaxNode VisitExpressionStatement(ExpressionStatementSyntax node)
     {
         node = (ExpressionStatementSyntax)base.VisitExpressionStatement(node)!;
@@ -212,7 +212,7 @@ internal sealed class FactoryRewriter(
         expressionSyntax = null;
         return false;
     }
-    
+
     private bool TryInitialize(
         InvocationExpressionSyntax invocation,
         [NotNullWhen(true)] out ExpressionSyntax? expressionSyntax)
@@ -254,14 +254,14 @@ internal sealed class FactoryRewriter(
             {
                 case nameof(IContext.Tag):
                     return Visit(SyntaxFactory.ParseExpression($" {variable.Injection.Tag.ValueToString()}"));
-                
+
                 case nameof(IContext.ConsumerTypes):
                     var consumers = variable.Info.GetTargetNodes().Select(targetNode => $"typeof({symbolNames.GetGlobalName(targetNode.Type)})").ToList();
                     if (consumers.Count == 0 && _ctx is not null)
                     {
                         consumers.Add($"typeof({_ctx.DependencyGraph.Source.Name.FullName})");
                     }
-                    
+
                     return Visit(SyntaxFactory.ParseExpression($" new {Names.SystemNamespace}Type[{consumers.Count}]{{{string.Join(", ", consumers)}}}"));
             }
         }
@@ -270,6 +270,6 @@ internal sealed class FactoryRewriter(
     }
 
     internal record Injection(string VariableName, bool DeclarationRequired);
-    
+
     internal record Initializer(string VariableName);
 }

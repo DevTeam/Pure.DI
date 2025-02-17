@@ -4,7 +4,7 @@ namespace Pure.DI.Core;
 using System.Reflection;
 using System.Text.RegularExpressions;
 
-internal sealed class Resources(
+sealed class Resources(
     Assembly assembly,
     Func<string, Regex> regexFactory,
     ICache<string, Regex> regexCache)

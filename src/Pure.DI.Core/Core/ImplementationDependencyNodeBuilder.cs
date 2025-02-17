@@ -5,7 +5,7 @@
 
 namespace Pure.DI.Core;
 
-internal sealed class ImplementationDependencyNodeBuilder(
+sealed class ImplementationDependencyNodeBuilder(
     IBuilder<DpImplementation, IEnumerable<DpImplementation>> implementationVariantsBuilder,
     IAttributes attributes,
     IInstanceDpProvider instanceDpProvider,
@@ -18,7 +18,7 @@ internal sealed class ImplementationDependencyNodeBuilder(
         var setup = ctx.Setup;
         foreach (var binding in setup.Bindings)
         {
-            if (binding.Implementation is not { } implementation)
+            if (binding.Implementation is not {} implementation)
             {
                 continue;
             }

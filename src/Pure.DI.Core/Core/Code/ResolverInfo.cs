@@ -1,6 +1,6 @@
 namespace Pure.DI.Core.Code;
 
-internal record ResolverInfo(
+record ResolverInfo(
     int Id,
     ITypeSymbol Type,
     IReadOnlyCollection<Root> Roots)

@@ -4,13 +4,13 @@ namespace Pure.DI.Benchmarks.Containers;
 using Microsoft.Extensions.DependencyInjection;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-internal sealed class MicrosoftDependencyInjection : BaseAbstractContainer<ServiceProvider>
+sealed class MicrosoftDependencyInjection : BaseAbstractContainer<ServiceProvider>
 {
-    private readonly IServiceCollection _serviceCollection = new ServiceCollection();
-    private readonly Lazy<ServiceProvider> _container;
 
     public MicrosoftDependencyInjection() =>
         _container = new Lazy<ServiceProvider>(() => _serviceCollection.BuildServiceProvider());
+    private readonly Lazy<ServiceProvider> _container;
+    private readonly IServiceCollection _serviceCollection = new ServiceCollection();
 
     public override ServiceProvider CreateContainer() => _container.Value;
 
@@ -39,5 +39,5 @@ internal sealed class MicrosoftDependencyInjection : BaseAbstractContainer<Servi
 
     public override T Resolve<T>() where T : class => _container.Value.GetService<T>()!;
 
-    public override void Dispose() { }
+    public override void Dispose() {}
 }

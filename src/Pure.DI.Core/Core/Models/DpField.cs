@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core.Models;
 
-internal record DpField(
+record DpField(
     IFieldSymbol Field,
     int? Ordinal,
     Injection Injection)

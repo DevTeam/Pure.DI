@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core.Models;
 
-internal record DpRoot(
+record DpRoot(
     in MdRoot Source,
     in MdBinding Binding,
     in Injection Injection)

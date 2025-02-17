@@ -1,3 +1,3 @@
 ﻿namespace Build;
 
-internal record ExampleGroup(string Name, IReadOnlyList<Example> Examples);
+record ExampleGroup(string Name, IReadOnlyList<Example> Examples);

@@ -3,7 +3,7 @@
 
 namespace Pure.DI.Core;
 
-internal sealed class ImplementationVariantsBuilder(
+sealed class ImplementationVariantsBuilder(
     IVariator<ImplementationVariant> implementationVariator,
     CancellationToken cancellationToken)
     : IBuilder<DpImplementation, IEnumerable<DpImplementation>>

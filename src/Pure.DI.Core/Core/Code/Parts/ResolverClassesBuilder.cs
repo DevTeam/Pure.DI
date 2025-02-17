@@ -4,7 +4,7 @@
 
 namespace Pure.DI.Core.Code.Parts;
 
-internal sealed class ResolverClassesBuilder(IBuilder<RootContext, IEnumerable<ResolverInfo>> resolversBuilder)
+sealed class ResolverClassesBuilder(IBuilder<RootContext, IEnumerable<ResolverInfo>> resolversBuilder)
     : IClassPartBuilder
 {
     public ClassPart Part => ClassPart.ResolverClasses;
@@ -169,7 +169,7 @@ internal sealed class ResolverClassesBuilder(IBuilder<RootContext, IEnumerable<R
     [SuppressMessage("ReSharper", "ConvertIfStatementToReturnStatement")]
     private static bool CanBeUsedInSwitch(Root root)
     {
-        if (root.Injection.Tag?.GetType() is not { } tagType)
+        if (root.Injection.Tag?.GetType() is not {} tagType)
         {
             return true;
         }

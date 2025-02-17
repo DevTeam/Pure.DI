@@ -1,6 +1,6 @@
 namespace Pure.DI.Core.Code;
 
-internal record Block(
+record Block(
     int Id,
     IStatement? Parent,
     LinkedList<IStatement> Statements) : IStatement

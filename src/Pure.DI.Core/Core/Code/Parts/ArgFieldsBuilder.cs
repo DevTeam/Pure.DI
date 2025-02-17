@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core.Code.Parts;
 
-internal sealed class ArgFieldsBuilder(ITypeResolver typeResolver)
+sealed class ArgFieldsBuilder(ITypeResolver typeResolver)
     : IClassPartBuilder
 {
     public ClassPart Part => ClassPart.ArgFields;

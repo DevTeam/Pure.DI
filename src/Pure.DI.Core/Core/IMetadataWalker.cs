@@ -1,6 +1,6 @@
 namespace Pure.DI.Core;
 
-internal interface IMetadataWalker
+interface IMetadataWalker
 {
     void Visit(IMetadataVisitor metadataVisitor, in SyntaxUpdate update);
 }

@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core;
 
-internal sealed class Metadata(
+sealed class Metadata(
     ITypes types)
     : IMetadata
 {
@@ -43,6 +43,6 @@ internal sealed class Metadata(
 
     private bool ReturnConfiguration(InvocationExpressionSyntax invocation, SemanticModel semanticModel) =>
         semanticModel.GetTypeInfo(invocation) is var typeInfo
-        && (typeInfo.Type ?? typeInfo.ConvertedType) is { } type
+        && (typeInfo.Type ?? typeInfo.ConvertedType) is {} type
         && types.TypeEquals(type, types.TryGet(SpecialType.IConfiguration, semanticModel.Compilation));
 }

@@ -4,7 +4,7 @@ namespace Pure.DI.Core.Code;
 
 using System.Globalization;
 
-internal static class CodeExtensions
+static class CodeExtensions
 {
     public static string ValueToString(this object? tag, string defaultValue = "null") =>
         tag switch

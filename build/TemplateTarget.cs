@@ -3,7 +3,7 @@
 
 namespace Build;
 
-internal class TemplateTarget(
+class TemplateTarget(
     Settings settings,
     Commands commands,
     Versions versions,

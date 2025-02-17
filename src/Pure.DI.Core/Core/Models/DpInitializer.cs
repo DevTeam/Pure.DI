@@ -2,7 +2,7 @@
 // ReSharper disable NotAccessedPositionalProperty.Global
 namespace Pure.DI.Core.Models;
 
-internal record DpInitializer(
+record DpInitializer(
     in MdInitializer Source,
     in ImmutableArray<DpMethod> Methods,
     in ImmutableArray<DpProperty> Properties,

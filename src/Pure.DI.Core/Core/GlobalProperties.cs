@@ -2,20 +2,16 @@
 
 namespace Pure.DI.Core;
 
-internal sealed class GlobalProperties : IGlobalProperties
+sealed class GlobalProperties : IGlobalProperties
 {
     public const string SeverityProperty = "build_property.purediseverity";
     public const string LogFileProperty = "build_property.puredilogfile";
     private const string MaxIterationsProperty = "build_property.puredimaxiterations";
     private const string ProfilePathProperty = "build_property.purediprofilepath";
 
-    private readonly Lazy<int> _maxIterations;
-    private readonly Lazy<string> _profilePath;
-
     public GlobalProperties(IGeneratorOptions options)
     {
-        _maxIterations = new Lazy<int>(() =>
-        {
+        _maxIterations = new Lazy<int>(() => {
             if (options.GlobalOptions.TryGetValue(MaxIterationsProperty, out var maxIterationsStr)
                 && !string.IsNullOrWhiteSpace(maxIterationsStr)
                 && int.TryParse(maxIterationsStr, out var maxIterations)
@@ -32,6 +28,9 @@ internal sealed class GlobalProperties : IGlobalProperties
                 ? profilePath
                 : string.Empty);
     }
+
+    private readonly Lazy<int> _maxIterations;
+    private readonly Lazy<string> _profilePath;
 
     public int MaxIterations => _maxIterations.Value;
 

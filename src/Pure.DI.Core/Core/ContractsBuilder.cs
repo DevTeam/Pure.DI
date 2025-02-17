@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core;
 
-internal sealed class ContractsBuilder : IBuilder<ContractsBuildContext, ISet<Injection>>
+sealed class ContractsBuilder : IBuilder<ContractsBuildContext, ISet<Injection>>
 {
     public ISet<Injection> Build(ContractsBuildContext context)
     {

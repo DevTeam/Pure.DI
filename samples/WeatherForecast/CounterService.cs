@@ -7,6 +7,6 @@ public class CounterService : ICounterService
 
     public long Count => Interlocked.Read(ref _count);
 
-    public long IncrementCount() => 
+    public long IncrementCount() =>
         Interlocked.Increment(ref _count);
 }

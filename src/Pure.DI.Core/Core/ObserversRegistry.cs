@@ -2,9 +2,11 @@
 
 namespace Pure.DI.Core;
 
-internal sealed class ObserversRegistry : IObserversRegistry, IObserversProvider
+sealed class ObserversRegistry : IObserversRegistry, IObserversProvider
 {
     private readonly Dictionary<Type, ICollection<object>> _observers = new();
+
+    public IEnumerable<IObserver<T>> GetObservers<T>() => GetOfType<T>().Cast<IObserver<T>>();
 
     public IDisposable Register<T>(IObserver<T> observer)
     {
@@ -24,8 +26,6 @@ internal sealed class ObserversRegistry : IObserversRegistry, IObserversProvider
             }
         }
     }
-
-    public IEnumerable<IObserver<T>> GetObservers<T>() => GetOfType<T>().Cast<IObserver<T>>();
 
     private ICollection<object> GetOfType<T>()
     {

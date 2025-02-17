@@ -13,8 +13,7 @@ public class SourceGenerator : IIncrementalGenerator
         // Run Rider as administrator
         DebugHelper.Debug();
 
-        context.RegisterPostInitializationOutput(initializationContext =>
-        {
+        context.RegisterPostInitializationOutput(initializationContext => {
             foreach (var apiSource in Generator.Api)
             {
                 initializationContext.AddSource(apiSource.HintName, apiSource.SourceText);

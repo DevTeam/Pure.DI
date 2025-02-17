@@ -3,7 +3,7 @@
 
 namespace Build;
 
-internal class RootTarget(
+class RootTarget(
     RootCommand rootCommand,
     IEnumerable<IInitializable> initializables)
     : ITarget<int>

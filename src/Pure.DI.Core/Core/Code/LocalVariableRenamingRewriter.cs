@@ -2,9 +2,7 @@
 
 namespace Pure.DI.Core.Code;
 
-using System.Collections.Generic;
-
-internal sealed class LocalVariableRenamingRewriter(
+sealed class LocalVariableRenamingRewriter(
     ITriviaTools triviaTools,
     IVariableNameProvider variableNameProvider)
     : CSharpSyntaxRewriter, ILocalVariableRenamingRewriter
@@ -30,7 +28,7 @@ internal sealed class LocalVariableRenamingRewriter(
     {
         if (_names.TryGetValue(token.Text, out var newName)
             && token.IsKind(SyntaxKind.IdentifierToken)
-            && token.Parent is { } parent
+            && token.Parent is {} parent
             && (_semanticModel?.SyntaxTree != parent.SyntaxTree || _semanticModel.GetSymbolInfo(parent).Symbol is ILocalSymbol))
         {
             token = triviaTools.PreserveTrivia(_ctx!.DependencyGraph.Source.Hints, SyntaxFactory.Identifier(newName), token);

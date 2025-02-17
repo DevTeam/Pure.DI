@@ -31,7 +31,7 @@ public enum State
 
 public record CardboardBox<T>(T Content) : IBox<T>;
 
-public class ShroedingersCat(Lazy<State> superposition): ICat
+public class ShroedingersCat(Lazy<State> superposition) : ICat
 {
     // The decoherence of the superposition
     // at the time of observation via an irreversible process
@@ -42,7 +42,7 @@ public class ShroedingersCat(Lazy<State> superposition): ICat
 
 // Let's glue all together
 
-internal partial class Composition
+partial class Composition
 {
     // In fact, this code is never run, and the method can have any name or be a constructor, for example,
     // and can be in any part of the compiled code because this is just a hint to set up an object graph.

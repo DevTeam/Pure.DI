@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core.Code.Parts;
 
-internal sealed class ToStringMethodBuilder
+sealed class ToStringMethodBuilder
     : IClassPartBuilder
 {
     public ClassPart Part => ClassPart.ToStringMethod;

@@ -1,6 +1,6 @@
 ﻿namespace Build;
 
-internal class DotNetEnv(Env env) : IInitializable
+class DotNetEnv(Env env) : IInitializable
 {
     public async Task InitializeAsync(CancellationToken cancellationToken)
     {

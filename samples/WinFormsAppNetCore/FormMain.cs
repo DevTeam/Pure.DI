@@ -1,12 +1,10 @@
 ﻿namespace WinFormsAppNetCore;
 
 using System.ComponentModel;
-using System.Windows.Forms;
 using Clock.ViewModels;
 
-internal partial class FormMain : Form
+partial class FormMain : Form
 {
-    private readonly IClockViewModel _clockViewModel;
 
     internal FormMain(IClockViewModel clockViewModel)
     {
@@ -18,6 +16,7 @@ internal partial class FormMain : Form
             notifyPropertyChanged.PropertyChanged += (_, _) => UpdateDateTime();
         }
     }
+    private readonly IClockViewModel _clockViewModel;
 
     private void UpdateDateTime()
     {

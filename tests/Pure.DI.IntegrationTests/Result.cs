@@ -5,7 +5,7 @@ namespace Pure.DI.IntegrationTests;
 using System.Text;
 using Core.Models;
 
-internal readonly record struct Result(
+readonly record struct Result(
     bool Success,
     ImmutableArray<string> StdOut,
     IReadOnlyList<LogEntry> Logs,

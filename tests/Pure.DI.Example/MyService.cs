@@ -1,6 +1,6 @@
 ﻿namespace OtherAssembly;
 
-internal class MyService(IMyDependency dependency) : IMyService
+class MyService(IMyDependency dependency) : IMyService
 {
     public void DoSomething() =>
         dependency.DoSomething();

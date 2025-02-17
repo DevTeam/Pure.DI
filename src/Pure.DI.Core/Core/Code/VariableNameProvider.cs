@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core.Code;
 
-internal class VariableNameProvider(IIdGenerator idGenerator) : IVariableNameProvider
+class VariableNameProvider(IIdGenerator idGenerator) : IVariableNameProvider
 {
     public string GetVariableName(DependencyNode node, int transientId)
     {

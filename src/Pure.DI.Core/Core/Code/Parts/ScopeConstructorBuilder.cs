@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core.Code.Parts;
 
-internal sealed class ScopeConstructorBuilder : IClassPartBuilder
+sealed class ScopeConstructorBuilder : IClassPartBuilder
 {
     public ClassPart Part => ClassPart.ScopeConstructor;
 

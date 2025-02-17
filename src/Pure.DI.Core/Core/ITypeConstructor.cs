@@ -1,6 +1,6 @@
 namespace Pure.DI.Core;
 
-internal interface ITypeConstructor
+interface ITypeConstructor
 {
     bool TryBind(MdSetup setup, ITypeSymbol source, ITypeSymbol target);
 

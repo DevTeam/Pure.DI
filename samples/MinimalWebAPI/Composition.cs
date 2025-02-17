@@ -8,7 +8,7 @@ using Pure.DI.MS;
 using WeatherForecast;
 using static Pure.DI.Lifetime;
 
-internal partial class Composition : ServiceProviderFactory<Composition>
+partial class Composition : ServiceProviderFactory<Composition>
 {
     void Setup() => DI.Setup()
         // Use the DI setup from the base class

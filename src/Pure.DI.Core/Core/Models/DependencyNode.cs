@@ -1,6 +1,6 @@
 namespace Pure.DI.Core.Models;
 
-internal record DependencyNode(
+record DependencyNode(
     int Variation,
     in MdBinding Binding,
     ITypeSymbol Type,
@@ -34,6 +34,8 @@ internal record DependencyNode(
     {
     }
 
+    public virtual bool Equals(DependencyNode? other) => Binding.Equals(other?.Binding);
+
     private IEnumerable<string> ToStrings(int indent) =>
         Root?.ToStrings(indent)
         ?? Implementation?.ToStrings(indent)
@@ -43,8 +45,6 @@ internal record DependencyNode(
         ?? Enumerable.Repeat("unresolved", 1);
 
     public override string ToString() => string.Join(Environment.NewLine, ToStrings(0));
-
-    public virtual bool Equals(DependencyNode? other) => Binding.Equals(other?.Binding);
 
     public override int GetHashCode() => Binding.GetHashCode();
 }

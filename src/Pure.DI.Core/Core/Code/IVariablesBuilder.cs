@@ -1,6 +1,6 @@
 namespace Pure.DI.Core.Code;
 
-internal interface IVariablesBuilder
+interface IVariablesBuilder
 {
     Block Build(
         DependencyGraph dependencyGraph,

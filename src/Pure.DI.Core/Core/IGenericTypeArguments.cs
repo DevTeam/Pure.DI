@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core;
 
-internal interface IGenericTypeArguments
+interface IGenericTypeArguments
 {
     bool IsGenericTypeArgument(MdSetup setup, ITypeSymbol typeSymbol);
 

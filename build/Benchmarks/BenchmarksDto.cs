@@ -2,4 +2,4 @@
 
 namespace Build.Benchmarks;
 
-internal record BenchmarksDto(IReadOnlyCollection<Benchmark> Benchmarks);
+record BenchmarksDto(IReadOnlyCollection<Benchmark> Benchmarks);

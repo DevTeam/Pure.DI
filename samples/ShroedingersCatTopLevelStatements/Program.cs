@@ -1,8 +1,8 @@
 ﻿// ReSharper disable UnusedMemberInSuper.Global
 // ReSharper disable UnusedMember.Global
 
-using Pure.DI;
 using System.Diagnostics;
+using Pure.DI;
 using static Pure.DI.Lifetime;
 
 // Composition root
@@ -44,7 +44,7 @@ public enum State
 
 public record CardboardBox<T>(T Content) : IBox<T>;
 
-public class ShroedingersCat(Lazy<State> superposition): ICat
+public class ShroedingersCat(Lazy<State> superposition) : ICat
 {
     // The decoherence of the superposition
     // at the time of observation via an irreversible process

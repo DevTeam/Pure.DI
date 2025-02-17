@@ -4,7 +4,7 @@
 
 namespace Pure.DI.Core;
 
-internal sealed class MetadataValidator(
+sealed class MetadataValidator(
     ILogger logger,
     IBaseSymbolsProvider baseSymbolsProvider,
     IMarker marker)
@@ -97,7 +97,7 @@ internal sealed class MetadataValidator(
         ITypeSymbol? implementationType = null;
         SemanticModel? semanticModel = null;
         var location = binding.Source.GetLocation();
-        if (binding.Implementation is { } implementation)
+        if (binding.Implementation is {} implementation)
         {
             semanticModel = implementation.SemanticModel;
             implementationType = implementation.Type;
@@ -105,7 +105,7 @@ internal sealed class MetadataValidator(
         }
         else
         {
-            if (binding.Factory is { } factory)
+            if (binding.Factory is {} factory)
             {
                 semanticModel = factory.SemanticModel;
                 implementationType = factory.Type;
@@ -113,7 +113,7 @@ internal sealed class MetadataValidator(
             }
             else
             {
-                if (binding.Arg is { } arg)
+                if (binding.Arg is {} arg)
                 {
                     semanticModel = arg.SemanticModel;
                     implementationType = arg.Type;

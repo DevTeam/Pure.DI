@@ -98,6 +98,232 @@ public class AccumulatorTests
     }
 
     [Fact]
+    public async Task ShouldSupportAccumulatorWhenDifferentLifetimes()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency
+                               {
+                                   bool IsDisposed { get; }
+                               }
+                               
+                               class Dependency : IDependency, IDisposable
+                               {
+                                   public bool IsDisposed { get; private set; }
+                               
+                                   public void Dispose() => IsDisposed = true;
+                               }
+                               
+                               interface IService
+                               {
+                                   public IDependency Dependency { get; }
+                                   
+                                   public IDependency SingleDependency { get; }
+                               }
+                               
+                               class Service : IService, IDisposable
+                               {
+                                   private readonly Owned<IDependency> _dependency;
+                                   private readonly Owned<IDependency> _singleDependency;
+                               
+                                   public Service(
+                                       Func<Owned<IDependency>> dependencyFactory,
+                                       [Tag("single")] Owned<IDependency> singleDependency)
+                                   {
+                                       _singleDependency = singleDependency;
+                                       _dependency = dependencyFactory();
+                                   }
+                               
+                                   public IDependency Dependency => _dependency.Value;
+                               
+                                   public IDependency SingleDependency => _singleDependency.Value;
+                               
+                                   public void Dispose()
+                                   {
+                                       _dependency.Dispose();
+                                       _singleDependency.Dispose();
+                                   }
+                               }
+                               
+                               partial class Composition
+                               {
+                                   static void Setup() =>
+                                       DI.Setup()
+                                           .Bind().To<Dependency>()
+                                           .Bind("single").As(Lifetime.Singleton).To<Dependency>()
+                                           .Bind().To<Service>()
+                               
+                                           // Composition root
+                                           .Root<Service>("Root");
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root1 = composition.Root;
+                                       var root2 = composition.Root;
+                                       Console.WriteLine(root1.Dependency != root2.Dependency);
+                                       Console.WriteLine(root1.SingleDependency == root2.SingleDependency);
+                                       
+                                       root2.Dispose();
+                                       
+                                       // Checks that the disposable instances
+                                       // associated with root1 have been disposed of
+                                       Console.WriteLine(root2.Dependency.IsDisposed);
+                                       
+                                       // But the singleton is still not disposed of
+                                       Console.WriteLine(root2.SingleDependency.IsDisposed == false);
+                                       
+                                       // Checks that the disposable instances
+                                       // associated with root2 have not been disposed of
+                                       Console.WriteLine(root1.Dependency.IsDisposed == false);
+                                       Console.WriteLine(root1.SingleDependency.IsDisposed == false);
+                                       
+                                       root1.Dispose();
+                                       
+                                       // Checks that the disposable instances
+                                       // associated with root2 have been disposed of
+                                       Console.WriteLine(root1.Dependency.IsDisposed);
+                                       
+                                       // But the singleton is still not disposed of
+                                       Console.WriteLine(root1.SingleDependency.IsDisposed == false);
+                                       
+                                       composition.Dispose();
+                                       Console.WriteLine(root1.SingleDependency.IsDisposed);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True", "True", "True", "True", "True", "True", "True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportAccumulatorWhenDifferentLifetimes2()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency
+                               {
+                                   bool IsDisposed { get; }
+                               }
+                               
+                               class Dependency : IDependency, IDisposable
+                               {
+                                   public bool IsDisposed { get; private set; }
+                               
+                                   public void Dispose() => IsDisposed = true;
+                               }
+                               
+                               interface IService
+                               {
+                                   public IDependency Dependency { get; }
+                                   
+                                   public IDependency SingleDependency { get; }
+                               }
+                               
+                               class Service : IService, IDisposable
+                               {
+                                   private readonly Owned<IDependency> _dependency;
+                                   private readonly Owned<IDependency> _singleDependency;
+                               
+                                   public Service(
+                                       Func<Owned<IDependency>> dependencyFactory,
+                                       [Tag("single")] Func<Owned<IDependency>> singleDependencyFactory)
+                                   {
+                                       _singleDependency = singleDependencyFactory();
+                                       _dependency = dependencyFactory();
+                                   }
+                               
+                                   public IDependency Dependency => _dependency.Value;
+                               
+                                   public IDependency SingleDependency => _singleDependency.Value;
+                               
+                                   public void Dispose()
+                                   {
+                                       _dependency.Dispose();
+                                       _singleDependency.Dispose();
+                                   }
+                               }
+                               
+                               partial class Composition
+                               {
+                                   static void Setup() =>
+                                       DI.Setup()
+                                           .Bind().To<Dependency>()
+                                           .Bind("single").As(Lifetime.Singleton).To<Dependency>()
+                                           .Bind().To<Service>()
+                               
+                                           // Composition root
+                                           .Root<Service>("Root");
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root1 = composition.Root;
+                                       var root2 = composition.Root;
+                                       Console.WriteLine(root1.Dependency != root2.Dependency);
+                                       Console.WriteLine(root1.SingleDependency == root2.SingleDependency);
+                                       
+                                       root2.Dispose();
+                                       
+                                       // Checks that the disposable instances
+                                       // associated with root1 have been disposed of
+                                       Console.WriteLine(root2.Dependency.IsDisposed);
+                                       
+                                       // But the singleton is still not disposed of
+                                       Console.WriteLine(root2.SingleDependency.IsDisposed == false);
+                                       
+                                       // Checks that the disposable instances
+                                       // associated with root2 have not been disposed of
+                                       Console.WriteLine(root1.Dependency.IsDisposed == false);
+                                       Console.WriteLine(root1.SingleDependency.IsDisposed == false);
+                                       
+                                       root1.Dispose();
+                                       
+                                       // Checks that the disposable instances
+                                       // associated with root2 have been disposed of
+                                       Console.WriteLine(root1.Dependency.IsDisposed);
+                                       
+                                       // But the singleton is still not disposed of
+                                       Console.WriteLine(root1.SingleDependency.IsDisposed == false);
+                                       
+                                       composition.Dispose();
+                                       Console.WriteLine(root1.SingleDependency.IsDisposed);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True", "True", "True", "True", "True", "True", "True", "True"], result);
+    }
+
+    [Fact]
     public async Task ShouldSupportAccumulatorWhenForContracts()
     {
         // Given
@@ -195,126 +421,6 @@ public class AccumulatorTests
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["3", "Sample.XyzDependency", "Sample.AbcDependency", "Sample.Service"], result);
-    }
-
-    [Fact]
-    public async Task ShroedingersCatScenarioWhenAccumulator()
-    {
-        // Given
-
-        // When
-        var result = await """
-                           using System;
-                           using System.Collections.Generic;
-                           using Pure.DI;
-                           using static Pure.DI.Lifetime;
-
-                           namespace Sample
-                           {
-                               // Let's create an abstraction
-                           
-                               interface IBox<out T> { T Content { get; } }
-                           
-                               enum State { Alive, Dead }
-                           
-                               interface ICat { State State { get; } }
-                           
-                               // Here is our implementation
-                           
-                               class CardboardBox<T> : IBox<T>
-                               {
-                                   public CardboardBox(Func<(T value, Accumulator acc)> contentFactory)
-                                   {
-                                       var content = contentFactory();
-                                       foreach(var dep in content.acc.Items)
-                                       {
-                                           Console.WriteLine(dep);
-                                       }
-                                       
-                                       Console.WriteLine("CardboardBox created");
-                                       Content = content.value;
-                                   }
-                           
-                                   public T Content { get; }
-                           
-                                   public override string ToString() => $"[{Content}]";
-                               }
-                           
-                               class ShroedingersCat : ICat
-                               {
-                                   // Represents the superposition of the states
-                                   private readonly Lazy<State> _superposition;
-                           
-                                   public ShroedingersCat(Lazy<State> superposition) => _superposition = superposition;
-                           
-                                   // The decoherence of the superposition at the time of observation via an irreversible process
-                                   public State State => _superposition.Value;
-                               }
-                               
-                               class Accumulator 
-                               {
-                                   private readonly List<object> _items = new List<object>();
-                                   
-                                   public IEnumerable<object> Items =>_items.ToArray();
-                                   
-                                   public void Add(object item) => _items.Add(item);
-                               }
-                           
-                               // Let's glue all together
-                           
-                               internal partial class Composition
-                               {
-                                   void Setup()
-                                   {
-                                       // FormatCode = On
-                                       DI.Setup(nameof(Composition))
-                                           .Accumulate<object, Accumulator>(Transient)
-                                           .Accumulate<object, Accumulator>(Singleton)
-                                           // Models a random subatomic event that may or may not occur
-                                           .Bind<Random>().As(Singleton).To<Random>()
-                                           // Represents a quantum superposition of 2 states: Alive or Dead
-                                           .Bind<State>().To(ctx =>
-                                           {
-                                               ctx.Inject<Random>(out var random);
-                                               return (State)random.Next(2);
-                                           }) 
-                                           .Bind<ICat>().To<ShroedingersCat>()
-                                           // Represents a cardboard box with any content
-                                           .Bind<IBox<TT>>().To<CardboardBox<TT>>() 
-                                           // Composition Root
-                                           .Root<(Program program, Accumulator acc)>("Root");
-                                   }
-                               }
-                           
-                               public class Program
-                               {
-                                   IBox<ICat> _box;
-                           
-                                   internal Program(IBox<ICat> box) => _box = box;
-                           
-                                   public static void Main()
-                                   {
-                                       var composition = new Composition();
-                                       var root = composition.Root;
-                                       Console.WriteLine(root);
-                                       foreach(var dep in root.acc.Items)
-                                       {
-                                           Console.WriteLine(dep);
-                                       }
-                           
-                                       Console.WriteLine("Program created");
-                                   }
-                               }
-                           }
-                           """.RunAsync(new Options
-        {
-            LanguageVersion = LanguageVersion.CSharp8,
-            NullableContextOptions = NullableContextOptions.Disable
-        });
-
-        // Then
-        result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["Value is not created.", "Sample.ShroedingersCat", "(Sample.ShroedingersCat, Sample.Accumulator)", "CardboardBox created", "(Sample.Program, Sample.Accumulator)", "[Sample.ShroedingersCat]", "Sample.Program", "(Sample.Program, Sample.Accumulator)", "Program created"], result);
     }
 
     [Fact]
@@ -523,77 +629,6 @@ public class AccumulatorTests
         result.StdOut.ShouldBe(["True", "False", "True"], result);
     }
 
-    [Fact]
-    public async Task ShouldSupportOwned()
-    {
-        // Given
-
-        // When
-        var result = await """
-                               using System;
-                               using System.Collections.Generic;
-                               using Pure.DI;
-                           
-                               namespace Sample
-                               {
-                                   interface IDependency
-                                   {
-                                       bool IsDisposed { get; }
-                                   }
-                           
-                                   class Dependency : IDependency, IDisposable
-                                   {
-                                       public bool IsDisposed { get; private set; }
-                           
-                                       public void Dispose() => IsDisposed = true;
-                                   }
-                           
-                                   interface IService
-                                   {
-                                       public IDependency Dependency { get; }
-                                   }
-                           
-                                   class Service : IService
-                                   {
-                                       public Service(IDependency dependency)
-                                       {
-                                           Dependency = dependency;
-                                       }
-                                       
-                                       public IDependency Dependency { get; }
-                                   }
-                           
-                                   partial class Composition
-                                   {
-                                       void Setup() =>
-                                           DI.Setup(nameof(Composition))
-                                               .Bind<IDependency>().To<Dependency>()
-                                               .Bind<IService>().To<Service>()
-                                               .Root<(IService Service, Owned Owned)>("Root");
-                                   }
-                           
-                                   public class Program
-                                   {
-                                       public static void Main()
-                                       {
-                                           var composition = new Composition();
-                                           var root1 = composition.Root;
-                                           var root2 = composition.Root;
-                                           root2.Owned.Dispose();
-                                           Console.WriteLine(root2.Service.Dependency.IsDisposed);
-                                           Console.WriteLine(root1.Service.Dependency.IsDisposed);
-                                           root1.Owned.Dispose();
-                                           Console.WriteLine(root1.Service.Dependency.IsDisposed);
-                                       }
-                                   }
-                               }
-                           """.RunAsync();
-
-        // Then
-        result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["True", "False", "True"], result);
-    }
-
 #if ROSLYN4_8_OR_GREATER
     [Fact]
     public async Task ShouldSupportMultipleLifetimesAsArray()
@@ -690,122 +725,80 @@ public class AccumulatorTests
         result.StdOut.ShouldBe(["3", "Sample.XyzDependency", "Sample.AbcDependency", "Sample.Service"]);
     }
 #endif
-    
+
     [Fact]
-    public async Task ShouldSupportAccumulatorWhenDifferentLifetimes()
+    public async Task ShouldSupportOwned()
     {
         // Given
 
         // When
         var result = await """
-                           using System;
-                           using System.Collections.Generic;
-                           using Pure.DI;
-
-                           namespace Sample
-                           {
-                               interface IDependency
-                               {
-                                   bool IsDisposed { get; }
-                               }
-                               
-                               class Dependency : IDependency, IDisposable
-                               {
-                                   public bool IsDisposed { get; private set; }
-                               
-                                   public void Dispose() => IsDisposed = true;
-                               }
-                               
-                               interface IService
-                               {
-                                   public IDependency Dependency { get; }
-                                   
-                                   public IDependency SingleDependency { get; }
-                               }
-                               
-                               class Service : IService, IDisposable
-                               {
-                                   private readonly Owned<IDependency> _dependency;
-                                   private readonly Owned<IDependency> _singleDependency;
-                               
-                                   public Service(
-                                       Func<Owned<IDependency>> dependencyFactory,
-                                       [Tag("single")] Owned<IDependency> singleDependency)
-                                   {
-                                       _singleDependency = singleDependency;
-                                       _dependency = dependencyFactory();
-                                   }
-                               
-                                   public IDependency Dependency => _dependency.Value;
-                               
-                                   public IDependency SingleDependency => _singleDependency.Value;
-                               
-                                   public void Dispose()
-                                   {
-                                       _dependency.Dispose();
-                                       _singleDependency.Dispose();
-                                   }
-                               }
-                               
-                               partial class Composition
-                               {
-                                   static void Setup() =>
-                                       DI.Setup()
-                                           .Bind().To<Dependency>()
-                                           .Bind("single").As(Lifetime.Singleton).To<Dependency>()
-                                           .Bind().To<Service>()
-                               
-                                           // Composition root
-                                           .Root<Service>("Root");
-                               }
+                               using System;
+                               using System.Collections.Generic;
+                               using Pure.DI;
                            
-                               public class Program
+                               namespace Sample
                                {
-                                   public static void Main()
+                                   interface IDependency
                                    {
-                                       var composition = new Composition();
-                                       var root1 = composition.Root;
-                                       var root2 = composition.Root;
-                                       Console.WriteLine(root1.Dependency != root2.Dependency);
-                                       Console.WriteLine(root1.SingleDependency == root2.SingleDependency);
+                                       bool IsDisposed { get; }
+                                   }
+                           
+                                   class Dependency : IDependency, IDisposable
+                                   {
+                                       public bool IsDisposed { get; private set; }
+                           
+                                       public void Dispose() => IsDisposed = true;
+                                   }
+                           
+                                   interface IService
+                                   {
+                                       public IDependency Dependency { get; }
+                                   }
+                           
+                                   class Service : IService
+                                   {
+                                       public Service(IDependency dependency)
+                                       {
+                                           Dependency = dependency;
+                                       }
                                        
-                                       root2.Dispose();
-                                       
-                                       // Checks that the disposable instances
-                                       // associated with root1 have been disposed of
-                                       Console.WriteLine(root2.Dependency.IsDisposed);
-                                       
-                                       // But the singleton is still not disposed of
-                                       Console.WriteLine(root2.SingleDependency.IsDisposed == false);
-                                       
-                                       // Checks that the disposable instances
-                                       // associated with root2 have not been disposed of
-                                       Console.WriteLine(root1.Dependency.IsDisposed == false);
-                                       Console.WriteLine(root1.SingleDependency.IsDisposed == false);
-                                       
-                                       root1.Dispose();
-                                       
-                                       // Checks that the disposable instances
-                                       // associated with root2 have been disposed of
-                                       Console.WriteLine(root1.Dependency.IsDisposed);
-                                       
-                                       // But the singleton is still not disposed of
-                                       Console.WriteLine(root1.SingleDependency.IsDisposed == false);
-                                       
-                                       composition.Dispose();
-                                       Console.WriteLine(root1.SingleDependency.IsDisposed);
+                                       public IDependency Dependency { get; }
+                                   }
+                           
+                                   partial class Composition
+                                   {
+                                       void Setup() =>
+                                           DI.Setup(nameof(Composition))
+                                               .Bind<IDependency>().To<Dependency>()
+                                               .Bind<IService>().To<Service>()
+                                               .Root<(IService Service, Owned Owned)>("Root");
+                                   }
+                           
+                                   public class Program
+                                   {
+                                       public static void Main()
+                                       {
+                                           var composition = new Composition();
+                                           var root1 = composition.Root;
+                                           var root2 = composition.Root;
+                                           root2.Owned.Dispose();
+                                           Console.WriteLine(root2.Service.Dependency.IsDisposed);
+                                           Console.WriteLine(root1.Service.Dependency.IsDisposed);
+                                           root1.Owned.Dispose();
+                                           Console.WriteLine(root1.Service.Dependency.IsDisposed);
+                                       }
                                    }
                                }
-                           }
                            """.RunAsync();
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["True", "True", "True", "True", "True", "True", "True", "True", "True"], result);
+        result.StdOut.ShouldBe(["True", "False", "True"], result);
     }
-    
+
     [Fact]
-    public async Task ShouldSupportAccumulatorWhenDifferentLifetimes2()
+    public async Task ShroedingersCatScenarioWhenAccumulator()
     {
         // Given
 
@@ -814,106 +807,113 @@ public class AccumulatorTests
                            using System;
                            using System.Collections.Generic;
                            using Pure.DI;
+                           using static Pure.DI.Lifetime;
 
                            namespace Sample
                            {
-                               interface IDependency
+                               // Let's create an abstraction
+                           
+                               interface IBox<out T> { T Content { get; } }
+                           
+                               enum State { Alive, Dead }
+                           
+                               interface ICat { State State { get; } }
+                           
+                               // Here is our implementation
+                           
+                               class CardboardBox<T> : IBox<T>
                                {
-                                   bool IsDisposed { get; }
+                                   public CardboardBox(Func<(T value, Accumulator acc)> contentFactory)
+                                   {
+                                       var content = contentFactory();
+                                       foreach(var dep in content.acc.Items)
+                                       {
+                                           Console.WriteLine(dep);
+                                       }
+                                       
+                                       Console.WriteLine("CardboardBox created");
+                                       Content = content.value;
+                                   }
+                           
+                                   public T Content { get; }
+                           
+                                   public override string ToString() => $"[{Content}]";
+                               }
+                           
+                               class ShroedingersCat : ICat
+                               {
+                                   // Represents the superposition of the states
+                                   private readonly Lazy<State> _superposition;
+                           
+                                   public ShroedingersCat(Lazy<State> superposition) => _superposition = superposition;
+                           
+                                   // The decoherence of the superposition at the time of observation via an irreversible process
+                                   public State State => _superposition.Value;
                                }
                                
-                               class Dependency : IDependency, IDisposable
+                               class Accumulator 
                                {
-                                   public bool IsDisposed { get; private set; }
-                               
-                                   public void Dispose() => IsDisposed = true;
-                               }
-                               
-                               interface IService
-                               {
-                                   public IDependency Dependency { get; }
+                                   private readonly List<object> _items = new List<object>();
                                    
-                                   public IDependency SingleDependency { get; }
+                                   public IEnumerable<object> Items =>_items.ToArray();
+                                   
+                                   public void Add(object item) => _items.Add(item);
                                }
-                               
-                               class Service : IService, IDisposable
+                           
+                               // Let's glue all together
+                           
+                               internal partial class Composition
                                {
-                                   private readonly Owned<IDependency> _dependency;
-                                   private readonly Owned<IDependency> _singleDependency;
-                               
-                                   public Service(
-                                       Func<Owned<IDependency>> dependencyFactory,
-                                       [Tag("single")] Func<Owned<IDependency>> singleDependencyFactory)
+                                   void Setup()
                                    {
-                                       _singleDependency = singleDependencyFactory();
-                                       _dependency = dependencyFactory();
+                                       // FormatCode = On
+                                       DI.Setup(nameof(Composition))
+                                           .Accumulate<object, Accumulator>(Transient)
+                                           .Accumulate<object, Accumulator>(Singleton)
+                                           // Models a random subatomic event that may or may not occur
+                                           .Bind<Random>().As(Singleton).To<Random>()
+                                           // Represents a quantum superposition of 2 states: Alive or Dead
+                                           .Bind<State>().To(ctx =>
+                                           {
+                                               ctx.Inject<Random>(out var random);
+                                               return (State)random.Next(2);
+                                           }) 
+                                           .Bind<ICat>().To<ShroedingersCat>()
+                                           // Represents a cardboard box with any content
+                                           .Bind<IBox<TT>>().To<CardboardBox<TT>>() 
+                                           // Composition Root
+                                           .Root<(Program program, Accumulator acc)>("Root");
                                    }
-                               
-                                   public IDependency Dependency => _dependency.Value;
-                               
-                                   public IDependency SingleDependency => _singleDependency.Value;
-                               
-                                   public void Dispose()
-                                   {
-                                       _dependency.Dispose();
-                                       _singleDependency.Dispose();
-                                   }
-                               }
-                               
-                               partial class Composition
-                               {
-                                   static void Setup() =>
-                                       DI.Setup()
-                                           .Bind().To<Dependency>()
-                                           .Bind("single").As(Lifetime.Singleton).To<Dependency>()
-                                           .Bind().To<Service>()
-                               
-                                           // Composition root
-                                           .Root<Service>("Root");
                                }
                            
                                public class Program
                                {
+                                   IBox<ICat> _box;
+                           
+                                   internal Program(IBox<ICat> box) => _box = box;
+                           
                                    public static void Main()
                                    {
                                        var composition = new Composition();
-                                       var root1 = composition.Root;
-                                       var root2 = composition.Root;
-                                       Console.WriteLine(root1.Dependency != root2.Dependency);
-                                       Console.WriteLine(root1.SingleDependency == root2.SingleDependency);
-                                       
-                                       root2.Dispose();
-                                       
-                                       // Checks that the disposable instances
-                                       // associated with root1 have been disposed of
-                                       Console.WriteLine(root2.Dependency.IsDisposed);
-                                       
-                                       // But the singleton is still not disposed of
-                                       Console.WriteLine(root2.SingleDependency.IsDisposed == false);
-                                       
-                                       // Checks that the disposable instances
-                                       // associated with root2 have not been disposed of
-                                       Console.WriteLine(root1.Dependency.IsDisposed == false);
-                                       Console.WriteLine(root1.SingleDependency.IsDisposed == false);
-                                       
-                                       root1.Dispose();
-                                       
-                                       // Checks that the disposable instances
-                                       // associated with root2 have been disposed of
-                                       Console.WriteLine(root1.Dependency.IsDisposed);
-                                       
-                                       // But the singleton is still not disposed of
-                                       Console.WriteLine(root1.SingleDependency.IsDisposed == false);
-                                       
-                                       composition.Dispose();
-                                       Console.WriteLine(root1.SingleDependency.IsDisposed);
+                                       var root = composition.Root;
+                                       Console.WriteLine(root);
+                                       foreach(var dep in root.acc.Items)
+                                       {
+                                           Console.WriteLine(dep);
+                                       }
+                           
+                                       Console.WriteLine("Program created");
                                    }
                                }
                            }
-                           """.RunAsync();
+                           """.RunAsync(new Options
+        {
+            LanguageVersion = LanguageVersion.CSharp8,
+            NullableContextOptions = NullableContextOptions.Disable
+        });
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["True", "True", "True", "True", "True", "True", "True", "True", "True"], result);
+        result.StdOut.ShouldBe(["Value is not created.", "Sample.ShroedingersCat", "(Sample.ShroedingersCat, Sample.Accumulator)", "CardboardBox created", "(Sample.Program, Sample.Accumulator)", "[Sample.ShroedingersCat]", "Sample.Program", "(Sample.Program, Sample.Accumulator)", "Program created"], result);
     }
 }

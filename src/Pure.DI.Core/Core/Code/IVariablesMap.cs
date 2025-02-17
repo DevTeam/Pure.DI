@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core.Code;
 
-internal interface IVariablesMap: IDictionary<MdBinding, Variable>
+interface IVariablesMap : IDictionary<MdBinding, Variable>
 {
     bool IsThreadSafe { get; }
 

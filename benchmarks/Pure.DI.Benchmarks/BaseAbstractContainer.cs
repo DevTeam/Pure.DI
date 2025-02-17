@@ -2,7 +2,7 @@
 
 using Model;
 
-internal abstract class BaseAbstractContainer<TActualContainer> : IAbstractContainer<TActualContainer>
+abstract class BaseAbstractContainer<TActualContainer> : IAbstractContainer<TActualContainer>
 {
     public TActualContainer? TryCreate()
     {
@@ -16,15 +16,15 @@ internal abstract class BaseAbstractContainer<TActualContainer> : IAbstractConta
         }
     }
 
-    public abstract TActualContainer CreateContainer();
-
     public abstract IAbstractContainer<TActualContainer> Bind(
         Type contractType,
         Type implementationType,
         AbstractLifetime lifetime = AbstractLifetime.Transient,
         string? name = null);
 
-    public abstract T Resolve<T>() where T : class;
-
     public abstract void Dispose();
+
+    public abstract TActualContainer CreateContainer();
+
+    public abstract T Resolve<T>() where T : class;
 }

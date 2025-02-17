@@ -1,6 +1,6 @@
 namespace Pure.DI.Core.Code;
 
-internal static class VarExtensions
+static class VarExtensions
 {
     public static IEnumerable<IStatement> GetPath(this IStatement statement)
     {

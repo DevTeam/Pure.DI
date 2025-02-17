@@ -4,7 +4,7 @@ namespace Build;
 
 using Benchmarks;
 
-internal class PerformanceTestsTarget(
+class PerformanceTestsTarget(
     Settings settings,
     Commands commands,
     Env env,
@@ -46,7 +46,7 @@ internal class PerformanceTestsTarget(
             foreach (var reportName in fileSystem.EnumerateFiles(tempDirectory, "*.json", SearchOption.AllDirectories))
             {
                 await using var benchmarksJsonStream = fileSystem.OpenRead(reportName);
-                if (json.TryDeserialize<BenchmarksDto>(benchmarksJsonStream) is { } dto)
+                if (json.TryDeserialize<BenchmarksDto>(benchmarksJsonStream) is {} dto)
                 {
                     benchmarks.AddRange(dto.Benchmarks);
                 }

@@ -1,6 +1,6 @@
 namespace Pure.DI.Core.Models;
 
-internal record DpArg(
+record DpArg(
     in MdArg Source,
     in MdBinding Binding)
 {

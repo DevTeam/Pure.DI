@@ -6,7 +6,7 @@ namespace Pure.DI.Core;
 
 using System.IO.Compression;
 
-internal sealed class MermaidUrlBuilder : IBuilder<IEnumerable<string>, Uri>
+sealed class MermaidUrlBuilder : IBuilder<IEnumerable<string>, Uri>
 {
     public Uri Build(IEnumerable<string> lines)
     {

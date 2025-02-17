@@ -1,6 +1,6 @@
 ﻿namespace OtherAssembly;
 
-internal class MyDependency : IMyDependency
+class MyDependency : IMyDependency
 {
     public void DoSomething()
     {

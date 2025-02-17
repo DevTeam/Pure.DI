@@ -6,16 +6,16 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
-        <InternalsVisibleTo Include="Clock.Tests" />
-        <InternalsVisibleTo Include="WpfAppNetCore" />
-        <InternalsVisibleTo Include="WinFormsApp" />
-        <InternalsVisibleTo Include="WinFormsAppNetCore" />
-        <InternalsVisibleTo Include="AvaloniaApp" />
-        <InternalsVisibleTo Include="SingleRootAvaloniaApp" />
-        <InternalsVisibleTo Include="BlazorWebAssemblyApp" />
-        <InternalsVisibleTo Include="BlazorServerApp" />
-        <InternalsVisibleTo Include="MAUIApp" />
+        <InternalsVisibleTo Include="DynamicProxyGenAssembly2"/>
+        <InternalsVisibleTo Include="Clock.Tests"/>
+        <InternalsVisibleTo Include="WpfAppNetCore"/>
+        <InternalsVisibleTo Include="WinFormsApp"/>
+        <InternalsVisibleTo Include="WinFormsAppNetCore"/>
+        <InternalsVisibleTo Include="AvaloniaApp"/>
+        <InternalsVisibleTo Include="SingleRootAvaloniaApp"/>
+        <InternalsVisibleTo Include="BlazorWebAssemblyApp"/>
+        <InternalsVisibleTo Include="BlazorServerApp"/>
+        <InternalsVisibleTo Include="MAUIApp"/>
     </ItemGroup>
 
 </Project>

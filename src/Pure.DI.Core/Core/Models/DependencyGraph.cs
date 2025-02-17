@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core.Models;
 
-internal record DependencyGraph(
+record DependencyGraph(
     bool IsResolved,
     in MdSetup Source,
     IGraph<DependencyNode, Dependency> Graph,

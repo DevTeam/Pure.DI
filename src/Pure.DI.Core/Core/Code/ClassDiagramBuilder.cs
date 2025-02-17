@@ -4,7 +4,7 @@
 
 namespace Pure.DI.Core.Code;
 
-internal sealed class ClassDiagramBuilder(
+sealed class ClassDiagramBuilder(
     IBuilder<ContractsBuildContext, ISet<Injection>> injectionsBuilder,
     IMarker marker,
     ITypeResolver typeResolver,
@@ -60,7 +60,7 @@ internal sealed class ClassDiagramBuilder(
             {
                 compositionLines.AppendLine($"class {composition.Source.Source.Name.ClassName}");
             }
-            
+
             var compositionClass = new Class(composition.Source.Source.Name.Namespace, composition.Source.Source.Name.ClassName, "", null, compositionLines);
             classes.Add(compositionClass);
 
@@ -133,7 +133,7 @@ internal sealed class ClassDiagramBuilder(
                         classes.Add(new Class(dependency.Target.Type.ContainingNamespace?.ToDisplayString() ?? "", targetType, "", dependency.Target.Type, new LinesBuilder()));
                     }
 
-                    if (dependency.Source.Arg is { } arg)
+                    if (dependency.Source.Arg is {} arg)
                     {
                         if (arg.Source.IsBuildUpInstance)
                         {
@@ -165,7 +165,7 @@ internal sealed class ClassDiagramBuilder(
                     lines.AppendLine($"namespace {actualNamespace} {{");
                     lines.IncIndent();
                 }
-                
+
                 foreach (var cls in classByNamespace.GroupBy(i => i.Name).Select(i => i.First()).OrderBy(i => i.Name))
                 {
                     var classLines = cls.Lines;
@@ -417,7 +417,7 @@ internal sealed class ClassDiagramBuilder(
                 {
                     typeKind = "record";
                 }
-                
+
                 if (Type is IArrayTypeSymbol)
                 {
                     typeKind = "array";

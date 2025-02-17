@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core;
 
-internal interface IVariablesWalker
+interface IVariablesWalker
 {
     IVariablesWalker Initialize(ICollection<Variable> variables);
 

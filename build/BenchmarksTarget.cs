@@ -2,7 +2,7 @@
 
 namespace Build;
 
-internal class BenchmarksTarget(
+class BenchmarksTarget(
     Settings settings,
     Commands commands,
     Env env,

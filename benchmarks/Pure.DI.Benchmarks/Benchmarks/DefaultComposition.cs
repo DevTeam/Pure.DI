@@ -3,7 +3,7 @@
 // ReSharper disable ArrangeTypeMemberModifiers
 namespace Pure.DI.Benchmarks.Benchmarks;
 
-internal class DefaultComposition
+class DefaultComposition
 {
     static void Setup() =>
         DI.Setup("Default", CompositionKind.Global)

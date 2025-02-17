@@ -1,6 +1,6 @@
 namespace Pure.DI.Core;
 
-internal interface IGeneratorDiagnostic
+interface IGeneratorDiagnostic
 {
     public void ReportDiagnostic(Diagnostic diagnostic);
 }

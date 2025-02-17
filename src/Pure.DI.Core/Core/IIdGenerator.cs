@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core;
 
-internal interface IIdGenerator
+interface IIdGenerator
 {
     int Generate();
 }

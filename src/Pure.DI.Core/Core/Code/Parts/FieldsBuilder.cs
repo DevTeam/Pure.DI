@@ -3,7 +3,7 @@
 
 namespace Pure.DI.Core.Code.Parts;
 
-internal sealed class FieldsBuilder(
+sealed class FieldsBuilder(
     ITypeResolver typeResolver,
     ILocks locks)
     : IClassPartBuilder

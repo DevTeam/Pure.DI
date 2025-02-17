@@ -3,7 +3,7 @@
 
 namespace Pure.DI.Core.Code;
 
-internal sealed class UsingDeclarationsBuilder : IBuilder<CompositionCode, CompositionCode>
+sealed class UsingDeclarationsBuilder : IBuilder<CompositionCode, CompositionCode>
 {
     public CompositionCode Build(CompositionCode composition)
     {

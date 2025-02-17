@@ -2,7 +2,7 @@ namespace Pure.DI.Core;
 
 using System.Collections.Concurrent;
 
-internal sealed class Hints : ConcurrentDictionary<Hint, LinkedList<string>>, IHints
+sealed class Hints : ConcurrentDictionary<Hint, LinkedList<string>>, IHints
 {
     public bool IsCommentsEnabled =>
         IsEnabled(Hint.Comments, SettingState.On);
@@ -43,7 +43,7 @@ internal sealed class Hints : ConcurrentDictionary<Hint, LinkedList<string>>, IH
     public bool IsResolveEnabled =>
         IsEnabled(Hint.Resolve, SettingState.On);
 
-    public bool IsSystemThreadingLockEnabled => 
+    public bool IsSystemThreadingLockEnabled =>
         IsEnabled(Hint.SystemThreadingLock, SettingState.On);
 
     public string ResolveMethodName =>

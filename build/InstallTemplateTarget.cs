@@ -3,7 +3,7 @@
 
 namespace Build;
 
-internal class InstallTemplateTarget(
+class InstallTemplateTarget(
     Commands commands,
     [Tag(typeof(TemplateTarget))] ITarget<Package> templateTarget)
     : IInitializable, ITarget<Package>

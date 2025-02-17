@@ -4,7 +4,7 @@ namespace Pure.DI.Core;
 
 using Microsoft.CodeAnalysis.Operations;
 
-internal sealed class Semantic(
+sealed class Semantic(
     IInjectionSiteFactory injectionSiteFactory,
     IWildcardMatcher wildcardMatcher,
     ITypes types,
@@ -117,7 +117,7 @@ internal sealed class Semantic(
 
                 break;
             }
-            
+
             case IdentifierNameSyntax identifierNameSyntax when typeof(T) == typeof(object):
                 return identifierNameSyntax.Identifier.Text switch
                 {
@@ -145,8 +145,8 @@ internal sealed class Semantic(
                         // ReSharper disable once HeuristicUnreachableCode
                         break;
 
-                    case MemberAccessExpressionSyntax { Name: GenericNameSyntax { TypeArgumentList.Arguments: [{ } typeArg] }, Name.Identifier.Text: nameof(Tag.OnConstructorArg), Expression: IdentifierNameSyntax { Identifier.Text: nameof(Tag) } }:
-                        if (invocationExpressionSyntax.ArgumentList.Arguments is [{ } ctorArgName])
+                    case MemberAccessExpressionSyntax { Name: GenericNameSyntax { TypeArgumentList.Arguments: [{} typeArg] }, Name.Identifier.Text: nameof(Tag.OnConstructorArg), Expression: IdentifierNameSyntax { Identifier.Text: nameof(Tag) } }:
+                        if (invocationExpressionSyntax.ArgumentList.Arguments is [{} ctorArgName])
                         {
                             var name = GetRequiredConstantValue<string>(semanticModel, ctorArgName.Expression);
                             var ctor = GetTypeSymbol<ITypeSymbol>(semanticModel, typeArg)
@@ -168,8 +168,8 @@ internal sealed class Semantic(
 
                         break;
 
-                    case MemberAccessExpressionSyntax { Name: GenericNameSyntax { TypeArgumentList.Arguments: [{ } typeArg] }, Name.Identifier.Text: nameof(Tag.OnMethodArg), Expression: IdentifierNameSyntax { Identifier.Text: nameof(Tag) } }:
-                        if (invocationExpressionSyntax.ArgumentList.Arguments is [{ } methodNameArg, { } methodArgName])
+                    case MemberAccessExpressionSyntax { Name: GenericNameSyntax { TypeArgumentList.Arguments: [{} typeArg] }, Name.Identifier.Text: nameof(Tag.OnMethodArg), Expression: IdentifierNameSyntax { Identifier.Text: nameof(Tag) } }:
+                        if (invocationExpressionSyntax.ArgumentList.Arguments is [{} methodNameArg, {} methodArgName])
                         {
                             var methodName = GetRequiredConstantValue<string>(semanticModel, methodNameArg.Expression);
                             var methodArg = GetRequiredConstantValue<string>(semanticModel, methodArgName.Expression);
@@ -193,8 +193,8 @@ internal sealed class Semantic(
 
                         break;
 
-                    case MemberAccessExpressionSyntax { Name: GenericNameSyntax { TypeArgumentList.Arguments: [{ } typeArg] }, Name.Identifier.Text: nameof(Tag.OnMember), Expression: IdentifierNameSyntax { Identifier.Text: nameof(Tag) } }:
-                        if (invocationExpressionSyntax.ArgumentList.Arguments is [{ } memberNameArg])
+                    case MemberAccessExpressionSyntax { Name: GenericNameSyntax { TypeArgumentList.Arguments: [{} typeArg] }, Name.Identifier.Text: nameof(Tag.OnMember), Expression: IdentifierNameSyntax { Identifier.Text: nameof(Tag) } }:
+                        if (invocationExpressionSyntax.ArgumentList.Arguments is [{} memberNameArg])
                         {
                             var name = GetRequiredConstantValue<string>(semanticModel, memberNameArg.Expression);
                             var type = GetTypeSymbol<ITypeSymbol>(semanticModel, typeArg);
@@ -241,10 +241,10 @@ internal sealed class Semantic(
         throw new CompileErrorException($"{node} must be a constant value of type {typeof(T)} or a special API call.", node.GetLocation(), LogId.ErrorInvalidMetadata);
     }
 
-    private bool IsSpecialType(SemanticModel semanticModel, SyntaxNode node, SpecialType specialType) =>
-        semanticModel.GetTypeInfo(node).Type is { } type
-        && types.TypeEquals(type, types.TryGet(specialType, semanticModel.Compilation));
-
-    public bool IsValidNamespace(INamespaceSymbol? namespaceSymbol) => 
+    public bool IsValidNamespace(INamespaceSymbol? namespaceSymbol) =>
         namespaceSymbol is { IsImplicitlyDeclared: false };
+
+    private bool IsSpecialType(SemanticModel semanticModel, SyntaxNode node, SpecialType specialType) =>
+        semanticModel.GetTypeInfo(node).Type is {} type
+        && types.TypeEquals(type, types.TryGet(specialType, semanticModel.Compilation));
 }

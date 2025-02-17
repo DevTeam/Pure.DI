@@ -4,7 +4,7 @@
 
 namespace Pure.DI.Core.Code;
 
-internal sealed class VariableCodeBuilder(
+sealed class VariableCodeBuilder(
     ICodeBuilder<DpImplementation> implementationBuilder,
     ICodeBuilder<DpFactory> factoryBuilder,
     ICodeBuilder<DpConstruct> constructBuilder)

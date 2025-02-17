@@ -6,658 +6,6 @@ using Core.Models;
 
 public class GraphTests
 {
-    [Fact]
-    public async Task ShouldSupportBindToImplementation()
-    {
-        // Given
-
-        // When
-        var result = await """
-                           namespace Sample
-                           {
-                               using System;
-                               using Pure.DI;
-                               using Sample;
-                           
-                               internal interface IService
-                               {
-                               }
-                           
-                               internal interface IDependency
-                               {
-                               }
-                           
-                               internal class Service : IService
-                               {
-                                   internal Service(IDependency dependency)
-                                   {
-                                   }
-                               }
-                           
-                               internal class Dependency : IDependency
-                               {
-                                   public Dependency() {}
-                               }
-                           
-                               internal partial class Composition
-                               {                   
-                                   void Setup() => Pure.DI.DI.Setup("Composition")
-                                       .Bind<IDependency>().To<Dependency>()
-                                       .Bind<IService>().To<Service>().Root<IService>(); 
-                               }       
-                           
-                               public class Program { public static void Main() { } }
-                           }
-                           """.RunAsync();
-
-        // Then
-        result.Success.ShouldBeTrue(result);
-        var graphs = GetGraphs(result);
-        graphs.Length.ShouldBe(1, result);
-        graphs[0].ConvertToString().ShouldBe("""
-                                             Sample.IService() 
-                                               +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
-                                             Dependency()
-                                             Service(Sample.IDependency dependency<--Sample.IDependency))
-                                               +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency()]
-                                             """.Replace("\r", ""));
-    }
-
-    [Fact]
-    public async Task ShouldSupportBindToImplementationWhenHasNoRoot()
-    {
-        // Given
-
-        // When
-        var result = await """
-                           namespace Sample
-                           {
-                               using System;
-                               using Pure.DI;
-                               using Sample;
-                           
-                               internal interface IService
-                               {
-                               }
-                           
-                               internal interface IDependency
-                               {
-                               }
-                           
-                               internal class Service : IService
-                               {
-                                   internal Service(IDependency dependency)
-                                   {
-                                   }
-                               }
-                           
-                               internal class Dependency : IDependency
-                               {
-                                   public Dependency() {}
-                               }
-                           
-                               internal partial class Composition
-                               {                   
-                                   void Setup() => Pure.DI.DI.Setup("Composition")
-                                       .Bind<IDependency>().To<Dependency>()
-                                       .Bind<IService>().To<Service>(); 
-                               }       
-                           
-                               public class Program { public static void Main() { } }
-                           }
-                           """.RunAsync();
-
-        // Then
-        result.Success.ShouldBeFalse(result);
-        result.Errors.Count.ShouldBe(0);
-        var graphs = GetGraphs(result);
-        graphs.Length.ShouldBe(1, result);
-        graphs[0].ConvertToString().ShouldBe("");
-    }
-
-    [Fact]
-    public async Task ShouldSupportRoot()
-    {
-        // Given
-
-        // When
-        var result = await """
-                           namespace Sample
-                           {
-                               using System;
-                               using Pure.DI;
-                               using Sample;
-                           
-                               internal interface IService
-                               {
-                               }
-                           
-                               internal interface IDependency
-                               {
-                               }
-                           
-                               internal class Service : IService
-                               {
-                                   internal Service(IDependency dependency)
-                                   {
-                                   }
-                               }
-                           
-                               internal class Dependency : IDependency
-                               {
-                                   public Dependency() {}
-                               }
-                           
-                               internal partial class Composition
-                               {                   
-                                   void Setup() => Pure.DI.DI.Setup("Composition")
-                                       .Bind<IDependency>().To<Dependency>()
-                                       .Bind<IService>().To<Service>()
-                                       .Root<IService>("MyService"); 
-                               }       
-                           
-                               public class Program { public static void Main() { } }
-                           }
-                           """.RunAsync();
-
-        // Then
-        result.Success.ShouldBeTrue(result);
-        var graphs = GetGraphs(result);
-        graphs.Length.ShouldBe(1, result);
-        graphs[0].ConvertToString().ShouldBe("""
-                                             Sample.IService() MyService
-                                               +[Sample.IService() MyService]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
-                                             Dependency()
-                                             Service(Sample.IDependency dependency<--Sample.IDependency))
-                                               +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency()]
-                                             """.Replace("\r", ""));
-    }
-
-    [Fact]
-    public async Task ShouldSupportBindToImplementationWhenSeveralConstructors()
-    {
-        // Given
-
-        // When
-        var result = await """
-                           namespace Sample
-                           {
-                               using System;
-                               using Pure.DI;
-                               using Sample;
-                           
-                               internal interface IService
-                               {
-                               }
-                           
-                               internal interface IDependency
-                               {
-                               }
-                           
-                               internal class Service : IService
-                               {
-                                   internal Service(IDependency dependency)
-                                   {
-                                   }
-                           
-                                   public Service()
-                                   {
-                                   }
-                               }
-                           
-                               internal class Dependency : IDependency
-                               {
-                                   public Dependency() {}
-                           
-                                   public Dependency(int val) {}
-                               }
-                           
-                               internal partial class Composition
-                               {                   
-                                   void Setup() => Pure.DI.DI.Setup("Composition")
-                                       .Bind<IDependency>().To<Dependency>()
-                                       .Bind<IService>().To<Service>().Root<IService>(); 
-                               }       
-                           
-                               public class Program { public static void Main() { } }
-                           }
-                           """.RunAsync();
-
-        // Then
-        result.Success.ShouldBeTrue(result);
-        var graphs = GetGraphs(result);
-        graphs.Length.ShouldBe(1, result);
-        graphs[0].ConvertToString().ShouldBe("""
-                                             Sample.IService() 
-                                               +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
-                                             Dependency()
-                                             Service(Sample.IDependency dependency<--Sample.IDependency))
-                                               +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency()]
-                                             """.Replace("\r", ""));
-    }
-
-    [Fact]
-    public async Task ShouldSupportBindToFactory()
-    {
-        // Given
-
-        // When
-        var result = await """
-                           namespace Sample
-                           {
-                               using System;
-                               using Pure.DI;
-                               using Sample;
-                           
-                               internal interface IService
-                               {
-                               }
-                           
-                               internal interface IDependency
-                               {
-                               }
-                           
-                               internal class Service : IService
-                               {
-                                   internal Service(IDependency dependency)
-                                   {
-                                   }
-                               }
-                           
-                               internal class Dependency : IDependency
-                               {
-                                   public Dependency() {}
-                               }
-                           
-                               internal partial class Composition
-                               {                   
-                                   void Setup() => Pure.DI.DI.Setup("Composition")
-                                       .Bind<IDependency>().To(_ => new Dependency())
-                                       .Bind<IService>().To<Service>().Root<IService>(); 
-                               }       
-                           
-                               public class Program { public static void Main() { } }
-                           }
-                           """.RunAsync();
-
-        // Then
-        result.Success.ShouldBeTrue(result);
-        var graphs = GetGraphs(result);
-        graphs.Length.ShouldBe(1, result);
-        graphs[0].ConvertToString().ShouldBe("""
-                                             Sample.IService() 
-                                               +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
-                                             new Dependency()
-                                             Service(Sample.IDependency dependency<--Sample.IDependency))
-                                               +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[new Dependency()]
-                                             """.Replace("\r", ""));
-    }
-
-    [Fact]
-    public async Task ShouldSupportBindToArg()
-    {
-        // Given
-
-        // When
-        var result = await """
-                           namespace Sample
-                           {
-                               using System;
-                               using Pure.DI;
-                               using Sample;
-                           
-                               internal interface IService
-                               {
-                               }
-                           
-                               internal interface IDependency
-                               {
-                               }
-                           
-                               internal class Service : IService
-                               {
-                                   internal Service(IDependency dependency)
-                                   {
-                                   }
-                               }
-                           
-                               internal class Dependency : IDependency
-                               {
-                                   public Dependency() {}
-                               }
-                           
-                               internal partial class Composition
-                               {                   
-                                   void Setup() => Pure.DI.DI.Setup("Composition")
-                                       .Arg<IDependency>("dep")
-                                       .Bind<IService>().To<Service>().Root<IService>(); 
-                               }
-                           
-                               public class Program { public static void Main() { } }       
-                           }
-                           """.RunAsync();
-
-        // Then
-        result.Success.ShouldBeTrue(result);
-        var graphs = GetGraphs(result);
-        graphs.Length.ShouldBe(1, result);
-        graphs[0].ConvertToString().ShouldBe("""
-                                             Sample.IService() 
-                                               +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
-                                             Sample.IDependency dep
-                                             Service(Sample.IDependency dependency<--Sample.IDependency))
-                                               +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Sample.IDependency dep]
-                                             """.Replace("\r", ""));
-    }
-
-    [Fact]
-    public async Task ShouldSupportSeparatedSetup()
-    {
-        // Given
-
-        // When
-        var result = await """
-                           namespace Sample
-                           {
-                               using System;
-                               using Pure.DI;
-                               using Sample;
-                           
-                               internal interface IService
-                               {
-                               }
-                           
-                               internal interface IDependency
-                               {
-                               }
-                           
-                               internal class Service : IService
-                               {
-                                   internal Service(IDependency dependency)
-                                   {
-                                   }
-                               }
-                           
-                               internal class Dependency : IDependency
-                               {
-                                   public Dependency() {}
-                               }
-                           
-                               internal partial class Composition
-                               {                   
-                                   void Setup()
-                                   {
-                                        Pure.DI.DI.Setup("Composition")
-                                          .Bind<IDependency>().To<Dependency>();
-                           
-                                       Pure.DI.DI.Setup("Composition")
-                                           .Bind<IService>().To<Service>().Root<IService>();
-                                   }  
-                               }       
-                           
-                               public class Program { public static void Main() { } }
-                           }
-                           """.RunAsync();
-
-        // Then
-        result.Success.ShouldBeTrue(result);
-        var graphs = GetGraphs(result);
-        graphs.Length.ShouldBe(1, result);
-        graphs[0].ConvertToString().ShouldBe("""
-                                             Sample.IService() 
-                                               +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
-                                             Dependency()
-                                             Service(Sample.IDependency dependency<--Sample.IDependency))
-                                               +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency()]
-                                             """.Replace("\r", ""));
-    }
-
-    [Fact]
-    public async Task ShouldSupportUnresolvedDependency()
-    {
-        // Given
-
-        // When
-        var result = await """
-                           namespace Sample
-                           {
-                               using System;
-                               using Pure.DI;
-                               using Sample;
-                           
-                               internal interface IService
-                               {
-                               }
-                           
-                               internal interface IDependency
-                               {
-                               }
-                           
-                               internal class Service : IService
-                               {
-                                   internal Service(IDependency dependency)
-                                   {
-                                   }
-                               }
-                           
-                               internal class Dependency : IDependency
-                               {
-                                   public Dependency(int id, string abc) {}
-                               }
-                           
-                               internal partial class Composition
-                               {                   
-                                   void Setup() => Pure.DI.DI.Setup("Composition")
-                                       .Bind<int>().To(_ => 99)
-                                       .Bind<IDependency>().To<Dependency>()
-                                       .Bind<IService>().To<Service>().Root<IService>("Root"); 
-                               }
-                           
-                               public class Program { public static void Main() { } }       
-                           }
-                           """.RunAsync();
-
-        // Then
-        result.Success.ShouldBeFalse(result);
-        var graphs = GetGraphs(result);
-        graphs.Length.ShouldBe(1, result);
-        graphs[0].ConvertToString().ShouldBe("""
-                                             Sample.IService() Root
-                                               +[Sample.IService() Root]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
-                                             99
-                                             Dependency(int id<--int), string abc<--string))
-                                               +[Dependency(int id<--int), string abc<--string))]<--[int]--[99]
-                                               -[Dependency(int id<--int), string abc<--string))]<--[string]--[unresolved]
-                                             Service(Sample.IDependency dependency<--Sample.IDependency))
-                                               +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency(int id<--int), string abc<--string))]
-                                             """.Replace("\r", ""));
-
-        var errors = result.Logs.Where(i => i.Id == LogId.ErrorUnableToResolve).ToImmutableArray();
-        errors.Length.ShouldBe(1);
-    }
-
-    [Fact]
-    public async Task ShouldSupportDependsOnWhenInternal()
-    {
-        // Given
-
-        // When
-        var result = await """
-                           namespace Sample
-                           {
-                               using System;
-                               using Pure.DI;
-                               using Sample;
-                           
-                               internal interface IService
-                               {
-                               }
-                           
-                               internal interface IDependency
-                               {
-                               }
-                           
-                               internal class Service : IService
-                               {
-                                   internal Service(IDependency dependency)
-                                   {
-                                   }
-                               }
-                           
-                               internal class Dependency : IDependency
-                               {
-                                   public Dependency() {}
-                               }
-                           
-                               internal partial class Composition
-                               {                   
-                                   private static void Setup1() => Pure.DI.DI.Setup("BaseComposition", CompositionKind.Internal)
-                                       .Bind<IDependency>().To<Dependency>(); 
-                           
-                                   private static void Setup2() => Pure.DI.DI.Setup("Composition")
-                                       .DependsOn("BaseComposition")
-                                       .Bind<IService>().To<Service>().Root<IService>();
-                               }
-                           
-                               public class Program { public static void Main() { } }       
-                           }
-                           """.RunAsync();
-
-        // Then
-        result.Success.ShouldBeTrue(result);
-        var graphs = GetGraphs(result);
-        graphs.Length.ShouldBe(1, result);
-        graphs[0].ConvertToString().ShouldBe("""
-                                             Sample.IService() 
-                                               +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
-                                             Dependency()
-                                             Service(Sample.IDependency dependency<--Sample.IDependency))
-                                               +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency()]
-                                             """.Replace("\r", ""));
-    }
-
-    [Fact]
-    public async Task ShouldSupportDependsOnWhenGlobal()
-    {
-        // Given
-
-        // When
-        var result = await """
-                           namespace Sample
-                           {
-                               using System;
-                               using Pure.DI;
-                               using Sample;
-                           
-                               internal interface IService
-                               {
-                               }
-                           
-                               internal interface IDependency
-                               {
-                               }
-                           
-                               internal class Service : IService
-                               {
-                                   internal Service(IDependency dependency)
-                                   {
-                                   }
-                               }
-                           
-                               internal class Dependency : IDependency
-                               {
-                                   public Dependency() {}
-                               }
-                           
-                               internal partial class Composition
-                               {                   
-                                   private static void Setup1() => Pure.DI.DI.Setup("BaseComposition", CompositionKind.Global)
-                                       .Bind<IDependency>().To<Dependency>(); 
-                           
-                                   private static void Setup2() => Pure.DI.DI.Setup("Composition")
-                                       .Bind<IService>().To<Service>().Root<IService>();
-                               }
-                           
-                               public class Program { public static void Main() { } }       
-                           }
-                           """.RunAsync();
-
-        // Then
-        result.Success.ShouldBeTrue(result);
-        var graphs = GetGraphs(result);
-        graphs.Length.ShouldBe(1, result);
-        graphs[0].ConvertToString().ShouldBe("""
-                                             Sample.IService() 
-                                               +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
-                                             Dependency()
-                                             Service(Sample.IDependency dependency<--Sample.IDependency))
-                                               +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency()]
-                                             """.Replace("\r", ""));
-    }
-
-    [Fact]
-    public async Task ShouldSupportDependsOnWhenPublic()
-    {
-        // Given
-
-        // When
-        var result = await """
-                           namespace Sample
-                           {
-                               using System;
-                               using Pure.DI;
-                               using Sample;
-                           
-                               internal interface IService
-                               {
-                               }
-                           
-                               internal interface IDependency
-                               {
-                               }
-                           
-                               internal class Service : IService
-                               {
-                                   internal Service(IDependency dependency)
-                                   {
-                                   }
-                               }
-                           
-                               internal class Dependency : IDependency
-                               {
-                                   public Dependency() {}
-                               }
-                           
-                               internal partial class Composition
-                               {                   
-                                   private static void Setup1() => Pure.DI.DI.Setup("BaseComposition", CompositionKind.Public)
-                                       .Bind<IDependency>().To<Dependency>()
-                                       .Root<IDependency>(); 
-                           
-                                   private static void Setup2() => Pure.DI.DI.Setup("Composition")
-                                       .DependsOn("BaseComposition")
-                                       .Bind<IService>().To<Service>()
-                                       .Root<IService>();
-                               }
-                           
-                               public class Program { public static void Main() { } }       
-                           }
-                           """.RunAsync();
-
-        // Then
-        result.Success.ShouldBeTrue(result);
-        var graphs = GetGraphs(result);
-        graphs.Length.ShouldBe(2, result);
-        graphs[1].ConvertToString().ShouldBe("""
-                                             Sample.IService() 
-                                               +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
-                                             Sample.IDependency() 
-                                               +[Sample.IDependency() ]<--[Sample.IDependency]--[Dependency()]
-                                             Dependency()
-                                             Service(Sample.IDependency dependency<--Sample.IDependency))
-                                               +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency()]
-                                             """.Replace("\r", ""));
-    }
 
     [Theory]
     [InlineData(5, false)]
@@ -762,8 +110,187 @@ public class GraphTests
         }
     }
 
+    private static DependencyGraph[] GetGraphs(Result result) =>
+        result.DependencyGraphs.ToArray();
+
     [Fact]
-    public async Task ShouldSupportBindToImplementationWhenSeveralConstructorsAndHasUnresolvedOne()
+    public async Task ShouldHandleCyclicDependencies()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           namespace Sample
+                           {
+                               using System;
+                               using Pure.DI;
+                               using Sample;
+                           
+                               internal interface IService
+                               {
+                               }
+                           
+                               internal interface IDependency1
+                               {
+                               }
+                           
+                               internal interface IDependency2
+                               {
+                               }
+                           
+                               internal class Service : IService
+                               {
+                                   internal Service(IDependency1 dep) {}
+                               }
+                           
+                               internal class Dependency1 : IDependency1
+                               {
+                                   public Dependency1(IDependency2 dep) {}
+                               }
+                           
+                               internal class Dependency2 : IDependency2
+                               {
+                                   public Dependency2(IService service) {}
+                               }
+                           
+                               internal partial class Composition
+                               {
+                                   void Setup() => Pure.DI.DI.Setup("Composition")
+                                       .Bind<IDependency1>().To<Dependency1>()
+                                       .Bind<IDependency2>().To<Dependency2>()
+                                       .Bind<IService>().To<Service>()
+                                       .Root<IService>("Service"); 
+                               }
+                           
+                               public class Program { public static void Main() { } }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        var graphs = GetGraphs(result);
+        graphs.Length.ShouldBe(1, result);
+        graphs[0].ConvertToString().ShouldBe("""
+                                             Sample.IService() Service
+                                               +[Sample.IService() Service]<--[Sample.IService]--[Service(Sample.IDependency1 dep<--Sample.IDependency1))]
+                                             Dependency1(Sample.IDependency2 dep<--Sample.IDependency2))
+                                               +[Dependency1(Sample.IDependency2 dep<--Sample.IDependency2))]<--[Sample.IDependency2]--[Dependency2(Sample.IService service<--Sample.IService))]
+                                             Dependency2(Sample.IService service<--Sample.IService))
+                                               +[Dependency2(Sample.IService service<--Sample.IService))]<--[Sample.IService]--[Service(Sample.IDependency1 dep<--Sample.IDependency1))]
+                                             Service(Sample.IDependency1 dep<--Sample.IDependency1))
+                                               +[Service(Sample.IDependency1 dep<--Sample.IDependency1))]<--[Sample.IDependency1]--[Dependency1(Sample.IDependency2 dep<--Sample.IDependency2))]
+                                             """.Replace("\r", ""));
+
+        var errors = result.Logs.Where(i => i.Id == LogId.ErrorCyclicDependency).ToImmutableArray();
+        errors.Length.ShouldBe(1);
+    }
+
+    [Fact]
+    public async Task ShouldSupportAutoBinding()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           namespace Sample
+                           {
+                               using System;
+                               using Pure.DI;
+                               using Sample;
+                           
+                               internal interface IService
+                               {
+                               }
+                           
+                               internal class Service : IService
+                               {
+                                   internal Service(Dependency dependency)
+                                   {
+                                   }
+                               }
+                           
+                               internal class Dependency
+                               {
+                                   public Dependency() {}
+                               }
+                           
+                               internal partial class Composition
+                               {                   
+                                   void Setup() => Pure.DI.DI.Setup("Composition")
+                                       .Bind<IService>().To<Service>().Root<IService>(); 
+                               }
+                           
+                               public class Program { public static void Main() { } }       
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        var graphs = GetGraphs(result);
+        graphs.Length.ShouldBe(1, result);
+        graphs[0].ConvertToString().ShouldBe("""
+                                             Sample.IService() 
+                                               +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.Dependency dependency<--Sample.Dependency))]
+                                             Service(Sample.Dependency dependency<--Sample.Dependency))
+                                               +[Service(Sample.Dependency dependency<--Sample.Dependency))]<--[Sample.Dependency]--[Dependency()]
+                                             Dependency()
+                                             """.Replace("\r", ""));
+    }
+
+    [Fact]
+    public async Task ShouldSupportAutoBindingWhenGeneric()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           namespace Sample
+                           {
+                               using System;
+                               using Pure.DI;
+                               using Sample;
+                           
+                               internal interface IService
+                               {
+                               }
+                           
+                               internal class Service : IService
+                               {
+                                   internal Service(Dependency<string> dependency)
+                                   {
+                                   }
+                               }
+                           
+                               internal class Dependency<T>
+                               {
+                                   public Dependency() {}
+                               }
+                           
+                               internal partial class Composition
+                               {                   
+                                   void Setup() => Pure.DI.DI.Setup("Composition")
+                                       .Bind<IService>().To<Service>().Root<IService>(); 
+                               }
+                           
+                               public class Program { public static void Main() { } }       
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        var graphs = GetGraphs(result);
+        graphs.Length.ShouldBe(1, result);
+        graphs[0].ConvertToString().ShouldBe("""
+                                             Sample.IService() 
+                                               +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.Dependency<string> dependency<--Sample.Dependency<string>))]
+                                             Service(Sample.Dependency<string> dependency<--Sample.Dependency<string>))
+                                               +[Service(Sample.Dependency<string> dependency<--Sample.Dependency<string>))]<--[Sample.Dependency<string>]--[Dependency<string>()]
+                                             Dependency<string>()
+                                             """.Replace("\r", ""));
+    }
+
+    [Fact]
+    public async Task ShouldSupportBindToArg()
     {
         // Given
 
@@ -792,15 +319,13 @@ public class GraphTests
                            
                                internal class Dependency : IDependency
                                {
-                                   public Dependency(string abc) {}
-                           
                                    public Dependency() {}
                                }
                            
                                internal partial class Composition
                                {                   
                                    void Setup() => Pure.DI.DI.Setup("Composition")
-                                       .Bind<IDependency>().To<Dependency>()
+                                       .Arg<IDependency>("dep")
                                        .Bind<IService>().To<Service>().Root<IService>(); 
                                }
                            
@@ -815,123 +340,9 @@ public class GraphTests
         graphs[0].ConvertToString().ShouldBe("""
                                              Sample.IService() 
                                                +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
-                                             Dependency()
+                                             Sample.IDependency dep
                                              Service(Sample.IDependency dependency<--Sample.IDependency))
-                                               +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency()]
-                                             """.Replace("\r", ""));
-    }
-
-    [Fact]
-    public async Task ShouldSupportBindToGenericImplementation()
-    {
-        // Given
-
-        // When
-        var result = await """
-                           namespace Sample
-                           {
-                               using System;
-                               using Pure.DI;
-                               using Sample;
-                           
-                               internal interface IService
-                               {
-                               }
-                           
-                               internal interface IDependency<T>
-                               {
-                               }
-                           
-                               internal class Service : IService
-                               {
-                                   internal Service(IDependency<int> dependency)
-                                   {
-                                   }
-                               }
-                           
-                               internal class Dependency<T> : IDependency<T>
-                               {
-                                   public Dependency() {}
-                               }
-                           
-                               internal partial class Composition
-                               {                   
-                                   void Setup() => Pure.DI.DI.Setup("Composition")
-                                       .Bind<IDependency<TT>>().To<Dependency<TT>>()
-                                       .Bind<IService>().To<Service>().Root<IService>(); 
-                               }
-                           
-                               public class Program { public static void Main() { } }       
-                           }
-                           """.RunAsync();
-
-        // Then
-        result.Success.ShouldBeTrue(result);
-        var graphs = GetGraphs(result);
-        graphs.Length.ShouldBe(1, result);
-        graphs[0].ConvertToString().ShouldBe("""
-                                             Sample.IService() 
-                                               +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))]
-                                             Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))
-                                               +[Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))]<--[Sample.IDependency<int>]--[Dependency<int>()]
-                                             Dependency<int>()
-                                             """.Replace("\r", ""));
-    }
-
-    [Fact]
-    public async Task ShouldSupportBindToGenericFactory()
-    {
-        // Given
-
-        // When
-        var result = await """
-                           namespace Sample
-                           {
-                               using System;
-                               using Pure.DI;
-                               using Sample;
-                           
-                               internal interface IService
-                               {
-                               }
-                           
-                               internal interface IDependency<T>
-                               {
-                               }
-                           
-                               internal class Service : IService
-                               {
-                                   internal Service(IDependency<int> dependency)
-                                   {
-                                   }
-                               }
-                           
-                               internal class Dependency<T> : IDependency<T>
-                               {
-                                   public Dependency(T[] arr) {}
-                               }
-                           
-                               internal partial class Composition
-                               {                   
-                                   void Setup() => Pure.DI.DI.Setup("Composition")
-                                       .Bind<IDependency<TT>>().To(_ => new Dependency<TT>(new TT[1]))
-                                       .Bind<IService>().To<Service>().Root<IService>(); 
-                               }
-                           
-                               public class Program { public static void Main() { } }       
-                           }
-                           """.RunAsync();
-
-        // Then
-        result.Success.ShouldBeTrue(result);
-        var graphs = GetGraphs(result);
-        graphs.Length.ShouldBe(1, result);
-        graphs[0].ConvertToString().ShouldBe("""
-                                             Sample.IService() 
-                                               +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))]
-                                             Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))
-                                               +[Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))]<--[Sample.IDependency<int>]--[new Dependency<int>(new int[1])]
-                                             new Dependency<int>(new int[1])
+                                               +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Sample.IDependency dep]
                                              """.Replace("\r", ""));
     }
 
@@ -1087,7 +498,7 @@ public class GraphTests
     }
 
     [Fact]
-    public async Task ShouldSupportAutoBinding()
+    public async Task ShouldSupportBindToFactory()
     {
         // Given
 
@@ -1103,14 +514,18 @@ public class GraphTests
                                {
                                }
                            
+                               internal interface IDependency
+                               {
+                               }
+                           
                                internal class Service : IService
                                {
-                                   internal Service(Dependency dependency)
+                                   internal Service(IDependency dependency)
                                    {
                                    }
                                }
                            
-                               internal class Dependency
+                               internal class Dependency : IDependency
                                {
                                    public Dependency() {}
                                }
@@ -1118,6 +533,64 @@ public class GraphTests
                                internal partial class Composition
                                {                   
                                    void Setup() => Pure.DI.DI.Setup("Composition")
+                                       .Bind<IDependency>().To(_ => new Dependency())
+                                       .Bind<IService>().To<Service>().Root<IService>(); 
+                               }       
+                           
+                               public class Program { public static void Main() { } }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        var graphs = GetGraphs(result);
+        graphs.Length.ShouldBe(1, result);
+        graphs[0].ConvertToString().ShouldBe("""
+                                             Sample.IService() 
+                                               +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
+                                             new Dependency()
+                                             Service(Sample.IDependency dependency<--Sample.IDependency))
+                                               +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[new Dependency()]
+                                             """.Replace("\r", ""));
+    }
+
+    [Fact]
+    public async Task ShouldSupportBindToGenericFactory()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           namespace Sample
+                           {
+                               using System;
+                               using Pure.DI;
+                               using Sample;
+                           
+                               internal interface IService
+                               {
+                               }
+                           
+                               internal interface IDependency<T>
+                               {
+                               }
+                           
+                               internal class Service : IService
+                               {
+                                   internal Service(IDependency<int> dependency)
+                                   {
+                                   }
+                               }
+                           
+                               internal class Dependency<T> : IDependency<T>
+                               {
+                                   public Dependency(T[] arr) {}
+                               }
+                           
+                               internal partial class Composition
+                               {                   
+                                   void Setup() => Pure.DI.DI.Setup("Composition")
+                                       .Bind<IDependency<TT>>().To(_ => new Dependency<TT>(new TT[1]))
                                        .Bind<IService>().To<Service>().Root<IService>(); 
                                }
                            
@@ -1131,10 +604,297 @@ public class GraphTests
         graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
                                              Sample.IService() 
-                                               +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.Dependency dependency<--Sample.Dependency))]
-                                             Service(Sample.Dependency dependency<--Sample.Dependency))
-                                               +[Service(Sample.Dependency dependency<--Sample.Dependency))]<--[Sample.Dependency]--[Dependency()]
+                                               +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))]
+                                             Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))
+                                               +[Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))]<--[Sample.IDependency<int>]--[new Dependency<int>(new int[1])]
+                                             new Dependency<int>(new int[1])
+                                             """.Replace("\r", ""));
+    }
+
+    [Fact]
+    public async Task ShouldSupportBindToGenericImplementation()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           namespace Sample
+                           {
+                               using System;
+                               using Pure.DI;
+                               using Sample;
+                           
+                               internal interface IService
+                               {
+                               }
+                           
+                               internal interface IDependency<T>
+                               {
+                               }
+                           
+                               internal class Service : IService
+                               {
+                                   internal Service(IDependency<int> dependency)
+                                   {
+                                   }
+                               }
+                           
+                               internal class Dependency<T> : IDependency<T>
+                               {
+                                   public Dependency() {}
+                               }
+                           
+                               internal partial class Composition
+                               {                   
+                                   void Setup() => Pure.DI.DI.Setup("Composition")
+                                       .Bind<IDependency<TT>>().To<Dependency<TT>>()
+                                       .Bind<IService>().To<Service>().Root<IService>(); 
+                               }
+                           
+                               public class Program { public static void Main() { } }       
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        var graphs = GetGraphs(result);
+        graphs.Length.ShouldBe(1, result);
+        graphs[0].ConvertToString().ShouldBe("""
+                                             Sample.IService() 
+                                               +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))]
+                                             Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))
+                                               +[Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))]<--[Sample.IDependency<int>]--[Dependency<int>()]
+                                             Dependency<int>()
+                                             """.Replace("\r", ""));
+    }
+    [Fact]
+    public async Task ShouldSupportBindToImplementation()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           namespace Sample
+                           {
+                               using System;
+                               using Pure.DI;
+                               using Sample;
+                           
+                               internal interface IService
+                               {
+                               }
+                           
+                               internal interface IDependency
+                               {
+                               }
+                           
+                               internal class Service : IService
+                               {
+                                   internal Service(IDependency dependency)
+                                   {
+                                   }
+                               }
+                           
+                               internal class Dependency : IDependency
+                               {
+                                   public Dependency() {}
+                               }
+                           
+                               internal partial class Composition
+                               {                   
+                                   void Setup() => Pure.DI.DI.Setup("Composition")
+                                       .Bind<IDependency>().To<Dependency>()
+                                       .Bind<IService>().To<Service>().Root<IService>(); 
+                               }       
+                           
+                               public class Program { public static void Main() { } }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        var graphs = GetGraphs(result);
+        graphs.Length.ShouldBe(1, result);
+        graphs[0].ConvertToString().ShouldBe("""
+                                             Sample.IService() 
+                                               +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
                                              Dependency()
+                                             Service(Sample.IDependency dependency<--Sample.IDependency))
+                                               +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency()]
+                                             """.Replace("\r", ""));
+    }
+
+    [Fact]
+    public async Task ShouldSupportBindToImplementationWhenHasNoRoot()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           namespace Sample
+                           {
+                               using System;
+                               using Pure.DI;
+                               using Sample;
+                           
+                               internal interface IService
+                               {
+                               }
+                           
+                               internal interface IDependency
+                               {
+                               }
+                           
+                               internal class Service : IService
+                               {
+                                   internal Service(IDependency dependency)
+                                   {
+                                   }
+                               }
+                           
+                               internal class Dependency : IDependency
+                               {
+                                   public Dependency() {}
+                               }
+                           
+                               internal partial class Composition
+                               {                   
+                                   void Setup() => Pure.DI.DI.Setup("Composition")
+                                       .Bind<IDependency>().To<Dependency>()
+                                       .Bind<IService>().To<Service>(); 
+                               }       
+                           
+                               public class Program { public static void Main() { } }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count.ShouldBe(0);
+        var graphs = GetGraphs(result);
+        graphs.Length.ShouldBe(1, result);
+        graphs[0].ConvertToString().ShouldBe("");
+    }
+
+    [Fact]
+    public async Task ShouldSupportBindToImplementationWhenSeveralConstructors()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           namespace Sample
+                           {
+                               using System;
+                               using Pure.DI;
+                               using Sample;
+                           
+                               internal interface IService
+                               {
+                               }
+                           
+                               internal interface IDependency
+                               {
+                               }
+                           
+                               internal class Service : IService
+                               {
+                                   internal Service(IDependency dependency)
+                                   {
+                                   }
+                           
+                                   public Service()
+                                   {
+                                   }
+                               }
+                           
+                               internal class Dependency : IDependency
+                               {
+                                   public Dependency() {}
+                           
+                                   public Dependency(int val) {}
+                               }
+                           
+                               internal partial class Composition
+                               {                   
+                                   void Setup() => Pure.DI.DI.Setup("Composition")
+                                       .Bind<IDependency>().To<Dependency>()
+                                       .Bind<IService>().To<Service>().Root<IService>(); 
+                               }       
+                           
+                               public class Program { public static void Main() { } }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        var graphs = GetGraphs(result);
+        graphs.Length.ShouldBe(1, result);
+        graphs[0].ConvertToString().ShouldBe("""
+                                             Sample.IService() 
+                                               +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
+                                             Dependency()
+                                             Service(Sample.IDependency dependency<--Sample.IDependency))
+                                               +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency()]
+                                             """.Replace("\r", ""));
+    }
+
+    [Fact]
+    public async Task ShouldSupportBindToImplementationWhenSeveralConstructorsAndHasUnresolvedOne()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           namespace Sample
+                           {
+                               using System;
+                               using Pure.DI;
+                               using Sample;
+                           
+                               internal interface IService
+                               {
+                               }
+                           
+                               internal interface IDependency
+                               {
+                               }
+                           
+                               internal class Service : IService
+                               {
+                                   internal Service(IDependency dependency)
+                                   {
+                                   }
+                               }
+                           
+                               internal class Dependency : IDependency
+                               {
+                                   public Dependency(string abc) {}
+                           
+                                   public Dependency() {}
+                               }
+                           
+                               internal partial class Composition
+                               {                   
+                                   void Setup() => Pure.DI.DI.Setup("Composition")
+                                       .Bind<IDependency>().To<Dependency>()
+                                       .Bind<IService>().To<Service>().Root<IService>(); 
+                               }
+                           
+                               public class Program { public static void Main() { } }       
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        var graphs = GetGraphs(result);
+        graphs.Length.ShouldBe(1, result);
+        graphs[0].ConvertToString().ShouldBe("""
+                                             Sample.IService() 
+                                               +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
+                                             Dependency()
+                                             Service(Sample.IDependency dependency<--Sample.IDependency))
+                                               +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency()]
                                              """.Replace("\r", ""));
     }
 
@@ -1203,7 +963,7 @@ public class GraphTests
     }
 
     [Fact]
-    public async Task ShouldSupportAutoBindingWhenGeneric()
+    public async Task ShouldSupportDependsOnWhenGlobal()
     {
         // Given
 
@@ -1219,22 +979,29 @@ public class GraphTests
                                {
                                }
                            
+                               internal interface IDependency
+                               {
+                               }
+                           
                                internal class Service : IService
                                {
-                                   internal Service(Dependency<string> dependency)
+                                   internal Service(IDependency dependency)
                                    {
                                    }
                                }
                            
-                               internal class Dependency<T>
+                               internal class Dependency : IDependency
                                {
                                    public Dependency() {}
                                }
                            
                                internal partial class Composition
                                {                   
-                                   void Setup() => Pure.DI.DI.Setup("Composition")
-                                       .Bind<IService>().To<Service>().Root<IService>(); 
+                                   private static void Setup1() => Pure.DI.DI.Setup("BaseComposition", CompositionKind.Global)
+                                       .Bind<IDependency>().To<Dependency>(); 
+                           
+                                   private static void Setup2() => Pure.DI.DI.Setup("Composition")
+                                       .Bind<IService>().To<Service>().Root<IService>();
                                }
                            
                                public class Program { public static void Main() { } }       
@@ -1247,15 +1014,15 @@ public class GraphTests
         graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
                                              Sample.IService() 
-                                               +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.Dependency<string> dependency<--Sample.Dependency<string>))]
-                                             Service(Sample.Dependency<string> dependency<--Sample.Dependency<string>))
-                                               +[Service(Sample.Dependency<string> dependency<--Sample.Dependency<string>))]<--[Sample.Dependency<string>]--[Dependency<string>()]
-                                             Dependency<string>()
+                                               +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
+                                             Dependency()
+                                             Service(Sample.IDependency dependency<--Sample.IDependency))
+                                               +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency()]
                                              """.Replace("\r", ""));
     }
 
     [Fact]
-    public async Task ShouldHandleCyclicDependencies()
+    public async Task ShouldSupportDependsOnWhenInternal()
     {
         // Given
 
@@ -1271,37 +1038,242 @@ public class GraphTests
                                {
                                }
                            
-                               internal interface IDependency1
-                               {
-                               }
-                           
-                               internal interface IDependency2
+                               internal interface IDependency
                                {
                                }
                            
                                internal class Service : IService
                                {
-                                   internal Service(IDependency1 dep) {}
+                                   internal Service(IDependency dependency)
+                                   {
+                                   }
                                }
                            
-                               internal class Dependency1 : IDependency1
+                               internal class Dependency : IDependency
                                {
-                                   public Dependency1(IDependency2 dep) {}
-                               }
-                           
-                               internal class Dependency2 : IDependency2
-                               {
-                                   public Dependency2(IService service) {}
+                                   public Dependency() {}
                                }
                            
                                internal partial class Composition
-                               {
-                                   void Setup() => Pure.DI.DI.Setup("Composition")
-                                       .Bind<IDependency1>().To<Dependency1>()
-                                       .Bind<IDependency2>().To<Dependency2>()
-                                       .Bind<IService>().To<Service>()
-                                       .Root<IService>("Service"); 
+                               {                   
+                                   private static void Setup1() => Pure.DI.DI.Setup("BaseComposition", CompositionKind.Internal)
+                                       .Bind<IDependency>().To<Dependency>(); 
+                           
+                                   private static void Setup2() => Pure.DI.DI.Setup("Composition")
+                                       .DependsOn("BaseComposition")
+                                       .Bind<IService>().To<Service>().Root<IService>();
                                }
+                           
+                               public class Program { public static void Main() { } }       
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        var graphs = GetGraphs(result);
+        graphs.Length.ShouldBe(1, result);
+        graphs[0].ConvertToString().ShouldBe("""
+                                             Sample.IService() 
+                                               +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
+                                             Dependency()
+                                             Service(Sample.IDependency dependency<--Sample.IDependency))
+                                               +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency()]
+                                             """.Replace("\r", ""));
+    }
+
+    [Fact]
+    public async Task ShouldSupportDependsOnWhenPublic()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           namespace Sample
+                           {
+                               using System;
+                               using Pure.DI;
+                               using Sample;
+                           
+                               internal interface IService
+                               {
+                               }
+                           
+                               internal interface IDependency
+                               {
+                               }
+                           
+                               internal class Service : IService
+                               {
+                                   internal Service(IDependency dependency)
+                                   {
+                                   }
+                               }
+                           
+                               internal class Dependency : IDependency
+                               {
+                                   public Dependency() {}
+                               }
+                           
+                               internal partial class Composition
+                               {                   
+                                   private static void Setup1() => Pure.DI.DI.Setup("BaseComposition", CompositionKind.Public)
+                                       .Bind<IDependency>().To<Dependency>()
+                                       .Root<IDependency>(); 
+                           
+                                   private static void Setup2() => Pure.DI.DI.Setup("Composition")
+                                       .DependsOn("BaseComposition")
+                                       .Bind<IService>().To<Service>()
+                                       .Root<IService>();
+                               }
+                           
+                               public class Program { public static void Main() { } }       
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        var graphs = GetGraphs(result);
+        graphs.Length.ShouldBe(2, result);
+        graphs[1].ConvertToString().ShouldBe("""
+                                             Sample.IService() 
+                                               +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
+                                             Sample.IDependency() 
+                                               +[Sample.IDependency() ]<--[Sample.IDependency]--[Dependency()]
+                                             Dependency()
+                                             Service(Sample.IDependency dependency<--Sample.IDependency))
+                                               +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency()]
+                                             """.Replace("\r", ""));
+    }
+
+    [Fact]
+    public async Task ShouldSupportEnumerableInjection()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                           
+                               class Dependency: IDependency
+                               {        
+                                   public Dependency() { }
+                               }
+                           
+                               interface IService
+                               {                    
+                               }
+                           
+                               class Service: IService 
+                               {
+                                   public Service(System.Collections.Generic.IEnumerable<IDependency> deps) { }    
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>(1).To<Dependency>()
+                                           .Bind<IDependency>(2).To<Dependency>()
+                                           .Bind<IDependency>(3).To<Dependency>()
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;                              
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        var graphs = GetGraphs(result);
+        graphs.Length.ShouldBe(1, result);
+        graphs[0].ConvertToString().ShouldBe("""
+                                             Sample.IService() Service
+                                               +[Sample.IService() Service]<--[Sample.IService]--[Service(System.Collections.Generic.IEnumerable<Sample.IDependency> deps<--System.Collections.Generic.IEnumerable<Sample.IDependency>))]
+                                             Dependency()
+                                             Dependency()
+                                             Dependency()
+                                             Service(System.Collections.Generic.IEnumerable<Sample.IDependency> deps<--System.Collections.Generic.IEnumerable<Sample.IDependency>))
+                                               +[Service(System.Collections.Generic.IEnumerable<Sample.IDependency> deps<--System.Collections.Generic.IEnumerable<Sample.IDependency>))]<--[System.Collections.Generic.IEnumerable<Sample.IDependency>]--[System.Collections.Generic.IEnumerable<Sample.IDependency> enumerable of Sample.IDependency(1), Sample.IDependency(2), Sample.IDependency(3)]
+                                             System.Collections.Generic.IEnumerable<Sample.IDependency> enumerable of Sample.IDependency(1), Sample.IDependency(2), Sample.IDependency(3)
+                                               +[System.Collections.Generic.IEnumerable<Sample.IDependency> enumerable of Sample.IDependency(1), Sample.IDependency(2), Sample.IDependency(3)]<--[Sample.IDependency(1)]--[Dependency()]
+                                               +[System.Collections.Generic.IEnumerable<Sample.IDependency> enumerable of Sample.IDependency(1), Sample.IDependency(2), Sample.IDependency(3)]<--[Sample.IDependency(2)]--[Dependency()]
+                                               +[System.Collections.Generic.IEnumerable<Sample.IDependency> enumerable of Sample.IDependency(1), Sample.IDependency(2), Sample.IDependency(3)]<--[Sample.IDependency(3)]--[Dependency()]
+                                             """.Replace("\r", ""));
+    }
+
+    [Fact]
+    public async Task ShouldSupportOverrides()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           namespace Sample
+                           {
+                               using System;
+                               using Pure.DI;
+                               using Sample;
+                           
+                               internal interface IService
+                               {
+                               }
+                           
+                               internal interface IDependency
+                               {
+                               }
+                           
+                               internal class Service : IService
+                               {
+                                   internal Service(IDependency dependency)
+                                   {
+                                   }
+                           
+                                   public Service()
+                                   {
+                                   }
+                               }
+                           
+                               internal class SimpleService : IService
+                               {
+                                   public SimpleService(int id)
+                                   {
+                                   }
+                           
+                                   public SimpleService()
+                                   {
+                                   }
+                               }
+                           
+                               internal class Dependency : IDependency
+                               {
+                                   public Dependency() {}
+                           
+                                   public Dependency(int val) {}
+                               }
+                           
+                               internal partial class Composition
+                               {                   
+                                   void Setup() => Pure.DI.DI.Setup("Composition")
+                                       .Bind<IDependency>().To<Dependency>()
+                                       .Bind<IService>().To<Service>()
+                                       .Root<IService>("Root")
+                                       .Bind<IService>().To<SimpleService>(); 
+                               }       
                            
                                public class Program { public static void Main() { } }
                            }
@@ -1309,21 +1281,135 @@ public class GraphTests
 
         // Then
         result.Success.ShouldBeFalse(result);
+        result.Warnings.Count.ShouldBe(3);
+        result.Errors.Count.ShouldBe(0);
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
-                                             Sample.IService() Service
-                                               +[Sample.IService() Service]<--[Sample.IService]--[Service(Sample.IDependency1 dep<--Sample.IDependency1))]
-                                             Dependency1(Sample.IDependency2 dep<--Sample.IDependency2))
-                                               +[Dependency1(Sample.IDependency2 dep<--Sample.IDependency2))]<--[Sample.IDependency2]--[Dependency2(Sample.IService service<--Sample.IService))]
-                                             Dependency2(Sample.IService service<--Sample.IService))
-                                               +[Dependency2(Sample.IService service<--Sample.IService))]<--[Sample.IService]--[Service(Sample.IDependency1 dep<--Sample.IDependency1))]
-                                             Service(Sample.IDependency1 dep<--Sample.IDependency1))
-                                               +[Service(Sample.IDependency1 dep<--Sample.IDependency1))]<--[Sample.IDependency1]--[Dependency1(Sample.IDependency2 dep<--Sample.IDependency2))]
+                                             Sample.IService() Root
+                                               +[Sample.IService() Root]<--[Sample.IService]--[SimpleService()]
+                                             SimpleService()
                                              """.Replace("\r", ""));
+    }
 
-        var errors = result.Logs.Where(i => i.Id == LogId.ErrorCyclicDependency).ToImmutableArray();
-        errors.Length.ShouldBe(1);
+    [Fact]
+    public async Task ShouldSupportRoot()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           namespace Sample
+                           {
+                               using System;
+                               using Pure.DI;
+                               using Sample;
+                           
+                               internal interface IService
+                               {
+                               }
+                           
+                               internal interface IDependency
+                               {
+                               }
+                           
+                               internal class Service : IService
+                               {
+                                   internal Service(IDependency dependency)
+                                   {
+                                   }
+                               }
+                           
+                               internal class Dependency : IDependency
+                               {
+                                   public Dependency() {}
+                               }
+                           
+                               internal partial class Composition
+                               {                   
+                                   void Setup() => Pure.DI.DI.Setup("Composition")
+                                       .Bind<IDependency>().To<Dependency>()
+                                       .Bind<IService>().To<Service>()
+                                       .Root<IService>("MyService"); 
+                               }       
+                           
+                               public class Program { public static void Main() { } }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        var graphs = GetGraphs(result);
+        graphs.Length.ShouldBe(1, result);
+        graphs[0].ConvertToString().ShouldBe("""
+                                             Sample.IService() MyService
+                                               +[Sample.IService() MyService]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
+                                             Dependency()
+                                             Service(Sample.IDependency dependency<--Sample.IDependency))
+                                               +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency()]
+                                             """.Replace("\r", ""));
+    }
+
+    [Fact]
+    public async Task ShouldSupportSeparatedSetup()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           namespace Sample
+                           {
+                               using System;
+                               using Pure.DI;
+                               using Sample;
+                           
+                               internal interface IService
+                               {
+                               }
+                           
+                               internal interface IDependency
+                               {
+                               }
+                           
+                               internal class Service : IService
+                               {
+                                   internal Service(IDependency dependency)
+                                   {
+                                   }
+                               }
+                           
+                               internal class Dependency : IDependency
+                               {
+                                   public Dependency() {}
+                               }
+                           
+                               internal partial class Composition
+                               {                   
+                                   void Setup()
+                                   {
+                                        Pure.DI.DI.Setup("Composition")
+                                          .Bind<IDependency>().To<Dependency>();
+                           
+                                       Pure.DI.DI.Setup("Composition")
+                                           .Bind<IService>().To<Service>().Root<IService>();
+                                   }  
+                               }       
+                           
+                               public class Program { public static void Main() { } }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        var graphs = GetGraphs(result);
+        graphs.Length.ShouldBe(1, result);
+        graphs[0].ConvertToString().ShouldBe("""
+                                             Sample.IService() 
+                                               +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
+                                             Dependency()
+                                             Service(Sample.IDependency dependency<--Sample.IDependency))
+                                               +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency()]
+                                             """.Replace("\r", ""));
     }
 
     [Fact]
@@ -1497,78 +1583,7 @@ public class GraphTests
     }
 
     [Fact]
-    public async Task ShouldSupportEnumerableInjection()
-    {
-        // Given
-
-        // When
-        var result = await """
-                           using System;
-                           using Pure.DI;
-
-                           namespace Sample
-                           {
-                               interface IDependency {}
-                           
-                               class Dependency: IDependency
-                               {        
-                                   public Dependency() { }
-                               }
-                           
-                               interface IService
-                               {                    
-                               }
-                           
-                               class Service: IService 
-                               {
-                                   public Service(System.Collections.Generic.IEnumerable<IDependency> deps) { }    
-                               }
-                           
-                               static class Setup
-                               {
-                                   private static void SetupComposition()
-                                   {
-                                       DI.Setup("Composition")
-                                           .Bind<IDependency>(1).To<Dependency>()
-                                           .Bind<IDependency>(2).To<Dependency>()
-                                           .Bind<IDependency>(3).To<Dependency>()
-                                           .Bind<IService>().To<Service>()
-                                           .Root<IService>("Service");
-                                   }
-                               }
-                           
-                               public class Program
-                               {
-                                   public static void Main()
-                                   {
-                                       var composition = new Composition();
-                                       var service = composition.Service;                              
-                                   }
-                               }
-                           }
-                           """.RunAsync();
-
-        // Then
-        result.Success.ShouldBeTrue(result);
-        var graphs = GetGraphs(result);
-        graphs.Length.ShouldBe(1, result);
-        graphs[0].ConvertToString().ShouldBe("""
-                                             Sample.IService() Service
-                                               +[Sample.IService() Service]<--[Sample.IService]--[Service(System.Collections.Generic.IEnumerable<Sample.IDependency> deps<--System.Collections.Generic.IEnumerable<Sample.IDependency>))]
-                                             Dependency()
-                                             Dependency()
-                                             Dependency()
-                                             Service(System.Collections.Generic.IEnumerable<Sample.IDependency> deps<--System.Collections.Generic.IEnumerable<Sample.IDependency>))
-                                               +[Service(System.Collections.Generic.IEnumerable<Sample.IDependency> deps<--System.Collections.Generic.IEnumerable<Sample.IDependency>))]<--[System.Collections.Generic.IEnumerable<Sample.IDependency>]--[System.Collections.Generic.IEnumerable<Sample.IDependency> enumerable of Sample.IDependency(1), Sample.IDependency(2), Sample.IDependency(3)]
-                                             System.Collections.Generic.IEnumerable<Sample.IDependency> enumerable of Sample.IDependency(1), Sample.IDependency(2), Sample.IDependency(3)
-                                               +[System.Collections.Generic.IEnumerable<Sample.IDependency> enumerable of Sample.IDependency(1), Sample.IDependency(2), Sample.IDependency(3)]<--[Sample.IDependency(1)]--[Dependency()]
-                                               +[System.Collections.Generic.IEnumerable<Sample.IDependency> enumerable of Sample.IDependency(1), Sample.IDependency(2), Sample.IDependency(3)]<--[Sample.IDependency(2)]--[Dependency()]
-                                               +[System.Collections.Generic.IEnumerable<Sample.IDependency> enumerable of Sample.IDependency(1), Sample.IDependency(2), Sample.IDependency(3)]<--[Sample.IDependency(3)]--[Dependency()]
-                                             """.Replace("\r", ""));
-    }
-
-    [Fact]
-    public async Task ShouldSupportOverrides()
+    public async Task ShouldSupportUnresolvedDependency()
     {
         // Given
 
@@ -1593,56 +1608,41 @@ public class GraphTests
                                    internal Service(IDependency dependency)
                                    {
                                    }
-                           
-                                   public Service()
-                                   {
-                                   }
-                               }
-                           
-                               internal class SimpleService : IService
-                               {
-                                   public SimpleService(int id)
-                                   {
-                                   }
-                           
-                                   public SimpleService()
-                                   {
-                                   }
                                }
                            
                                internal class Dependency : IDependency
                                {
-                                   public Dependency() {}
-                           
-                                   public Dependency(int val) {}
+                                   public Dependency(int id, string abc) {}
                                }
                            
                                internal partial class Composition
                                {                   
                                    void Setup() => Pure.DI.DI.Setup("Composition")
+                                       .Bind<int>().To(_ => 99)
                                        .Bind<IDependency>().To<Dependency>()
-                                       .Bind<IService>().To<Service>()
-                                       .Root<IService>("Root")
-                                       .Bind<IService>().To<SimpleService>(); 
-                               }       
+                                       .Bind<IService>().To<Service>().Root<IService>("Root"); 
+                               }
                            
-                               public class Program { public static void Main() { } }
+                               public class Program { public static void Main() { } }       
                            }
                            """.RunAsync();
 
         // Then
         result.Success.ShouldBeFalse(result);
-        result.Warnings.Count.ShouldBe(3);
-        result.Errors.Count.ShouldBe(0);
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
                                              Sample.IService() Root
-                                               +[Sample.IService() Root]<--[Sample.IService]--[SimpleService()]
-                                             SimpleService()
+                                               +[Sample.IService() Root]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
+                                             99
+                                             Dependency(int id<--int), string abc<--string))
+                                               +[Dependency(int id<--int), string abc<--string))]<--[int]--[99]
+                                               -[Dependency(int id<--int), string abc<--string))]<--[string]--[unresolved]
+                                             Service(Sample.IDependency dependency<--Sample.IDependency))
+                                               +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency(int id<--int), string abc<--string))]
                                              """.Replace("\r", ""));
-    }
 
-    private static DependencyGraph[] GetGraphs(Result result) =>
-        result.DependencyGraphs.ToArray();
+        var errors = result.Logs.Where(i => i.Id == LogId.ErrorUnableToResolve).ToImmutableArray();
+        errors.Length.ShouldBe(1);
+    }
 }

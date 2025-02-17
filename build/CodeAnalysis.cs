@@ -1,3 +1,3 @@
 namespace Build;
 
-internal record CodeAnalysis(Version AnalyzerRoslynPackageVersion);
+record CodeAnalysis(Version AnalyzerRoslynPackageVersion);

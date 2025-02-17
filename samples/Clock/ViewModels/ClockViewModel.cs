@@ -3,12 +3,8 @@
 using Models;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-internal class ClockViewModel : ViewModel, IClockViewModel, IDisposable, IObserver<Tick>
+class ClockViewModel : ViewModel, IClockViewModel, IDisposable, IObserver<Tick>
 {
-    private readonly ILog<ClockViewModel> _log;
-    private readonly IClock _clock;
-    private readonly IDisposable _timerToken;
-    private DateTimeOffset _now;
 
     public ClockViewModel(
         ILog<ClockViewModel> log,
@@ -21,10 +17,20 @@ internal class ClockViewModel : ViewModel, IClockViewModel, IDisposable, IObserv
         _timerToken = timer.Subscribe(this);
         log.Info("Created");
     }
+    private readonly IClock _clock;
+    private readonly ILog<ClockViewModel> _log;
+    private readonly IDisposable _timerToken;
+    private DateTimeOffset _now;
 
     public string Time => _now.ToString("T");
 
     public string Date => _now.ToString("d");
+
+    void IDisposable.Dispose()
+    {
+        _timerToken.Dispose();
+        _log.Info("Disposed");
+    }
 
     void IObserver<Tick>.OnNext(Tick value)
     {
@@ -34,13 +40,7 @@ internal class ClockViewModel : ViewModel, IClockViewModel, IDisposable, IObserv
         OnPropertyChanged(nameof(Date));
     }
 
-    void IObserver<Tick>.OnError(Exception error) { }
+    void IObserver<Tick>.OnError(Exception error) {}
 
-    void IObserver<Tick>.OnCompleted() { }
-
-    void IDisposable.Dispose()
-    {
-        _timerToken.Dispose();
-        _log.Info("Disposed");
-    }
+    void IObserver<Tick>.OnCompleted() {}
 }

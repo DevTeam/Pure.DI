@@ -5,7 +5,7 @@ namespace Pure.DI.IntegrationTests;
 using System.Text;
 using Core.Models;
 
-internal static class GraphExtensions
+static class GraphExtensions
 {
     public static string ConvertToString(this DependencyGraph graph)
     {

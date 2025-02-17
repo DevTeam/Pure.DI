@@ -1,8 +1,8 @@
+namespace AvaloniaApp;
+
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-
-namespace AvaloniaApp;
 
 public class App : Application
 {
@@ -27,8 +27,7 @@ public class App : Application
             // Handles disposables
             if (ApplicationLifetime is IControlledApplicationLifetime controlledApplicationLifetime)
             {
-                controlledApplicationLifetime.Exit += (_, _) =>
-                {
+                controlledApplicationLifetime.Exit += (_, _) => {
                     // Disposal of root objects with lifetime Transient, PerBlock, PerResolve
                     composition.Root.Owned.Dispose();
                     // Dispose of singletons

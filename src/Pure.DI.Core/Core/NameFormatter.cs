@@ -1,17 +1,15 @@
 ﻿// ReSharper disable MemberCanBePrivate.Global
 namespace Pure.DI.Core;
 
-internal sealed class NameFormatter : INameFormatter
+sealed class NameFormatter : INameFormatter
 {
     private static readonly SymbolDisplayFormat TypeFormat = new(
-        globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.Omitted,
         genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters,
         typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameOnly,
         miscellaneousOptions: SymbolDisplayMiscellaneousOptions.UseSpecialTypes | SymbolDisplayMiscellaneousOptions.CollapseTupleTypes | SymbolDisplayMiscellaneousOptions.RemoveAttributeSuffix
     );
 
     private static readonly SymbolDisplayFormat FullTypeFormat = new(
-        globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.Omitted,
         genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters,
         typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
         miscellaneousOptions: SymbolDisplayMiscellaneousOptions.UseSpecialTypes | SymbolDisplayMiscellaneousOptions.CollapseTupleTypes | SymbolDisplayMiscellaneousOptions.RemoveAttributeSuffix
@@ -29,7 +27,7 @@ internal sealed class NameFormatter : INameFormatter
         var name = nameTemplate
             .Replace("{type}", type is not null ? type.ToDisplayString(NullableFlowState.NotNull, TypeFormat) : "")
             .Replace("{TYPE}", type is not null ? type.ToDisplayString(NullableFlowState.NotNull, FullTypeFormat) : "")
-            .Replace("{tag}", tag is not null ?tag.ToString() : "");
+            .Replace("{tag}", tag is not null ? tag.ToString() : "");
 
         return ToValidIdentifier(name);
     }

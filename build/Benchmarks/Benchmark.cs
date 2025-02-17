@@ -1,7 +1,9 @@
 ﻿namespace Build.Benchmarks;
 
+using Immutype;
+
 [ExcludeFromCodeCoverage]
-[Immutype.Target]
+[Target]
 public readonly record struct Benchmark(
     string Namespace = "",
     string Type = "",

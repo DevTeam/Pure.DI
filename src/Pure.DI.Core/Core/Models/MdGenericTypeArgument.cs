@@ -3,7 +3,7 @@
 
 namespace Pure.DI.Core.Models;
 
-internal readonly record struct MdGenericTypeArgument(
+readonly record struct MdGenericTypeArgument(
     SemanticModel SemanticModel,
     SyntaxNode Source,
     INamedTypeSymbol Type)

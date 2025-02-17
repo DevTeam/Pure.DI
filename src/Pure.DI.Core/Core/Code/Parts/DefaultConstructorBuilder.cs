@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core.Code.Parts;
 
-internal sealed class DefaultConstructorBuilder(
+sealed class DefaultConstructorBuilder(
     ILocks locks)
     : IClassPartBuilder
 {

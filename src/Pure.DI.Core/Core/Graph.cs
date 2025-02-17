@@ -2,13 +2,10 @@
 
 namespace Pure.DI.Core;
 
-internal sealed class Graph<TVertex, TEdge> : IGraph<TVertex, TEdge>
+sealed class Graph<TVertex, TEdge> : IGraph<TVertex, TEdge>
     where TEdge : IEdge<TVertex>
     where TVertex : notnull
 {
-    private readonly Dictionary<TVertex, GraphEntry<TVertex, TEdge>> _inOutEdges;
-    private readonly Dictionary<TVertex, GraphEntry<TVertex, TEdge>> _outInEdges;
-    private readonly List<TEdge> _edges = [];
 
     public Graph(
         IEnumerable<GraphEntry<TVertex, TEdge>> entries,
@@ -42,6 +39,9 @@ internal sealed class Graph<TVertex, TEdge> : IGraph<TVertex, TEdge>
             i => i.Key,
             i => new GraphEntry<TVertex, TEdge>(i.Key, i.Value));
     }
+    private readonly List<TEdge> _edges = [];
+    private readonly Dictionary<TVertex, GraphEntry<TVertex, TEdge>> _inOutEdges;
+    private readonly Dictionary<TVertex, GraphEntry<TVertex, TEdge>> _outInEdges;
 
     public IEnumerable<TVertex> Vertices => _inOutEdges.Keys;
 

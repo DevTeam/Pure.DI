@@ -6,9 +6,9 @@
 
 namespace Pure.DI.Core;
 
-using Injection = Injection;
+using Injection=Injection;
 
-internal sealed class DependencyGraphBuilder(
+sealed class DependencyGraphBuilder(
     IEnumerable<IBuilder<DependencyNodeBuildContext, IEnumerable<DependencyNode>>> dependencyNodeBuilders,
     IBuilder<ContractsBuildContext, ISet<Injection>> contractsBuilder,
     IMarker marker,
@@ -165,7 +165,7 @@ internal sealed class DependencyGraphBuilder(
                                     UpdateMap(newInjection, genericNode);
                                 }
                             }
-                                
+
                             isDone = true;
                             break;
                         }
@@ -176,7 +176,7 @@ internal sealed class DependencyGraphBuilder(
                         }
 
                         // Construct
-                        if (namedTypeSymbol.TypeArguments is [{ } constructType])
+                        if (namedTypeSymbol.TypeArguments is [{} constructType])
                         {
                             var constructKind = GetConstructKind(namedTypeSymbol);
                             // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
@@ -320,7 +320,7 @@ internal sealed class DependencyGraphBuilder(
                 processed.Add(node);
             }
         }
-        
+
         foreach (var item in contextMap)
         {
             map[item.Key] = item.Value;
@@ -365,7 +365,7 @@ internal sealed class DependencyGraphBuilder(
 
         return ImmutableArray<DependencyNode>.Empty;
 
-        object? GetContextTag(Injection injection, DependencyNode node) => 
+        object? GetContextTag(Injection injection, DependencyNode node) =>
             node.Factory is { Source.HasContextTag: true } ? injection.Tag : null;
 
         void UpdateMap(Injection injection, DependencyNode node)
@@ -409,7 +409,7 @@ internal sealed class DependencyGraphBuilder(
             string GetTagName() => unresolvedInjection.Tag.ValueToString();
             string GetLifetimeName() => ownerNode.Lifetime.ValueToString();
             if (filter.IsMeet(
-                    setup, 
+                    setup,
                     (Hint.OnCannotResolveContractTypeNameRegularExpression, Hint.OnCannotResolveContractTypeNameWildcard, GetContractName),
                     (Hint.OnCannotResolveTagRegularExpression, Hint.OnCannotResolveTagWildcard, GetTagName),
                     (Hint.OnCannotResolveLifetimeRegularExpression, Hint.OnCannotResolveLifetimeWildcard, GetLifetimeName)))

@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core.Code.Parts;
 
-internal enum ClassPart
+enum ClassPart
 {
     Fields,
     ArgFields,

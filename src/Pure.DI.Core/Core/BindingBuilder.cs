@@ -5,21 +5,21 @@ namespace Pure.DI.Core;
 
 using static Tag;
 
-internal sealed class BindingBuilder(
+sealed class BindingBuilder(
     [Tag(UniqueTag)] IIdGenerator idGenerator,
     IBaseSymbolsProvider baseSymbolsProvider,
     ITypes types)
     : IBindingBuilder
 {
+    private readonly List<MdContract> _contracts = [];
     private readonly LinkedList<MdDefaultLifetime> _defaultLifetimes = [];
+    private readonly List<MdTag> _tags = [];
+    private MdArg? _arg;
+    private MdFactory? _factory;
+    private MdImplementation? _implementation;
+    private MdLifetime? _lifetime;
     private SemanticModel? _semanticModel;
     private SyntaxNode? _source;
-    private MdLifetime? _lifetime;
-    private MdImplementation? _implementation;
-    private MdFactory? _factory;
-    private MdArg? _arg;
-    private readonly List<MdContract> _contracts = [];
-    private readonly List<MdTag> _tags = [];
 
     public void AddDefaultLifetime(MdDefaultLifetime defaultLifetime) =>
         _defaultLifetimes.AddFirst(defaultLifetime);
@@ -71,8 +71,8 @@ internal sealed class BindingBuilder(
         var contractsSource = _implementation?.Source ?? _factory?.Source;
         try
         {
-            if (_semanticModel is { } semanticModel
-                && _source is { } source)
+            if (_semanticModel is {} semanticModel
+                && _source is {} source)
             {
                 var autoContracts = _contracts.Where(i => i.ContractType == null).ToList();
                 if (autoContracts.Count > 0)
@@ -194,8 +194,7 @@ internal sealed class BindingBuilder(
                     ? ImmutableHashSet<MdTag>.Empty
                     : defaultLifetime.Tags.ToImmutableHashSet();
 
-                var baseSymbols = baseSymbolsProvider.GetBaseSymbols(implementationType, (i, _) =>
-                {
+                var baseSymbols = baseSymbolsProvider.GetBaseSymbols(implementationType, (i, _) => {
                     if (!tags.IsEmpty)
                     {
                         var bindingTags = implementationTags.ToImmutableHashSet();

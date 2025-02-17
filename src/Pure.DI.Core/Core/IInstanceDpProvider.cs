@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core;
 
-internal interface IInstanceDpProvider
+interface IInstanceDpProvider
 {
     InstanceDp Get(
         MdSetup setup,

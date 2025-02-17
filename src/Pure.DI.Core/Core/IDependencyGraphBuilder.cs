@@ -1,6 +1,6 @@
 namespace Pure.DI.Core;
 
-internal interface IDependencyGraphBuilder
+interface IDependencyGraphBuilder
 {
     IEnumerable<DependencyNode> TryBuild(
         MdSetup setup,

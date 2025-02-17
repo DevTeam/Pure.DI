@@ -1,8 +1,8 @@
+namespace AvaloniaSimpleApp;
+
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-
-namespace AvaloniaSimpleApp;
 
 public class App : Application
 {
@@ -18,7 +18,7 @@ public class App : Application
         {
             desktop.MainWindow = composition.MainWindow;
         }
-        
+
         base.OnFrameworkInitializationCompleted();
     }
 }

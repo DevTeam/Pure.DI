@@ -2,16 +2,16 @@
 // ReSharper disable ConvertIfStatementToReturnStatement
 namespace Pure.DI.Core.Code;
 
-internal sealed class TriviaTools : ITriviaTools
+sealed class TriviaTools : ITriviaTools
 {
     public T PreserveTrivia<T>(IHints hints, T newNode, SyntaxNode prevNode)
-        where T: SyntaxNode
+        where T : SyntaxNode
     {
         if (hints.IsFormatCodeEnabled)
         {
             return newNode.WithLeadingTrivia(TrimEnd(prevNode.GetLeadingTrivia())).WithTrailingTrivia(prevNode.GetTrailingTrivia());
         }
-        
+
         return newNode.WithLeadingTrivia(SyntaxFactory.Space);
     }
 
@@ -25,6 +25,6 @@ internal sealed class TriviaTools : ITriviaTools
         return newToken.WithLeadingTrivia(SyntaxFactory.Space);
     }
 
-    private static SyntaxTriviaList TrimEnd(SyntaxTriviaList trivia) => 
+    private static SyntaxTriviaList TrimEnd(SyntaxTriviaList trivia) =>
         new(trivia.SkipWhile(i => i.IsKind(SyntaxKind.WhitespaceTrivia)).Reverse().SkipWhile(i => i.IsKind(SyntaxKind.WhitespaceTrivia)).Reverse());
 }

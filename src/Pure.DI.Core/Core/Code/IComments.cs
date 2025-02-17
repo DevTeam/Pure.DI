@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core.Code;
 
-internal interface IComments
+interface IComments
 {
     IEnumerable<string> GetComments(IEnumerable<SyntaxTrivia> comments);
 

@@ -4,7 +4,7 @@
 
 namespace Pure.DI.Core.Models;
 
-internal record MdSetup(
+record MdSetup(
     SemanticModel SemanticModel,
     SyntaxNode Source,
     in CompositionName Name,
@@ -23,7 +23,7 @@ internal record MdSetup(
     IReadOnlyCollection<MdTagOnSites> TagOn,
     IReadOnlyCollection<string> Comments)
 {
-    public virtual bool Equals(MdSetup? other) => 
+    public virtual bool Equals(MdSetup? other) =>
         other is not null && (ReferenceEquals(this, other) || Name.Equals(other.Name));
 
     public override int GetHashCode() => Name.GetHashCode();

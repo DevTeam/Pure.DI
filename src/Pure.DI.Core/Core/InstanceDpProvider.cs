@@ -1,7 +1,7 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal sealed class InstanceDpProvider(
+sealed class InstanceDpProvider(
     ISemantic semantic,
     IAttributes attributes,
     IWildcardMatcher wildcardMatcher,
@@ -97,7 +97,7 @@ internal sealed class InstanceDpProvider(
             fields.ToImmutableArray(),
             properties.ToImmutableArray());
     }
-    
+
     public ImmutableArray<DpParameter> GetParameters(
         in MdSetup setup,
         in ImmutableArray<IParameterSymbol> parameters,
@@ -124,14 +124,14 @@ internal sealed class InstanceDpProvider(
 
         return dependenciesBuilder.MoveToImmutable();
     }
-    
+
     private static IEnumerable<ISymbol> GetMembers(ITypeSymbol type)
     {
         var members = new List<ISymbol>();
         while (true)
         {
             members.AddRange(type.GetMembers());
-            if (type.BaseType is { } baseType)
+            if (type.BaseType is {} baseType)
             {
                 type = baseType;
                 continue;
@@ -142,13 +142,13 @@ internal sealed class InstanceDpProvider(
 
         return members;
     }
-    
+
     private object? GetTagAttribute(
         MdSetup setup,
         ISymbol member) =>
         attributes.GetAttribute(setup.SemanticModel, setup.TagAttributes, member, default(object?))
         ?? TryCreateTagOnSite(setup, member);
-    
+
     private object? TryCreateTagOnSite(
         MdSetup setup,
         ISymbol symbol)

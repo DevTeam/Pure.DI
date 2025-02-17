@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core;
 
-internal sealed class CodeGenerator(
+sealed class CodeGenerator(
     IProfiler profiler,
     IExceptionHandler exceptionHandler,
     IObserversRegistry observersRegistry,
@@ -41,12 +41,12 @@ internal sealed class CodeGenerator(
                 break;
             }
 
-            if (exceptionHandler.SafeRun(setup, BuildCode) is { } composition)
+            if (exceptionHandler.SafeRun(setup, BuildCode) is {} composition)
             {
                 compositions.Add(composition);
             }
         }
-        
+
         cancellationToken.ThrowIfCancellationRequested();
         exceptionHandler.SafeRun(new TagContext(compositions), BuildSmartTags);
         return Unit.Shared;

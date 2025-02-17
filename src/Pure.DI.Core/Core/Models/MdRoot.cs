@@ -1,6 +1,6 @@
 namespace Pure.DI.Core.Models;
 
-internal readonly record struct MdRoot(
+readonly record struct MdRoot(
     SyntaxNode Source,
     SemanticModel SemanticModel,
     ITypeSymbol RootType,

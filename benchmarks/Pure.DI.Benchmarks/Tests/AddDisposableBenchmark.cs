@@ -13,7 +13,7 @@ public class AddDisposableBenchmark
 {
     private const int Count = 128;
     private static readonly IDisposable Disposable = Mock.Of<IDisposable>();
-    
+
     [Benchmark(Baseline = true)]
     public List<IDisposable> Baseline()
     {
@@ -30,7 +30,7 @@ public class AddDisposableBenchmark
 
         return list;
     }
-    
+
     [Benchmark]
     public IDisposable AddDisposable()
     {
@@ -39,7 +39,7 @@ public class AddDisposableBenchmark
         {
             owned.Add(Disposable);
         }
-        
+
         return owned;
     }
 }

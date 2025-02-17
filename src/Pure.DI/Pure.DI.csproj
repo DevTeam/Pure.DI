@@ -22,7 +22,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Pure.DI.Core\Pure.DI.Core.csproj"/>
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="$(AnalyzerRoslynPackageVersion)" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="$(AnalyzerRoslynPackageVersion)" PrivateAssets="all"/>
         <None Include="$(OutDir)\*.dll" Pack="true" PackagePath="analyzers/dotnet/roslyn$(AnalyzerRoslynVersion)/cs" Visible="false"/>
     </ItemGroup>
 
@@ -36,7 +36,7 @@
         </When>
     </Choose>
 
-    <Target Name="_UpdatePackageId" BeforeTargets="$(PackDependsOn)" Condition="$(AvoidCycleErrorOnSelfReference) == 'true'" >
+    <Target Name="_UpdatePackageId" BeforeTargets="$(PackDependsOn)" Condition="$(AvoidCycleErrorOnSelfReference) == 'true'">
         <PropertyGroup>
             <PackageId>$(PackageIdTemp)</PackageId>
         </PropertyGroup>

@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core.Code;
 
-internal sealed class ResolversBuilder(ITypeResolver typeResolver)
+sealed class ResolversBuilder(ITypeResolver typeResolver)
     : IBuilder<RootContext, IEnumerable<ResolverInfo>>
 {
     public IEnumerable<ResolverInfo> Build(RootContext ctx) =>

@@ -7,7 +7,7 @@
 
 namespace Build;
 
-internal class PublishBlazorTarget(
+class PublishBlazorTarget(
     Commands commands)
     : IInitializable, ITarget<int>
 {

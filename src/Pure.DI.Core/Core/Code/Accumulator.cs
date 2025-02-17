@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core.Code;
 
-internal record Accumulator(
+record Accumulator(
     bool IsRoot,
     string Name,
     bool IsDeclared,

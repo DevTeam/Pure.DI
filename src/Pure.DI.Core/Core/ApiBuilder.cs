@@ -3,7 +3,7 @@
 
 namespace Pure.DI.Core;
 
-internal sealed class ApiBuilder(IResources resources)
+sealed class ApiBuilder(IResources resources)
     : IBuilder<Unit, IEnumerable<Source>>
 {
     public IEnumerable<Source> Build(Unit data)

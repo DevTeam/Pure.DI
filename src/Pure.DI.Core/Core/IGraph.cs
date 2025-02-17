@@ -1,6 +1,6 @@
 namespace Pure.DI.Core;
 
-internal interface IGraph<TVertex, TEdge> where TEdge : IEdge<TVertex>
+interface IGraph<TVertex, TEdge> where TEdge : IEdge<TVertex>
 {
     IEnumerable<TVertex> Vertices { get; }
 

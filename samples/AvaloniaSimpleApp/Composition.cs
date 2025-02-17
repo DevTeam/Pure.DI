@@ -9,7 +9,6 @@ public partial class Composition
     private static void Setup() => DI.Setup()
         .Root<MainWindow>(nameof(MainWindow))
         .Root<IMainViewModel>(nameof(MainViewModel))
-
         .Bind().As(Singleton).To<Repository>()
         .Bind().To<BusinessService>()
         .Bind().As(Singleton).To<MainViewModel>();

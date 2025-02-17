@@ -4,7 +4,7 @@ namespace Pure.DI.Core;
 
 using System.Reflection;
 
-internal sealed class InjectionSiteFactory : IInjectionSiteFactory
+sealed class InjectionSiteFactory : IInjectionSiteFactory
 {
     private static readonly SymbolDisplayFormat NameTagQualifiedFormat;
 

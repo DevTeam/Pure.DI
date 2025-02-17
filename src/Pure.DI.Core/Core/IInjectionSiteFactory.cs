@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core;
 
-internal interface IInjectionSiteFactory
+interface IInjectionSiteFactory
 {
     string CreateInjectionSite(ISymbol containingSymbol, string name);
 

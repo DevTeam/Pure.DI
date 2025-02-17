@@ -2,13 +2,15 @@
 
 namespace Pure.DI.Core;
 
-internal sealed class ProcessingNode(
+sealed class ProcessingNode(
     IInjectionsWalker injectionsWalker,
     DependencyNode node,
     ISet<Injection> contracts)
     : IEquatable<ProcessingNode>, IProcessingNode
 {
     private readonly Lazy<IReadOnlyCollection<InjectionInfo>> _injections = new(() => GetInjections(injectionsWalker, node));
+
+    public bool Equals(ProcessingNode other) => Node.Equals(other.Node);
 
     public DependencyNode Node => node;
 
@@ -17,8 +19,6 @@ internal sealed class ProcessingNode(
     public IReadOnlyCollection<InjectionInfo> Injections => _injections.Value;
 
     public override string ToString() => Node.ToString();
-
-    public bool Equals(ProcessingNode other) => Node.Equals(other.Node);
 
     public override bool Equals(object? obj) => obj is ProcessingNode other && Equals(other);
 

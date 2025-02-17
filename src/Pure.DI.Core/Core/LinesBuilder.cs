@@ -5,15 +5,15 @@ namespace Pure.DI.Core;
 
 using System.Buffers;
 
-internal sealed class LinesBuilder : IEnumerable<string>
+sealed class LinesBuilder : IEnumerable<string>
 {
-    private readonly StringBuilder _sb = new();
-    private readonly List<Line> _lines = [];
-    private Indent _indent;
 
     public LinesBuilder(Indent indent) => _indent = new Indent(indent.Value - 1);
 
     public LinesBuilder() => _indent = new Indent(0);
+    private readonly List<Line> _lines = [];
+    private readonly StringBuilder _sb = new();
+    private Indent _indent;
 
     public int Count => _sb.Length > 0 ? 1 : 0 + _lines.Count;
 
@@ -25,6 +25,14 @@ internal sealed class LinesBuilder : IEnumerable<string>
             return _lines;
         }
     }
+
+    public IEnumerator<string> GetEnumerator()
+    {
+        FlushLines();
+        return _lines.Select(i => $"{GetIndent(i.Indent)}{i.Text}").GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     public void Append(string text) => _sb.Append(text);
 
@@ -74,12 +82,6 @@ internal sealed class LinesBuilder : IEnumerable<string>
         _indent = new Indent(_indent.Value - size);
     }
 
-    public IEnumerator<string> GetEnumerator()
-    {
-        FlushLines();
-        return _lines.Select(i => $"{GetIndent(i.Indent)}{i.Text}").GetEnumerator();
-    }
-
     public IDisposable SaveToArray(Encoding encoding, out byte[] buffer, out int size)
     {
         FlushLines();
@@ -107,8 +109,6 @@ internal sealed class LinesBuilder : IEnumerable<string>
         size = position;
         return Disposables.Create(() => ArrayPool<byte>.Shared.Return(rent));
     }
-
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     private void FlushLines()
     {

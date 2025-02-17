@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core;
 
-internal interface IEdge<out TVertex>
+interface IEdge<out TVertex>
 {
     TVertex Source { get; }
 

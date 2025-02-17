@@ -1,6 +1,6 @@
 namespace Pure.DI.Core.Code;
 
-internal interface IStatement
+interface IStatement
 {
     IStatement? Parent { get; }
 

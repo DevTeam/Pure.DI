@@ -2,10 +2,9 @@
 
 namespace Pure.DI.Core.Code.Parts;
 
-internal sealed class ParameterizedConstructorBuilder(
+sealed class ParameterizedConstructorBuilder(
     ITypeResolver typeResolver,
-    [Tag(typeof(ParameterizedConstructorCommenter))]
-    ICommenter<Unit> constructorCommenter,
+    [Tag(typeof(ParameterizedConstructorCommenter))] ICommenter<Unit> constructorCommenter,
     ILocks locks)
     : IClassPartBuilder
 {

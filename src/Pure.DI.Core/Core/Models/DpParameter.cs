@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core.Models;
 
-internal record DpParameter(
+record DpParameter(
     IParameterSymbol ParameterSymbol,
     in Injection Injection)
 {

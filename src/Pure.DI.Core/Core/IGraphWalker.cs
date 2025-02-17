@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core;
 
-internal interface IGraphWalker<TContext, T>
+interface IGraphWalker<TContext, T>
 {
     void Walk(
         TContext ctx,

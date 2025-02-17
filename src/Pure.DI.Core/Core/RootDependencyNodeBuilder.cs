@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core;
 
-internal sealed class RootDependencyNodeBuilder : IBuilder<DependencyNodeBuildContext, IEnumerable<DependencyNode>>
+sealed class RootDependencyNodeBuilder : IBuilder<DependencyNodeBuildContext, IEnumerable<DependencyNode>>
 {
     public IEnumerable<DependencyNode> Build(DependencyNodeBuildContext ctx)
     {
@@ -21,7 +21,7 @@ internal sealed class RootDependencyNodeBuilder : IBuilder<DependencyNodeBuildCo
             yield return new DependencyNode(
                 0,
                 rootBinding,
-                Root: new DpRoot(
+                new DpRoot(
                     root,
                     rootBinding,
                     new Injection(

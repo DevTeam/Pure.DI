@@ -4,7 +4,7 @@
 namespace Build.Tools;
 
 [SuppressMessage("Reliability", "CA2012:Use ValueTasks correctly")]
-internal class Commands(RootCommand rootCommand)
+class Commands(RootCommand rootCommand)
 {
     public Task RegisterAsync<T>(
         ITarget<T> target,
@@ -13,8 +13,7 @@ internal class Commands(RootCommand rootCommand)
         params string[] aliases)
     {
         var command = new Command(name, description);
-        command.SetHandler(async ctx =>
-        {
+        command.SetHandler(async ctx => {
             Summary($"\"{description}\" started");
             try
             {
@@ -27,12 +26,12 @@ internal class Commands(RootCommand rootCommand)
                 throw;
             }
         });
-        
+
         foreach (var alias in aliases)
         {
             command.AddAlias(alias);
         }
-        
+
         rootCommand.AddCommand(command);
         return Task.CompletedTask;
     }

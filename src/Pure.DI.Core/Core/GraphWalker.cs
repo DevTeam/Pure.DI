@@ -1,7 +1,7 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal sealed class GraphWalker<TContext, T> : IGraphWalker<TContext, T>
+sealed class GraphWalker<TContext, T> : IGraphWalker<TContext, T>
 {
     public void Walk(
         TContext ctx,

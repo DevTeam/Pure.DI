@@ -2,10 +2,10 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal sealed class SmartTags : ISmartTags
+sealed class SmartTags : ISmartTags
 {
     private readonly HashSet<SmartTag> _tags = [];
-    
+
     public object Register(string name)
     {
         if (SyntaxFacts.IsValidIdentifier(name)

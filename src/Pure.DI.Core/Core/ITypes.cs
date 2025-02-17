@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core;
 
-internal interface ITypes
+interface ITypes
 {
     INamedTypeSymbol? TryGet(SpecialType specialType, Compilation compilation);
 

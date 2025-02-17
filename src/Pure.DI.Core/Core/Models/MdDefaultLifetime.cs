@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core.Models;
 
-internal readonly record struct MdDefaultLifetime(
+readonly record struct MdDefaultLifetime(
     in MdLifetime Lifetime,
     ITypeSymbol? Type = null,
     ImmutableArray<MdTag> Tags = default)

@@ -2,7 +2,7 @@
 // ReSharper disable UnusedVariable
 namespace Pure.DI.Core.Code;
 
-internal sealed class TagClassBuilder(
+sealed class TagClassBuilder(
     IInformation information,
     ISmartTags smartTags,
     IFormatter formatter,

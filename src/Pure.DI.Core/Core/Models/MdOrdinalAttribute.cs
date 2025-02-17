@@ -3,7 +3,7 @@
 
 namespace Pure.DI.Core.Models;
 
-internal readonly record struct MdOrdinalAttribute(
+readonly record struct MdOrdinalAttribute(
     SemanticModel SemanticModel,
     SyntaxNode Source,
     INamedTypeSymbol AttributeType,

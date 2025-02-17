@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core.Code.Parts;
 
-internal sealed class StaticConstructorBuilder(
+sealed class StaticConstructorBuilder(
     ITypeResolver typeResolver,
     IBuilder<RootContext, IEnumerable<ResolverInfo>> resolversBuilder)
     : IClassPartBuilder

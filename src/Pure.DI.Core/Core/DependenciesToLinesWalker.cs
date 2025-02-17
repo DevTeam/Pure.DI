@@ -1,9 +1,14 @@
 namespace Pure.DI.Core;
 
-internal sealed class DependenciesToLinesWalker(int indent)
+sealed class DependenciesToLinesWalker(int indent)
     : DependenciesWalker<Unit>, IEnumerable<string>
 {
     private readonly LinesBuilder _lb = new(indent);
+
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+    // ReSharper disable once NotDisposedResourceIsReturned
+    public IEnumerator<string> GetEnumerator() => _lb.GetEnumerator();
 
     public override void VisitRoot(in Unit ctx, in DpRoot root)
     {
@@ -76,9 +81,4 @@ internal sealed class DependenciesToLinesWalker(int indent)
     }
 
     public override void VisitParameter(in Unit ctx, in DpParameter parameter) => _lb.Append(parameter.ToString());
-
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-    // ReSharper disable once NotDisposedResourceIsReturned
-    public IEnumerator<string> GetEnumerator() => _lb.GetEnumerator();
 }

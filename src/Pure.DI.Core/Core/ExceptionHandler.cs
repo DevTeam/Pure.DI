@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core;
 
-internal sealed class ExceptionHandler(ILogger logger)
+sealed class ExceptionHandler(ILogger logger)
     : IExceptionHandler
 {
     public TResult? SafeRun<T, TResult>(T state, Func<T, TResult> action)

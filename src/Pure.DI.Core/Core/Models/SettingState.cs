@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core.Models;
 
-internal enum SettingState
+enum SettingState
 {
     Off,
     On

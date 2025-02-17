@@ -3,11 +3,11 @@
 // ReSharper disable UnusedParameter.Local
 namespace System.Runtime.CompilerServices;
 
-internal static class IsExternalInit;
+static class IsExternalInit;
 
-internal class RequiredMemberAttribute : Attribute;
+class RequiredMemberAttribute : Attribute;
 
-internal class CompilerFeatureRequiredAttribute : Attribute
+class CompilerFeatureRequiredAttribute : Attribute
 {
-    public CompilerFeatureRequiredAttribute(string name) { }
+    public CompilerFeatureRequiredAttribute(string name) {}
 }

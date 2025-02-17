@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core.Code;
 
-internal sealed class ParameterizedConstructorCommenter(
+sealed class ParameterizedConstructorCommenter(
     IComments comments)
     : ICommenter<Unit>
 {
@@ -17,7 +17,7 @@ internal sealed class ParameterizedConstructorCommenter(
         code.AppendLine("/// </summary>");
         foreach (var arg in composition.Args.GetArgsOfKind(ArgKind.Class))
         {
-            if (arg.Node.Arg?.Source is not { } mdArg)
+            if (arg.Node.Arg?.Source is not {} mdArg)
             {
                 continue;
             }

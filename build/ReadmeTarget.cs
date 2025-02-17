@@ -6,7 +6,7 @@ namespace Build;
 
 using Pure.DI.Benchmarks.Benchmarks;
 
-internal class ReadmeTarget(
+class ReadmeTarget(
     Commands commands,
     Env env,
     Versions versions,
@@ -54,40 +54,39 @@ internal class ReadmeTarget(
         await AddContentAsync(ReadmeTemplateFile, readmeWriter);
 
         await readmeWriter.WriteLineAsync("");
-        
+
         await GenerateExamplesAsync(examplesSet, readmeWriter, logsDirectory);
 
         await AddContentAsync(FooterTemplateFile, readmeWriter);
-        
+
         await AddContributingAsync(readmeWriter);
 
         await AddBenchmarksAsync(logsDirectory, readmeWriter);
 
         await readmeWriter.FlushAsync(cancellationToken);
-        
+
         await using var contributingWriter = File.CreateText(ContributingFile);
-        
+
         await AddContributingAsync(contributingWriter);
-        
+
         await contributingWriter.FlushAsync(cancellationToken);
-        
+
         return 0;
     }
 
     private async Task AddContributingAsync(StreamWriter readmeWriter)
     {
-        await AddContentAsync(ContributingTemplateFile, readmeWriter, onLine: async line =>
-        {
+        await AddContentAsync(ContributingTemplateFile, readmeWriter, onLine: async line => {
             switch (line.ToLowerInvariant().Trim())
             {
                 case "$(commands)":
                     foreach (var command in rootCommand.Subcommands.OrderBy(i => i.Name))
                     {
-                        await readmeWriter.WriteLineAsync($"| {string.Join(", ", new []{ command.Name }.Concat(command.Aliases).OrderBy(i => i.Length).ThenBy(i => i))} | {command.Description} |");
+                        await readmeWriter.WriteLineAsync($"| {string.Join(", ", new[] { command.Name }.Concat(command.Aliases).OrderBy(i => i.Length).ThenBy(i => i))} | {command.Description} |");
                     }
 
                     return true;
-                
+
                 default:
                     return false;
             }
@@ -132,7 +131,7 @@ internal class ReadmeTarget(
 
         await readmeWriter.WriteLineAsync("## Examples");
         await readmeWriter.WriteLineAsync("");
-        
+
         foreach (var (groupName, exampleItems) in examplesSet)
         {
             var groupTitle = new string(FormatTitle(groupName).ToArray());
@@ -216,7 +215,7 @@ internal class ReadmeTarget(
             }
         }
     }
-    
+
     private static async Task AddClassDiagram(string logsDirectory, string exampleName, TextWriter examplesWriter)
     {
         var classDiagramFile = Path.Combine(logsDirectory, exampleName + ".Mermaid");
@@ -252,8 +251,7 @@ internal class ReadmeTarget(
                     .Skip(5)
                     .Reverse()
                     .Concat(["}"])
-                    .Where(i =>
-                    {
+                    .Where(i => {
                         var line = i.TrimStart();
                         return !(
                             line.StartsWith("///")

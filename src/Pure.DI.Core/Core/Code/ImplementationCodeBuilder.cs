@@ -3,7 +3,7 @@
 
 namespace Pure.DI.Core.Code;
 
-internal sealed class ImplementationCodeBuilder(
+sealed class ImplementationCodeBuilder(
     ITypeResolver typeResolver,
     IInjections injections,
     Func<IVariablesWalker> variablesWalkerFactory,

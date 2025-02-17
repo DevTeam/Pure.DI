@@ -4,7 +4,7 @@ namespace Pure.DI.Benchmarks.Containers;
 using global::Ninject;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-internal sealed class Ninject : BaseAbstractContainer<StandardKernel>
+sealed class Ninject : BaseAbstractContainer<StandardKernel>
 {
     private readonly StandardKernel _container = new();
 

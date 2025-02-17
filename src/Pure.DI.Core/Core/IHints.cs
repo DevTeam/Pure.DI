@@ -1,6 +1,6 @@
 namespace Pure.DI.Core;
 
-internal interface IHints : IReadOnlyDictionary<Hint, LinkedList<string>>
+interface IHints : IReadOnlyDictionary<Hint, LinkedList<string>>
 {
     bool IsCommentsEnabled { get; }
 
@@ -27,7 +27,7 @@ internal interface IHints : IReadOnlyDictionary<Hint, LinkedList<string>>
     bool IsFormatCodeEnabled { get; }
 
     bool IsResolveEnabled { get; }
-    
+
     bool IsSystemThreadingLockEnabled { get; }
 
     string ResolveMethodName { get; }

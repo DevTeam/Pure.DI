@@ -3,7 +3,7 @@
 
 namespace Build.Tools;
 
-internal class Properties
+class Properties
 {
     public string this[string name]
     {

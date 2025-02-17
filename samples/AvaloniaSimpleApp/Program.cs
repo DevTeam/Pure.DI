@@ -1,9 +1,11 @@
-﻿using Avalonia;
+﻿
 
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable ClassNeverInstantiated.Global
 
 namespace AvaloniaSimpleApp;
+
+using Avalonia;
 
 public class Program
 {

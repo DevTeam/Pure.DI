@@ -3,8 +3,9 @@
 namespace Pure.DI.Core.Code;
 
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 
-internal sealed class Comments : IComments
+sealed class Comments : IComments
 {
     private static readonly Regex CommentRegex = new(@"//\s*(.+)", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Singleline);
     private static readonly Regex HintCommentRegex = new($@"\s*({string.Join("|", Enum.GetNames(typeof(Hint)))})\s*=\s*(.+)\s*", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Singleline);
@@ -25,7 +26,7 @@ internal sealed class Comments : IComments
 
     public IHints GetHints(IEnumerable<string> comments)
     {
-        var hints = 
+        var hints =
             from comment in comments
             select HintCommentRegex.Match(comment)
             into match
@@ -69,7 +70,7 @@ internal sealed class Comments : IComments
         }
     }
 
-    public string Escape(string text) => new System.Xml.Linq.XText(text).ToString();
+    public string Escape(string text) => new XText(text).ToString();
 
     public IEnumerable<string> FormatList(
         string title,

@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core.Code;
 
-internal sealed class ClassCommenter(
+sealed class ClassCommenter(
     IFormatter formatter,
     IComments comments,
     IBuilder<IEnumerable<string>, Uri> mermaidUrlBuilder,

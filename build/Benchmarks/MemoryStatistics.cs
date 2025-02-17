@@ -1,7 +1,9 @@
 ﻿namespace Build.Benchmarks;
 
+using Immutype;
+
 [ExcludeFromCodeCoverage]
-[Immutype.Target]
+[Target]
 public readonly record struct MemoryStatistics(
     int Gen0Collections = 0,
     int Gen1Collections = 0,

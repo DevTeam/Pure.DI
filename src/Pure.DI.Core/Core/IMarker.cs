@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core;
 
-internal interface IMarker
+interface IMarker
 {
     bool IsMarkerBased(MdSetup setup, ITypeSymbol type);
 

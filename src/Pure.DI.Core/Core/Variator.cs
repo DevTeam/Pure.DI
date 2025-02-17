@@ -3,8 +3,8 @@
 
 namespace Pure.DI.Core;
 
-internal sealed class Variator<T> : IVariator<T>
-    where T: class
+sealed class Variator<T> : IVariator<T>
+    where T : class
 {
     public bool TryGetNextVariants(
         IEnumerable<IEnumerator<T>> variations,

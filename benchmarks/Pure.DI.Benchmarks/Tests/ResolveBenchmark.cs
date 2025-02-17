@@ -70,7 +70,7 @@ public class ResolveBenchmark
         Dictionary.TryGetValue(Key9, out _);
         Dictionary.TryGetValue(Key10, out _);
     }
-    
+
     [Benchmark(OperationsPerInvoke = 10)]
     public void Resolve()
     {
@@ -85,20 +85,20 @@ public class ResolveBenchmark
         Resolve(Key9);
         Resolve(Key10);
     }
-    
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private string Resolve(global::System.Type type)
+    private string Resolve(System.Type type)
     {
-        var index = (int)(BucketSize * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % Divisor));
+        var index = (int)(BucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % Divisor));
         ref var pair = ref Pairs[index];
         return pair.Key == type ? pair.Value : ResolveNoInlining(type, index);
     }
-    
+
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private string ResolveNoInlining(global::System.Type type, int index)
+    private string ResolveNoInlining(System.Type type, int index)
     {
         var finish = index + BucketSize;
-        while (++index < finish) 
+        while (++index < finish)
         {
             ref var pair = ref Pairs[index];
             if (pair.Key == type)
@@ -106,8 +106,8 @@ public class ResolveBenchmark
                 return pair.Value;
             }
         }
-      
-        throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+
+        throw new System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
     }
 
     private static Pair<Type, string>[] CreatePairs() =>

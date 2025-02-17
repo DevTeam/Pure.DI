@@ -1,7 +1,9 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal sealed class LifetimeAnalyzer : ILifetimeAnalyzer
+using System.Diagnostics;
+
+sealed class LifetimeAnalyzer : ILifetimeAnalyzer
 {
     // Lifetimes sorted by potential state storage duration from least to greatest.
     private static readonly List<Lifetime> LifetimesByPriority =
@@ -17,7 +19,7 @@ internal sealed class LifetimeAnalyzer : ILifetimeAnalyzer
 
     static LifetimeAnalyzer()
     {
-        System.Diagnostics.Debug.Assert(
+        Debug.Assert(
             LifetimesByPriority.Count == Enum.GetValues(typeof(Lifetime)).Length,
             "Some lifetime is not accounted for in the LifetimeAnalyzer class.");
 

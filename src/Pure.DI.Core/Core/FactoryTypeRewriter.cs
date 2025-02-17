@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core;
 
-internal sealed class FactoryTypeRewriter(
+sealed class FactoryTypeRewriter(
     IMarker marker,
     ITypeResolver typeResolver,
     ITypes types)
@@ -36,7 +36,7 @@ internal sealed class FactoryTypeRewriter(
             return tag;
         }
 
-        if (injection.Tag is { } newTag)
+        if (injection.Tag is {} newTag)
         {
             return new MdTag(0, newTag);
         }

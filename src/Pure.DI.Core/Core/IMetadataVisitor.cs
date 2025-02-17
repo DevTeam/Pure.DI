@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core;
 
-internal interface IMetadataVisitor
+interface IMetadataVisitor
 {
     void VisitSetup(in MdSetup setup);
 

@@ -1,6 +1,6 @@
 namespace Pure.DI.Core;
 
-internal interface IGlobalProperties
+interface IGlobalProperties
 {
     int MaxIterations { get; }
 

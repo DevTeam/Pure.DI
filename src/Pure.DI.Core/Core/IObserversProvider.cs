@@ -1,6 +1,6 @@
 namespace Pure.DI.Core;
 
-internal interface IObserversProvider
+interface IObserversProvider
 {
     IEnumerable<IObserver<T>> GetObservers<T>();
 }

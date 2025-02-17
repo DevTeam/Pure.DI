@@ -5,7 +5,7 @@ using IoC.Features;
 using IoC.Lifetimes;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-internal sealed class IoCContainer : BaseAbstractContainer<Container>
+sealed class IoCContainer : BaseAbstractContainer<Container>
 {
     private readonly Container _container = Container.Create(CollectionFeature.Set, FuncFeature.Set);
 

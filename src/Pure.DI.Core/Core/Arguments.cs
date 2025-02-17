@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core;
 
-internal sealed class Arguments : IArguments
+sealed class Arguments : IArguments
 {
     public ArgumentSyntax?[] GetArgs(
         BaseArgumentListSyntax argumentListSyntax,
@@ -12,7 +12,7 @@ internal sealed class Arguments : IArguments
         for (var argIndex = 0; argIndex < argumentListSyntax.Arguments.Count; argIndex++)
         {
             var arg = argumentListSyntax.Arguments[argIndex];
-            if (arg.NameColon?.Name.Identifier.Text is { } colonName)
+            if (arg.NameColon?.Name.Identifier.Text is {} colonName)
             {
                 for (var colonIndex = 0; colonIndex < colons.Length; colonIndex++)
                 {

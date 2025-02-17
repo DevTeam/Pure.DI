@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core;
 
-internal sealed class SetupsBuilder(
+sealed class SetupsBuilder(
     Func<IMetadataWalker> metadataSyntaxWalkerFactory,
     ICache<ImmutableArray<byte>, bool> setupCache,
     Func<IBindingBuilder> bindingBuilderFactory,
@@ -12,20 +12,20 @@ internal sealed class SetupsBuilder(
     ISymbolNames symbolNames)
     : IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>, IMetadataVisitor, ISetupFinalizer
 {
-    private readonly List<MdSetup> _setups = [];
-    private readonly List<MdBinding> _bindings = [];
-    private readonly List<MdRoot> _roots = [];
-    private readonly List<MdDependsOn> _dependsOn = [];
-    private readonly List<MdGenericTypeArgument> _genericTypeArguments = [];
-    private readonly List<MdGenericTypeArgumentAttribute> _genericTypeArgumentAttributes = [];
-    private readonly List<MdTypeAttribute> _typeAttributes = [];
-    private readonly List<MdTagAttribute> _tagAttributes = [];
-    private readonly List<MdOrdinalAttribute> _ordinalAttributes = [];
-    private readonly List<MdUsingDirectives> _usingDirectives = [];
     private readonly List<MdAccumulator> _accumulators = [];
+    private readonly List<MdBinding> _bindings = [];
+    private readonly List<MdDependsOn> _dependsOn = [];
+    private readonly List<MdGenericTypeArgumentAttribute> _genericTypeArgumentAttributes = [];
+    private readonly List<MdGenericTypeArgument> _genericTypeArguments = [];
+    private readonly List<MdOrdinalAttribute> _ordinalAttributes = [];
+    private readonly List<MdRoot> _roots = [];
+    private readonly List<MdSetup> _setups = [];
+    private readonly List<MdTagAttribute> _tagAttributes = [];
+    private readonly List<MdTypeAttribute> _typeAttributes = [];
+    private readonly List<MdUsingDirectives> _usingDirectives = [];
     private IBindingBuilder _bindingBuilder = bindingBuilderFactory();
-    private MdSetup? _setup;
     private Hints _hints = new();
+    private MdSetup? _setup;
 
     public IEnumerable<MdSetup> Build(SyntaxUpdate update)
     {
@@ -135,9 +135,6 @@ internal sealed class SetupsBuilder(
 
     public void VisitFinish() => FinishSetup(_setup);
 
-    private void FinishBinding() =>
-        _bindings.Add(_bindingBuilder.Build(_setup!));
-
     public MdSetup Finalize(MdSetup setup)
     {
         _setup = setup;
@@ -165,22 +162,25 @@ internal sealed class SetupsBuilder(
         return FinishSetup(null)!;
     }
 
+    private void FinishBinding() =>
+        _bindings.Add(_bindingBuilder.Build(_setup!));
+
     private void FinalizeBinding(MdSetup setup, MdBinding binding)
     {
         ITypeSymbol type;
-        if (binding.Arg is { } arg)
+        if (binding.Arg is {} arg)
         {
             type = arg.Type;
         }
         else
         {
-            if (binding.Implementation is { } implementation)
+            if (binding.Implementation is {} implementation)
             {
                 type = implementation.Type;
             }
             else
             {
-                if (binding.Factory is { } factory)
+                if (binding.Factory is {} factory)
                 {
                     type = factory.Type;
                 }
@@ -375,7 +375,7 @@ internal sealed class SetupsBuilder(
 
     private MdSetup? FinishSetup(MdSetup? source)
     {
-        if (_setup is not { } setup)
+        if (_setup is not {} setup)
         {
             return null;
         }

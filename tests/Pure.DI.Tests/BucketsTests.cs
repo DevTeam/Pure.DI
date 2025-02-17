@@ -5,7 +5,6 @@
 namespace Pure.DI.Tests;
 
 using System.Runtime.CompilerServices;
-using Pure.DI;
 
 public class BucketsTests
 {
@@ -43,30 +42,6 @@ public class BucketsTests
             .Select(i => new Pair<string, int>((100 + i).ToString(), i))
             .ToArray();
 
-    [Fact]
-    public void ShouldSupportTypeKey()
-    {
-        // Given
-        var divisor = Buckets<Type, int>.GetDivisor(5);
-        var pairs = Buckets<Type, int>.Create(
-            divisor,
-            out var bucketSize,
-            [
-                new Pair<Type, int>(typeof(string), 1),
-                new Pair<Type, int>(typeof(int), 2),
-                new Pair<Type, int>(typeof(double), 3),
-                new Pair<Type, int>(typeof(float), 4),
-                new Pair<Type, int>(typeof(char), 5)
-            ]
-        );
-
-        // When
-        var value = Get(pairs, divisor, bucketSize, typeof(float));
-
-        // Then
-        value.ShouldBe(4);
-    }
-
     private static TValue Get<TKey, TValue>(
         Pair<TKey, TValue>[] pairs,
         uint divisor,
@@ -91,5 +66,29 @@ public class BucketsTests
         }
 
         throw new InvalidOperationException();
+    }
+
+    [Fact]
+    public void ShouldSupportTypeKey()
+    {
+        // Given
+        var divisor = Buckets<Type, int>.GetDivisor(5);
+        var pairs = Buckets<Type, int>.Create(
+            divisor,
+            out var bucketSize,
+            [
+                new Pair<Type, int>(typeof(string), 1),
+                new Pair<Type, int>(typeof(int), 2),
+                new Pair<Type, int>(typeof(double), 3),
+                new Pair<Type, int>(typeof(float), 4),
+                new Pair<Type, int>(typeof(char), 5)
+            ]
+        );
+
+        // When
+        var value = Get(pairs, divisor, bucketSize, typeof(float));
+
+        // Then
+        value.ShouldBe(4);
     }
 }

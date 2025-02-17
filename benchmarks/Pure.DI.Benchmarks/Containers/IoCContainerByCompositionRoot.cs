@@ -4,7 +4,7 @@ namespace Pure.DI.Benchmarks.Containers;
 using IoC;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-internal sealed class IoCContainerByCompositionRoot<TContract> : BaseAbstractContainer<Func<TContract>>
+sealed class IoCContainerByCompositionRoot<TContract> : BaseAbstractContainer<Func<TContract>>
 {
     private readonly IoCContainer _container = new();
 

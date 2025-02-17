@@ -8,7 +8,7 @@ namespace Pure.DI.Core;
 
 using System.Runtime.CompilerServices;
 
-internal static class LoggerExtensions
+static class LoggerExtensions
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void CompileError(this ILogger logger, string errorMessage, in Location location, string id) =>

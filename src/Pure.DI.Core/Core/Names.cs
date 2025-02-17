@@ -4,12 +4,9 @@ namespace Pure.DI.Core;
 
 using System.Runtime.CompilerServices;
 
-internal static class Names
+static class Names
 {
-    public static readonly string Salt = $"M{DateTime.Now.Month:00}D{DateTime.Now.Day:00}di";
     public const string GeneratorName = $"{nameof(Pure)}.{nameof(DI)}";
-    public static readonly string InjectionMarker = "injection" + Salt;
-    public static readonly string InitializationMarker = "initialization" + Salt;
 
     // Namespaces
     public const string GlobalNamespacePrefix = "global::";
@@ -24,13 +21,10 @@ internal static class Names
     // Messages
     public const string CannotResolveMessage = "Cannot resolve composition root";
     public const string OfTypeMessage = "of type";
-
-    // Others
-    public static readonly string ResolverClassName = $"Resolver{Salt}";
     public const string DefaultApiMethodModifiers = "public";
     public const string ParentScopeArgName = "parentScope";
     public const string ResolverPropertyName = "Value";
-    public const string DefaultBuilderName= "BuildUp";
+    public const string DefaultBuilderName = "BuildUp";
     public const string BuildingInstance = "buildingInstance";
     public const string ContextInstance = "ctx";
 
@@ -68,6 +62,21 @@ internal static class Names
     public const string EnsureExistsMethodNamePrefix = "EnsureExistenceOf";
     public const string EnumerateMethodNamePrefix = "EnumerationOf";
 
+    // Vars
+    public const string TransientVariablePrefix = "transient";
+    public const string PerBlockVariablePrefix = "perBlock";
+    public const string PerResolveVariablePrefix = "perResolve";
+    public const string SingletonVariablePrefix = "_singleton";
+    public const string ScopedVariablePrefix = "_scoped";
+    public const string ArgVariablePrefix = "_arg";
+    public const string LocalVariablePrefix = "local";
+    public static readonly string Salt = $"M{DateTime.Now.Month:00}D{DateTime.Now.Day:00}di";
+    public static readonly string InjectionMarker = "injection" + Salt;
+    public static readonly string InitializationMarker = "initialization" + Salt;
+
+    // Others
+    public static readonly string ResolverClassName = $"Resolver{Salt}";
+
     // Fields
     public static readonly string BucketsFieldName = $"_buckets{Salt}";
     public static readonly string BucketSizeFieldName = $"_bucketSize{Salt}";
@@ -77,15 +86,6 @@ internal static class Names
     public static readonly string RootFieldName = "_root" + Salt;
     public static readonly string CannotResolveFieldName = "CannotResolveMessage" + Salt;
     public static readonly string OfTypeFieldName = "OfTypeMessage" + Salt;
-
-    // Vars
-    public const string TransientVariablePrefix = "transient";
-    public const string PerBlockVariablePrefix = "perBlock";
-    public const string PerResolveVariablePrefix = "perResolve";
-    public const string SingletonVariablePrefix = "_singleton";
-    public const string ScopedVariablePrefix = "_scoped";
-    public const string ArgVariablePrefix = "_arg";
-    public const string LocalVariablePrefix = "local";
 
     public static string GetPropertyName(this Root root) =>
         root.IsPublic ? root.Name : $"Root{Salt}{root.Index}";

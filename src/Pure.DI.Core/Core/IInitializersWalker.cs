@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core;
 
-internal interface IInitializersWalker
+interface IInitializersWalker
 {
     IInitializersWalker Ininitialize(string variableName, IEnumerator<Variable> variables);
 

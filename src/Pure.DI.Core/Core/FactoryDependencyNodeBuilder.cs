@@ -3,7 +3,7 @@
 
 namespace Pure.DI.Core;
 
-internal sealed class FactoryDependencyNodeBuilder(
+sealed class FactoryDependencyNodeBuilder(
     IAttributes attributes,
     IInstanceDpProvider instanceDpProvider)
     : IBuilder<DependencyNodeBuildContext, IEnumerable<DependencyNode>>
@@ -13,7 +13,7 @@ internal sealed class FactoryDependencyNodeBuilder(
         var setup = ctx.Setup;
         foreach (var binding in setup.Bindings)
         {
-            if (binding.Factory is not { } factory)
+            if (binding.Factory is not {} factory)
             {
                 continue;
             }
@@ -33,7 +33,7 @@ internal sealed class FactoryDependencyNodeBuilder(
                 {
                     continue;
                 }
-                
+
                 var targetDp = instanceDpProvider.Get(setup, ctx.TypeConstructor, compilation, targetType);
                 initializers.Add(new DpInitializer(initializer, targetDp.Methods, targetDp.Properties, targetDp.Fields));
             }

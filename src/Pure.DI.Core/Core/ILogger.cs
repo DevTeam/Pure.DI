@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core;
 
-internal interface ILogger
+interface ILogger
 {
     void Log(in LogEntry logEntry);
 }

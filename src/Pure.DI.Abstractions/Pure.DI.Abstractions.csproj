@@ -11,7 +11,7 @@
 
     <ItemGroup>
         <Compile Remove="any\Pure.DI\Abstractions\Composition.g.cs"/>
-        <Content Include="any\Pure.DI\Abstractions\Composition.g.cs" buildAction="Compile" >
+        <Content Include="any\Pure.DI\Abstractions\Composition.g.cs" buildAction="Compile">
             <Pack>true</Pack>
             <PackagePath>contentFiles/cs/any/Pure.DI/Abstractions</PackagePath>
         </Content>

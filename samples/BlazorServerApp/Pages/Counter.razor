@@ -12,13 +12,13 @@
 
 @code {
     long _count;
-    
+
     protected override void OnInitialized()
     {
         _count = CounterService.Count;
         base.OnInitialized();
     }
 
-    private void IncrementCount() => 
+    private void IncrementCount() =>
         _count = CounterService.IncrementCount();
 }

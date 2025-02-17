@@ -2,7 +2,7 @@
 // ReSharper disable InvertIf
 namespace Build;
 
-internal class CreateExamplesTarget(
+class CreateExamplesTarget(
     Commands commands,
     Settings settings,
     Env env)
@@ -18,7 +18,7 @@ internal class CreateExamplesTarget(
     public const string SourceKey = "s";
     public const string BodyKey = "b";
     public const string ReferencesKey = "r";
-    
+
     private static readonly string[] Groups =
     [
         "Basics",
@@ -33,7 +33,7 @@ internal class CreateExamplesTarget(
     ];
 
     private static readonly char[] Separator = ['='];
-    
+
     public Task InitializeAsync(CancellationToken cancellationToken) => commands.RegisterAsync(
         this, "Create examples", "example", "e");
 
@@ -63,7 +63,7 @@ internal class CreateExamplesTarget(
             .WithNoBuild(true)
             .WithConfiguration(settings.Configuration)
             .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
-        
+
         return await CreateExamplesAsync(cancellationToken);
     }
 
@@ -174,7 +174,7 @@ internal class CreateExamplesTarget(
                     localBody.Add(line);
                 }
             }
-            
+
             if (body.Count != 0)
             {
                 var references = vars[ReferencesKey].Split(";", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
@@ -195,7 +195,7 @@ internal class CreateExamplesTarget(
                 i.OrderBy(j => int.Parse(j[PriorityKey])).ThenBy(j => j[DescriptionKey]).Select(j => new Example(j)).ToList()))
             .ToList();
     }
-    
+
     private enum Part
     {
         Comment,

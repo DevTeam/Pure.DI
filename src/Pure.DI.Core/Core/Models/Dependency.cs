@@ -1,6 +1,6 @@
 namespace Pure.DI.Core.Models;
 
-internal readonly record struct Dependency(
+readonly record struct Dependency(
     bool IsResolved,
     DependencyNode Source,
     in Injection Injection,

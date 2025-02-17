@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core;
 
-internal sealed class DependencyGraphValidator(
+sealed class DependencyGraphValidator(
     ILogger logger,
     ITypeResolver typeResolver,
     IFilter filter,
@@ -30,7 +30,7 @@ internal sealed class DependencyGraphValidator(
                 string GetTagName() => unresolvedInjection.Tag.ValueToString();
                 string GetLifetimeName() => dependencyNode.Lifetime.ValueToString();
                 if (filter.IsMeet(
-                        setup, 
+                        setup,
                         (Hint.OnCannotResolveContractTypeNameRegularExpression, Hint.OnCannotResolveContractTypeNameWildcard, GetContractName),
                         (Hint.OnCannotResolveTagRegularExpression, Hint.OnCannotResolveTagWildcard, GetTagName),
                         (Hint.OnCannotResolveLifetimeRegularExpression, Hint.OnCannotResolveLifetimeWildcard, GetLifetimeName)))

@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core;
 
-internal interface IGraphVisitor<in TContext, T>
+interface IGraphVisitor<in TContext, T>
 {
     T Create(
         IGraph<DependencyNode, Dependency> graph,

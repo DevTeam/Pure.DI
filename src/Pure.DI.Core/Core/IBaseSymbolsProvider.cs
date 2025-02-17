@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core;
 
-internal interface IBaseSymbolsProvider
+interface IBaseSymbolsProvider
 {
     IEnumerable<ITypeSymbol> GetBaseSymbols(
         ITypeSymbol symbol,

@@ -3,7 +3,7 @@
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.Core.Code;
 
-internal sealed class Formatter(
+sealed class Formatter(
     IComments comments,
     ITypeResolver typeResolver)
     : IFormatter
@@ -70,10 +70,10 @@ internal sealed class Formatter(
         return FormatRef(sb.ToString());
     }
 
-    public string FormatRef(string text) => 
+    public string FormatRef(string text) =>
         $"<see cref=\"{text}\"/>";
-    
-    public string FormatRef(Lifetime lifetime) => 
+
+    public string FormatRef(Lifetime lifetime) =>
         $"<see cref=\"{Names.GeneratorName}.{nameof(Lifetime)}.{lifetime}\"/>";
 
     public string FormatRef(ITypeSymbol type)
@@ -86,6 +86,6 @@ internal sealed class Formatter(
 #endif
     }
 
-    private string FormatTypeName(string typeName) => 
+    private string FormatTypeName(string typeName) =>
         comments.Escape(typeName.Replace('<', '{').Replace('>', '}'));
 }

@@ -2,7 +2,7 @@ namespace Build;
 
 using System.Runtime.CompilerServices;
 
-internal class GeneratorTarget(
+class GeneratorTarget(
     Settings settings,
     Commands commands,
     Packages packages)

@@ -2,7 +2,7 @@
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.Core;
 
-internal sealed class BindingsValidator(ILogger logger, IRegistry<MdBinding> registry)
+sealed class BindingsValidator(ILogger logger, IRegistry<MdBinding> registry)
     : IValidator<DependencyGraph>
 {
     public bool Validate(DependencyGraph data)

@@ -11,7 +11,7 @@ namespace Pure.DI.Core;
 using System.Runtime.CompilerServices;
 
 [ExcludeFromCodeCoverage]
-internal static class Disposables
+static class Disposables
 {
     public static readonly IDisposable Empty = EmptyDisposable.Shared;
 

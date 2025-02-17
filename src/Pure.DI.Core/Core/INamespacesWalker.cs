@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core;
 
-internal interface INamespacesWalker
+interface INamespacesWalker
 {
     INamespacesWalker Initialize(SemanticModel semanticModel);
 

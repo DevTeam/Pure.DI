@@ -1,5 +1,4 @@
 using BlazorServerApp;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Uses Composition as an alternative IServiceProviderFactory
