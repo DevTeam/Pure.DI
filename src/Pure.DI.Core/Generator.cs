@@ -25,7 +25,7 @@ public sealed partial class Generator
             new GeneratorDiagnostic(sourceProductionContext),
             changes.Select(change => new SyntaxUpdate(change.Node, change.SemanticModel)),
             cancellationToken);
-    
+
     [Conditional("DI")]
     private void Setup() => DI.Setup()
         .Hint(Resolve, "Off")
@@ -52,6 +52,7 @@ public sealed partial class Generator
                 ctx.Inject<Logger>(out var logger);
                 return logger.WithTargetType(ctx.ConsumerTypes[0]);
             })
+            .Bind().To<VariablesMap>()
 
             // Walkers
             .Bind<IMetadataWalker>().To<MetadataWalker>()
@@ -59,9 +60,10 @@ public sealed partial class Generator
             .Bind<IInjectionsWalker>().To<InjectionsWalker>()
             .Bind<INamespacesWalker>().To<NamespacesWalker>()
             .Bind<IFactoryResolversWalker>().To<FactoryResolversWalker>()
-            .Bind<IFactoryValidator>().To<FactoryValidator>()
             .Bind<IInitializersWalker>().To<InitializersWalker>()
             .Bind<IConstructorInjectionsCounterWalker>().To<ConstructorInjectionsCounterWalker>()
+            .Bind<IDependencyGraphLocationsWalker>().To<DependencyGraphLocationsWalker>()
+            .Bind<IFactoryValidator>().To<FactoryValidator>()
             .Bind<ILocalVariableRenamingRewriter>().To<LocalVariableRenamingRewriter>()
 
         .DefaultLifetime(Singleton)
@@ -72,7 +74,7 @@ public sealed partial class Generator
             .Bind().To<Information>()
 
         .DefaultLifetime(PerBlock)
-            .Bind().To(_ => typeof(Core.CodeGenerator).Assembly)
+            .Bind().To(_ => typeof(CodeGenerator).Assembly)
             .Bind().To<Arguments>()
             .Bind().To<Comments>()
             .Bind().To<BuildTools>()
@@ -142,7 +144,7 @@ public sealed partial class Generator
             .Bind().To<ApiBuilder>()
             .Bind().To<CodeBuilder>()
             .Bind().To<SetupsBuilder>()
-            .Bind().To<Core.CodeGenerator>()
+            .Bind().To<CodeGenerator>()
             .Bind().To<FactoryTypeRewriter>()
             .Bind().To<CompositionBuilder>()
             .Bind().To<TagClassBuilder>()

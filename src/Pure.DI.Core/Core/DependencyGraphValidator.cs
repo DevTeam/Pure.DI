@@ -6,6 +6,7 @@ internal sealed class DependencyGraphValidator(
     ILogger logger,
     ITypeResolver typeResolver,
     IFilter filter,
+    Func<IDependencyGraphLocationsWalker> dependencyGraphLocationsWalkerFactory,
     CancellationToken cancellationToken)
     : IValidator<DependencyGraph>
 {
@@ -40,7 +41,7 @@ internal sealed class DependencyGraphValidator(
 
             isResolved = false;
             var errorMessage = $"Unable to resolve \"{unresolvedInjection}\" in {target}.";
-            var locationsWalker = new DependencyGraphLocationsWalker(unresolvedInjection);
+            var locationsWalker = dependencyGraphLocationsWalkerFactory().Initialize(unresolvedInjection);
             locationsWalker.VisitDependencyNode(Unit.Shared, target);
             foreach (var location in locationsWalker.Locations)
             {

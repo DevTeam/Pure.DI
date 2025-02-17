@@ -11,16 +11,17 @@ internal sealed class CompositionBuilder(
     ICodeBuilder<Block> blockBuilder,
     ICodeBuilder<IStatement> statementBuilder,
     IBuilder<CompositionCode, LinesBuilder> classDiagramBuilder,
+    Func<IVariablesMap> variablesMapFactory,
     CancellationToken cancellationToken)
     : IBuilder<DependencyGraph, CompositionCode>
 {
     public CompositionCode Build(DependencyGraph graph)
     {
         var roots = new List<Root>();
-        var map = new VariablesMap();
         var allArgs = new HashSet<Variable>();
         var isThreadSafe = false;
         var isThreadSafeEnabled = graph.Source.Hints.IsThreadSafeEnabled;
+        var map = variablesMapFactory();
         foreach (var root in graph.Roots.Values)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -79,7 +80,7 @@ internal sealed class CompositionBuilder(
 
             roots.Add(processedRoot);
             isThreadSafe |= isThreadSafeEnabled && root.Node.Accumulators.Count > 0;
-            isThreadSafe |= isThreadSafeEnabled && map.IsThreadSafe();
+            isThreadSafe |= isThreadSafeEnabled && map.IsThreadSafe;
             map.Reset();
         }
 
