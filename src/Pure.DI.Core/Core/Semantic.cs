@@ -37,7 +37,10 @@ sealed class Semantic(
             return result;
         }
 
-        throw new CompileErrorException($"The type {node} is not supported.", node.GetLocation(), LogId.ErrorInvalidMetadata);
+        throw new CompileErrorException(
+            string.Format(Strings.Error_Template_NotSupported, node),
+            node.GetLocation(),
+            LogId.ErrorInvalidMetadata);
     }
 
     public T GetRequiredConstantValue<T>(SemanticModel semanticModel, SyntaxNode node)
@@ -48,7 +51,10 @@ sealed class Semantic(
             return value;
         }
 
-        throw new CompileErrorException($"{node} must be a non-null value of type {typeof(T)}.", node.GetLocation(), LogId.ErrorInvalidMetadata);
+        throw new CompileErrorException(
+            string.Format(Strings.Error_Template_MustBeValueOfType, node, typeof(T)),
+            node.GetLocation(),
+            LogId.ErrorInvalidMetadata);
     }
 
     public T?[] GetConstantValues<T>(SemanticModel semanticModel, SyntaxNode node)
@@ -159,7 +165,10 @@ sealed class Semantic(
 
                             if (ctor is null)
                             {
-                                throw new CompileErrorException($"There is no accessible non-static constructor of type {typeArg} with an argument matching \"{name}\".", invocationExpressionSyntax.GetLocation(), LogId.ErrorInvalidMetadata);
+                                throw new CompileErrorException(
+                                    string.Format(Strings.Error_Template_NoAccessibleConstructor, typeArg, name),
+                                    invocationExpressionSyntax.GetLocation(),
+                                    LogId.ErrorInvalidMetadata);
                             }
 
                             var injectionSite = injectionSiteFactory.CreateInjectionSite(ctorArgName.Expression, ctor, name);
@@ -184,7 +193,10 @@ sealed class Semantic(
 
                             if (method is null)
                             {
-                                throw new CompileErrorException($"There is no accessible non-static method of type {typeArg} with a name matching \"{methodName}\" an argument matching \"{methodArg}\".", invocationExpressionSyntax.GetLocation(), LogId.ErrorInvalidMetadata);
+                                throw new CompileErrorException(
+                                    string.Format(Strings.Error_Template_NoAccessibleMethod, typeArg, methodName, methodArg),
+                                    invocationExpressionSyntax.GetLocation(),
+                                    LogId.ErrorInvalidMetadata);
                             }
 
                             var injectionSite = injectionSiteFactory.CreateInjectionSite(methodArgName.Expression, method, methodArg);
@@ -207,7 +219,10 @@ sealed class Semantic(
 
                             if (member is null)
                             {
-                                throw new CompileErrorException($"There is no accessible non-static writable field or property matched with \"{name}\" of {typeArg}.", invocationExpressionSyntax.GetLocation(), LogId.ErrorInvalidMetadata);
+                                throw new CompileErrorException(
+                                    string.Format(Strings.Error_Template_NoAccessibleFieldOrProperty, name, typeArg),
+                                    invocationExpressionSyntax.GetLocation(),
+                                    LogId.ErrorInvalidMetadata);
                             }
 
                             var injectionSite = injectionSiteFactory.CreateInjectionSite(memberNameArg, type, name);
@@ -238,7 +253,10 @@ sealed class Semantic(
             return (T)typeOfOperation.TypeOperand;
         }
 
-        throw new CompileErrorException($"{node} must be a constant value of type {typeof(T)} or a special API call.", node.GetLocation(), LogId.ErrorInvalidMetadata);
+        throw new CompileErrorException(
+            string.Format(Strings.Error_Template_MustBeApiCall, node, typeof(T)),
+            node.GetLocation(),
+            LogId.ErrorInvalidMetadata);
     }
 
     public bool IsValidNamespace(INamespaceSymbol? namespaceSymbol) =>

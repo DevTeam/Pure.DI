@@ -30,7 +30,10 @@ sealed class ImplementationDependencyNodeBuilder(
 
             if (implementationType.IsAbstract)
             {
-                throw new CompileErrorException($"The {implementationType} cannot be constructed due to being an abstract type.", implementation.Source.GetLocation(), LogId.ErrorInvalidMetadata);
+                throw new CompileErrorException(
+                    string.Format(Strings.Error_Template_CannotConstructAbstractType, implementationType),
+                    implementation.Source.GetLocation(),
+                    LogId.ErrorInvalidMetadata);
             }
 
             var compilation = binding.SemanticModel.Compilation;
@@ -57,7 +60,10 @@ sealed class ImplementationDependencyNodeBuilder(
 
             if (constructors.Count == 0)
             {
-                throw new CompileErrorException($"The instance of {implementationType} cannot be instantiated due to no accessible constructor available.", implementation.Source.GetLocation(), LogId.ErrorInvalidMetadata);
+                throw new CompileErrorException(
+                    string.Format(Strings.Error_Template_CannotBeInstantiatedNoAccessibleConstructor, implementationType),
+                    implementation.Source.GetLocation(),
+                    LogId.ErrorInvalidMetadata);
             }
 
             var instanceDp = instanceDpProvider.Get(setup, ctx.TypeConstructor, compilation, implementationType);

@@ -16,7 +16,7 @@ sealed class FactoryValidator : CSharpSyntaxWalker, IFactoryValidator
         {
             if (node.Parent is ArgumentSyntax)
             {
-                throw new CompileErrorException($"It is not possible to use \"{_contextParameterName}\" directly. Only its methods or properties can be used.", node.GetLocation(), LogId.ErrorInvalidMetadata);
+                throw new CompileErrorException(string.Format(Strings.Error_Template_CannotUseContextDirectly, _contextParameterName), node.GetLocation(), LogId.ErrorInvalidMetadata);
             }
         }
 

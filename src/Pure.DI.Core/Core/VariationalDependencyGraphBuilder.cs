@@ -57,7 +57,10 @@ sealed class VariationalDependencyGraphBuilder(
 
                     if (node.Binding.SourceSetup.Kind != CompositionKind.Global)
                     {
-                        logger.CompileWarning($"{item.Key.ToString()} has been overridden.", item.Value.Binding.Source.GetLocation(), LogId.WarningOverriddenBinding);
+                        logger.CompileWarning(
+                            string.Format(Strings.Warning_Template_BindingHasBeenOverridden, item.Key),
+                            item.Value.Binding.Source.GetLocation(),
+                            LogId.WarningOverriddenBinding);
                     }
                 }
             }
@@ -79,12 +82,18 @@ sealed class VariationalDependencyGraphBuilder(
             {
                 if (maxAttempts-- == 0)
                 {
-                    throw new CompileErrorException("It is not possible to construct a dependency graph.", setup.Source.GetLocation(), LogId.ErrorInvalidMetadata);
+                    throw new CompileErrorException(
+                        Strings.Error_InvalidBindingDueToCompilationError,
+                        setup.Source.GetLocation(),
+                        LogId.ErrorInvalidMetadata);
                 }
 
                 if (maxIterations-- <= 0)
                 {
-                    logger.CompileError($"The maximum number of iterations {globalProperties.MaxIterations.ToString()} was exceeded when building the optimal dependency graph. Try to specify the dependency graph more accurately.", setup.Source.GetLocation(), LogId.ErrorInvalidMetadata);
+                    logger.CompileError(
+                        string.Format(Strings.Error_Template_MaximumNumberOfIterations, globalProperties.MaxIterations),
+                        setup.Source.GetLocation(),
+                        LogId.ErrorInvalidMetadata);
                 }
 
                 cancellationToken.ThrowIfCancellationRequested();

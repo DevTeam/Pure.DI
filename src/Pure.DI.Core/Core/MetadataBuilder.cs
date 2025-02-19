@@ -28,7 +28,10 @@ sealed class MetadataBuilder(
             var languageVersion = compilations.GetLanguageVersion(update.SemanticModel.Compilation);
             if (languageVersion < LanguageVersion.CSharp8)
             {
-                throw new CompileErrorException($"{Names.GeneratorName} does not support C# {languageVersion.ToDisplayString()}. Please use language version {LanguageVersion.CSharp8.ToDisplayString()} or greater.", update.Node.GetLocation(), LogId.ErrorNotSupportedLanguageVersion);
+                throw new CompileErrorException(
+                    string.Format(Strings.Error_Template_UnsupportLanguage, Names.GeneratorName, languageVersion.ToDisplayString(), LanguageVersion.CSharp8.ToDisplayString()),
+                    update.Node.GetLocation(),
+                    LogId.ErrorNotSupportedLanguageVersion);
             }
 
             var setupsBuilder = setupsBuilderFactory();
@@ -83,7 +86,10 @@ sealed class MetadataBuilder(
 
                 if (!map.TryGetValue(compositionTypeName, out var dependsOnSetup))
                 {
-                    throw new CompileErrorException($"Cannot find setup \"{compositionTypeName}\".", dependsOn.Source.GetLocation(), LogId.ErrorCannotFindSetup);
+                    throw new CompileErrorException(
+                        string.Format(Strings.Error_Template_CannotFindSetup, compositionTypeName),
+                        dependsOn.Source.GetLocation(),
+                        LogId.ErrorCannotFindSetup);
                 }
 
                 yield return dependsOnSetup;

@@ -11,7 +11,10 @@ sealed class BindingsValidator(ILogger logger, IRegistry<MdBinding> registry)
         {
             if (!registry.IsRegistered(data.Source, binding))
             {
-                logger.CompileWarning("The binding was not used.", binding.Source.GetLocation(), LogId.WarningMetadataDefect);
+                logger.CompileWarning(
+                    Strings.Warning_BindingIsNotUsed,
+                    binding.Source.GetLocation(),
+                    LogId.WarningMetadataDefect);
             }
         }
 

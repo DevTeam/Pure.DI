@@ -26,7 +26,7 @@ sealed class LifetimesValidatorVisitor(
             {
                 if (errors.Add(new ErrorKey(actualTargetLifetimeNode, dependencyNode)))
                 {
-                    logger.CompileError($"Type {actualTargetLifetimeNode.Type} with lifetime {actualTargetLifetimeNode.Lifetime} requires direct or transitive dependency injectionion of type {dependencyNode.Type} with lifetime {dependencyNode.Lifetime}, which can lead to data leakage and inconsistent behavior.", dependencyNode.Binding.Source.GetLocation(), LogId.ErrorLifetimeDefect);
+                    logger.CompileError(string.Format(Strings.Error_Template_TypeWithLifetimeRequiresDirectOrTransitiveInjection, actualTargetLifetimeNode.Type, actualTargetLifetimeNode.Lifetime, dependencyNode.Type, dependencyNode.Lifetime), dependencyNode.Binding.Source.GetLocation(), LogId.ErrorLifetimeDefect);
                 }
             }
 

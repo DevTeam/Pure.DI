@@ -205,7 +205,7 @@ sealed class ApiInvocationProcessor(
                     case nameof(IConfiguration.RootBind):
                         if (genericName.TypeArgumentList.Arguments is not [{} rootBindType])
                         {
-                            throw new CompileErrorException("Invalid root type.", invocation.GetLocation(), LogId.ErrorInvalidMetadata);
+                            throw new CompileErrorException(Strings.Error_InvalidRootType, invocation.GetLocation(), LogId.ErrorInvalidMetadata);
                         }
 
                         var tagArguments = invocation.ArgumentList.Arguments.SkipWhile((arg, i) => arg.NameColon?.Name.Identifier.Text != "tags" && i < 2);
@@ -289,7 +289,7 @@ sealed class ApiInvocationProcessor(
                             // ReSharper disable once MergeIntoNegatedPattern
                             || rootsType.SpecialType == Microsoft.CodeAnalysis.SpecialType.System_Object)
                         {
-                            throw new CompileErrorException("Invalid roots type.", invocation.GetLocation(), LogId.ErrorInvalidMetadata);
+                            throw new CompileErrorException(Strings.Error_InvalidRootsRype, invocation.GetLocation(), LogId.ErrorInvalidMetadata);
                         }
 
                         var rootsArgs = arguments.GetArgs(invocation.ArgumentList, "name", "kind", "filter");
@@ -306,7 +306,7 @@ sealed class ApiInvocationProcessor(
 
                         if (!hasRootsType)
                         {
-                            throw new CompileErrorException($"There is no type found that inherits from {symbolNames.GetName(rootsType)} whose name matches the \"{rootsWildcardFilter}\" filter.", invocation.GetLocation(), LogId.ErrorInvalidMetadata);
+                            throw new CompileErrorException(string.Format(Strings.Error_Template_NoTypeForWildcard, symbolNames.GetName(rootsType), rootsWildcardFilter), invocation.GetLocation(), LogId.ErrorInvalidMetadata);
                         }
 
                         break;
@@ -314,7 +314,7 @@ sealed class ApiInvocationProcessor(
                     case nameof(IConfiguration.Root):
                         if (genericName.TypeArgumentList.Arguments is not [{} rootTypeSyntax])
                         {
-                            throw new CompileErrorException("Invalid root type.", invocation.GetLocation(), LogId.ErrorInvalidMetadata);
+                            throw new CompileErrorException(Strings.Error_InvalidRootType, invocation.GetLocation(), LogId.ErrorInvalidMetadata);
                         }
 
                         var rootSymbol = semantic.GetTypeSymbol<INamedTypeSymbol>(semanticModel, rootTypeSyntax);
@@ -327,7 +327,7 @@ sealed class ApiInvocationProcessor(
                             // ReSharper disable once MergeIntoNegatedPattern
                             || buildersRootType.SpecialType == Microsoft.CodeAnalysis.SpecialType.System_Object)
                         {
-                            throw new CompileErrorException("Invalid builders type.", invocation.GetLocation(), LogId.ErrorInvalidMetadata);
+                            throw new CompileErrorException(Strings.Error_InvalidBuildersType, invocation.GetLocation(), LogId.ErrorInvalidMetadata);
                         }
 
                         var buildersArgs = arguments.GetArgs(invocation.ArgumentList, "name", "kind", "filter");
@@ -353,7 +353,7 @@ sealed class ApiInvocationProcessor(
 
                         if (!hasBuildersType)
                         {
-                            throw new CompileErrorException($"There is no type found that inherits from {symbolNames.GetName(buildersRootType)} whose name matches the \"{buildersWildcardFilter}\" filter.", invocation.GetLocation(), LogId.ErrorInvalidMetadata);
+                            throw new CompileErrorException(string.Format(Strings.Error_Template_NoTypeForWildcard, symbolNames.GetName(buildersRootType), buildersWildcardFilter), invocation.GetLocation(), LogId.ErrorInvalidMetadata);
                         }
 
                         break;
@@ -361,7 +361,7 @@ sealed class ApiInvocationProcessor(
                     case nameof(IConfiguration.Builder):
                         if (genericName.TypeArgumentList.Arguments is not [{} builderRootTypeSyntax])
                         {
-                            throw new CompileErrorException("Invalid builder type.", invocation.GetLocation(), LogId.ErrorInvalidMetadata);
+                            throw new CompileErrorException(Strings.Error_InvalidBuilderType, invocation.GetLocation(), LogId.ErrorInvalidMetadata);
                         }
 
                         var builderType = semantic.GetTypeSymbol<INamedTypeSymbol>(semanticModel, builderRootTypeSyntax);
@@ -526,7 +526,7 @@ sealed class ApiInvocationProcessor(
                     var marker = types.GetMarker(index, semanticModel.Compilation);
                     if (marker is null)
                     {
-                        throw new CompileErrorException("Too many type parameters.", invocation.GetLocation(), LogId.ErrorInvalidMetadata);
+                        throw new CompileErrorException(Strings.Error_TooManyTypeParameters, invocation.GetLocation(), LogId.ErrorInvalidMetadata);
                     }
 
                     markers.Add(marker);
@@ -915,7 +915,7 @@ sealed class ApiInvocationProcessor(
     {
         if (lambdaExpression.AsyncKeyword.IsKind(SyntaxKind.AsyncKeyword))
         {
-            throw new CompileErrorException("Asynchronous factory with the async keyword is not supported.", lambdaExpression.GetLocation(), LogId.ErrorInvalidMetadata);
+            throw new CompileErrorException(Strings.Error_AsynchronousFactoryWithAsyncNotSupported, lambdaExpression.GetLocation(), LogId.ErrorInvalidMetadata);
         }
     }
 
@@ -935,7 +935,7 @@ sealed class ApiInvocationProcessor(
 
     // ReSharper disable once SuggestBaseTypeForParameter
     private static void NotSupported(InvocationExpressionSyntax invocation) =>
-        throw new CompileErrorException($"The {invocation} is not supported.", invocation.GetLocation(), LogId.ErrorInvalidMetadata);
+        throw new CompileErrorException(string.Format(Strings.Error_Template_NotSupported, invocation), invocation.GetLocation(), LogId.ErrorInvalidMetadata);
 
     private IReadOnlyList<T> BuildConstantArgs<T>(
         SemanticModel semanticModel,
@@ -943,7 +943,9 @@ sealed class ApiInvocationProcessor(
         args
             .SelectMany(a => semantic.GetConstantValues<T>(semanticModel, a.Expression).Select(value => (value, a.Expression)))
             .Select(a => a.value ?? throw new CompileErrorException(
-                $"{a.Expression} must be a non-null value of type {typeof(T)}.", a.Expression.GetLocation(), LogId.ErrorInvalidMetadata))
+                string.Format(Strings.Error_Template_MustBeValueOfType, a.Expression, typeof(T)),
+                a.Expression.GetLocation(),
+                LogId.ErrorInvalidMetadata))
             .ToList();
 
     private ImmutableArray<MdTag> BuildTags(
@@ -995,7 +997,7 @@ sealed class ApiInvocationProcessor(
         var name = nameFormatter.Format(nameTemplate!, type?.OriginalDefinition, tag);
         if (!SyntaxFacts.IsValidIdentifier(name))
         {
-            throw new CompileErrorException($"Invalid identifier \"{name}\".", source.GetLocation(), LogId.ErrorInvalidMetadata);
+            throw new CompileErrorException(string.Format(Strings.Error_Template_InvalidIdentifier, name), source.GetLocation(), LogId.ErrorInvalidMetadata);
         }
 
         return name;

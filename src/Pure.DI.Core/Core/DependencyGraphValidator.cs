@@ -40,7 +40,7 @@ sealed class DependencyGraphValidator(
             }
 
             isResolved = false;
-            var errorMessage = $"Unable to resolve \"{unresolvedInjection}\" in {target}.";
+            var errorMessage = string.Format(Strings.Error_Template_UnableToResolve, unresolvedInjection, target);
             var locationsWalker = dependencyGraphLocationsWalkerFactory().Initialize(unresolvedInjection);
             locationsWalker.VisitDependencyNode(Unit.Shared, target);
             foreach (var location in locationsWalker.Locations)
@@ -52,7 +52,7 @@ sealed class DependencyGraphValidator(
 
         if (!isResolved && !isErrorReported)
         {
-            logger.CompileError("Cannot build a dependency graph.", dependencyGraph.Source.Source.GetLocation(), LogId.ErrorUnableToResolve);
+            logger.CompileError(Strings.Error_CannotBuildDependencyGraph, dependencyGraph.Source.Source.GetLocation(), LogId.ErrorUnableToResolve);
         }
 
         throw HandledException.Shared;

@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="$(AnalyzerRoslynPackageVersion)" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="$(AnalyzerRoslynPackageVersion)" PrivateAssets="all"/>
         <PackageReference Include="Pure.DI" Version="$(InternalVersion)">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -23,12 +23,21 @@
             <DesignTime>True</DesignTime>
             <DependentUpon>GenericTypeArguments.g.tt</DependentUpon>
         </Compile>
+        <EmbeddedResource Update="Strings.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+        <Compile Update="Strings.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>Strings.resx</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="Components\GenericTypeArguments.g.tt">
-        <Generator>TextTemplatingFileGenerator</Generator>
-      </None>
+        <None Update="Components\GenericTypeArguments.g.tt">
+            <Generator>TextTemplatingFileGenerator</Generator>
+        </None>
     </ItemGroup>
 
 </Project>

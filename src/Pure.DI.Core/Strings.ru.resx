@@ -1,0 +1,161 @@
+﻿<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="Warning_NoRoots" xml:space="preserve">
+        <value>Ни один из корней композиции не объявлен. Добавьте хотя бы один корень.</value>
+    </data>
+    <data name="Error_Template_InvalidCompositionTypeName" xml:space="preserve">
+        <value>Недопустимое имя типа композиции «{0}».</value>
+    </data>
+    <data name="Error_Template_InvalidRootName" xml:space="preserve">
+        <value>Недопустимое имя корня «{0}».</value>
+    </data>
+    <data name="Error_Template_RootDuplicate" xml:space="preserve">
+        <value>Корень композиции «{0}» дублирует ранее объявленный корень «{1}».</value>
+    </data>
+    <data name="Error_AccumulatorTypeCannotBeGenericTypeMarker" xml:space="preserve">
+        <value>Тип аккумулятора не может быть основан на маркере общего типа.</value>
+    </data>
+    <data name="Error_Template_InvalidArgumentName" xml:space="preserve">
+        <value>Недопустимое имя аргумента «{0}».</value>
+    </data>
+    <data name="Error_AccumulatorCannotAccumulateGenericTypeMarker" xml:space="preserve">
+        <value>Накопитель не может накапливать экземпляры, основанные на маркере общего типа.</value>
+    </data>
+    <data name="Error_ClassArgumentTypeCannotBeGenericTypeMarker" xml:space="preserve">
+        <value>Тип аргумента класса не может быть основан на маркере общего типа.</value>
+    </data>
+    <data name="Error_InvalidBindingDueToCompilationError" xml:space="preserve">
+        <value>Неверное привязка из-за ошибки компиляции.</value>
+    </data>
+    <data name="Error_Template_NotImplement" xml:space="preserve">
+        <value>{0} не реализует {1}.</value>
+    </data>
+    <data name="Error_Template_CyclicDependency" xml:space="preserve">
+        <value>Найдена циклическая зависимость: {0}.</value>
+    </data>
+    <data name="Error_Template_UnableToResolve" xml:space="preserve">
+        <value>Не удается разрешить «{0}» в {1}.</value>
+    </data>
+    <data name="Error_CannotBuildDependencyGraph" xml:space="preserve">
+        <value>Не удается построить граф зависимостей.</value>
+    </data>
+    <data name="Error_Template_InvalidRegularExpression" xml:space="preserve">
+        <value>Недопустимое регулярное выражение {0}: «{1}».</value>
+    </data>
+    <data name="Error_Template_InvalidWildcard" xml:space="preserve">
+        <value>Недопустимое выражение с подстановочными знаками {0}: «{1}».</value>
+    </data>
+    <data name="Error_Template_TypeWithLifetimeRequiresDirectOrTransitiveInjection" xml:space="preserve">
+        <value>Тип {0} со временем жизни {1} требует прямой или транзитивной инъекции зависимости от типа {2} со временем жизни {3}, что может привести к утечке данных и неожиданному поведению.</value>
+    </data>
+    <data name="Error_Template_MaximumNumberOfIterations" xml:space="preserve">
+        <value>При построении оптимального графа зависимостей было превышено максимальное количество итераций {0}. Попробуйте задать граф зависимостей более точно.</value>
+    </data>
+    <data name="Error_DependencyGraphConstractionFailure" xml:space="preserve">
+        <value>Невозможно построить граф зависимостей.</value>
+    </data>
+    <data name="Error_Template_LifetimeDoesNotSupportCyclicDependencies" xml:space="preserve">
+        <value>Время жизни {0} не поддерживает циклические зависимости.</value>
+    </data>
+    <data name="Error_InvalidNumberOfInitializers" xml:space="preserve">
+        <value>Неверное количество инициализаторов.</value>
+    </data>
+    <data name="Error_Template_CannotUseContextDirectly" xml:space="preserve">
+        <value>Невозможно использовать «{0}» напрямую. Можно использовать только его методы или свойства.</value>
+    </data>
+    <data name="Error_InvalidRootType" xml:space="preserve">
+        <value>Недопустимый тип корня.</value>
+    </data>
+    <data name="Error_InvalidRootsRype" xml:space="preserve">
+        <value>Недопустимый тип корней.</value>
+    </data>
+    <data name="Error_Template_NoTypeForWildcard" xml:space="preserve">
+        <value>Не найдено ни одного типа, наследующего от {0}, имя которого соответствовало бы фильтру «{1}».</value>
+    </data>
+    <data name="Error_InvalidBuildersType" xml:space="preserve">
+        <value>Недопустимый тип построителей.</value>
+    </data>
+    <data name="Error_InvalidBuilderType" xml:space="preserve">
+        <value>Недопустимый тип построителя.</value>
+    </data>
+    <data name="Error_TooManyTypeParameters" xml:space="preserve">
+        <value>Слишком много параметров типа.</value>
+    </data>
+    <data name="Error_AsynchronousFactoryWithAsyncNotSupported" xml:space="preserve">
+        <value>Асинхронная фабрика с ключевым словом async не поддерживается.</value>
+    </data>
+    <data name="Error_Template_NotSupported" xml:space="preserve">
+        <value>{0} не поддерживается.</value>
+    </data>
+    <data name="Error_Template_MustBeValueOfType" xml:space="preserve">
+        <value>{0} должно быть ненулевым значением типа {1}.</value>
+    </data>
+    <data name="Error_Template_InvalidIdentifier" xml:space="preserve">
+        <value>Недопустимый идентификатор «{0}».</value>
+    </data>
+    <data name="Error_Template_InvalidAttributeArgumentPosition" xml:space="preserve">
+        <value>Позиция аргумента {0} атрибута {1} находится вне диапазона [0..{2}].</value>
+    </data>
+    <data name="Error_Template_AttributeMemberCannotBeProcessed" xml:space="preserve">
+        <value>{0} типа {1} не может быть обработан, потому что он отмечен несколькими взаимоисключающими атрибутами.</value>
+    </data>
+    <data name="Error_InvalidBinding" xml:space="preserve">
+        <value>Привязка определена неправильно.</value>
+    </data>
+    <data name="Error_Template_TooLargeComposition" xml:space="preserve">
+        <value>Композиция слишком большая. Остановился на зависимости #{0}.</value>
+    </data>
+    <data name="Error_Template_CannotConstructAbstractType" xml:space="preserve">
+        <value>Экземпляр {0} не может быть построен, так как является абстрактным типом.</value>
+    </data>
+    <data name="Error_Template_CannotBeInstantiatedNoAccessibleConstructor" xml:space="preserve">
+        <value>Экземпляр {0} не может быть создан из-за отсутствия доступного конструктора.</value>
+    </data>
+    <data name="Error_Template_UnsupportLanguage" xml:space="preserve">
+        <value>{0} не поддерживает язык C# {1}. Пожалуйста, используйте язык версии {2} или выше.</value>
+    </data>
+    <data name="Error_Template_CannotFindSetup" xml:space="preserve">
+        <value>Не удается найти настройку «{0}».</value>
+    </data>
+    <data name="Error_Template_NoAccessibleConstructor" xml:space="preserve">
+        <value>Не существует доступного нестатического конструктора типа {0} с аргументом, соответствующим «{1}».</value>
+    </data>
+    <data name="Error_Template_NoAccessibleMethod" xml:space="preserve">
+        <value>Не существует доступного нестатического метода типа {0} с именем, соответствующим «{1}», и аргументом, соответствующим «{2}».</value>
+    </data>
+    <data name="Error_Template_NoAccessibleFieldOrProperty" xml:space="preserve">
+        <value>Не существует доступного нестатического  изменяемого поля или свойства, сопоставленного с «{0}» из {1}.</value>
+    </data>
+    <data name="Error_Template_MustBeApiCall" xml:space="preserve">
+        <value>{0} должно быть константным значением типа {1} или специальным вызовом API.</value>
+    </data>
+    <data name="Warning_BindingIsNotUsed" xml:space="preserve">
+        <value>Привязка не используется.</value>
+    </data>
+    <data name="Warning_Template_RootCannotBeResolvedByResolveMethods" xml:space="preserve">
+        <value>Корень {0} нельзя разрешить с помощью методов Resolve, поскольку он имеет аргументы {1}, поэтому при попытке это сделать будет выброшено исключение.</value>
+    </data>
+    <data name="Warning_Template_BindingHasBeenOverridden" xml:space="preserve">
+        <value>{0} была переопределена.</value>
+    </data>
+    <data name="Warning_Template_InjectionSiteIsNotUsed" xml:space="preserve">
+        <value>«{0}» метка в месте инъекции не используется.</value>
+    </data>
+    <data name="Info_CodeGenerationAborted" xml:space="preserve">
+        <value>Генерация кода прервана.</value>
+    </data>
+    <data name="Error_UnhandledError" xml:space="preserve">
+        <value>Произошла необработанная ошибка.</value>
+    </data>
+</root>

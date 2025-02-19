@@ -78,7 +78,10 @@ sealed class DependencyGraphBuilder(
             cancellationToken.ThrowIfCancellationRequested();
             if (counter++ > Const.MaxIterationsCount)
             {
-                throw new CompileErrorException($"The composition is too large. Stopped on the #{counter} dependency.", setup.Source.GetLocation(), LogId.ErrorInvalidMetadata);
+                throw new CompileErrorException(
+                    string.Format(Strings.Error_Template_TooLargeComposition, counter),
+                    setup.Source.GetLocation(),
+                    LogId.ErrorInvalidMetadata);
             }
 
             var targetNode = node.Node;

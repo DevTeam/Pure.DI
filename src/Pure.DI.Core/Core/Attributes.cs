@@ -45,7 +45,10 @@ sealed class Attributes(
                             return semantic.GetConstantValue<T>(semanticModel, argumentList.Arguments[attributeMetadata.ArgumentPosition].Expression) ?? defaultValue;
                         }
 
-                        throw new CompileErrorException($"The argument position {attributeMetadata.ArgumentPosition.ToString()} of attribute {attributeMetadata.Source} is out of range [0..{args.Length.ToString()}].", attributeMetadata.Source.GetLocation(), LogId.ErrorInvalidMetadata);
+                        throw new CompileErrorException(
+                            string.Format(Strings.Error_Template_InvalidAttributeArgumentPosition, attributeMetadata.ArgumentPosition, attributeMetadata.Source, args.Length),
+                            attributeMetadata.Source.GetLocation(),
+                            LogId.ErrorInvalidMetadata);
                     }
 
                     var typedConstant = args[attributeMetadata.ArgumentPosition];
@@ -57,7 +60,10 @@ sealed class Attributes(
                     break;
 
                 case > 1:
-                    throw new CompileErrorException($"{member} of the type {member.ContainingType} cannot be processed because it is marked with multiple mutually exclusive attributes.", attributeMetadata.Source.GetLocation(), LogId.ErrorInvalidMetadata);
+                    throw new CompileErrorException(
+                        string.Format(Strings.Error_Template_AttributeMemberCannotBeProcessed, member, member.ContainingType),
+                        attributeMetadata.Source.GetLocation(),
+                        LogId.ErrorInvalidMetadata);
             }
         }
 
@@ -84,7 +90,10 @@ sealed class Attributes(
                 var args = attributeSyntax.ArgumentList?.Arguments.ToList() ?? [];
                 if (attributeMetadata.ArgumentPosition >= args.Count)
                 {
-                    throw new CompileErrorException($"The argument position {attributeMetadata.ArgumentPosition.ToString()} of attribute {attributeMetadata.Source} is out of range [0..{args.Count.ToString()}].", attributeMetadata.Source.GetLocation(), LogId.ErrorInvalidMetadata);
+                    throw new CompileErrorException(
+                        string.Format(Strings.Error_Template_InvalidAttributeArgumentPosition, attributeMetadata.ArgumentPosition, attributeMetadata.Source, args.Count),
+                        attributeMetadata.Source.GetLocation(),
+                        LogId.ErrorInvalidMetadata);
                 }
 
                 var argSyntax = args[attributeMetadata.ArgumentPosition];

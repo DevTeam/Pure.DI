@@ -24,7 +24,7 @@ sealed class RootValidator(
         foreach (var root in rootArgs)
         {
             logger.CompileWarning(
-                $"The root {Format(root.root)} cannot be resolved using Resolve methods due it has arguments {string.Join(", ", root.args.Select(i => i.VariableName))}, so an exception will be thrown when trying to do it.",
+                string.Format(Strings.Warning_Template_RootCannotBeResolvedByResolveMethods, Format(root.root), string.Join(", ", root.args.Select(i => i.VariableName))),
                 root.root.Node.Arg?.Source.Source.GetLocation() ?? composition.Source.Source.Source.GetLocation(),
                 LogId.WarningRootArgInResolveMethod);
         }
@@ -38,7 +38,7 @@ sealed class RootValidator(
         foreach (var root in genericRoots)
         {
             logger.CompileWarning(
-                $"The root {Format(root)} cannot be resolved using Resolve methods due it has type arguments {string.Join(", ", root.TypeDescription.TypeArgs)}, so an exception will be thrown when trying to do it.",
+                string.Format(Strings.Warning_Template_RootCannotBeResolvedByResolveMethods, Format(root), string.Join(", ", root.TypeDescription.TypeArgs)),
                 root.Node.Arg?.Source.Source.GetLocation() ?? composition.Source.Source.Source.GetLocation(),
                 LogId.WarningTypeArgInResolveMethod);
         }

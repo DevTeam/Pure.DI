@@ -140,7 +140,7 @@ sealed class BindingBuilder(
                     _arg);
             }
 
-            throw new CompileErrorException("The binding is defined incorrectly.", setup.Source.GetLocation(), LogId.ErrorInvalidMetadata);
+            throw new CompileErrorException(Strings.Error_InvalidBinding, setup.Source.GetLocation(), LogId.ErrorInvalidMetadata);
         }
         finally
         {

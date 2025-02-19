@@ -67,7 +67,7 @@ sealed class ExceptionHandler(ILogger logger)
 #else
                 DiagnosticSeverity.Hidden,
 #endif
-                "Code generation aborted.",
+                Strings.Info_CodeGenerationAborted,
                 null,
                 LogId.InfoGenerationInterrupted,
                 handledException));
@@ -76,7 +76,7 @@ sealed class ExceptionHandler(ILogger logger)
         logger.Log(
             new LogEntry(
                 DiagnosticSeverity.Error,
-                "An unhandled error has occurred.",
+                Strings.Error_UnhandledError,
                 null,
                 LogId.ErrorUnhandled,
                 exception));

@@ -43,7 +43,7 @@ sealed class CyclicDependencyValidatorVisitor(
             }
 
             var pathStr = string.Join(" <-- ", path.Select(i => i.Type));
-            logger.CompileError($"Cyclic dependency has been found: {pathStr}.", node.Binding.Source.GetLocation(), LogId.ErrorCyclicDependency);
+            logger.CompileError(string.Format(Strings.Error_Template_CyclicDependency, pathStr), node.Binding.Source.GetLocation(), LogId.ErrorCyclicDependency);
             result = false;
             break;
         }

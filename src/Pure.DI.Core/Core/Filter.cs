@@ -46,7 +46,7 @@ sealed class Filter(
                 }
                 catch (ArgumentException ex)
                 {
-                    logger.CompileError($"Invalid regular expression {regularExpression}. {ex.Message}", setup.Source.GetLocation(), LogId.ErrorInvalidMetadata);
+                    logger.CompileError(string.Format(Strings.Error_Template_InvalidRegularExpression, regularExpression, ex.Message), setup.Source.GetLocation(), LogId.ErrorInvalidMetadata);
                 }
             }
         }
@@ -65,7 +65,7 @@ sealed class Filter(
                 }
                 catch (Exception ex)
                 {
-                    logger.CompileError($"Invalid wildcard {wildcard}. {ex.Message}", setup.Source.GetLocation(), LogId.ErrorInvalidMetadata);
+                    logger.CompileError(string.Format(Strings.Error_Template_InvalidWildcard, wildcard, ex.Message), setup.Source.GetLocation(), LogId.ErrorInvalidMetadata);
                 }
             }
         }

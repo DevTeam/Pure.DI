@@ -201,7 +201,7 @@ sealed class FactoryCodeBuilder(
         if (injectionArgs.Count != injections.Count)
         {
             throw new CompileErrorException(
-                $"{variable.Node.Lifetime} lifetime does not support cyclic dependencies.",
+                string.Format(Strings.Error_Template_LifetimeDoesNotSupportCyclicDependencies, variable.Node.Lifetime),
                 factory.Source.Source.GetLocation(),
                 LogId.ErrorInvalidMetadata);
         }
@@ -209,7 +209,7 @@ sealed class FactoryCodeBuilder(
         if (factory.Initializers.Length != inits.Count)
         {
             throw new CompileErrorException(
-                "Invalid number of initializers.",
+                Strings.Error_InvalidNumberOfInitializers,
                 factory.Source.Source.GetLocation(),
                 LogId.ErrorInvalidMetadata);
         }
