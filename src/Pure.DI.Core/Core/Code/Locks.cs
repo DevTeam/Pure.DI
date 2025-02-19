@@ -36,13 +36,10 @@ sealed class Locks(ITypes types) : ILocks
         }
 
         lines.AppendLine("finally");
-        lines.AppendLine("{");
-        using (lines.Indent())
+        using (lines.CreateBlock())
         {
             lines.AppendLine($"{Names.LockFieldName}.Exit();");
         }
-
-        lines.AppendLine("}");
     }
 
     private bool IsSystemThreadingLockEnabled(MdSetup setup) =>

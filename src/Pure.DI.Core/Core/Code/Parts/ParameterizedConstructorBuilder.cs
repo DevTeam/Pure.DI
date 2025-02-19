@@ -29,8 +29,7 @@ sealed class ParameterizedConstructorBuilder(
         code.AppendLine($"[{Names.OrdinalAttributeName}(128)]");
         var classArgs = composition.Args.GetArgsOfKind(ArgKind.Class).ToList();
         code.AppendLine($"public {composition.Source.Source.Name.ClassName}({string.Join(", ", classArgs.Select(arg => $"{typeResolver.Resolve(composition.Source.Source, arg.InstanceType)} {arg.Node.Arg?.Source.ArgName}"))})");
-        code.AppendLine("{");
-        using (code.Indent())
+        using (code.CreateBlock())
         {
             foreach (var arg in classArgs)
             {
@@ -55,7 +54,6 @@ sealed class ParameterizedConstructorBuilder(
             }
         }
 
-        code.AppendLine("}");
         membersCounter++;
         return composition with { MembersCount = membersCounter };
     }

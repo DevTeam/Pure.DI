@@ -3,6 +3,7 @@
 namespace Pure.DI.Core.Code;
 
 using Parts;
+using static LinesBuilderExtensions;
 using static Tag;
 
 sealed class CompositionClassBuilder(
@@ -31,7 +32,7 @@ sealed class CompositionClassBuilder(
         if (!string.IsNullOrWhiteSpace(name.Namespace))
         {
             code.AppendLine($"namespace {name.Namespace}");
-            code.AppendLine("{");
+            code.AppendLine(BlockStart);
             nsIndent = code.Indent();
         }
 
@@ -51,9 +52,7 @@ sealed class CompositionClassBuilder(
         }
 
         code.AppendLine($"partial class {name.ClassName}{(implementingInterfaces.Count > 0 ? ": " + string.Join(", ", implementingInterfaces) : "")}");
-        code.AppendLine("{");
-
-        using (code.Indent())
+        using (code.CreateBlock())
         {
             var prevCount = composition.MembersCount;
             // Generate class members
@@ -70,14 +69,12 @@ sealed class CompositionClassBuilder(
             }
         }
 
-        code.AppendLine("}");
-
         // ReSharper disable once InvertIf
         if (!string.IsNullOrWhiteSpace(name.Namespace))
         {
             // ReSharper disable once RedundantAssignment
             nsIndent.Dispose();
-            code.AppendLine("}");
+            code.AppendLine(BlockFinish);
         }
 
         return composition;

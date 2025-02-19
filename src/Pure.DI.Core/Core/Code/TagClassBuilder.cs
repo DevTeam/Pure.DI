@@ -2,6 +2,8 @@
 // ReSharper disable UnusedVariable
 namespace Pure.DI.Core.Code;
 
+using static LinesBuilderExtensions;
+
 sealed class TagClassBuilder(
     IInformation information,
     ISmartTags smartTags,
@@ -44,11 +46,11 @@ sealed class TagClassBuilder(
         code.AppendLine($"// by {information.Description}");
 
         code.AppendLine($"namespace {Names.GeneratorName}");
-        code.AppendLine("{");
+        code.AppendLine(BlockStart);
         using (code.Indent())
         {
             code.AppendLine($"internal partial class {nameof(Tag)}");
-            code.AppendLine("{");
+            code.AppendLine(BlockStart);
             using (code.Indent())
             {
                 var isFirst = true;
@@ -88,11 +90,10 @@ sealed class TagClassBuilder(
                 }
             }
 
-            code.AppendLine("}");
+            code.AppendLine(BlockFinish);
         }
 
-        code.AppendLine("}");
-
+        code.AppendLine(BlockFinish);
         return new TagCode(code);
     }
 }

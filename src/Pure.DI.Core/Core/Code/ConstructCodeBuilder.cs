@@ -61,8 +61,7 @@ sealed class ConstructCodeBuilder(
         }
 
         code.AppendLine($"{methodPrefix}{typeResolver.Resolve(ctx.DependencyGraph.Source, variable.InstanceType)} {localMethodName}()");
-        code.AppendLine("{");
-        using (code.Indent())
+        using (code.CreateBlock())
         {
             var hasYieldReturn = false;
             foreach (var statement in variable.Args)
@@ -85,7 +84,6 @@ sealed class ConstructCodeBuilder(
             }
         }
 
-        code.AppendLine("}");
         code.AppendLine();
         ctx.Code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VariableName} = {localMethodName}();");
         ctx.Code.AppendLines(ctx.BuildTools.OnCreated(ctx, variable));

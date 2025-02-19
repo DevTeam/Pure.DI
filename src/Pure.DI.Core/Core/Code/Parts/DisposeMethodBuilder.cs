@@ -2,6 +2,8 @@
 
 namespace Pure.DI.Core.Code.Parts;
 
+using static LinesBuilderExtensions;
+
 sealed class DisposeMethodBuilder(
     ILocks locks)
     : IClassPartBuilder
@@ -29,18 +31,15 @@ sealed class DisposeMethodBuilder(
         }
 
         code.AppendLine($"{composition.Source.Source.Hints.DisposeMethodModifiers} void Dispose()");
-        code.AppendLine("{");
-        using (code.Indent())
+        using (code.CreateBlock())
         {
             AddSyncPart(composition, code, false);
             code.AppendLine();
             code.AppendLine("while (disposeIndex-- > 0)");
-            code.AppendLine("{");
-            using (code.Indent())
+            using (code.CreateBlock())
             {
                 code.AppendLine("switch (disposables[disposeIndex])");
-                code.AppendLine("{");
-                using (code.Indent())
+                using (code.CreateBlock())
                 {
                     if (hasDisposable)
                     {
@@ -57,14 +56,9 @@ sealed class DisposeMethodBuilder(
                         AddDisposeAsyncPart(code, false);
                     }
                 }
-
-                code.AppendLine("}");
             }
-
-            code.AppendLine("}");
         }
 
-        code.AppendLine("}");
         membersCounter++;
 
         code.AppendLine();
@@ -89,18 +83,15 @@ sealed class DisposeMethodBuilder(
             }
 
             code.AppendLine($"{composition.Source.Source.Hints.DisposeAsyncMethodModifiers} async {Names.ValueTaskTypeName} DisposeAsync()");
-            code.AppendLine("{");
-            using (code.Indent())
+            using (code.CreateBlock())
             {
                 AddSyncPart(composition, code, true);
                 code.AppendLine();
                 code.AppendLine("while (disposeIndex-- > 0)");
-                code.AppendLine("{");
-                using (code.Indent())
+                using (code.CreateBlock())
                 {
                     code.AppendLine("switch (disposables[disposeIndex])");
-                    code.AppendLine("{");
-                    using (code.Indent())
+                    using (code.CreateBlock())
                     {
                         if (hasAsyncDisposable)
                         {
@@ -117,14 +108,9 @@ sealed class DisposeMethodBuilder(
                             AddDisposePart(code);
                         }
                     }
-
-                    code.AppendLine("}");
                 }
-
-                code.AppendLine("}");
             }
 
-            code.AppendLine("}");
             membersCounter++;
 
             code.AppendLine();
@@ -147,8 +133,7 @@ sealed class DisposeMethodBuilder(
         using (code.Indent())
         {
             code.AppendLine("try");
-            code.AppendLine("{");
-            using (code.Indent())
+            using (code.CreateBlock())
             {
                 if (makeAsyncCall)
                 {
@@ -158,25 +143,19 @@ sealed class DisposeMethodBuilder(
                 {
                     code.AppendLine("var valueTask = asyncDisposableInstance.DisposeAsync();");
                     code.AppendLine("if (!valueTask.IsCompleted)");
-                    code.AppendLine("{");
-                    using (code.Indent())
+                    using (code.CreateBlock())
                     {
                         code.AppendLine("valueTask.AsTask().Wait();");
                     }
-
-                    code.AppendLine("}");
                 }
             }
 
-            code.AppendLine("}");
             code.AppendLine("catch (Exception exception)");
-            code.AppendLine("{");
-            using (code.Indent())
+            using (code.CreateBlock())
             {
                 code.AppendLine($"{Names.OnDisposeAsyncExceptionMethodName}(asyncDisposableInstance, exception);");
             }
 
-            code.AppendLine("}");
             code.AppendLine("break;");
         }
     }
@@ -187,21 +166,17 @@ sealed class DisposeMethodBuilder(
         using (code.Indent())
         {
             code.AppendLine("try");
-            code.AppendLine("{");
-            using (code.Indent())
+            using (code.CreateBlock())
             {
                 code.AppendLine("disposableInstance.Dispose();");
             }
 
-            code.AppendLine("}");
             code.AppendLine("catch (Exception exception)");
-            code.AppendLine("{");
-            using (code.Indent())
+            using (code.CreateBlock())
             {
                 code.AppendLine($"{Names.OnDisposeExceptionMethodName}(disposableInstance, exception);");
             }
 
-            code.AppendLine("}");
             code.AppendLine("break;");
         }
     }
@@ -213,7 +188,7 @@ sealed class DisposeMethodBuilder(
         if (composition.IsThreadSafe)
         {
             locks.AddLockStatements(composition.Source.Source, code, isAsync);
-            code.AppendLine("{");
+            code.AppendLine(BlockStart);
             code.IncIndent();
         }
 
@@ -232,7 +207,7 @@ sealed class DisposeMethodBuilder(
         // ReSharper disable once InvertIf
         if (composition.IsThreadSafe)
         {
-            code.AppendLine("}");
+            code.AppendLine(BlockFinish);
             locks.AddUnlockStatements(composition.Source.Source, code, isAsync);
         }
     }

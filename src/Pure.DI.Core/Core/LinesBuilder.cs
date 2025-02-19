@@ -7,13 +7,13 @@ using System.Buffers;
 
 sealed class LinesBuilder : IEnumerable<string>
 {
+    private readonly List<Line> _lines = [];
+    private readonly StringBuilder _sb = new();
+    private Indent _indent;
 
     public LinesBuilder(Indent indent) => _indent = new Indent(indent.Value - 1);
 
     public LinesBuilder() => _indent = new Indent(0);
-    private readonly List<Line> _lines = [];
-    private readonly StringBuilder _sb = new();
-    private Indent _indent;
 
     public int Count => _sb.Length > 0 ? 1 : 0 + _lines.Count;
 

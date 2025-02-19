@@ -7,6 +7,14 @@ sealed class ApiMembersBuilder(
     IBuildTools buildTools)
     : IClassPartBuilder
 {
+    private const string CommentSummaryStart = "/// <summary>";
+    private const string CommentSummary = "/// Resolves the composition root.";
+    private const string CommentSummaryByTag = "/// Resolves the composition root by tag.";
+    private const string CommentSummaryFinish = "/// </summary>";
+    private const string CommentParamT = "/// <typeparam name=\"T\">The type of the composition root.</typeparam>";
+    private const string CommentParamType = "/// <param name=\"type\">The type of the composition root.</param>";
+    private const string CommentParamTag = "/// <param name=\"tag\">The tag of a composition root.</param>";
+
     public ClassPart Part => ClassPart.ApiMembers;
 
     public CompositionCode Build(CompositionCode composition)
@@ -21,57 +29,53 @@ sealed class ApiMembersBuilder(
         {
             if (isCommentsEnabled)
             {
-                apiCode.AppendLine("/// <summary>");
-                apiCode.AppendLine("/// Resolves the composition root.");
-                apiCode.AppendLine("/// </summary>");
-                apiCode.AppendLine("/// <typeparam name=\"T\">The type of the composition root.</typeparam>");
-                apiCode.AppendLine("/// <returns>A composition root.</returns>");
+                apiCode.AppendLine(CommentSummaryStart);
+                apiCode.AppendLine(CommentSummary);
+                apiCode.AppendLine(CommentSummaryFinish);
+                apiCode.AppendLine(CommentParamT);
+                FinishComments(apiCode);
             }
 
             buildTools.AddPureHeader(apiCode);
             buildTools.AddAggressiveInlining(apiCode);
             apiCode.AppendLine($"{hints.ResolveMethodModifiers} T {hints.ResolveMethodName}<T>()");
-            apiCode.AppendLine("{");
-            using (apiCode.Indent())
+            using (apiCode.CreateBlock())
             {
                 apiCode.AppendLine($"return {Names.ResolverClassName}<T>.{Names.ResolverPropertyName}.{Names.ResolveMethodName}(this);");
             }
 
-            apiCode.AppendLine("}");
             membersCounter++;
 
             apiCode.AppendLine();
             if (isCommentsEnabled)
             {
-                apiCode.AppendLine("/// <summary>");
-                apiCode.AppendLine("/// Resolves the composition root by tag.");
-                apiCode.AppendLine("/// </summary>");
-                apiCode.AppendLine("/// <typeparam name=\"T\">The type of the composition root.</typeparam>");
-                apiCode.AppendLine("/// <param name=\"tag\">The tag of a composition root.</param>");
-                apiCode.AppendLine("/// <returns>A composition root.</returns>");
+                apiCode.AppendLine(CommentSummaryStart);
+                apiCode.AppendLine(CommentSummaryByTag);
+                apiCode.AppendLine(CommentSummaryFinish);
+                apiCode.AppendLine(CommentParamT);
+                apiCode.AppendLine(CommentParamTag);
+                FinishComments(apiCode);
             }
 
             buildTools.AddPureHeader(apiCode);
             buildTools.AddAggressiveInlining(apiCode);
             apiCode.AppendLine($"{hints.ResolveByTagMethodModifiers} T {hints.ResolveByTagMethodName}<T>(object{nullable} tag)");
-            apiCode.AppendLine("{");
-            using (apiCode.Indent())
+            using (apiCode.CreateBlock())
             {
                 apiCode.AppendLine($"return {Names.ResolverClassName}<T>.{Names.ResolverPropertyName}.{Names.ResolveByTagMethodName}(this, tag);");
             }
 
-            apiCode.AppendLine("}");
             membersCounter++;
 
             apiCode.AppendLine();
             var resolvers = resolversBuilder.Build(new RootContext(composition.Source.Source, composition.Roots)).ToList();
             if (isCommentsEnabled)
             {
-                apiCode.AppendLine("/// <summary>");
-                apiCode.AppendLine("/// Resolves the composition root.");
-                apiCode.AppendLine("/// </summary>");
-                apiCode.AppendLine("/// <param name=\"type\">The type of the composition root.</param>");
-                apiCode.AppendLine("/// <returns>A composition root.</returns>");
+                apiCode.AppendLine(CommentSummaryStart);
+                apiCode.AppendLine(CommentSummary);
+                apiCode.AppendLine(CommentSummaryFinish);
+                apiCode.AppendLine(CommentParamType);
+                FinishComments(apiCode);
             }
 
             CreateObjectResolverMethod(
@@ -101,12 +105,12 @@ sealed class ApiMembersBuilder(
             apiCode.AppendLine();
             if (isCommentsEnabled)
             {
-                apiCode.AppendLine("/// <summary>");
-                apiCode.AppendLine("/// Resolves the composition root by tag.");
-                apiCode.AppendLine("/// </summary>");
-                apiCode.AppendLine("/// <param name=\"type\">The type of the composition root.</param>");
-                apiCode.AppendLine("/// <param name=\"tag\">The tag of a composition root.</param>");
-                apiCode.AppendLine("/// <returns>A composition root.</returns>");
+                apiCode.AppendLine(CommentSummaryStart);
+                apiCode.AppendLine(CommentSummaryByTag);
+                apiCode.AppendLine(CommentSummaryFinish);
+                apiCode.AppendLine(CommentParamType);
+                apiCode.AppendLine(CommentParamTag);
+                FinishComments(apiCode);
             }
 
             CreateObjectResolverMethod(
@@ -165,6 +169,15 @@ sealed class ApiMembersBuilder(
 
         return composition with { MembersCount = membersCounter };
     }
+    private static void FinishComments(LinesBuilder apiCode)
+    {
+        apiCode.AppendLine("/// <returns>An instance of a composition root.</returns>");
+        apiCode.AppendLine("""/// <exception cref="InvalidOperationException">Will be thrown if the corresponding composition root was not specified. To specify a composition root use API method such as <see cref="IConfiguration.Root{T}"/>.</exception>""");
+        apiCode.AppendLine("""/// <seealso cref="IConfiguration.RootBind{T}"/>""");
+        apiCode.AppendLine("""/// <seealso cref="IConfiguration.Roots{T}"/>""");
+        apiCode.AppendLine("""/// <seealso cref="IConfiguration.Builder{T}"/>""");
+        apiCode.AppendLine("""/// <seealso cref="IConfiguration.Builders{T}"/>""");
+    }
 
     private void CreateObjectResolverMethod(
         string methodModifiers,
@@ -179,8 +192,7 @@ sealed class ApiMembersBuilder(
         buildTools.AddPureHeader(code);
         buildTools.AddAggressiveInlining(code);
         code.AppendLine($"{methodModifiers} object {methodName}({methodArgs})");
-        code.AppendLine("{");
-        using (code.Indent())
+        using (code.CreateBlock())
         {
             var divisor = Buckets<object, object>.GetDivisor((uint)resolvers.Count);
             if (resolvers.Count > 0)
@@ -194,8 +206,6 @@ sealed class ApiMembersBuilder(
                 code.AppendLine($"throw new {Names.SystemNamespace}InvalidOperationException($\"{{{Names.CannotResolveFieldName}}} {(byTag ? "\\\"{tag}\\\" " : "")}{{{Names.OfTypeFieldName}}} {{type}}.\");");
             }
         }
-
-        code.AppendLine("}");
     }
 
     private static void CreateObjectConflictsResolverMethod(
@@ -207,31 +217,22 @@ sealed class ApiMembersBuilder(
     {
         code.AppendLine($"[{Names.MethodImplAttributeName}({Names.MethodImplNoInlining})]");
         code.AppendLine($"private object Resolve{Names.Salt}({methodArgs}, int index)");
-        code.AppendLine("{");
-        using (code.Indent())
+        using (code.CreateBlock())
         {
             code.AppendLine($"var finish = index + {Names.BucketSizeFieldName};");
             code.AppendLine("while (++index < finish)");
-            code.AppendLine("{");
-            using (code.Indent())
+            using (code.CreateBlock())
             {
                 code.AppendLine($"ref var pair = ref {Names.BucketsFieldName}[index];");
                 code.AppendLine("if (pair.Key == type)");
-                code.AppendLine("{");
-                using (code.Indent())
+                using (code.CreateBlock())
                 {
                     code.AppendLine($"return pair.Value.{resolveMethodName}({resolveMethodArgs});");
                 }
-
-                code.AppendLine("}");
             }
 
-            code.AppendLine("}");
             code.AppendLine();
-
             code.AppendLine($"throw new {Names.SystemNamespace}InvalidOperationException($\"{{{Names.CannotResolveFieldName}}} {(byTag ? "\\\"{tag}\\\" " : "")}{{{Names.OfTypeFieldName}}} {{type}}.\");");
         }
-
-        code.AppendLine("}");
     }
 }

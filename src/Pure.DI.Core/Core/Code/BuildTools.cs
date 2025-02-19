@@ -4,6 +4,7 @@
 // ReSharper disable MoveLocalFunctionAfterJumpStatement
 namespace Pure.DI.Core.Code;
 
+using static LinesBuilderExtensions;
 using static Tag;
 
 sealed class BuildTools(
@@ -83,7 +84,7 @@ sealed class BuildTools(
         if (lockIsRequired && accLines.Count > 0)
         {
             locks.AddLockStatements(ctx.DependencyGraph.Source, code, false);
-            code.AppendLine("{");
+            code.AppendLine(BlockStart);
             code.IncIndent();
         }
 
@@ -92,7 +93,7 @@ sealed class BuildTools(
         if (lockIsRequired && accLines.Count > 0)
         {
             code.DecIndent();
-            code.AppendLine("}");
+            code.AppendLine(BlockFinish);
             locks.AddUnlockStatements(ctx.DependencyGraph.Source, code, false);
         }
 

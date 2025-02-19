@@ -2,6 +2,8 @@
 
 namespace Pure.DI.Core.Code.Parts;
 
+using static LinesBuilderExtensions;
+
 sealed class RootMethodsBuilder(
     IBuildTools buildTools,
     ITypeResolver typeResolver,
@@ -176,8 +178,7 @@ sealed class RootMethodsBuilder(
             }
         }
 
-        code.AppendLine("{");
-        using (code.Indent())
+        using (code.CreateBlock())
         {
             var indentToken = Disposables.Empty;
             if (root.IsMethod)
@@ -191,7 +192,7 @@ sealed class RootMethodsBuilder(
             {
                 buildTools.AddAggressiveInlining(code);
                 code.AppendLine("get");
-                code.AppendLine("{");
+                code.AppendLine(BlockStart);
                 indentToken = code.Indent();
             }
 
@@ -218,10 +219,8 @@ sealed class RootMethodsBuilder(
 
             if (!root.IsMethod)
             {
-                code.AppendLine("}");
+                code.AppendLine(BlockFinish);
             }
         }
-
-        code.AppendLine("}");
     }
 }

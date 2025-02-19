@@ -4,6 +4,7 @@
 namespace Pure.DI.Core;
 
 using Microsoft.CodeAnalysis.Operations;
+using static LinesBuilderExtensions;
 
 sealed class ApiInvocationProcessor(
     IComments comments,
@@ -557,11 +558,11 @@ sealed class ApiInvocationProcessor(
         // Factory
         var factory = new StringBuilder();
         factory.AppendLine($"({Names.IContextTypeName} {Names.ContextInstance}) =>");
-        factory.AppendLine("{");
+        factory.AppendLine(BlockStart);
         factory.AppendLine($"{Names.ContextInstance}.{nameof(IContext.Inject)}({builderArgTag.Value.ValueToString()}, out {symbolNames.GetName(builderType)} {Names.BuildingInstance});");
         factory.AppendLine($"{Names.ContextInstance}.{nameof(IContext.BuildUp)}({Names.BuildingInstance});");
         factory.AppendLine($"return {Names.BuildingInstance};");
-        factory.AppendLine("}");
+        factory.AppendLine(BlockFinish);
         var builderLambdaExpression = (LambdaExpressionSyntax)SyntaxFactory.ParseExpression(factory.ToString());
 
         metadataVisitor.VisitContract(new MdContract(semanticModel, invocationSource, builderType, ContractKind.Explicit, ImmutableArray.Create(builderTag)));

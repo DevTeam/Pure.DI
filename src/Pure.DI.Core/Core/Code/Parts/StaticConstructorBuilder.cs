@@ -2,6 +2,8 @@
 
 namespace Pure.DI.Core.Code.Parts;
 
+using static LinesBuilderExtensions;
+
 sealed class StaticConstructorBuilder(
     ITypeResolver typeResolver,
     IBuilder<RootContext, IEnumerable<ResolverInfo>> resolversBuilder)
@@ -34,8 +36,7 @@ sealed class StaticConstructorBuilder(
         }
 
         code.AppendLine($"static {composition.Source.Source.Name.ClassName}()");
-        code.AppendLine("{");
-        using (code.Indent())
+        using (code.CreateBlock())
         {
             foreach (var resolver in resolvers)
             {
@@ -62,7 +63,7 @@ sealed class StaticConstructorBuilder(
                 code.AppendLine($"{divisor.ToString()},");
                 code.AppendLine($"out {Names.BucketSizeFieldName},");
                 code.AppendLine($"new {pairTypeName}[{resolvers.Count.ToString()}]");
-                code.AppendLine("{");
+                code.AppendLine(BlockStart);
                 using (code.Indent())
                 {
                     var isFirst = true;
@@ -78,7 +79,6 @@ sealed class StaticConstructorBuilder(
             }
         }
 
-        code.AppendLine("}");
         membersCounter++;
 
         return composition with { MembersCount = composition.MembersCount + membersCounter };

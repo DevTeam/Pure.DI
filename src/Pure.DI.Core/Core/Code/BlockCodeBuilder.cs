@@ -2,6 +2,8 @@
 
 namespace Pure.DI.Core.Code;
 
+using static LinesBuilderExtensions;
+
 sealed class BlockCodeBuilder(
     INodeInfo nodeInfo,
     ICompilations compilations,
@@ -53,16 +55,16 @@ sealed class BlockCodeBuilder(
                 if (lockIsRequired)
                 {
                     code.AppendLine($"if ({checkExpression})");
-                    code.AppendLine("{");
+                    code.AppendLine(BlockStart);
                     code.IncIndent();
                     locks.AddLockStatements(ctx.DependencyGraph.Source, code, false);
-                    code.AppendLine("{");
+                    code.AppendLine(BlockStart);
                     code.IncIndent();
                     ctx = ctx with { LockIsRequired = false };
                 }
 
                 code.AppendLine($"if ({checkExpression})");
-                code.AppendLine("{");
+                code.AppendLine(BlockStart);
                 code.IncIndent();
                 ctx = ctx with { Level = level + 1 };
             }
@@ -119,7 +121,7 @@ sealed class BlockCodeBuilder(
             }
 
             code.DecIndent();
-            code.AppendLine("}");
+            code.AppendLine(BlockFinish);
             if (!lockIsRequired)
             {
                 locks.AddUnlockStatements(ctx.DependencyGraph.Source, code, false);
@@ -128,9 +130,9 @@ sealed class BlockCodeBuilder(
             }
 
             code.DecIndent();
-            code.AppendLine("}");
+            code.AppendLine(BlockFinish);
             code.DecIndent();
-            code.AppendLine("}");
+            code.AppendLine(BlockFinish);
             code.AppendLine();
         }
         finally
@@ -148,13 +150,13 @@ sealed class BlockCodeBuilder(
                     }
 
                     localMethodCode.AppendLine($"void {localMethodName}()");
-                    localMethodCode.AppendLine("{");
+                    localMethodCode.AppendLine(BlockStart);
                     using (localMethodCode.Indent())
                     {
                         localMethodCode.AppendLines(code.Lines);
                     }
 
-                    localMethodCode.AppendLine("}");
+                    localMethodCode.AppendLine(BlockFinish);
                     code = new LinesBuilder();
                     code.AppendLine($"{localMethodName}();");
                     info.HasLocalMethod = true;

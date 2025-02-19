@@ -21,8 +21,7 @@ sealed class ScopeConstructorBuilder : IClassPartBuilder
         }
 
         code.AppendLine($"internal {composition.Source.Source.Name.ClassName}({composition.Source.Source.Name.ClassName} {Names.ParentScopeArgName})");
-        code.AppendLine("{");
-        using (code.Indent())
+        using (code.CreateBlock())
         {
             code.AppendLine($"{Names.RootFieldName} = ({Names.ParentScopeArgName} ?? throw new {Names.SystemNamespace}ArgumentNullException(nameof({Names.ParentScopeArgName}))).{Names.RootFieldName};");
             var classArgs = composition.Args.GetArgsOfKind(ArgKind.Class).ToList();
@@ -52,7 +51,6 @@ sealed class ScopeConstructorBuilder : IClassPartBuilder
             }
         }
 
-        code.AppendLine("}");
         membersCounter++;
         return composition with { MembersCount = membersCounter };
     }

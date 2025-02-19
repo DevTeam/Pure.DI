@@ -28,8 +28,7 @@ sealed class DefaultConstructorBuilder(
 
         code.AppendLine($"[{Names.OrdinalAttributeName}(256)]");
         code.AppendLine($"public {composition.Source.Source.Name.ClassName}()");
-        code.AppendLine("{");
-        using (code.Indent())
+        using (code.CreateBlock())
         {
             code.AppendLine($"{Names.RootFieldName} = this;");
             if (composition.IsThreadSafe)
@@ -43,7 +42,6 @@ sealed class DefaultConstructorBuilder(
             }
         }
 
-        code.AppendLine("}");
         membersCounter++;
         return composition with { MembersCount = membersCounter };
     }

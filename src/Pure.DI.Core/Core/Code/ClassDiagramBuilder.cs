@@ -4,6 +4,8 @@
 
 namespace Pure.DI.Core.Code;
 
+using static LinesBuilderExtensions;
+
 sealed class ClassDiagramBuilder(
     IBuilder<ContractsBuildContext, ISet<Injection>> injectionsBuilder,
     IMarker marker,
@@ -34,7 +36,7 @@ sealed class ClassDiagramBuilder(
             var compositionLines = new LinesBuilder();
             if (hasResolveMethods || rootProperties.Count > 0)
             {
-                compositionLines.AppendLine($"class {composition.Source.Source.Name.ClassName} {{");
+                compositionLines.AppendLine($"class {composition.Source.Source.Name.ClassName} {BlockStart}");
                 using (lines.Indent())
                 {
                     compositionLines.AppendLine("<<partial>>");
@@ -54,7 +56,7 @@ sealed class ClassDiagramBuilder(
                     }
                 }
 
-                compositionLines.AppendLine("}");
+                compositionLines.AppendLine(BlockFinish);
             }
             else
             {
@@ -184,14 +186,14 @@ sealed class ClassDiagramBuilder(
                         }
                     }
 
-                    lines.AppendLine("}");
+                    lines.AppendLine(BlockFinish);
                 }
 
                 // ReSharper disable once InvertIf
                 if (hasNamespace)
                 {
                     lines.DecIndent();
-                    lines.AppendLine("}");
+                    lines.AppendLine(BlockFinish);
                 }
             }
         }
@@ -373,7 +375,7 @@ sealed class ClassDiagramBuilder(
                 base.VisitDependencyNode(lines, node);
             }
 
-            lines.AppendLine("}");
+            lines.AppendLine(BlockFinish);
         }
 
         public override void VisitConstructor(in LinesBuilder ctx, in DpMethod constructor)

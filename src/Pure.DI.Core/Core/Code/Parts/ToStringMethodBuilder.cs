@@ -26,8 +26,7 @@ sealed class ToStringMethodBuilder
         }
 
         code.AppendLine("public override string ToString()");
-        code.AppendLine("{");
-        using (code.Indent())
+        using (code.CreateBlock())
         {
             code.AppendLine("return");
             using (code.Indent())
@@ -41,7 +40,6 @@ sealed class ToStringMethodBuilder
             }
         }
 
-        code.AppendLine("}");
         membersCounter++;
         return composition with { MembersCount = membersCounter };
     }
