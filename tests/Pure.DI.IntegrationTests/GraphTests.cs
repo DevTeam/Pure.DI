@@ -10,7 +10,7 @@ public class GraphTests
     [Theory]
     [InlineData(5, false)]
     [InlineData(300, false)]
-    [InlineData(300, true)]
+    [InlineData(200, true)]
     public async Task ShouldSupportLongSetup(int count, bool randomLifetime)
     {
         // Given

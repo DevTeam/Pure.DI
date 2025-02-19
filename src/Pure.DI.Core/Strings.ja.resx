@@ -1,0 +1,162 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="Warning_NoRoots" xml:space="preserve">
+        <value>コンポジションルートが宣言されていません。少なくとも1つのルートを追加してください。</value>
+    </data>
+    <data name="Error_Template_InvalidCompositionTypeName" xml:space="preserve">
+        <value>無効なコンポジションタイプ名「{0}」。</value>
+    </data>
+    <data name="Error_Template_InvalidRootName" xml:space="preserve">
+        <value>無効なルート名「{0}」。</value>
+    </data>
+    <data name="Error_Template_RootDuplicate" xml:space="preserve">
+        <value>コンポジションルート「{0}」が既に宣言されたルート「{1}」と重複しています。</value>
+    </data>
+    <data name="Error_AccumulatorTypeCannotBeGenericTypeMarker" xml:space="preserve">
+        <value>アキュムレータタイプはジェネリックタイプマーカーに基づくことはできません。</value>
+    </data>
+    <data name="Error_AccumulatorCannotAccumulateGenericTypeMarker" xml:space="preserve">
+        <value>アキュムレータはジェネリックタイプマーカーに基づくインスタンスを蓄積できません。</value>
+    </data>
+    <data name="Error_Template_InvalidArgumentName" xml:space="preserve">
+        <value>無効な引数名「{0}」。</value>
+    </data>
+    <data name="Error_ClassArgumentTypeCannotBeGenericTypeMarker" xml:space="preserve">
+        <value>クラス引数タイプはジェネリックタイプマーカーに基づくことはできません。</value>
+    </data>
+    <data name="Error_InvalidBindingDueToCompilationError" xml:space="preserve">
+        <value>コンパイルエラーによる無効なバインディング。</value>
+    </data>
+    <data name="Error_Template_NotImplement" xml:space="preserve">
+        <value>{0}は{1}を実装していません。</value>
+    </data>
+    <data name="Error_Template_CyclicDependency" xml:space="preserve">
+        <value>循環依存が検出されました: {0}。</value>
+    </data>
+    <data name="Error_Template_UnableToResolve" xml:space="preserve">
+        <value>{1}内で「{0}」を解決できません。</value>
+    </data>
+    <data name="Error_CannotBuildDependencyGraph" xml:space="preserve">
+        <value>依存関係グラフを構築できません。</value>
+    </data>
+    <data name="Error_Template_InvalidRegularExpression" xml:space="preserve">
+        <value>無効な正規表現{0}:「{1}」。</value>
+    </data>
+    <data name="Error_Template_InvalidWildcard" xml:space="preserve">
+        <value>無効なワイルドカード{0}:「{ex.Message}」。</value>
+    </data>
+    <data name="Error_Template_TypeWithLifetimeRequiresDirectOrTransitiveInjection" xml:space="preserve">
+        <value>ライフタイム{1}のタイプ{0}は、ライフタイム{3}のタイプ{2}の直接/間接的な依存性注入を必要とします。データ漏洩や予期せぬ動作の原因となる可能性があります。</value>
+    </data>
+    <data name="Error_Template_MaximumNumberOfIterations" xml:space="preserve">
+        <value>最適な依存関係グラフ構築中に最大反復回数{0}を超過しました。依存関係グラフをより正確に指定してください。</value>
+    </data>
+    <data name="Error_DependencyGraphConstractionFailure" xml:space="preserve">
+        <value>依存関係グラフを構築できません。</value>
+    </data>
+    <data name="Error_Template_LifetimeDoesNotSupportCyclicDependencies" xml:space="preserve">
+        <value>{0}ライフタイムは循環依存をサポートしていません。</value>
+    </data>
+    <data name="Error_InvalidNumberOfInitializers" xml:space="preserve">
+        <value>無効なイニシャライザ数。</value>
+    </data>
+    <data name="Error_Template_CannotUseContextDirectly" xml:space="preserve">
+        <value>「{0}」を直接使用することはできません。メソッドまたはプロパティのみ使用可能です。</value>
+    </data>
+    <data name="Error_InvalidRootType" xml:space="preserve">
+        <value>無効なルートタイプ。</value>
+    </data>
+    <data name="Error_InvalidRootsRype" xml:space="preserve">
+        <value>無効なルーツタイプ。</value>
+    </data>
+    <data name="Error_Template_NoTypeForWildcard" xml:space="preserve">
+        <value>{0}を継承し、「{1}」フィルターに一致する名前のタイプが見つかりません。</value>
+    </data>
+    <data name="Error_InvalidBuildersType" xml:space="preserve">
+        <value>無効なビルダータイプ。</value>
+    </data>
+    <data name="Error_InvalidBuilderType" xml:space="preserve">
+        <value>無効なビルダータイプ。</value>
+    </data>
+    <data name="Error_TooManyTypeParameters" xml:space="preserve">
+        <value>タイプパラメータが多すぎます。</value>
+    </data>
+    <data name="Error_AsynchronousFactoryWithAsyncNotSupported" xml:space="preserve">
+        <value>asyncキーワードを使用した非同期ファクトリはサポートされていません。</value>
+    </data>
+    <data name="Error_Template_NotSupported" xml:space="preserve">
+        <value>{0}はサポートされていません。</value>
+    </data>
+    <data name="Error_Template_MustBeValueOfType" xml:space="preserve">
+        <value>{0}は{1}タイプの非null値でなければなりません。</value>
+    </data>
+    <data name="Error_Template_InvalidIdentifier" xml:space="preserve">
+        <value>無効な識別子「{0}」。</value>
+    </data>
+    <data name="Error_Template_InvalidAttributeArgumentPosition" xml:space="preserve">
+        <value>属性{1}の引数位置{0}が範囲[0..{2}]を超えています。</value>
+    </data>
+    <data name="Error_Template_AttributeMemberCannotBeProcessed" xml:space="preserve">
+        <value>タイプ{1}の{0}は、相互排他的な複数の属性でマークされているため処理できません。</value>
+    </data>
+    <data name="Error_InvalidBinding" xml:space="preserve">
+        <value>バインディングが正しく定義されていません。</value>
+    </data>
+    <data name="Error_Template_TooLargeComposition" xml:space="preserve">
+        <value>コンポジションが大きすぎます。#{0}依存関係で停止しました。</value>
+    </data>
+    <data name="Error_Template_CannotConstructAbstractType" xml:space="preserve">
+        <value>抽象タイプである{0}のインスタンスを構築できません。</value>
+    </data>
+    <data name="Error_Template_CannotBeInstantiatedNoAccessibleConstructor" xml:space="preserve">
+        <value>アクセス可能なコンストラクタがないため、{0}をインスタンス化できません。</value>
+    </data>
+    <data name="Error_Template_UnsupportLanguage" xml:space="preserve">
+        <value>{0}はC# {1}をサポートしていません。言語バージョン{2}以上を使用してください。</value>
+    </data>
+    <data name="Error_Template_CannotFindSetup" xml:space="preserve">
+        <value>セットアップ「{0}」が見つかりません。</value>
+    </data>
+    <data name="Error_Template_NoAccessibleConstructor" xml:space="preserve">
+        <value>タイプ{0}に引数「{1}」に一致するアクセス可能な非静的コンストラクタが存在しません。</value>
+    </data>
+    <data name="Error_Template_NoAccessibleMethod" xml:space="preserve">
+        <value>タイプ{0}に名前「{1}」、引数「{2}」に一致するアクセス可能な非静的メソッドが存在しません。</value>
+    </data>
+    <data name="Error_Template_NoAccessibleFieldOrProperty" xml:space="preserve">
+        <value>タイプ{1}に「{0}」に一致するアクセス可能な非静的書き込み可能フィールド/プロパティが存在しません。</value>
+    </data>
+    <data name="Error_Template_MustBeApiCall" xml:space="preserve">
+        <value>{0}は{1}タイプの定数値または特殊API呼び出しでなければなりません。</value>
+    </data>
+    <data name="Warning_BindingIsNotUsed" xml:space="preserve">
+        <value>バインディングが使用されていません。</value>
+    </data>
+    <data name="Warning_Template_RootCannotBeResolvedByResolveMethods" xml:space="preserve">
+        <value>ルート{0}は引数{1}を持つためResolveメソッドで解決できず、試行時に例外がスローされます。</value>
+    </data>
+    <data name="Warning_Template_InjectionSiteIsNotUsed" xml:space="preserve">
+        <value>インジェクションサイトのタグ「{0}」が使用されていません。</value>
+    </data>
+    <data name="Warning_Template_BindingHasBeenOverridden" xml:space="preserve">
+        <value>{0}は上書きされました。</value>
+    </data>
+    <data name="Info_CodeGenerationAborted" xml:space="preserve">
+        <value>コード生成が中止されました。</value>
+    </data>
+    <data name="Error_UnhandledError" xml:space="preserve">
+        <value>未処理のエラーが発生しました。</value>
+    </data>
+</root>
