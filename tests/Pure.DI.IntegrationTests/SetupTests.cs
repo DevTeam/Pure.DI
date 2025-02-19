@@ -1,10 +1,10 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
+using System.Globalization;
 using Core;
 
 public class SetupTests
 {
-
     [Theory]
     [InlineData("Func")]
     [InlineData("Lazy")]
@@ -560,6 +560,48 @@ public class SetupTests
         result.Warnings.Count.ShouldBe(2, result);
         result.Warnings.Count(i => i.Id == LogId.WarningOverriddenBinding).ShouldBe(1, result);
         result.Warnings.Count(i => i.Id == LogId.WarningMetadataDefect).ShouldBe(1, result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportCultureForErrorsAndWarnings()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<string>().To(_ => "Abc")
+                                           .Bind<string>().To(_ => "Xyz")
+                                           .Root<string>("Result");
+                                   }
+                               }  
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Result);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options( Culture: "ru" ));
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.StdOut.ShouldBe(["Xyz"], result);
+        result.Warnings.Count.ShouldBe(2, result);
+        result.Warnings.Count(i => i is { Id: LogId.WarningOverriddenBinding, Message: "Привязка для string была переопределена." }).ShouldBe(1, result);
+        result.Warnings.Count(i => i is { Id: LogId.WarningMetadataDefect, Message: "Привязка не используется." }).ShouldBe(1, result);
     }
 
     [Fact]

@@ -2,12 +2,15 @@
 
 namespace Pure.DI.Core;
 
+using System.Globalization;
+
 sealed class GlobalProperties : IGlobalProperties
 {
     public const string SeverityProperty = "build_property.purediseverity";
     public const string LogFileProperty = "build_property.puredilogfile";
     private const string MaxIterationsProperty = "build_property.puredimaxiterations";
     private const string ProfilePathProperty = "build_property.purediprofilepath";
+    public const string CultureProperty = "build_property.puredipculture";
 
     public GlobalProperties(IGeneratorOptions options)
     {
@@ -27,12 +30,30 @@ sealed class GlobalProperties : IGlobalProperties
             options.GlobalOptions.TryGetValue(ProfilePathProperty, out var profilePath)
                 ? profilePath
                 : string.Empty);
+
+        _culture = new Lazy<CultureInfo?>(() => {
+            try
+            {
+                return options.GlobalOptions.TryGetValue(CultureProperty, out var culture)
+                    ? CultureInfo.GetCultureInfo(culture)
+                    : null;
+            }
+            catch
+            {
+                // ignored
+            }
+
+            return null;
+        });
     }
 
     private readonly Lazy<int> _maxIterations;
     private readonly Lazy<string> _profilePath;
+    private readonly Lazy<CultureInfo?> _culture;
 
     public int MaxIterations => _maxIterations.Value;
+
+    public CultureInfo? Culture => _culture.Value;
 
     public bool TryGetProfilePath(out string path) =>
         !string.IsNullOrWhiteSpace(path = _profilePath.Value);

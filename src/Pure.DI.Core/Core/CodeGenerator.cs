@@ -2,6 +2,8 @@
 
 namespace Pure.DI.Core;
 
+using System.Globalization;
+
 sealed class CodeGenerator(
     IProfiler profiler,
     IExceptionHandler exceptionHandler,
@@ -12,20 +14,39 @@ sealed class CodeGenerator(
     IBuilder<TagContext, TagCode> tagClassBuildr,
     ISmartTags smartTags,
     ISources sources,
+    IGlobalProperties globalProperties,
     CancellationToken cancellationToken)
     : IBuilder<IEnumerable<SyntaxUpdate>, Unit>
 {
     public Unit Build(IEnumerable<SyntaxUpdate> updates)
     {
         profiler.Profile();
-        using var logObserverToken = observersRegistry.Register(logObserver);
+        var culture = globalProperties.Culture;
+        CultureInfo? currentCulture = null;
+        if (culture is not null)
+        {
+            currentCulture = CultureInfo.CurrentUICulture;
+            CultureInfo.CurrentUICulture = culture;
+        }
+
         try
         {
-            exceptionHandler.SafeRun(updates, ProcessUpdates);
+            using var logObserverToken = observersRegistry.Register(logObserver);
+            try
+            {
+                exceptionHandler.SafeRun(updates, ProcessUpdates);
+            }
+            finally
+            {
+                logObserver.OnCompleted();
+            }
         }
         finally
         {
-            logObserver.OnCompleted();
+            if (currentCulture is not null)
+            {
+                CultureInfo.CurrentUICulture = currentCulture;
+            }
         }
 
         return Unit.Shared;

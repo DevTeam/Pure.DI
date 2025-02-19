@@ -147,7 +147,7 @@
         <value>Корень {0} нельзя разрешить с помощью методов Resolve, поскольку он имеет аргументы {1}, поэтому при попытке это сделать будет выброшено исключение.</value>
     </data>
     <data name="Warning_Template_BindingHasBeenOverridden" xml:space="preserve">
-        <value>{0} была переопределена.</value>
+        <value>Привязка для {0} была переопределена.</value>
     </data>
     <data name="Warning_Template_InjectionSiteIsNotUsed" xml:space="preserve">
         <value>«{0}» метка в месте инъекции не используется.</value>

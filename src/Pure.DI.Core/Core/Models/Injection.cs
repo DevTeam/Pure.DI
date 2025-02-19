@@ -7,12 +7,12 @@ readonly record struct Injection(
     ITypeSymbol Type,
     object? Tag)
 {
+    public override string ToString() => $"{Type}{(Tag != null && Tag is not MdTagOnSites ? $"({Tag.ValueToString()})" : "")}";
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool Equals(Injection other) =>
         (ReferenceEquals(Type, other.Type) || SymbolEqualityComparer.Default.Equals(Type, other.Type))
         && EqualTags(Tag, other.Tag);
-    public override string ToString() => $"{Type}{(Tag != null && Tag is not MdTagOnSites ? $"({Tag.ValueToString()})" : "")}";
 
     public override int GetHashCode() =>
         SymbolEqualityComparer.Default.GetHashCode(Type);

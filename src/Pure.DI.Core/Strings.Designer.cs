@@ -474,7 +474,7 @@ namespace Pure.DI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} has been overridden..
+        ///   Looks up a localized string similar to The binding for {0} has been overridden..
         /// </summary>
         internal static string Warning_Template_BindingHasBeenOverridden {
             get {

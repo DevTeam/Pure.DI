@@ -151,7 +151,7 @@
         <value>インジェクションサイトのタグ「{0}」が使用されていません。</value>
     </data>
     <data name="Warning_Template_BindingHasBeenOverridden" xml:space="preserve">
-        <value>{0}は上書きされました。</value>
+        <value>{0}のバインディングがオーバーライドされました。</value>
     </data>
     <data name="Info_CodeGenerationAborted" xml:space="preserve">
         <value>コード生成が中止されました。</value>

@@ -151,7 +151,7 @@
         <value>La etiqueta "{0}" en el sitio de inyección no se usa.</value>
     </data>
     <data name="Warning_Template_BindingHasBeenOverridden" xml:space="preserve">
-        <value>{0} ha sido sobrescrito.</value>
+        <value>El enlace para {0} ha sido anulado.</value>
     </data>
     <data name="Info_CodeGenerationAborted" xml:space="preserve">
         <value>Generación de código cancelada.</value>

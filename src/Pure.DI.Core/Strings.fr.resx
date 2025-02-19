@@ -151,7 +151,7 @@
         <value>Le tag «{0}» du site d'injection n'est pas utilisé.</value>
     </data>
     <data name="Warning_Template_BindingHasBeenOverridden" xml:space="preserve">
-        <value>{0} a été remplacé.</value>
+        <value>La liaison pour {0} a été remplacée.</value>
     </data>
     <data name="Info_CodeGenerationAborted" xml:space="preserve">
         <value>Génération de code annulée.</value>

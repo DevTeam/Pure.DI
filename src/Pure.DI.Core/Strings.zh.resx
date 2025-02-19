@@ -151,7 +151,7 @@
         <value>注入点的“{0}”标签未被使用。</value>
     </data>
     <data name="Warning_Template_BindingHasBeenOverridden" xml:space="preserve">
-        <value>{0}已被覆盖。</value>
+        <value>{0} 的绑定已被覆盖。</value>
     </data>
     <data name="Info_CodeGenerationAborted" xml:space="preserve">
         <value>代码生成已中止。</value>

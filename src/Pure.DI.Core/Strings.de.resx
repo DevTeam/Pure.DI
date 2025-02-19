@@ -151,7 +151,7 @@
         <value>Tag „{0}“ an Injektionsstelle wird nicht genutzt.</value>
     </data>
     <data name="Warning_Template_BindingHasBeenOverridden" xml:space="preserve">
-        <value>{0} wurde überschrieben.</value>
+        <value>Die Bindung für {0} wurde außer Kraft gesetzt.</value>
     </data>
     <data name="Info_CodeGenerationAborted" xml:space="preserve">
         <value>Codegenerierung abgebrochen.</value>

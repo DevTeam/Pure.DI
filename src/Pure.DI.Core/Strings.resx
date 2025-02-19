@@ -157,7 +157,7 @@
         <value>"{0}" of the tag on the injection site is not used.</value>
     </data>
     <data name="Warning_Template_BindingHasBeenOverridden" xml:space="preserve">
-        <value>{0} has been overridden.</value>
+        <value>The binding for {0} has been overridden.</value>
     </data>
     <data name="Info_CodeGenerationAborted" xml:space="preserve">
         <value>Code generation aborted.</value>
