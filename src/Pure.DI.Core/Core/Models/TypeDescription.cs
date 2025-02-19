@@ -1,4 +1,4 @@
-﻿namespace Pure.DI.Core.Code;
+﻿namespace Pure.DI.Core.Models;
 
 readonly record struct TypeDescription(
     string Name,

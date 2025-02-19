@@ -1,8 +1,6 @@
 ﻿namespace Pure.DI.Core.Code;
 
-sealed class ParameterizedConstructorCommenter(
-    IComments comments)
-    : ICommenter<Unit>
+sealed class ParameterizedConstructorCommenter(IComments comments) : ICommenter<Unit>
 {
     public void AddComments(CompositionCode composition, Unit unit)
     {

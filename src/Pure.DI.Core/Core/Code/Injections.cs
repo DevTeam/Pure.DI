@@ -3,15 +3,11 @@ namespace Pure.DI.Core.Code;
 
 sealed class Injections : IInjections
 {
-    public void FieldInjection(string targetName, BuildContext ctx, DpField field, Variable fieldVariable)
-    {
+    public void FieldInjection(string targetName, BuildContext ctx, DpField field, Variable fieldVariable) =>
         ctx.Code.AppendLine($"{targetName}.{field.Field.Name} = {ctx.BuildTools.OnInjected(ctx, fieldVariable)};");
-    }
 
-    public void PropertyInjection(string targetName, BuildContext ctx, DpProperty property, Variable propertyVariable)
-    {
+    public void PropertyInjection(string targetName, BuildContext ctx, DpProperty property, Variable propertyVariable) =>
         ctx.Code.AppendLine($"{targetName}.{property.Property.Name} = {ctx.BuildTools.OnInjected(ctx, propertyVariable)};");
-    }
 
     public void MethodInjection(string targetName, BuildContext ctx, DpMethod method, IReadOnlyList<Variable> methodArgs)
     {

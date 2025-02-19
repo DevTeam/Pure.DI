@@ -1,9 +1,7 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
-sealed class Locks(
-    ITypes types)
-    : ILocks
+sealed class Locks(ITypes types) : ILocks
 {
     public string GetLockType(MdSetup setup) =>
         IsSystemThreadingLockEnabled(setup)
