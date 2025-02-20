@@ -150,7 +150,7 @@ sealed class DisposeMethodBuilder(
                 }
             }
 
-            code.AppendLine("catch (Exception exception)");
+            code.AppendLine($"catch ({Names.SystemNamespace}Exception exception)");
             using (code.CreateBlock())
             {
                 code.AppendLine($"{Names.OnDisposeAsyncExceptionMethodName}(asyncDisposableInstance, exception);");
@@ -171,7 +171,7 @@ sealed class DisposeMethodBuilder(
                 code.AppendLine("disposableInstance.Dispose();");
             }
 
-            code.AppendLine("catch (Exception exception)");
+            code.AppendLine($"catch ({Names.SystemNamespace}Exception exception)");
             using (code.CreateBlock())
             {
                 code.AppendLine($"{Names.OnDisposeExceptionMethodName}(disposableInstance, exception);");

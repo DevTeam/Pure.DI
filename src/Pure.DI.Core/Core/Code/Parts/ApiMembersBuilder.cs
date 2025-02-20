@@ -172,11 +172,11 @@ sealed class ApiMembersBuilder(
     private static void FinishComments(LinesBuilder apiCode)
     {
         apiCode.AppendLine("/// <returns>An instance of a composition root.</returns>");
-        apiCode.AppendLine("""/// <exception cref="InvalidOperationException">Will be thrown if the corresponding composition root was not specified. To specify a composition root use API method such as <see cref="IConfiguration.Root{T}"/>.</exception>""");
-        apiCode.AppendLine("""/// <seealso cref="IConfiguration.RootBind{T}"/>""");
-        apiCode.AppendLine("""/// <seealso cref="IConfiguration.Roots{T}"/>""");
-        apiCode.AppendLine("""/// <seealso cref="IConfiguration.Builder{T}"/>""");
-        apiCode.AppendLine("""/// <seealso cref="IConfiguration.Builders{T}"/>""");
+        apiCode.AppendLine($"/// <exception cref=\"{Names.SystemNamespace}InvalidOperationException\">Will be thrown if the corresponding composition root was not specified. To specify a composition root use API method such as <see cref=\"{Names.IConfigurationTypeName}.Root{{T}}\"/>.</exception>");
+        apiCode.AppendLine($"/// <seealso cref=\"{Names.IConfigurationTypeName}.RootBind{{T}}\"/>");
+        apiCode.AppendLine($"/// <seealso cref=\"{Names.IConfigurationTypeName}.Roots{{T}}\"/>");
+        apiCode.AppendLine($"/// <seealso cref=\"{Names.IConfigurationTypeName}.Builder{{T}}\"/>");
+        apiCode.AppendLine($"/// <seealso cref=\"{Names.IConfigurationTypeName}.Builders{{T}}\"/>");
     }
 
     private void CreateObjectResolverMethod(

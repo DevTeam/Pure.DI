@@ -38,6 +38,7 @@ static class Names
     public const string IAsyncDisposableTypeName = $"{SystemNamespace}IAsyncDisposable";
     public const string IResolverTypeName = $"{ApiNamespace}{nameof(IResolver<object, object>)}";
     public const string IContextTypeName = $"{ApiNamespace}{nameof(IContext)}";
+    public const string IConfigurationTypeName = $"{ApiNamespace}{nameof(IConfiguration)}";
     public const string ObjectTypeName = $"{SystemNamespace}Object";
     public const string ValueTaskTypeName = $"{SystemNamespace}Threading.Tasks.ValueTask";
     public const string LockTypeName = $"{SystemNamespace}Threading.Lock";

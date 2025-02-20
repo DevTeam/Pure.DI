@@ -37,6 +37,7 @@ namespace Pure.DI
     /// <seealso cref="Pure.DI.DI.Setup"/>
     /// <seealso cref="IBinding.As"/>
     /// <seealso cref="IConfiguration.DefaultLifetime"/>
+    /// <seealso cref="IConfiguration.DefaultLifetime{T}"/>
     internal enum Lifetime
     {
         /// <summary>
@@ -1030,6 +1031,8 @@ namespace Pure.DI
     /// </code>
     /// </example>
     /// </summary>
+    /// <seealso cref="IConfiguration.GenericTypeArgumentAttribute{T}"/>
+    /// <seealso cref="IConfiguration.GenericTypeArgument{T}"/>
     [global::System.AttributeUsage(global::System.AttributeTargets.Class | global::System.AttributeTargets.Interface | global::System.AttributeTargets.Struct | global::System.AttributeTargets.Enum)]
 #if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
@@ -1087,6 +1090,7 @@ namespace Pure.DI
     /// </code>
     /// </example>
     /// </summary>
+    /// <seealso cref="DependencyAttribute"/>
     /// <seealso cref="TagAttribute"/>
     /// <seealso cref="TypeAttribute"/>
     [global::System.AttributeUsage(global::System.AttributeTargets.Constructor | global::System.AttributeTargets.Method | global::System.AttributeTargets.Property | global::System.AttributeTargets.Field, AllowMultiple = false)]
@@ -1153,6 +1157,7 @@ namespace Pure.DI
     /// </code>
     /// </example>
     /// </summary>
+    /// <seealso cref="DependencyAttribute"/>
     /// <seealso cref="OrdinalAttribute"/>
     /// <seealso cref="TypeAttribute"/>
     [global::System.AttributeUsage(global::System.AttributeTargets.Parameter | global::System.AttributeTargets.Property | global::System.AttributeTargets.Field, AllowMultiple = false)]
@@ -1213,6 +1218,7 @@ namespace Pure.DI
     /// </code>
     /// </example>
     /// </summary>
+    /// <seealso cref="DependencyAttribute"/>
     /// <seealso cref="TagAttribute"/>
     /// <seealso cref="OrdinalAttribute"/>
     [global::System.AttributeUsage(global::System.AttributeTargets.Parameter | global::System.AttributeTargets.Property | global::System.AttributeTargets.Field, AllowMultiple = false)]
@@ -1233,6 +1239,8 @@ namespace Pure.DI
     /// </summary>
     /// <param name="tag">The injection tag. See also <see cref="IBinding.Tags"/></param>.
     /// <param name="ordinal">The injection ordinal.</param>
+    /// <seealso cref="OrdinalAttribute"/>
+    /// <seealso cref="TagAttribute"/>
     [global::System.AttributeUsage(global::System.AttributeTargets.Constructor | global::System.AttributeTargets.Method | global::System.AttributeTargets.Parameter | global::System.AttributeTargets.Property | global::System.AttributeTargets.Field)]
 #if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
@@ -1273,6 +1281,7 @@ namespace Pure.DI
     /// </code>
     /// </example>
     /// </summary>
+    /// <seealso cref="RootKinds.Exposed"/>
     [global::System.AttributeUsage(global::System.AttributeTargets.Property | global::System.AttributeTargets.Method | global::System.AttributeTargets.Field)]
 #if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
@@ -1316,6 +1325,10 @@ namespace Pure.DI
     /// Determines a kind of root of the composition.
     /// </summary>
     /// <seealso cref="IConfiguration.Root{T}"/>
+    /// <seealso cref="IConfiguration.RootBind{T}"/>
+    /// <seealso cref="IConfiguration.Roots{T}"/>
+    /// <seealso cref="IConfiguration.Builder{T}"/>
+    /// <seealso cref="IConfiguration.Builders{T}"/>
     [global::System.Flags]
     internal enum RootKinds
     {
@@ -1362,6 +1375,7 @@ namespace Pure.DI
         /// <summary>
         /// Specifies to create a exposed root of the composition.
         /// </summary>
+        /// <seealso cref="BindAttribute"/>
         Exposed = 1 << 7,
         
         /// <summary>
@@ -1373,6 +1387,8 @@ namespace Pure.DI
     /// <summary>
     /// Represents well known tags.
     /// </summary>
+    /// <seealso cref="IConfiguration.Bind{T}"/>
+    /// <seealso cref="IBinding.Tags"/>
 #if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 #endif
@@ -1471,6 +1487,8 @@ namespace Pure.DI
     /// <summary>
     /// This abstraction allows a disposable object to be disposed of.
     /// </summary>
+    /// <seealso cref="Owned"/>
+    /// <seealso cref="IConfiguration.Accumulate{T,TAccumulator}"/>
     internal interface IOwned
         : global::System.IDisposable
 #if NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
@@ -1482,6 +1500,8 @@ namespace Pure.DI
     /// <summary>
     /// Performs accumulation and disposal of disposable objects.
     /// </summary>
+    /// <seealso cref="IOwned"/>
+    /// <seealso cref="IConfiguration.Accumulate{T,TAccumulator}"/>
 #if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 #endif
@@ -1601,6 +1621,7 @@ namespace Pure.DI
         /// <param name="disposableInstance">The disposable instance.</param>
         /// <param name="exception">Exception occurring during disposal.</param>
         /// <typeparam name="T">The actual type of instance being disposed of.</typeparam>
+        /// <seealso cref="IDisposable"/>
         partial void OnDisposeException<T>(T disposableInstance, global::System.Exception exception)
             where T : global::System.IDisposable;
         
@@ -1620,6 +1641,9 @@ namespace Pure.DI
     /// Contains a value and gives the ability to dispose of that value.
     /// </summary>
     /// <typeparam name="T">Type of value owned.</typeparam>
+    /// <seealso cref="IOwned"/>
+    /// <seealso cref="Owned"/>
+    /// <seealso cref="IConfiguration.Accumulate{T,TAccumulator}"/>
     [global::System.Diagnostics.DebuggerDisplay("{Value}")]
     [global::System.Diagnostics.DebuggerTypeProxy(typeof(global::Pure.DI.Owned<>.DebugView))]
     internal readonly struct Owned<T>: global::Pure.DI.IOwned
@@ -1715,12 +1739,12 @@ namespace Pure.DI
         /// </summary>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
-        /// <seealso cref="To{T}()"/>
-        /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
-        /// <seealso cref="To{T1,T}()"/>
-        /// <seealso cref="To{T1,T2,T}()"/>
-        /// <seealso cref="Tags"/>
-        /// <seealso cref="As"/>
+        /// <seealso cref="IBinding.To{T}()"/>
+        /// <seealso cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
+        /// <seealso cref="IBinding.To{T1,T}()"/>
+        /// <seealso cref="IBinding.To{T1,T2,T}()"/>
+        /// <seealso cref="IBinding.Tags"/>
+        /// <seealso cref="IBinding.As"/>
         IBinding Bind(params object[] tags);
         
         /// <summary>
@@ -1735,12 +1759,12 @@ namespace Pure.DI
         /// <typeparam name="T">The type of dependency to be bound.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
-        /// <seealso cref="To{T}()"/>
-        /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
-        /// <seealso cref="To{T1,T}()"/>
-        /// <seealso cref="To{T1,T2,T}()"/>
-        /// <seealso cref="Tags"/>
-        /// <seealso cref="As"/> 
+        /// <seealso cref="IBinding.To{T}()"/>
+        /// <seealso cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
+        /// <seealso cref="IBinding.To{T1,T}()"/>
+        /// <seealso cref="IBinding.To{T1,T2,T}()"/>
+        /// <seealso cref="IBinding.Tags"/>
+        /// <seealso cref="IBinding.As"/>
         IBinding Bind<T>(params object[] tags);
         
         /// <summary>
@@ -1750,12 +1774,12 @@ namespace Pure.DI
         /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
-        /// <seealso cref="To{T}()"/>
-        /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
-        /// <seealso cref="To{T1,T}()"/>
-        /// <seealso cref="To{T1,T2,T}()"/>
-        /// <seealso cref="Tags"/>
-        /// <seealso cref="As"/>
+        /// <seealso cref="IBinding.To{T}()"/>
+        /// <seealso cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
+        /// <seealso cref="IBinding.To{T1,T}()"/>
+        /// <seealso cref="IBinding.To{T1,T2,T}()"/>
+        /// <seealso cref="IBinding.Tags"/>
+        /// <seealso cref="IBinding.As"/>
         IBinding Bind<T1, T2>(params object[] tags);
         
         /// <summary>
@@ -1766,12 +1790,12 @@ namespace Pure.DI
         /// <typeparam name="T3">The type 3 of dependency to be bound.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
-        /// <seealso cref="To{T}()"/>
-        /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
-        /// <seealso cref="To{T1,T}()"/>
-        /// <seealso cref="To{T1,T2,T}()"/>
-        /// <seealso cref="Tags"/>
-        /// <seealso cref="As"/>
+        /// <seealso cref="IBinding.To{T}()"/>
+        /// <seealso cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
+        /// <seealso cref="IBinding.To{T1,T}()"/>
+        /// <seealso cref="IBinding.To{T1,T2,T}()"/>
+        /// <seealso cref="IBinding.Tags"/>
+        /// <seealso cref="IBinding.As"/>
         IBinding Bind<T1, T2, T3>(params object[] tags);
         
         /// <summary>
@@ -1783,12 +1807,12 @@ namespace Pure.DI
         /// <typeparam name="T4">The type 4 of dependency to be bound.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
-        /// <seealso cref="To{T}()"/>
-        /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
-        /// <seealso cref="To{T1,T}()"/>
-        /// <seealso cref="To{T1,T2,T}()"/>
-        /// <seealso cref="Tags"/>
-        /// <seealso cref="As"/>
+        /// <seealso cref="IBinding.To{T}()"/>
+        /// <seealso cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
+        /// <seealso cref="IBinding.To{T1,T}()"/>
+        /// <seealso cref="IBinding.To{T1,T2,T}()"/>
+        /// <seealso cref="IBinding.Tags"/>
+        /// <seealso cref="IBinding.As"/>
         IBinding Bind<T1, T2, T3, T4>(params object[] tags);
         
         /// <summary>
@@ -1801,12 +1825,12 @@ namespace Pure.DI
         /// <typeparam name="T5">The type 5 of dependency to be bound.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
-        /// <seealso cref="To{T}()"/>
-        /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
-        /// <seealso cref="To{T1,T}()"/>
-        /// <seealso cref="To{T1,T2,T}()"/>
-        /// <seealso cref="Tags"/>
-        /// <seealso cref="As"/>
+        /// <seealso cref="IBinding.To{T}()"/>
+        /// <seealso cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
+        /// <seealso cref="IBinding.To{T1,T}()"/>
+        /// <seealso cref="IBinding.To{T1,T2,T}()"/>
+        /// <seealso cref="IBinding.Tags"/>
+        /// <seealso cref="IBinding.As"/>
         IBinding Bind<T1, T2, T3, T4, T5>(params object[] tags);
         
         /// <summary>
@@ -1820,12 +1844,12 @@ namespace Pure.DI
         /// <typeparam name="T6">The type 6 of dependency to be bound.</typeparam> 
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
-        /// <seealso cref="To{T}()"/>
-        /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
-        /// <seealso cref="To{T1,T}()"/>
-        /// <seealso cref="To{T1,T2,T}()"/>
-        /// <seealso cref="Tags"/>
-        /// <seealso cref="As"/>
+        /// <seealso cref="IBinding.To{T}()"/>
+        /// <seealso cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
+        /// <seealso cref="IBinding.To{T1,T}()"/>
+        /// <seealso cref="IBinding.To{T1,T2,T}()"/>
+        /// <seealso cref="IBinding.Tags"/>
+        /// <seealso cref="IBinding.As"/>
         IBinding Bind<T1, T2, T3, T4, T5, T6>(params object[] tags);
         
         /// <summary>
@@ -1840,12 +1864,12 @@ namespace Pure.DI
         /// <typeparam name="T7">The type 7 of dependency to be bound.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
-        /// <seealso cref="To{T}()"/>
-        /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
-        /// <seealso cref="To{T1,T}()"/>
-        /// <seealso cref="To{T1,T2,T}()"/>
-        /// <seealso cref="Tags"/>
-        /// <seealso cref="As"/>
+        /// <seealso cref="IBinding.To{T}()"/>
+        /// <seealso cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
+        /// <seealso cref="IBinding.To{T1,T}()"/>
+        /// <seealso cref="IBinding.To{T1,T2,T}()"/>
+        /// <seealso cref="IBinding.Tags"/>
+        /// <seealso cref="IBinding.As"/>
         IBinding Bind<T1, T2, T3, T4, T5, T6, T7>(params object[] tags);
         
         /// <summary>
@@ -1861,12 +1885,12 @@ namespace Pure.DI
         /// <typeparam name="T8">The type 8 of dependency to be bound.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
-        /// <seealso cref="To{T}()"/>
-        /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
-        /// <seealso cref="To{T1,T}()"/>
-        /// <seealso cref="To{T1,T2,T}()"/>
-        /// <seealso cref="Tags"/>
-        /// <seealso cref="As"/>
+        /// <seealso cref="IBinding.To{T}()"/>
+        /// <seealso cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
+        /// <seealso cref="IBinding.To{T1,T}()"/>
+        /// <seealso cref="IBinding.To{T1,T2,T}()"/>
+        /// <seealso cref="IBinding.Tags"/>
+        /// <seealso cref="IBinding.As"/>
         IBinding Bind<T1, T2, T3, T4, T5, T6, T7, T8>(params object[] tags);
 
         /// <summary>
@@ -1906,12 +1930,12 @@ namespace Pure.DI
         /// <param name="kind">The optional argument specifying the kind for the root of the composition.</param>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding. If is is not empty, the first tag is used for the root.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
-        /// <seealso cref="To{T}()"/>
-        /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
-        /// <seealso cref="To{T1,T}()"/>
-        /// <seealso cref="To{T1,T2,T}()"/>
-        /// <seealso cref="Tags"/>
-        /// <seealso cref="As"/>
+        /// <seealso cref="IBinding.To{T}()"/>
+        /// <seealso cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
+        /// <seealso cref="IBinding.To{T1,T}()"/>
+        /// <seealso cref="IBinding.To{T1,T2,T}()"/>
+        /// <seealso cref="IBinding.Tags"/>
+        /// <seealso cref="IBinding.As"/>
         IBinding RootBind<T>(string name = "", RootKinds kind = RootKinds.Default, params object[] tags);
 
         /// <summary>
@@ -2066,6 +2090,7 @@ namespace Pure.DI
         /// <param name="tags">The optional argument that specifies the tags for the argument.</param>
         /// <typeparam name="T">The argument type.</typeparam>
         /// <returns>Reference to the setup continuation chain.</returns>
+        /// <seealso cref="RootArg{T}"/>
         IConfiguration Arg<T>(string name, params object[] tags);
         
         /// <summary>
@@ -2104,6 +2129,7 @@ namespace Pure.DI
         /// <param name="tags">The optional argument that specifies the tags for the argument.</param>
         /// <typeparam name="T">The argument type.</typeparam>
         /// <returns>Reference to the setup continuation chain.</returns>
+        /// <seealso cref="Arg{T}"/>
         IConfiguration RootArg<T>(string name, params object[] tags);
         
         /// <summary>
@@ -2149,6 +2175,8 @@ namespace Pure.DI
         /// <param name="kind">The optional argument specifying the kind for the root of the composition.</param>
         /// <typeparam name="T">The composition root type.</typeparam>
         /// <returns>Reference to the setup continuation chain.</returns>
+        /// <seealso cref="RootBind{T}"/>
+        /// <seealso cref="Roots{T}"/>
         IConfiguration Root<T>(string name = "", object tag = null, RootKinds kind = RootKinds.Default);
 
         /// <summary>
@@ -2190,6 +2218,7 @@ namespace Pure.DI
         /// <param name="filter">A wildcard to filter root types by their full name.</param>
         /// <typeparam name="T">The composition root base type.</typeparam>
         /// <returns>Reference to the setup continuation chain.</returns>
+        /// <seealso cref="Root{T}"/>
         IConfiguration Roots<T>(string name = "", RootKinds kind = RootKinds.Default, string filter = "*");
 
         /// <summary>
@@ -2224,6 +2253,7 @@ namespace Pure.DI
         /// <param name="kind">The optional argument specifying the kind for the root of the composition.</param>
         /// <typeparam name="T">The composition root type.</typeparam>
         /// <returns>Reference to the setup continuation chain.</returns>
+        /// <seealso cref="Builders{T}"/>
         IConfiguration Builder<T>(string name = "BuildUp", RootKinds kind = RootKinds.Default);
         
         /// <summary>
@@ -2271,6 +2301,7 @@ namespace Pure.DI
         /// <param name="filter">A wildcard to filter builder types by their full name.</param>
         /// <typeparam name="T">The composition root base type.</typeparam>
         /// <returns>Reference to the setup continuation chain.</returns>
+        /// <seealso cref="Builder{T}"/>
         IConfiguration Builders<T>(string name = "BuildUp", RootKinds kind = RootKinds.Default, string filter = "*");
 
         /// <summary>
@@ -2301,7 +2332,6 @@ namespace Pure.DI
         /// <typeparam name="T">The type of instance. All instances that can be cast to this type will be aacumulated.</typeparam>
         /// <typeparam name="TAccumulator">The type of accumulator. It must have a public constructor without parameters and a <c>Add</c> method with a single argument that allows you to add an instance of type <typeparamref name="T"/>.</typeparam>
         /// <returns>Reference to the setup continuation chain.</returns>
-        /// <seealso cref="Pure.DI.Hint"/>
         /// <seealso cref="Pure.DI.Lifetime"/>
         IConfiguration Accumulate<T, TAccumulator>(params Lifetime[] lifetimes)
             where TAccumulator: new();
@@ -2320,6 +2350,7 @@ namespace Pure.DI
         /// </summary>
         /// <typeparam name="T">The generic type marker.</typeparam>
         /// <returns>Reference to the setup continuation chain.</returns>
+        /// <seealso cref="GenericTypeArgumentAttribute{T}"/>
         IConfiguration GenericTypeArgument<T>();
     }
 
@@ -2888,14 +2919,14 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
         /// <seealso cref="IBinding.Tags"/>
         object Tag { get; }
 
         /// <summary>
         /// The types of consumers for which the instance is created. Cannot be used outside of the binding setup. Guaranteed to contain at least one element.
         /// </summary>
-        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
         Type[] ConsumerTypes { get; }
 
         /// <summary>
@@ -2972,6 +3003,7 @@ namespace Pure.DI
         /// </summary>
         /// <param name="value">An existing object for which the injection(s) is to be performed.</param>
         /// <typeparam name="T">Object type.</typeparam>
+        /// <seealso cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
         void BuildUp<T>(T value);
     }
     
@@ -3344,6 +3376,7 @@ namespace Pure.DI
         /// </summary>
         /// <param name="composite">The composition.</param>
         /// <returns>A composition root.</returns>
+        /// <seealso cref="DI.Setup"/>
         T Resolve(TComposite composite);
         
         /// <summary>
@@ -3352,6 +3385,7 @@ namespace Pure.DI
         /// <param name="composite">The composition.</param>
         /// <param name="tag">The tag of a composition root.</param>
         /// <returns>A composition root.</returns>
+        /// <seealso cref="DI.Setup"/>
         T ResolveByTag(TComposite composite, object tag);
     }
 }

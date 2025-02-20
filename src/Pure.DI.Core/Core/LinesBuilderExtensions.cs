@@ -11,8 +11,10 @@ static class LinesBuilderExtensions
     public static IDisposable CreateBlock(this LinesBuilder linesBuilder)
     {
         linesBuilder.AppendLine(BlockStart);
-        return Disposables.Create(
-            linesBuilder.Indent(),
-            Disposables.Create(() => linesBuilder.AppendLine(BlockFinish)));
+        linesBuilder.IncIndent();
+        return Disposables.Create(() => {
+            linesBuilder.DecIndent();
+            linesBuilder.AppendLine(BlockFinish);
+        });
     }
 }
