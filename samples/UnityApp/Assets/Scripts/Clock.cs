@@ -1,6 +1,5 @@
 using Pure.DI;
 using UnityEngine;
-#pragma warning disable CS8618
 #pragma warning disable CS0649
 
 public class Clock : MonoBehaviour
