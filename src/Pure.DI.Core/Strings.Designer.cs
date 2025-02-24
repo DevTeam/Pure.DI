@@ -285,7 +285,7 @@ namespace Pure.DI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Invalid wildcard {0}: &quot;{ex.Message}&quot;..
+        ///   Looks up a localized string similar to Invalid wildcard {0}: &quot;{1}&quot;..
         /// </summary>
         internal static string Error_Template_InvalidWildcard {
             get {

@@ -1,5 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+        </xsd:element>
+    </xsd:schema>
     <resheader name="resmimetype">
         <value>text/microsoft-resx</value>
     </resheader>
@@ -28,7 +32,7 @@
         <value>累加器类型不能基于泛型类型标记。</value>
     </data>
     <data name="Error_AccumulatorCannotAccumulateGenericTypeMarker" xml:space="preserve">
-        <value>累加器不能累积基于泛型类型标记的实例。</value>
+        <value>累加器无法累积基于泛型类型标记的实例。</value>
     </data>
     <data name="Error_Template_InvalidArgumentName" xml:space="preserve">
         <value>无效的参数名称“{0}”。</value>
@@ -55,16 +59,16 @@
         <value>无效的正则表达式{0}：“{1}”。</value>
     </data>
     <data name="Error_Template_InvalidWildcard" xml:space="preserve">
-        <value>无效的通配符{0}：“{ex.Message}”。</value>
+        <value>无效的通配符{0}：“{1}”。</value>
     </data>
     <data name="Error_Template_TypeWithLifetimeRequiresDirectOrTransitiveInjection" xml:space="preserve">
-        <value>具有{1}生命周期的类型{0}需要直接或通过依赖注入传递类型{2}（生命周期{3}），可能导致数据泄漏和意外行为。</value>
+        <value>具有生命周期{1}的类型{0}需要直接或间接注入具有生命周期{3}的类型{2}，这可能导致数据泄漏或意外行为。</value>
     </data>
     <data name="Error_Template_MaximumNumberOfIterations" xml:space="preserve">
-        <value>构建最优依赖关系图时超过最大迭代次数{0}。请更精确地指定依赖关系图。</value>
+        <value>构建最优依赖关系图时超过最大迭代次数{0}。请更精确地定义依赖关系图。</value>
     </data>
     <data name="Error_DependencyGraphConstractionFailure" xml:space="preserve">
-        <value>无法构造依赖关系图。</value>
+        <value>无法构建依赖关系图。</value>
     </data>
     <data name="Error_Template_LifetimeDoesNotSupportCyclicDependencies" xml:space="preserve">
         <value>{0}生命周期不支持循环依赖。</value>
@@ -79,16 +83,16 @@
         <value>无效的根类型。</value>
     </data>
     <data name="Error_InvalidRootsRype" xml:space="preserve">
-        <value>根类型无效。</value>
+        <value>无效的根类型。</value>
     </data>
     <data name="Error_Template_NoTypeForWildcard" xml:space="preserve">
-        <value>未找到继承自{0}且名称匹配“{1}”筛选器的类型。</value>
+        <value>未找到继承自{0}且名称匹配过滤器“{1}”的类型。</value>
     </data>
     <data name="Error_InvalidBuildersType" xml:space="preserve">
-        <value>生成器类型无效。</value>
+        <value>无效的构建器类型。</value>
     </data>
     <data name="Error_InvalidBuilderType" xml:space="preserve">
-        <value>生成器类型无效。</value>
+        <value>无效的构建器类型。</value>
     </data>
     <data name="Error_TooManyTypeParameters" xml:space="preserve">
         <value>类型参数过多。</value>
@@ -100,58 +104,58 @@
         <value>不支持{0}。</value>
     </data>
     <data name="Error_Template_MustBeValueOfType" xml:space="preserve">
-        <value>{0}必须是非空的{1}类型值。</value>
+        <value>{0}必须是类型{1}的非空值。</value>
     </data>
     <data name="Error_Template_InvalidIdentifier" xml:space="preserve">
         <value>无效的标识符“{0}”。</value>
     </data>
     <data name="Error_Template_InvalidAttributeArgumentPosition" xml:space="preserve">
-        <value>特性{1}的参数位置{0}超出范围[0..{2}]。</value>
+        <value>属性{1}的参数位置{0}超出范围[0..{2}]。</value>
     </data>
     <data name="Error_Template_AttributeMemberCannotBeProcessed" xml:space="preserve">
-        <value>类型{1}的{0}无法处理，因其被标记了多个互斥特性。</value>
+        <value>类型{1}的{0}无法处理，因为它被标记了多个互斥属性。</value>
     </data>
     <data name="Error_InvalidBinding" xml:space="preserve">
         <value>绑定定义不正确。</value>
     </data>
     <data name="Error_Template_TooLargeComposition" xml:space="preserve">
-        <value>组合规模过大。已在#{0}依赖项处停止。</value>
+        <value>组合过大。已在依赖项#{0}处停止。</value>
     </data>
     <data name="Error_Template_CannotConstructAbstractType" xml:space="preserve">
-        <value>无法构造{0}的实例，因其为抽象类型。</value>
+        <value>无法构造{0}的实例，因为它是抽象类型。</value>
     </data>
     <data name="Error_Template_CannotBeInstantiatedNoAccessibleConstructor" xml:space="preserve">
-        <value>由于没有可访问的构造函数，无法实例化{0}。</value>
+        <value>无法实例化{0}，因为无可访问的构造函数。</value>
     </data>
     <data name="Error_Template_UnsupportLanguage" xml:space="preserve">
-        <value>{0}不支持C# {1}。请使用{2}或更高版本。</value>
+        <value>{0}不支持C# {1}。请使用语言版本{2}或更高。</value>
     </data>
     <data name="Error_Template_CannotFindSetup" xml:space="preserve">
         <value>找不到设置“{0}”。</value>
     </data>
     <data name="Error_Template_NoAccessibleConstructor" xml:space="preserve">
-        <value>类型{0}没有参数匹配“{1}”的可访问非静态构造函数。</value>
+        <value>类型{0}没有可访问的非静态构造函数与参数“{1}”匹配。</value>
     </data>
     <data name="Error_Template_NoAccessibleMethod" xml:space="preserve">
-        <value>类型{0}没有名称匹配“{1}”且参数匹配“{2}”的可访问非静态方法。</value>
+        <value>类型{0}没有可访问的非静态方法与名称“{1}”及参数“{2}”匹配。</value>
     </data>
     <data name="Error_Template_NoAccessibleFieldOrProperty" xml:space="preserve">
-        <value>类型{1}没有与“{0}”匹配的可访问非静态可写字段或属性。</value>
+        <value>类型{1}没有可访问的非静态可写字段或属性与“{0}”匹配。</value>
     </data>
     <data name="Error_Template_MustBeApiCall" xml:space="preserve">
-        <value>{0}必须是{1}类型的常量值或特殊API调用。</value>
+        <value>{0}必须是类型{1}的常量值或特殊API调用。</value>
     </data>
     <data name="Warning_BindingIsNotUsed" xml:space="preserve">
-        <value>绑定未被使用。</value>
+        <value>未使用绑定。</value>
     </data>
     <data name="Warning_Template_RootCannotBeResolvedByResolveMethods" xml:space="preserve">
-        <value>根{0}因具有参数{1}而无法通过Resolve方法解析，尝试解析时将抛出异常。</value>
+        <value>根{0}因包含参数{1}无法通过Resolve方法解析，尝试时将引发异常。</value>
     </data>
     <data name="Warning_Template_InjectionSiteIsNotUsed" xml:space="preserve">
-        <value>注入点的“{0}”标签未被使用。</value>
+        <value>注入点标记的“{0}”未使用。</value>
     </data>
     <data name="Warning_Template_BindingHasBeenOverridden" xml:space="preserve">
-        <value>{0} 的绑定已被覆盖。</value>
+        <value>{0}的绑定已被覆盖。</value>
     </data>
     <data name="Info_CodeGenerationAborted" xml:space="preserve">
         <value>代码生成已中止。</value>

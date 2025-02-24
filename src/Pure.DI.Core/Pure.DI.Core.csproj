@@ -32,6 +32,24 @@
             <AutoGen>True</AutoGen>
             <DependentUpon>Strings.resx</DependentUpon>
         </Compile>
+        <EmbeddedResource Update="Strings.de.resx">
+          <DependentUpon>Strings.resx</DependentUpon>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Strings.es.resx">
+          <DependentUpon>Strings.resx</DependentUpon>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Strings.fr.resx">
+          <DependentUpon>Strings.resx</DependentUpon>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Strings.ja.resx">
+          <DependentUpon>Strings.resx</DependentUpon>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Strings.ru.resx">
+          <DependentUpon>Strings.resx</DependentUpon>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Strings.zh.resx">
+          <DependentUpon>Strings.resx</DependentUpon>
+        </EmbeddedResource>
     </ItemGroup>
 
     <ItemGroup>

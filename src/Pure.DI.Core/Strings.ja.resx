@@ -1,5 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+        </xsd:element>
+    </xsd:schema>
     <resheader name="resmimetype">
         <value>text/microsoft-resx</value>
     </resheader>
@@ -22,7 +26,7 @@
         <value>無効なルート名「{0}」。</value>
     </data>
     <data name="Error_Template_RootDuplicate" xml:space="preserve">
-        <value>コンポジションルート「{0}」が既に宣言されたルート「{1}」と重複しています。</value>
+        <value>コンポジションルート「{0}」が以前に宣言されたルート「{1}」と重複しています。</value>
     </data>
     <data name="Error_AccumulatorTypeCannotBeGenericTypeMarker" xml:space="preserve">
         <value>アキュムレータタイプはジェネリックタイプマーカーに基づくことはできません。</value>
@@ -46,7 +50,7 @@
         <value>循環依存が検出されました: {0}。</value>
     </data>
     <data name="Error_Template_UnableToResolve" xml:space="preserve">
-        <value>{1}内で「{0}」を解決できません。</value>
+        <value>「{0}」を{1}で解決できません。</value>
     </data>
     <data name="Error_CannotBuildDependencyGraph" xml:space="preserve">
         <value>依存関係グラフを構築できません。</value>
@@ -55,13 +59,13 @@
         <value>無効な正規表現{0}:「{1}」。</value>
     </data>
     <data name="Error_Template_InvalidWildcard" xml:space="preserve">
-        <value>無効なワイルドカード{0}:「{ex.Message}」。</value>
+        <value>無効なワイルドカード{0}:「{1}」。</value>
     </data>
     <data name="Error_Template_TypeWithLifetimeRequiresDirectOrTransitiveInjection" xml:space="preserve">
-        <value>ライフタイム{1}のタイプ{0}は、ライフタイム{3}のタイプ{2}の直接/間接的な依存性注入を必要とします。データ漏洩や予期せぬ動作の原因となる可能性があります。</value>
+        <value>ライフタイム{1}を持つタイプ{0}は、ライフタイム{3}を持つタイプ{2}の直接または推移的な依存性注入を必要とします。これにより、データ漏洩や予期せぬ動作が発生する可能性があります。</value>
     </data>
     <data name="Error_Template_MaximumNumberOfIterations" xml:space="preserve">
-        <value>最適な依存関係グラフ構築中に最大反復回数{0}を超過しました。依存関係グラフをより正確に指定してください。</value>
+        <value>最適な依存関係グラフの構築中に最大反復回数{0}を超過しました。依存関係グラフをより正確に指定してください。</value>
     </data>
     <data name="Error_DependencyGraphConstractionFailure" xml:space="preserve">
         <value>依存関係グラフを構築できません。</value>
@@ -70,7 +74,7 @@
         <value>{0}ライフタイムは循環依存をサポートしていません。</value>
     </data>
     <data name="Error_InvalidNumberOfInitializers" xml:space="preserve">
-        <value>無効なイニシャライザ数。</value>
+        <value>無効なイニシャライザの数。</value>
     </data>
     <data name="Error_Template_CannotUseContextDirectly" xml:space="preserve">
         <value>「{0}」を直接使用することはできません。メソッドまたはプロパティのみ使用可能です。</value>
@@ -79,10 +83,10 @@
         <value>無効なルートタイプ。</value>
     </data>
     <data name="Error_InvalidRootsRype" xml:space="preserve">
-        <value>無効なルーツタイプ。</value>
+        <value>無効なルートタイプ。</value>
     </data>
     <data name="Error_Template_NoTypeForWildcard" xml:space="preserve">
-        <value>{0}を継承し、「{1}」フィルターに一致する名前のタイプが見つかりません。</value>
+        <value>{0}から継承され、フィルター「{1}」に一致する名前を持つタイプが見つかりませんでした。</value>
     </data>
     <data name="Error_InvalidBuildersType" xml:space="preserve">
         <value>無効なビルダータイプ。</value>
@@ -106,37 +110,37 @@
         <value>無効な識別子「{0}」。</value>
     </data>
     <data name="Error_Template_InvalidAttributeArgumentPosition" xml:space="preserve">
-        <value>属性{1}の引数位置{0}が範囲[0..{2}]を超えています。</value>
+        <value>属性{1}の引数位置{0}が範囲[0..{2}]外です。</value>
     </data>
     <data name="Error_Template_AttributeMemberCannotBeProcessed" xml:space="preserve">
-        <value>タイプ{1}の{0}は、相互排他的な複数の属性でマークされているため処理できません。</value>
+        <value>{1}タイプの{0}は、複数の相互排他的な属性でマークされているため処理できません。</value>
     </data>
     <data name="Error_InvalidBinding" xml:space="preserve">
         <value>バインディングが正しく定義されていません。</value>
     </data>
     <data name="Error_Template_TooLargeComposition" xml:space="preserve">
-        <value>コンポジションが大きすぎます。#{0}依存関係で停止しました。</value>
+        <value>コンポジションが大きすぎます。依存関係#{0}で停止しました。</value>
     </data>
     <data name="Error_Template_CannotConstructAbstractType" xml:space="preserve">
-        <value>抽象タイプである{0}のインスタンスを構築できません。</value>
+        <value>{0}は抽象タイプのためインスタンス化できません。</value>
     </data>
     <data name="Error_Template_CannotBeInstantiatedNoAccessibleConstructor" xml:space="preserve">
-        <value>アクセス可能なコンストラクタがないため、{0}をインスタンス化できません。</value>
+        <value>アクセス可能なコンストラクタがないため、{0}のインスタンスを作成できません。</value>
     </data>
     <data name="Error_Template_UnsupportLanguage" xml:space="preserve">
-        <value>{0}はC# {1}をサポートしていません。言語バージョン{2}以上を使用してください。</value>
+        <value>{0}はC# {1}をサポートしていません。言語バージョン{2}以降を使用してください。</value>
     </data>
     <data name="Error_Template_CannotFindSetup" xml:space="preserve">
         <value>セットアップ「{0}」が見つかりません。</value>
     </data>
     <data name="Error_Template_NoAccessibleConstructor" xml:space="preserve">
-        <value>タイプ{0}に引数「{1}」に一致するアクセス可能な非静的コンストラクタが存在しません。</value>
+        <value>{0}タイプに引数「{1}」に一致するアクセス可能な非静的コンストラクタがありません。</value>
     </data>
     <data name="Error_Template_NoAccessibleMethod" xml:space="preserve">
-        <value>タイプ{0}に名前「{1}」、引数「{2}」に一致するアクセス可能な非静的メソッドが存在しません。</value>
+        <value>{0}タイプに名前「{1}」、引数「{2}」に一致するアクセス可能な非静的メソッドがありません。</value>
     </data>
     <data name="Error_Template_NoAccessibleFieldOrProperty" xml:space="preserve">
-        <value>タイプ{1}に「{0}」に一致するアクセス可能な非静的書き込み可能フィールド/プロパティが存在しません。</value>
+        <value>{1}の「{0}」に一致するアクセス可能な非静的書き込み可能フィールドまたはプロパティがありません。</value>
     </data>
     <data name="Error_Template_MustBeApiCall" xml:space="preserve">
         <value>{0}は{1}タイプの定数値または特殊API呼び出しでなければなりません。</value>
@@ -148,10 +152,10 @@
         <value>ルート{0}は引数{1}を持つためResolveメソッドで解決できず、試行時に例外がスローされます。</value>
     </data>
     <data name="Warning_Template_InjectionSiteIsNotUsed" xml:space="preserve">
-        <value>インジェクションサイトのタグ「{0}」が使用されていません。</value>
+        <value>注入サイトのタグ「{0}」が使用されていません。</value>
     </data>
     <data name="Warning_Template_BindingHasBeenOverridden" xml:space="preserve">
-        <value>{0}のバインディングがオーバーライドされました。</value>
+        <value>{0}のバインディングが上書きされました。</value>
     </data>
     <data name="Info_CodeGenerationAborted" xml:space="preserve">
         <value>コード生成が中止されました。</value>

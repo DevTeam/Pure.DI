@@ -1,0 +1,3 @@
+Russian, German, Arabic, Simplified Chinese, Japanese, French, Spanish, Hindi, Portuguese
+
+In the XML document below, translate all <value> elements into German. Keep the XML document structure, placeholders (e.g. {0}, ") and technical terms completely intact. The translation was made for software engineers.

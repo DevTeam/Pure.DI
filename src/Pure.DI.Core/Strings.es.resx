@@ -1,5 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+        </xsd:element>
+    </xsd:schema>
     <resheader name="resmimetype">
         <value>text/microsoft-resx</value>
     </resheader>
@@ -13,37 +17,37 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="Warning_NoRoots" xml:space="preserve">
-        <value>No se han declarado raíces de composición. Agregue al menos una raíz.</value>
+        <value>No se han declarado raíces de composición. Añada al menos una raíz.</value>
     </data>
     <data name="Error_Template_InvalidCompositionTypeName" xml:space="preserve">
-        <value>Nombre de tipo de composición no válido "{0}".</value>
+        <value>Nombre de tipo de composición inválido "{0}".</value>
     </data>
     <data name="Error_Template_InvalidRootName" xml:space="preserve">
-        <value>Nombre de raíz no válido "{0}".</value>
+        <value>Nombre de raíz inválido "{0}".</value>
     </data>
     <data name="Error_Template_RootDuplicate" xml:space="preserve">
-        <value>La raíz de composición "{0}" duplica la raíz declarada previamente "{1}".</value>
+        <value>La raíz de composición "{0}" duplica la raíz previamente declarada "{1}".</value>
     </data>
     <data name="Error_AccumulatorTypeCannotBeGenericTypeMarker" xml:space="preserve">
         <value>El tipo de acumulador no puede basarse en un marcador de tipo genérico.</value>
     </data>
     <data name="Error_AccumulatorCannotAccumulateGenericTypeMarker" xml:space="preserve">
-        <value>El acumulador no puede acumular instancias basadas en marcadores de tipo genérico.</value>
+        <value>El acumulador no puede acumular instancias basadas en un marcador de tipo genérico.</value>
     </data>
     <data name="Error_Template_InvalidArgumentName" xml:space="preserve">
-        <value>Nombre de argumento no válido "{0}".</value>
+        <value>Nombre de argumento inválido "{0}".</value>
     </data>
     <data name="Error_ClassArgumentTypeCannotBeGenericTypeMarker" xml:space="preserve">
         <value>El tipo de argumento de clase no puede basarse en un marcador de tipo genérico.</value>
     </data>
     <data name="Error_InvalidBindingDueToCompilationError" xml:space="preserve">
-        <value>Enlace no válido debido a un error de compilación.</value>
+        <value>Enlace inválido debido a un error de compilación.</value>
     </data>
     <data name="Error_Template_NotImplement" xml:space="preserve">
         <value>{0} no implementa {1}.</value>
     </data>
     <data name="Error_Template_CyclicDependency" xml:space="preserve">
-        <value>Se encontró una dependencia cíclica: {0}.</value>
+        <value>Se ha encontrado una dependencia cíclica: {0}.</value>
     </data>
     <data name="Error_Template_UnableToResolve" xml:space="preserve">
         <value>No se puede resolver "{0}" en {1}.</value>
@@ -52,111 +56,111 @@
         <value>No se puede construir un gráfico de dependencias.</value>
     </data>
     <data name="Error_Template_InvalidRegularExpression" xml:space="preserve">
-        <value>Expresión regular no válida {0}: "{1}".</value>
+        <value>Expresión regular inválida {0}: "{1}".</value>
     </data>
     <data name="Error_Template_InvalidWildcard" xml:space="preserve">
-        <value>Comodín no válido {0}: "{ex.Message}".</value>
+        <value>Comodín inválido {0}: "{1}".</value>
     </data>
     <data name="Error_Template_TypeWithLifetimeRequiresDirectOrTransitiveInjection" xml:space="preserve">
-        <value>El tipo {0} con ciclo de vida {1} requiere inyección directa/transitiva de {2} (ciclo {3}), lo que puede causar fugas de datos o comportamientos inesperados.</value>
+        <value>El tipo {0} con duración {1} requiere inyección de dependencia directa o transitiva del tipo {2} con duración {3}, lo que puede provocar fugas de datos o comportamientos inesperados.</value>
     </data>
     <data name="Error_Template_MaximumNumberOfIterations" xml:space="preserve">
-        <value>Se excedió el número máximo de iteraciones ({0}) al construir el gráfico de dependencias. Especifique el gráfico con mayor precisión.</value>
+        <value>Se excedió el número máximo de iteraciones {0} al construir el gráfico de dependencias óptimo. Especifique el gráfico con mayor precisión.</value>
     </data>
     <data name="Error_DependencyGraphConstractionFailure" xml:space="preserve">
         <value>No es posible construir un gráfico de dependencias.</value>
     </data>
     <data name="Error_Template_LifetimeDoesNotSupportCyclicDependencies" xml:space="preserve">
-        <value>El ciclo de vida {0} no admite dependencias cíclicas.</value>
+        <value>La duración {0} no admite dependencias cíclicas.</value>
     </data>
     <data name="Error_InvalidNumberOfInitializers" xml:space="preserve">
-        <value>Número de inicializadores no válido.</value>
+        <value>Número inválido de inicializadores.</value>
     </data>
     <data name="Error_Template_CannotUseContextDirectly" xml:space="preserve">
-        <value>No se puede usar "{0}" directamente. Solo sus métodos/propiedades son utilizables.</value>
+        <value>No es posible usar "{0}" directamente. Solo se pueden usar sus métodos o propiedades.</value>
     </data>
     <data name="Error_InvalidRootType" xml:space="preserve">
-        <value>Tipo de raíz no válido.</value>
+        <value>Tipo de raíz inválido.</value>
     </data>
     <data name="Error_InvalidRootsRype" xml:space="preserve">
-        <value>Tipo de raíces no válido.</value>
+        <value>Tipo de raíces inválido.</value>
     </data>
     <data name="Error_Template_NoTypeForWildcard" xml:space="preserve">
-        <value>No hay tipos que hereden de {0} y coincidan con el filtro "{1}".</value>
+        <value>No se encontró ningún tipo que herede de {0} y coincida con el filtro "{1}".</value>
     </data>
     <data name="Error_InvalidBuildersType" xml:space="preserve">
-        <value>Tipo de constructores no válido.</value>
+        <value>Tipo de constructores inválido.</value>
     </data>
     <data name="Error_InvalidBuilderType" xml:space="preserve">
-        <value>Tipo de constructor no válido.</value>
+        <value>Tipo de constructor inválido.</value>
     </data>
     <data name="Error_TooManyTypeParameters" xml:space="preserve">
         <value>Demasiados parámetros de tipo.</value>
     </data>
     <data name="Error_AsynchronousFactoryWithAsyncNotSupported" xml:space="preserve">
-        <value>No se admiten fábricas asíncronas con la palabra clave async.</value>
+        <value>No se admite la fábrica asincrónica con la palabra clave async.</value>
     </data>
     <data name="Error_Template_NotSupported" xml:space="preserve">
         <value>{0} no está soportado.</value>
     </data>
     <data name="Error_Template_MustBeValueOfType" xml:space="preserve">
-        <value>{0} debe ser un valor no nulo de tipo {1}.</value>
+        <value>{0} debe ser un valor no nulo del tipo {1}.</value>
     </data>
     <data name="Error_Template_InvalidIdentifier" xml:space="preserve">
-        <value>Identificador no válido "{0}".</value>
+        <value>Identificador inválido "{0}".</value>
     </data>
     <data name="Error_Template_InvalidAttributeArgumentPosition" xml:space="preserve">
-        <value>La posición {0} del atributo {1} está fuera del rango [0..{2}].</value>
+        <value>La posición del argumento {0} del atributo {1} está fuera del rango [0..{2}].</value>
     </data>
     <data name="Error_Template_AttributeMemberCannotBeProcessed" xml:space="preserve">
-        <value>{0} del tipo {1} no puede procesarse por tener atributos mutuamente excluyentes.</value>
+        <value>{0} del tipo {1} no puede procesarse porque está marcado con múltiples atributos mutuamente excluyentes.</value>
     </data>
     <data name="Error_InvalidBinding" xml:space="preserve">
-        <value>El enlace está mal definido.</value>
+        <value>El enlace está definido incorrectamente.</value>
     </data>
     <data name="Error_Template_TooLargeComposition" xml:space="preserve">
-        <value>Composición demasiado grande. Detenido en la dependencia #{0}.</value>
+        <value>La composición es demasiado grande. Detenido en la dependencia #{0}.</value>
     </data>
     <data name="Error_Template_CannotConstructAbstractType" xml:space="preserve">
-        <value>No se puede construir una instancia de {0} (tipo abstracto).</value>
+        <value>No se puede construir una instancia de {0} porque es un tipo abstracto.</value>
     </data>
     <data name="Error_Template_CannotBeInstantiatedNoAccessibleConstructor" xml:space="preserve">
-        <value>No se puede instanciar {0}: ningún constructor accesible.</value>
+        <value>No se puede crear una instancia de {0} debido a la falta de un constructor accesible.</value>
     </data>
     <data name="Error_Template_UnsupportLanguage" xml:space="preserve">
-        <value>{0} no soporta C# {1}. Use la versión {2} o superior.</value>
+        <value>{0} no admite C# {1}. Utilice la versión de lenguaje {2} o superior.</value>
     </data>
     <data name="Error_Template_CannotFindSetup" xml:space="preserve">
         <value>No se encuentra la configuración "{0}".</value>
     </data>
     <data name="Error_Template_NoAccessibleConstructor" xml:space="preserve">
-        <value>No hay constructores no estáticos accesibles en {0} que coincidan con "{1}".</value>
+        <value>No hay un constructor no estático accesible del tipo {0} que coincida con el argumento "{1}".</value>
     </data>
     <data name="Error_Template_NoAccessibleMethod" xml:space="preserve">
-        <value>No hay métodos no estáticos accesibles en {0} con nombre "{1}" y argumento "{2}".</value>
+        <value>No hay un método no estático accesible del tipo {0} que coincida con el nombre "{1}" y el argumento "{2}".</value>
     </data>
     <data name="Error_Template_NoAccessibleFieldOrProperty" xml:space="preserve">
-        <value>No hay campos/propiedades escribibles en {1} que coincidan con "{0}".</value>
+        <value>No hay un campo o propiedad escribible no estático accesible que coincida con "{0}" en {1}.</value>
     </data>
     <data name="Error_Template_MustBeApiCall" xml:space="preserve">
-        <value>{0} debe ser un valor constante de tipo {1} o una llamada API especial.</value>
+        <value>{0} debe ser un valor constante del tipo {1} o una llamada API especial.</value>
     </data>
     <data name="Warning_BindingIsNotUsed" xml:space="preserve">
-        <value>El enlace no se está utilizando.</value>
+        <value>El enlace no se utiliza.</value>
     </data>
     <data name="Warning_Template_RootCannotBeResolvedByResolveMethods" xml:space="preserve">
-        <value>La raíz {0} (argumentos {1}) no puede resolverse con Resolve(), se lanzará una excepción.</value>
+        <value>La raíz {0} no se puede resolver mediante métodos Resolve debido a los argumentos {1}, por lo que se lanzará una excepción al intentarlo.</value>
     </data>
     <data name="Warning_Template_InjectionSiteIsNotUsed" xml:space="preserve">
-        <value>La etiqueta "{0}" en el sitio de inyección no se usa.</value>
+        <value>"{0}" de la etiqueta en el sitio de inyección no se utiliza.</value>
     </data>
     <data name="Warning_Template_BindingHasBeenOverridden" xml:space="preserve">
-        <value>El enlace para {0} ha sido anulado.</value>
+        <value>El enlace para {0} ha sido sobrescrito.</value>
     </data>
     <data name="Info_CodeGenerationAborted" xml:space="preserve">
-        <value>Generación de código cancelada.</value>
+        <value>Generación de código abortada.</value>
     </data>
     <data name="Error_UnhandledError" xml:space="preserve">
-        <value>Ocurrió un error no controlado.</value>
+        <value>Ha ocurrido un error no controlado.</value>
     </data>
 </root>
