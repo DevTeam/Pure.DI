@@ -1,0 +1,9 @@
+# Localization
+
+Russian, German, Arabic, Simplified Chinese, Japanese, French, Spanish, Hindi, Portuguese
+
+In the XML document below, translate all <value> elements into Russian. Keep the XML document structure, placeholders (e.g. {0}, ") and technical terms completely intact. The translation was made for software engineers.
+
+# Readme
+
+Enhance the Markdown document below for software engineers. Retain the Markdown document structure, references and style. Simplify technical jargon without losing accuracy. Write your response in Markdown format. Here is the document:

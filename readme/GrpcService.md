@@ -53,7 +53,7 @@ The [project file](/samples/GrpcService/GrpcService.csproj) looks like this:
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.1.56" />
+        <PackageReference Include="Pure.DI.MS" Version="2.1.57" />
     </ItemGroup>
 
 </Project>
