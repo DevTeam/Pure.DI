@@ -1,10 +1,10 @@
 {
   "mainAssemblyName": "BlazorWebAssemblyApp",
   "resources": {
-    "hash": "sha256-0a5WJGXPAKaF12orkgy9WscJr8WK03gz0D2P51aap8s=",
+    "hash": "sha256-dsjA6qXiFq91LfOxT0/qtxw5xcVlrCdJAH8AI5vXXSM=",
     "fingerprinting": {
-      "BlazorWebAssemblyApp.ax6lhaig0b.wasm": "BlazorWebAssemblyApp.wasm",
-      "Clock.sjuqv0f237.wasm": "Clock.wasm",
+      "BlazorWebAssemblyApp.l7wr4c5pkw.wasm": "BlazorWebAssemblyApp.wasm",
+      "Clock.sssusjgmg4.wasm": "Clock.wasm",
       "Microsoft.AspNetCore.Components.0j14bqtyr0.wasm": "Microsoft.AspNetCore.Components.wasm",
       "Microsoft.AspNetCore.Components.Web.5fnpqqr84r.wasm": "Microsoft.AspNetCore.Components.Web.wasm",
       "Microsoft.AspNetCore.Components.WebAssembly.7biexwpbed.wasm": "Microsoft.AspNetCore.Components.WebAssembly.wasm",
@@ -40,7 +40,7 @@
       "System.Text.Json.6we41d0ig2.wasm": "System.Text.Json.wasm",
       "System.Text.RegularExpressions.0e9rlv7vxy.wasm": "System.Text.RegularExpressions.wasm",
       "System.Threading.jmn9lxh1h2.wasm": "System.Threading.wasm",
-      "WeatherForecast.uf5o1pyhpi.wasm": "WeatherForecast.wasm",
+      "WeatherForecast.uvk4cvapht.wasm": "WeatherForecast.wasm",
       "dotnet.js": "dotnet.js",
       "dotnet.native.8bti36lthm.js": "dotnet.native.js",
       "dotnet.native.tr0cyonrwt.wasm": "dotnet.native.wasm",
@@ -68,8 +68,8 @@
       "System.Runtime.InteropServices.JavaScript.2qzse51b5r.wasm": "sha256-2nWN1zwezK82JRmcnLLcKzdroP7qZRNl6DW0r2jhKe4="
     },
     "assembly": {
-      "BlazorWebAssemblyApp.ax6lhaig0b.wasm": "sha256-Tk+MQ/GEkCZvreB+lV1VnQcGYdjkdVoXF2G+RUoQ4pk=",
-      "Clock.sjuqv0f237.wasm": "sha256-KAwb7RB0WzNfbVDrBGxL+cQQ0DmChAw8POC13Njnlv4=",
+      "BlazorWebAssemblyApp.l7wr4c5pkw.wasm": "sha256-0Z8dEA0rcdoHp/3ogNvyM+8BxH5K8Y273cpcWfqG9MU=",
+      "Clock.sssusjgmg4.wasm": "sha256-tMr3a0l6MNqEDDq7tYJ/TIhcg6Cunp1DgmaMJKHQlaM=",
       "Microsoft.AspNetCore.Components.0j14bqtyr0.wasm": "sha256-vMN1H5FYfO0bnsa68nPRTQds7VPDlobXIR+QJt7nP4I=",
       "Microsoft.AspNetCore.Components.Web.5fnpqqr84r.wasm": "sha256-0fT5DLMa1voamFmX5/f/aY8oct7a5CLEOHu2Tdn6oCA=",
       "Microsoft.AspNetCore.Components.WebAssembly.7biexwpbed.wasm": "sha256-zRocb89jyCr8/ntc9fvhPEvSXkFbpCgmMMRouUpTV5k=",
@@ -103,7 +103,7 @@
       "System.Text.Json.6we41d0ig2.wasm": "sha256-ZpnvYq0dRSY41iHQRqnJgS1YXKU1Mzzi5nwSQpT6sko=",
       "System.Text.RegularExpressions.0e9rlv7vxy.wasm": "sha256-SKkTQL9D0Loskr+NX705/WITcRNb/8VQlQorMrz5S6M=",
       "System.Threading.jmn9lxh1h2.wasm": "sha256-24inb9qHwMgt3KIjfomf+IHFhkJlGDDhcK8ivbFO8Z0=",
-      "WeatherForecast.uf5o1pyhpi.wasm": "sha256-ijaoyOXkmUFMte37cTSnOe6Zk99TrQ2nLrFfbseGCnQ="
+      "WeatherForecast.uvk4cvapht.wasm": "sha256-uorwodRG/jhRpifs9HfA61daQUmKa0ccHEgihgdRKo0="
     }
   },
   "cacheBootResources": true,
