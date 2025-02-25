@@ -2,7 +2,7 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](/samples/ShroedingersCat)
 
-This example demonstrates the creation of a simple console application in the pure DI paradigm using the _Pure.DI_ code generator. All code is in [one file](/samples/ShroedingersCat/Program.cs) for easy perception:
+This example demonstrates the creation of a simple console application in the pure DI paradigm using the Pure.DI code generator. All code is in [one file](/samples/ShroedingersCat/Program.cs) for easy perception:
 
 ```c#
 using Pure.DI;

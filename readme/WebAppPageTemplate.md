@@ -2,7 +2,7 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](/samples/WebApp)
 
-This example demonstrates the creation of a Web application in the pure DI paradigm using the _Pure.DI_ code generator.
+This example demonstrates the creation of a Web application in the pure DI paradigm using the Pure.DI code generator.
 
 Composition setup file is [Composition.cs](/samples/WebApp/Composition.cs):
 

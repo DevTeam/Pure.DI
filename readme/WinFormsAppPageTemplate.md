@@ -2,7 +2,7 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](/samples/WinFormsApp)
 
-This example demonstrates the creation of a WinForms application in the pure DI paradigm using the _Pure.DI_ code generator.
+This example demonstrates the creation of a WinForms application in the pure DI paradigm using the Pure.DI code generator.
 
 The composition definition is in the file [Composition.cs](/samples/WinFormsApp/Composition.cs). Remember to define all the necessary roots of the composition, for example, this could be a main form such as _FormMain_:
 

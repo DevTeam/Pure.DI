@@ -2,7 +2,7 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](/samples/AvaloniaApp)
 
-This example demonstrates the creation of a [Avalonia](https://avaloniaui.net/) application in the pure DI paradigm using the _Pure.DI_ code generator.
+This example demonstrates the creation of a [Avalonia](https://avaloniaui.net/) application in the pure DI paradigm using the Pure.DI code generator.
 
 > [!NOTE]
 > [Another example](samples/SingleRootAvaloniaApp) with Avalonia shows how to create an application with a single composition root.

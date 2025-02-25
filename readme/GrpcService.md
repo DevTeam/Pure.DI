@@ -2,7 +2,7 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](/samples/GrpcService)
 
-This example demonstrates the creation of a Web API application in the pure DI paradigm using the _Pure.DI_ code generator.
+This example demonstrates the creation of a Web API application in the pure DI paradigm using the Pure.DI code generator.
 
 Composition setup file is [Composition.cs](/samples/GrpcService/Composition.cs):
 
@@ -53,7 +53,7 @@ The [project file](/samples/GrpcService/GrpcService.csproj) looks like this:
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.1.57" />
+        <PackageReference Include="Pure.DI.MS" Version="2.1.58" />
     </ItemGroup>
 
 </Project>

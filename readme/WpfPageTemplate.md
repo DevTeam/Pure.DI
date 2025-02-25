@@ -2,7 +2,7 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](/samples/WpfAppNetCore)
 
-This example demonstrates the creation of a WPF application in the pure DI paradigm using the _Pure.DI_ code generator.
+This example demonstrates the creation of a WPF application in the pure DI paradigm using the Pure.DI code generator.
 
 The definition of the composition is in [Composition.cs](/samples/WpfAppNetCore/Composition.cs). This class setups how the composition of objects will be created for the application. You must not forget to define any necessary composition roots, for example, these can be view models such as _ClockViewModel_:
 

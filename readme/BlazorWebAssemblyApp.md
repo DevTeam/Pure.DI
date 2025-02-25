@@ -4,7 +4,7 @@
 
 [Here's an example](https://devteam.github.io/Pure.DI/) on github.io
 
-This example demonstrates the creation of a [Blazor WebAssembly](https://learn.microsoft.com/en-us/aspnet/core/blazor/hosting-models#blazor-webassembly) application in the pure DI paradigm using the _Pure.DI_ code generator.
+This example demonstrates the creation of a [Blazor WebAssembly](https://learn.microsoft.com/en-us/aspnet/core/blazor/hosting-models#blazor-webassembly) application in the pure DI paradigm using the Pure.DI code generator.
 
 Composition setup file is [Composition.cs](/samples/BlazorWebAssemblyApp/Composition.cs):
 
@@ -67,7 +67,7 @@ The [project file](/samples/BlazorWebAssemblyApp/BlazorWebAssemblyApp.csproj) lo
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.1.57" />
+        <PackageReference Include="Pure.DI.MS" Version="2.1.58" />
     </ItemGroup>
 
 </Project>
