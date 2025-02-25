@@ -1,6 +1,5 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
-using System.Globalization;
 using Core;
 
 public class SetupTests

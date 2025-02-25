@@ -92,7 +92,7 @@ internal partial class Composition
 {
     public static readonly Composition Shared = new();
     
-    private void Setup() =>
+    private static void Setup() =>
 // }
         // Resolve = off
 // {
