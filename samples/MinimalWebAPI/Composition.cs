@@ -14,7 +14,7 @@ partial class Composition : ServiceProviderFactory<Composition>
         // Use the DI setup from the base class
         .DependsOn(Base)
         .Bind().As(Singleton).To<WeatherForecastService>()
-        .Root<IWeatherForecastService>()
+            .Root<IWeatherForecastService>()
 
         // Application composition root
         .Root<Program>(nameof(Root));
