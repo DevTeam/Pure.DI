@@ -23,6 +23,12 @@ class PublishBlazorTarget(
         var projectPath = Path.Combine("samples", "BlazorWebAssemblyApp");
         var publishPath = Path.Combine(projectPath, "bin");
         var rootPath = Path.Combine(publishPath, "wwwroot");
+        Summary($"Root path: {rootPath}");
+        if (Directory.Exists(rootPath))
+        {
+            Directory.Delete(rootPath, true);
+        }
+
         var result = await new DotNetPublish()
             .WithProject(projectPath)
             .WithConfiguration("Release")
@@ -32,7 +38,7 @@ class PublishBlazorTarget(
         // Change the base-tag in index.html from '/' to 'BlazorWebAssemblyApp' to match GitHub Pages repository subdirectory
         var indexFile = Path.Combine(rootPath, "index.html");
         var indexContent = await File.ReadAllTextAsync(indexFile, cancellationToken);
-        indexContent = indexContent.Replace("""<base href="/" />""", """<base href="/Pure.DI/" />""");
+        indexContent = indexContent.Replace("href=\"/\"", "href=\"/Pure.DI/\"");
         await File.WriteAllTextAsync(indexFile, indexContent, cancellationToken);
 
         // Copy index.html to 404.html to serve the same file when a file is not found
