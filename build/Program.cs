@@ -1,4 +1,6 @@
 ﻿using Build;
+using Build.Core;
+using Build.Core.Targets;
 using static Pure.DI.Lifetime;
 
 DI.Setup(nameof(Composition))
