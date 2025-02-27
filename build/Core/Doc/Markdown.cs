@@ -6,7 +6,6 @@ using System.Xml.Linq;
 class Markdown(
     IDocumentWalker<MarkdownWriterContext> dotNetXmlDocumentWalker,
     IDocumentVisitor<MarkdownWriterContext> markdownWriterVisitor)
-    : IMarkdown
 {
     public Task ConvertAsync(
         XDocument document,

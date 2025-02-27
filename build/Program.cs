@@ -35,6 +35,7 @@ DI.Setup(nameof(Composition))
     .Bind(Tag.Type).To<InstallTemplateTarget>()
     .Bind(Tag.Type).To<UpdateTarget>()
     .Bind(Tag.Type).To<PublishBlazorTarget>()
-    .Bind(Tag.Type).To<PerformanceTestsTarget>();
+    .Bind(Tag.Type).To<PerformanceTestsTarget>()
+    .Bind(Tag.Type).To<AiContextTarget>();
 
 return await new Composition().Root.RunAsync(CancellationToken.None);

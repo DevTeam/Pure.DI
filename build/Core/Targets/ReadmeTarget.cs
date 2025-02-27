@@ -14,10 +14,10 @@ class ReadmeTarget(
     Versions versions,
     Settings settings,
     RootCommand rootCommand,
-    IMarkdown markdown,
-    IXDocumentTools xDocumentTools,
+    ReadmeTools readmeTools,
     [Tag(typeof(CreateExamplesTarget))] ITarget<IReadOnlyCollection<ExampleGroup>> createExamplesTarget,
-    [Tag(typeof(BenchmarksTarget))] ITarget<int> benchmarksTarget)
+    [Tag(typeof(BenchmarksTarget))] ITarget<int> benchmarksTarget,
+    [Tag(typeof(AiContextTarget))] ITarget<AIContext> aiContextTarget)
     : IInitializable, ITarget<int>
 {
     private const string ReadmeDir = "readme";
@@ -48,7 +48,7 @@ class ReadmeTarget(
             Directory.Delete(generatedFiles, true);
         }
 
-        var examplesSet = await createExamplesTarget.RunAsync(cancellationToken);
+        var examples = await createExamplesTarget.RunAsync(cancellationToken);
 
         await using var readmeWriter = File.CreateText(ReadmeFile);
 
@@ -60,7 +60,7 @@ class ReadmeTarget(
 
         await readmeWriter.WriteLineAsync();
 
-        await GenerateExamplesAsync(examplesSet, readmeWriter, logsDirectory);
+        await GenerateExamplesAsync(examples, readmeWriter, logsDirectory);
 
         await AddContentAsync(FooterTemplateFile, readmeWriter);
 
@@ -76,93 +76,9 @@ class ReadmeTarget(
 
         await contributingWriter.FlushAsync(cancellationToken);
 
-        await using var aiContextReadmeWriter = File.CreateText(AiContextReadmeFile);
-
-        await AddAiContextAsync(examplesSet, aiContextReadmeWriter);
-
-        await aiContextReadmeWriter.FlushAsync(cancellationToken);
+        await aiContextTarget.RunAsync(cancellationToken);
 
         return 0;
-    }
-
-    private async Task AddAiContextAsync(IReadOnlyCollection<ExampleGroup> examples, StreamWriter writer)
-    {
-        await writer.WriteLineAsync("# Pure.DI source code generator usage scenarios.");
-        foreach (var (groupName, exampleItems) in examples)
-        {
-            await writer.WriteLineAsync();
-            var groupTitle = new string(FormatTitle(groupName).ToArray());
-            await writer.WriteLineAsync($"## {groupTitle} scenarios");
-            foreach (var vars in exampleItems)
-            {
-                var description = vars[CreateExamplesTarget.DescriptionKey];
-                var code = vars[CreateExamplesTarget.BodyKey];
-                await writer.WriteLineAsync();
-                await writer.WriteLineAsync($"### {description}");
-                await writer.WriteLineAsync();
-                var header = vars[CreateExamplesTarget.HeaderKey];
-                if (!string.IsNullOrWhiteSpace(header))
-                {
-                    await writer.WriteLineAsync(header);
-                    await writer.WriteLineAsync();
-                }
-
-                await writer.WriteLineAsync("```c#");
-                await writer.WriteLineAsync(code);
-                await writer.WriteLineAsync("```");
-                await writer.WriteLineAsync();
-                var references = vars[CreateExamplesTarget.ReferencesKey].Split(";", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-                var refs = references.Length > 0 ? "s" : "";
-                await writer.WriteLineAsync($"To run the above code, the following NuGet package{refs} must be added:");
-                await writer.WriteLineAsync(" - [Pure.DI](https://www.nuget.org/packages/Pure.DI)");
-                foreach (var reference in references)
-                {
-                    await writer.WriteLineAsync($"  - [{reference}](https://www.nuget.org/packages/{reference})");
-                }
-
-                await writer.WriteLineAsync();
-
-                var footer = vars[CreateExamplesTarget.FooterKey];
-                if (!string.IsNullOrWhiteSpace(footer))
-                {
-                    await writer.WriteLineAsync(footer);
-                }
-            }
-        }
-
-        await writer.WriteLineAsync();
-        await writer.WriteLineAsync("# Examples of using Pure.DI source code generator in different types of .NET applications.");
-        await writer.WriteLineAsync();
-        var generatorPackageVersion = versions.GetNext(new NuGetRestoreSettings("Pure.DI"), Settings.VersionRange, 0).ToString();
-        var msPackageVersion = versions.GetNext(new NuGetRestoreSettings("Pure.DI.MS"), Settings.VersionRange, 0).ToString();
-        foreach (var readmeFile in Directory.EnumerateFiles(Path.Combine(ReadmeDir), "*.md"))
-        {
-            if (readmeFile.EndsWith("Template.md", StringComparison.InvariantCultureIgnoreCase))
-            {
-                if (readmeFile.EndsWith("PageTemplate.md"))
-                {
-                    var content = await File.ReadAllTextAsync(readmeFile);
-                    content = content
-                        .Replace("$(version)", generatorPackageVersion)
-                        .Replace("$(ms.version)", msPackageVersion)
-                        .Replace("$(targetFrameworkVersion)", $"net{settings.BaseDotNetFrameworkVersion}");
-                    await writer.WriteLineAsync(content);
-                }
-            }
-        }
-
-        await writer.WriteLineAsync();
-        await writer.WriteLineAsync("# Pure.DI API");
-        await writer.WriteLineAsync();
-        var sourceDirectory = env.GetPath(PathType.SourceDirectory);
-        var xmlDocFile = Path.Combine(sourceDirectory, "Pure.DI.Core", "bin", settings.Configuration, "netstandard2.0", "Pure.DI.xml");
-        using var xmlDocReader = File.OpenText(xmlDocFile);
-        var xmlDoc = await xDocumentTools.LoadAsync(xmlDocReader, LoadOptions.None, CancellationToken.None);
-        await markdown.ConvertAsync(
-            xmlDoc,
-            writer,
-            i => i.NamespaceName == "Pure.DI" && i.TypeName != "Generator",
-            CancellationToken.None);
     }
 
     private async Task AddContributingAsync(StreamWriter writer)
@@ -225,7 +141,7 @@ class ReadmeTarget(
 
         foreach (var (groupName, exampleItems) in examples)
         {
-            var groupTitle = new string(FormatTitle(groupName).ToArray());
+            var groupTitle = new string(readmeTools.FormatTitle(groupName).ToArray());
             Info($"Processing examples group \"{groupTitle}\"");
             await writer.WriteLineAsync($"### {groupTitle}");
             foreach (var vars in exampleItems)
@@ -453,21 +369,6 @@ class ReadmeTarget(
             await classDiagramWriter.WriteLineAsync("### Generated code");
             await classDiagramWriter.WriteLineAsync();
             await AddExample(logsDirectory, $"Pure.DI.Benchmarks.Benchmarks.{name}.g.cs", classDiagramWriter);
-        }
-    }
-
-    private static IEnumerable<char> FormatTitle(string title)
-    {
-        var isFirst = true;
-        foreach (var ch in title)
-        {
-            if (!isFirst && char.IsUpper(ch))
-            {
-                yield return ' ';
-            }
-
-            yield return ch;
-            isFirst = false;
         }
     }
 
