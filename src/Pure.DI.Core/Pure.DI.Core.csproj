@@ -4,6 +4,7 @@
         <TargetFramework>netstandard2.0</TargetFramework>
         <RootNamespace>$(BasePackageId)</RootNamespace>
         <DefineConstants>$(DefineConstants);PUREDI_API_SUPPRESSION;PUREDI_API_V2</DefineConstants>
+        <DocumentationFile>Pure.DI.xml</DocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>

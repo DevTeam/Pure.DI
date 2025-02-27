@@ -1,6 +1,6 @@
 # Pure.DI source code generator usage scenarios.
 
-## Basics
+## Basics scenarios
 
 ### Auto-bindings
 
@@ -1477,7 +1477,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-## Lifetimes
+## Lifetimes scenarios
 
 ### Transient
 
@@ -2225,7 +2225,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-## Base Class Library
+## Base Class Library scenarios
 
 ### Func
 
@@ -3249,7 +3249,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-## Generics
+## Generics scenarios
 
 ### Generics
 
@@ -3947,7 +3947,7 @@ To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
 
 
-## Attributes
+## Attributes scenarios
 
 ### Constructor ordinal attribute
 
@@ -4626,7 +4626,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-## Interception
+## Interception scenarios
 
 ### Decorator
 
@@ -4876,7 +4876,7 @@ To run the above code, the following NuGet packages must be added:
   - [Castle.DynamicProxy](https://www.nuget.org/packages/Castle.DynamicProxy)
 
 
-## Hints
+## Hints scenarios
 
 ### Resolve hint
 
@@ -5435,7 +5435,7 @@ To run the above code, the following NuGet packages must be added:
 
 For more hints, see [this](README.md#setup-hints) page.
 
-## Advanced
+## Advanced scenarios
 
 ### Composition root kinds
 
@@ -6972,7 +6972,7 @@ To run the above code, the following NuGet packages must be added:
   - [Serilog.Events](https://www.nuget.org/packages/Serilog.Events)
 
 
-## Unity
+## Unity scenarios
 
 ### Basic Unity use case
 
@@ -8638,4 +8638,5486 @@ It contains an additional reference to the NuGet package:
 |         |                                                                                            |                          |
 |---------|--------------------------------------------------------------------------------------------|:-------------------------|
 | Pure.DI | [![NuGet](https://img.shields.io/nuget/v/Pure.DI)](https://www.nuget.org/packages/Pure.DI) | DI source code generator |
+
+
+# Pure.DI API
+
+
+<details><summary>Pure.DI</summary><blockquote>
+
+
+<details><summary>BindAttribute</summary><blockquote>
+
+Indicates that a property or method can be automatically added as a binding.
+            
+```c#
+
+internal class DependencyProvider
+            {
+                [Bind()]
+                public Dependency Dep => new Dependency();
+            }
+            
+```
+
+
+```c#
+
+internal class DependencyProvider
+            {
+                [Bind(typeof(IDependency<TT>), Lifetime.Singleton)]
+                public Dependency GetDep<T>() => new Dependency();
+            }
+            
+```
+
+
+```c#
+
+internal class DependencyProvider
+            {
+                [Bind(typeof(IDependency), Lifetime.PerResolve, "some tag")]
+                public Dependency GetDep(int id) => new Dependency(id);
+            }
+            
+```
+
+
+See also _Exposed_.
+
+<details><summary>Constructor BindAttribute(System.Type,Pure.DI.Lifetime,System.Object[])</summary><blockquote>
+
+Creates an attribute instance.
+            
+</blockquote></details>
+
+
+</blockquote></details>
+
+
+<details><summary>Buckets`2</summary><blockquote>
+
+For internal use. 
+            
+</blockquote></details>
+
+
+<details><summary>CompositionKind</summary><blockquote>
+
+Determines how the partial class will be generated. The _Setup(System.String,Pure.DI.CompositionKind)_ method has an additional argument  `kind` , which defines the type of composition:
+            
+```c#
+
+DI.Setup("BaseComposition", CompositionKind.Internal);
+            
+```
+
+
+See also _Setup(System.String,Pure.DI.CompositionKind)_.
+
+<details><summary>Field Public</summary><blockquote>
+
+This value is used by default. If this value is specified, a normal partial class will be generated.
+            
+</blockquote></details>
+
+
+<details><summary>Field Internal</summary><blockquote>
+
+If this value is specified, the class will not be generated, but this setting can be used by other users as a baseline. The API call _DependsOn(System.String[])_ is mandatory.
+            
+</blockquote></details>
+
+
+<details><summary>Field Global</summary><blockquote>
+
+No partial classes will be created when this value is specified, but this setting is the baseline for all installations in the current project, and the API call _DependsOn(System.String[])_ is not required.
+            
+</blockquote></details>
+
+
+</blockquote></details>
+
+
+<details><summary>DependencyAttribute</summary><blockquote>
+
+A universal DI attribute that allows to specify the tag and ordinal of an injection.
+            
+ - parameter _tag_ - The injection tag. See also _Tags(System.Object[])_
+.
+            
+ - parameter _ordinal_ - The injection ordinal.
+
+See also _OrdinalAttribute_.
+
+See also _TagAttribute_.
+
+<details><summary>Constructor DependencyAttribute(System.Object,System.Int32)</summary><blockquote>
+
+Creates an attribute instance.
+            
+ - parameter _tag_ - The injection tag. See also _Tags(System.Object[])_
+.
+            
+ - parameter _ordinal_ - The injection ordinal.
+
+</blockquote></details>
+
+
+</blockquote></details>
+
+
+<details><summary>DI</summary><blockquote>
+
+An API for a Dependency Injection setup.
+            
+See also _Setup(System.String,Pure.DI.CompositionKind)_.
+
+<details><summary>Method Setup(System.String,Pure.DI.CompositionKind)</summary><blockquote>
+
+Begins the definitions of the Dependency Injection setup chain.
+             
+```c#
+
+interface IDependency;
+            
+             
+             class Dependency : IDependency;
+            
+             
+             interface IService;
+            
+             
+             class Service(IDependency dependency) : IService;
+            
+             
+             DI.Setup("Composition")
+               .Bind<IDependency>().To<Dependency>()
+               .Bind<IService>().To<Service>()
+               .Root<IService>("Root");
+             
+```
+
+
+ - parameter _compositionTypeName_ - An optional argument specifying the partial class name to generate.
+
+ - parameter _kind_ - An optional argument specifying the kind of setup. Please _CompositionKind_ for details. It defaults to  `Public` .
+
+ - returns Reference to the setup continuation chain.
+
+</blockquote></details>
+
+
+</blockquote></details>
+
+
+<details><summary>GenericTypeArgumentAttribute</summary><blockquote>
+
+Represents a generic type argument attribute. It allows you to create custom generic type argument such as _TTS_, _TTDictionary`2_, etc. 
+            
+```c#
+
+[GenericTypeArgument]
+            internal interface TTMy: IMy { }
+            
+```
+
+
+See also _GenericTypeArgumentAttribute``1_.
+
+See also _GenericTypeArgument``1_.
+
+</blockquote></details>
+
+
+<details><summary>Hint</summary><blockquote>
+
+Hints for the code generator and can be used to fine tune code generation.
+            
+```c#
+
+// Resolve = Off
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.Resolve, "Off")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+<details><summary>Field Resolve</summary><blockquote>
+
+ `On`  or  `Off` . Determines whether to generate  `Resolve`  methods.  `On`  by default.
+            
+```c#
+
+// Resolve = Off
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.Resolve, "Off")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field OnNewInstance</summary><blockquote>
+
+ `On`  or  `Off` . Determines whether to use partial  `OnNewInstance`  method.  `Off`  by default.
+            
+```c#
+
+// OnNewInstance = On
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.OnNewInstance, "On")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field OnNewInstancePartial</summary><blockquote>
+
+ `On`  or  `Off` . Determines whether to generate partial  `OnNewInstance`  method when the _OnNewInstance_ hint is  `On` .  `On`  by default.
+            
+```c#
+
+// OnNewInstancePartial = On
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.OnNewInstancePartial, "On")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field OnNewInstanceImplementationTypeNameRegularExpression</summary><blockquote>
+
+The regular expression to filter OnNewInstance by the instance type name. ".+" by default.
+            
+```c#
+
+// OnNewInstanceImplementationTypeNameRegularExpression = Dependency
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.OnNewInstanceImplementationTypeNameRegularExpression, "Dependency")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field OnNewInstanceImplementationTypeNameWildcard</summary><blockquote>
+
+The wildcard to filter OnNewInstance by the instance type name. "*" by default.
+            
+```c#
+
+// OnNewInstanceImplementationTypeNameWildcard = *Dependency
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.OnNewInstanceImplementationTypeNameWildcard, "*Dependency")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field OnNewInstanceTagRegularExpression</summary><blockquote>
+
+The regular expression to filter OnNewInstance by the tag. ".+" by default.
+            
+```c#
+
+// OnNewInstanceTagRegularExpression = IDependency
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.OnNewInstanceTagRegularExpression, "IDependency")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field OnNewInstanceTagWildcard</summary><blockquote>
+
+The wildcard to filter OnNewInstance by the tag. "*" by default.
+            
+```c#
+
+// OnNewInstanceTagWildcard = *IDependency
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.OnNewInstanceTagWildcard, "*IDependency")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field OnNewInstanceLifetimeRegularExpression</summary><blockquote>
+
+The regular expression to filter OnNewInstance by the lifetime. ".+" by default.
+            
+```c#
+
+// OnNewInstanceLifetimeRegularExpression = Singleton
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.OnNewInstanceLifetimeRegularExpression, "Singleton")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field OnNewInstanceLifetimeWildcard</summary><blockquote>
+
+The wildcard to filter OnNewInstance by the lifetime. "*" by default.
+            
+```c#
+
+// OnNewInstanceLifetimeWildcard = *Singleton
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.OnNewInstanceLifetimeWildcard, "*Singleton")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field OnDependencyInjection</summary><blockquote>
+
+ `On`  or  `Off` . Determines whether to use partial  `OnDependencyInjection`  method to control of dependency injection.  `Off`  by default.
+            
+```c#
+
+// OnDependencyInjection = On
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.OnDependencyInjection, "On")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field OnDependencyInjectionPartial</summary><blockquote>
+
+ `On`  or  `Off` . Determines whether to generate partial  `OnDependencyInjection`  method when the _OnDependencyInjection_ hint is  `On`  to control of dependency injection.  `On`  by default.
+            
+```c#
+
+// OnDependencyInjectionPartial = On
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.OnDependencyInjectionPartial, "On")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field OnDependencyInjectionImplementationTypeNameRegularExpression</summary><blockquote>
+
+The regular expression to filter OnDependencyInjection by the instance type name. ".+" by default.
+            
+```c#
+
+// OnDependencyInjectionImplementationTypeNameRegularExpression = Dependency
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.OnDependencyInjectionImplementationTypeNameRegularExpression, "Dependency")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field OnDependencyInjectionImplementationTypeNameWildcard</summary><blockquote>
+
+The wildcard to filter OnDependencyInjection by the instance type name. "*" by default.
+            
+```c#
+
+// OnDependencyInjectionImplementationTypeNameWildcard = *Dependency
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.OnDependencyInjectionImplementationTypeNameWildcard, "*Dependency")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field OnDependencyInjectionContractTypeNameRegularExpression</summary><blockquote>
+
+The regular expression to filter OnDependencyInjection by the resolving type name. ".+" by default.
+            
+```c#
+
+// OnDependencyInjectionContractTypeNameRegularExpression = IDependency
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.OnDependencyInjectionContractTypeNameRegularExpression, "IDependency")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field OnDependencyInjectionContractTypeNameWildcard</summary><blockquote>
+
+The wildcard to filter OnDependencyInjection by the resolving type name. "*" by default.
+            
+```c#
+
+// OnDependencyInjectionContractTypeNameWildcard = *IDependency
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.OnDependencyInjectionContractTypeName, "*IDependency")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field OnDependencyInjectionTagRegularExpression</summary><blockquote>
+
+The regular expression to filter OnDependencyInjection by the tag. ".+" by default.
+            
+```c#
+
+// OnDependencyInjectionTagRegularExpression = MyTag
+            DI.Setup("Composition")
+                .Bind<IDependency>("MyTag").To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.OnDependencyInjectionTagRegularExpression, "MyTag")
+                .Bind<IDependency>("MyTag").To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field OnDependencyInjectionTagWildcard</summary><blockquote>
+
+The wildcard to filter OnDependencyInjection by the tag. "*" by default.
+            
+```c#
+
+// OnDependencyInjectionTagWildcard = MyTag
+            DI.Setup("Composition")
+                .Bind<IDependency>("MyTag").To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.OnDependencyInjectionTagWildcard, "MyTag")
+                .Bind<IDependency>("MyTag").To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field OnDependencyInjectionLifetimeRegularExpression</summary><blockquote>
+
+The regular expression to filter OnDependencyInjection by the lifetime. ".+" by default.
+            
+```c#
+
+// OnDependencyInjectionLifetimeRegularExpression = Singleton
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.OnDependencyInjectionLifetimeRegularExpression, "Singleton")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field OnDependencyInjectionLifetimeWildcard</summary><blockquote>
+
+The wildcard to filter OnDependencyInjection by the lifetime. ".+" by default.
+            
+```c#
+
+// OnDependencyInjectionLifetimeWildcard = *Singleton
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.OnDependencyInjectionLifetimeWildcard, "*Singleton")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field OnCannotResolve</summary><blockquote>
+
+ `On`  or  `Off` . Determines whether to use a partial  `OnCannotResolve<T>(...)`  method to handle a scenario in which the dependency cannot be resolved.  `Off`  by default.
+            
+```c#
+
+// OnCannotResolve = On
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.OnCannotResolve, "On")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field OnCannotResolvePartial</summary><blockquote>
+
+ `On`  or  `Off` . Determines whether to generate a partial  `OnCannotResolve<T>(...)`  method when the  `OnCannotResolve`  hint is  `On`  to handle a scenario in which the dependency cannot be resolved.  `On`  by default.
+            
+```c#
+
+// OnCannotResolvePartial = On
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.OnCannotResolvePartial, "On")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field OnCannotResolveContractTypeNameRegularExpression</summary><blockquote>
+
+The regular expression to filter OnCannotResolve by the resolving type name. ".+" by default.
+            
+```c#
+
+// OnCannotResolveContractTypeNameRegularExpression = OtherType
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.OnCannotResolveContractTypeNameRegularExpression, "OtherType")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field OnCannotResolveContractTypeNameWildcard</summary><blockquote>
+
+The wildcard to filter OnCannotResolve by the resolving type name. "*" by default.
+            
+```c#
+
+// OnCannotResolveContractTypeNameWildcard = *OtherType
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.OnCannotResolveContractTypeNameWildcard, "*OtherType")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field OnCannotResolveTagRegularExpression</summary><blockquote>
+
+The regular expression to filter OnCannotResolve by the tag. ".+" by default.
+            
+```c#
+
+// OnCannotResolveTagRegularExpression = MyTag
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.OnCannotResolveTagRegularExpression, "MyTag")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field OnCannotResolveTagWildcard</summary><blockquote>
+
+The wildcard to filter OnCannotResolve by the tag. "*" by default.
+            
+```c#
+
+// OnCannotResolveTagWildcard = MyTag
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.OnCannotResolveTagWildcard, "MyTag")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field OnCannotResolveLifetimeRegularExpression</summary><blockquote>
+
+The regular expression to filter OnCannotResolve by the lifetime. ".+" by default.
+            
+```c#
+
+// OnCannotResolveLifetimeRegularExpression = Singleton
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.OnCannotResolveLifetimeRegularExpression, "Singleton")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field OnCannotResolveLifetimeWildcard</summary><blockquote>
+
+The wildcard to filter OnCannotResolve by the lifetime. "*" by default.
+            
+```c#
+
+// OnCannotResolveLifetimeWildcard = *Singleton
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.OnCannotResolveLifetimeWildcard, "*Singleton")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field OnNewRoot</summary><blockquote>
+
+ `On`  or  `Off` . Determines whether to use a static partial  `OnNewRoot<T>(...)`  method to handle the new composition root registration event.  `Off`  by default.
+            
+```c#
+
+// OnNewRoot = On
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.OnNewRoot, "On")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field OnNewRootPartial</summary><blockquote>
+
+ `On`  or  `Off` . Determines whether to generate a static partial  `OnNewRoot<T>(...)`  method when the  `OnNewRoot`  hint is  `On`  to handle the new composition root registration event.  `On`  by default.
+            
+```c#
+
+// OnNewRootPartial = On
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.OnNewRootPartial, "On")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field ToString</summary><blockquote>
+
+ `On`  or  `Off` . Determine if the  `ToString()`  method should be generated. This method provides a text-based class diagram in the format mermaid.  `Off`  by default. 
+            
+```c#
+
+// ToString = On
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.ToString, "On")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field ThreadSafe</summary><blockquote>
+
+ `On`  or  `Off` . This hint determines whether object composition will be created in a thread-safe manner.  `On`  by default.
+            
+```c#
+
+// ThreadSafe = Off
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.ThreadSafe, "Off")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field ResolveMethodModifiers</summary><blockquote>
+
+Overrides modifiers of the method  `public T Resolve<T>()` . "public" by default.
+            
+```c#
+
+// ResolveMethodModifiers = internal
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.ResolveMethodModifiers, "internal")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field ResolveMethodName</summary><blockquote>
+
+Overrides name of the method  `public T Resolve<T>()` . "Resolve" by default.
+            
+```c#
+
+// ResolveMethodName = GetService
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.ResolveMethodName, "GetService")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field ResolveByTagMethodModifiers</summary><blockquote>
+
+Overrides modifiers of the method  `public T Resolve<T>(object? tag)` . "public" by default.
+            
+```c#
+
+// ResolveByTagMethodModifiers = internal
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.ResolveByTagMethodModifiers, "internal")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field ResolveByTagMethodName</summary><blockquote>
+
+Overrides name of the method  `public T Resolve<T>(object? tag)` . "Resolve" by default.
+            For example:
+            
+```c#
+
+// ResolveByTagMethodName = GetService
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.ResolveByTagMethodName, "GetService")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field ObjectResolveMethodModifiers</summary><blockquote>
+
+Overrides modifiers of the method  `public object Resolve(Type type)` . "public" by default.
+            
+```c#
+
+// ObjectResolveMethodModifiers = internal
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.ObjectResolveMethodModifiers, "internal")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field ObjectResolveMethodName</summary><blockquote>
+
+Overrides name of the method  `public object Resolve(Type type)` . "Resolve" by default.
+            
+```c#
+
+// ObjectResolveMethodName = GetService
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.ObjectResolveMethodName, "GetService")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field ObjectResolveByTagMethodModifiers</summary><blockquote>
+
+Overrides modifiers of the method  `public object Resolve(Type type, object? tag)` . "public" by default.
+            
+```c#
+
+// ObjectResolveByTagMethodModifiers = internal
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.ObjectResolveByTagMethodModifiers, "internal")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field ObjectResolveByTagMethodName</summary><blockquote>
+
+Overrides name of the method  `public object Resolve(Type type, object? tag)` . "Resolve" by default.
+            
+```c#
+
+// ObjectResolveByTagMethodName = GetService
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.ObjectResolveByTagMethodName, "GetService")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field DisposeMethodModifiers</summary><blockquote>
+
+Overrides modifiers of the method  `public void Dispose()` . "public" by default.
+            
+```c#
+
+// DisposeMethodModifiers = internal
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.DisposeMethodModifiers, "internal")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field DisposeAsyncMethodModifiers</summary><blockquote>
+
+Overrides modifiers of the method  `public _ValueTask_ DisposeAsyncMethodModifiers()` . "public" by default.
+            
+```c#
+
+// DisposeAsyncMethodModifiers = internal
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.DisposeAsyncMethodModifiers, "internal")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field FormatCode</summary><blockquote>
+
+ `On`  or  `Off` . Specifies whether the generated code should be formatted. This option consumes a lot of CPU resources.  `Off`  by default.
+            
+```c#
+
+// FormatCode = On
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.FormatCode, "On")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field SeverityOfNotImplementedContract</summary><blockquote>
+
+ `Error`  or  `Warning`  or  `Info`  or  `Hidden` . Indicates the severity level of the situation when, in the binding, an implementation does not implement a contract.  `Error`  by default.
+            
+```c#
+
+// FormatCode = On
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.SeverityOfNotImplementedContracts, "On")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field Comments</summary><blockquote>
+
+ `On`  or  `Off` . Specifies whether the generated code should be commented.  `On`  by default.
+            
+```c#
+
+// Comments = Off
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.Comments, "Off")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field SystemThreadingLock</summary><blockquote>
+
+ `On`  or  `Off` . Indicates whether _Lock_ should be used whenever possible instead of the classic approach of synchronizing object access using _Monitor_.  `On`  by default.
+            
+```c#
+
+// SystemThreadingLock = Off
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.SystemThreadingLock, "Off")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+</blockquote></details>
+
+
+<details><summary>IBinding</summary><blockquote>
+
+An API for a binding setup.
+            
+<details><summary>Method Bind(System.Object[])</summary><blockquote>
+
+Begins the binding definition for the implementation type itself, and if the implementation is not an abstract class or structure, for all abstract but NOT special types that are directly implemented.
+            Special types include:
+            System.ObjectSystem.EnumSystem.MulticastDelegateSystem.DelegateSystem.Collections.IEnumerableSystem.Collections.Generic.IEnumerable<T>System.Collections.Generic.IList<T>System.Collections.Generic.ICollection<T>System.Collections.IEnumeratorSystem.Collections.Generic.IEnumerator<T>System.Collections.Generic.IIReadOnlyList<T>System.Collections.Generic.IReadOnlyCollection<T>System.IDisposableSystem.IAsyncResultSystem.AsyncCallback
+```c#
+
+DI.Setup("Composition")
+                .Bind().To<Service>();
+            
+```
+
+
+ - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
+
+ - returns Reference to the setup continuation chain.
+
+See also _To``1_.
+
+See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+
+See also _!:To<T1,T>()_.
+
+See also _!:To<T1,T2,T>()_.
+
+See also _Tags(System.Object[])_.
+
+See also _As(Pure.DI.Lifetime)_.
+
+</blockquote></details>
+
+
+<details><summary>Method Bind``1(System.Object[])</summary><blockquote>
+
+Begins the definition of the binding.
+            
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+The type of dependency to be bound. Common type markers such as _TT_, _TTList`1_ and others are also supported.
+ - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
+
+ - returns Reference to the setup continuation chain.
+
+See also _To``1_.
+
+See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+
+See also _!:To<T1,T>()_.
+
+See also _!:To<T1,T2,T>()_.
+
+See also _Tags(System.Object[])_.
+
+See also _As(Pure.DI.Lifetime)_.
+
+</blockquote></details>
+
+
+<details><summary>Method Bind``2(System.Object[])</summary><blockquote>
+
+Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
+            The type 1 of dependency to be bound.The type 2 of dependency to be bound.
+ - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
+
+ - returns Reference to the setup continuation chain.
+
+See also _To``1_.
+
+See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+
+See also _!:To<T1,T>()_.
+
+See also _!:To<T1,T2,T>()_.
+
+See also _Tags(System.Object[])_.
+
+See also _As(Pure.DI.Lifetime)_.
+
+</blockquote></details>
+
+
+<details><summary>Method Bind``3(System.Object[])</summary><blockquote>
+
+Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
+            The type 1 of dependency to be bound.The type 2 of dependency to be bound.The type 3 of dependency to be bound.
+ - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
+
+ - returns Reference to the setup continuation chain.
+
+See also _To``1_.
+
+See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+
+See also _!:To<T1,T>()_.
+
+See also _!:To<T1,T2,T>()_.
+
+See also _Tags(System.Object[])_.
+
+See also _As(Pure.DI.Lifetime)_.
+
+</blockquote></details>
+
+
+<details><summary>Method Bind``4(System.Object[])</summary><blockquote>
+
+Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
+            The type 1 of dependency to be bound.The type 2 of dependency to be bound.The type 3 of dependency to be bound.The type 3 of dependency to be bound.
+ - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
+
+ - returns Reference to the setup continuation chain.
+
+See also _To``1_.
+
+See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+
+See also _!:To<T1,T>()_.
+
+See also _!:To<T1,T2,T>()_.
+
+See also _Tags(System.Object[])_.
+
+See also _As(Pure.DI.Lifetime)_.
+
+</blockquote></details>
+
+
+<details><summary>Method Bind``5(System.Object[])</summary><blockquote>
+
+Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
+            The type 1 of dependency to be bound.The type 2 of dependency to be bound.The type 3 of dependency to be bound.The type 3 of dependency to be bound.The type 5 of dependency to be bound.
+ - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
+
+ - returns Reference to the setup continuation chain.
+
+See also _To``1_.
+
+See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+
+See also _!:To<T1,T>()_.
+
+See also _!:To<T1,T2,T>()_.
+
+See also _Tags(System.Object[])_.
+
+See also _As(Pure.DI.Lifetime)_.
+
+</blockquote></details>
+
+
+<details><summary>Method Bind``6(System.Object[])</summary><blockquote>
+
+Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
+            The type 1 of dependency to be bound.The type 2 of dependency to be bound.The type 3 of dependency to be bound.The type 3 of dependency to be bound.The type 5 of dependency to be bound.The type 6 of dependency to be bound.
+ - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
+
+ - returns Reference to the setup continuation chain.
+
+See also _To``1_.
+
+See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+
+See also _!:To<T1,T>()_.
+
+See also _!:To<T1,T2,T>()_.
+
+See also _Tags(System.Object[])_.
+
+See also _As(Pure.DI.Lifetime)_.
+
+</blockquote></details>
+
+
+<details><summary>Method Bind``7(System.Object[])</summary><blockquote>
+
+Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
+            The type 1 of dependency to be bound.The type 2 of dependency to be bound.The type 3 of dependency to be bound.The type 3 of dependency to be bound.The type 5 of dependency to be bound.The type 6 of dependency to be bound.The type 7 of dependency to be bound.
+ - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
+
+ - returns Reference to the setup continuation chain.
+
+See also _To``1_.
+
+See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+
+See also _!:To<T1,T>()_.
+
+See also _!:To<T1,T2,T>()_.
+
+See also _Tags(System.Object[])_.
+
+See also _As(Pure.DI.Lifetime)_.
+
+</blockquote></details>
+
+
+<details><summary>Method Bind``8(System.Object[])</summary><blockquote>
+
+Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
+            The type 1 of dependency to be bound.The type 2 of dependency to be bound.The type 3 of dependency to be bound.The type 3 of dependency to be bound.The type 5 of dependency to be bound.The type 6 of dependency to be bound.The type 7 of dependency to be bound.The type 8 of dependency to be bound.
+ - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
+
+ - returns Reference to the setup continuation chain.
+
+See also _To``1_.
+
+See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+
+See also _!:To<T1,T>()_.
+
+See also _!:To<T1,T2,T>()_.
+
+See also _Tags(System.Object[])_.
+
+See also _As(Pure.DI.Lifetime)_.
+
+</blockquote></details>
+
+
+<details><summary>Method As(Pure.DI.Lifetime)</summary><blockquote>
+
+Determines the _Lifetime_ of a binding.
+            
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>();
+            
+```
+
+
+ - parameter _lifetime_ - The _Lifetime_ of a binding
+
+ - returns Reference to the setup continuation chain.
+
+See also _Bind``1(System.Object[])_.
+
+See also _To``1_.
+
+See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+
+See also _!:To<T1,T>()_.
+
+See also _!:To<T1,T2,T>()_.
+
+See also _Tags(System.Object[])_.
+
+</blockquote></details>
+
+
+<details><summary>Method Tags(System.Object[])</summary><blockquote>
+
+Defines the binding tags.
+             Sometimes it's important to take control of building a dependency graph. For example, when there are multiple implementations of the same contract. In this case, tags will help:
+             
+```c#
+
+interface IDependency { }
+             
+            
+             class AbcDependency : IDependency { }
+             
+            
+             class XyzDependency : IDependency { }
+             
+            
+             class Dependency : IDependency { }
+             
+            
+             interface IService
+             {
+                 IDependency Dependency1 { get; }
+             
+            
+                 IDependency Dependency2 { get; }
+             }
+            
+             
+             class Service : IService
+             {
+                 public Service(
+                     [Tag("Abc")] IDependency dependency1,
+                     [Tag("Xyz")] IDependency dependency2)
+                 {
+                     Dependency1 = dependency1;
+                     Dependency2 = dependency2;
+                 }
+            
+                 public IDependency Dependency1 { get; }
+            
+             
+                 public IDependency Dependency2 { get; }
+             }
+            
+             
+             DI.Setup("Composition")
+                 .Bind<IDependency>().Tags("Abc").To<AbcDependency>()
+                 .Bind<IDependency>().Tags("Xyz").To<XyzDependency>()
+                 .Bind<IService>().To<Service>().Root<IService>("Root");
+             
+```
+
+
+ - parameter _tags_ - The binding tags.
+
+ - returns Reference to the setup continuation chain.
+
+See also _Bind``1(System.Object[])_.
+
+See also _To``1_.
+
+See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+
+See also _!:To<T1,T>()_.
+
+See also _!:To<T1,T2,T>()_.
+
+See also _As(Pure.DI.Lifetime)_.
+
+</blockquote></details>
+
+
+<details><summary>Method To``1</summary><blockquote>
+
+Completes the binding chain by specifying the implementation.
+            
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+The implementation type. Also supports generic type markers such as _TT_, _TTList`1_, and others.
+ - returns Reference to the setup continuation chain.
+
+See also _Bind``1(System.Object[])_.
+
+See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+
+See also _!:To<T1,T>()_.
+
+See also _!:To<T1,T2,T>()_.
+
+See also _Tags(System.Object[])_.
+
+See also _As(Pure.DI.Lifetime)_.
+
+</blockquote></details>
+
+
+<details><summary>Method To``1(System.Func{Pure.DI.IContext,``0})</summary><blockquote>
+
+Completes the binding chain by specifying the implementation using a factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc.
+             
+```c#
+
+DI.Setup("Composition")
+                 .Bind<IService>()
+                 To(_ =>
+                 {
+                     var service = new Service("My Service");
+                     service.Initialize();
+                     return service;
+                 })
+             
+```
+
+
+             another example:
+             
+```c#
+
+DI.Setup("Composition")
+                 .Bind&lt;IService&gt;()
+                 To(ctx =&gt;
+                 {
+                     ctx.Inject<IDependency>(out var dependency);
+                     return new Service(dependency);
+                 })
+             
+```
+
+
+             and another example:
+             
+```c#
+
+DI.Setup("Composition")
+                 .Bind&lt;IService&gt;()
+                 To(ctx =&gt;
+                 {
+                     // Builds up an instance with all necessary dependencies
+                     ctx.Inject<Service>(out var service);
+            
+             
+                     service.Initialize();
+                     return service;
+                 })
+             
+```
+
+
+ - parameter _factory_ - An expression for manually creating and initializing an instance.
+The implementation type.
+ - returns Reference to the setup continuation chain.
+
+See also _Bind``1(System.Object[])_.
+
+See also _To``1_.
+
+See also _!:To<T1,T>()_.
+
+See also _!:To<T1,T2,T>()_.
+
+See also _Tags(System.Object[])_.
+
+See also _As(Pure.DI.Lifetime)_.
+
+</blockquote></details>
+
+
+<details><summary>Method To``1(System.String)</summary><blockquote>
+
+Completes the binding chain by specifying the implementation using a source code statement.
+            
+```c#
+
+DI.Setup("Composition")
+                .Bind<int>().To<int>("dependencyId")
+                .Bind<Func<int, IDependency>>()
+                    .To<Func<int, IDependency>>(ctx =>
+                        dependencyId =>
+                        {
+                            ctx.Inject<Dependency>(out var dependency);
+                            return dependency;
+                        });
+            
+```
+
+
+ - parameter _sourceCodeStatement_ - Source code statement
+The implementation type.
+ - returns Reference to the setup continuation chain.
+
+See also _Bind``1(System.Object[])_.
+
+</blockquote></details>
+
+
+<details><summary>Method To``2(System.Func{``0,``1})</summary><blockquote>
+
+Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the _TagAttribute_ in front of the parameter to specify the tag of the injected dependency.
+            
+```c#
+
+DI.Setup(nameof(Composition))
+                .Bind<IDependency>().To((
+                    Dependency dependency) =>
+                {
+                    dependency.Initialize();
+                    return dependency;
+                });
+            
+```
+
+
+            A variant using _TagAttribute_:
+            
+```c#
+
+DI.Setup(nameof(Composition))
+                .Bind<IDependency>().To((
+                    [Tag("some tag")] Dependency dependency) =>
+                {
+                    dependency.Initialize();
+                    return dependency;
+                });
+            
+```
+
+
+ - parameter _factory_ - An expression for manually creating and initializing an instance.
+Type #1 of injected dependency.The implementation type.
+ - returns Reference to the setup continuation chain.
+
+See also _Bind``1(System.Object[])_.
+
+See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+
+See also _To``1_.
+
+See also _Tags(System.Object[])_.
+
+See also _As(Pure.DI.Lifetime)_.
+
+</blockquote></details>
+
+
+<details><summary>Method To``3(System.Func{``0,``1,``2})</summary><blockquote>
+
+Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the _TagAttribute_ in front of the parameter to specify the tag of the injected dependency.
+            
+```c#
+
+DI.Setup(nameof(Composition))
+                .Bind<IDependency>().To((
+                    Dependency dependency,
+                    DateTimeOffset time) =>
+                {
+                    dependency.Initialize(time);
+                    return dependency;
+                });
+            
+```
+
+
+            A variant using _TagAttribute_:
+            
+```c#
+
+DI.Setup(nameof(Composition))
+                .Bind("now datetime").To(_ => DateTimeOffset.Now)
+                .Bind<IDependency>().To((
+                    Dependency dependency,
+                    [Tag("now datetime")] DateTimeOffset time) =>
+                {
+                    dependency.Initialize(time);
+                    return dependency;
+                });
+            
+```
+
+
+ - parameter _factory_ - An expression for manually creating and initializing an instance.
+Type #1 of injected dependency.Type #2 of injected dependency.The implementation type.
+ - returns Reference to the setup continuation chain.
+
+See also _Bind``1(System.Object[])_.
+
+See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+
+See also _To``1_.
+
+See also _Tags(System.Object[])_.
+
+See also _As(Pure.DI.Lifetime)_.
+
+</blockquote></details>
+
+
+<details><summary>Method To``4(System.Func{``0,``1,``2,``3})</summary><blockquote>
+
+Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the _TagAttribute_ in front of the parameter to specify the tag of the injected dependency.
+            
+ - parameter _factory_ - An expression for manually creating and initializing an instance.
+Type #1 of injected dependency.Type #2 of injected dependency.Type #3 of injected dependency.The implementation type.
+ - returns Reference to the setup continuation chain.
+
+See also _Bind``1(System.Object[])_.
+
+See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+
+See also _To``1_.
+
+See also _Tags(System.Object[])_.
+
+See also _As(Pure.DI.Lifetime)_.
+
+</blockquote></details>
+
+
+<details><summary>Method To``5(System.Func{``0,``1,``2,``3,``4})</summary><blockquote>
+
+Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the _TagAttribute_ in front of the parameter to specify the tag of the injected dependency.
+            
+ - parameter _factory_ - An expression for manually creating and initializing an instance.
+Type #1 of injected dependency.Type #2 of injected dependency.Type #3 of injected dependency.Type #4 of injected dependency.The implementation type.
+ - returns Reference to the setup continuation chain.
+
+See also _Bind``1(System.Object[])_.
+
+See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+
+See also _To``1_.
+
+See also _Tags(System.Object[])_.
+
+See also _As(Pure.DI.Lifetime)_.
+
+</blockquote></details>
+
+
+<details><summary>Method To``6(System.Func{``0,``1,``2,``3,``4,``5})</summary><blockquote>
+
+Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the _TagAttribute_ in front of the parameter to specify the tag of the injected dependency.
+            
+ - parameter _factory_ - An expression for manually creating and initializing an instance.
+Type #1 of injected dependency.Type #2 of injected dependency.Type #3 of injected dependency.Type #4 of injected dependency.Type #5 of injected dependency.The implementation type.
+ - returns Reference to the setup continuation chain.
+
+See also _Bind``1(System.Object[])_.
+
+See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+
+See also _To``1_.
+
+See also _Tags(System.Object[])_.
+
+See also _As(Pure.DI.Lifetime)_.
+
+</blockquote></details>
+
+
+<details><summary>Method To``7(System.Func{``0,``1,``2,``3,``4,``5,``6})</summary><blockquote>
+
+Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the _TagAttribute_ in front of the parameter to specify the tag of the injected dependency.
+            
+ - parameter _factory_ - An expression for manually creating and initializing an instance.
+Type #1 of injected dependency.Type #2 of injected dependency.Type #3 of injected dependency.Type #4 of injected dependency.Type #5 of injected dependency.Type #6 of injected dependency.The implementation type.
+ - returns Reference to the setup continuation chain.
+
+See also _Bind``1(System.Object[])_.
+
+See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+
+See also _To``1_.
+
+See also _Tags(System.Object[])_.
+
+See also _As(Pure.DI.Lifetime)_.
+
+</blockquote></details>
+
+
+<details><summary>Method To``8(System.Func{``0,``1,``2,``3,``4,``5,``6,``7})</summary><blockquote>
+
+Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the _TagAttribute_ in front of the parameter to specify the tag of the injected dependency.
+            
+ - parameter _factory_ - An expression for manually creating and initializing an instance.
+Type #1 of injected dependency.Type #2 of injected dependency.Type #3 of injected dependency.Type #4 of injected dependency.Type #5 of injected dependency.Type #6 of injected dependency.Type #7 of injected dependency.The implementation type.
+ - returns Reference to the setup continuation chain.
+
+See also _Bind``1(System.Object[])_.
+
+See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+
+See also _To``1_.
+
+See also _Tags(System.Object[])_.
+
+See also _As(Pure.DI.Lifetime)_.
+
+</blockquote></details>
+
+
+<details><summary>Method To``9(System.Func{``0,``1,``2,``3,``4,``5,``6,``7,``8})</summary><blockquote>
+
+Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the _TagAttribute_ in front of the parameter to specify the tag of the injected dependency.
+            
+ - parameter _factory_ - An expression for manually creating and initializing an instance.
+Type #1 of injected dependency.Type #2 of injected dependency.Type #3 of injected dependency.Type #4 of injected dependency.Type #5 of injected dependency.Type #6 of injected dependency.Type #7 of injected dependency.Type #7 of injected dependency.The implementation type.
+ - returns Reference to the setup continuation chain.
+
+See also _Bind``1(System.Object[])_.
+
+See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+
+See also _To``1_.
+
+See also _Tags(System.Object[])_.
+
+See also _As(Pure.DI.Lifetime)_.
+
+</blockquote></details>
+
+
+</blockquote></details>
+
+
+<details><summary>IConfiguration</summary><blockquote>
+
+An API for a Dependency Injection setup.
+            
+See also _Setup(System.String,Pure.DI.CompositionKind)_.
+
+<details><summary>Method Bind(System.Object[])</summary><blockquote>
+
+Begins the binding definition for the implementation type itself, and if the implementation is not an abstract class or structure, for all abstract but NOT special types that are directly implemented.
+            Special types include:
+            System.ObjectSystem.EnumSystem.MulticastDelegateSystem.DelegateSystem.Collections.IEnumerableSystem.Collections.Generic.IEnumerable<T>System.Collections.Generic.IList<T>System.Collections.Generic.ICollection<T>System.Collections.IEnumeratorSystem.Collections.Generic.IEnumerator<T>System.Collections.Generic.IIReadOnlyList<T>System.Collections.Generic.IReadOnlyCollection<T>System.IDisposableSystem.IAsyncResultSystem.AsyncCallback
+```c#
+
+DI.Setup("Composition")
+                .Bind().To<Service>();
+            
+```
+
+
+ - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
+
+ - returns Reference to the setup continuation chain.
+
+See also _To``1_.
+
+See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+
+See also _To<T1,T>()_.
+
+See also _To<T1,T2,T>()_.
+
+See also _Tags(System.Object[])_.
+
+See also _As(Pure.DI.Lifetime)_.
+
+</blockquote></details>
+
+
+<details><summary>Method Bind``1(System.Object[])</summary><blockquote>
+
+Begins the definition of the binding.
+            
+```c#
+
+DI.Setup("Composition")
+                .Bind<IService>().To<Service>();
+            
+```
+
+The type of dependency to be bound.
+ - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
+
+ - returns Reference to the setup continuation chain.
+
+See also _To``1_.
+
+See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+
+See also _To<T1,T>()_.
+
+See also _To<T1,T2,T>()_.
+
+See also _Tags(System.Object[])_.
+
+See also _As(Pure.DI.Lifetime)_.
+
+</blockquote></details>
+
+
+<details><summary>Method Bind``2(System.Object[])</summary><blockquote>
+
+Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
+            The type 1 of dependency to be bound.The type 2 of dependency to be bound.
+ - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
+
+ - returns Reference to the setup continuation chain.
+
+See also _To``1_.
+
+See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+
+See also _To<T1,T>()_.
+
+See also _To<T1,T2,T>()_.
+
+See also _Tags(System.Object[])_.
+
+See also _As(Pure.DI.Lifetime)_.
+
+</blockquote></details>
+
+
+<details><summary>Method Bind``3(System.Object[])</summary><blockquote>
+
+Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
+            The type 1 of dependency to be bound.The type 2 of dependency to be bound.The type 3 of dependency to be bound.
+ - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
+
+ - returns Reference to the setup continuation chain.
+
+See also _To``1_.
+
+See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+
+See also _To<T1,T>()_.
+
+See also _To<T1,T2,T>()_.
+
+See also _Tags(System.Object[])_.
+
+See also _As(Pure.DI.Lifetime)_.
+
+</blockquote></details>
+
+
+<details><summary>Method Bind``4(System.Object[])</summary><blockquote>
+
+Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
+            The type 1 of dependency to be bound.The type 2 of dependency to be bound.The type 3 of dependency to be bound.The type 4 of dependency to be bound.
+ - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
+
+ - returns Reference to the setup continuation chain.
+
+See also _To``1_.
+
+See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+
+See also _To<T1,T>()_.
+
+See also _To<T1,T2,T>()_.
+
+See also _Tags(System.Object[])_.
+
+See also _As(Pure.DI.Lifetime)_.
+
+</blockquote></details>
+
+
+<details><summary>Method Bind``5(System.Object[])</summary><blockquote>
+
+Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
+            The type 1 of dependency to be bound.The type 2 of dependency to be bound.The type 3 of dependency to be bound.The type 4 of dependency to be bound.The type 5 of dependency to be bound.
+ - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
+
+ - returns Reference to the setup continuation chain.
+
+See also _To``1_.
+
+See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+
+See also _To<T1,T>()_.
+
+See also _To<T1,T2,T>()_.
+
+See also _Tags(System.Object[])_.
+
+See also _As(Pure.DI.Lifetime)_.
+
+</blockquote></details>
+
+
+<details><summary>Method Bind``6(System.Object[])</summary><blockquote>
+
+Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
+            The type 1 of dependency to be bound.The type 2 of dependency to be bound.The type 3 of dependency to be bound.The type 4 of dependency to be bound.The type 5 of dependency to be bound.The type 6 of dependency to be bound.
+ - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
+
+ - returns Reference to the setup continuation chain.
+
+See also _To``1_.
+
+See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+
+See also _To<T1,T>()_.
+
+See also _To<T1,T2,T>()_.
+
+See also _Tags(System.Object[])_.
+
+See also _As(Pure.DI.Lifetime)_.
+
+</blockquote></details>
+
+
+<details><summary>Method Bind``7(System.Object[])</summary><blockquote>
+
+Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
+            The type 1 of dependency to be bound.The type 2 of dependency to be bound.The type 3 of dependency to be bound.The type 4 of dependency to be bound.The type 5 of dependency to be bound.The type 6 of dependency to be bound.The type 7 of dependency to be bound.
+ - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
+
+ - returns Reference to the setup continuation chain.
+
+See also _To``1_.
+
+See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+
+See also _To<T1,T>()_.
+
+See also _To<T1,T2,T>()_.
+
+See also _Tags(System.Object[])_.
+
+See also _As(Pure.DI.Lifetime)_.
+
+</blockquote></details>
+
+
+<details><summary>Method Bind``8(System.Object[])</summary><blockquote>
+
+Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
+            The type 1 of dependency to be bound.The type 2 of dependency to be bound.The type 3 of dependency to be bound.The type 4 of dependency to be bound.The type 5 of dependency to be bound.The type 6 of dependency to be bound.The type 7 of dependency to be bound.The type 8 of dependency to be bound.
+ - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
+
+ - returns Reference to the setup continuation chain.
+
+See also _To``1_.
+
+See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+
+See also _To<T1,T>()_.
+
+See also _To<T1,T2,T>()_.
+
+See also _Tags(System.Object[])_.
+
+See also _As(Pure.DI.Lifetime)_.
+
+</blockquote></details>
+
+
+<details><summary>Method RootBind``1(System.String,Pure.DI.RootKinds,System.Object[])</summary><blockquote>
+
+Begins the definition of the binding with _Root``1(System.String,System.Object,Pure.DI.RootKinds)_ applied.
+            
+```c#
+
+DI.Setup("Composition")
+                .RootBind<IService>();
+            
+```
+
+The type of dependency to be bound.
+ - parameter _name_ - Specifies the name of the root of the composition. If the value is empty, a private root will be created, which can be used when calling  `Resolve`  methods.
+            The name supports templating:
+            TemplateDescription{type}Will be replaced by the short name of the root type without its namespaces.{TYPE}Will be replaced with the full name of the root type.{tag}Will be replaced with the first tag name.
+
+ - parameter _kind_ - The optional argument specifying the kind for the root of the composition.
+
+ - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding. If is is not empty, the first tag is used for the root.
+
+ - returns Reference to the setup continuation chain.
+
+See also _To``1_.
+
+See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+
+See also _To<T1,T>()_.
+
+See also _To<T1,T2,T>()_.
+
+See also _Tags(System.Object[])_.
+
+See also _As(Pure.DI.Lifetime)_.
+
+</blockquote></details>
+
+
+<details><summary>Method DependsOn(System.String[])</summary><blockquote>
+
+Indicates the use of some single or multiple setups as base setups by name.
+            
+```c#
+
+DI.Setup("Composition")
+                .DependsOn(nameof(CompositionBase));
+            
+```
+
+
+ - parameter _setupNames_ - A set of names for the basic setups on which this one depends.
+
+ - returns Reference to the setup continuation chain.
+
+See also _Setup(System.String,Pure.DI.CompositionKind)_.
+
+</blockquote></details>
+
+
+<details><summary>Method GenericTypeArgumentAttribute``1</summary><blockquote>
+
+Specifies a custom generic type argument attribute.
+            
+```c#
+
+[AttributeUsage(AttributeTargets.Interface | AttributeTargets.Class | AttributeTargets.Struct)]
+            class MyGenericTypeArgumentAttribute : Attribute;
+             
+            [MyGenericTypeArgument]
+            interface TTMy; 
+             
+            DI.Setup("Composition")
+                .GenericTypeAttribute<MyGenericTypeArgumentAttribute>()
+                .Bind<IDependency<TTMy>>().To<Dependency<TTMy>>();
+            
+```
+
+The attribute type.
+ - returns Reference to the setup continuation chain.
+
+See also _GenericTypeArgumentAttribute``1_.
+
+</blockquote></details>
+
+
+<details><summary>Method TypeAttribute``1(System.Int32)</summary><blockquote>
+
+Specifies a custom attribute that overrides the injection type.
+            
+```c#
+
+DI.Setup("Composition")
+                .TypeAttribute<MyTypeAttribute>();
+            
+```
+
+
+ - parameter _typeArgumentPosition_ - The optional parameter that specifies the position of the type parameter in the attribute constructor. 0 by default. See predefined attribute _TypeAttribute``1(System.Int32)_.
+The attribute type.
+ - returns Reference to the setup continuation chain.
+
+See also _TypeAttribute_.
+
+</blockquote></details>
+
+
+<details><summary>Method TagAttribute``1(System.Int32)</summary><blockquote>
+
+Specifies a tag attribute that overrides the injected tag.
+            
+```c#
+
+DI.Setup("Composition")
+                .TagAttribute<MyTagAttribute>();
+            
+```
+
+
+ - parameter _tagArgumentPosition_ - The optional parameter that specifies the position of the tag parameter in the attribute constructor. 0 by default. See the predefined _TagAttribute``1(System.Int32)_ attribute.
+The attribute type.
+ - returns Reference to the setup continuation chain.
+
+See also _TagAttribute_.
+
+</blockquote></details>
+
+
+<details><summary>Method OrdinalAttribute``1(System.Int32)</summary><blockquote>
+
+Specifies a custom attribute that overrides the injection ordinal.
+            
+```c#
+
+DI.Setup("Composition")
+                .OrdinalAttribute<MyOrdinalAttribute>();
+            
+```
+
+
+ - parameter _ordinalArgumentPosition_ - The optional parameter that specifies the position of the ordinal parameter in the attribute constructor. 0 by default. See the predefined _OrdinalAttribute``1(System.Int32)_ attribute.
+The attribute type.
+ - returns Reference to the setup continuation chain.
+
+See also _OrdinalAttribute_.
+
+</blockquote></details>
+
+
+<details><summary>Method DefaultLifetime(Pure.DI.Lifetime)</summary><blockquote>
+
+Overrides the default _Lifetime_ for all bindings further down the chain. If not specified, the _Transient_ lifetime is used.
+            
+```c#
+
+DI.Setup("Composition")
+                .DefaultLifetime(Lifetime.Singleton);
+            
+```
+
+
+ - parameter _lifetime_ - The default lifetime.
+
+ - returns Reference to the setup continuation chain.
+
+See also _Lifetime_.
+
+See also _As(Pure.DI.Lifetime)_.
+
+</blockquote></details>
+
+
+<details><summary>Method DefaultLifetime``1(Pure.DI.Lifetime,System.Object[])</summary><blockquote>
+
+Overrides the default _Lifetime_ for all bindings can be casted to type  further down the chain.
+            
+```c#
+
+DI.Setup("Composition")
+                .DefaultLifetime<IMySingleton>(Lifetime.Singleton);
+            
+```
+
+
+```c#
+
+DI.Setup("Composition")
+                .DefaultLifetime<IMySingleton>(Lifetime.Singleton, "my tag");
+            
+```
+
+
+ - parameter _lifetime_ - The default lifetime.
+
+ - parameter _tags_ - The optional argument specifying the binding tags for which it will set the default lifetime. If not specified, the default lifetime will be set for any tags.
+The default lifetime will be applied to bindings if the implementation class can be cast to type .
+ - returns Reference to the setup continuation chain.
+
+See also _Lifetime_.
+
+See also _As(Pure.DI.Lifetime)_.
+
+</blockquote></details>
+
+
+<details><summary>Method Arg``1(System.String,System.Object[])</summary><blockquote>
+
+Adds a partial class argument and replaces the default constructor by adding this argument as a parameter. It is only created if this argument is actually used. 
+            
+```c#
+
+DI.Setup("Composition")
+                .Arg<int>("id");
+            
+```
+
+
+ - parameter _name_ - The argument name.
+            The name supports templating:
+            TemplateDescription{type}Will be replaced by the short name of the argument type without its namespaces.{TYPE}Will be replaced with the full name of the argument type.{tag}Will be replaced with the first tag name.
+
+ - parameter _tags_ - The optional argument that specifies the tags for the argument.
+The argument type.
+ - returns Reference to the setup continuation chain.
+
+See also _RootArg``1(System.String,System.Object[])_.
+
+</blockquote></details>
+
+
+<details><summary>Method RootArg``1(System.String,System.Object[])</summary><blockquote>
+
+Adds a root argument to use as a root parameter. 
+            
+```c#
+
+DI.Setup("Composition")
+                .RootArg<int>("id");
+            
+```
+
+
+ - parameter _name_ - The argument name.
+            The name supports templating:
+            TemplateDescription{type}Will be replaced by the short name of the argument type without its namespaces.{TYPE}Will be replaced with the full name of the argument type.{tag}Will be replaced with the first tag name.
+
+ - parameter _tags_ - The optional argument that specifies the tags for the argument.
+The argument type.
+ - returns Reference to the setup continuation chain.
+
+See also _Arg``1(System.String,System.Object[])_.
+
+</blockquote></details>
+
+
+<details><summary>Method Root``1(System.String,System.Object,Pure.DI.RootKinds)</summary><blockquote>
+
+Specifying the root of the composition.
+            
+```c#
+
+DI.Setup("Composition")
+                .Root<Service>("MyService");
+            
+```
+
+
+```c#
+
+DI.Setup("Composition")
+                .Root<Service>("My{type}");
+            
+```
+
+
+ - parameter _name_ - Specifies the name of the root of the composition. If the value is empty, a private root will be created, which can be used when calling  `Resolve`  methods.
+            The name supports templating:
+            TemplateDescription{type}Will be replaced by the short name of the root type without its namespaces.{TYPE}Will be replaced with the full name of the root type.{tag}Will be replaced with the root tag name.
+
+ - parameter _tag_ - The optional argument specifying the tag for the root of the composition.
+
+ - parameter _kind_ - The optional argument specifying the kind for the root of the composition.
+The composition root type.
+ - returns Reference to the setup continuation chain.
+
+See also _RootBind``1(System.String,Pure.DI.RootKinds,System.Object[])_.
+
+See also _Roots``1(System.String,Pure.DI.RootKinds,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Method Roots``1(System.String,Pure.DI.RootKinds,System.String)</summary><blockquote>
+
+Specifies to define composition roots for all types inherited from _!:T_ available at compile time at the point where the method is called.
+            
+```c#
+
+DI.Setup("Composition")
+                .Roots<IService>();
+            
+```
+
+
+```c#
+
+DI.Setup("Composition")
+                .Roots<IService>("Root{type}", filter: "*MyService");
+            
+```
+
+
+ - parameter _name_ - Specifies the name of the roots of the composition. If the value is empty, private roots will be created, which can be used when calling  `Resolve`  methods.
+            The name supports templating:
+            TemplateDescription{type}Will be replaced by the short name of the type without its namespaces.{TYPE}Will be replaced with the full name of the type.
+
+ - parameter _kind_ - The optional argument specifying the kind for the root of the composition.
+
+ - parameter _filter_ - A wildcard to filter root types by their full name.
+The composition root base type.
+ - returns Reference to the setup continuation chain.
+
+See also _Root``1(System.String,System.Object,Pure.DI.RootKinds)_.
+
+</blockquote></details>
+
+
+<details><summary>Method Builder``1(System.String,Pure.DI.RootKinds)</summary><blockquote>
+
+Specifies the method of the composition builder. The first argument to the method will always be the instance to be built. The remaining arguments to this method will be listed in the order in which they are defined in the setup.Specifies to create a composition builder method. The first argument to the method will always be the instance to be built. The remaining arguments to this method will be listed in the order in which they are defined in the setup.
+            
+```c#
+
+DI.Setup("Composition")
+                .Builder<Service>("BuildUpMyService");
+            
+```
+
+
+ - parameter _name_ - Specifies the name of the builder. The default name is "BuildUp".
+            The name supports templating:
+            TemplateDescription{type}Will be replaced by the short name of the type without its namespaces.{TYPE}Will be replaced with the full name of the type.
+
+ - parameter _kind_ - The optional argument specifying the kind for the root of the composition.
+The composition root type.
+ - returns Reference to the setup continuation chain.
+
+See also _Builders``1(System.String,Pure.DI.RootKinds,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Method Builders``1(System.String,Pure.DI.RootKinds,System.String)</summary><blockquote>
+
+Specifies to define builders for all types inherited from _!:T_ available at compile time at the point where the method is called.
+            
+```c#
+
+DI.Setup("Composition")
+                .Builders<Service>();
+            
+```
+
+
+```c#
+
+DI.Setup("Composition")
+                .Builder<Service>("BuildUp");
+            
+```
+
+
+```c#
+
+DI.Setup("Composition")
+                .Builder<Service>("BuildUp{type}", filter: "*MyService");
+            
+```
+
+
+ - parameter _name_ - Specifies the name of the builders. The default name is "BuildUp".
+            The name supports templating:
+            TemplateDescription{type}Will be replaced by the short name of the type without its namespaces.{TYPE}Will be replaced with the full name of the type.
+
+ - parameter _kind_ - The optional argument specifying the kind for the root of the composition.
+
+ - parameter _filter_ - A wildcard to filter builder types by their full name.
+The composition root base type.
+ - returns Reference to the setup continuation chain.
+
+See also _Builder``1(System.String,Pure.DI.RootKinds)_.
+
+</blockquote></details>
+
+
+<details><summary>Method Hint(Pure.DI.Hint,System.String)</summary><blockquote>
+
+Defines a hint for fine-tuning code generation.
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Resolve, "Off");
+            
+```
+
+
+ - parameter _hint_ - The hint type.
+
+ - parameter _value_ - The hint value.
+
+ - returns Reference to the setup continuation chain.
+
+See also _Hint_.
+
+</blockquote></details>
+
+
+<details><summary>Method Accumulate``2(Pure.DI.Lifetime[])</summary><blockquote>
+
+Registers an accumulator for instances.
+            
+```c#
+
+DI.Setup("Composition")
+                .Accumulate<IDisposable, MyAccumulator>(Lifetime.Transient);
+            
+```
+
+
+ - parameter _lifetimes_ - _Lifetime_ of the instances to be accumulated. Instances with lifetime _Singleton_, _Scoped_, or _PerResolve_ only accumulate in an accumulator that is NOT lazily created.
+The type of instance. All instances that can be cast to this type will be aacumulated.The type of accumulator. It must have a public constructor without parameters and a  `Add`  method with a single argument that allows you to add an instance of type .
+ - returns Reference to the setup continuation chain.
+
+See also _Lifetime_.
+
+</blockquote></details>
+
+
+<details><summary>Method GenericTypeArgument``1</summary><blockquote>
+
+Specifies a custom generic type argument.
+            
+```c#
+
+interface TTMy;
+             
+            DI.Setup("Composition")
+                .GenericTypeArgument<TTMy>()
+                .Bind<IDependency<TTMy>>().To<Dependency<TTMy>>();
+            
+```
+
+The generic type marker.
+ - returns Reference to the setup continuation chain.
+
+See also _GenericTypeArgumentAttribute``1_.
+
+</blockquote></details>
+
+
+</blockquote></details>
+
+
+<details><summary>IContext</summary><blockquote>
+
+Injection context. Cannot be used outside of the binding setup.
+            
+<details><summary>Property Tag</summary><blockquote>
+
+The tag that was used to inject the current object in the object graph. Cannot be used outside of the binding setup. See also _Tags(System.Object[])_
+```c#
+
+DI.Setup("Composition")
+                .Bind<Lazy<TT>>()
+                .To(ctx =>
+                {
+                    ctx.Inject<Func<TT>>(ctx.Tag, out var func);
+                    return new Lazy<TT>(func, false);
+                };
+            
+```
+
+
+See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+
+See also _Tags(System.Object[])_.
+
+</blockquote></details>
+
+
+<details><summary>Property ConsumerTypes</summary><blockquote>
+
+The types of consumers for which the instance is created. Cannot be used outside of the binding setup. Guaranteed to contain at least one element.
+            
+See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+
+</blockquote></details>
+
+
+<details><summary>Method Inject``1(``0@)</summary><blockquote>
+
+Injects an instance of type  `T` . Cannot be used outside of the binding setup.
+             
+```c#
+
+DI.Setup("Composition")
+                 .Bind<IService>()
+                 To(ctx =>
+                 {
+                     ctx.Inject<IDependency>(out var dependency);
+                     return new Service(dependency);
+                 })
+             
+```
+
+
+             and another example:
+```c#
+
+DI.Setup("Composition")
+                 .Bind<IService>()
+                 To(ctx =>
+                 {
+                     // Builds up an instance with all necessary dependencies
+                     ctx.Inject<Service>(out var service);
+            
+             
+                     service.Initialize();
+                     return service;
+                 })
+             
+```
+
+
+ - parameter _value_ - Injectable instance.
+.
+             Instance type.
+See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+
+</blockquote></details>
+
+
+<details><summary>Method Inject``1(System.Object,``0@)</summary><blockquote>
+
+Injects an instance of type  `T`  marked with a tag. Cannot be used outside of the binding setup.
+            
+```c#
+
+DI.Setup("Composition")
+                .Bind<IService>()
+                To(ctx =>
+                {
+                    ctx.Inject<IDependency>("MyTag", out var dependency);
+                    return new Service(dependency);
+                })
+            
+```
+
+
+ - parameter _tag_ - The injection tag. See also _Tags(System.Object[])_
+.
+            
+ - parameter _value_ - Injectable instance.
+.
+            Instance type.
+See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+
+</blockquote></details>
+
+
+<details><summary>Method BuildUp``1(``0)</summary><blockquote>
+
+Builds up of an existing object. In other words, injects the necessary dependencies via methods, properties, or fields into an existing object. Cannot be used outside of the binding setup.
+             
+```c#
+
+DI.Setup("Composition")
+                 .Bind<IService>()
+                 To(ctx =>
+                 {
+                     var service = new Service();
+                     // Initialize an instance with all necessary dependencies
+                     ctx.BuildUp(service);
+            
+             
+                     return service;
+                 })
+             
+```
+
+
+ - parameter _value_ - An existing object for which the injection(s) is to be performed.
+Object type.
+See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+
+</blockquote></details>
+
+
+</blockquote></details>
+
+
+<details><summary>IOwned</summary><blockquote>
+
+This abstraction allows a disposable object to be disposed of.
+            
+See also _Owned_.
+
+See also _Accumulate``2(Pure.DI.Lifetime[])_.
+
+</blockquote></details>
+
+
+<details><summary>IResolver`2</summary><blockquote>
+
+Abstract dependency resolver.
+            The composition type.The type of the composition root.
+<details><summary>Method Resolve(`0)</summary><blockquote>
+
+Resolves the composition root.
+            
+ - parameter _composite_ - The composition.
+
+ - returns A composition root.
+
+See also _Setup(System.String,Pure.DI.CompositionKind)_.
+
+</blockquote></details>
+
+
+<details><summary>Method ResolveByTag(`0,System.Object)</summary><blockquote>
+
+Resolves the composition root by type and tag.
+            
+ - parameter _composite_ - The composition.
+
+ - parameter _tag_ - The tag of a composition root.
+
+ - returns A composition root.
+
+See also _Setup(System.String,Pure.DI.CompositionKind)_.
+
+</blockquote></details>
+
+
+</blockquote></details>
+
+
+<details><summary>Lifetime</summary><blockquote>
+
+Binding lifetimes.
+            
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>();
+            
+```
+
+
+See also _Setup(System.String,Pure.DI.CompositionKind)_.
+
+See also _As(Pure.DI.Lifetime)_.
+
+See also _DefaultLifetime(Pure.DI.Lifetime)_.
+
+See also _DefaultLifetime``1(Pure.DI.Lifetime,System.Object[])_.
+
+<details><summary>Field Transient</summary><blockquote>
+
+Specifies to create a new dependency instance each time. This is the default value and can be omitted.
+            
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency>().As(Lifetime.Transient).To<Dependency>();
+            
+```
+
+
+            This is the default lifetime, it can be omitted, for example:
+            
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+</blockquote></details>
+
+
+<details><summary>Field Singleton</summary><blockquote>
+
+Ensures that there will be a single instance of the dependency for each composition.
+            
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>();
+            
+```
+
+
+</blockquote></details>
+
+
+<details><summary>Field PerResolve</summary><blockquote>
+
+Guarantees that there will be a single instance of the dependency for each root of the composition.
+            
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency>().As(Lifetime.PerResolve).To<Dependency>();
+            
+```
+
+
+</blockquote></details>
+
+
+<details><summary>Field PerBlock</summary><blockquote>
+
+Does not guarantee that there will be a single instance of the dependency for each root of the composition, but is useful to reduce the number of instances of type.
+            
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency>().As(Lifetime.PerBlock).To<Dependency>();
+            
+```
+
+
+</blockquote></details>
+
+
+<details><summary>Field Scoped</summary><blockquote>
+
+Ensures that there will be a single instance of the dependency for each scope.
+            
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>();
+            
+```
+
+
+</blockquote></details>
+
+
+</blockquote></details>
+
+
+<details><summary>OrdinalAttribute</summary><blockquote>
+
+Represents an ordinal attribute.
+             This attribute is part of the API, but you can use your own attribute at any time, and this allows you to define them in the assembly and namespace you want.
+             For constructors, it defines the sequence of attempts to use a particular constructor to create an object:
+             
+```c#
+
+class Service : IService
+             {
+                 private readonly string _name;
+             
+            
+                 [Ordinal(1)]
+                 public Service(IDependency dependency) =>
+                     _name = "with dependency";
+             
+            
+                 [Ordinal(0)]
+                 public Service(string name) => _name = name;
+             }
+             
+```
+
+
+             For fields, properties and methods, it specifies to perform dependency injection and defines the sequence:
+             
+```c#
+
+class Person : IPerson
+             {
+                 private readonly string _name = "";
+             
+                 [Ordinal(0)]
+                 public int Id;
+            
+             
+                 [Ordinal(1)]
+                 public string FirstName
+                 {
+                     set
+                     {
+                         _name = value;
+                     }
+                 }
+             
+            
+                 public IDependency? Dependency { get; private set; }
+             
+            
+                 [Ordinal(2)]
+                 public void SetDependency(IDependency dependency) =>
+                     Dependency = dependency;
+             }
+             
+```
+
+
+See also _DependencyAttribute_.
+
+See also _TagAttribute_.
+
+See also _TypeAttribute_.
+
+<details><summary>Constructor OrdinalAttribute(System.Int32)</summary><blockquote>
+
+Creates an attribute instance.
+            
+ - parameter _ordinal_ - The injection ordinal.
+
+</blockquote></details>
+
+
+</blockquote></details>
+
+
+<details><summary>Owned</summary><blockquote>
+
+Performs accumulation and disposal of disposable objects.
+            
+See also _IOwned_.
+
+See also _Accumulate``2(Pure.DI.Lifetime[])_.
+
+<details><summary>Method Dispose</summary><blockquote>
+
+
+</blockquote></details>
+
+
+</blockquote></details>
+
+
+<details><summary>Owned`1</summary><blockquote>
+
+Contains a value and gives the ability to dispose of that value.
+            Type of value owned.
+See also _IOwned_.
+
+See also _Owned_.
+
+See also _Accumulate``2(Pure.DI.Lifetime[])_.
+
+<details><summary>Field Value</summary><blockquote>
+
+Own value.
+            
+</blockquote></details>
+
+
+<details><summary>Constructor Owned`1(`0,Pure.DI.IOwned)</summary><blockquote>
+
+Creates a new instance.
+            
+ - parameter _value_ - Own value.
+
+ - parameter _owned_ - The abstraction allows a disposable object to be disposed of.
+
+</blockquote></details>
+
+
+<details><summary>Method Dispose</summary><blockquote>
+
+
+</blockquote></details>
+
+
+</blockquote></details>
+
+
+<details><summary>Pair`2</summary><blockquote>
+
+For internal use.
+            
+</blockquote></details>
+
+
+<details><summary>RootKinds</summary><blockquote>
+
+Determines a kind of root of the composition.
+            
+See also _Root``1(System.String,System.Object,Pure.DI.RootKinds)_.
+
+See also _RootBind``1(System.String,Pure.DI.RootKinds,System.Object[])_.
+
+See also _Roots``1(System.String,Pure.DI.RootKinds,System.String)_.
+
+See also _Builder``1(System.String,Pure.DI.RootKinds)_.
+
+See also _Builders``1(System.String,Pure.DI.RootKinds,System.String)_.
+
+<details><summary>Field Default</summary><blockquote>
+
+Specifies to use the default composition root kind.
+            
+</blockquote></details>
+
+
+<details><summary>Field Public</summary><blockquote>
+
+Specifies to use a  `public`  access modifier for the root of the composition.
+            
+</blockquote></details>
+
+
+<details><summary>Field Internal</summary><blockquote>
+
+Specifies to use a  `internal`  access modifier for the root of the composition.
+            
+</blockquote></details>
+
+
+<details><summary>Field Private</summary><blockquote>
+
+Specifies to use a  `private`  access modifier for the root of the composition.
+            
+</blockquote></details>
+
+
+<details><summary>Field Property</summary><blockquote>
+
+Specifies to create a composition root as a property.
+            
+</blockquote></details>
+
+
+<details><summary>Field Method</summary><blockquote>
+
+Specifies to create a composition root as a method.
+            
+</blockquote></details>
+
+
+<details><summary>Field Static</summary><blockquote>
+
+Specifies to create a static root of the composition.
+            
+</blockquote></details>
+
+
+<details><summary>Field Partial</summary><blockquote>
+
+Specifies to create a partial root of the composition.
+            
+</blockquote></details>
+
+
+<details><summary>Field Exposed</summary><blockquote>
+
+Specifies to create a exposed root of the composition.
+            
+See also _BindAttribute_.
+
+</blockquote></details>
+
+
+<details><summary>Field Protected</summary><blockquote>
+
+Specifies to use a  `protected`  access modifier for the root of the composition.
+            
+</blockquote></details>
+
+
+</blockquote></details>
+
+
+<details><summary>Strings</summary><blockquote>
+
+A strongly-typed resource class, for looking up localized strings, etc.
+            
+<details><summary>Property ResourceManager</summary><blockquote>
+
+Returns the cached ResourceManager instance used by this class.
+            
+</blockquote></details>
+
+
+<details><summary>Property Culture</summary><blockquote>
+
+Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_AccumulatorCannotAccumulateGenericTypeMarker</summary><blockquote>
+
+Looks up a localized string similar to The accumulator cannot accumulate instances based on a generic type marker..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_AccumulatorTypeCannotBeGenericTypeMarker</summary><blockquote>
+
+Looks up a localized string similar to The accumulator type cannot be based on a generic type marker..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_AsynchronousFactoryWithAsyncNotSupported</summary><blockquote>
+
+Looks up a localized string similar to Asynchronous factory with the async keyword is not supported..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_CannotBuildDependencyGraph</summary><blockquote>
+
+Looks up a localized string similar to Cannot build a dependency graph..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_ClassArgumentTypeCannotBeGenericTypeMarker</summary><blockquote>
+
+Looks up a localized string similar to The class argument type cannot be based on a generic type marker..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_DependencyGraphConstractionFailure</summary><blockquote>
+
+Looks up a localized string similar to It is not possible to construct a dependency graph..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_InvalidBinding</summary><blockquote>
+
+Looks up a localized string similar to The binding is defined incorrectly..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_InvalidBindingDueToCompilationError</summary><blockquote>
+
+Looks up a localized string similar to Invalid binding due to compilation error..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_InvalidBuildersType</summary><blockquote>
+
+Looks up a localized string similar to Invalid builders type..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_InvalidBuilderType</summary><blockquote>
+
+Looks up a localized string similar to Invalid builder type..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_InvalidNumberOfInitializers</summary><blockquote>
+
+Looks up a localized string similar to Invalid number of initializers..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_InvalidRootsRype</summary><blockquote>
+
+Looks up a localized string similar to Invalid roots type..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_InvalidRootType</summary><blockquote>
+
+Looks up a localized string similar to Invalid root type..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_Template_AttributeMemberCannotBeProcessed</summary><blockquote>
+
+Looks up a localized string similar to {0} of the type {1} cannot be processed because it is marked with multiple mutually exclusive attributes..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_Template_CannotBeInstantiatedNoAccessibleConstructor</summary><blockquote>
+
+Looks up a localized string similar to An instance of {0} cannot be instantiated due to no accessible constructor available..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_Template_CannotConstructAbstractType</summary><blockquote>
+
+Looks up a localized string similar to An instance of {0} cannot be constructed because it is an abstract type..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_Template_CannotFindSetup</summary><blockquote>
+
+Looks up a localized string similar to Cannot find setup "{0}"..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_Template_CannotUseContextDirectly</summary><blockquote>
+
+Looks up a localized string similar to It is not possible to use "{0}" directly. Only its methods or properties can be used..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_Template_CyclicDependency</summary><blockquote>
+
+Looks up a localized string similar to Cyclic dependency has been found: {0}..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_Template_InvalidArgumentName</summary><blockquote>
+
+Looks up a localized string similar to Invalid argument name "{0}"..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_Template_InvalidAttributeArgumentPosition</summary><blockquote>
+
+Looks up a localized string similar to The argument position {0} of attribute {1} is out of range [0..{2}]..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_Template_InvalidCompositionTypeName</summary><blockquote>
+
+Looks up a localized string similar to Invalid composition type name "{0}"..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_Template_InvalidIdentifier</summary><blockquote>
+
+Looks up a localized string similar to Invalid identifier "{0}"..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_Template_InvalidRegularExpression</summary><blockquote>
+
+Looks up a localized string similar to Invalid regular expression {0}: "{1}"..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_Template_InvalidRootName</summary><blockquote>
+
+Looks up a localized string similar to Invalid root name "{0}"..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_Template_InvalidWildcard</summary><blockquote>
+
+Looks up a localized string similar to Invalid wildcard {0}: "{1}"..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_Template_LifetimeDoesNotSupportCyclicDependencies</summary><blockquote>
+
+Looks up a localized string similar to {0} lifetime does not support cyclic dependencies..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_Template_MaximumNumberOfIterations</summary><blockquote>
+
+Looks up a localized string similar to The maximum number of iterations {0} was exceeded  was exceeded when building the optimal dependency graph. Try to specify the dependency graph more accurately..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_Template_MustBeApiCall</summary><blockquote>
+
+Looks up a localized string similar to {0} must be a constant value of type {1} or a special API call..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_Template_MustBeValueOfType</summary><blockquote>
+
+Looks up a localized string similar to {0} must be a non-null value of type {1}..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_Template_NoAccessibleConstructor</summary><blockquote>
+
+Looks up a localized string similar to There is no accessible non-static constructor of type {0} with an argument matching "{1}"..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_Template_NoAccessibleFieldOrProperty</summary><blockquote>
+
+Looks up a localized string similar to There is no accessible non-static writable field or property matched with "{0}" of {1}..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_Template_NoAccessibleMethod</summary><blockquote>
+
+Looks up a localized string similar to There is no accessible non-static method of type {0} with a name matching "{1}" an argument matching "{2}"..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_Template_NotImplement</summary><blockquote>
+
+Looks up a localized string similar to {0} does not implement {1}..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_Template_NotSupported</summary><blockquote>
+
+Looks up a localized string similar to {0} is not supported..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_Template_NoTypeForWildcard</summary><blockquote>
+
+Looks up a localized string similar to There is no type found that inherits from {0} whose name matches the "{1}" filter..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_Template_RootDuplicate</summary><blockquote>
+
+Looks up a localized string similar to The composition root "{0}" duplicates the previously declared root "{1}"..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_Template_TooLargeComposition</summary><blockquote>
+
+Looks up a localized string similar to The composition is too large. Stopped on the #{0} dependency..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_Template_TypeWithLifetimeRequiresDirectOrTransitiveInjection</summary><blockquote>
+
+Looks up a localized string similar to Type {0} with lifetime {1} requires direct or transitive dependency injection of type {2} with lifetime {3}, which can lead to data leakage and unexpected behavior..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_Template_UnableToResolve</summary><blockquote>
+
+Looks up a localized string similar to Unable to resolve "{0}" in {1}..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_Template_UnsupportLanguage</summary><blockquote>
+
+Looks up a localized string similar to {0} does not support C# {1}. Please use language version {2} or greater..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_TooManyTypeParameters</summary><blockquote>
+
+Looks up a localized string similar to Too many type parameters..
+            
+</blockquote></details>
+
+
+<details><summary>Property Error_UnhandledError</summary><blockquote>
+
+Looks up a localized string similar to An unhandled error has occurred..
+            
+</blockquote></details>
+
+
+<details><summary>Property Info_CodeGenerationAborted</summary><blockquote>
+
+Looks up a localized string similar to Code generation aborted..
+            
+</blockquote></details>
+
+
+<details><summary>Property Warning_BindingIsNotUsed</summary><blockquote>
+
+Looks up a localized string similar to Binding is not used..
+            
+</blockquote></details>
+
+
+<details><summary>Property Warning_NoRoots</summary><blockquote>
+
+Looks up a localized string similar to None of the composition roots are declared. Add at least one root..
+            
+</blockquote></details>
+
+
+<details><summary>Property Warning_Template_BindingHasBeenOverridden</summary><blockquote>
+
+Looks up a localized string similar to The binding for {0} has been overridden..
+            
+</blockquote></details>
+
+
+<details><summary>Property Warning_Template_InjectionSiteIsNotUsed</summary><blockquote>
+
+Looks up a localized string similar to "{0}" of the tag on the injection site is not used..
+            
+</blockquote></details>
+
+
+<details><summary>Property Warning_Template_RootCannotBeResolvedByResolveMethods</summary><blockquote>
+
+Looks up a localized string similar to The root {0} cannot be resolved using Resolve methods due it has arguments {1}, so an exception will be thrown when trying to do it..
+            
+</blockquote></details>
+
+
+</blockquote></details>
+
+
+<details><summary>Tag</summary><blockquote>
+
+Represents well known tags.
+            
+See also _Bind``1(System.Object[])_.
+
+See also _Tags(System.Object[])_.
+
+<details><summary>Field Unique</summary><blockquote>
+
+Unique tag.
+            Begins the definition of the binding.
+            
+```c#
+
+DI.Setup("Composition")
+                .Bind<IService>(Tag.Unique).To<Service1>()
+                .Bind<IService>(Tag.Unique).To<Service1>()
+                .Root<IEnumerable<IService>>("Root");
+            
+```
+
+
+</blockquote></details>
+
+
+<details><summary>Field Type</summary><blockquote>
+
+Tag of target implementation type.
+            
+```c#
+
+DI.Setup("Composition")
+                .Bind<IService>(Tag.Type).To<Service>()
+                .Root<IService>("Root", typeof(Service));
+            
+```
+
+
+</blockquote></details>
+
+
+<details><summary>Method On(System.String[])</summary><blockquote>
+
+This tag allows you to determine which binding will be used for explicit injection for a particular injection site.
+            
+```c#
+
+DI.Setup("Composition")
+                .Bind(Tag.On("MyNamespace.Service.Service:dep"))
+                    .To<Dependency>()
+                .Bind().To<Service>()
+                .Root<IService>("Root");
+            
+```
+
+
+ - parameter _injectionSites_ - Set of labels for inection each, must be specified in a special format: <namespace>.<type>.<member>[:argument]. The argument is specified only for the constructor and methods. The wildcards '*' and '?' are supported. All names are case-sensitive. The global namespace prefix 'global::' must be omitted.
+
+</blockquote></details>
+
+
+<details><summary>Method OnConstructorArg``1(System.String)</summary><blockquote>
+
+This tag allows you to determine which binding will be used for explicit injection for a particular constructor argument.
+            
+```c#
+
+DI.Setup("Composition")
+                .Bind(Tag.OnConstructorArg<Service>("dep"))
+                    .To<Dependency>()
+                .Bind().To<Service>()
+                .Root<IService>("Root");
+            
+```
+
+
+ - parameter _argName_ - The name of the constructor argument.
+
+</blockquote></details>
+
+
+<details><summary>Method OnMember``1(System.String)</summary><blockquote>
+
+This tag allows you to define which binding will be used for explicit injection for property or field of the type.
+            
+```c#
+
+DI.Setup("Composition")
+                .Bind(Tag.OnMember<Service>("DepProperty"))
+                    .To<Dependency>()
+                .Bind().To<Service>()
+                .Root<IService>("Root");
+            
+```
+
+
+ - parameter _memberName_ - The name of the type member.
+
+</blockquote></details>
+
+
+<details><summary>Method OnMethodArg``1(System.String,System.String)</summary><blockquote>
+
+This tag allows you to determine which binding will be used for explicit injection for a particular method argument.
+            
+```c#
+
+DI.Setup("Composition")
+                .Bind(Tag.OnMethodArg<Service>("DoSomething", "state"))
+                    .To<Dependency>()
+                .Bind().To<Service>()
+                .Root<IService>("Root");
+            
+```
+
+
+ - parameter _methodName_ - The name of the type method.
+
+ - parameter _argName_ - The name of the method argument.
+
+</blockquote></details>
+
+
+<details><summary>Field UsingDeclarations</summary><blockquote>
+
+Atomically generated smart tag with value "UsingDeclarations".
+            It's used for:
+            
+            class _Generator__CompositionClassBuilder_ <-- _IBuilder`2_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field GenericType</summary><blockquote>
+
+Atomically generated smart tag with value "GenericType".
+            It's used for:
+            
+            class _Generator__TypeResolver_ <-- _IIdGenerator_(GenericType) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
+<details><summary>Field Injection</summary><blockquote>
+
+Atomically generated smart tag with value "Injection".
+            
+</blockquote></details>
+
+
+<details><summary>Field CompositionClass</summary><blockquote>
+
+Atomically generated smart tag with value "CompositionClass".
+            It's used for:
+            
+            class _Generator__CodeBuilder_ <-- _IBuilder`2_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field UniqueTag</summary><blockquote>
+
+Atomically generated smart tag with value "UniqueTag".
+            It's used for:
+            
+            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
+</blockquote></details>
+
+
+<details><summary>TagAttribute</summary><blockquote>
+
+Represents a tag attribute overriding an injection tag. The tag can be a constant, a type, or a value of an enumerated type.
+             This attribute is part of the API, but you can use your own attribute at any time, and this allows you to define them in the assembly and namespace you want.
+             Sometimes it's important to take control of building a dependency graph. For example, when there are multiple implementations of the same contract. In this case, tags will help:
+             
+```c#
+
+interface IDependency { }
+             
+            
+             class AbcDependency : IDependency { }
+             
+            
+             class XyzDependency : IDependency { }
+             
+            
+             class Dependency : IDependency { }
+             
+            
+             interface IService
+             {
+                 IDependency Dependency1 { get; }
+             
+            
+                 IDependency Dependency2 { get; }
+             }
+            
+             
+             class Service : IService
+             {
+                 public Service(
+                     [Tag("Abc")] IDependency dependency1,
+                     [Tag("Xyz")] IDependency dependency2)
+                 {
+                     Dependency1 = dependency1;
+                     Dependency2 = dependency2;
+                 }
+            
+                 public IDependency Dependency1 { get; }
+            
+             
+                 public IDependency Dependency2 { get; }
+             }
+            
+             
+             DI.Setup("Composition")
+                 .Bind<IDependency>("Abc").To<AbcDependency>()
+                 .Bind<IDependency>("Xyz").To<XyzDependency>()
+                 .Bind<IService>().To<Service>().Root<IService>("Root");
+             
+```
+
+
+See also _DependencyAttribute_.
+
+See also _OrdinalAttribute_.
+
+See also _TypeAttribute_.
+
+<details><summary>Constructor TagAttribute(System.Object)</summary><blockquote>
+
+Creates an attribute instance.
+            
+ - parameter _tag_ - The injection tag. See also _Tags(System.Object[])_
+.
+        
+</blockquote></details>
+
+
+</blockquote></details>
+
+
+<details><summary>TT</summary><blockquote>
+
+Represents the generic type arguments marker for a reference type.
+            
+</blockquote></details>
+
+
+<details><summary>TT1</summary><blockquote>
+
+Represents the generic type arguments marker for a reference type.
+            
+</blockquote></details>
+
+
+<details><summary>TT10</summary><blockquote>
+
+Represents the generic type arguments marker for a reference type.
+            
+</blockquote></details>
+
+
+<details><summary>TT11</summary><blockquote>
+
+Represents the generic type arguments marker for a reference type.
+            
+</blockquote></details>
+
+
+<details><summary>TT12</summary><blockquote>
+
+Represents the generic type arguments marker for a reference type.
+            
+</blockquote></details>
+
+
+<details><summary>TT13</summary><blockquote>
+
+Represents the generic type arguments marker for a reference type.
+            
+</blockquote></details>
+
+
+<details><summary>TT14</summary><blockquote>
+
+Represents the generic type arguments marker for a reference type.
+            
+</blockquote></details>
+
+
+<details><summary>TT15</summary><blockquote>
+
+Represents the generic type arguments marker for a reference type.
+            
+</blockquote></details>
+
+
+<details><summary>TT16</summary><blockquote>
+
+Represents the generic type arguments marker for a reference type.
+            
+</blockquote></details>
+
+
+<details><summary>TT2</summary><blockquote>
+
+Represents the generic type arguments marker for a reference type.
+            
+</blockquote></details>
+
+
+<details><summary>TT3</summary><blockquote>
+
+Represents the generic type arguments marker for a reference type.
+            
+</blockquote></details>
+
+
+<details><summary>TT4</summary><blockquote>
+
+Represents the generic type arguments marker for a reference type.
+            
+</blockquote></details>
+
+
+<details><summary>TT5</summary><blockquote>
+
+Represents the generic type arguments marker for a reference type.
+            
+</blockquote></details>
+
+
+<details><summary>TT6</summary><blockquote>
+
+Represents the generic type arguments marker for a reference type.
+            
+</blockquote></details>
+
+
+<details><summary>TT7</summary><blockquote>
+
+Represents the generic type arguments marker for a reference type.
+            
+</blockquote></details>
+
+
+<details><summary>TT8</summary><blockquote>
+
+Represents the generic type arguments marker for a reference type.
+            
+</blockquote></details>
+
+
+<details><summary>TT9</summary><blockquote>
+
+Represents the generic type arguments marker for a reference type.
+            
+</blockquote></details>
+
+
+<details><summary>TTCollection`1</summary><blockquote>
+
+Represents the generic type arguments marker for _ICollection>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTCollection1`1</summary><blockquote>
+
+Represents the generic type arguments marker for _ICollection>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTCollection2`1</summary><blockquote>
+
+Represents the generic type arguments marker for _ICollection>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTCollection3`1</summary><blockquote>
+
+Represents the generic type arguments marker for _ICollection>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTCollection4`1</summary><blockquote>
+
+Represents the generic type arguments marker for _ICollection>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTCollection5`1</summary><blockquote>
+
+Represents the generic type arguments marker for _ICollection>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTCollection6`1</summary><blockquote>
+
+Represents the generic type arguments marker for _ICollection>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTCollection7`1</summary><blockquote>
+
+Represents the generic type arguments marker for _ICollection>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTCollection8`1</summary><blockquote>
+
+Represents the generic type arguments marker for _ICollection>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTComparable</summary><blockquote>
+
+Represents the generic type arguments marker for _IComparable_.
+            
+</blockquote></details>
+
+
+<details><summary>TTComparable`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IComparable>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTComparable1</summary><blockquote>
+
+Represents the generic type arguments marker for _IComparable_.
+            
+</blockquote></details>
+
+
+<details><summary>TTComparable1`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IComparable>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTComparable2</summary><blockquote>
+
+Represents the generic type arguments marker for _IComparable_.
+            
+</blockquote></details>
+
+
+<details><summary>TTComparable2`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IComparable>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTComparable3</summary><blockquote>
+
+Represents the generic type arguments marker for _IComparable_.
+            
+</blockquote></details>
+
+
+<details><summary>TTComparable3`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IComparable>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTComparable4</summary><blockquote>
+
+Represents the generic type arguments marker for _IComparable_.
+            
+</blockquote></details>
+
+
+<details><summary>TTComparable4`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IComparable>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTComparable5</summary><blockquote>
+
+Represents the generic type arguments marker for _IComparable_.
+            
+</blockquote></details>
+
+
+<details><summary>TTComparable5`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IComparable>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTComparable6</summary><blockquote>
+
+Represents the generic type arguments marker for _IComparable_.
+            
+</blockquote></details>
+
+
+<details><summary>TTComparable6`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IComparable>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTComparable7</summary><blockquote>
+
+Represents the generic type arguments marker for _IComparable_.
+            
+</blockquote></details>
+
+
+<details><summary>TTComparable7`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IComparable>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTComparable8</summary><blockquote>
+
+Represents the generic type arguments marker for _IComparable_.
+            
+</blockquote></details>
+
+
+<details><summary>TTComparable8`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IComparable>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTComparer`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IComparer>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTComparer1`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IComparer>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTComparer2`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IComparer>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTComparer3`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IComparer>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTComparer4`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IComparer>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTComparer5`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IComparer>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTComparer6`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IComparer>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTComparer7`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IComparer>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTComparer8`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IComparer>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTDictionary`2</summary><blockquote>
+
+Represents the generic type arguments marker for _IDictionary>TKey, TValue>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTDictionary1`2</summary><blockquote>
+
+Represents the generic type arguments marker for _IDictionary>TKey, TValue>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTDictionary2`2</summary><blockquote>
+
+Represents the generic type arguments marker for _IDictionary>TKey, TValue>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTDictionary3`2</summary><blockquote>
+
+Represents the generic type arguments marker for _IDictionary>TKey, TValue>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTDictionary4`2</summary><blockquote>
+
+Represents the generic type arguments marker for _IDictionary>TKey, TValue>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTDictionary5`2</summary><blockquote>
+
+Represents the generic type arguments marker for _IDictionary>TKey, TValue>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTDictionary6`2</summary><blockquote>
+
+Represents the generic type arguments marker for _IDictionary>TKey, TValue>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTDictionary7`2</summary><blockquote>
+
+Represents the generic type arguments marker for _IDictionary>TKey, TValue>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTDictionary8`2</summary><blockquote>
+
+Represents the generic type arguments marker for _IDictionary>TKey, TValue>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTDisposable</summary><blockquote>
+
+Represents the generic type arguments marker for _IDisposable_.
+            
+</blockquote></details>
+
+
+<details><summary>TTDisposable1</summary><blockquote>
+
+Represents the generic type arguments marker for _IDisposable_.
+            
+</blockquote></details>
+
+
+<details><summary>TTDisposable2</summary><blockquote>
+
+Represents the generic type arguments marker for _IDisposable_.
+            
+</blockquote></details>
+
+
+<details><summary>TTDisposable3</summary><blockquote>
+
+Represents the generic type arguments marker for _IDisposable_.
+            
+</blockquote></details>
+
+
+<details><summary>TTDisposable4</summary><blockquote>
+
+Represents the generic type arguments marker for _IDisposable_.
+            
+</blockquote></details>
+
+
+<details><summary>TTDisposable5</summary><blockquote>
+
+Represents the generic type arguments marker for _IDisposable_.
+            
+</blockquote></details>
+
+
+<details><summary>TTDisposable6</summary><blockquote>
+
+Represents the generic type arguments marker for _IDisposable_.
+            
+</blockquote></details>
+
+
+<details><summary>TTDisposable7</summary><blockquote>
+
+Represents the generic type arguments marker for _IDisposable_.
+            
+</blockquote></details>
+
+
+<details><summary>TTDisposable8</summary><blockquote>
+
+Represents the generic type arguments marker for _IDisposable_.
+            
+</blockquote></details>
+
+
+<details><summary>TTE</summary><blockquote>
+
+Represents the generic type arguments marker for a enum type.
+            
+</blockquote></details>
+
+
+<details><summary>TTE1</summary><blockquote>
+
+Represents the generic type arguments marker for a enum type.
+            
+</blockquote></details>
+
+
+<details><summary>TTE10</summary><blockquote>
+
+Represents the generic type arguments marker for a enum type.
+            
+</blockquote></details>
+
+
+<details><summary>TTE11</summary><blockquote>
+
+Represents the generic type arguments marker for a enum type.
+            
+</blockquote></details>
+
+
+<details><summary>TTE12</summary><blockquote>
+
+Represents the generic type arguments marker for a enum type.
+            
+</blockquote></details>
+
+
+<details><summary>TTE13</summary><blockquote>
+
+Represents the generic type arguments marker for a enum type.
+            
+</blockquote></details>
+
+
+<details><summary>TTE14</summary><blockquote>
+
+Represents the generic type arguments marker for a enum type.
+            
+</blockquote></details>
+
+
+<details><summary>TTE15</summary><blockquote>
+
+Represents the generic type arguments marker for a enum type.
+            
+</blockquote></details>
+
+
+<details><summary>TTE16</summary><blockquote>
+
+Represents the generic type arguments marker for a enum type.
+            
+</blockquote></details>
+
+
+<details><summary>TTE2</summary><blockquote>
+
+Represents the generic type arguments marker for a enum type.
+            
+</blockquote></details>
+
+
+<details><summary>TTE3</summary><blockquote>
+
+Represents the generic type arguments marker for a enum type.
+            
+</blockquote></details>
+
+
+<details><summary>TTE4</summary><blockquote>
+
+Represents the generic type arguments marker for a enum type.
+            
+</blockquote></details>
+
+
+<details><summary>TTE5</summary><blockquote>
+
+Represents the generic type arguments marker for a enum type.
+            
+</blockquote></details>
+
+
+<details><summary>TTE6</summary><blockquote>
+
+Represents the generic type arguments marker for a enum type.
+            
+</blockquote></details>
+
+
+<details><summary>TTE7</summary><blockquote>
+
+Represents the generic type arguments marker for a enum type.
+            
+</blockquote></details>
+
+
+<details><summary>TTE8</summary><blockquote>
+
+Represents the generic type arguments marker for a enum type.
+            
+</blockquote></details>
+
+
+<details><summary>TTE9</summary><blockquote>
+
+Represents the generic type arguments marker for a enum type.
+            
+</blockquote></details>
+
+
+<details><summary>TTEnumerable`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IEnumerable>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTEnumerable1`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IEnumerable>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTEnumerable2`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IEnumerable>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTEnumerable3`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IEnumerable>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTEnumerable4`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IEnumerable>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTEnumerable5`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IEnumerable>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTEnumerable6`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IEnumerable>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTEnumerable7`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IEnumerable>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTEnumerable8`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IEnumerable>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTEnumerator`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IEnumerator>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTEnumerator1`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IEnumerator>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTEnumerator2`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IEnumerator>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTEnumerator3`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IEnumerator>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTEnumerator4`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IEnumerator>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTEnumerator5`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IEnumerator>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTEnumerator6`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IEnumerator>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTEnumerator7`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IEnumerator>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTEnumerator8`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IEnumerator>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTEqualityComparer`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IEqualityComparer>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTEqualityComparer1`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IEqualityComparer>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTEqualityComparer2`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IEqualityComparer>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTEqualityComparer3`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IEqualityComparer>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTEqualityComparer4`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IEqualityComparer>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTEqualityComparer5`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IEqualityComparer>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTEqualityComparer6`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IEqualityComparer>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTEqualityComparer7`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IEqualityComparer>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTEqualityComparer8`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IEqualityComparer>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTEquatable`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IEquatable>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTEquatable1`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IEquatable>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTEquatable2`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IEquatable>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTEquatable3`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IEquatable>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTEquatable4`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IEquatable>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTEquatable5`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IEquatable>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTEquatable6`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IEquatable>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTEquatable7`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IEquatable>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTEquatable8`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IEquatable>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTList`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IList>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTList1`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IList>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTList2`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IList>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTList3`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IList>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTList4`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IList>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTList5`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IList>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTList6`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IList>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTList7`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IList>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTList8`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IList>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTObservable`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IObservable>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTObservable1`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IObservable>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTObservable2`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IObservable>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTObservable3`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IObservable>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTObservable4`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IObservable>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTObservable5`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IObservable>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTObservable6`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IObservable>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTObservable7`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IObservable>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTObservable8`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IObservable>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTObserver`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IObserver>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTObserver1`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IObserver>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTObserver2`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IObserver>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTObserver3`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IObserver>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTObserver4`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IObserver>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTObserver5`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IObserver>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTObserver6`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IObserver>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTObserver7`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IObserver>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTObserver8`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IObserver>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTReadOnlyCollection`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IReadOnlyCollection>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTReadOnlyCollection1`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IReadOnlyCollection>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTReadOnlyCollection2`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IReadOnlyCollection>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTReadOnlyCollection3`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IReadOnlyCollection>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTReadOnlyCollection4`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IReadOnlyCollection>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTReadOnlyCollection5`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IReadOnlyCollection>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTReadOnlyCollection6`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IReadOnlyCollection>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTReadOnlyCollection7`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IReadOnlyCollection>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTReadOnlyCollection8`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IReadOnlyCollection>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTReadOnlyList`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IReadOnlyList>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTReadOnlyList1`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IReadOnlyList>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTReadOnlyList2`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IReadOnlyList>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTReadOnlyList3`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IReadOnlyList>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTReadOnlyList4`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IReadOnlyList>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTReadOnlyList5`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IReadOnlyList>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTReadOnlyList6`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IReadOnlyList>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTReadOnlyList7`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IReadOnlyList>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTReadOnlyList8`1</summary><blockquote>
+
+Represents the generic type arguments marker for _IReadOnlyList>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTS</summary><blockquote>
+
+Represents the generic type arguments marker for a value type.
+            
+</blockquote></details>
+
+
+<details><summary>TTS1</summary><blockquote>
+
+Represents the generic type arguments marker for a value type.
+            
+</blockquote></details>
+
+
+<details><summary>TTS10</summary><blockquote>
+
+Represents the generic type arguments marker for a value type.
+            
+</blockquote></details>
+
+
+<details><summary>TTS11</summary><blockquote>
+
+Represents the generic type arguments marker for a value type.
+            
+</blockquote></details>
+
+
+<details><summary>TTS12</summary><blockquote>
+
+Represents the generic type arguments marker for a value type.
+            
+</blockquote></details>
+
+
+<details><summary>TTS13</summary><blockquote>
+
+Represents the generic type arguments marker for a value type.
+            
+</blockquote></details>
+
+
+<details><summary>TTS14</summary><blockquote>
+
+Represents the generic type arguments marker for a value type.
+            
+</blockquote></details>
+
+
+<details><summary>TTS15</summary><blockquote>
+
+Represents the generic type arguments marker for a value type.
+            
+</blockquote></details>
+
+
+<details><summary>TTS16</summary><blockquote>
+
+Represents the generic type arguments marker for a value type.
+            
+</blockquote></details>
+
+
+<details><summary>TTS2</summary><blockquote>
+
+Represents the generic type arguments marker for a value type.
+            
+</blockquote></details>
+
+
+<details><summary>TTS3</summary><blockquote>
+
+Represents the generic type arguments marker for a value type.
+            
+</blockquote></details>
+
+
+<details><summary>TTS4</summary><blockquote>
+
+Represents the generic type arguments marker for a value type.
+            
+</blockquote></details>
+
+
+<details><summary>TTS5</summary><blockquote>
+
+Represents the generic type arguments marker for a value type.
+            
+</blockquote></details>
+
+
+<details><summary>TTS6</summary><blockquote>
+
+Represents the generic type arguments marker for a value type.
+            
+</blockquote></details>
+
+
+<details><summary>TTS7</summary><blockquote>
+
+Represents the generic type arguments marker for a value type.
+            
+</blockquote></details>
+
+
+<details><summary>TTS8</summary><blockquote>
+
+Represents the generic type arguments marker for a value type.
+            
+</blockquote></details>
+
+
+<details><summary>TTS9</summary><blockquote>
+
+Represents the generic type arguments marker for a value type.
+            
+</blockquote></details>
+
+
+<details><summary>TTSet`1</summary><blockquote>
+
+Represents the generic type arguments marker for _ISet>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTSet1`1</summary><blockquote>
+
+Represents the generic type arguments marker for _ISet>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTSet2`1</summary><blockquote>
+
+Represents the generic type arguments marker for _ISet>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTSet3`1</summary><blockquote>
+
+Represents the generic type arguments marker for _ISet>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTSet4`1</summary><blockquote>
+
+Represents the generic type arguments marker for _ISet>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTSet5`1</summary><blockquote>
+
+Represents the generic type arguments marker for _ISet>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTSet6`1</summary><blockquote>
+
+Represents the generic type arguments marker for _ISet>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTSet7`1</summary><blockquote>
+
+Represents the generic type arguments marker for _ISet>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TTSet8`1</summary><blockquote>
+
+Represents the generic type arguments marker for _ISet>T>_.
+            
+</blockquote></details>
+
+
+<details><summary>TypeAttribute</summary><blockquote>
+
+The injection type can be defined manually using the  `Type`  attribute.This attribute explicitly overrides an injected type, otherwise it would be determined automatically based on the type of the constructor/method, property, or field parameter.
+             This attribute is part of the API, but you can use your own attribute at any time, and this allows you to define them in the assembly and namespace you want.
+             
+```c#
+
+interface IDependency { }
+             
+            
+             class AbcDependency : IDependency { }
+            
+            
+             class XyzDependency : IDependency { }
+            
+            
+             interface IService
+             {
+                 IDependency Dependency1 { get; }
+            
+                 IDependency Dependency2 { get; }
+             }
+            
+            
+             class Service : IService
+             {
+                 public Service(
+                     [Type(typeof(AbcDependency))] IDependency dependency1,
+                     [Type(typeof(XyzDependency))] IDependency dependency2)
+                 {
+                     Dependency1 = dependency1;
+                     Dependency2 = dependency2;
+                 }
+            
+            
+                 public IDependency Dependency1 { get; }
+            
+            
+                 public IDependency Dependency2 { get; }
+             }
+            
+            
+             DI.Setup("Composition")
+                 .Bind<IService>().To<Service>().Root<IService>("Root");
+             
+```
+
+
+See also _DependencyAttribute_.
+
+See also _TagAttribute_.
+
+See also _OrdinalAttribute_.
+
+<details><summary>Constructor TypeAttribute(System.Type)</summary><blockquote>
+
+Creates an attribute instance.
+            
+ - parameter _type_ - The injection type. See also _Bind``1(System.Object[])_ and _Bind``1(System.Object[])_.
+
+</blockquote></details>
+
+
+<details><summary>Method Match(System.ReadOnlySpan{System.Char},System.ReadOnlySpan{System.Char},System.Boolean,System.Boolean)</summary><blockquote>
+
+Return true if the given expression matches the given name. Supports the following wildcards:
+                '*', '?', '<', '>', '"'. The backslash character '\' escapes.
+            
+ - parameter _wildcard_ - The wildcard expression to match with, such as "*.foo".
+
+ - parameter _text_ - The text to check against the expression.
+
+ - parameter _ignoreCase_ - True to ignore case (default).
+
+ - parameter _useExtendedWildcards_ - True to use additional expressions symbols.
+
+</blockquote></details>
+
+
+</blockquote></details>
+
+
+</blockquote></details>
 

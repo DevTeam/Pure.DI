@@ -4,5 +4,6 @@ enum PathType
 {
     SolutionDirectory,
     TempDirectory,
-    BenchmarksResultDirectory
+    BenchmarksResultDirectory,
+    SourceDirectory
 }

@@ -1,5 +1,6 @@
 ﻿using Build;
 using Build.Core;
+using Build.Core.Doc;
 using Build.Core.Targets;
 using static Pure.DI.Lifetime;
 
@@ -14,6 +15,11 @@ DI.Setup(nameof(Composition))
     .Bind<ITeamCityArtifactsWriter>().To(_ => GetService<ITeamCityWriter>())
     .Bind().To(_ => GetService<INuGet>())
     .Bind().To<DotNetEnv>()
+    .Bind().To<Markdown>()
+    .Bind().To<XDocumentTools>()
+    .Bind().To<DotNetXmlDocumentWalker<TT>>()
+    .Bind().To<MarkdownWriterVisitor>()
+    .Bind().To<DocumentParts>()
 
     // Targets
     .Bind(Tag.Type).To<GeneratorTarget>()
