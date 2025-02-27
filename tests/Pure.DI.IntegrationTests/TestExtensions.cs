@@ -251,6 +251,17 @@ public static class TestExtensions
         return compilation;
     }
 
+    public static string GetSource(this Location? location)
+    {
+        if (location is null || !location.IsInSource)
+        {
+            return "unknown";
+        }
+
+        var source = location.SourceTree.ToString();
+        return source.Substring(location.SourceSpan.Start, location.SourceSpan.Length);
+    }
+
     private static string GetErrorMessage(Diagnostic diagnostic)
     {
         var description = diagnostic.GetMessage(CultureInfo.InvariantCulture);
@@ -259,13 +270,12 @@ public static class TestExtensions
             return description;
         }
 
-        var source = diagnostic.Location.SourceTree.ToString();
-        var span = source.Substring(diagnostic.Location.SourceSpan.Start, diagnostic.Location.SourceSpan.Length);
+        var source = diagnostic.Location.GetSource();
         return description
                + Environment.NewLine + Environment.NewLine
                + diagnostic
                + Environment.NewLine + Environment.NewLine
-               + span
+               + source
                + Environment.NewLine + Environment.NewLine
                + "Line " + (diagnostic.Location.GetMappedLineSpan().StartLinePosition.Line + 1)
                + Environment.NewLine

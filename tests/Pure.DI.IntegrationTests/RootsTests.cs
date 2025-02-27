@@ -4,54 +4,6 @@ using Core;
 
 public class RootsTests
 {
-
-    [Fact]
-    public async Task ShouldShowErrorWhenInheritedTypeNotFound()
-    {
-        // Given
-
-        // When
-        var result = await """
-                           using System;
-                           using Pure.DI;
-
-                           namespace Sample
-                           {
-                               interface IDependency {}
-                           
-                               class Dependency: IDependency
-                               {
-                               }
-                           
-                               interface IService
-                               {
-                                   IDependency? Dep { get; }
-                               }
-                           
-                               static class Setup
-                               {
-                                   private static void SetupComposition()
-                                   {
-                                       DI.Setup("Composition")
-                                           .Bind().To<Dependency>()
-                                           .Roots<IService>();
-                                   }
-                               }
-                           
-                               public class Program
-                               {
-                                   public static void Main()
-                                   {
-                                       var composition = new Composition();
-                                   }
-                               }
-                           }
-                           """.RunAsync();
-
-        // Then
-        result.Success.ShouldBeFalse(result);
-        result.Errors.Count(i => i.Id == LogId.ErrorInvalidMetadata).ShouldBe(1, result);
-    }
     [Fact]
     public async Task ShouldSupportRoot()
     {

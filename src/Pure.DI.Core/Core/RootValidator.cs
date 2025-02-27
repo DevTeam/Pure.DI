@@ -17,15 +17,15 @@ sealed class RootValidator(
         var rootArgs = composition.Roots
             .Where(root => !root.Source.IsBuilder)
             .Select(root => (root, args: root.Args.GetArgsOfKind(ArgKind.Root).ToList()))
-            .Where(i => i.args.Count > 0)
+            .Where(i => i.args.Count > 0 && i.root.TypeDescription.TypeArgs.Count == 0)
             .GroupBy(i => i.root.Node.Binding.Id)
             .Select(i => i.First());
 
-        foreach (var root in rootArgs)
+        foreach (var (root, args) in rootArgs)
         {
             logger.CompileWarning(
-                string.Format(Strings.Warning_Template_RootCannotBeResolvedByResolveMethods, Format(root.root), string.Join(", ", root.args.Select(i => i.VariableName))),
-                root.root.Node.Arg?.Source.Source.GetLocation() ?? composition.Source.Source.Source.GetLocation(),
+                string.Format(Strings.Warning_Template_RootCannotBeResolvedByResolveMethods, Format(root), string.Join(", ", args.Select(i => i.VariableName))),
+                root.Source.Source.GetLocation(),
                 LogId.WarningRootArgInResolveMethod);
         }
 
@@ -39,7 +39,7 @@ sealed class RootValidator(
         {
             logger.CompileWarning(
                 string.Format(Strings.Warning_Template_RootCannotBeResolvedByResolveMethods, Format(root), string.Join(", ", root.TypeDescription.TypeArgs)),
-                root.Node.Arg?.Source.Source.GetLocation() ?? composition.Source.Source.Source.GetLocation(),
+                root.Source.Source.GetLocation(),
                 LogId.WarningTypeArgInResolveMethod);
         }
 

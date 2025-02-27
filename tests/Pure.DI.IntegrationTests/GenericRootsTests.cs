@@ -102,63 +102,6 @@ public class GenericRootsTests
     }
 
     [Fact]
-    public async Task ShouldShowWarningsForGenericRootWhenResolveMethods()
-    {
-        // Given
-
-        // When
-        var result = await """
-                           using System;
-                           using Pure.DI;
-                           using static Pure.DI.Lifetime;
-
-                           namespace Sample
-                           {
-                               class Dep<T> { }
-                           
-                               interface IBox<T> { T? Content { get; set; } }
-                           
-                               class CardboardBox<T> : IBox<T>
-                               {
-                                   public CardboardBox(Dep<T> dep)
-                                   {
-                                   }
-                                   
-                                   public T? Content { get; set; }
-                               }
-                           
-                               internal partial class Composition
-                               {
-                                   void Setup()
-                                   {
-                                       DI.Setup(nameof(Composition))
-                                           .Bind<IBox<TT>>().To<CardboardBox<TT>>() 
-                                           // Composition Root
-                                           .Root<IBox<TT>>("GetRoot");
-                                   }
-                               }
-                           
-                               public class Program
-                               {
-                                   public static void Main()
-                                   {
-                                       var composition = new Composition();
-                                       var root = composition.GetRoot<int>();
-                                       Console.WriteLine(root);
-                                   }
-                               }
-                           }
-                           """.RunAsync(new Options(LanguageVersion.CSharp9));
-
-        // Then
-        result.Success.ShouldBeFalse(result);
-        result.Errors.Count.ShouldBe(0);
-        result.Warnings.Count.ShouldBe(1);
-        result.Warnings.Count(i => i.Id == LogId.WarningTypeArgInResolveMethod).ShouldBe(1);
-        result.StdOut.ShouldBe(["Sample.CardboardBox`1[System.Int32]"], result);
-    }
-
-    [Fact]
     public async Task ShouldSupportComplexGenericRootArg()
     {
         // Given

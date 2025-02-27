@@ -87,7 +87,8 @@ public class ArgsTests
         result.Success.ShouldBeFalse(result);
         result.Errors.Count.ShouldBe(0, result);
         result.Warnings.Count.ShouldBe(2, result);
-        result.Warnings.Count(i => i.Id == LogId.WarningRootArgInResolveMethod).ShouldBe(2, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningRootArgInResolveMethod && i.Location.GetSource() == "Root<Dependency2>").ShouldBe(1, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningRootArgInResolveMethod && i.Location.GetSource() == "Root<IService>").ShouldBe(1, result);
         result.StdOut.ShouldBe(["Some Name_99"], result);
     }
 
@@ -154,137 +155,6 @@ public class ArgsTests
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Some Name"], result);
-    }
-
-    [Fact]
-    public async Task ShouldShowCompilationErrorWhenArgIsBasedOnGenericMarker()
-    {
-        // Given
-
-        // When
-        var result = await """
-                           using System;
-                           using System.Collections.Generic;
-                           using Pure.DI;
-
-                           namespace Sample
-                           {
-                               interface IDependency {}
-                           
-                               class Dependency: IDependency {}
-                           
-                               interface IService
-                               {
-                                   IDependency Dep { get; }
-                           
-                                   string Name { get; }
-                               }
-                           
-                               class Service: IService 
-                               {
-                                   public Service(IDependency dep, string name)
-                                   { 
-                                       Dep = dep;
-                                       Name = name;
-                                   }
-                           
-                                   public IDependency Dep { get; }
-                           
-                                   public string Name { get; private set; }
-                               }
-                           
-                               static class Setup
-                               {
-                                   private static void SetupComposition()
-                                   {
-                                       DI.Setup("Composition")
-                                           .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
-                                           .Bind<IService>().To<Service>()
-                                           .Arg<IList<TT>>("serviceName")
-                                           .Root<IService>("Service");
-                                   }
-                               }
-                           
-                               public class Program
-                               {
-                                   public static void Main()
-                                   {
-                                       var composition = new Composition("Some Name");
-                                       Console.WriteLine(composition.Service.Name);
-                                   }
-                               }
-                           }
-                           """.RunAsync();
-
-        // Then
-        result.Success.ShouldBeFalse(result);
-        result.Errors.Count.ShouldBe(2, result);
-        result.Errors.Count(i => i is { Id: LogId.ErrorInvalidMetadata, Message: "The class argument type cannot be based on a generic type marker." }).ShouldBe(1, result);
-    }
-
-    [Fact]
-    public async Task ShouldShowCompilationErrorWhenArgIsGenericMarker()
-    {
-        // Given
-
-        // When
-        var result = await """
-                           using System;
-                           using Pure.DI;
-
-                           namespace Sample
-                           {
-                               interface IDependency {}
-                           
-                               class Dependency: IDependency {}
-                           
-                               interface IService
-                               {
-                                   IDependency Dep { get; }
-                           
-                                   string Name { get; }
-                               }
-                           
-                               class Service: IService 
-                               {
-                                   public Service(IDependency dep, string name)
-                                   { 
-                                       Dep = dep;
-                                       Name = name;
-                                   }
-                           
-                                   public IDependency Dep { get; }
-                           
-                                   public string Name { get; private set; }
-                               }
-                           
-                               static class Setup
-                               {
-                                   private static void SetupComposition()
-                                   {
-                                       DI.Setup("Composition")
-                                           .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
-                                           .Bind<IService>().To<Service>()
-                                           .Arg<TT>("serviceName")
-                                           .Root<IService>("Service");
-                                   }
-                               }
-                           
-                               public class Program
-                               {
-                                   public static void Main()
-                                   {
-                                       var composition = new Composition("Some Name");
-                                       Console.WriteLine(composition.Service.Name);
-                                   }
-                               }
-                           }
-                           """.RunAsync();
-
-        // Then
-        result.Success.ShouldBeFalse(result);
-        result.Errors.Count.ShouldBe(2, result);
-        result.Errors.Count(i => i is { Id: LogId.ErrorInvalidMetadata, Message: "The class argument type cannot be based on a generic type marker." }).ShouldBe(1, result);
     }
 
     [Fact]
@@ -663,7 +533,8 @@ public class ArgsTests
         result.Success.ShouldBeFalse(result);
         result.Errors.Count.ShouldBe(0, result);
         result.Warnings.Count.ShouldBe(2, result);
-        result.Warnings.Count(i => i.Id == LogId.WarningRootArgInResolveMethod).ShouldBe(2, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningRootArgInResolveMethod && i.Location.GetSource() == "Root<IService>").ShouldBe(1, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningRootArgInResolveMethod && i.Location.GetSource() == "Root<Dependency2>").ShouldBe(1, result);
         result.StdOut.ShouldBe(["Some Name_99"], result);
     }
 

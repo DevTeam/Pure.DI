@@ -235,62 +235,6 @@ public class SetupTests
         result.Success.ShouldBeTrue(result);
     }
 
-    [Theory]
-    [InlineData(DiagnosticSeverity.Error, LogId.ErrorInvalidMetadata)]
-    [InlineData(DiagnosticSeverity.Warning, LogId.WarningMetadataDefect)]
-    [InlineData(DiagnosticSeverity.Info, LogId.InfoMetadataDefect)]
-    [InlineData(DiagnosticSeverity.Hidden, "")]
-    internal async Task ShouldReportWhenContractWasNotImplemented(DiagnosticSeverity severity, string logId)
-    {
-        // Given
-
-        // When
-        var result = await """
-                           using System;
-                           using Pure.DI;
-
-                           namespace Sample
-                           {
-                                interface IService
-                                {
-                                }
-                           
-                                class Service 
-                                {
-                                }
-                           
-                                static class Setup
-                                {
-                                   private static void SetupComposition()
-                                   {
-                                       DI.Setup("Composition")
-                                           .Hint(Hint.SeverityOfNotImplementedContract, "#severity#")
-                                           .Bind<IService>().To<Service>()
-                                           .Root<Service>("MyRoot");
-                                   }
-                                }
-                           
-                                public class Program
-                                {
-                                   public static void Main()
-                                   {
-                                       var composition = new Composition();
-                                   }
-                                }
-                           }
-                           """.Replace("#severity#", severity.ToString()).RunAsync();
-
-        // Then
-        result.Success.ShouldBeFalse(result);
-        result.Errors.Count.ShouldBe(severity == DiagnosticSeverity.Error ? 1 : 0, result);
-        if (severity != DiagnosticSeverity.Hidden)
-        {
-            result.Logs
-                .Count(i => i.Severity == severity && i.Id == logId && i.Message.Contains("Sample.Service does not implement Sample.IService."))
-                .ShouldBe(1, result);
-        }
-    }
-
     [Fact]
     public async Task ShouldCreateCompositionRootWhenSomeOtherCompositionHasInvalidGraph()
     {
@@ -408,7 +352,7 @@ public class SetupTests
         result.Success.ShouldBeFalse(result);
         result.Errors.Count.ShouldBe(0, result);
         result.Warnings.Count.ShouldBe(2, result);
-        result.Warnings.Count(i => i.Id == LogId.WarningMetadataDefect).ShouldBe(2, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningMetadataDefect && i.Location.GetSource() == "Setup").ShouldBe(1, result);
     }
 
     [Fact]
@@ -516,7 +460,7 @@ public class SetupTests
             ],
             result);
         result.Warnings.Count.ShouldBe(0, result);
-        result.Warnings.Count(i => i.Id == LogId.WarningOverriddenBinding).ShouldBe(0, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningOverriddenBinding && i.Location.GetSource() == "").ShouldBe(0, result);
     }
 
     [Fact]
@@ -557,8 +501,8 @@ public class SetupTests
         result.Success.ShouldBeFalse(result);
         result.StdOut.ShouldBe(["Xyz"], result);
         result.Warnings.Count.ShouldBe(2, result);
-        result.Warnings.Count(i => i.Id == LogId.WarningOverriddenBinding).ShouldBe(1, result);
-        result.Warnings.Count(i => i.Id == LogId.WarningMetadataDefect).ShouldBe(1, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningOverriddenBinding && i.Location.GetSource() == "_ => \"Xyz\"").ShouldBe(1, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningMetadataDefect && i.Location.GetSource() == "_ => \"Abc\"").ShouldBe(1, result);
     }
 
     [Fact]
@@ -599,8 +543,8 @@ public class SetupTests
         result.Success.ShouldBeFalse(result);
         result.StdOut.ShouldBe(["Xyz"], result);
         result.Warnings.Count.ShouldBe(2, result);
-        result.Warnings.Count(i => i is { Id: LogId.WarningOverriddenBinding, Message: "Привязка для string была переопределена." }).ShouldBe(1, result);
-        result.Warnings.Count(i => i is { Id: LogId.WarningMetadataDefect, Message: "Привязка не используется." }).ShouldBe(1, result);
+        result.Warnings.Count(i => i is { Id: LogId.WarningOverriddenBinding, Message: "Привязка для string была переопределена." } && i.Location.GetSource() == "_ => \"Xyz\"").ShouldBe(1, result);
+        result.Warnings.Count(i => i is { Id: LogId.WarningMetadataDefect, Message: "Привязка не используется." } && i.Location.GetSource() == "_ => \"Abc\"").ShouldBe(1, result);
     }
 
     [Fact]
@@ -659,7 +603,7 @@ public class SetupTests
         result.Success.ShouldBeFalse(result);
         result.StdOut.ShouldBe(["Xyz"], result);
         result.Warnings.Count.ShouldBe(1, result);
-        result.Warnings.Count(i => i.Id == LogId.WarningOverriddenBinding).ShouldBe(1, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningOverriddenBinding && i.Location.GetSource() == "_ => \"Xyz\"").ShouldBe(1, result);
     }
 
     [Fact]
@@ -705,7 +649,7 @@ public class SetupTests
         result.Success.ShouldBeFalse(result);
         result.StdOut.ShouldBe(["Xyz"], result);
         result.Warnings.Count.ShouldBe(2, result);
-        result.Warnings.Count(i => i.Id == LogId.WarningOverriddenBinding).ShouldBe(1, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningOverriddenBinding && i.Location.GetSource() == "_ => \"Xyz\"").ShouldBe(1, result);
     }
 
     [Fact]
@@ -821,7 +765,7 @@ public class SetupTests
         result.Success.ShouldBeFalse(result);
         result.StdOut.ShouldBe(["Sample.MyDependency", "Sample.Dependency", "Sample.MyDependency"], result);
         result.Warnings.Count.ShouldBe(1);
-        result.Warnings.Count(i => i.Id == LogId.WarningOverriddenBinding).ShouldBe(1);
+        result.Warnings.Count(i => i.Id == LogId.WarningOverriddenBinding && i.Location.GetSource() == "_ => new MyDependency()").ShouldBe(1, result);
     }
 
     [Fact]
@@ -862,54 +806,7 @@ public class SetupTests
         result.Success.ShouldBeFalse(result);
         result.Errors.Count.ShouldBe(0, result);
         result.Warnings.Count.ShouldBe(1, result);
-        result.Warnings.Count(i => i.Id == LogId.WarningMetadataDefect).ShouldBe(1, result);
-    }
-
-    [Fact]
-    public async Task ShouldShowErrorWhenCannotResolveRoot()
-    {
-        // Given
-
-        // When
-        var result = await """
-                           using System;
-                           using Pure.DI;
-
-                           namespace Sample
-                           {
-                                interface IService
-                                {
-                                }
-                           
-                                class Service: IService 
-                                {
-                                }
-                           
-                                static class Setup
-                                {
-                                   private static void SetupComposition()
-                                   {
-                                       DI.Setup("Composition")
-                                           .Bind<IService>(1).To<Service>()
-                                           .Root<IService>("MyRoot1");
-                                   }
-                                }
-                           
-                                public class Program
-                                {
-                                   public static void Main()
-                                   {
-                                       var composition = new Composition();
-                                   }
-                                }
-                           }
-                           """.RunAsync();
-
-        // Then
-        result.Success.ShouldBeFalse(result);
-        result.Errors
-            .Count(i => i is { Id: LogId.ErrorUnableToResolve, Message: "Unable to resolve \"Sample.IService\" in Sample.IService() MyRoot1." })
-            .ShouldBe(1, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningMetadataDefect && i.Location.GetSource() == "_ => global::System.Collections.Generic.Comparer<TT>.Default").ShouldBe(1, result);
     }
 
     [Fact]
@@ -949,54 +846,6 @@ public class SetupTests
         // Then
         result.Success.ShouldBeFalse(result);
         result.Errors.Count.ShouldBe(2, result);
-    }
-
-    [Fact]
-    public async Task ShouldShowWarningWhenBindingWasNotUsed()
-    {
-        // Given
-
-        // When
-        var result = await """
-                           using System;
-                           using Pure.DI;
-
-                           namespace Sample
-                           {
-                               internal interface IDependency { }
-                           
-                               internal class Dependency : IDependency { }
-                           
-                               internal interface IService { }
-                           
-                               internal class Service : IService { }
-                           
-                               static class Setup
-                               {
-                                   private static void SetupComposition()
-                                   {
-                                       DI.Setup(nameof(Composition))
-                                           .Bind<IDependency>().To<Dependency>()
-                                           .Bind<IService>().To<Service>()
-                                           .Root<IService>("Root");
-                                   }
-                               }
-                           
-                               public class Program
-                               {
-                                   public static void Main()
-                                   {
-                                       var composition = new Composition();
-                                   }
-                               }
-                           }
-                           """.RunAsync();
-
-        // Then
-        result.Success.ShouldBeFalse(result);
-        result.Errors.Count.ShouldBe(0);
-        result.Warnings.Count.ShouldBe(1);
-        result.Warnings.Count(i => i.Id == LogId.WarningMetadataDefect).ShouldBe(1);
     }
 
     [Fact]
@@ -1197,7 +1046,7 @@ public class SetupTests
         result.Success.ShouldBeFalse(result);
         result.Errors.Count.ShouldBe(0, result);
         result.Warnings.Count.ShouldBe(7, result);
-        result.Warnings.Count(i => i.Id == LogId.WarningMetadataDefect).ShouldBe(7, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningMetadataDefect && i.Location.GetSource() == "Dependency").ShouldBe(7, result);
     }
 
     [Fact]

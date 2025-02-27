@@ -1,4 +1,4 @@
-namespace Pure.DI.Core;
+﻿namespace Pure.DI.Core;
 
 sealed class DependencyGraphLocationsWalker : DependenciesWalker<Unit>, IDependencyGraphLocationsWalker
 {

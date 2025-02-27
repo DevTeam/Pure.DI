@@ -43,7 +43,7 @@ sealed class DependencyGraphValidator(
             var errorMessage = string.Format(Strings.Error_Template_UnableToResolve, unresolvedInjection, target);
             var locationsWalker = dependencyGraphLocationsWalkerFactory().Initialize(unresolvedInjection);
             locationsWalker.VisitDependencyNode(Unit.Shared, target);
-            foreach (var location in locationsWalker.Locations)
+            foreach (var location in locationsWalker.Locations.Where(i => i.IsInSource).DefaultIfEmpty(target.Binding.Source.GetLocation()))
             {
                 logger.CompileError(errorMessage, location, LogId.ErrorUnableToResolve);
                 isErrorReported = true;

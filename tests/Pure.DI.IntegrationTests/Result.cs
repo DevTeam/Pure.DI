@@ -17,6 +17,21 @@ readonly record struct Result(
     public override string ToString()
     {
         var text = new StringBuilder();
+        text.AppendLine();
+        text.AppendLine("Errors:");
+        foreach (var error in Errors)
+        {
+            text.AppendLine($"{error.Message} at {error.Location.GetSource()}");
+        }
+
+        text.AppendLine();
+        text.AppendLine("Warnings:");
+        foreach (var warning in Warnings)
+        {
+            text.AppendLine($"{warning.Message} at {warning.Location.GetSource()}");
+        }
+
+        text.AppendLine();
         if (!string.IsNullOrWhiteSpace(GeneratedCode))
         {
             text.AppendLine("Code:");
@@ -25,12 +40,6 @@ readonly record struct Result(
         else
         {
             text.AppendLine("The code was not generated.");
-        }
-
-        text.AppendLine();
-        foreach (var error in Errors)
-        {
-            text.AppendLine(error.Message);
         }
 
         return text.ToString();
