@@ -2,7 +2,7 @@ namespace Build.Core.Doc;
 
 using System.Text;
 
-class DocumentParts : IMarkdownParts
+class MarkdownParts
 {
     public Memory<string> GetParts(string? text)
     {

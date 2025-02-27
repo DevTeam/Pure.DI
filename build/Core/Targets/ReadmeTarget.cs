@@ -2,6 +2,7 @@
 // ReSharper disable ConvertIfStatementToSwitchStatement
 // ReSharper disable ClassNeverInstantiated.Global
 
+// ReSharper disable InconsistentNaming
 namespace Build.Core.Targets;
 
 using System.Xml.Linq;
@@ -17,17 +18,16 @@ class ReadmeTarget(
     ReadmeTools readmeTools,
     [Tag(typeof(CreateExamplesTarget))] ITarget<IReadOnlyCollection<ExampleGroup>> createExamplesTarget,
     [Tag(typeof(BenchmarksTarget))] ITarget<int> benchmarksTarget,
-    [Tag(typeof(AiContextTarget))] ITarget<AIContext> aiContextTarget)
+    [Tag(typeof(AIContextTarget))] ITarget<AIContext> aiContextTarget)
     : IInitializable, ITarget<int>
 {
     private const string ReadmeDir = "readme";
     private const string CommonReadmeFile = "README.md";
-    private const string HeaderTemplateFile = "HEaderTemplate.md";
+    private const string HeaderTemplateFile = "HeaderTemplate.md";
     private const string ReadmeTemplateFile = "ReadmeTemplate.md";
     private const string FooterTemplateFile = "FooterTemplate.md";
     private const string ContributingTemplateFile = "ContributingTemplate.md";
     private const string ReadmeFile = "README.md";
-    private const string AiContextReadmeFile = "AI_CONTEXT.md";
     private const string ContributingFile = "CONTRIBUTING.md";
 
     public Task InitializeAsync(CancellationToken cancellationToken) => commands.RegisterAsync(
@@ -58,7 +58,7 @@ class ReadmeTarget(
 
         await AddContentAsync(ReadmeTemplateFile, readmeWriter);
 
-        await readmeWriter.WriteLineAsync();
+        await AIContextAsync(readmeWriter, cancellationToken);
 
         await GenerateExamplesAsync(examples, readmeWriter, logsDirectory);
 
@@ -76,9 +76,20 @@ class ReadmeTarget(
 
         await contributingWriter.FlushAsync(cancellationToken);
 
-        await aiContextTarget.RunAsync(cancellationToken);
-
         return 0;
+    }
+    private async Task AIContextAsync(StreamWriter writer, CancellationToken cancellationToken)
+    {
+        await writer.WriteLineAsync();
+        await writer.WriteLineAsync("## AI Context");
+        await writer.WriteLineAsync();
+        await writer.WriteLineAsync("| AI Context file | Size | Tokens |");
+        var aiContext = await aiContextTarget.RunAsync(cancellationToken);
+        foreach (var aiContextFile in aiContext.Files)
+        {
+            var fileName = Path.GetFileName(aiContextFile.FileName);
+            await writer.WriteLineAsync($"| [{fileName}](#{fileName}) | {aiContextFile.SizeKB}KB | {aiContextFile.SizeKTokens}K |");
+        }
     }
 
     private async Task AddContributingAsync(StreamWriter writer)
@@ -114,6 +125,7 @@ class ReadmeTarget(
 
     private async Task GenerateExamplesAsync(IReadOnlyCollection<ExampleGroup> examples, TextWriter writer, string logsDirectory)
     {
+        await writer.WriteLineAsync();
         var generatorPackageVersion = versions.GetNext(new NuGetRestoreSettings("Pure.DI"), Settings.VersionRange, 0).ToString();
         var msPackageVersion = versions.GetNext(new NuGetRestoreSettings("Pure.DI.MS"), Settings.VersionRange, 0).ToString();
         foreach (var readmeFile in Directory.EnumerateFiles(Path.Combine(ReadmeDir), "*.md"))
@@ -144,10 +156,10 @@ class ReadmeTarget(
             var groupTitle = new string(readmeTools.FormatTitle(groupName).ToArray());
             Info($"Processing examples group \"{groupTitle}\"");
             await writer.WriteLineAsync($"### {groupTitle}");
-            foreach (var vars in exampleItems)
+            foreach (var example in exampleItems)
             {
-                var description = vars[CreateExamplesTarget.DescriptionKey];
-                var code = vars[CreateExamplesTarget.BodyKey];
+                var description = example[CreateExamplesTarget.DescriptionKey];
+                var code = example[CreateExamplesTarget.BodyKey];
                 var file = CreateExampleFileName(description);
                 var exampleFile = $"{file}.md";
                 await using var examplesWriter = File.CreateText(Path.Combine(ReadmeDir, exampleFile));
@@ -155,7 +167,7 @@ class ReadmeTarget(
                 await writer.WriteLineAsync($"- [{description}]({ReadmeDir}/{exampleFile})");
                 await examplesWriter.WriteLineAsync($"#### {description}");
                 await examplesWriter.WriteLineAsync();
-                var header = vars[CreateExamplesTarget.HeaderKey];
+                var header = example[CreateExamplesTarget.HeaderKey];
                 if (!string.IsNullOrWhiteSpace(header))
                 {
                     await examplesWriter.WriteLineAsync(header);
@@ -178,7 +190,7 @@ class ReadmeTarget(
                 await examplesWriter.WriteLineAsync("```bash");
                 await examplesWriter.WriteLineAsync("dotnet new console -n Sample");
                 await examplesWriter.WriteLineAsync("```");
-                var references = vars[CreateExamplesTarget.ReferencesKey].Split(";", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                var references = example[CreateExamplesTarget.ReferencesKey].Split(";", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                 var refs = references.Length > 0 ? "s" : "";
                 await examplesWriter.WriteLineAsync($"- Add reference{refs} to NuGet package{refs}");
                 await examplesWriter.WriteLineAsync("  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)");
@@ -203,14 +215,14 @@ class ReadmeTarget(
                 await examplesWriter.WriteLineAsync("</details>");
                 await examplesWriter.WriteLineAsync();
 
-                var footer = vars[CreateExamplesTarget.FooterKey];
+                var footer = example[CreateExamplesTarget.FooterKey];
                 if (!string.IsNullOrWhiteSpace(footer))
                 {
                     await examplesWriter.WriteLineAsync(footer);
                     await examplesWriter.WriteLineAsync();
                 }
 
-                var exampleName = Path.GetFileNameWithoutExtension(vars[CreateExamplesTarget.SourceKey]);
+                var exampleName = Path.GetFileNameWithoutExtension(example[CreateExamplesTarget.SourceKey]);
 
                 await AddExample(logsDirectory, $"Pure.DI.UsageTests.*.{exampleName}.*.g.cs", examplesWriter);
                 await examplesWriter.WriteLineAsync();

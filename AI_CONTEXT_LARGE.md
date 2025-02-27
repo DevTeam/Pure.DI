@@ -1,8 +1,8 @@
-# Pure.DI source code generator usage scenarios.
+This Markdown-formatted document contains information on working with Pure.DI.
 
-## Basics scenarios
+# Usage scenarios.
 
-### Auto-bindings
+## Auto-bindings
 
 Injection of non-abstract types is possible without any additional effort.
 
@@ -32,7 +32,7 @@ To run the above code, the following NuGet package must be added:
 
 It is better to inject abstract dependencies, for example, in the form of interfaces. Use bindings to map abstract types to their implementations as in almost all [other examples](injections-of-abstractions.md).
 
-### Injections of abstractions
+## Injections of abstractions
 
 This example demonstrates the recommended approach of using abstractions instead of implementations when injecting dependencies.
 
@@ -85,7 +85,7 @@ Usually the biggest block in the setup is the chain of bindings, which describes
 > Even if the binding is not defined, there is no problem with the injection, but obviously under the condition that the consumer requests an injection NOT of abstract type.
 
 
-### Composition roots
+## Composition roots
 
 This example demonstrates several ways to create a composition root.
 > [!TIP]
@@ -162,7 +162,7 @@ DI.Setup("Composition")
 ```
 This can be done if these methods are not needed, in case only certain composition roots are used. It's not significant then, but it will help save resources during compilation.
 
-### Resolve methods
+## Resolve methods
 
 This example shows how to resolve the composition roots using the _Resolve_ methods by _Service Locator_ approach. `Resolve` methods are generated automatically for each registered root.
 
@@ -217,7 +217,7 @@ _Resolve_ methods are similar to calls to the roots of a composition. Compositio
 
 - Lead to performance degradation because they search for the root of a composition based on its type.
 
-### Simplified binding
+## Simplified binding
 
 You can use the `Bind(...)` method without type parameters. In this case binding will be performed for the implementation type itself, and if the implementation is not an abstract type or structure, for all abstract but NOT special types that are directly implemented.
 
@@ -315,7 +315,7 @@ For class `Dependency`, the `Bind().To<Dependency>()` binding will be equivalent
 | ❌ | `DependencyBase`      | non-abstract                                    |
 | ❌ | `IDependencyBase`     | is not directly implemented by class Dependency |
 
-### Factory
+## Factory
 
 This example demonstrates how to create and initialize an instance manually.
 At the compilation stage, the set of dependencies that an object needs in order to be created is determined. In most cases, this happens automatically according to the set of constructors and their arguments and does not require any additional customization efforts. But sometimes it is necessary to manually create an object, as in lines of code:
@@ -403,7 +403,7 @@ This approach is more expensive to maintain, but allows you to create objects mo
 > [!IMPORTANT]
 > The method `Inject()`cannot be used outside of the binding setup.
 
-### Simplified factory
+## Simplified factory
 
 This example shows how to create and initialize an instance manually in a simplified form. When you use a lambda function to specify custom instance initialization logic, each parameter of that function represents an injection of a dependency. Starting with C# 10, you can also put the `Tag(...)` attribute in front of the parameter to specify the tag of the injected dependency.
 
@@ -468,7 +468,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-### Class arguments
+## Class arguments
 
 Sometimes you need to pass some state to a composition class to use it when resolving dependencies. To do this, just use the `Arg<T>(string argName)` method, specify the type of argument and its name. You can also specify a tag for each argument. You can then use them as dependencies when building the object graph. If you have multiple arguments of the same type, just use tags to distinguish them. The values of the arguments are manipulated when you create a composition class by calling its constructor. It is important to remember that only those arguments that are used in the object graph will appear in the constructor. Arguments that are not involved will not be added to the constructor arguments.
 > [!NOTE]
@@ -541,7 +541,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-### Root arguments
+## Root arguments
 
 Sometimes it is necessary to pass some state to the composition to use it when resolving dependencies. To do this, just use the `RootArg<T>(string argName)` method, specify the type of argument and its name. You can also specify a tag for each argument. You can then use them as dependencies when building the object graph. If you have multiple arguments of the same type, just use tags to distinguish them. The root of a composition that uses at least one root argument is prepended as a method, not a property. It is important to remember that the method will only display arguments that are used in the object graph of that composition root. Arguments that are not involved will not be added to the method arguments. It is best to use unique argument names so that there are no collisions.
 > [!NOTE]
@@ -617,7 +617,7 @@ To run the above code, the following NuGet packages must be added:
 
 When using composition root arguments, compilation warnings are shown if `Resolve` methods are generated, since these methods will not be able to create these roots. You can disable the creation of `Resolve` methods using the `Hint(Hint.Resolve, "Off")` hint, or ignore them but remember the risks of using `Resolve` methods.
 
-### Tags
+## Tags
 
 Sometimes it's important to take control of building a dependency graph. For example, when there are multiple implementations of the same contract. In this case, _tags_ will help:
 
@@ -684,7 +684,7 @@ To run the above code, the following NuGet packages must be added:
 
 The tag can be a constant, a type, a [smart tag](smart-tags.md), or a value of an `Enum` type. The _default_ and _null_ tags are also supported.
 
-### Smart tags
+## Smart tags
 
 When you have a large graph of objects, you may need a lot of tags to neatly define all the dependencies in it. Strings or other constant values are not always convenient to use, because they have too much variability. And there are often cases when you specify one tag in the binding, but the same tag in the dependency, but with a typo, which leads to a compilation error when checking the dependency graph. The solution to this problem is to create an `Enum` type and use its values as tags. Pure.DI makes it easier to solve this problem.
 
@@ -769,7 +769,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-### Build up of an existing object
+## Build up of an existing object
 
 In other words, injecting the necessary dependencies via methods, properties, or fields into an existing object.
 
@@ -829,7 +829,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-### Builder
+## Builder
 
 Sometimes you need to build up an existing composition root and inject all of its dependencies, in which case the `Builder` method will be useful, as in the example below:
 
@@ -878,7 +878,7 @@ To run the above code, the following NuGet packages must be added:
 
 The default builder method name is `BuildUp`. The first argument to this method will always be the instance to be built.
 
-### Builder with arguments
+## Builder with arguments
 
 Builders can be used with arguments as in the example below:
 
@@ -928,7 +928,7 @@ To run the above code, the following NuGet packages must be added:
 
 The default builder method name is `BuildUp`. The first argument to this method will always be the instance to be built. The remaining arguments of this method will be listed in the order in which they are defined in the setup.
 
-### Builders
+## Builders
 
 Sometimes you need builders for all types inherited from <see cref=“T”/> available at compile time at the point where the method is called.
 
@@ -991,7 +991,7 @@ To run the above code, the following NuGet packages must be added:
 
 The default builder method name is `BuildUp`. The first argument to this method will always be the instance to be built.
 
-### Builders with a name template
+## Builders with a name template
 
 Sometimes you need to build up an existing composition root and inject all of its dependencies, in which case the `Builder` method will be useful, as in the example below:
 
@@ -1056,7 +1056,7 @@ To run the above code, the following NuGet packages must be added:
 
 The default builder method name is `BuildUp`. The first argument to this method will always be the instance to be built.
 
-### Field injection
+## Field injection
 
 To use dependency injection for a field, make sure the field is writable and simply add the _Ordinal_ attribute to that field, specifying an ordinal that will be used to determine the injection order:
 
@@ -1100,7 +1100,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-### Method injection
+## Method injection
 
 To use dependency implementation for a method, simply add the _Ordinal_ attribute to that method, specifying the sequence number that will be used to define the call to that method:
 
@@ -1146,7 +1146,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-### Property injection
+## Property injection
 
 To use dependency injection on a property, make sure the property is writable and simply add the _Ordinal_ attribute to that property, specifying the ordinal that will be used to determine the injection order:
 
@@ -1189,7 +1189,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-### Default values
+## Default values
 
 ```c#
 using Shouldly;
@@ -1233,7 +1233,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-### Required properties or fields
+## Required properties or fields
 
 All properties or fields marked with the _required_ keyword automatically become injected dependencies.
 
@@ -1282,7 +1282,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-### Root binding
+## Root binding
 
 In general, it is recommended to define one composition root for the entire application. But sometimes it is necessary to have multiple roots. To simplify the definition of composition roots, a "hybrid" API method `RootBind<T>(string rootName)` was added. It allows you to define a binding and at the same time the root of the composition. You can it in order to reduce repetitions. The registration `composition.RootBind<IDependency>().To<Dependency>()` is an equivalent to `composition.Bind<IDependency>().To<Dependency>().Root<IDependency>()`.
 
@@ -1314,7 +1314,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-### Async Root
+## Async Root
 
 ```c#
 using Pure.DI;
@@ -1348,7 +1348,7 @@ To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
 
 
-### Consumer types
+## Consumer types
 
 `ConsumerTypes` is used to get the list of consumer types of a given dependency. It contains an array of types and guarantees that it will contain at least one element. The use of `ConsumerTypes` is demonstrated on the example of [Serilog library](https://serilog.net/):
 
@@ -1416,7 +1416,7 @@ To run the above code, the following NuGet packages must be added:
   - [Serilog.Events](https://www.nuget.org/packages/Serilog.Events)
 
 
-### Roots
+## Roots
 
 Sometimes you need roots for all types inherited from <see cref="T"/> available at compile time at the point where the method is called.
 
@@ -1448,7 +1448,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-### Roots with filter
+## Roots with filter
 
 ```c#
 using Shouldly;
@@ -1477,9 +1477,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-## Lifetimes scenarios
-
-### Transient
+## Transient
 
 The _Transient_ lifetime specifies to create a new dependency instance each time. It is the default lifetime and can be omitted.
 
@@ -1538,7 +1536,7 @@ The _Transient_ lifetime is the safest and is used by default. Yes, its widespre
 > [!IMPORTANT]
 > The following very important rule, in my opinion, will help in the last point. Now, when a constructor is used to implement dependencies, it should not be loaded with other tasks. Accordingly, constructors should be free of all logic except for checking arguments and saving them for later use. Following this rule, even the largest compositions of objects will be built quickly.
 
-### Singleton
+## Singleton
 
 The _Singleton_ lifetime ensures that there will be a single instance of the dependency for each composition.
 
@@ -1600,7 +1598,7 @@ Some articles advise using objects with a _Singleton_ lifetime as often as possi
 
 - Sometimes additional logic is required to dispose of _Singleton_.
 
-### PerResolve
+## PerResolve
 
 The _PerResolve_ lifetime ensures that there will be one instance of the dependency for each composition root instance.
 
@@ -1652,7 +1650,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-### PerBlock
+## PerBlock
 
 The _PreBlock_ lifetime does not guarantee that there will be a single dependency instance for each instance of the composition root (as for the _PreResolve_ lifetime), but is useful for reducing the number of instances of a type.
 
@@ -1704,7 +1702,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-### Scope
+## Scope
 
 The _Scoped_ lifetime ensures that there will be a single instance of the dependency for each scope.
 
@@ -1793,7 +1791,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-### Auto scoped
+## Auto scoped
 
 You can use the following example to automatically create a session when creating instances of a particular type:
 
@@ -1864,7 +1862,7 @@ To run the above code, the following NuGet packages must be added:
 > [!IMPORTANT]
 > The method `Inject()`cannot be used outside of the binding setup.
 
-### Default lifetime
+## Default lifetime
 
 For example, if some lifetime is used more often than others, you can make it the default lifetime:
 
@@ -1918,7 +1916,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-### Default lifetime for a type
+## Default lifetime for a type
 
 For example, if a certain lifetime is used more often than others, you can make it the default lifetime for a certain type:
 
@@ -1970,7 +1968,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-### Default lifetime for a type and a tag
+## Default lifetime for a type and a tag
 
 For example, if a certain lifetime is used more often than others, you can make it the default lifetime for a certain type:
 
@@ -2023,7 +2021,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-### Disposable singleton
+## Disposable singleton
 
 To dispose all created singleton instances, simply dispose the composition instance:
 
@@ -2077,7 +2075,7 @@ To run the above code, the following NuGet packages must be added:
 
 A composition class becomes disposable if it creates at least one disposable singleton instance.
 
-### Async disposable singleton
+## Async disposable singleton
 
 If at least one of these objects implements the `IAsyncDisposable` interface, then the composition implements `IAsyncDisposable` as well. To dispose of all created singleton instances in an asynchronous manner, simply dispose of the composition instance in an asynchronous manner:
 
@@ -2134,7 +2132,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-### Async disposable scope
+## Async disposable scope
 
 ```c#
 using Shouldly;
@@ -2225,9 +2223,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-## Base Class Library scenarios
-
-### Func
+## Func
 
 _Func<T>_ helps when the logic must enter instances of some type on demand or more than once. This is a very handy mechanism for instance replication. For example it is used when implementing the `Lazy<T>` injection.
 
@@ -2273,7 +2269,7 @@ To run the above code, the following NuGet packages must be added:
 
 Be careful, replication takes into account the lifetime of the object.
 
-### Enumerable
+## Enumerable
 
 Specifying `IEnumerable<T>` as the injection type allows you to inject instances of all bindings that implement type `T` in a lazy fashion - the instances will be provided one by one, in order corresponding to the sequence of bindings.
 
@@ -2319,7 +2315,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-### Enumerable generics
+## Enumerable generics
 
 ```c#
 using Shouldly;
@@ -2370,7 +2366,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-### Array
+## Array
 
 Specifying `T[]` as the injection type allows instances from all bindings that implement the `T` type to be injected.
 
@@ -2439,7 +2435,7 @@ In addition to arrays, other collection types are also supported, such as:
 - System.Collections.Immutable.IImmutableStack<T>
 And of course this list can easily be supplemented on its own.
 
-### Lazy
+## Lazy
 
 ```c#
 using Shouldly;
@@ -2476,7 +2472,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-### Task
+## Task
 
 By default, tasks are started automatically when they are injected. It is recommended to use an argument of type <c>CancellationToken</c> to the composition root to be able to cancel the execution of a task. In this case, the composition root property is automatically converted to a method with a parameter of type <c>CancellationToken</c>. To start a task, an instance of type <c>TaskFactory<T></c> is used, with default settings:
 
@@ -2541,7 +2537,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-### ValueTask
+## ValueTask
 
 ```c#
 using Pure.DI;
@@ -2586,7 +2582,7 @@ To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
 
 
-### Manually started tasks
+## Manually started tasks
 
 By default, tasks are started automatically when they are injected. But you can override this behavior as shown in the example below. It is also recommended to add a binding for <c>CancellationToken</c> to be able to cancel the execution of a task.
 
@@ -2660,7 +2656,7 @@ To run the above code, the following NuGet package must be added:
 > [!IMPORTANT]
 > The method `Inject()`cannot be used outside of the binding setup.
 
-### Span and ReadOnlySpan
+## Span and ReadOnlySpan
 
 Specifying `Span<T>` and `ReadOnlySpan<T>` work the same as with the array `T[]`.
 
@@ -2710,7 +2706,7 @@ public IService Root
 }
 ```
 
-### Tuple
+## Tuple
 
 The tuples feature provides concise syntax to group multiple data elements in a lightweight data structure. The following example shows how a type can ask to inject a tuple argument into it:
 
@@ -2749,7 +2745,7 @@ To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
 
 
-### Weak Reference
+## Weak Reference
 
 ```c#
 using Pure.DI;
@@ -2783,7 +2779,7 @@ To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
 
 
-### Async Enumerable
+## Async Enumerable
 
 Specifying `IAsyncEnumerable<T>` as the injection type allows instances of all bindings implementing type `T` to be injected in an asynchronous-lazy manner - the instances will be provided one at a time, in an order corresponding to the sequence of the bindings.
 
@@ -2836,7 +2832,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-### Service collection
+## Service collection
 
 The `// OnNewRoot = On` hint specifies to create a static method that will be called for each registered composition root. This method can be used, for example, to create an _IServiceCollection_ object:
 
@@ -2890,7 +2886,7 @@ To run the above code, the following NuGet packages must be added:
   - [Microsoft.Extensions.DependencyInjection](https://www.nuget.org/packages/Microsoft.Extensions.DependencyInjection)
 
 
-### Func with arguments
+## Func with arguments
 
 ```c#
 using Shouldly;
@@ -2977,7 +2973,7 @@ To run the above code, the following NuGet packages must be added:
 
 Using a binding of the form `.Bind<T>().To<T>("some statement")` is a kind of hack that allows you to replace an injection with just its own string.
 
-### Func with tag
+## Func with tag
 
 ```c#
 using Shouldly;
@@ -3020,7 +3016,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-### Keyed service provider
+## Keyed service provider
 
 ```c#
 using Shouldly;
@@ -3074,7 +3070,7 @@ To run the above code, the following NuGet packages must be added:
   - [Microsoft.Extensions.DependencyInjection](https://www.nuget.org/packages/Microsoft.Extensions.DependencyInjection)
 
 
-### Service provider
+## Service provider
 
 The `// ObjectResolveMethodName = GetService` hint overrides the _object Resolve(Type type)_ method name in _GetService_, allowing the _IServiceProvider_ interface to be implemented in a partial class.
 
@@ -3123,7 +3119,7 @@ To run the above code, the following NuGet packages must be added:
   - [Microsoft.Extensions.DependencyInjection](https://www.nuget.org/packages/Microsoft.Extensions.DependencyInjection)
 
 
-### Service provider with scope
+## Service provider with scope
 
 ```c#
 using Shouldly;
@@ -3203,7 +3199,7 @@ To run the above code, the following NuGet packages must be added:
   - [Microsoft.Extensions.DependencyInjection](https://www.nuget.org/packages/Microsoft.Extensions.DependencyInjection)
 
 
-### Overriding the BCL binding
+## Overriding the BCL binding
 
 At any time, the default binding to the BCL type can be changed to your own:
 
@@ -3249,9 +3245,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-## Generics scenarios
-
-### Generics
+## Generics
 
 Generic types are also supported.
 > [!IMPORTANT]
@@ -3346,7 +3340,7 @@ internal interface TTDisposable: IDisposable { }
 internal interface TTEnumerator<out T>: IEnumerator<T> { }
 ```
 
-### Generic composition roots
+## Generic composition roots
 
 Sometimes you want to be able to create composition roots with type parameters. In this case, the composition root can only be represented by a method.
 > [!IMPORTANT]
@@ -3404,7 +3398,7 @@ To run the above code, the following NuGet package must be added:
 > [!IMPORTANT]
 > The method `Inject()`cannot be used outside of the binding setup.
 
-### Complex generics
+## Complex generics
 
 Defining generic type arguments using particular marker types like ```TT``` in this sample is a distinguishing and outstanding feature. This allows binding complex generic types with nested generic types and with any type constraints. For instance ```IService<T1, T2, TList, TDictionary> where T2: struct where TList: IList<T1> where TDictionary: IDictionary<T1, T2> { }``` and its binding to the some implementation ```.Bind<IService<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>().To<Service<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>()``` with all checks and code-generation at the compile time. It is clear that this example is exaggerated, it just demonstrates the ease of working with marker types like ```TT, TTEnumerable, TTSet``` and etc. for binding complex generic types.
 
@@ -3476,7 +3470,7 @@ To run the above code, the following NuGet packages must be added:
 
 It can also be useful in a very simple scenario where, for example, the sequence of type arguments does not match the sequence of arguments of the contract that implements the type.
 
-### Generic composition roots with constraints
+## Generic composition roots with constraints
 
 > [!IMPORTANT]
 > `Resolve' methods cannot be used to resolve generic composition roots.
@@ -3540,7 +3534,7 @@ To run the above code, the following NuGet package must be added:
 > [!IMPORTANT]
 > The method `Inject()`cannot be used outside of the binding setup.
 
-### Generic async composition roots with constraints
+## Generic async composition roots with constraints
 
 > [!IMPORTANT]
 > `Resolve' methods cannot be used to resolve generic composition roots.
@@ -3606,7 +3600,7 @@ To run the above code, the following NuGet package must be added:
 > [!IMPORTANT]
 > The method `Inject()`cannot be used outside of the binding setup.
 
-### Custom generic argument
+## Custom generic argument
 
 ```c#
 using Shouldly;
@@ -3655,7 +3649,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-### Build up of an existing generic object
+## Build up of an existing generic object
 
 In other words, injecting the necessary dependencies via methods, properties, or fields into an existing object.
 
@@ -3719,7 +3713,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-### Generic root arguments
+## Generic root arguments
 
 ```c#
 using Pure.DI;
@@ -3756,7 +3750,7 @@ To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
 
 
-### Complex generic root arguments
+## Complex generic root arguments
 
 ```c#
 using Pure.DI;
@@ -3796,7 +3790,7 @@ To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
 
 
-### Generic builder
+## Generic builder
 
 ```c#
 using Shouldly;
@@ -3842,7 +3836,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-### Generic builders
+## Generic builders
 
 ```c#
 using Shouldly;
@@ -3902,7 +3896,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-### Generic roots
+## Generic roots
 
 ```c#
 using Pure.DI;
@@ -3947,9 +3941,7 @@ To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
 
 
-## Attributes scenarios
-
-### Constructor ordinal attribute
+## Constructor ordinal attribute
 
 When applied to any constructor in a type, automatic injection constructor selection is disabled. The selection will only focus on constructors marked with this attribute, in the appropriate order from smallest value to largest.
 
@@ -4000,7 +3992,7 @@ To run the above code, the following NuGet packages must be added:
 
 The attribute `Ordinal` is part of the API, but you can use your own attribute at any time, and this allows you to define them in the assembly and namespace you want.
 
-### Dependency attribute
+## Dependency attribute
 
 When applied to a property or field, these type members will also participate in dependency injection in the appropriate order from smallest value to largest.
 
@@ -4071,7 +4063,7 @@ To run the above code, the following NuGet packages must be added:
 
 The attribute `Dependency` is part of the API, but you can use your own attribute at any time, and this allows you to define them in the assembly and namespace you want.
 
-### Member ordinal attribute
+## Member ordinal attribute
 
 When applied to a property or field, these type members will also participate in dependency injection in the appropriate order from smallest value to largest.
 
@@ -4142,7 +4134,7 @@ To run the above code, the following NuGet packages must be added:
 
 The attribute `Ordinal` is part of the API, but you can use your own attribute at any time, and this allows you to define them in the assembly and namespace you want.
 
-### Tag attribute
+## Tag attribute
 
 Sometimes it's important to take control of building a dependency graph. For example, when there are multiple implementations of the same contract. In this case, _tags_ will help:
 
@@ -4195,7 +4187,7 @@ To run the above code, the following NuGet packages must be added:
 
 The tag can be a constant, a type, a [smart tag](smart-tags.md), or a value of an `Enum` type. This attribute is part of the API, but you can use your own attribute at any time, and this allows you to define them in the assembly and namespace you want.
 
-### Type attribute
+## Type attribute
 
 The injection type can be defined manually using the `Type` attribute. This attribute explicitly overrides an injected type, otherwise it would be determined automatically based on the type of the constructor/method, property, or field parameter.
 
@@ -4244,7 +4236,7 @@ To run the above code, the following NuGet packages must be added:
 
 This attribute is part of the API, but you can use your own attribute at any time, and this allows you to define them in the assembly and namespace you want.
 
-### Inject attribute
+## Inject attribute
 
 If you want to use attributes in your libraries but don't want to create your own, you can add this package to your projects:
 
@@ -4294,7 +4286,7 @@ This package should also be included in a project:
 
 [![NuGet](https://img.shields.io/nuget/v/Pure.DI)](https://www.nuget.org/packages/Pure.DI)
 
-### Custom attributes
+## Custom attributes
 
 It's very easy to use your attributes. To do this, you need to create a descendant of the `System.Attribute` class and register it using one of the appropriate methods:
 - `TagAttribute`
@@ -4369,7 +4361,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-### Custom universal attribute
+## Custom universal attribute
 
 You can use a combined attribute, and each method in the list above has an optional parameter that defines the argument number (the default is 0) from where to get the appropriate metadata for _tag_, _ordinal_, or _type_.
 
@@ -4421,7 +4413,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-### Custom generic argument attribute
+## Custom generic argument attribute
 
 ```c#
 using Shouldly;
@@ -4474,7 +4466,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-### Bind attribute
+## Bind attribute
 
 `BindAttribute` allows you to perform automatic binding to properties, fields or methods that belong to the type of the binding involved.
 
@@ -4526,7 +4518,7 @@ To run the above code, the following NuGet package must be added:
 
 This attribute `BindAttribute` applies to field properties and methods, to regular, static, and even returning generalized types.
 
-### Bind attribute with lifetime and tag
+## Bind attribute with lifetime and tag
 
 ```c#
 using Pure.DI;
@@ -4575,7 +4567,7 @@ To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
 
 
-### Bind attribute for a generic type
+## Bind attribute for a generic type
 
 ```c#
 using Shouldly;
@@ -4626,9 +4618,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-## Interception scenarios
-
-### Decorator
+## Decorator
 
 Interception is the ability to intercept calls between objects in order to enrich or change their behavior, but without having to change their code. A prerequisite for interception is weak binding. That is, if programming is abstraction-based, the underlying implementation can be transformed or improved by "packaging" it into other implementations of the same abstraction. At its core, intercept is an application of the Decorator design pattern. This pattern provides a flexible alternative to inheritance by dynamically "attaching" additional responsibility to an object. Decorator "packs" one implementation of an abstraction into another implementation of the same abstraction like a "matryoshka doll".
 _Decorator_ is a well-known and useful design pattern. It is convenient to use tagged dependencies to build a chain of nested decorators, as in the example below:
@@ -4668,7 +4658,7 @@ To run the above code, the following NuGet packages must be added:
 
 Here an instance of the _Service_ type, labeled _"base"_, is injected in the decorator _DecoratorService_. You can use any tag that semantically reflects the feature of the abstraction being embedded. The tag can be a constant, a type, or a value of an enumerated type.
 
-### Interception
+## Interception
 
 Interception allows you to enrich or change the behavior of a certain set of objects from the object graph being created without changing the code of the corresponding types.
 
@@ -4752,7 +4742,7 @@ Using an intercept gives you the ability to add end-to-end functionality such as
 
 - Providing resistance to failures, etc.
 
-### Advanced interception
+## Advanced interception
 
 This approach of interception maximizes performance by precompiling the proxy object factory.
 
@@ -4876,9 +4866,7 @@ To run the above code, the following NuGet packages must be added:
   - [Castle.DynamicProxy](https://www.nuget.org/packages/Castle.DynamicProxy)
 
 
-## Hints scenarios
-
-### Resolve hint
+## Resolve hint
 
 Hints are used to fine-tune code generation. The _Resolve_ hint determines whether to generate _Resolve_ methods. By default a set of four _Resolve_ methods are generated. Set this hint to _Off_ to disable the generation of resolve methods. This will reduce class composition generation time and no private composition roots will be generated in this case. When the _Resolve_ hint is disabled, only the public root properties are available, so be sure to define them explicitly with the `Root<T>(...)` method.
 In addition, setup hints can be comments before the _Setup_ method in the form ```hint = value```, for example: `// Resolve = Off`.
@@ -4912,7 +4900,7 @@ To run the above code, the following NuGet package must be added:
 
 For more hints, see [this](README.md#setup-hints) page.
 
-### ThreadSafe hint
+## ThreadSafe hint
 
 Hints are used to fine-tune code generation. The _ThreadSafe_ hint determines whether object composition will be created in a thread-safe manner. This hint is _On_ by default. It is good practice not to use threads when creating an object graph, in which case this hint can be turned off, which will lead to a slight increase in performance.
 In addition, setup hints can be comments before the _Setup_ method in the form ```hint = value```, for example: `// ThreadSafe = Off`.
@@ -4944,7 +4932,7 @@ To run the above code, the following NuGet package must be added:
 
 For more hints, see [this](README.md#setup-hints) page.
 
-### OnDependencyInjection regular expression hint
+## OnDependencyInjection regular expression hint
 
 Hints are used to fine-tune code generation. The _OnDependencyInjection_ hint determines whether to generate partial _OnDependencyInjection_ method to control of dependency injection.
 In addition, setup hints can be comments before the _Setup_ method in the form ```hint = value```, for example: `// OnDependencyInjection = On`.
@@ -5010,7 +4998,7 @@ To run the above code, the following NuGet packages must be added:
 The `OnDependencyInjectionContractTypeNameRegularExpression` hint helps identify the set of types that require injection control. You can use it to specify a regular expression to filter the full name of a type.
 For more hints, see [this](README.md#setup-hints) page.
 
-### OnDependencyInjection wildcard hint
+## OnDependencyInjection wildcard hint
 
 Hints are used to fine-tune code generation. The _OnDependencyInjection_ hint determines whether to generate partial _OnDependencyInjection_ method to control of dependency injection.
 In addition, setup hints can be comments before the _Setup_ method in the form ```hint = value```, for example: `// OnDependencyInjection = On`.
@@ -5076,7 +5064,7 @@ To run the above code, the following NuGet packages must be added:
 The `OnDependencyInjectionContractTypeNameWildcard` hint helps identify the set of types that require injection control. You can use it to specify a wildcard to filter the full name of a type.
 For more hints, see [this](README.md#setup-hints) page.
 
-### OnCannotResolve regular expression hint
+## OnCannotResolve regular expression hint
 
 Hints are used to fine-tune code generation. The _OnCannotResolve_ hint determines whether to generate a partial `OnCannotResolve<T>(...)` method to handle a scenario where an instance which cannot be resolved.
 In addition, setup hints can be comments before the _Setup_ method in the form ```hint = value```, for example: `// OnCannotResolveContractTypeNameRegularExpression = string`.
@@ -5138,7 +5126,7 @@ To run the above code, the following NuGet packages must be added:
 The `OnCannotResolveContractTypeNameRegularExpression` hint helps define the set of types that require manual dependency resolution. You can use it to specify a regular expression to filter the full type name.
 For more hints, see [this](README.md#setup-hints) page.
 
-### OnCannotResolve wildcard hint
+## OnCannotResolve wildcard hint
 
 Hints are used to fine-tune code generation. The _OnCannotResolve_ hint determines whether to generate a partial `OnCannotResolve<T>(...)` method to handle a scenario where an instance which cannot be resolved.
 In addition, setup hints can be comments before the _Setup_ method in the form ```hint = value```, for example: `// OnCannotResolveContractTypeNameWildcard = string`.
@@ -5200,7 +5188,7 @@ To run the above code, the following NuGet packages must be added:
 The `OnCannotResolveContractTypeNameWildcard` hint helps define the set of types that require manual dependency resolution. You can use it to specify a wildcard to filter the full type name.
 For more hints, see [this](README.md#setup-hints) page.
 
-### OnNewInstance regular expression hint
+## OnNewInstance regular expression hint
 
 Hints are used to fine-tune code generation. The _OnNewInstance_ hint determines whether to generate partial _OnNewInstance_ method.
 In addition, setup hints can be comments before the _Setup_ method in the form ```hint = value```, for example: `// OnNewInstance = On`.
@@ -5268,7 +5256,7 @@ To run the above code, the following NuGet packages must be added:
 The `OnNewInstanceLifetimeRegularExpression` hint helps you define a set of lifetimes that require instance creation control. You can use it to specify a regular expression to filter bindings by lifetime name.
 For more hints, see [this](README.md#setup-hints) page.
 
-### OnNewInstance wildcard hint
+## OnNewInstance wildcard hint
 
 Hints are used to fine-tune code generation. The _OnNewInstance_ hint determines whether to generate partial _OnNewInstance_ method.
 In addition, setup hints can be comments before the _Setup_ method in the form ```hint = value```, for example: `// OnNewInstance = On`.
@@ -5337,7 +5325,7 @@ To run the above code, the following NuGet packages must be added:
 The `OnNewInstanceImplementationTypeNameWildcard` hint helps you define a set of implementation types that require instance creation control. You can use it to specify a wildcard to filter bindings by implementation name.
 For more hints, see [this](README.md#setup-hints) page.
 
-### ToString hint
+## ToString hint
 
 Hints are used to fine-tune code generation. The _ToString_ hint determines if the _ToString()_ method should be generated. This method provides a text-based class diagram in the format [mermaid](https://mermaid.js.org/). To see this diagram, just call the ToString method and copy the text to [this site](https://mermaid.live/). An example class diagram can be seen below.
 In addition, setup hints can be comments before the _Setup_ method in the form ```hint = value```, for example: `// ToString = On`.
@@ -5369,7 +5357,7 @@ To run the above code, the following NuGet package must be added:
 Developers who start using DI technology often complain that they stop seeing the structure of the application because it is difficult to understand how it is built. To make life easier, you can add the _ToString_ hint by telling the generator to create a `ToString()` method.
 For more hints, see [this](README.md#setup-hints) page.
 
-### Check for a root
+## Check for a root
 
 Sometimes you need to check if you can get the root of a composition using the _Resolve_ method before calling it, this example will show you how to do it:
 
@@ -5435,9 +5423,7 @@ To run the above code, the following NuGet packages must be added:
 
 For more hints, see [this](README.md#setup-hints) page.
 
-## Advanced scenarios
-
-### Composition root kinds
+## Composition root kinds
 
 ```c#
 using Pure.DI;
@@ -5490,7 +5476,7 @@ To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
 
 
-### Root with mame template
+## Root with mame template
 
 ```c#
 using Pure.DI;
@@ -5510,7 +5496,7 @@ To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
 
 
-### Tag Type
+## Tag Type
 
 `Tag.Type` in bindings replaces the expression `typeof(T)`, where `T` is the type of the implementation in a binding.
 
@@ -5574,7 +5560,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-### Tag Unique
+## Tag Unique
 
 `Tag.Unique` is useful to register a binding with a unique tag. It will not be available through the composition root or `Resolve` methods directly, but can be injected in compositions as some kind of enumeration.
 
@@ -5618,7 +5604,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-### Tag on injection site
+## Tag on injection site
 
 Sometimes it is necessary to determine which binding will be used to inject explicitly. To do this, use a special tag created by calling the `Tag.On()` method. Tag on injection site is specified in a special format: `Tag.On("<namespace>.<type>.<member>[:argument]")`. The argument is specified only for the constructor and methods. For example, for namespace _MyNamespace_ and type _Class1_:
 
@@ -5703,7 +5689,7 @@ To run the above code, the following NuGet packages must be added:
 > [!WARNING]
 > Each potentially injectable argument, property, or field contains an additional tag. This tag can be used to specify what can be injected there. This will only work if the binding type and the tag match. So while this approach can be useful for specifying what to enter, it can be more expensive to maintain and less reliable, so it is recommended to use attributes like `[Tag(...)]` instead.
 
-### Tag on a constructor argument
+## Tag on a constructor argument
 
 The wildcards ‘*’ and ‘?’ are supported.
 
@@ -5762,7 +5748,7 @@ To run the above code, the following NuGet packages must be added:
 > [!WARNING]
 > Each potentially injectable argument, property, or field contains an additional tag. This tag can be used to specify what can be injected there. This will only work if the binding type and the tag match. So while this approach can be useful for specifying what to enter, it can be more expensive to maintain and less reliable, so it is recommended to use attributes like `[Tag(...)]` instead.
 
-### Tag on a member
+## Tag on a member
 
 The wildcards ‘*’ and ‘?’ are supported.
 
@@ -5807,7 +5793,7 @@ To run the above code, the following NuGet packages must be added:
 > [!WARNING]
 > Each potentially injectable argument, property, or field contains an additional tag. This tag can be used to specify what can be injected there. This will only work if the binding type and the tag match. So while this approach can be useful for specifying what to enter, it can be more expensive to maintain and less reliable, so it is recommended to use attributes like `[Tag(...)]` instead.
 
-### Tag on a method argument
+## Tag on a method argument
 
 The wildcards ‘*’ and ‘?’ are supported.
 
@@ -5856,7 +5842,7 @@ To run the above code, the following NuGet packages must be added:
 > [!WARNING]
 > Each potentially injectable argument, property, or field contains an additional tag. This tag can be used to specify what can be injected there. This will only work if the binding type and the tag match. So while this approach can be useful for specifying what to enter, it can be more expensive to maintain and less reliable, so it is recommended to use attributes like `[Tag(...)]` instead.
 
-### Tag on injection site with wildcards
+## Tag on injection site with wildcards
 
 The wildcards ‘*’ and ‘?’ are supported.
 
@@ -5926,7 +5912,7 @@ To run the above code, the following NuGet packages must be added:
 > [!WARNING]
 > Each potentially injectable argument, property, or field contains an additional tag. This tag can be used to specify what can be injected there. This will only work if the binding type and the tag match. So while this approach can be useful for specifying what to enter, it can be more expensive to maintain and less reliable, so it is recommended to use attributes like `[Tag(...)]` instead.
 
-### Dependent compositions
+## Dependent compositions
 
 The _Setup_ method has an additional argument _kind_, which defines the type of composition:
 - _CompositionKind.Public_ - will create a normal composition class, this is the default setting and can be omitted, it can also use the _DependsOn_ method to use it as a dependency in other compositions
@@ -5979,7 +5965,7 @@ To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
 
 
-### Accumulators
+## Accumulators
 
 Accumulators allow you to accumulate instances of certain types and lifetimes.
 
@@ -6027,7 +6013,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-### Global compositions
+## Global compositions
 
 When the `Setup(name, kind)` method is called, the second optional parameter specifies the composition kind. If you set it as `CompositionKind.Global`, no composition class will be created, but this setup will be the base setup for all others in the current project, and `DependsOn(...)` is not required. The setups will be applied in the sort order of their names.
 
@@ -6057,7 +6043,7 @@ To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
 
 
-### Partial class
+## Partial class
 
 A partial class can contain setup code.
 
@@ -6129,7 +6115,7 @@ To run the above code, the following NuGet packages must be added:
 
 The partial class is also useful for specifying access modifiers to the generated class.
 
-### A few partial classes
+## A few partial classes
 
 The setting code for one Composition can be located in several methods and/or in several partial classes.
 
@@ -6176,7 +6162,7 @@ To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
 
 
-### Tracking disposable instances per a composition root
+## Tracking disposable instances per a composition root
 
 ```c#
 using Shouldly;
@@ -6242,7 +6228,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-### Tracking disposable instances in delegates
+## Tracking disposable instances in delegates
 
 ```c#
 using Shouldly;
@@ -6312,7 +6298,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-### Tracking disposable instances using pre-built classes
+## Tracking disposable instances using pre-built classes
 
 If you want ready-made classes for tracking disposable objects in your libraries but don't want to create your own, you can add this package to your projects:
 
@@ -6417,7 +6403,7 @@ This package should also be included in a project:
 
 [![NuGet](https://img.shields.io/nuget/v/Pure.DI)](https://www.nuget.org/packages/Pure.DI)
 
-### Tracking disposable instances with different lifetimes
+## Tracking disposable instances with different lifetimes
 
 ```c#
 using Shouldly;
@@ -6511,7 +6497,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-### Tracking async disposable instances per a composition root
+## Tracking async disposable instances per a composition root
 
 ```c#
 using Shouldly;
@@ -6582,7 +6568,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-### Tracking async disposable instances in delegates
+## Tracking async disposable instances in delegates
 
 ```c#
 using Shouldly;
@@ -6659,7 +6645,7 @@ To run the above code, the following NuGet packages must be added:
   - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
-### Exposed roots
+## Exposed roots
 
 Composition roots from other assemblies or projects can be used as a source of bindings. When you add a binding to a composition from another assembly or project, the roots of the composition with the `RootKind.Exposed` type will be used in the bindings automatically. For example, in some assembly a composition is defined as:
 ```c#
@@ -6699,7 +6685,7 @@ To run the above code, the following NuGet package must be added:
 > [!IMPORTANT]
 > At this point, a composition from another assembly or another project can be used for this purpose. Compositions from the current project cannot be used in this way due to limitations of the source code generators.
 
-### Exposed roots with tags
+## Exposed roots with tags
 
 Composition roots from other assemblies or projects can be used as a source of bindings. When you add a binding to a composition from another assembly or project, the roots of the composition with the `RootKind.Exposed` type will be used in the bindings automatically. For example, in some assembly a composition is defined as:
 ```c#
@@ -6737,7 +6723,7 @@ To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
 
 
-### Exposed roots via arg
+## Exposed roots via arg
 
 Composition roots from other assemblies or projects can be used as a source of bindings passed through class arguments. When you add a binding to a composition from another assembly or project, the roots of the composition with the `RootKind.Exposed` type will be used in the bindings automatically. For example, in some assembly a composition is defined as:
 ```c#
@@ -6775,7 +6761,7 @@ To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
 
 
-### Exposed roots via root arg
+## Exposed roots via root arg
 
 Composition roots from other assemblies or projects can be used as a source of bindings passed through root arguments. When you add a binding to a composition from another assembly or project, the roots of the composition with the `RootKind.Exposed` type will be used in the bindings automatically. For example, in some assembly a composition is defined as:
 ```c#
@@ -6814,7 +6800,7 @@ To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
 
 
-### Exposed generic roots
+## Exposed generic roots
 
 Composition roots from other assemblies or projects can be used as a source of bindings. When you add a binding to a composition from another assembly or project, the roots of the composition with the `RootKind.Exposed` type will be used in the bindings automatically. For example, in some assembly a composition is defined as:
 ```c#
@@ -6856,7 +6842,7 @@ To run the above code, the following NuGet package must be added:
 > [!IMPORTANT]
 > At this point, a composition from another assembly or another project can be used for this purpose. Compositions from the current project cannot be used in this way due to limitations of the source code generators.
 
-### Exposed generic roots with args
+## Exposed generic roots with args
 
 Composition roots from other assemblies or projects can be used as a source of bindings. When you add a binding to a composition from another assembly or project, the roots of the composition with the `RootKind.Exposed` type will be used in the bindings automatically. For example, in some assembly a composition is defined as:
 ```c#
@@ -6898,7 +6884,7 @@ To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
 
 
-### DI tracing via serilog
+## DI tracing via serilog
 
 ```c#
 using Serilog.Core;
@@ -6972,9 +6958,7 @@ To run the above code, the following NuGet packages must be added:
   - [Serilog.Events](https://www.nuget.org/packages/Serilog.Events)
 
 
-## Unity scenarios
-
-### Basic Unity use case
+## Basic Unity use case
 
 ```c#
 using Pure.DI;
@@ -7043,7 +7027,7 @@ To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
 
 
-### Unity MonoBehaviours
+## Unity MonoBehaviours
 
 ```c#
 using Pure.DI;
@@ -7132,7 +7116,7 @@ To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
 
 
-# Examples of using Pure.DI source code generator in different types of .NET applications.
+# Examples of using Pure.DI for different types of .NET projects.
 
 #### Avalonia application
 
@@ -12553,15 +12537,6 @@ DI.Setup("Composition")
 </blockquote></details>
 
 
-<details><summary>Field UsingDeclarations</summary><blockquote>
-
-Atomically generated smart tag with value "UsingDeclarations".
-            It's used for:
-            
-            class _Generator__CompositionClassBuilder_ <-- _IBuilder`2_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
-</blockquote></details>
-
-
 <details><summary>Field GenericType</summary><blockquote>
 
 Atomically generated smart tag with value "GenericType".
@@ -12584,6 +12559,15 @@ Atomically generated smart tag with value "CompositionClass".
             It's used for:
             
             class _Generator__CodeBuilder_ <-- _IBuilder`2_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field UsingDeclarations</summary><blockquote>
+
+Atomically generated smart tag with value "UsingDeclarations".
+            It's used for:
+            
+            class _Generator__CompositionClassBuilder_ <-- _IBuilder`2_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
 </blockquote></details>
 
 

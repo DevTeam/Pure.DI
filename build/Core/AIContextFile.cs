@@ -1,3 +1,4 @@
-﻿namespace Build.Core;
+﻿// ReSharper disable InconsistentNaming
+namespace Build.Core;
 
-record AIContextFile(string FileName, AIContextSize Size, long SizeBytes);
+record AIContextFile(string FileName, AIContextSize Size, long SizeKB, long SizeKTokens);

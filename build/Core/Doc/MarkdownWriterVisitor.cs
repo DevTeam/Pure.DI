@@ -2,7 +2,7 @@
 
 namespace Build.Core.Doc;
 
-class MarkdownWriterVisitor(IMarkdownParts markdownParts) : IDocumentVisitor<MarkdownWriterContext>
+class MarkdownWriterVisitor(MarkdownParts markdownParts) : IDocumentVisitor<MarkdownWriterContext>
 {
     public async Task<MarkdownWriterContext> StartTypeVisitAsync(MarkdownWriterContext ctx, DocumentType type, CancellationToken cancellationToken)
     {

@@ -15,18 +15,15 @@ DI.Setup(nameof(Composition))
     .Bind<ITeamCityArtifactsWriter>().To(_ => GetService<ITeamCityWriter>())
     .Bind().To(_ => GetService<INuGet>())
     .Bind().To<DotNetEnv>()
-    .Bind().To<Markdown>()
-    .Bind().To<XDocumentTools>()
     .Bind().To<DotNetXmlDocumentWalker<TT>>()
     .Bind().To<MarkdownWriterVisitor>()
-    .Bind().To<DocumentParts>()
 
     // Targets
     .Bind(Tag.Type).To<GeneratorTarget>()
     .Bind(Tag.Type).To<LibrariesTarget>()
     .Bind(Tag.Type).To<CompatibilityCheckTarget>()
     .Bind(Tag.Type).To<PackTarget>()
-    .Bind(Tag.Type).To<CreateExamplesTarget>()
+    .Bind(Tag.Type).As(Singleton).To<CreateExamplesTarget>()
     .Bind(Tag.Type).To<ReadmeTarget>()
     .Bind(Tag.Type).To<TestExamplesTarget>()
     .Bind(Tag.Type).To<BenchmarksTarget>()
@@ -36,6 +33,6 @@ DI.Setup(nameof(Composition))
     .Bind(Tag.Type).To<UpdateTarget>()
     .Bind(Tag.Type).To<PublishBlazorTarget>()
     .Bind(Tag.Type).To<PerformanceTestsTarget>()
-    .Bind(Tag.Type).To<AiContextTarget>();
+    .Bind(Tag.Type).To<AIContextTarget>();
 
 return await new Composition().Root.RunAsync(CancellationToken.None);

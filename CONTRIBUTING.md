@@ -43,6 +43,7 @@ The entire build logic is a regular [console .NET application](/build). You can 
 
 | Commands | Description |
 |----------|-------------|
+| ai, ai | Generate AI context |
 | bm, benchmarks, benchmarks | Run benchmarks |
 | c, check, check | Compatibility checks |
 | dp, deploy, deploy | Package deployment |

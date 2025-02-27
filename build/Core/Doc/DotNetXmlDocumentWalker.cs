@@ -3,7 +3,7 @@ namespace Build.Core.Doc;
 using System.Xml.Linq;
 using System.Xml.XPath;
 
-class DotNetXmlDocumentWalker<T>(IMarkdownParts markdownParts) : IDocumentWalker<T>
+class DotNetXmlDocumentWalker<T>(MarkdownParts markdownParts) : IDocumentWalker<T>
 {
     public async Task WalkAsync(
         T ctx,

@@ -1,6 +1,9 @@
-﻿namespace Build.Core;
+﻿// ReSharper disable InconsistentNaming
+namespace Build.Core;
 
-enum AIContextSize
+enum AIContextSize: long
 {
-    Large
+    Small = 8,
+    Medium = 32,
+    Large = 128
 }

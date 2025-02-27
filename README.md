@@ -199,6 +199,13 @@ dotnet run
 </details>
 
 
+## AI Context
+
+| AI Context file | Size | Tokens |
+| [AI_CONTEXT_SMALL.md](#AI_CONTEXT_SMALL.md) | 25KB | 6K |
+| [AI_CONTEXT_MEDIUM.md](#AI_CONTEXT_MEDIUM.md) | 124KB | 31K |
+| [AI_CONTEXT_LARGE.md](#AI_CONTEXT_LARGE.md) | 410KB | 105K |
+
 ## Examples
 
 ### Basics
@@ -1161,6 +1168,7 @@ The entire build logic is a regular [console .NET application](/build). You can 
 
 | Commands | Description |
 |----------|-------------|
+| ai, ai | Generate AI context |
 | bm, benchmarks, benchmarks | Run benchmarks |
 | c, check, check | Compatibility checks |
 | dp, deploy, deploy | Package deployment |

@@ -1,24 +1,24 @@
 // ReSharper disable InvertIf
 // ReSharper disable ConvertIfStatementToSwitchStatement
 // ReSharper disable ClassNeverInstantiated.Global
-
+// ReSharper disable InconsistentNaming
 namespace Build.Core.Targets;
 
 using System.Xml.Linq;
 using Doc;
 using Enum=Enum;
 
-class AiContextTarget(
+class AIContextTarget(
     Commands commands,
     Env env,
     Versions versions,
     Settings settings,
     Markdown markdown,
     XDocumentTools xDocumentTools,
-    ReadmeTools readmeTools,
     [Tag(typeof(CreateExamplesTarget))] ITarget<IReadOnlyCollection<ExampleGroup>> createExamplesTarget)
     : IInitializable, ITarget<AIContext>
 {
+    private const long AITokenSizeBytes = 4;
     private const string ReadmeDir = "readme";
     private const string AiContextReadmeFileTemplate = "AI_CONTEXT_{0}.md";
 
@@ -39,24 +39,33 @@ class AiContextTarget(
         return new AIContext(files);
     }
 
-    private async Task<AIContextFile> CreateAiContextFile(string fileName, IReadOnlyCollection<ExampleGroup> examples, AIContextSize size, CancellationToken cancellationToken)
+    private async Task<AIContextFile> CreateAiContextFile(
+        string fileName,
+        IReadOnlyCollection<ExampleGroup> examples,
+        AIContextSize size,
+        CancellationToken cancellationToken)
     {
         await using var writer = File.CreateText(fileName);
         {
-            await writer.WriteLineAsync("# Pure.DI source code generator usage scenarios.");
+            await writer.WriteLineAsync("This Markdown-formatted document contains information on working with Pure.DI.");
+            await writer.WriteLineAsync();
+            await writer.WriteLineAsync("# Usage scenarios.");
             foreach (var (groupName, exampleItems) in examples)
             {
-                await writer.WriteLineAsync();
-                var groupTitle = new string(readmeTools.FormatTitle(groupName).ToArray());
-                await writer.WriteLineAsync($"## {groupTitle} scenarios");
-                foreach (var vars in exampleItems)
+                foreach (var example in exampleItems)
                 {
-                    var description = vars[CreateExamplesTarget.DescriptionKey];
-                    var code = vars[CreateExamplesTarget.BodyKey];
+                    var priority = int.Parse(example[CreateExamplesTarget.PriorityKey]);
+                    if (!AddExample(size, priority, groupName))
+                    {
+                        continue;
+                    }
+
+                    var description = example[CreateExamplesTarget.DescriptionKey];
+                    var code = example[CreateExamplesTarget.BodyKey];
                     await writer.WriteLineAsync();
-                    await writer.WriteLineAsync($"### {description}");
+                    await writer.WriteLineAsync($"## {description}");
                     await writer.WriteLineAsync();
-                    var header = vars[CreateExamplesTarget.HeaderKey];
+                    var header = example[CreateExamplesTarget.HeaderKey];
                     if (!string.IsNullOrWhiteSpace(header))
                     {
                         await writer.WriteLineAsync(header);
@@ -67,7 +76,7 @@ class AiContextTarget(
                     await writer.WriteLineAsync(code);
                     await writer.WriteLineAsync("```");
                     await writer.WriteLineAsync();
-                    var references = vars[CreateExamplesTarget.ReferencesKey].Split(";", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                    var references = example[CreateExamplesTarget.ReferencesKey].Split(";", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                     var refs = references.Length > 0 ? "s" : "";
                     await writer.WriteLineAsync($"To run the above code, the following NuGet package{refs} must be added:");
                     await writer.WriteLineAsync(" - [Pure.DI](https://www.nuget.org/packages/Pure.DI)");
@@ -78,7 +87,7 @@ class AiContextTarget(
 
                     await writer.WriteLineAsync();
 
-                    var footer = vars[CreateExamplesTarget.FooterKey];
+                    var footer = example[CreateExamplesTarget.FooterKey];
                     if (!string.IsNullOrWhiteSpace(footer))
                     {
                         await writer.WriteLineAsync(footer);
@@ -86,44 +95,77 @@ class AiContextTarget(
                 }
             }
 
-            await writer.WriteLineAsync();
-            await writer.WriteLineAsync("# Examples of using Pure.DI source code generator in different types of .NET applications.");
-            await writer.WriteLineAsync();
-            var generatorPackageVersion = versions.GetNext(new NuGetRestoreSettings("Pure.DI"), Settings.VersionRange, 0).ToString();
-            var msPackageVersion = versions.GetNext(new NuGetRestoreSettings("Pure.DI.MS"), Settings.VersionRange, 0).ToString();
-            foreach (var readmeFile in Directory.EnumerateFiles(Path.Combine(ReadmeDir), "*.md"))
+            if (size >= AIContextSize.Large)
             {
-                if (readmeFile.EndsWith("Template.md", StringComparison.InvariantCultureIgnoreCase))
+                await writer.WriteLineAsync();
+                await writer.WriteLineAsync("# Examples of using Pure.DI for different types of .NET projects.");
+                await writer.WriteLineAsync();
+                var generatorPackageVersion = versions.GetNext(new NuGetRestoreSettings("Pure.DI"), Settings.VersionRange, 0).ToString();
+                var msPackageVersion = versions.GetNext(new NuGetRestoreSettings("Pure.DI.MS"), Settings.VersionRange, 0).ToString();
+                foreach (var readmeFile in Directory.EnumerateFiles(Path.Combine(ReadmeDir), "*.md"))
                 {
-                    if (readmeFile.EndsWith("PageTemplate.md"))
+                    if (readmeFile.EndsWith("Template.md", StringComparison.InvariantCultureIgnoreCase))
                     {
-                        var content = await File.ReadAllTextAsync(readmeFile);
-                        content = content
-                            .Replace("$(version)", generatorPackageVersion)
-                            .Replace("$(ms.version)", msPackageVersion)
-                            .Replace("$(targetFrameworkVersion)", $"net{settings.BaseDotNetFrameworkVersion}");
-                        await writer.WriteLineAsync(content);
+                        if (readmeFile.EndsWith("PageTemplate.md"))
+                        {
+                            var content = await File.ReadAllTextAsync(readmeFile);
+                            content = content
+                                .Replace("$(version)", generatorPackageVersion)
+                                .Replace("$(ms.version)", msPackageVersion)
+                                .Replace("$(targetFrameworkVersion)", $"net{settings.BaseDotNetFrameworkVersion}");
+                            await writer.WriteLineAsync(content);
+                        }
                     }
                 }
             }
 
-            await writer.WriteLineAsync();
-            await writer.WriteLineAsync("# Pure.DI API");
-            await writer.WriteLineAsync();
-            var sourceDirectory = env.GetPath(PathType.SourceDirectory);
-            var xmlDocFile = Path.Combine(sourceDirectory, "Pure.DI.Core", "bin", settings.Configuration, "netstandard2.0", "Pure.DI.xml");
-            using var xmlDocReader = File.OpenText(xmlDocFile);
-            var xmlDoc = await xDocumentTools.LoadAsync(xmlDocReader, LoadOptions.None, CancellationToken.None);
-            await markdown.ConvertAsync(
-                xmlDoc,
-                writer,
-                i => i.NamespaceName == "Pure.DI" && i.TypeName != "Generator",
-                CancellationToken.None);
+            if (size >= AIContextSize.Large)
+            {
+                await writer.WriteLineAsync();
+                await writer.WriteLineAsync("# Pure.DI API");
+                await writer.WriteLineAsync();
+                var sourceDirectory = env.GetPath(PathType.SourceDirectory);
+                var xmlDocFile = Path.Combine(sourceDirectory, "Pure.DI.Core", "bin", settings.Configuration, "netstandard2.0", "Pure.DI.xml");
+                using var xmlDocReader = File.OpenText(xmlDocFile);
+                var xmlDoc = await xDocumentTools.LoadAsync(xmlDocReader, LoadOptions.None, CancellationToken.None);
+                await markdown.ConvertAsync(xmlDoc, writer,  doc => AddDocument(size, doc), CancellationToken.None);
+            }
 
             await writer.FlushAsync(cancellationToken);
         }
 
         var sizeBytes = new FileInfo(fileName).Length;
-        return new AIContextFile(fileName, size, sizeBytes);
+        var sizeTokens = sizeBytes / AITokenSizeBytes;
+        if (sizeTokens > (long)size * 1000)
+        {
+            Error($"{size} {Path.GetFileName(fileName)} is {sizeTokens / 1000}K tokens, max size is {(long)size}K tokens.");
+        }
+        else
+        {
+            Summary($"{size} {Path.GetFileName(fileName)} is {sizeTokens / 1000}K tokens, max size is {(long)size}K tokens.");
+        }
+
+        return new AIContextFile(fileName, size, sizeBytes / 1024L, sizeTokens / 1000);
+    }
+
+    private static bool AddExample(AIContextSize size, int priority, string groupName)
+    {
+        switch (size)
+        {
+            case AIContextSize.Small
+                when priority <= 4 && groupName is "Basics" or "Lifetimes":
+            case AIContextSize.Medium
+                when priority <= 14 && groupName != "Advanced" && groupName != "Hints":
+            case AIContextSize.Large:
+                return true;
+
+            default:
+                return false;
+        }
+    }
+
+    private static bool AddDocument(AIContextSize size, DocumentTypeName doc)
+    {
+        return doc.NamespaceName == "Pure.DI" && doc.TypeName != "Generator";
     }
 }

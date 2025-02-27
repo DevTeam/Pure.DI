@@ -10,7 +10,7 @@ class CreateExamplesTarget(
 {
     private const string VisibleKey = "v";
     private const string TitleKey = "t";
-    private const string PriorityKey = "p";
+    public const string PriorityKey = "p";
     public const string DescriptionKey = "d";
     public const string IntegrationTestKey = "i";
     public const string HeaderKey = "h";
@@ -34,11 +34,21 @@ class CreateExamplesTarget(
 
     private static readonly char[] Separator = ['='];
 
+    private IReadOnlyCollection<ExampleGroup> _examples = [];
+
     public Task InitializeAsync(CancellationToken cancellationToken) => commands.RegisterAsync(
         this, "Create examples", "example", "e");
 
     public async Task<IReadOnlyCollection<ExampleGroup>> RunAsync(CancellationToken cancellationToken)
     {
+        lock (_examples)
+        {
+            if (_examples.Count > 0)
+            {
+                return _examples;
+            }
+        }
+
         var solutionDirectory = env.GetPath(PathType.SolutionDirectory);
         var usageTestsProject = Path.Combine(solutionDirectory, "tests", "Pure.DI.UsageTests", "Pure.DI.UsageTests.csproj");
         var projects = new[]
@@ -64,7 +74,13 @@ class CreateExamplesTarget(
             .WithConfiguration(settings.Configuration)
             .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
-        return await CreateExamplesAsync(cancellationToken);
+        var examples = await CreateExamplesAsync(cancellationToken);
+        lock (_examples)
+        {
+            _examples = examples;
+        }
+
+        return examples;
     }
 
     private async Task<IReadOnlyCollection<ExampleGroup>> CreateExamplesAsync(CancellationToken cancellationToken)
