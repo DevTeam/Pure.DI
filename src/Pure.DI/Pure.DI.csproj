@@ -23,7 +23,7 @@
     <ItemGroup>
         <ProjectReference Include="..\Pure.DI.Core\Pure.DI.Core.csproj"/>
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="$(AnalyzerRoslynPackageVersion)" PrivateAssets="all"/>
-        <None Include="$(OutDir)\*.dll" Pack="true" PackagePath="analyzers/dotnet/roslyn$(AnalyzerRoslynVersion)/cs" Visible="false"/>
+        <None Include="$(OutDir)\**\*.*" Pack="true" PackagePath="analyzers/dotnet/roslyn$(AnalyzerRoslynVersion)/cs" Visible="false"/>
     </ItemGroup>
 
     <Choose>
