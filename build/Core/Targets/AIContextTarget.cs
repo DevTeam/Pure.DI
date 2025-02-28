@@ -49,7 +49,7 @@ class AIContextTarget(
         await using var writer = File.CreateText(fileName);
 
         {
-            await writer.WriteLineAsync("This Markdown-formatted document contains information on working with Pure.DI.");
+            await writer.WriteLineAsync("This Markdown-formatted document contains information about working with Pure.DI");
             await writer.WriteLineAsync();
             await writer.WriteLineAsync("# Usage scenarios.");
             foreach (var (groupName, exampleItems) in examples)
@@ -121,7 +121,7 @@ class AIContextTarget(
                 }
             }
 
-            if (size >= AIContextSize.Medium)
+            if (size >= AIContextSize.Large)
             {
                 await writer.WriteLineAsync();
                 await writer.WriteLineAsync("# Pure.DI API");

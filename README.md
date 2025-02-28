@@ -3409,12 +3409,12 @@ DI.Setup("Composition")
 </blockquote></details>
 
 
-<details><summary>Field GenericType</summary><blockquote>
+<details><summary>Field CompositionClass</summary><blockquote>
 
-Atomically generated smart tag with value "GenericType".
+Atomically generated smart tag with value "CompositionClass".
             It's used for:
             
-            class _Generator__TypeResolver_ <-- _IIdGenerator_(GenericType) -- _IdGenerator_ as _PerResolve_
+            class _Generator__CodeBuilder_ <-- _IBuilder`2_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
 </blockquote></details>
 
 
@@ -3427,19 +3427,19 @@ Atomically generated smart tag with value "UsingDeclarations".
 </blockquote></details>
 
 
+<details><summary>Field GenericType</summary><blockquote>
+
+Atomically generated smart tag with value "GenericType".
+            It's used for:
+            
+            class _Generator__TypeResolver_ <-- _IIdGenerator_(GenericType) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
 <details><summary>Field Injection</summary><blockquote>
 
 Atomically generated smart tag with value "Injection".
             
-</blockquote></details>
-
-
-<details><summary>Field CompositionClass</summary><blockquote>
-
-Atomically generated smart tag with value "CompositionClass".
-            It's used for:
-            
-            class _Generator__CodeBuilder_ <-- _IBuilder`2_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
 </blockquote></details>
 
 
@@ -5187,9 +5187,9 @@ Contextual AI needs to understand the situation it’s in. This means knowing de
 
 | AI Context file | Size | Tokens |
 | --------------- | ---- | ------ |
-| [AI_CONTEXT_SMALL.md](#AI_CONTEXT_SMALL.md) | 25KB | 6K |
-| [AI_CONTEXT_MEDIUM.md](#AI_CONTEXT_MEDIUM.md) | 124KB | 31K |
-| [AI_CONTEXT_LARGE.md](#AI_CONTEXT_LARGE.md) | 369KB | 94K |
+| [AI_CONTEXT_SMALL.md](AI_CONTEXT_SMALL.md) | 25KB | 6K |
+| [AI_CONTEXT_MEDIUM.md](AI_CONTEXT_MEDIUM.md) | 124KB | 31K |
+| [AI_CONTEXT_LARGE.md](AI_CONTEXT_LARGE.md) | 369KB | 94K |
 ## How to contribute to Pure.DI
 
 Thank you for your interest in contributing to the Pure.DI project! First of all, if you are going to make a big change or feature, please open a problem first. That way, we can coordinate and understand if the change you're going to work on fits with current priorities and if we can commit to reviewing and merging it within a reasonable timeframe. We don't want you to waste a lot of your valuable time on something that may not align with what we want for Pure.DI.

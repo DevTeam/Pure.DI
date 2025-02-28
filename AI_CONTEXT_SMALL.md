@@ -1,4 +1,4 @@
-This Markdown-formatted document contains information on working with Pure.DI.
+This Markdown-formatted document contains information about working with Pure.DI
 
 # Usage scenarios.
 

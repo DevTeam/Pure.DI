@@ -1,4 +1,4 @@
-This Markdown-formatted document contains information on working with Pure.DI.
+This Markdown-formatted document contains information about working with Pure.DI
 
 # Usage scenarios.
 
@@ -4270,7 +4270,4 @@ internal partial class Composition
 
 To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-
-
-# Pure.DI API
 

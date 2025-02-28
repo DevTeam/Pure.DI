@@ -109,7 +109,7 @@ class ReadmeTarget(
         foreach (var aiContextFile in aiContext.Files)
         {
             var fileName = Path.GetFileName(aiContextFile.FileName);
-            await writer.WriteLineAsync($"| [{fileName}](#{fileName}) | {aiContextFile.SizeKB}KB | {aiContextFile.SizeKTokens}K |");
+            await writer.WriteLineAsync($"| [{fileName}]({fileName}) | {aiContextFile.SizeKB}KB | {aiContextFile.SizeKTokens}K |");
         }
     }
 
