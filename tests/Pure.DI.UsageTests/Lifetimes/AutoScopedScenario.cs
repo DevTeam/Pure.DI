@@ -80,15 +80,15 @@ partial class Composition
             // Session composition root
             .Root<Service>("SessionRoot", kind: RootKinds.Private)
             // Auto scoped
-            .Bind().To(IService (Composition baseComposition) =>
+            .Bind().To(IService (Composition parentScope) =>
             {
-                // Creates a session
-                var session = new Composition(baseComposition);
-                // Provides a root
-                return session.SessionRoot;
+                // Creates a new scope from the parent scope
+                var scope = new Composition(parentScope);
+                // Provides a scope root
+                return scope.SessionRoot;
             })
 
-            // Program composition root
+            // Composition root
             .Root<Program>("ProgramRoot");
 }
 // }

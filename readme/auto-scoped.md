@@ -50,15 +50,15 @@ partial class Composition
             // Session composition root
             .Root<Service>("SessionRoot", kind: RootKinds.Private)
             // Auto scoped
-            .Bind().To(IService (Composition baseComposition) =>
+            .Bind().To(IService (Composition parentScope) =>
             {
-                // Creates a session
-                var session = new Composition(baseComposition);
-                // Provides a root
-                return session.SessionRoot;
+                // Creates a new scope from the parent scope
+                var scope = new Composition(parentScope);
+                // Provides a scope root
+                return scope.SessionRoot;
             })
 
-            // Program composition root
+            // Composition root
             .Root<Program>("ProgramRoot");
 }
 ```
@@ -127,11 +127,11 @@ partial class Composition
       {
         Composition transientComposition3 = this;
         IService transientIService2;
-        Composition localBaseComposition101 = transientComposition3;
-        // Creates a session
-        var localSession102 = new Composition(localBaseComposition101);
-        // Provides a root
-        transientIService2 = localSession102.SessionRoot;
+        Composition localParentScope101 = transientComposition3;
+        // Creates a new scope from the parent scope
+        var localScope102 = new Composition(localParentScope101);
+        // Provides a scope root
+        transientIService2 = localScope102.SessionRoot;
         IService localValue100 = transientIService2;
         return localValue100;
       });

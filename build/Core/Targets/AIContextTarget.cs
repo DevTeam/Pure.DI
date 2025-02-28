@@ -137,16 +137,16 @@ class AIContextTarget(
         }
 
         var sizeBytes = new FileInfo(fileName).Length;
-        var sizeTokens = sizeBytes / AITokenSizeBytes;
-        if (sizeTokens > (long)size * 1000L)
+        var sizeKTokens = sizeBytes / AITokenSizeBytes / 1000;
+        if (sizeKTokens >= (long)size)
         {
-            Error($"{size} {Path.GetFileName(fileName)} is {sizeTokens / 1000L}K tokens, max size is {(long)size}K tokens.");
+            Error($"{size} {Path.GetFileName(fileName)} has {sizeKTokens}K/{(long)size}K tokens.");
         }
         else
         {
-            Summary($"{size} {Path.GetFileName(fileName)} is {sizeTokens / 1000L}K tokens, max size is {(long)size}K tokens.");
+            Summary($"{size} {Path.GetFileName(fileName)} has {sizeKTokens}K/{(long)size}K tokens.");
         }
 
-        return new AIContextFile(fileName, size, sizeBytes / 1024L, sizeTokens / 1000L);
+        return new AIContextFile(fileName, size, sizeBytes / 1024L, sizeKTokens);
     }
 }

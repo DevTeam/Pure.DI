@@ -753,7 +753,7 @@ class Service(IDependency dependency) : IService
 }
 
 // Implements a session
-class Session(Composition composition) : Composition(composition);
+class Session(Composition parent) : Composition(parent);
 
 partial class Program(Func<Session> sessionFactory)
 {
@@ -772,7 +772,7 @@ partial class Composition
             // Session composition root
             .Root<IService>("SessionRoot")
 
-            // Program composition root
+            // Composition root
             .Root<Program>("ProgramRoot");
 }
 ```
