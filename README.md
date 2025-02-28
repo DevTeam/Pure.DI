@@ -199,13 +199,6 @@ dotnet run
 </details>
 
 
-## AI Context
-
-| AI Context file | Size | Tokens |
-| [AI_CONTEXT_SMALL.md](#AI_CONTEXT_SMALL.md) | 25KB | 6K |
-| [AI_CONTEXT_MEDIUM.md](#AI_CONTEXT_MEDIUM.md) | 124KB | 31K |
-| [AI_CONTEXT_LARGE.md](#AI_CONTEXT_LARGE.md) | 410KB | 105K |
-
 ## Examples
 
 ### Basics
@@ -363,6 +356,7 @@ dotnet run
 - Git repo with examples
   - [Schrödinger's cat](https://github.com/DevTeam/Pure.DI.Example) 
   - [How to use Pure.DI to create and test libraries](https://github.com/DevTeam/Pure.DI.Solution) 
+
 ## Generated Code
 
 Each generated class, hereafter called a _composition_, must be customized. Setup starts with a call to the `Setup(string compositionTypeName)` method:
@@ -1104,7 +1098,7 @@ Start the project build and wait until a file like *c:\profiling\pure_di_????.dt
 
 </details>
 
-### Additional resources
+## Additional resources
 
 Examples of how to set up a composition
 - [Pure.DI](https://github.com/DevTeam/Pure.DI/blob/master/src/Pure.DI.Core/Generator.cs)
@@ -1123,6 +1117,16 @@ RU DotNext video
 
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=nrp9SH-gLqg" target="_blank"><img src="http://img.youtube.com/vi/nrp9SH-gLqg/0.jpg"
 alt="DotNext Pure.DI" width="640" border="10"/></a>
+
+## AI Context
+
+Contextual AI needs to understand the situation it’s in. This means knowing details like API, usage scenarios, etc. This helps the AI give more relevant and personalized responses. So Markdown docs below can be useful if you or your team rely on an AI assistant to write code using Pure.DI:
+
+| AI Context file | Size | Tokens |
+| --------------- | ---- | ------ |
+| [AI_CONTEXT_SMALL.md](#AI_CONTEXT_SMALL.md) | 25KB | 6K |
+| [AI_CONTEXT_MEDIUM.md](#AI_CONTEXT_MEDIUM.md) | 124KB | 31K |
+| [AI_CONTEXT_LARGE.md](#AI_CONTEXT_LARGE.md) | 368KB | 94K |
 ## How to contribute to Pure.DI
 
 Thank you for your interest in contributing to the Pure.DI project! First of all, if you are going to make a big change or feature, please open a problem first. That way, we can coordinate and understand if the change you're going to work on fits with current priorities and if we can commit to reviewing and merging it within a reasonable timeframe. We don't want you to waste a lot of your valuable time on something that may not align with what we want for Pure.DI.

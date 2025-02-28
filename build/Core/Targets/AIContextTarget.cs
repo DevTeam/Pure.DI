@@ -46,6 +46,7 @@ class AIContextTarget(
         CancellationToken cancellationToken)
     {
         await using var writer = File.CreateText(fileName);
+
         {
             await writer.WriteLineAsync("This Markdown-formatted document contains information on working with Pure.DI.");
             await writer.WriteLineAsync();
@@ -108,7 +109,7 @@ class AIContextTarget(
                     {
                         if (readmeFile.EndsWith("PageTemplate.md"))
                         {
-                            var content = await File.ReadAllTextAsync(readmeFile);
+                            var content = await File.ReadAllTextAsync(readmeFile, cancellationToken);
                             content = content
                                 .Replace("$(version)", generatorPackageVersion)
                                 .Replace("$(ms.version)", msPackageVersion)
@@ -119,7 +120,7 @@ class AIContextTarget(
                 }
             }
 
-            if (size >= AIContextSize.Large)
+            if (size >= AIContextSize.Medium)
             {
                 await writer.WriteLineAsync();
                 await writer.WriteLineAsync("# Pure.DI API");
@@ -128,7 +129,7 @@ class AIContextTarget(
                 var xmlDocFile = Path.Combine(sourceDirectory, "Pure.DI.Core", "bin", settings.Configuration, "netstandard2.0", "Pure.DI.xml");
                 using var xmlDocReader = File.OpenText(xmlDocFile);
                 var xmlDoc = await xDocumentTools.LoadAsync(xmlDocReader, LoadOptions.None, CancellationToken.None);
-                await markdown.ConvertAsync(xmlDoc, writer,  doc => AddDocument(size, doc), CancellationToken.None);
+                await markdown.ConvertAsync(xmlDoc, writer, doc => DocumentPartFilter(size, doc), CancellationToken.None);
             }
 
             await writer.FlushAsync(cancellationToken);
@@ -136,16 +137,16 @@ class AIContextTarget(
 
         var sizeBytes = new FileInfo(fileName).Length;
         var sizeTokens = sizeBytes / AITokenSizeBytes;
-        if (sizeTokens > (long)size * 1000)
+        if (sizeTokens > (long)size * 1000L)
         {
-            Error($"{size} {Path.GetFileName(fileName)} is {sizeTokens / 1000}K tokens, max size is {(long)size}K tokens.");
+            Error($"{size} {Path.GetFileName(fileName)} is {sizeTokens / 1000L}K tokens, max size is {(long)size}K tokens.");
         }
         else
         {
-            Summary($"{size} {Path.GetFileName(fileName)} is {sizeTokens / 1000}K tokens, max size is {(long)size}K tokens.");
+            Summary($"{size} {Path.GetFileName(fileName)} is {sizeTokens / 1000L}K tokens, max size is {(long)size}K tokens.");
         }
 
-        return new AIContextFile(fileName, size, sizeBytes / 1024L, sizeTokens / 1000);
+        return new AIContextFile(fileName, size, sizeBytes / 1024L, sizeTokens / 1000L);
     }
 
     private static bool AddExample(AIContextSize size, int priority, string groupName)
@@ -155,7 +156,7 @@ class AIContextTarget(
             case AIContextSize.Small
                 when priority <= 4 && groupName is "Basics" or "Lifetimes":
             case AIContextSize.Medium
-                when priority <= 14 && groupName != "Advanced" && groupName != "Hints":
+                when priority <= 14 && groupName is not "Advanced" and not "Hints":
             case AIContextSize.Large:
                 return true;
 
@@ -164,8 +165,20 @@ class AIContextTarget(
         }
     }
 
-    private static bool AddDocument(AIContextSize size, DocumentTypeName doc)
+    private static bool DocumentPartFilter(AIContextSize size, DocumentPart part)
     {
-        return doc.NamespaceName == "Pure.DI" && doc.TypeName != "Generator";
+        if (part.NamespaceName != "Pure.DI" || part.TypeName == "Generator")
+        {
+            return false;
+        }
+
+        return size switch
+        {
+            AIContextSize.Small => false,
+            AIContextSize.Medium => false,
+            _ =>
+                part.TypeName is not "DI" and not "Buckets`2" and not "IResolver`2" and not "Pair`2" and not "Strings"
+                && !Enumerable.Range(5, 10).Any(i => part.MemberName.Contains(i.ToString()))
+        };
     }
 }

@@ -23,7 +23,7 @@ class DotNetXmlDocumentWalker<T>(MarkdownParts markdownParts) : IDocumentWalker<
                 let namespaceName = markdownParts.Join(typeFullNameParts[..^1])
                 let typeName = markdownParts.Join(typeFullNameParts[^1..]) ?? ""
                 let memberName = markdownParts.Join(parts[^1..]) ?? ""
-                select (name: new DocumentTypeName(namespaceName, typeName, memberName), kind, element))
+                select (name: new DocumentPart(namespaceName, typeName, memberName), kind, element))
             .OrderBy(i => i.name.NamespaceName).ThenBy(i => i.name.TypeName);
 
         DocumentType? type = null;

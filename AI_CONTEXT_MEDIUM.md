@@ -4271,3 +4271,6 @@ internal partial class Composition
 To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
 
+
+# Pure.DI API
+

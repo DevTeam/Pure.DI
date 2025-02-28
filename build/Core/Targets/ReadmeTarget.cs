@@ -58,11 +58,11 @@ class ReadmeTarget(
 
         await AddContentAsync(ReadmeTemplateFile, readmeWriter);
 
-        await AIContextAsync(readmeWriter, cancellationToken);
-
         await GenerateExamplesAsync(examples, readmeWriter, logsDirectory);
 
         await AddContentAsync(FooterTemplateFile, readmeWriter);
+
+        await AddAIContextAsync(readmeWriter, cancellationToken);
 
         await AddContributingAsync(readmeWriter);
 
@@ -78,12 +78,16 @@ class ReadmeTarget(
 
         return 0;
     }
-    private async Task AIContextAsync(StreamWriter writer, CancellationToken cancellationToken)
+
+    private async Task AddAIContextAsync(StreamWriter writer, CancellationToken cancellationToken)
     {
         await writer.WriteLineAsync();
         await writer.WriteLineAsync("## AI Context");
         await writer.WriteLineAsync();
+        await writer.WriteLineAsync("Contextual AI needs to understand the situation it’s in. This means knowing details like API, usage scenarios, etc. This helps the AI give more relevant and personalized responses. So Markdown docs below can be useful if you or your team rely on an AI assistant to write code using Pure.DI:");
+        await writer.WriteLineAsync();
         await writer.WriteLineAsync("| AI Context file | Size | Tokens |");
+        await writer.WriteLineAsync("| --------------- | ---- | ------ |");
         var aiContext = await aiContextTarget.RunAsync(cancellationToken);
         foreach (var aiContextFile in aiContext.Files)
         {

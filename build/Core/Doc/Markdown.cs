@@ -10,10 +10,10 @@ class Markdown(
     public Task ConvertAsync(
         XDocument document,
         TextWriter markdownWriter,
-        Predicate<DocumentTypeName> filter,
+        Predicate<DocumentPart> documentPartFilter,
         CancellationToken cancellationToken)
         => dotNetXmlDocumentWalker.WalkAsync(
-            new MarkdownWriterContext(filter, markdownWriter),
+            new MarkdownWriterContext(documentPartFilter, markdownWriter),
             document,
             markdownWriterVisitor,
             cancellationToken);

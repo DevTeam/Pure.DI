@@ -8679,13 +8679,6 @@ Creates an attribute instance.
 </blockquote></details>
 
 
-<details><summary>Buckets`2</summary><blockquote>
-
-For internal use. 
-            
-</blockquote></details>
-
-
 <details><summary>CompositionKind</summary><blockquote>
 
 Determines how the partial class will be generated. The _Setup(System.String,Pure.DI.CompositionKind)_ method has an additional argument  `kind` , which defines the type of composition:
@@ -8744,50 +8737,6 @@ Creates an attribute instance.
 .
             
  - parameter _ordinal_ - The injection ordinal.
-
-</blockquote></details>
-
-
-</blockquote></details>
-
-
-<details><summary>DI</summary><blockquote>
-
-An API for a Dependency Injection setup.
-            
-See also _Setup(System.String,Pure.DI.CompositionKind)_.
-
-<details><summary>Method Setup(System.String,Pure.DI.CompositionKind)</summary><blockquote>
-
-Begins the definitions of the Dependency Injection setup chain.
-             
-```c#
-
-interface IDependency;
-            
-             
-             class Dependency : IDependency;
-            
-             
-             interface IService;
-            
-             
-             class Service(IDependency dependency) : IService;
-            
-             
-             DI.Setup("Composition")
-               .Bind<IDependency>().To<Dependency>()
-               .Bind<IService>().To<Service>()
-               .Root<IService>("Root");
-             
-```
-
-
- - parameter _compositionTypeName_ - An optional argument specifying the partial class name to generate.
-
- - parameter _kind_ - An optional argument specifying the kind of setup. Please _CompositionKind_ for details. It defaults to  `Public` .
-
- - returns Reference to the setup continuation chain.
 
 </blockquote></details>
 
@@ -10285,98 +10234,6 @@ See also _As(Pure.DI.Lifetime)_.
 </blockquote></details>
 
 
-<details><summary>Method Bind``5(System.Object[])</summary><blockquote>
-
-Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
-            The type 1 of dependency to be bound.The type 2 of dependency to be bound.The type 3 of dependency to be bound.The type 3 of dependency to be bound.The type 5 of dependency to be bound.
- - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
-
- - returns Reference to the setup continuation chain.
-
-See also _To``1_.
-
-See also _To``1(System.Func{Pure.DI.IContext,``0})_.
-
-See also _!:To<T1,T>()_.
-
-See also _!:To<T1,T2,T>()_.
-
-See also _Tags(System.Object[])_.
-
-See also _As(Pure.DI.Lifetime)_.
-
-</blockquote></details>
-
-
-<details><summary>Method Bind``6(System.Object[])</summary><blockquote>
-
-Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
-            The type 1 of dependency to be bound.The type 2 of dependency to be bound.The type 3 of dependency to be bound.The type 3 of dependency to be bound.The type 5 of dependency to be bound.The type 6 of dependency to be bound.
- - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
-
- - returns Reference to the setup continuation chain.
-
-See also _To``1_.
-
-See also _To``1(System.Func{Pure.DI.IContext,``0})_.
-
-See also _!:To<T1,T>()_.
-
-See also _!:To<T1,T2,T>()_.
-
-See also _Tags(System.Object[])_.
-
-See also _As(Pure.DI.Lifetime)_.
-
-</blockquote></details>
-
-
-<details><summary>Method Bind``7(System.Object[])</summary><blockquote>
-
-Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
-            The type 1 of dependency to be bound.The type 2 of dependency to be bound.The type 3 of dependency to be bound.The type 3 of dependency to be bound.The type 5 of dependency to be bound.The type 6 of dependency to be bound.The type 7 of dependency to be bound.
- - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
-
- - returns Reference to the setup continuation chain.
-
-See also _To``1_.
-
-See also _To``1(System.Func{Pure.DI.IContext,``0})_.
-
-See also _!:To<T1,T>()_.
-
-See also _!:To<T1,T2,T>()_.
-
-See also _Tags(System.Object[])_.
-
-See also _As(Pure.DI.Lifetime)_.
-
-</blockquote></details>
-
-
-<details><summary>Method Bind``8(System.Object[])</summary><blockquote>
-
-Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
-            The type 1 of dependency to be bound.The type 2 of dependency to be bound.The type 3 of dependency to be bound.The type 3 of dependency to be bound.The type 5 of dependency to be bound.The type 6 of dependency to be bound.The type 7 of dependency to be bound.The type 8 of dependency to be bound.
- - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
-
- - returns Reference to the setup continuation chain.
-
-See also _To``1_.
-
-See also _To``1(System.Func{Pure.DI.IContext,``0})_.
-
-See also _!:To<T1,T>()_.
-
-See also _!:To<T1,T2,T>()_.
-
-See also _Tags(System.Object[])_.
-
-See also _As(Pure.DI.Lifetime)_.
-
-</blockquote></details>
-
-
 <details><summary>Method As(Pure.DI.Lifetime)</summary><blockquote>
 
 Determines the _Lifetime_ of a binding.
@@ -10730,111 +10587,6 @@ See also _As(Pure.DI.Lifetime)_.
 </blockquote></details>
 
 
-<details><summary>Method To``5(System.Func{``0,``1,``2,``3,``4})</summary><blockquote>
-
-Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the _TagAttribute_ in front of the parameter to specify the tag of the injected dependency.
-            
- - parameter _factory_ - An expression for manually creating and initializing an instance.
-Type #1 of injected dependency.Type #2 of injected dependency.Type #3 of injected dependency.Type #4 of injected dependency.The implementation type.
- - returns Reference to the setup continuation chain.
-
-See also _Bind``1(System.Object[])_.
-
-See also _To``1(System.Func{Pure.DI.IContext,``0})_.
-
-See also _To``1_.
-
-See also _Tags(System.Object[])_.
-
-See also _As(Pure.DI.Lifetime)_.
-
-</blockquote></details>
-
-
-<details><summary>Method To``6(System.Func{``0,``1,``2,``3,``4,``5})</summary><blockquote>
-
-Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the _TagAttribute_ in front of the parameter to specify the tag of the injected dependency.
-            
- - parameter _factory_ - An expression for manually creating and initializing an instance.
-Type #1 of injected dependency.Type #2 of injected dependency.Type #3 of injected dependency.Type #4 of injected dependency.Type #5 of injected dependency.The implementation type.
- - returns Reference to the setup continuation chain.
-
-See also _Bind``1(System.Object[])_.
-
-See also _To``1(System.Func{Pure.DI.IContext,``0})_.
-
-See also _To``1_.
-
-See also _Tags(System.Object[])_.
-
-See also _As(Pure.DI.Lifetime)_.
-
-</blockquote></details>
-
-
-<details><summary>Method To``7(System.Func{``0,``1,``2,``3,``4,``5,``6})</summary><blockquote>
-
-Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the _TagAttribute_ in front of the parameter to specify the tag of the injected dependency.
-            
- - parameter _factory_ - An expression for manually creating and initializing an instance.
-Type #1 of injected dependency.Type #2 of injected dependency.Type #3 of injected dependency.Type #4 of injected dependency.Type #5 of injected dependency.Type #6 of injected dependency.The implementation type.
- - returns Reference to the setup continuation chain.
-
-See also _Bind``1(System.Object[])_.
-
-See also _To``1(System.Func{Pure.DI.IContext,``0})_.
-
-See also _To``1_.
-
-See also _Tags(System.Object[])_.
-
-See also _As(Pure.DI.Lifetime)_.
-
-</blockquote></details>
-
-
-<details><summary>Method To``8(System.Func{``0,``1,``2,``3,``4,``5,``6,``7})</summary><blockquote>
-
-Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the _TagAttribute_ in front of the parameter to specify the tag of the injected dependency.
-            
- - parameter _factory_ - An expression for manually creating and initializing an instance.
-Type #1 of injected dependency.Type #2 of injected dependency.Type #3 of injected dependency.Type #4 of injected dependency.Type #5 of injected dependency.Type #6 of injected dependency.Type #7 of injected dependency.The implementation type.
- - returns Reference to the setup continuation chain.
-
-See also _Bind``1(System.Object[])_.
-
-See also _To``1(System.Func{Pure.DI.IContext,``0})_.
-
-See also _To``1_.
-
-See also _Tags(System.Object[])_.
-
-See also _As(Pure.DI.Lifetime)_.
-
-</blockquote></details>
-
-
-<details><summary>Method To``9(System.Func{``0,``1,``2,``3,``4,``5,``6,``7,``8})</summary><blockquote>
-
-Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the _TagAttribute_ in front of the parameter to specify the tag of the injected dependency.
-            
- - parameter _factory_ - An expression for manually creating and initializing an instance.
-Type #1 of injected dependency.Type #2 of injected dependency.Type #3 of injected dependency.Type #4 of injected dependency.Type #5 of injected dependency.Type #6 of injected dependency.Type #7 of injected dependency.Type #7 of injected dependency.The implementation type.
- - returns Reference to the setup continuation chain.
-
-See also _Bind``1(System.Object[])_.
-
-See also _To``1(System.Func{Pure.DI.IContext,``0})_.
-
-See also _To``1_.
-
-See also _Tags(System.Object[])_.
-
-See also _As(Pure.DI.Lifetime)_.
-
-</blockquote></details>
-
-
 </blockquote></details>
 
 
@@ -10957,98 +10709,6 @@ See also _As(Pure.DI.Lifetime)_.
 
 Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
             The type 1 of dependency to be bound.The type 2 of dependency to be bound.The type 3 of dependency to be bound.The type 4 of dependency to be bound.
- - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
-
- - returns Reference to the setup continuation chain.
-
-See also _To``1_.
-
-See also _To``1(System.Func{Pure.DI.IContext,``0})_.
-
-See also _To<T1,T>()_.
-
-See also _To<T1,T2,T>()_.
-
-See also _Tags(System.Object[])_.
-
-See also _As(Pure.DI.Lifetime)_.
-
-</blockquote></details>
-
-
-<details><summary>Method Bind``5(System.Object[])</summary><blockquote>
-
-Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
-            The type 1 of dependency to be bound.The type 2 of dependency to be bound.The type 3 of dependency to be bound.The type 4 of dependency to be bound.The type 5 of dependency to be bound.
- - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
-
- - returns Reference to the setup continuation chain.
-
-See also _To``1_.
-
-See also _To``1(System.Func{Pure.DI.IContext,``0})_.
-
-See also _To<T1,T>()_.
-
-See also _To<T1,T2,T>()_.
-
-See also _Tags(System.Object[])_.
-
-See also _As(Pure.DI.Lifetime)_.
-
-</blockquote></details>
-
-
-<details><summary>Method Bind``6(System.Object[])</summary><blockquote>
-
-Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
-            The type 1 of dependency to be bound.The type 2 of dependency to be bound.The type 3 of dependency to be bound.The type 4 of dependency to be bound.The type 5 of dependency to be bound.The type 6 of dependency to be bound.
- - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
-
- - returns Reference to the setup continuation chain.
-
-See also _To``1_.
-
-See also _To``1(System.Func{Pure.DI.IContext,``0})_.
-
-See also _To<T1,T>()_.
-
-See also _To<T1,T2,T>()_.
-
-See also _Tags(System.Object[])_.
-
-See also _As(Pure.DI.Lifetime)_.
-
-</blockquote></details>
-
-
-<details><summary>Method Bind``7(System.Object[])</summary><blockquote>
-
-Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
-            The type 1 of dependency to be bound.The type 2 of dependency to be bound.The type 3 of dependency to be bound.The type 4 of dependency to be bound.The type 5 of dependency to be bound.The type 6 of dependency to be bound.The type 7 of dependency to be bound.
- - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
-
- - returns Reference to the setup continuation chain.
-
-See also _To``1_.
-
-See also _To``1(System.Func{Pure.DI.IContext,``0})_.
-
-See also _To<T1,T>()_.
-
-See also _To<T1,T2,T>()_.
-
-See also _Tags(System.Object[])_.
-
-See also _As(Pure.DI.Lifetime)_.
-
-</blockquote></details>
-
-
-<details><summary>Method Bind``8(System.Object[])</summary><blockquote>
-
-Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
-            The type 1 of dependency to be bound.The type 2 of dependency to be bound.The type 3 of dependency to be bound.The type 4 of dependency to be bound.The type 5 of dependency to be bound.The type 6 of dependency to be bound.The type 7 of dependency to be bound.The type 8 of dependency to be bound.
  - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
 
  - returns Reference to the setup continuation chain.
@@ -11679,41 +11339,6 @@ See also _Accumulate``2(Pure.DI.Lifetime[])_.
 </blockquote></details>
 
 
-<details><summary>IResolver`2</summary><blockquote>
-
-Abstract dependency resolver.
-            The composition type.The type of the composition root.
-<details><summary>Method Resolve(`0)</summary><blockquote>
-
-Resolves the composition root.
-            
- - parameter _composite_ - The composition.
-
- - returns A composition root.
-
-See also _Setup(System.String,Pure.DI.CompositionKind)_.
-
-</blockquote></details>
-
-
-<details><summary>Method ResolveByTag(`0,System.Object)</summary><blockquote>
-
-Resolves the composition root by type and tag.
-            
- - parameter _composite_ - The composition.
-
- - parameter _tag_ - The tag of a composition root.
-
- - returns A composition root.
-
-See also _Setup(System.String,Pure.DI.CompositionKind)_.
-
-</blockquote></details>
-
-
-</blockquote></details>
-
-
 <details><summary>Lifetime</summary><blockquote>
 
 Binding lifetimes.
@@ -11952,13 +11577,6 @@ Creates a new instance.
 </blockquote></details>
 
 
-<details><summary>Pair`2</summary><blockquote>
-
-For internal use.
-            
-</blockquote></details>
-
-
 <details><summary>RootKinds</summary><blockquote>
 
 Determines a kind of root of the composition.
@@ -12041,371 +11659,6 @@ See also _BindAttribute_.
 <details><summary>Field Protected</summary><blockquote>
 
 Specifies to use a  `protected`  access modifier for the root of the composition.
-            
-</blockquote></details>
-
-
-</blockquote></details>
-
-
-<details><summary>Strings</summary><blockquote>
-
-A strongly-typed resource class, for looking up localized strings, etc.
-            
-<details><summary>Property ResourceManager</summary><blockquote>
-
-Returns the cached ResourceManager instance used by this class.
-            
-</blockquote></details>
-
-
-<details><summary>Property Culture</summary><blockquote>
-
-Overrides the current thread's CurrentUICulture property for all
-              resource lookups using this strongly typed resource class.
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_AccumulatorCannotAccumulateGenericTypeMarker</summary><blockquote>
-
-Looks up a localized string similar to The accumulator cannot accumulate instances based on a generic type marker..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_AccumulatorTypeCannotBeGenericTypeMarker</summary><blockquote>
-
-Looks up a localized string similar to The accumulator type cannot be based on a generic type marker..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_AsynchronousFactoryWithAsyncNotSupported</summary><blockquote>
-
-Looks up a localized string similar to Asynchronous factory with the async keyword is not supported..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_CannotBuildDependencyGraph</summary><blockquote>
-
-Looks up a localized string similar to Cannot build a dependency graph..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_ClassArgumentTypeCannotBeGenericTypeMarker</summary><blockquote>
-
-Looks up a localized string similar to The class argument type cannot be based on a generic type marker..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_DependencyGraphConstractionFailure</summary><blockquote>
-
-Looks up a localized string similar to It is not possible to construct a dependency graph..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_InvalidBinding</summary><blockquote>
-
-Looks up a localized string similar to The binding is defined incorrectly..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_InvalidBindingDueToCompilationError</summary><blockquote>
-
-Looks up a localized string similar to Invalid binding due to compilation error..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_InvalidBuildersType</summary><blockquote>
-
-Looks up a localized string similar to Invalid builders type..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_InvalidBuilderType</summary><blockquote>
-
-Looks up a localized string similar to Invalid builder type..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_InvalidNumberOfInitializers</summary><blockquote>
-
-Looks up a localized string similar to Invalid number of initializers..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_InvalidRootsRype</summary><blockquote>
-
-Looks up a localized string similar to Invalid roots type..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_InvalidRootType</summary><blockquote>
-
-Looks up a localized string similar to Invalid root type..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_Template_AttributeMemberCannotBeProcessed</summary><blockquote>
-
-Looks up a localized string similar to {0} of the type {1} cannot be processed because it is marked with multiple mutually exclusive attributes..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_Template_CannotBeInstantiatedNoAccessibleConstructor</summary><blockquote>
-
-Looks up a localized string similar to An instance of {0} cannot be instantiated due to no accessible constructor available..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_Template_CannotConstructAbstractType</summary><blockquote>
-
-Looks up a localized string similar to An instance of {0} cannot be constructed because it is an abstract type..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_Template_CannotFindSetup</summary><blockquote>
-
-Looks up a localized string similar to Cannot find setup "{0}"..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_Template_CannotUseContextDirectly</summary><blockquote>
-
-Looks up a localized string similar to It is not possible to use "{0}" directly. Only its methods or properties can be used..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_Template_CyclicDependency</summary><blockquote>
-
-Looks up a localized string similar to Cyclic dependency has been found: {0}..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_Template_InvalidArgumentName</summary><blockquote>
-
-Looks up a localized string similar to Invalid argument name "{0}"..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_Template_InvalidAttributeArgumentPosition</summary><blockquote>
-
-Looks up a localized string similar to The argument position {0} of attribute {1} is out of range [0..{2}]..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_Template_InvalidCompositionTypeName</summary><blockquote>
-
-Looks up a localized string similar to Invalid composition type name "{0}"..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_Template_InvalidIdentifier</summary><blockquote>
-
-Looks up a localized string similar to Invalid identifier "{0}"..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_Template_InvalidRegularExpression</summary><blockquote>
-
-Looks up a localized string similar to Invalid regular expression {0}: "{1}"..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_Template_InvalidRootName</summary><blockquote>
-
-Looks up a localized string similar to Invalid root name "{0}"..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_Template_InvalidWildcard</summary><blockquote>
-
-Looks up a localized string similar to Invalid wildcard {0}: "{1}"..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_Template_LifetimeDoesNotSupportCyclicDependencies</summary><blockquote>
-
-Looks up a localized string similar to {0} lifetime does not support cyclic dependencies..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_Template_MaximumNumberOfIterations</summary><blockquote>
-
-Looks up a localized string similar to The maximum number of iterations {0} was exceeded  was exceeded when building the optimal dependency graph. Try to specify the dependency graph more accurately..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_Template_MustBeApiCall</summary><blockquote>
-
-Looks up a localized string similar to {0} must be a constant value of type {1} or a special API call..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_Template_MustBeValueOfType</summary><blockquote>
-
-Looks up a localized string similar to {0} must be a non-null value of type {1}..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_Template_NoAccessibleConstructor</summary><blockquote>
-
-Looks up a localized string similar to There is no accessible non-static constructor of type {0} with an argument matching "{1}"..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_Template_NoAccessibleFieldOrProperty</summary><blockquote>
-
-Looks up a localized string similar to There is no accessible non-static writable field or property matched with "{0}" of {1}..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_Template_NoAccessibleMethod</summary><blockquote>
-
-Looks up a localized string similar to There is no accessible non-static method of type {0} with a name matching "{1}" an argument matching "{2}"..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_Template_NotImplement</summary><blockquote>
-
-Looks up a localized string similar to {0} does not implement {1}..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_Template_NotSupported</summary><blockquote>
-
-Looks up a localized string similar to {0} is not supported..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_Template_NoTypeForWildcard</summary><blockquote>
-
-Looks up a localized string similar to There is no type found that inherits from {0} whose name matches the "{1}" filter..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_Template_RootDuplicate</summary><blockquote>
-
-Looks up a localized string similar to The composition root "{0}" duplicates the previously declared root "{1}"..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_Template_TooLargeComposition</summary><blockquote>
-
-Looks up a localized string similar to The composition is too large. Stopped on the #{0} dependency..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_Template_TypeWithLifetimeRequiresDirectOrTransitiveInjection</summary><blockquote>
-
-Looks up a localized string similar to Type {0} with lifetime {1} requires direct or transitive dependency injection of type {2} with lifetime {3}, which can lead to data leakage and unexpected behavior..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_Template_UnableToResolve</summary><blockquote>
-
-Looks up a localized string similar to Unable to resolve "{0}" in {1}..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_Template_UnsupportLanguage</summary><blockquote>
-
-Looks up a localized string similar to {0} does not support C# {1}. Please use language version {2} or greater..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_TooManyTypeParameters</summary><blockquote>
-
-Looks up a localized string similar to Too many type parameters..
-            
-</blockquote></details>
-
-
-<details><summary>Property Error_UnhandledError</summary><blockquote>
-
-Looks up a localized string similar to An unhandled error has occurred..
-            
-</blockquote></details>
-
-
-<details><summary>Property Info_CodeGenerationAborted</summary><blockquote>
-
-Looks up a localized string similar to Code generation aborted..
-            
-</blockquote></details>
-
-
-<details><summary>Property Warning_BindingIsNotUsed</summary><blockquote>
-
-Looks up a localized string similar to Binding is not used..
-            
-</blockquote></details>
-
-
-<details><summary>Property Warning_NoRoots</summary><blockquote>
-
-Looks up a localized string similar to None of the composition roots are declared. Add at least one root..
-            
-</blockquote></details>
-
-
-<details><summary>Property Warning_Template_BindingHasBeenOverridden</summary><blockquote>
-
-Looks up a localized string similar to The binding for {0} has been overridden..
-            
-</blockquote></details>
-
-
-<details><summary>Property Warning_Template_InjectionSiteIsNotUsed</summary><blockquote>
-
-Looks up a localized string similar to "{0}" of the tag on the injection site is not used..
-            
-</blockquote></details>
-
-
-<details><summary>Property Warning_Template_RootCannotBeResolvedByResolveMethods</summary><blockquote>
-
-Looks up a localized string similar to The root {0} cannot be resolved using Resolve methods due it has arguments {1}, so an exception will be thrown when trying to do it..
             
 </blockquote></details>
 
@@ -12670,55 +11923,6 @@ Represents the generic type arguments marker for a reference type.
 </blockquote></details>
 
 
-<details><summary>TT10</summary><blockquote>
-
-Represents the generic type arguments marker for a reference type.
-            
-</blockquote></details>
-
-
-<details><summary>TT11</summary><blockquote>
-
-Represents the generic type arguments marker for a reference type.
-            
-</blockquote></details>
-
-
-<details><summary>TT12</summary><blockquote>
-
-Represents the generic type arguments marker for a reference type.
-            
-</blockquote></details>
-
-
-<details><summary>TT13</summary><blockquote>
-
-Represents the generic type arguments marker for a reference type.
-            
-</blockquote></details>
-
-
-<details><summary>TT14</summary><blockquote>
-
-Represents the generic type arguments marker for a reference type.
-            
-</blockquote></details>
-
-
-<details><summary>TT15</summary><blockquote>
-
-Represents the generic type arguments marker for a reference type.
-            
-</blockquote></details>
-
-
-<details><summary>TT16</summary><blockquote>
-
-Represents the generic type arguments marker for a reference type.
-            
-</blockquote></details>
-
-
 <details><summary>TT2</summary><blockquote>
 
 Represents the generic type arguments marker for a reference type.
@@ -12734,41 +11938,6 @@ Represents the generic type arguments marker for a reference type.
 
 
 <details><summary>TT4</summary><blockquote>
-
-Represents the generic type arguments marker for a reference type.
-            
-</blockquote></details>
-
-
-<details><summary>TT5</summary><blockquote>
-
-Represents the generic type arguments marker for a reference type.
-            
-</blockquote></details>
-
-
-<details><summary>TT6</summary><blockquote>
-
-Represents the generic type arguments marker for a reference type.
-            
-</blockquote></details>
-
-
-<details><summary>TT7</summary><blockquote>
-
-Represents the generic type arguments marker for a reference type.
-            
-</blockquote></details>
-
-
-<details><summary>TT8</summary><blockquote>
-
-Represents the generic type arguments marker for a reference type.
-            
-</blockquote></details>
-
-
-<details><summary>TT9</summary><blockquote>
 
 Represents the generic type arguments marker for a reference type.
             
@@ -12804,34 +11973,6 @@ Represents the generic type arguments marker for _ICollection>T>_.
 
 
 <details><summary>TTCollection4`1</summary><blockquote>
-
-Represents the generic type arguments marker for _ICollection>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTCollection5`1</summary><blockquote>
-
-Represents the generic type arguments marker for _ICollection>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTCollection6`1</summary><blockquote>
-
-Represents the generic type arguments marker for _ICollection>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTCollection7`1</summary><blockquote>
-
-Represents the generic type arguments marker for _ICollection>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTCollection8`1</summary><blockquote>
 
 Represents the generic type arguments marker for _ICollection>T>_.
             
@@ -12908,62 +12049,6 @@ Represents the generic type arguments marker for _IComparable>T>_.
 </blockquote></details>
 
 
-<details><summary>TTComparable5</summary><blockquote>
-
-Represents the generic type arguments marker for _IComparable_.
-            
-</blockquote></details>
-
-
-<details><summary>TTComparable5`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IComparable>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTComparable6</summary><blockquote>
-
-Represents the generic type arguments marker for _IComparable_.
-            
-</blockquote></details>
-
-
-<details><summary>TTComparable6`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IComparable>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTComparable7</summary><blockquote>
-
-Represents the generic type arguments marker for _IComparable_.
-            
-</blockquote></details>
-
-
-<details><summary>TTComparable7`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IComparable>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTComparable8</summary><blockquote>
-
-Represents the generic type arguments marker for _IComparable_.
-            
-</blockquote></details>
-
-
-<details><summary>TTComparable8`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IComparable>T>_.
-            
-</blockquote></details>
-
-
 <details><summary>TTComparer`1</summary><blockquote>
 
 Represents the generic type arguments marker for _IComparer>T>_.
@@ -12993,34 +12078,6 @@ Represents the generic type arguments marker for _IComparer>T>_.
 
 
 <details><summary>TTComparer4`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IComparer>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTComparer5`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IComparer>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTComparer6`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IComparer>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTComparer7`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IComparer>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTComparer8`1</summary><blockquote>
 
 Represents the generic type arguments marker for _IComparer>T>_.
             
@@ -13062,34 +12119,6 @@ Represents the generic type arguments marker for _IDictionary>TKey, TValue>_.
 </blockquote></details>
 
 
-<details><summary>TTDictionary5`2</summary><blockquote>
-
-Represents the generic type arguments marker for _IDictionary>TKey, TValue>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTDictionary6`2</summary><blockquote>
-
-Represents the generic type arguments marker for _IDictionary>TKey, TValue>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTDictionary7`2</summary><blockquote>
-
-Represents the generic type arguments marker for _IDictionary>TKey, TValue>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTDictionary8`2</summary><blockquote>
-
-Represents the generic type arguments marker for _IDictionary>TKey, TValue>_.
-            
-</blockquote></details>
-
-
 <details><summary>TTDisposable</summary><blockquote>
 
 Represents the generic type arguments marker for _IDisposable_.
@@ -13125,34 +12154,6 @@ Represents the generic type arguments marker for _IDisposable_.
 </blockquote></details>
 
 
-<details><summary>TTDisposable5</summary><blockquote>
-
-Represents the generic type arguments marker for _IDisposable_.
-            
-</blockquote></details>
-
-
-<details><summary>TTDisposable6</summary><blockquote>
-
-Represents the generic type arguments marker for _IDisposable_.
-            
-</blockquote></details>
-
-
-<details><summary>TTDisposable7</summary><blockquote>
-
-Represents the generic type arguments marker for _IDisposable_.
-            
-</blockquote></details>
-
-
-<details><summary>TTDisposable8</summary><blockquote>
-
-Represents the generic type arguments marker for _IDisposable_.
-            
-</blockquote></details>
-
-
 <details><summary>TTE</summary><blockquote>
 
 Represents the generic type arguments marker for a enum type.
@@ -13161,55 +12162,6 @@ Represents the generic type arguments marker for a enum type.
 
 
 <details><summary>TTE1</summary><blockquote>
-
-Represents the generic type arguments marker for a enum type.
-            
-</blockquote></details>
-
-
-<details><summary>TTE10</summary><blockquote>
-
-Represents the generic type arguments marker for a enum type.
-            
-</blockquote></details>
-
-
-<details><summary>TTE11</summary><blockquote>
-
-Represents the generic type arguments marker for a enum type.
-            
-</blockquote></details>
-
-
-<details><summary>TTE12</summary><blockquote>
-
-Represents the generic type arguments marker for a enum type.
-            
-</blockquote></details>
-
-
-<details><summary>TTE13</summary><blockquote>
-
-Represents the generic type arguments marker for a enum type.
-            
-</blockquote></details>
-
-
-<details><summary>TTE14</summary><blockquote>
-
-Represents the generic type arguments marker for a enum type.
-            
-</blockquote></details>
-
-
-<details><summary>TTE15</summary><blockquote>
-
-Represents the generic type arguments marker for a enum type.
-            
-</blockquote></details>
-
-
-<details><summary>TTE16</summary><blockquote>
 
 Represents the generic type arguments marker for a enum type.
             
@@ -13231,41 +12183,6 @@ Represents the generic type arguments marker for a enum type.
 
 
 <details><summary>TTE4</summary><blockquote>
-
-Represents the generic type arguments marker for a enum type.
-            
-</blockquote></details>
-
-
-<details><summary>TTE5</summary><blockquote>
-
-Represents the generic type arguments marker for a enum type.
-            
-</blockquote></details>
-
-
-<details><summary>TTE6</summary><blockquote>
-
-Represents the generic type arguments marker for a enum type.
-            
-</blockquote></details>
-
-
-<details><summary>TTE7</summary><blockquote>
-
-Represents the generic type arguments marker for a enum type.
-            
-</blockquote></details>
-
-
-<details><summary>TTE8</summary><blockquote>
-
-Represents the generic type arguments marker for a enum type.
-            
-</blockquote></details>
-
-
-<details><summary>TTE9</summary><blockquote>
 
 Represents the generic type arguments marker for a enum type.
             
@@ -13307,34 +12224,6 @@ Represents the generic type arguments marker for _IEnumerable>T>_.
 </blockquote></details>
 
 
-<details><summary>TTEnumerable5`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IEnumerable>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTEnumerable6`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IEnumerable>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTEnumerable7`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IEnumerable>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTEnumerable8`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IEnumerable>T>_.
-            
-</blockquote></details>
-
-
 <details><summary>TTEnumerator`1</summary><blockquote>
 
 Represents the generic type arguments marker for _IEnumerator>T>_.
@@ -13364,34 +12253,6 @@ Represents the generic type arguments marker for _IEnumerator>T>_.
 
 
 <details><summary>TTEnumerator4`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IEnumerator>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTEnumerator5`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IEnumerator>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTEnumerator6`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IEnumerator>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTEnumerator7`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IEnumerator>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTEnumerator8`1</summary><blockquote>
 
 Represents the generic type arguments marker for _IEnumerator>T>_.
             
@@ -13433,34 +12294,6 @@ Represents the generic type arguments marker for _IEqualityComparer>T>_.
 </blockquote></details>
 
 
-<details><summary>TTEqualityComparer5`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IEqualityComparer>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTEqualityComparer6`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IEqualityComparer>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTEqualityComparer7`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IEqualityComparer>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTEqualityComparer8`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IEqualityComparer>T>_.
-            
-</blockquote></details>
-
-
 <details><summary>TTEquatable`1</summary><blockquote>
 
 Represents the generic type arguments marker for _IEquatable>T>_.
@@ -13490,34 +12323,6 @@ Represents the generic type arguments marker for _IEquatable>T>_.
 
 
 <details><summary>TTEquatable4`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IEquatable>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTEquatable5`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IEquatable>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTEquatable6`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IEquatable>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTEquatable7`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IEquatable>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTEquatable8`1</summary><blockquote>
 
 Represents the generic type arguments marker for _IEquatable>T>_.
             
@@ -13559,34 +12364,6 @@ Represents the generic type arguments marker for _IList>T>_.
 </blockquote></details>
 
 
-<details><summary>TTList5`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IList>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTList6`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IList>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTList7`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IList>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTList8`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IList>T>_.
-            
-</blockquote></details>
-
-
 <details><summary>TTObservable`1</summary><blockquote>
 
 Represents the generic type arguments marker for _IObservable>T>_.
@@ -13616,34 +12393,6 @@ Represents the generic type arguments marker for _IObservable>T>_.
 
 
 <details><summary>TTObservable4`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IObservable>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTObservable5`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IObservable>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTObservable6`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IObservable>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTObservable7`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IObservable>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTObservable8`1</summary><blockquote>
 
 Represents the generic type arguments marker for _IObservable>T>_.
             
@@ -13685,34 +12434,6 @@ Represents the generic type arguments marker for _IObserver>T>_.
 </blockquote></details>
 
 
-<details><summary>TTObserver5`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IObserver>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTObserver6`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IObserver>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTObserver7`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IObserver>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTObserver8`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IObserver>T>_.
-            
-</blockquote></details>
-
-
 <details><summary>TTReadOnlyCollection`1</summary><blockquote>
 
 Represents the generic type arguments marker for _IReadOnlyCollection>T>_.
@@ -13742,34 +12463,6 @@ Represents the generic type arguments marker for _IReadOnlyCollection>T>_.
 
 
 <details><summary>TTReadOnlyCollection4`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IReadOnlyCollection>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTReadOnlyCollection5`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IReadOnlyCollection>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTReadOnlyCollection6`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IReadOnlyCollection>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTReadOnlyCollection7`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IReadOnlyCollection>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTReadOnlyCollection8`1</summary><blockquote>
 
 Represents the generic type arguments marker for _IReadOnlyCollection>T>_.
             
@@ -13811,34 +12504,6 @@ Represents the generic type arguments marker for _IReadOnlyList>T>_.
 </blockquote></details>
 
 
-<details><summary>TTReadOnlyList5`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IReadOnlyList>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTReadOnlyList6`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IReadOnlyList>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTReadOnlyList7`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IReadOnlyList>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTReadOnlyList8`1</summary><blockquote>
-
-Represents the generic type arguments marker for _IReadOnlyList>T>_.
-            
-</blockquote></details>
-
-
 <details><summary>TTS</summary><blockquote>
 
 Represents the generic type arguments marker for a value type.
@@ -13847,55 +12512,6 @@ Represents the generic type arguments marker for a value type.
 
 
 <details><summary>TTS1</summary><blockquote>
-
-Represents the generic type arguments marker for a value type.
-            
-</blockquote></details>
-
-
-<details><summary>TTS10</summary><blockquote>
-
-Represents the generic type arguments marker for a value type.
-            
-</blockquote></details>
-
-
-<details><summary>TTS11</summary><blockquote>
-
-Represents the generic type arguments marker for a value type.
-            
-</blockquote></details>
-
-
-<details><summary>TTS12</summary><blockquote>
-
-Represents the generic type arguments marker for a value type.
-            
-</blockquote></details>
-
-
-<details><summary>TTS13</summary><blockquote>
-
-Represents the generic type arguments marker for a value type.
-            
-</blockquote></details>
-
-
-<details><summary>TTS14</summary><blockquote>
-
-Represents the generic type arguments marker for a value type.
-            
-</blockquote></details>
-
-
-<details><summary>TTS15</summary><blockquote>
-
-Represents the generic type arguments marker for a value type.
-            
-</blockquote></details>
-
-
-<details><summary>TTS16</summary><blockquote>
 
 Represents the generic type arguments marker for a value type.
             
@@ -13917,41 +12533,6 @@ Represents the generic type arguments marker for a value type.
 
 
 <details><summary>TTS4</summary><blockquote>
-
-Represents the generic type arguments marker for a value type.
-            
-</blockquote></details>
-
-
-<details><summary>TTS5</summary><blockquote>
-
-Represents the generic type arguments marker for a value type.
-            
-</blockquote></details>
-
-
-<details><summary>TTS6</summary><blockquote>
-
-Represents the generic type arguments marker for a value type.
-            
-</blockquote></details>
-
-
-<details><summary>TTS7</summary><blockquote>
-
-Represents the generic type arguments marker for a value type.
-            
-</blockquote></details>
-
-
-<details><summary>TTS8</summary><blockquote>
-
-Represents the generic type arguments marker for a value type.
-            
-</blockquote></details>
-
-
-<details><summary>TTS9</summary><blockquote>
 
 Represents the generic type arguments marker for a value type.
             
@@ -13987,34 +12568,6 @@ Represents the generic type arguments marker for _ISet>T>_.
 
 
 <details><summary>TTSet4`1</summary><blockquote>
-
-Represents the generic type arguments marker for _ISet>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTSet5`1</summary><blockquote>
-
-Represents the generic type arguments marker for _ISet>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTSet6`1</summary><blockquote>
-
-Represents the generic type arguments marker for _ISet>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTSet7`1</summary><blockquote>
-
-Represents the generic type arguments marker for _ISet>T>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTSet8`1</summary><blockquote>
 
 Represents the generic type arguments marker for _ISet>T>_.
             
@@ -14080,22 +12633,6 @@ See also _OrdinalAttribute_.
 Creates an attribute instance.
             
  - parameter _type_ - The injection type. See also _Bind``1(System.Object[])_ and _Bind``1(System.Object[])_.
-
-</blockquote></details>
-
-
-<details><summary>Method Match(System.ReadOnlySpan{System.Char},System.ReadOnlySpan{System.Char},System.Boolean,System.Boolean)</summary><blockquote>
-
-Return true if the given expression matches the given name. Supports the following wildcards:
-                '*', '?', '<', '>', '"'. The backslash character '\' escapes.
-            
- - parameter _wildcard_ - The wildcard expression to match with, such as "*.foo".
-
- - parameter _text_ - The text to check against the expression.
-
- - parameter _ignoreCase_ - True to ignore case (default).
-
- - parameter _useExtendedWildcards_ - True to use additional expressions symbols.
 
 </blockquote></details>
 

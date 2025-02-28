@@ -6,25 +6,25 @@ class MarkdownWriterVisitor(MarkdownParts markdownParts) : IDocumentVisitor<Mark
 {
     public async Task<MarkdownWriterContext> StartTypeVisitAsync(MarkdownWriterContext ctx, DocumentType type, CancellationToken cancellationToken)
     {
-        if (ctx.Namespace != type.TypeName.NamespaceName && !string.IsNullOrEmpty(ctx.Namespace))
+        if (ctx.Namespace != type.Part.NamespaceName && !string.IsNullOrEmpty(ctx.Namespace))
         {
             ctx = ctx with { Namespace = "" };
             await FinishDetails(ctx);
         }
 
-        if (!ctx.Filter(type.TypeName))
+        if (!ctx.DocumentPartFilter(type.Part))
         {
             return ctx with { IsSkipping = true };
         }
 
         ctx = ctx with { IsSkipping = false };
-        if (ctx.Namespace != type.TypeName.NamespaceName)
+        if (ctx.Namespace != type.Part.NamespaceName)
         {
-            ctx = ctx with { Namespace = type.TypeName.NamespaceName };
-            await StartDetails(ctx, type.TypeName.NamespaceName);
+            ctx = ctx with { Namespace = type.Part.NamespaceName };
+            await StartDetails(ctx, type.Part.NamespaceName);
         }
 
-        await StartDetails(ctx, type.TypeName.TypeName);
+        await StartDetails(ctx, type.Part.TypeName);
         return ctx;
     }
 
@@ -46,15 +46,20 @@ class MarkdownWriterVisitor(MarkdownParts markdownParts) : IDocumentVisitor<Mark
             return ctx;
         }
 
-        await StartDetails(ctx, $"{member.Kind} {member.TypeName.MemberName}");
+        if (!ctx.DocumentPartFilter(member.Part with { MemberName = member.Part.MemberName }))
+        {
+            return ctx with { IsSkippingMember = true };
+        }
+
+        await StartDetails(ctx, $"{member.Kind} {member.Part.MemberName}");
         return ctx with { TrimStart = true };
     }
 
     public async Task<MarkdownWriterContext> FinishMemberVisitAsync(MarkdownWriterContext ctx, DocumentMember member, CancellationToken cancellationToken)
     {
-        if (ctx.IsSkipping)
+        if (ctx.IsSkippingMember)
         {
-            return ctx;
+            return ctx with { IsSkippingMember = false };
         }
 
         await FinishDetails(ctx);
@@ -63,7 +68,7 @@ class MarkdownWriterVisitor(MarkdownParts markdownParts) : IDocumentVisitor<Mark
 
     public async Task<MarkdownWriterContext> StartElementVisitAsync(MarkdownWriterContext ctx, DocumentElement element, CancellationToken cancellationToken)
     {
-        if (ctx.IsSkipping)
+        if (ctx.IsSkipping || ctx.IsSkippingMember)
         {
             return ctx;
         }
@@ -125,7 +130,7 @@ class MarkdownWriterVisitor(MarkdownParts markdownParts) : IDocumentVisitor<Mark
 
     public async Task<MarkdownWriterContext> FinishElementVisitAsync(MarkdownWriterContext ctx, DocumentElement element, CancellationToken cancellationToken)
     {
-        if (ctx.IsSkipping)
+        if (ctx.IsSkipping || ctx.IsSkippingMember)
         {
             return ctx;
         }
@@ -153,7 +158,7 @@ class MarkdownWriterVisitor(MarkdownParts markdownParts) : IDocumentVisitor<Mark
 
     public async Task<MarkdownWriterContext> TextVisitAsync(MarkdownWriterContext ctx, DocumentText text, CancellationToken cancellationToken)
     {
-        if (ctx.IsSkipping)
+        if (ctx.IsSkipping || ctx.IsSkippingMember)
         {
             return ctx;
         }
@@ -187,6 +192,11 @@ class MarkdownWriterVisitor(MarkdownParts markdownParts) : IDocumentVisitor<Mark
 
     private static async Task FinishDetails(MarkdownWriterContext ctx)
     {
+        if (ctx.IsSkipping || ctx.IsSkippingMember)
+        {
+            return;
+        }
+
         await ctx.Writer.WriteLineAsync("");
         await ctx.Writer.WriteLineAsync("</blockquote></details>");
         await ctx.Writer.WriteLineAsync("");
