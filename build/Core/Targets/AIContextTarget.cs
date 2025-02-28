@@ -15,6 +15,7 @@ class AIContextTarget(
     Settings settings,
     Markdown markdown,
     XDocumentTools xDocumentTools,
+    FilterTools filterTools,
     [Tag(typeof(CreateExamplesTarget))] ITarget<IReadOnlyCollection<ExampleGroup>> createExamplesTarget)
     : IInitializable, ITarget<AIContext>
 {
@@ -56,7 +57,7 @@ class AIContextTarget(
                 foreach (var example in exampleItems)
                 {
                     var priority = int.Parse(example[CreateExamplesTarget.PriorityKey]);
-                    if (!AddExample(size, priority, groupName))
+                    if (!filterTools.AddExample(size, priority, groupName))
                     {
                         continue;
                     }
@@ -129,7 +130,7 @@ class AIContextTarget(
                 var xmlDocFile = Path.Combine(sourceDirectory, "Pure.DI.Core", "bin", settings.Configuration, "netstandard2.0", "Pure.DI.xml");
                 using var xmlDocReader = File.OpenText(xmlDocFile);
                 var xmlDoc = await xDocumentTools.LoadAsync(xmlDocReader, LoadOptions.None, CancellationToken.None);
-                await markdown.ConvertAsync(xmlDoc, writer, doc => DocumentPartFilter(size, doc), CancellationToken.None);
+                await markdown.ConvertAsync(xmlDoc, writer, part => filterTools.DocumentPartFilter(size, part), CancellationToken.None);
             }
 
             await writer.FlushAsync(cancellationToken);
@@ -147,38 +148,5 @@ class AIContextTarget(
         }
 
         return new AIContextFile(fileName, size, sizeBytes / 1024L, sizeTokens / 1000L);
-    }
-
-    private static bool AddExample(AIContextSize size, int priority, string groupName)
-    {
-        switch (size)
-        {
-            case AIContextSize.Small
-                when priority <= 4 && groupName is "Basics" or "Lifetimes":
-            case AIContextSize.Medium
-                when priority <= 14 && groupName is not "Advanced" and not "Hints":
-            case AIContextSize.Large:
-                return true;
-
-            default:
-                return false;
-        }
-    }
-
-    private static bool DocumentPartFilter(AIContextSize size, DocumentPart part)
-    {
-        if (part.NamespaceName != "Pure.DI" || part.TypeName == "Generator")
-        {
-            return false;
-        }
-
-        return size switch
-        {
-            AIContextSize.Small => false,
-            AIContextSize.Medium => false,
-            _ =>
-                part.TypeName is not "DI" and not "Buckets`2" and not "IResolver`2" and not "Pair`2" and not "Strings"
-                && !Enumerable.Range(5, 10).Any(i => part.MemberName.Contains(i.ToString()))
-        };
     }
 }

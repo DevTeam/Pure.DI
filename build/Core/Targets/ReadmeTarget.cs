@@ -16,6 +16,9 @@ class ReadmeTarget(
     Settings settings,
     RootCommand rootCommand,
     ReadmeTools readmeTools,
+    Markdown markdown,
+    XDocumentTools xDocumentTools,
+    FilterTools filterTools,
     [Tag(typeof(CreateExamplesTarget))] ITarget<IReadOnlyCollection<ExampleGroup>> createExamplesTarget,
     [Tag(typeof(BenchmarksTarget))] ITarget<int> benchmarksTarget,
     [Tag(typeof(AIContextTarget))] ITarget<AIContext> aiContextTarget)
@@ -58,6 +61,8 @@ class ReadmeTarget(
 
         await AddContentAsync(ReadmeTemplateFile, readmeWriter);
 
+        await AddAPIAsync(readmeWriter);
+
         await GenerateExamplesAsync(examples, readmeWriter, logsDirectory);
 
         await AddContentAsync(FooterTemplateFile, readmeWriter);
@@ -77,6 +82,18 @@ class ReadmeTarget(
         await contributingWriter.FlushAsync(cancellationToken);
 
         return 0;
+    }
+
+    private async Task AddAPIAsync(StreamWriter writer)
+    {
+        await writer.WriteLineAsync();
+        await writer.WriteLineAsync("## API");
+        await writer.WriteLineAsync();
+        var sourceDirectory = env.GetPath(PathType.SourceDirectory);
+        var xmlDocFile = Path.Combine(sourceDirectory, "Pure.DI.Core", "bin", settings.Configuration, "netstandard2.0", "Pure.DI.xml");
+        using var xmlDocReader = File.OpenText(xmlDocFile);
+        var xmlDoc = await xDocumentTools.LoadAsync(xmlDocReader, LoadOptions.None, CancellationToken.None);
+        await markdown.ConvertAsync(xmlDoc, writer, part => filterTools.DocumentPartFilter(AIContextSize.Large, part), CancellationToken.None);
     }
 
     private async Task AddAIContextAsync(StreamWriter writer, CancellationToken cancellationToken)

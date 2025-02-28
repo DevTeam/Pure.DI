@@ -1444,6 +1444,18 @@
             </list>
             </summary>
         </member>
+        <member name="F:Pure.DI.Tag.UsingDeclarations">
+            <summary>
+            Atomically generated smart tag with value "UsingDeclarations".
+            It's used for:
+            <br/>
+            <br/>
+            class <see cref="T:Pure.DI.Generator"/>
+            <list type="number">
+            <item><see cref="T:Pure.DI.Core.Code.CompositionClassBuilder"/> &lt;-- <see cref="T:Pure.DI.Core.IBuilder`2"/>(UsingDeclarations) -- <see cref="T:Pure.DI.Core.Code.UsingDeclarationsBuilder"/> as <see cref="F:Pure.DI.Lifetime.PerBlock"/></item>
+            </list>
+            </summary>
+        </member>
         <member name="F:Pure.DI.Tag.Injection">
             <summary>
             Atomically generated smart tag with value "Injection".
@@ -1458,18 +1470,6 @@
             class <see cref="T:Pure.DI.Generator"/>
             <list type="number">
             <item><see cref="T:Pure.DI.Core.CodeBuilder"/> &lt;-- <see cref="T:Pure.DI.Core.IBuilder`2"/>(CompositionClass) -- <see cref="T:Pure.DI.Core.Code.CompositionClassBuilder"/> as <see cref="F:Pure.DI.Lifetime.PerBlock"/></item>
-            </list>
-            </summary>
-        </member>
-        <member name="F:Pure.DI.Tag.UsingDeclarations">
-            <summary>
-            Atomically generated smart tag with value "UsingDeclarations".
-            It's used for:
-            <br/>
-            <br/>
-            class <see cref="T:Pure.DI.Generator"/>
-            <list type="number">
-            <item><see cref="T:Pure.DI.Core.Code.CompositionClassBuilder"/> &lt;-- <see cref="T:Pure.DI.Core.IBuilder`2"/>(UsingDeclarations) -- <see cref="T:Pure.DI.Core.Code.UsingDeclarationsBuilder"/> as <see cref="F:Pure.DI.Lifetime.PerBlock"/></item>
             </list>
             </summary>
         </member>

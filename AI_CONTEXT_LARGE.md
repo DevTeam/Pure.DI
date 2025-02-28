@@ -8744,6 +8744,50 @@ Creates an attribute instance.
 </blockquote></details>
 
 
+<details><summary>DI</summary><blockquote>
+
+An API for a Dependency Injection setup.
+            
+See also _Setup(System.String,Pure.DI.CompositionKind)_.
+
+<details><summary>Method Setup(System.String,Pure.DI.CompositionKind)</summary><blockquote>
+
+Begins the definitions of the Dependency Injection setup chain.
+             
+```c#
+
+interface IDependency;
+            
+             
+             class Dependency : IDependency;
+            
+             
+             interface IService;
+            
+             
+             class Service(IDependency dependency) : IService;
+            
+             
+             DI.Setup("Composition")
+               .Bind<IDependency>().To<Dependency>()
+               .Bind<IService>().To<Service>()
+               .Root<IService>("Root");
+             
+```
+
+
+ - parameter _compositionTypeName_ - An optional argument specifying the partial class name to generate.
+
+ - parameter _kind_ - An optional argument specifying the kind of setup. Please _CompositionKind_ for details. It defaults to  `Public` .
+
+ - returns Reference to the setup continuation chain.
+
+</blockquote></details>
+
+
+</blockquote></details>
+
+
 <details><summary>GenericTypeArgumentAttribute</summary><blockquote>
 
 Represents a generic type argument attribute. It allows you to create custom generic type argument such as _TTS_, _TTDictionary`2_, etc. 
@@ -11799,6 +11843,15 @@ Atomically generated smart tag with value "GenericType".
 </blockquote></details>
 
 
+<details><summary>Field UsingDeclarations</summary><blockquote>
+
+Atomically generated smart tag with value "UsingDeclarations".
+            It's used for:
+            
+            class _Generator__CompositionClassBuilder_ <-- _IBuilder`2_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
+</blockquote></details>
+
+
 <details><summary>Field Injection</summary><blockquote>
 
 Atomically generated smart tag with value "Injection".
@@ -11812,15 +11865,6 @@ Atomically generated smart tag with value "CompositionClass".
             It's used for:
             
             class _Generator__CodeBuilder_ <-- _IBuilder`2_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
-</blockquote></details>
-
-
-<details><summary>Field UsingDeclarations</summary><blockquote>
-
-Atomically generated smart tag with value "UsingDeclarations".
-            It's used for:
-            
-            class _Generator__CompositionClassBuilder_ <-- _IBuilder`2_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
 </blockquote></details>
 
 
