@@ -84,7 +84,7 @@ class AIContextTarget(
                     await writer.WriteLineAsync(" - [Pure.DI](https://www.nuget.org/packages/Pure.DI)");
                     foreach (var reference in references)
                     {
-                        await writer.WriteLineAsync($"  - [{reference}](https://www.nuget.org/packages/{reference})");
+                        await writer.WriteLineAsync($" - [{reference}](https://www.nuget.org/packages/{reference})");
                     }
 
                     await writer.WriteLineAsync();

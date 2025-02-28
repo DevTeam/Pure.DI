@@ -397,7 +397,7 @@ class Service(IDependency dependency) : IService
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 This approach is more expensive to maintain, but allows you to create objects more flexibly by passing them some state and introducing dependencies. As in the case of automatic dependency injecting, objects give up control on embedding, and the whole process takes place when the object graph is created.
 > [!IMPORTANT]
@@ -465,7 +465,7 @@ class Service(IDependency dependency) : IService
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
 ## Transient
@@ -514,7 +514,7 @@ class Service(
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 The _Transient_ lifetime is the safest and is used by default. Yes, its widespread use can cause a lot of memory traffic, but if there are doubts about thread safety, the _Transient_ lifetime is preferable because each consumer has its own instance of the dependency. The following nuances should be considered when choosing the _Transient_ lifetime:
 
@@ -573,7 +573,7 @@ class Service(
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 Some articles advise using objects with a _Singleton_ lifetime as often as possible, but the following details must be considered:
 
@@ -638,7 +638,7 @@ class Service(
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
 ## PerBlock
@@ -690,7 +690,7 @@ class Service(
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
 ## Scope
@@ -779,5 +779,5 @@ partial class Composition
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 

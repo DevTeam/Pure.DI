@@ -1432,18 +1432,6 @@
             <param name="methodName">The name of the type method.</param>
             <param name="argName">The name of the method argument.</param>
         </member>
-        <member name="F:Pure.DI.Tag.CompositionClass">
-            <summary>
-            Atomically generated smart tag with value "CompositionClass".
-            It's used for:
-            <br/>
-            <br/>
-            class <see cref="T:Pure.DI.Generator"/>
-            <list type="number">
-            <item><see cref="T:Pure.DI.Core.CodeBuilder"/> &lt;-- <see cref="T:Pure.DI.Core.IBuilder`2"/>(CompositionClass) -- <see cref="T:Pure.DI.Core.Code.CompositionClassBuilder"/> as <see cref="F:Pure.DI.Lifetime.PerBlock"/></item>
-            </list>
-            </summary>
-        </member>
         <member name="F:Pure.DI.Tag.UsingDeclarations">
             <summary>
             Atomically generated smart tag with value "UsingDeclarations".
@@ -1465,6 +1453,18 @@
             class <see cref="T:Pure.DI.Generator"/>
             <list type="number">
             <item><see cref="T:Pure.DI.Core.Code.TypeResolver"/> &lt;-- <see cref="T:Pure.DI.Core.IIdGenerator"/>(GenericType) -- <see cref="T:Pure.DI.Core.IdGenerator"/> as <see cref="F:Pure.DI.Lifetime.PerResolve"/></item>
+            </list>
+            </summary>
+        </member>
+        <member name="F:Pure.DI.Tag.CompositionClass">
+            <summary>
+            Atomically generated smart tag with value "CompositionClass".
+            It's used for:
+            <br/>
+            <br/>
+            class <see cref="T:Pure.DI.Generator"/>
+            <list type="number">
+            <item><see cref="T:Pure.DI.Core.CodeBuilder"/> &lt;-- <see cref="T:Pure.DI.Core.IBuilder`2"/>(CompositionClass) -- <see cref="T:Pure.DI.Core.Code.CompositionClassBuilder"/> as <see cref="F:Pure.DI.Lifetime.PerBlock"/></item>
             </list>
             </summary>
         </member>

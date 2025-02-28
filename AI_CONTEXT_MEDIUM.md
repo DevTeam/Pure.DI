@@ -397,7 +397,7 @@ class Service(IDependency dependency) : IService
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 This approach is more expensive to maintain, but allows you to create objects more flexibly by passing them some state and introducing dependencies. As in the case of automatic dependency injecting, objects give up control on embedding, and the whole process takes place when the object graph is created.
 > [!IMPORTANT]
@@ -465,7 +465,7 @@ class Service(IDependency dependency) : IService
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
 ## Class arguments
@@ -538,7 +538,7 @@ class Service(
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
 ## Root arguments
@@ -613,7 +613,7 @@ class Service(
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 When using composition root arguments, compilation warnings are shown if `Resolve` methods are generated, since these methods will not be able to create these roots. You can disable the creation of `Resolve` methods using the `Hint(Hint.Resolve, "Off")` hint, or ignore them but remember the risks of using `Resolve` methods.
 
@@ -680,7 +680,7 @@ class Service(
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 The tag can be a constant, a type, a [smart tag](smart-tags.md), or a value of an `Enum` type. The _default_ and _null_ tags are also supported.
 
@@ -766,7 +766,7 @@ class Service(
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
 ## Build up of an existing object
@@ -826,7 +826,7 @@ record Service(IDependency Dependency) : IService;
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
 ## Builder
@@ -874,7 +874,7 @@ record Service: IService
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 The default builder method name is `BuildUp`. The first argument to this method will always be the instance to be built.
 
@@ -924,7 +924,7 @@ record Service: IService
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 The default builder method name is `BuildUp`. The first argument to this method will always be the instance to be built. The remaining arguments of this method will be listed in the order in which they are defined in the setup.
 
@@ -987,7 +987,7 @@ record Service2 : IService
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 The default builder method name is `BuildUp`. The first argument to this method will always be the instance to be built.
 
@@ -1052,7 +1052,7 @@ record Service2 : IService
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 The default builder method name is `BuildUp`. The first argument to this method will always be the instance to be built.
 
@@ -1097,7 +1097,7 @@ class Service : IService
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
 ## Method injection
@@ -1143,7 +1143,7 @@ class Service : IService
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
 ## Property injection
@@ -1186,7 +1186,7 @@ class Service : IService
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
 ## Transient
@@ -1235,7 +1235,7 @@ class Service(
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 The _Transient_ lifetime is the safest and is used by default. Yes, its widespread use can cause a lot of memory traffic, but if there are doubts about thread safety, the _Transient_ lifetime is preferable because each consumer has its own instance of the dependency. The following nuances should be considered when choosing the _Transient_ lifetime:
 
@@ -1294,7 +1294,7 @@ class Service(
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 Some articles advise using objects with a _Singleton_ lifetime as often as possible, but the following details must be considered:
 
@@ -1359,7 +1359,7 @@ class Service(
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
 ## PerBlock
@@ -1411,7 +1411,7 @@ class Service(
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
 ## Scope
@@ -1500,7 +1500,7 @@ partial class Composition
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
 ## Auto scoped
@@ -1569,7 +1569,7 @@ partial class Composition
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 > [!IMPORTANT]
 > The method `Inject()`cannot be used outside of the binding setup.
@@ -1625,7 +1625,7 @@ class Service(
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
 ## Default lifetime for a type
@@ -1677,7 +1677,7 @@ class Service(
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
 ## Default lifetime for a type and a tag
@@ -1730,7 +1730,7 @@ class Service(
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
 ## Disposable singleton
@@ -1783,7 +1783,7 @@ class Service(IDependency dependency) : IService
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 A composition class becomes disposable if it creates at least one disposable singleton instance.
 
@@ -1841,7 +1841,7 @@ class Service(IDependency dependency) : IService
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
 ## Async disposable scope
@@ -1932,7 +1932,7 @@ partial class Composition
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
 ## Func
@@ -1977,7 +1977,7 @@ class Service(Func<IDependency> dependencyFactory): IService
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 Be careful, replication takes into account the lifetime of the object.
 
@@ -2024,7 +2024,7 @@ class Service(IEnumerable<IDependency> dependencies) : IService
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
 ## Enumerable generics
@@ -2075,7 +2075,7 @@ class Service<T>(IEnumerable<IDependency<T>> dependencies) : IService<T>
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
 ## Array
@@ -2119,7 +2119,7 @@ class Service(IDependency[] dependencies) : IService
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 In addition to arrays, other collection types are also supported, such as:
 - System.Memory<T>
@@ -2181,7 +2181,7 @@ class Service(Lazy<IDependency> dependency) : IService
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
 ## Task
@@ -2246,7 +2246,7 @@ class Service(Task<IDependency> dependencyTask) : IService
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
 ## ValueTask
@@ -2404,7 +2404,7 @@ class Service(ReadOnlySpan<Dependency> dependencies) : IService
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 This scenario is even more efficient in the case of `Span<T>` or `ReadOnlySpan<T>` when `T` is a value type. In this case, there is no heap allocation, and the composition root `IService` looks like this:
 ```c#
@@ -2541,7 +2541,7 @@ class Service(IAsyncEnumerable<IDependency> dependencies) : IService
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
 ## Generics
@@ -2594,7 +2594,7 @@ class Service(
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 Actually, the property _Root_ looks like:
 ```c#
@@ -2765,7 +2765,7 @@ class Program<T>(IService<T, int, List<T>, Dictionary<T, int>> service)
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 It can also be useful in a very simple scenario where, for example, the sequence of type arguments does not match the sequence of arguments of the contract that implements the type.
 
@@ -2945,7 +2945,7 @@ class Service(
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
 ## Build up of an existing generic object
@@ -3009,7 +3009,7 @@ record Service<T>(IDependency<T> Dependency)
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
 ## Generic root arguments
@@ -3132,7 +3132,7 @@ record Service<T, T2>: IService<T, T2>
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
 ## Generic builders
@@ -3192,7 +3192,7 @@ record Service2<T, T2>: IService<T, T2>
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
 ## Generic roots
@@ -3287,7 +3287,7 @@ class Service : IService
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 The attribute `Ordinal` is part of the API, but you can use your own attribute at any time, and this allows you to define them in the assembly and namespace you want.
 
@@ -3358,7 +3358,7 @@ class Person : IPerson
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 The attribute `Dependency` is part of the API, but you can use your own attribute at any time, and this allows you to define them in the assembly and namespace you want.
 
@@ -3429,7 +3429,7 @@ class Person : IPerson
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 The attribute `Ordinal` is part of the API, but you can use your own attribute at any time, and this allows you to define them in the assembly and namespace you want.
 
@@ -3482,7 +3482,7 @@ class Service(
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 The tag can be a constant, a type, a [smart tag](smart-tags.md), or a value of an `Enum` type. This attribute is part of the API, but you can use your own attribute at any time, and this allows you to define them in the assembly and namespace you want.
 
@@ -3531,7 +3531,7 @@ class Service(
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 This attribute is part of the API, but you can use your own attribute at any time, and this allows you to define them in the assembly and namespace you want.
 
@@ -3578,8 +3578,8 @@ class Person([Inject("NikName")] string name) : IPerson
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
-  - [Pure.DI.Abstractions](https://www.nuget.org/packages/Pure.DI.Abstractions)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Pure.DI.Abstractions](https://www.nuget.org/packages/Pure.DI.Abstractions)
 
 This package should also be included in a project:
 
@@ -3657,7 +3657,7 @@ class Person([MyTag("NikName")] string name) : IPerson
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
 ## Custom universal attribute
@@ -3709,7 +3709,7 @@ class Person([Inject<string>("NikName")] string name) : IPerson
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
 ## Custom generic argument attribute
@@ -3762,7 +3762,7 @@ class Service(
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
 ## Bind attribute
@@ -3902,7 +3902,7 @@ class GreetingService([Tag("base")] IService baseService) : IService
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 Here an instance of the _Service_ type, labeled _"base"_, is injected in the decorator _DecoratorService_. You can use any tag that semantically reflects the feature of the abstraction being embedded. The tag can be a constant, a type, or a value of an enumerated type.
 
@@ -3971,8 +3971,8 @@ partial class Composition : IInterceptor
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
-  - [Castle.DynamicProxy](https://www.nuget.org/packages/Castle.DynamicProxy)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Castle.DynamicProxy](https://www.nuget.org/packages/Castle.DynamicProxy)
 
 Using an intercept gives you the ability to add end-to-end functionality such as:
 
@@ -4110,8 +4110,8 @@ internal partial class Composition : IInterceptor
 
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-  - [Shouldly](https://www.nuget.org/packages/Shouldly)
-  - [Castle.DynamicProxy](https://www.nuget.org/packages/Castle.DynamicProxy)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Castle.DynamicProxy](https://www.nuget.org/packages/Castle.DynamicProxy)
 
 
 ## Basic Unity use case
