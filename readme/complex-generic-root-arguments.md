@@ -99,12 +99,12 @@ Class diagram:
 ---
 classDiagram
 	ServiceᐸTᐳ --|> IServiceᐸTᐳ
-	Composition ..> ServiceᐸTᐳ : IServiceᐸTᐳ GetMyServiceᐸTᐳ(Pure.DI.UsageTests.Basics.ComplexGenericRootArgScenario.MyData<T> complexArg)
+	Composition ..> ServiceᐸTᐳ : IServiceᐸTᐳ GetMyServiceᐸTᐳ(Pure.DI.UsageTests.Generics.ComplexGenericRootArgScenario.MyData<T> complexArg)
 	ServiceᐸTᐳ o-- MyDataᐸTᐳ : Argument "complexArg"
-	namespace Pure.DI.UsageTests.Basics.ComplexGenericRootArgScenario {
+	namespace Pure.DI.UsageTests.Generics.ComplexGenericRootArgScenario {
 		class Composition {
 		<<partial>>
-		+IServiceᐸTᐳ GetMyServiceᐸTᐳ(Pure.DI.UsageTests.Basics.ComplexGenericRootArgScenario.MyData<T> complexArg)
+		+IServiceᐸTᐳ GetMyServiceᐸTᐳ(Pure.DI.UsageTests.Generics.ComplexGenericRootArgScenario.MyData<T> complexArg)
 		}
 		class IServiceᐸTᐳ {
 			<<interface>>

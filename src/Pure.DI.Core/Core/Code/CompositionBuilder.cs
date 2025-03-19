@@ -22,7 +22,7 @@ sealed class CompositionBuilder(
         var isThreadSafe = false;
         var isThreadSafeEnabled = graph.Source.Hints.IsThreadSafeEnabled;
         var map = variablesMapFactory();
-        foreach (var root in graph.Roots.Values)
+        foreach (var root in graph.Roots)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var rootBlock = variablesBuilder.Build(graph, map, root.Node, root.Injection);
@@ -41,7 +41,9 @@ sealed class CompositionBuilder(
             foreach (var perResolveVar in map.GetPerResolves())
             {
                 ctx.Code.AppendLine($"var {perResolveVar.VariableName} = default({typeResolver.Resolve(graph.Source, perResolveVar.InstanceType)});");
-                if (perResolveVar.Info.RefCount > 1 && perResolveVar.InstanceType.IsValueType)
+                if (perResolveVar.Info.RefCount > 0
+                    && perResolveVar.InstanceType.IsValueType
+                    && perResolveVar.Injection.Kind != InjectionKind.Override)
                 {
                     ctx.Code.AppendLine($"var {perResolveVar.VariableName}Created = false;");
                 }

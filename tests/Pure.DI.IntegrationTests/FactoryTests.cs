@@ -1,7 +1,5 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
-using Core;
-
 public class FactoryTests
 {
 
@@ -96,7 +94,7 @@ public class FactoryTests
     }
 
     [Theory]
-    [InlineData(nameof(Lifetime.Transient), "ServiceAbc", "Service")]
+    [InlineData(nameof(Lifetime.Transient), "Service", "ServiceAbc")]
     [InlineData(nameof(Lifetime.Singleton), "Service", "ServiceAbc")]
     [InlineData(nameof(Lifetime.Scoped), "Service", "ServiceAbc")]
     [InlineData(nameof(Lifetime.PerBlock), "Service", "ServiceAbc")]

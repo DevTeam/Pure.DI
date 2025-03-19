@@ -12,6 +12,7 @@ using static RootKinds;
 using static Tag;
 using Metadata = Core.Metadata;
 
+// @formatter:off
 public sealed partial class Generator
 {
     public void Generate(
@@ -60,7 +61,7 @@ public sealed partial class Generator
             .Bind<IVariablesWalker>().To<VariablesWalker>()
             .Bind<IInjectionsWalker>().To<InjectionsWalker>()
             .Bind<INamespacesWalker>().To<NamespacesWalker>()
-            .Bind<IFactoryResolversWalker>().To<FactoryResolversWalker>()
+            .Bind<IFactoryApiWalker>().To<FactoryApiWalker>()
             .Bind<IInitializersWalker>().To<InitializersWalker>()
             .Bind<IConstructorInjectionsCounterWalker>().To<ConstructorInjectionsCounterWalker>()
             .Bind<IDependencyGraphLocationsWalker>().To<DependencyGraphLocationsWalker>()
@@ -113,6 +114,9 @@ public sealed partial class Generator
                 ctx.Inject(out IInjectionsWalker injectionsWalker);
                 return new ProcessingNode(injectionsWalker, node, contracts);
             }))
+            .Bind().To<BindingsFactory>()
+            .Bind().To<GraphOverride>()
+            .Bind().To<NodesFactory>()
 
             // Validators
             .Bind(Type).To<MetadataValidator>()
@@ -184,11 +188,14 @@ public sealed partial class Generator
             .Bind(UniqueTag).To<IdGenerator>()
             .Bind(GenericType).To<IdGenerator>()
             .Bind(Injection).To<IdGenerator>()
+            .Bind(Override).To<IdGenerator>()
             .Bind().To<IdGenerator>()
             .Bind().To<Registry<TT>>()
             .Bind().To<Locks>()
             .Bind().To<RootAccessModifierResolver>()
             .Bind().To<SmartTags>()
             .Bind().To<GenericTypeArguments>()
-            .Bind().To<VariableNameProvider>();}
+            .Bind().To<VariableNameProvider>()
+            .Bind().To<OverrideIdProvider>();
+}
 // @formatter:on

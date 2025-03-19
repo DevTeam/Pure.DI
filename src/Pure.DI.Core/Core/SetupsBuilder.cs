@@ -9,7 +9,8 @@ sealed class SetupsBuilder(
     IArguments arguments,
     Func<ITypeConstructor> typeConstructorFactory,
     ISemantic semantic,
-    ISymbolNames symbolNames)
+    ISymbolNames symbolNames,
+    Func<ILocalVariableRenamingRewriter> localVariableRenamingRewriterFactory)
     : IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>, IMetadataVisitor, ISetupFinalizer
 {
     private readonly List<MdAccumulator> _accumulators = [];
@@ -339,6 +340,7 @@ sealed class SetupsBuilder(
                     semanticModel,
                     source,
                     contractType,
+                    localVariableRenamingRewriterFactory(),
                     FactoryCodeBuilder.DefaultBindAttrParenthesizedLambda,
                     true,
                     FactoryCodeBuilder.DefaultCtxParameter,

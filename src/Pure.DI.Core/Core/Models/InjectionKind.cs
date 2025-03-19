@@ -3,16 +3,11 @@
 enum InjectionKind
 {
     Field,
-
     Property,
-
     Parameter,
-
     Root,
-
     FactoryInjection,
-
     Contract,
-
-    Construct
+    Construct,
+    Override
 }

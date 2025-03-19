@@ -11,4 +11,4 @@ record BuildContext(
     object? ContextTag,
     bool? LockIsRequired,
     ImmutableArray<Accumulator> Accumulators,
-    bool IsFactory = false);
+    bool AvoidLocalFunction = false);

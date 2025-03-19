@@ -10,7 +10,7 @@ sealed class CodeBuilder(
     IEnumerable<IValidator<MdSetup>> metadataValidators,
     IEnumerable<IValidator<DependencyGraph>> dependencyGraphValidators,
     IEnumerable<IValidator<CompositionCode>> compositionValidators,
-    IBuilder<DependencyGraph, IReadOnlyDictionary<Injection, Root>> rootsBuilder,
+    IBuilder<DependencyGraph, DependencyGraph> rootsBuilder,
     IBuilder<DependencyGraph, CompositionCode> compositionBuilder,
     [Tag(CompositionClass)] IBuilder<CompositionCode, CompositionCode> compositionClassBuilder,
     ISources sources,
@@ -37,8 +37,7 @@ sealed class CodeBuilder(
         }
 
         cancellationToken.ThrowIfCancellationRequested();
-        var roots = rootsBuilder.Build(dependencyGraph);
-        dependencyGraph = dependencyGraph with { Roots = roots };
+        dependencyGraph = rootsBuilder.Build(dependencyGraph);
 
         cancellationToken.ThrowIfCancellationRequested();
         if (dependencyGraphValidators.Any(validator => !validator.Validate(dependencyGraph)))

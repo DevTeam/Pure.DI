@@ -5,7 +5,6 @@ using Models;
 // ReSharper disable once ClassNeverInstantiated.Global
 class ClockViewModel : ViewModel, IClockViewModel, IDisposable, IObserver<Tick>
 {
-
     public ClockViewModel(
         ILog<ClockViewModel> log,
         IClock clock,

@@ -124,8 +124,8 @@ partial class Composition
     get
     {
       Serilog.ILogger transientILogger0;
-      Serilog.ILogger localLogger1 = _argLogger;
-      transientILogger0 = localLogger1.ForContext(new Type[1] { typeof(Composition) }[0]);
+      Serilog.ILogger localLogger40 = _argLogger;
+      transientILogger0 = localLogger40.ForContext(new Type[1] { typeof(Composition) }[0]);
       return transientILogger0;
     }
   }
@@ -135,11 +135,11 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
+      Serilog.ILogger transientILogger1;
+      Serilog.ILogger localLogger39 = _argLogger;
+      transientILogger1 = localLogger39.ForContext(new Type[1] { typeof(Service) }[0]);
       Dependency transientDependency2 = new Dependency();
       OnNewInstance<Dependency>(ref transientDependency2, null, Lifetime.Transient);
-      Serilog.ILogger transientILogger1;
-      Serilog.ILogger localLogger0 = _argLogger;
-      transientILogger1 = localLogger0.ForContext(new Type[1] { typeof(Service) }[0]);
       Service transientService0 = new Service(transientILogger1, OnDependencyInjection<IDependency>(transientDependency2, null, Lifetime.Transient));
       OnNewInstance<Service>(ref transientService0, null, Lifetime.Transient);
       return OnDependencyInjection<IService>(transientService0, null, Lifetime.Transient);

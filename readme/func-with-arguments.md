@@ -7,24 +7,9 @@ using Pure.DI;
 using System.Collections.Immutable;
 
 DI.Setup(nameof(Composition))
-    .Bind<IClock>().As(Lifetime.Singleton).To<Clock>()
-    // Binds a dependency of type int
-    // to the source code statement "dependencyId"
-    .Bind<int>().To<int>("dependencyId")
-    // Binds a dependency of type int with tag "sub"
-    // to the source code statement "subId"
-    .Bind<int>("sub").To<int>("subId")
-    .Bind<Func<int, int, IDependency>>()
-    .To<Func<int, int, IDependency>>(ctx =>
-        (dependencyId, subId) =>
-        {
-            // Builds up an instance of type Dependency
-            // referring source code statements "dependencyId"
-            // and source code statements "subId"
-            ctx.Inject<Dependency>(out var dependency);
-            return dependency;
-        })
-    .Bind<IService>().To<Service>()
+    .Bind().As(Lifetime.Singleton).To<Clock>()
+    .Bind().To<Dependency>()
+    .Bind().To<Service>()
 
     // Composition root
     .Root<IService>("Root");
@@ -32,9 +17,15 @@ DI.Setup(nameof(Composition))
 var composition = new Composition();
 var service = composition.Root;
 service.Dependencies.Length.ShouldBe(3);
+
+service.Dependencies[0].Name.ShouldBe("Abc");
 service.Dependencies[0].Id.ShouldBe(0);
+
+service.Dependencies[1].Name.ShouldBe("Xyz");
 service.Dependencies[1].Id.ShouldBe(1);
+
 service.Dependencies[2].Id.ShouldBe(2);
+service.Dependencies[2].Name.ShouldBe("");
 
 interface IClock
 {
@@ -48,20 +39,16 @@ class Clock : IClock
 
 interface IDependency
 {
-    int Id { get; }
+    string Name { get; }
 
-    int SubId { get; }
+    int Id { get; }
 }
 
-class Dependency(
-    IClock clock,
-    int id,
-    [Tag("sub")] int subId)
+class Dependency(string name, IClock clock, int id)
     : IDependency
 {
+    public string Name => name;
     public int Id => id;
-
-    public int SubId => subId;
 }
 
 interface IService
@@ -69,13 +56,13 @@ interface IService
     ImmutableArray<IDependency> Dependencies { get; }
 }
 
-class Service(Func<int, int, IDependency> dependencyFactory): IService
+class Service(Func<int, string, IDependency> dependencyFactory): IService
 {
     public ImmutableArray<IDependency> Dependencies { get; } =
     [
-        dependencyFactory(0, 99),
-        dependencyFactory(1, 99),
-        dependencyFactory(2, 99)
+        dependencyFactory(0, "Abc"),
+        dependencyFactory(1, "Xyz"),
+        dependencyFactory(2, "")
     ];
 }
 ```
@@ -107,8 +94,6 @@ dotnet run
 
 </details>
 
-Using a binding of the form `.Bind<T>().To<T>("some statement")` is a kind of hack that allows you to replace an injection with just its own string.
-
 The following partial class will be generated:
 
 ```c#
@@ -117,7 +102,7 @@ partial class Composition
   private readonly Composition _root;
   private readonly Lock _lock;
 
-  private Clock? _singletonClock43;
+  private Clock? _singletonClock51;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -137,30 +122,29 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<int, int, IDependency> transientFunc1 =
+      var overriddenTT25 = default(string);
+      var overriddenTT14 = default(int);
+      Func<int, string, IDependency> perBlockFunc1 = new Func<int, string, IDependency>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      (dependencyId, subId) =>
+      (int localArg136, string localArg237) =>
       {
-        // Builds up an instance of type Dependency
-        // referring source code statements "dependencyId"
-        // and source code statements "subId"
-        int transientInt324 = subId;
-        int transientInt323 = dependencyId;
-        if (_root._singletonClock43 is null)
+        overriddenTT14 = localArg136;
+        overriddenTT25 = localArg237;
+        if (_root._singletonClock51 is null)
         {
           using (_lock.EnterScope())
           {
-            if (_root._singletonClock43 is null)
+            if (_root._singletonClock51 is null)
             {
-              _root._singletonClock43 = new Clock();
+              _root._singletonClock51 = new Clock();
             }
           }
         }
 
-        Dependency localDependency65 = new Dependency(_root._singletonClock43, transientInt323, transientInt324);
-        return localDependency65;
-      };
-      return new Service(transientFunc1);
+        IDependency localValue103 = new Dependency(overriddenTT25, _root._singletonClock51, overriddenTT14);
+        return localValue103;
+      });
+      return new Service(perBlockFunc1);
     }
   }
 
@@ -291,12 +275,13 @@ Class diagram:
 classDiagram
 	Service --|> IService
 	Clock --|> IClock
+	Dependency --|> IDependency
 	Composition ..> Service : IService Root
-	Service *--  FuncᐸInt32ˏInt32ˏIDependencyᐳ : FuncᐸInt32ˏInt32ˏIDependencyᐳ
-	FuncᐸInt32ˏInt32ˏIDependencyᐳ *--  Dependency : Dependency
+	Service o-- "PerBlock" FuncᐸInt32ˏStringˏIDependencyᐳ : FuncᐸInt32ˏStringˏIDependencyᐳ
+	FuncᐸInt32ˏStringˏIDependencyᐳ *--  Dependency : IDependency
+	Dependency o-- "PerResolve" String : String
 	Dependency o-- "Singleton" Clock : IClock
-	Dependency *--  Int32 : Int32
-	Dependency *--  Int32 : "sub"  Int32
+	Dependency o-- "PerResolve" Int32 : Int32
 	namespace Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario {
 		class Clock {
 			+Clock()
@@ -310,24 +295,29 @@ classDiagram
 		+ object Resolve(Type type, object? tag)
 		}
 		class Dependency {
-			+Dependency(IClock clock, Int32 id, Int32 subId)
+			+Dependency(String name, IClock clock, Int32 id)
 		}
 		class IClock {
+			<<interface>>
+		}
+		class IDependency {
 			<<interface>>
 		}
 		class IService {
 			<<interface>>
 		}
 		class Service {
-			+Service(FuncᐸInt32ˏInt32ˏIDependencyᐳ dependencyFactory)
+			+Service(FuncᐸInt32ˏStringˏIDependencyᐳ dependencyFactory)
 		}
 	}
 	namespace System {
-		class FuncᐸInt32ˏInt32ˏIDependencyᐳ {
+		class FuncᐸInt32ˏStringˏIDependencyᐳ {
 				<<delegate>>
 		}
 		class Int32 {
-				<<struct>>
+			<<struct>>
+		}
+		class String {
 		}
 	}
 ```

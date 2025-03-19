@@ -71,8 +71,8 @@ partial class Singleton
 {
   private readonly Singleton _root;
 
-  private Service1? _scopedService141;
-  private Service4? _scopedService444;
+  private Service1? _scopedService149;
+  private Service4? _scopedService452;
 
   [OrdinalAttribute(256)]
   public Singleton()
@@ -88,22 +88,22 @@ partial class Singleton
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public partial CompositionRoot TestPureDIByCR()
   {
-    if (_scopedService444 is null)
+    if (_scopedService149 is null)
     {
-      _scopedService444 = new Service4();
-    }
-
-    if (_scopedService141 is null)
-    {
-      if (_scopedService444 is null)
+      if (_scopedService452 is null)
       {
-        _scopedService444 = new Service4();
+        _scopedService452 = new Service4();
       }
 
-      _scopedService141 = new Service1(new Service2(new Service3(_scopedService444, _scopedService444), new Service3(_scopedService444, _scopedService444), new Service3(_scopedService444, _scopedService444), new Service3(_scopedService444, _scopedService444), new Service3(_scopedService444, _scopedService444)));
+      _scopedService149 = new Service1(new Service2(new Service3(_scopedService452, _scopedService452), new Service3(_scopedService452, _scopedService452), new Service3(_scopedService452, _scopedService452), new Service3(_scopedService452, _scopedService452), new Service3(_scopedService452, _scopedService452)));
     }
 
-    return new CompositionRoot(_scopedService141, new Service2(new Service3(_scopedService444, _scopedService444), new Service3(_scopedService444, _scopedService444), new Service3(_scopedService444, _scopedService444), new Service3(_scopedService444, _scopedService444), new Service3(_scopedService444, _scopedService444)), new Service2(new Service3(_scopedService444, _scopedService444), new Service3(_scopedService444, _scopedService444), new Service3(_scopedService444, _scopedService444), new Service3(_scopedService444, _scopedService444), new Service3(_scopedService444, _scopedService444)), new Service2(new Service3(_scopedService444, _scopedService444), new Service3(_scopedService444, _scopedService444), new Service3(_scopedService444, _scopedService444), new Service3(_scopedService444, _scopedService444), new Service3(_scopedService444, _scopedService444)), new Service3(_scopedService444, _scopedService444), _scopedService444, _scopedService444);
+    if (_scopedService452 is null)
+    {
+      _scopedService452 = new Service4();
+    }
+
+    return new CompositionRoot(_scopedService149, new Service2(new Service3(_scopedService452, _scopedService452), new Service3(_scopedService452, _scopedService452), new Service3(_scopedService452, _scopedService452), new Service3(_scopedService452, _scopedService452), new Service3(_scopedService452, _scopedService452)), new Service2(new Service3(_scopedService452, _scopedService452), new Service3(_scopedService452, _scopedService452), new Service3(_scopedService452, _scopedService452), new Service3(_scopedService452, _scopedService452), new Service3(_scopedService452, _scopedService452)), new Service2(new Service3(_scopedService452, _scopedService452), new Service3(_scopedService452, _scopedService452), new Service3(_scopedService452, _scopedService452), new Service3(_scopedService452, _scopedService452), new Service3(_scopedService452, _scopedService452)), new Service3(_scopedService452, _scopedService452), _scopedService452, _scopedService452);
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]

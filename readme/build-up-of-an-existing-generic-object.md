@@ -109,10 +109,10 @@ partial class Composition
     if (name is null) throw new ArgumentNullException(nameof(name));
     Guid transientGuid2 = Guid.NewGuid();
     Dependency<Guid> transientDependency1;
-    Dependency<Guid> localDependency61 = new Dependency<Guid>();
-    localDependency61.Name = name;
-    localDependency61.SetId(transientGuid2);
-    transientDependency1 = localDependency61;
+    Dependency<Guid> localDependency136 = new Dependency<Guid>();
+    localDependency136.Name = name;
+    localDependency136.SetId(transientGuid2);
+    transientDependency1 = localDependency136;
     return new Service<Guid>(transientDependency1);
   }
 }
@@ -134,14 +134,14 @@ classDiagram
 	ServiceᐸGuidᐳ *--  DependencyᐸGuidᐳ : IDependencyᐸGuidᐳ
 	DependencyᐸGuidᐳ o-- String : Argument "name"
 	DependencyᐸGuidᐳ *--  Guid : Guid
-	namespace Pure.DI.UsageTests.Basics.GenericBuildUpScenario {
+	namespace Pure.DI.UsageTests.Generics.GenericBuildUpScenario {
 		class Composition {
 		<<partial>>
 		+IServiceᐸGuidᐳ GetMyService(string name)
 		}
 		class DependencyᐸGuidᐳ {
 			+String Name
-			+SetId(T1 id) : Void
+			+SetId(T3 id) : Void
 		}
 		class IDependencyᐸGuidᐳ {
 			<<interface>>

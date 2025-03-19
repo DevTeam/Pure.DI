@@ -5,7 +5,6 @@ using Clock.ViewModels;
 
 partial class FormMain : Form
 {
-
     internal FormMain(IClockViewModel clockViewModel)
     {
         _clockViewModel = clockViewModel;

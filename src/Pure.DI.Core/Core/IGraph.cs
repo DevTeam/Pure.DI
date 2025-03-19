@@ -2,9 +2,11 @@ namespace Pure.DI.Core;
 
 interface IGraph<TVertex, TEdge> where TEdge : IEdge<TVertex>
 {
-    IEnumerable<TVertex> Vertices { get; }
+    IReadOnlyCollection<GraphEntry<TVertex, TEdge>> Entries { get; }
 
-    IEnumerable<TEdge> Edges { get; }
+    IReadOnlyCollection<TVertex> Vertices { get; }
+
+    IReadOnlyCollection<TEdge> Edges { get; }
 
     bool TryGetInEdges(in TVertex target, out IReadOnlyCollection<TEdge> edges);
 

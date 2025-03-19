@@ -42,6 +42,98 @@ namespace Pure.DI
                         ctx.Inject<TT>(ctx.Tag, out var value);
                         return value;
                     }))
+                .Bind<global::System.Func<TT1, TT>>()
+                    .As(Lifetime.PerBlock)
+                    .To(ctx => new global::System.Func<TT1, TT>((TT1 arg1) =>
+                    {
+                        ctx.Override<TT1>(arg1);
+                        ctx.Inject<TT>(ctx.Tag, out var value);
+                        return value;
+                    }))
+                .Bind<global::System.Func<TT1, TT2, TT>>()
+                    .As(Lifetime.PerBlock)
+                    .To(ctx => new global::System.Func<TT1, TT2, TT>((TT1 arg1, TT2 arg2) =>
+                    {
+                        ctx.Override<TT1>(arg1);
+                        ctx.Override<TT2>(arg2);
+                        ctx.Inject<TT>(ctx.Tag, out var value);
+                        return value;
+                    }))
+                .Bind<global::System.Func<TT1, TT2, TT3, TT>>()
+                    .As(Lifetime.PerBlock)
+                    .To(ctx => new global::System.Func<TT1, TT2, TT3, TT>((TT1 arg1, TT2 arg2, TT3 arg3) =>
+                    {
+                        ctx.Override<TT1>(arg1);
+                        ctx.Override<TT2>(arg2);
+                        ctx.Override<TT3>(arg3);
+                        ctx.Inject<TT>(ctx.Tag, out var value);
+                        return value;
+                    }))
+                .Bind<global::System.Func<TT1, TT2, TT3, TT4, TT>>()
+                    .As(Lifetime.PerBlock)
+                    .To(ctx => new global::System.Func<TT1, TT2, TT3, TT4, TT>((TT1 arg1, TT2 arg2, TT3 arg3, TT4 arg4) =>
+                    {
+                        ctx.Override<TT1>(arg1);
+                        ctx.Override<TT2>(arg2);
+                        ctx.Override<TT3>(arg3);
+                        ctx.Override<TT4>(arg4);
+                        ctx.Inject<TT>(ctx.Tag, out var value);
+                        return value;
+                    }))
+                .Bind<global::System.Func<TT1, TT2, TT3, TT4, TT5, TT>>()
+                    .As(Lifetime.PerBlock)
+                    .To(ctx => new global::System.Func<TT1, TT2, TT3, TT4, TT5, TT>((TT1 arg1, TT2 arg2, TT3 arg3, TT4 arg4, TT5 arg5) =>
+                    {
+                        ctx.Override<TT1>(arg1);
+                        ctx.Override<TT2>(arg2);
+                        ctx.Override<TT3>(arg3);
+                        ctx.Override<TT4>(arg4);
+                        ctx.Override<TT5>(arg5);
+                        ctx.Inject<TT>(ctx.Tag, out var value);
+                        return value;
+                    }))
+                .Bind<global::System.Func<TT1, TT2, TT3, TT4, TT5, TT6, TT>>()
+                    .As(Lifetime.PerBlock)
+                    .To(ctx => new global::System.Func<TT1, TT2, TT3, TT4, TT5, TT6, TT>((TT1 arg1, TT2 arg2, TT3 arg3, TT4 arg4, TT5 arg5, TT6 arg6) =>
+                    {
+                        ctx.Override<TT1>(arg1);
+                        ctx.Override<TT2>(arg2);
+                        ctx.Override<TT3>(arg3);
+                        ctx.Override<TT4>(arg4);
+                        ctx.Override<TT5>(arg5);
+                        ctx.Override<TT6>(arg6);
+                        ctx.Inject<TT>(ctx.Tag, out var value);
+                        return value;
+                    }))
+                .Bind<global::System.Func<TT1, TT2, TT3, TT4, TT5, TT6, TT7, TT>>()
+                    .As(Lifetime.PerBlock)
+                    .To(ctx => new global::System.Func<TT1, TT2, TT3, TT4, TT5, TT6, TT7, TT>((TT1 arg1, TT2 arg2, TT3 arg3, TT4 arg4, TT5 arg5, TT6 arg6, TT7 arg7) =>
+                    {
+                        ctx.Override<TT1>(arg1);
+                        ctx.Override<TT2>(arg2);
+                        ctx.Override<TT3>(arg3);
+                        ctx.Override<TT4>(arg4);
+                        ctx.Override<TT5>(arg5);
+                        ctx.Override<TT6>(arg6);
+                        ctx.Override<TT7>(arg7);
+                        ctx.Inject<TT>(ctx.Tag, out var value);
+                        return value;
+                    }))
+                .Bind<global::System.Func<TT1, TT2, TT3, TT4, TT5, TT6, TT7, TT8, TT>>()
+                    .As(Lifetime.PerBlock)
+                    .To(ctx => new global::System.Func<TT1, TT2, TT3, TT4, TT5, TT6, TT7, TT8, TT>((TT1 arg1, TT2 arg2, TT3 arg3, TT4 arg4, TT5 arg5, TT6 arg6, TT7 arg7, TT8 arg8) =>
+                    {
+                        ctx.Override<TT1>(arg1);
+                        ctx.Override<TT2>(arg2);
+                        ctx.Override<TT3>(arg3);
+                        ctx.Override<TT4>(arg4);
+                        ctx.Override<TT5>(arg5);
+                        ctx.Override<TT6>(arg6);
+                        ctx.Override<TT7>(arg7);
+                        ctx.Override<TT8>(arg8);
+                        ctx.Inject<TT>(ctx.Tag, out var value);
+                        return value;
+                    }))
                 .Bind<global::System.Collections.Generic.IComparer<TT>>()
                 .Bind<global::System.Collections.Generic.Comparer<TT>>()
                     .To(_ => global::System.Collections.Generic.Comparer<TT>.Default)

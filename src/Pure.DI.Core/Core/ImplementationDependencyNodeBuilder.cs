@@ -36,7 +36,6 @@ sealed class ImplementationDependencyNodeBuilder(
                     LogId.ErrorInvalidMetadata);
             }
 
-            var compilation = binding.SemanticModel.Compilation;
             var constructors = new List<DpMethod>();
             var hasExplicitlyDeclaredNonStaticCtor = implementationType.Constructors.Any(i => !i.IsImplicitlyDeclared && !i.IsStatic);
             foreach (var constructor in implementationType.Constructors)
@@ -55,7 +54,7 @@ sealed class ImplementationDependencyNodeBuilder(
                     new DpMethod(
                         constructor,
                         attributes.GetAttribute(setup.SemanticModel, setup.OrdinalAttributes, constructor, default(int?)),
-                        instanceDpProvider.GetParameters(setup, constructor.Parameters, compilation, ctx.TypeConstructor)));
+                        instanceDpProvider.GetParameters(setup, constructor.Parameters, ctx.TypeConstructor)));
             }
 
             if (constructors.Count == 0)
@@ -66,7 +65,7 @@ sealed class ImplementationDependencyNodeBuilder(
                     LogId.ErrorInvalidMetadata);
             }
 
-            var instanceDp = instanceDpProvider.Get(setup, ctx.TypeConstructor, compilation, implementationType);
+            var instanceDp = instanceDpProvider.Get(setup, ctx.TypeConstructor, implementationType);
             var implementations = constructors
                 .Select(constructor =>
                     new DpImplementation(
@@ -84,7 +83,7 @@ sealed class ImplementationDependencyNodeBuilder(
 
             if (implementationsWithOrdinal.Count > 0)
             {
-                foreach (var node in CreateNodes(injectionsCounter, implementationsWithOrdinal.OrderBy(i => i.Constructor.Ordinal)))
+                foreach (var node in CreateNodes(ctx, injectionsCounter, implementationsWithOrdinal.OrderBy(i => i.Constructor.Ordinal)))
                 {
                     yield return node;
                 }
@@ -92,19 +91,19 @@ sealed class ImplementationDependencyNodeBuilder(
                 continue;
             }
 
-            foreach (var node in CreateNodes(injectionsCounter, implementations))
+            foreach (var node in CreateNodes(ctx, injectionsCounter, implementations))
             {
                 yield return node;
             }
         }
     }
 
-    private IEnumerable<DependencyNode> CreateNodes(IConstructorInjectionsCounterWalker walker, IEnumerable<DpImplementation> implementations) =>
+    private IEnumerable<DependencyNode> CreateNodes(DependencyNodeBuildContext ctx, IConstructorInjectionsCounterWalker walker, IEnumerable<DpImplementation> implementations) =>
         implementations
             .OrderByDescending(i => GetInjectionsCount(walker, i.Constructor))
             .ThenByDescending(i => i.Constructor.Method.DeclaredAccessibility)
             .SelectMany(implementationVariantsBuilder.Build)
-            .Select((implementation, variantId) => new DependencyNode(variantId, implementation.Binding, Implementation: implementation));
+            .Select((implementation, variantId) => new DependencyNode(variantId, implementation.Binding, ctx.TypeConstructor, Implementation: implementation));
 
     private static int GetInjectionsCount(IConstructorInjectionsCounterWalker walker, in DpMethod constructor)
     {

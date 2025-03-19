@@ -6,6 +6,7 @@ readonly record struct MdFactory(
     SemanticModel SemanticModel,
     SyntaxNode Source,
     ITypeSymbol Type,
+    ILocalVariableRenamingRewriter LocalVariableRenamingRewriter,
     LambdaExpressionSyntax Factory,
     bool IsSimpleFactory,
     ParameterSyntax Context,

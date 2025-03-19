@@ -10,6 +10,7 @@ readonly record struct MdResolver(
     ITypeSymbol ContractType,
     MdTag? Tag,
     ExpressionSyntax TargetValue,
+    ImmutableArray<MdOverride> Overrides,
     TypeSyntax? ArgumentType = null,
     ParameterSyntax? Parameter = null,
     ImmutableArray<AttributeSyntax> Attributes = default,

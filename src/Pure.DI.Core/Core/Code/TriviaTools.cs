@@ -15,9 +15,9 @@ sealed class TriviaTools : ITriviaTools
         return newNode.WithLeadingTrivia(SyntaxFactory.Space);
     }
 
-    public SyntaxToken PreserveTrivia(IHints hints, SyntaxToken newToken, SyntaxToken prevToken)
+    public SyntaxToken PreserveTrivia(bool formatCode, SyntaxToken newToken, SyntaxToken prevToken)
     {
-        if (hints.IsFormatCodeEnabled)
+        if (formatCode)
         {
             return newToken.WithLeadingTrivia(TrimEnd(prevToken.LeadingTrivia)).WithTrailingTrivia(prevToken.TrailingTrivia);
         }

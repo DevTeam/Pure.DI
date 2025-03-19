@@ -694,7 +694,7 @@ public class PartialMethodsTests
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["System.Func`1[Sample.IDependency] '' PerBlock created", "Sample.Dependency '' Singleton created", "Sample.Service '' Transient created"], result);
+        result.StdOut.ShouldBe(["Sample.Dependency '' Singleton created", "System.Func`1[Sample.IDependency] '' PerBlock created", "Sample.Service '' Transient created"], result);
     }
 
     [Fact]
@@ -1167,6 +1167,6 @@ public class PartialMethodsTests
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["String created", "Int32 created", "Dependency 99 created", "Int32 created", "String created", "Service 'MyService' created"], result);
+        result.StdOut.ShouldBe(["String created", "Int32 created", "Int32 created", "String created", "Dependency 99 created", "Service 'MyService' created"], result);
     }
 }

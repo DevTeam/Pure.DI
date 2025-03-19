@@ -468,6 +468,99 @@ To run the above code, the following NuGet packages must be added:
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
+## Injections as required
+
+```c#
+using Shouldly;
+using Pure.DI;
+using System.Collections.Generic;
+
+DI.Setup(nameof(Composition))
+    .Bind().To<Dependency>()
+    .Bind().To<Service>()
+
+    // Composition root
+    .Root<IService>("Root");
+
+var composition = new Composition();
+var service = composition.Root;
+service.Dependencies.Count.ShouldBe(2);
+
+interface IDependency;
+
+class Dependency : IDependency;
+
+interface IService
+{
+    IReadOnlyList<IDependency> Dependencies { get; }
+}
+
+class Service(Func<IDependency> dependencyFactory): IService
+{
+    public IReadOnlyList<IDependency> Dependencies { get; } =
+    [
+        dependencyFactory(),
+        dependencyFactory()
+    ];
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+
+## Injections as required with arguments
+
+```c#
+using Shouldly;
+using Pure.DI;
+using System.Collections.Generic;
+
+DI.Setup(nameof(Composition))
+    .Bind().To<Dependency>()
+    .Bind().To<Service>()
+
+    // Composition root
+    .Root<IService>("Root");
+
+var composition = new Composition();
+var service = composition.Root;
+var dependencies = service.Dependencies;
+dependencies.Count.ShouldBe(2);
+dependencies[0].Id.ShouldBe(33);
+dependencies[1].Id.ShouldBe(99);
+
+interface IDependency
+{
+    int Id { get; }
+}
+
+class Dependency(int id) : IDependency
+{
+    public int Id { get; } = id;
+}
+
+interface IService
+{
+    IReadOnlyList<IDependency> Dependencies { get; }
+}
+
+class Service(Func<int, IDependency> dependencyFactoryWithArgs): IService
+{
+    public IReadOnlyList<IDependency> Dependencies { get; } =
+    [
+        dependencyFactoryWithArgs(33),
+        dependencyFactoryWithArgs(99)
+    ];
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+
 ## Class arguments
 
 Sometimes you need to pass some state to a composition class to use it when resolving dependencies. To do this, just use the `Arg<T>(string argName)` method, specify the type of argument and its name. You can also specify a tag for each argument. You can then use them as dependencies when building the object graph. If you have multiple arguments of the same type, just use tags to distinguish them. The values of the arguments are manipulated when you create a composition class by calling its constructor. It is important to remember that only those arguments that are used in the object graph will appear in the constructor. Arguments that are not involved will not be added to the constructor arguments.
@@ -1945,8 +2038,8 @@ using Pure.DI;
 using System.Collections.Immutable;
 
 DI.Setup(nameof(Composition))
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>()
+    .Bind().To<Dependency>()
+    .Bind().To<Service>()
 
     // Composition root
     .Root<IService>("Root");
@@ -3763,107 +3856,6 @@ class Service(
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
-
-
-## Bind attribute
-
-`BindAttribute` allows you to perform automatic binding to properties, fields or methods that belong to the type of the binding involved.
-
-```c#
-using Pure.DI;
-
-DI.Setup(nameof(Composition))
-    .Bind().As(Lifetime.Singleton).To<Facade>()
-    .Bind().To<Service>()
-
-    // Composition root
-    .Root<IService>("Root");
-
-var composition = new Composition();
-var service = composition.Root;
-service.DoSomething();
-
-interface IDependency
-{
-    public void DoSomething();
-}
-
-class Dependency : IDependency
-{
-    public void DoSomething()
-    {
-    }
-}
-
-class Facade
-{
-    [Bind]
-    public IDependency Dependency { get; } = new Dependency();
-}
-
-interface IService
-{
-    public void DoSomething();
-}
-
-class Service(IDependency dep) : IService
-{
-    public void DoSomething() => dep.DoSomething();
-}
-```
-
-To run the above code, the following NuGet package must be added:
- - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-
-This attribute `BindAttribute` applies to field properties and methods, to regular, static, and even returning generalized types.
-
-## Bind attribute with lifetime and tag
-
-```c#
-using Pure.DI;
-
-DI.Setup(nameof(Composition))
-    .Bind().As(Lifetime.Singleton).To<Facade>()
-    .Bind().To<Service>()
-
-    // Composition root
-    .Root<IService>("Root");
-
-var composition = new Composition();
-var service = composition.Root;
-service.DoSomething();
-
-interface IDependency
-{
-    public void DoSomething();
-}
-
-class Dependency : IDependency
-{
-    public void DoSomething()
-    {
-    }
-}
-
-class Facade
-{
-    [Bind(lifetime: Lifetime.Singleton, tags: ["my tag"])]
-    public IDependency Dependency { get; } = new Dependency();
-}
-
-interface IService
-{
-    public void DoSomething();
-}
-
-class Service([Tag("my tag")] IDependency dep) : IService
-{
-    public void DoSomething() => dep.DoSomething();
-}
-```
-
-To run the above code, the following NuGet package must be added:
- - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
 
 
 ## Decorator

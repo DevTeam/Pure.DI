@@ -9,8 +9,8 @@ using Pure.DI;
 using System.Collections.Immutable;
 
 DI.Setup(nameof(Composition))
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>()
+    .Bind().To<Dependency>()
+    .Bind().To<Service>()
 
     // Composition root
     .Root<IService>("Root");
@@ -95,8 +95,8 @@ partial class Composition
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        IDependency localValue64 = new Dependency();
-        return localValue64;
+        IDependency localValue102 = new Dependency();
+        return localValue102;
       });
       return new Service(perBlockFunc1);
     }

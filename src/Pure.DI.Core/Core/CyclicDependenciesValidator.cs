@@ -17,7 +17,7 @@ sealed class CyclicDependenciesValidator(
             graphWalker.Walk(
                 errors,
                 graph,
-                root.Value.Node,
+                root.Node,
                 visitor,
                 cancellationToken);
         }

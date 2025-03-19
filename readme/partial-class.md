@@ -12,9 +12,9 @@ using System.Diagnostics;
 var composition = new Composition("Abc");
 var service = composition.Root;
 
-service.Dependency1.Id.ShouldBe(1);
-service.Dependency2.Id.ShouldBe(2);
-service.Name.ShouldBe("Abc_3");
+service.Name.ShouldBe("Abc_1");
+service.Dependency1.Id.ShouldBe(2);
+service.Dependency2.Id.ShouldBe(3);
 
 interface IDependency
 {
@@ -117,9 +117,9 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
+      string transientString1 = $"{_serviceName}_{GenerateId()}";
       long transientInt645 = GenerateId();
       long transientInt644 = GenerateId();
-      string transientString1 = $"{_serviceName}_{GenerateId()}";
       return new Service(transientString1, new Dependency(transientInt645), new Dependency(transientInt644));
     }
   }

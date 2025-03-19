@@ -87,11 +87,12 @@ public static class TestExtensions
         }
 
         compilation = compilation
-            .AddSyntaxTrees(generatedSources.Select(i => CSharpSyntaxTree.ParseText(i.SourceText, parseOptions)).ToArray())
-            .Check(stdOut, options);
+            .AddSyntaxTrees(generatedSources.Select(i => CSharpSyntaxTree.ParseText(i.SourceText, parseOptions)).ToArray());
 
         generatedSources.AddRange(generatedApiSources);
         var generatedCode = string.Join(Environment.NewLine, generatedSources.Select((src, index) => $"Generated {index + 1}" + Environment.NewLine + Environment.NewLine + src.SourceText));
+
+        compilation.Check(stdOut, options, generatedCode);
 
         var tempFileName = Path.Combine(Environment.CurrentDirectory, Guid.NewGuid().ToString()[..4]);
         var assemblyPath = Path.ChangeExtension(tempFileName, "exe");
@@ -224,7 +225,7 @@ public static class TestExtensions
                 MetadataReference.CreateFromFile(typeof(Regex).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(IAsyncEnumerable<>).Assembly.Location));
 
-    private static CSharpCompilation Check(this CSharpCompilation compilation, List<string> output, Options? options)
+    private static CSharpCompilation Check(this CSharpCompilation compilation, List<string> output, Options? options, string? generatedCode)
     {
         var errors = (
                 from diagnostic in compilation.GetDiagnostics()
@@ -246,8 +247,12 @@ public static class TestExtensions
         }
 
         errors.Insert(0, $"Language version is {compilation.LanguageVersion}, available versions are ... {string.Join(", ", Enum.GetNames<LanguageVersion>().TakeLast(5))}");
-        Assert.False(hasError, string.Join(Environment.NewLine + Environment.NewLine, errors));
+        if (!string.IsNullOrWhiteSpace(generatedCode))
+        {
+            errors.AddRange(AddLineNumbers(generatedCode));
+        }
 
+        Assert.False(hasError, string.Join(Environment.NewLine, errors));
         return compilation;
     }
 
@@ -282,9 +287,12 @@ public static class TestExtensions
                + Environment.NewLine
                + string.Join(
                    Environment.NewLine,
-                   source.Split(Environment.NewLine).Select((line, number) => $"/*{number + 1:0000}*/ {line}")
+                   AddLineNumbers(source)
                );
     }
+
+    private static IEnumerable<string> AddLineNumbers(string source) =>
+        source.Split(Environment.NewLine).Select((line, number) => $"/*{number + 1:0000}*/ {line}");
 
     private static string GetSystemAssemblyPathByName(string assemblyName) =>
         Path.Combine(Path.GetDirectoryName(typeof(object).Assembly.Location) ?? string.Empty, assemblyName);

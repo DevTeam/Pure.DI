@@ -113,29 +113,29 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var accumulator46 = new Owned();
+      var accumulator54 = new Owned();
+      Owned transientOwned1;
+      Owned localOwned59 = accumulator54;
+      transientOwned1 = localOwned59;
+      using (_lock.EnterScope())
+      {
+        accumulator54.Add(transientOwned1);
+      }
+
       Dependency transientDependency3 = new Dependency();
       using (_lock.EnterScope())
       {
-        accumulator46.Add(transientDependency3);
+        accumulator54.Add(transientDependency3);
       }
 
       Owned<IService> perBlockOwned0;
       // Creates the owner of an instance
-      Owned transientOwned1;
-      Owned localOwned22 = accumulator46;
-      transientOwned1 = localOwned22;
+      IOwned localOwned60 = transientOwned1;
+      IService localValue61 = new Service(transientDependency3);
+      perBlockOwned0 = new Owned<IService>(localValue61, localOwned60);
       using (_lock.EnterScope())
       {
-        accumulator46.Add(transientOwned1);
-      }
-
-      IOwned localOwned20 = transientOwned1;
-      IService localValue21 = new Service(transientDependency3);
-      perBlockOwned0 = new Owned<IService>(localValue21, localOwned20);
-      using (_lock.EnterScope())
-      {
-        accumulator46.Add(perBlockOwned0);
+        accumulator54.Add(perBlockOwned0);
       }
 
       return perBlockOwned0;

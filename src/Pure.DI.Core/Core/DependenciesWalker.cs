@@ -14,21 +14,25 @@ class DependenciesWalker<TContext>
         if (node.Root is {} root)
         {
             VisitRoot(ctx, root);
+            return;
         }
 
         if (node.Implementation is {} implementation)
         {
             VisitImplementation(ctx, implementation);
+            return;
         }
 
         if (node.Factory is {} factory)
         {
             VisitFactory(ctx, factory);
+            return;
         }
 
         if (node.Arg is {} arg)
         {
             VisitArg(ctx, arg);
+            return;
         }
 
         if (node.Construct is {} construction)
@@ -67,9 +71,9 @@ class DependenciesWalker<TContext>
 
     public virtual void VisitFactory(in TContext ctx, in DpFactory factory)
     {
-        foreach (var injection in factory.ResolversInjections)
+        foreach (var resolver in factory.Resolvers)
         {
-            VisitInjection(ctx, injection, false, null, ImmutableArray.Create(factory.Source.Source.GetLocation()));
+            VisitResolver(ctx, resolver);
         }
 
         foreach (var initializer in factory.Initializers)
@@ -153,6 +157,11 @@ class DependenciesWalker<TContext>
         object? explicitDefaultValue,
         in ImmutableArray<Location> locations)
     {
+    }
+
+    public virtual void VisitResolver(in TContext ctx, DpResolver resolver)
+    {
+        VisitInjection(ctx, resolver.Injection, false, null, ImmutableArray.Create(resolver.Source.Source.GetLocation()));
     }
 
     public virtual void VisitInitializer(in TContext ctx, DpInitializer initializer)

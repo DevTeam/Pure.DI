@@ -3,9 +3,9 @@
 namespace Pure.DI.Core;
 
 sealed class RootsBuilder(IBuilder<ContractsBuildContext, ISet<Injection>> contractsBuilder)
-    : IBuilder<DependencyGraph, IReadOnlyDictionary<Injection, Root>>
+    : IBuilder<DependencyGraph, DependencyGraph>
 {
-    public IReadOnlyDictionary<Injection, Root> Build(DependencyGraph dependencyGraph)
+    public DependencyGraph Build(DependencyGraph dependencyGraph)
     {
         var rootsPairs = new List<KeyValuePair<Injection, Root>>();
         foreach (var curNode in dependencyGraph.Graph.Vertices)
@@ -55,12 +55,13 @@ sealed class RootsBuilder(IBuilder<ContractsBuildContext, ISet<Injection>> contr
             }
         }
 
-        return rootsPairs
+        var roots = rootsPairs
             .GroupBy(i => i.Key)
             .Select((byInjection, index) => (byInjection, index))
-            .ToDictionary(
-                group => group.byInjection.Key,
-                group => CreateRoot(group));
+            .Select(group => CreateRoot(group))
+            .ToImmutableArray();
+
+        return dependencyGraph with { Roots = roots };
     }
 
     private static Root CreateRoot((IEnumerable<KeyValuePair<Injection, Root>> byInjection, int index) group) =>

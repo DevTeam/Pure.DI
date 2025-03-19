@@ -2994,8 +2994,6 @@ namespace Pure.DI
         ///         var service = new Service();
         ///         // Initialize an instance with all necessary dependencies
         ///         ctx.BuildUp(service);
-        ///
-        /// 
         ///         return service;
         ///     })
         /// </code>
@@ -3005,6 +3003,35 @@ namespace Pure.DI
         /// <typeparam name="T">Object type.</typeparam>
         /// <seealso cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
         void BuildUp<T>(T value);
+
+        /// <summary>
+        /// Overrides the binding with the specified value. Cannot be used outside of the binding setting.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind().To&lt;Func&lt;int, int, IDependency&gt;&gt;(ctx =&gt;
+        ///         (dependencyId, subId) =>
+        ///         {
+        ///             // Overrides with a lambda argument
+        ///             ctx.Override(dependencyId);
+        ///             // Overrides with tag using lambda argument
+        ///             ctx.Override(subId, "sub");
+        ///             // Overrides with some value
+        ///             ctx.Override($"Dep {dependencyId} {subId}");
+        ///             // Overrides with injected value
+        ///             ctx.Inject(Tag.Red, out Color red);
+        ///             ctx.Override(red);
+        ///             ctx.Inject&lt;Dependency&gt;(out var dependency);
+        ///             return dependency;
+        ///         })
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <param name="value">The object that will be used to override a binding.</param>
+        /// <typeparam name="T">Object type that will be used to override a binding.</typeparam>
+        /// <param name="tags">Injection tags that will be used to override a binding. See also <see cref="IBinding.Tags"/></param>.
+        /// <seealso cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
+        void Override<T>(T value, params object[] tags);
     }
     
     /// <summary>

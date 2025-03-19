@@ -120,7 +120,7 @@ partial class Composition: IDisposable
   private object[] _disposables;
   private int _disposeIndex;
 
-  private Dependency? _scopedDependency43;
+  private Dependency? _scopedDependency51;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -142,19 +142,19 @@ partial class Composition: IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_scopedDependency43 is null)
+      if (_scopedDependency51 is null)
       {
         using (_lock.EnterScope())
         {
-          if (_scopedDependency43 is null)
+          if (_scopedDependency51 is null)
           {
-            _scopedDependency43 = new Dependency();
-            _disposables[_disposeIndex++] = _scopedDependency43;
+            _scopedDependency51 = new Dependency();
+            _disposables[_disposeIndex++] = _scopedDependency51;
           }
         }
       }
 
-      return new Service(_scopedDependency43);
+      return new Service(_scopedDependency51);
     }
   }
 
@@ -168,8 +168,8 @@ partial class Composition: IDisposable
       () =>
       {
         Composition transientComposition3 = this;
-        Session localValue103 = new Session(transientComposition3);
-        return localValue103;
+        Session localValue147 = new Session(transientComposition3);
+        return localValue147;
       });
       return new Program(perBlockFunc1);
     }
@@ -185,7 +185,7 @@ partial class Composition: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _scopedDependency43 = null;
+      _scopedDependency51 = null;
       }
 
       while (disposeIndex-- > 0)

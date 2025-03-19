@@ -7,15 +7,27 @@ sealed class LocalVariableRenamingRewriter(
     IVariableNameProvider variableNameProvider)
     : CSharpSyntaxRewriter, ILocalVariableRenamingRewriter
 {
-    private readonly Dictionary<string, string> _names = new();
-    private BuildContext? _ctx;
+    private Dictionary<string, string> Names { get; init; } = [];
+    private bool _formatCode;
+    private bool _isOverride;
+    private bool _forcibleRename;
     private SemanticModel? _semanticModel;
 
-    public LambdaExpressionSyntax Rewrite(BuildContext ctx, LambdaExpressionSyntax lambda)
+    public SyntaxNode Rewrite(SemanticModel semanticModel, bool formatCode, bool isOverride, SyntaxNode lambda)
     {
-        _semanticModel = ctx.DependencyGraph.Source.SemanticModel;
-        _ctx = ctx;
-        return (LambdaExpressionSyntax)Visit(lambda);
+        _semanticModel = semanticModel;
+        _formatCode = formatCode;
+        _isOverride = isOverride;
+        _forcibleRename = _isOverride;
+        return Visit(lambda);
+    }
+
+    public ILocalVariableRenamingRewriter Clone()
+    {
+        return new LocalVariableRenamingRewriter(triviaTools, variableNameProvider)
+        {
+            Names = new Dictionary<string, string>(Names)
+        };
     }
 
     public override SyntaxNode? VisitVariableDeclarator(VariableDeclaratorSyntax node) =>
@@ -24,14 +36,36 @@ sealed class LocalVariableRenamingRewriter(
     public override SyntaxNode? VisitSingleVariableDesignation(SingleVariableDesignationSyntax node) =>
         base.VisitSingleVariableDesignation(node.WithIdentifier(SyntaxFactory.Identifier(GetUniqueName(node.Identifier.Text))));
 
+    public override SyntaxNode? VisitParameter(ParameterSyntax node) =>
+        base.VisitParameter(
+            Names.ContainsKey(node.Identifier.Text)
+                ? node.WithIdentifier(SyntaxFactory.Identifier(GetUniqueName(node.Identifier.Text)))
+                : node);
+
+    public override SyntaxNode? VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
+    {
+        _forcibleRename = false;
+        try
+        {
+            return base.VisitObjectCreationExpression(node);
+        }
+        finally
+        {
+            _forcibleRename = _isOverride;
+        }
+    }
+
+    public override SyntaxNode? VisitIdentifierName(IdentifierNameSyntax node) =>
+        base.VisitIdentifierName(_forcibleRename ? SyntaxFactory.IdentifierName(GetUniqueName(node.Identifier.Text)) : node);
+
     public override SyntaxToken VisitToken(SyntaxToken token)
     {
-        if (_names.TryGetValue(token.Text, out var newName)
+        if (Names.TryGetValue(token.Text, out var newName)
             && token.IsKind(SyntaxKind.IdentifierToken)
             && token.Parent is {} parent
             && (_semanticModel?.SyntaxTree != parent.SyntaxTree || _semanticModel.GetSymbolInfo(parent).Symbol is ILocalSymbol))
         {
-            token = triviaTools.PreserveTrivia(_ctx!.DependencyGraph.Source.Hints, SyntaxFactory.Identifier(newName), token);
+            token = triviaTools.PreserveTrivia(_formatCode, SyntaxFactory.Identifier(newName), token);
         }
 
         return base.VisitToken(token);
@@ -39,10 +73,10 @@ sealed class LocalVariableRenamingRewriter(
 
     private string GetUniqueName(string baseName)
     {
-        if (!_names.TryGetValue(baseName, out var newName))
+        if (!Names.TryGetValue(baseName, out var newName))
         {
             newName = variableNameProvider.GetLocalUniqueVariableName(baseName);
-            _names.Add(baseName, newName);
+            Names.Add(baseName, newName);
         }
 
         return newName;

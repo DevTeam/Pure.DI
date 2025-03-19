@@ -19,7 +19,7 @@ sealed class VariablesBuilder(
         var transientId = 0;
         var blockMap = new Dictionary<(MdBinding, object?, int), Variable>();
         var rootBlock = new Block(blockId++, null, []);
-        rootBlock.Statements.AddFirst(
+        rootBlock.Statements.AddLast(
             GetVariable(
                 dependencyGraph.Source,
                 rootBlock,
@@ -38,9 +38,11 @@ sealed class VariablesBuilder(
                 break;
             }
 
+            var isFactoryWithOverrides = currentBlock.Current.Node.Factory is { HasOverrides: true };
             var stack = new Stack<IStatement>(currentBlock.Statements);
             while (stack.TryPop(out var currentStatement))
             {
+                var firstStatement = currentBlock.Statements.Find(currentStatement) ?? currentBlock.Statements.First;
                 switch (currentStatement)
                 {
                     case Block block:
@@ -98,18 +100,13 @@ sealed class VariablesBuilder(
                             }
                         }
 
-                        foreach (var (isDepResolved, depNode, depInjection, _) in dependencies)
+                        foreach (var (_, dependencyNode, dependencyInjection, _) in dependencies.Where(i => i.IsResolved))
                         {
-                            if (!isDepResolved)
-                            {
-                                continue;
-                            }
-
-                            var hasCycle = path.TryGetValue(depNode.Binding.Id, out var cycleVariable);
+                            var hasCycle = path.TryGetValue(dependencyNode.Binding.Id, out var cycleVariable);
                             var isAlreadyCreated = false;
                             if (hasCycle)
                             {
-                                isAlreadyCreated = nodeInfo.IsLazy(depNode);
+                                isAlreadyCreated = nodeInfo.IsLazy(dependencyNode);
                                 if (isAlreadyCreated)
                                 {
                                     foreach (var pathVariable in path)
@@ -119,50 +116,50 @@ sealed class VariablesBuilder(
                                 }
                             }
 
-                            var depVariable = GetVariable(
+                            var dependencyVariable = GetVariable(
                                 dependencyGraph.Source,
                                 currentBlock,
                                 map,
                                 blockMap,
-                                depNode with { Accumulators = accumulators },
-                                depInjection,
+                                dependencyNode with { Accumulators = accumulators },
+                                dependencyInjection,
                                 ref transientId,
                                 cycleVariable);
 
-                            depVariable.Info.AddTargetNode(variable.Node);
-
-                            var isBlock = depNode.Lifetime is not Lifetime.Transient and not Lifetime.PerBlock
+                            dependencyVariable.Info.AddTargetNode(variable.Node);
+                            var isBlock = isFactoryWithOverrides
+                                          || dependencyNode.Lifetime is not Lifetime.Transient and not Lifetime.PerBlock
                                           || nodeInfo.IsDelegate(variable.Node)
-                                          || nodeInfo.IsDelegate(depNode);
+                                          || nodeInfo.IsDelegate(dependencyNode);
                             if (isBlock)
                             {
-                                var depBlock = new Block(blockId++, currentStatement, []);
-                                depBlock.Statements.AddFirst(depVariable);
+                                var dependencyBlock = new Block(blockId++, currentStatement, []);
+                                dependencyBlock.Statements.AddLast(dependencyVariable);
                                 if (!isAlreadyCreated)
                                 {
-                                    blocks.Push(depBlock);
+                                    blocks.Push(dependencyBlock);
                                 }
 
-                                if (!variable.IsLazy)
+                                if (!variable.IsLazy && !isFactoryWithOverrides)
                                 {
-                                    currentBlock.Statements.AddFirst(depBlock);
+                                    currentBlock.Statements.AddBefore(firstStatement, dependencyBlock);
                                 }
 
-                                variable.Args.Add(depBlock);
+                                variable.Args.Add(dependencyBlock);
                             }
                             else
                             {
                                 if (!isAlreadyCreated)
                                 {
-                                    stack.Push(depVariable);
+                                    stack.Push(dependencyVariable);
                                 }
 
-                                if (!variable.IsLazy)
+                                if (!variable.IsLazy && !isFactoryWithOverrides)
                                 {
-                                    currentBlock.Statements.AddFirst(depVariable);
+                                    currentBlock.Statements.AddBefore(firstStatement, dependencyVariable);
                                 }
 
-                                variable.Args.Add(depVariable);
+                                variable.Args.Add(dependencyVariable);
                             }
                         }
 

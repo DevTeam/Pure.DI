@@ -84,18 +84,18 @@ partial class Composition
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public OtherService<T3> GetMyOtherService_T<T3>()
+  public OtherService<T1> GetMyOtherService_T<T1>()
   {
-    OtherService<T3> transientOtherService0;
-    IDependency<T3> localDependency97 = new Dependency<T3>();
-    transientOtherService0 = new OtherService<T3>(localDependency97);
+    OtherService<T1> transientOtherService0;
+    IDependency<T1> localDependency141 = new Dependency<T1>();
+    transientOtherService0 = new OtherService<T1>(localDependency141);
     return transientOtherService0;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public Service<T3> GetMyService_T<T3>()
+  public Service<T1> GetMyService_T<T1>()
   {
-    return new Service<T3>(new Dependency<T3>());
+    return new Service<T1>(new Dependency<T1>());
   }
 }
 ```
@@ -109,26 +109,26 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	DependencyᐸT3ᐳ --|> IDependencyᐸT3ᐳ
-	Composition ..> OtherServiceᐸT3ᐳ : OtherServiceᐸT3ᐳ GetMyOtherService_TᐸT3ᐳ()
-	Composition ..> ServiceᐸT3ᐳ : ServiceᐸT3ᐳ GetMyService_TᐸT3ᐳ()
-	OtherServiceᐸT3ᐳ *--  DependencyᐸT3ᐳ : IDependencyᐸT3ᐳ
-	ServiceᐸT3ᐳ *--  DependencyᐸT3ᐳ : IDependencyᐸT3ᐳ
+	DependencyᐸT1ᐳ --|> IDependencyᐸT1ᐳ
+	Composition ..> OtherServiceᐸT1ᐳ : OtherServiceᐸT1ᐳ GetMyOtherService_TᐸT1ᐳ()
+	Composition ..> ServiceᐸT1ᐳ : ServiceᐸT1ᐳ GetMyService_TᐸT1ᐳ()
+	OtherServiceᐸT1ᐳ *--  DependencyᐸT1ᐳ : IDependencyᐸT1ᐳ
+	ServiceᐸT1ᐳ *--  DependencyᐸT1ᐳ : IDependencyᐸT1ᐳ
 	namespace Pure.DI.UsageTests.Generics.GenericsRootsScenario {
 		class Composition {
 		<<partial>>
-		+OtherServiceᐸT3ᐳ GetMyOtherService_TᐸT3ᐳ()
-		+ServiceᐸT3ᐳ GetMyService_TᐸT3ᐳ()
+		+OtherServiceᐸT1ᐳ GetMyOtherService_TᐸT1ᐳ()
+		+ServiceᐸT1ᐳ GetMyService_TᐸT1ᐳ()
 		}
-		class DependencyᐸT3ᐳ {
+		class DependencyᐸT1ᐳ {
 			+Dependency()
 		}
-		class IDependencyᐸT3ᐳ {
+		class IDependencyᐸT1ᐳ {
 			<<interface>>
 		}
-		class OtherServiceᐸT3ᐳ {
+		class OtherServiceᐸT1ᐳ {
 		}
-		class ServiceᐸT3ᐳ {
+		class ServiceᐸT1ᐳ {
 		}
 	}
 ```

@@ -12,15 +12,18 @@ sealed class ApiInvocationProcessor(
     ISemantic semantic,
     ISymbolNames symbolNames,
     [Tag(Tag.UniqueTag)] IdGenerator idGenerator,
+    IOverrideIdProvider overrideIdProvider,
     IBaseSymbolsProvider baseSymbolsProvider,
     INameFormatter nameFormatter,
     ITypes types,
     IWildcardMatcher wildcardMatcher,
     Func<INamespacesWalker> namespacesWalkerFactory,
-    Func<IFactoryResolversWalker> factoryResolversWalkerFactory)
+    Func<IFactoryApiWalker> factoryApiWalkerFactory,
+    Func<ILocalVariableRenamingRewriter> localVariableRenamingRewriterFactory)
     : IApiInvocationProcessor
 {
     private static readonly char[] TypeNamePartsSeparators = ['.'];
+    private static object NullTag = new object();
 
     public void ProcessInvocation(
         IMetadataVisitor metadataVisitor,
@@ -626,6 +629,7 @@ sealed class ApiInvocationProcessor(
                 semanticModel,
                 source,
                 returnType,
+                localVariableRenamingRewriterFactory(),
                 lambdaExpression,
                 true,
                 SyntaxFactory.Parameter(SyntaxFactory.Identifier("ctx_1182D127")),
@@ -769,100 +773,20 @@ sealed class ApiInvocationProcessor(
                 return;
         }
 
-        var factoryResolversWalker = factoryResolversWalkerFactory();
-        factoryResolversWalker.Visit(lambdaExpression);
+        var localVariableRenamingRewriter = localVariableRenamingRewriterFactory()!;
+        var factoryApiWalker = factoryApiWalkerFactory();
+        factoryApiWalker.Visit(lambdaExpression);
         var position = 0;
         var hasContextTag = false;
-        var resolvers = factoryResolversWalker.Resolvers.Select(invocation => {
-                if (invocation.ArgumentList.Arguments is not { Count: > 0 } invArguments)
-                {
-                    return default;
-                }
-
-                switch (invArguments)
-                {
-                    case [{ RefOrOutKeyword.IsMissing: false } targetValue]:
-                        var argSymbol = GetArgSymbol(semanticModel, invArguments[0], resultType);
-                        if (argSymbol is not null)
-                        {
-                            return new MdResolver(
-                                semanticModel,
-                                invocation,
-                                position++,
-                                argSymbol,
-                                null,
-                                targetValue.Expression);
-                        }
-
-                        break;
-
-                    default:
-                        var args = arguments.GetArgs(invocation.ArgumentList, "tag", "value");
-                        var tag = args[0]?.Expression;
-
-                        hasContextTag =
-                            tag is MemberAccessExpressionSyntax memberAccessExpression
-                            && memberAccessExpression.IsKind(SyntaxKind.SimpleMemberAccessExpression)
-                            && memberAccessExpression.Name.Identifier.Text == nameof(IContext.Tag)
-                            && memberAccessExpression.Expression is IdentifierNameSyntax identifierName
-                            && identifierName.Identifier.Text == contextParameter.Identifier.Text;
-
-                        var resolverTag = new MdTag(
-                            0,
-                            hasContextTag
-                                ? MdTag.ContextTag
-                                : tag is null
-                                    ? null
-                                    : semantic.GetConstantValue<object>(semanticModel, tag));
-
-                        if (args[1] is {} valueArg)
-                        {
-                            var argType = GetArgSymbol(semanticModel, valueArg, resultType);
-                            if (argType is null
-                                && invocation.SyntaxTree == semanticModel.SyntaxTree && semanticModel.GetOperation(invocation) is {} invocationOperation
-                                && invocationOperation.ChildOperations.OfType<IDeclarationExpressionOperation>().FirstOrDefault() is { Type: {} declarationType })
-                            {
-                                argType = declarationType;
-                            }
-
-                            if (argType is not null)
-                            {
-                                return new MdResolver(
-                                    semanticModel,
-                                    invocation,
-                                    position++,
-                                    argType,
-                                    resolverTag,
-                                    valueArg.Expression);
-                            }
-                        }
-
-                        break;
-                }
-
-                return default;
-            })
+        var resolvers = factoryApiWalker.Meta
+            .Where(i => i.Kind == FactoryMetaKind.Resolver)
+            .Select(meta => CreateResolver(semanticModel, resultType, meta, contextParameter, ref position, ref hasContextTag, localVariableRenamingRewriter))
             .Where(i => i != default)
             .ToImmutableArray();
 
-        var initializers = factoryResolversWalker.Initializers.Select(invocation => {
-                if (invocation.ArgumentList.Arguments is not [{} targetArg])
-                {
-                    return default;
-                }
-
-                var targetType = GetArgSymbol(semanticModel, targetArg, resultType);
-                if (targetType is null)
-                {
-                    return default;
-                }
-
-                return new MdInitializer(
-                    semanticModel,
-                    invocation,
-                    targetType,
-                    targetArg.Expression);
-            })
+        var initializers = factoryApiWalker.Meta
+            .Where(i => i.Kind == FactoryMetaKind.Initializer)
+            .Select(meta => CreateInitializer(semanticModel, resultType, meta, contextParameter, ref hasContextTag, localVariableRenamingRewriter))
             .Where(i => i != default)
             .ToImmutableArray();
 
@@ -876,6 +800,7 @@ sealed class ApiInvocationProcessor(
                 semanticModel,
                 lambdaExpression,
                 resultType,
+                localVariableRenamingRewriter,
                 lambdaExpression,
                 false,
                 contextParameter,
@@ -883,6 +808,186 @@ sealed class ApiInvocationProcessor(
                 initializers,
                 hasContextTag));
     }
+
+    private MdOverride CreateOverride(
+        SemanticModel semanticModel,
+        ITypeSymbol resultType,
+        OverrideMeta @override,
+        ParameterSyntax contextParameter,
+        ILocalVariableRenamingRewriter localVariableRenamingRewriter,
+        ref bool hasContextTag)
+    {
+        var invocation = @override.Expression;
+        if (invocation.ArgumentList.Arguments.Count == 0)
+        {
+            return default;
+        }
+
+        var args = arguments.GetArgs(invocation.ArgumentList, "value", "tags");
+        if (args[0] is not {} valueArg)
+        {
+            return default;
+        }
+
+        var argType = GetArg(semanticModel, resultType, valueArg, invocation);
+        if (argType is null)
+        {
+            return default;
+        }
+
+        var tagArguments = invocation.ArgumentList.Arguments.Skip(1).ToList();
+        var hasCtx = tagArguments.Aggregate(false, (current, tag) => current | HasContextTag(tag.Expression, contextParameter));
+        var tags = BuildTags(semanticModel, tagArguments)
+            .AsEnumerable()
+            .Select(tag => tag with { Value = tag.Value ?? (hasCtx ? MdTag.ContextTag : null) })
+            .DefaultIfEmpty(new MdTag(0, hasCtx ? MdTag.ContextTag : null))
+            .ToImmutableArray();
+
+        var valueExpression = (ExpressionSyntax)localVariableRenamingRewriter.Rewrite(semanticModel, false, true, valueArg.Expression);
+        return new MdOverride(
+            semanticModel,
+            invocation,
+            overrideIdProvider.GetId(argType, tags.Select(tag => tag.Value ?? NullTag).ToImmutableHashSet()),
+            @override.Position,
+            argType,
+            tags,
+            valueExpression);
+    }
+
+    private MdInitializer CreateInitializer(
+        SemanticModel semanticModel,
+        ITypeSymbol resultType,
+        FactoryMeta meta,
+        ParameterSyntax contextParameter,
+        ref bool hasContextTag,
+        ILocalVariableRenamingRewriter localVariableRenamingRewriter)
+    {
+        var invocation = meta.Expression;
+        if (invocation.ArgumentList.Arguments is not [{} targetArg])
+        {
+            return default;
+        }
+
+        var targetType = GetArgSymbol(semanticModel, targetArg, resultType);
+        if (targetType is null)
+        {
+            return default;
+        }
+
+        var overrides = new List<MdOverride>();
+        // ReSharper disable once LoopCanBeConvertedToQuery
+        foreach (var @override in meta.Overrides)
+        {
+            var mdOverride = CreateOverride(semanticModel, resultType, @override, contextParameter, localVariableRenamingRewriter, ref hasContextTag);
+            if (mdOverride != default)
+            {
+                overrides.Add(mdOverride);
+            }
+        }
+
+        return new MdInitializer(
+            semanticModel,
+            invocation,
+            targetType,
+            targetArg.Expression,
+            overrides.ToImmutableArray());
+    }
+
+    private MdResolver CreateResolver(
+        SemanticModel semanticModel,
+        ITypeSymbol resultType,
+        FactoryMeta meta,
+        ParameterSyntax contextParameter,
+        ref int position,
+        ref bool hasContextTag,
+        ILocalVariableRenamingRewriter localVariableRenamingRewriter)
+    {
+        var invocation = meta.Expression;
+        if (invocation.ArgumentList.Arguments is not { Count: > 0 } invArguments)
+        {
+            return default;
+        }
+
+        var overrides = new List<MdOverride>();
+        // ReSharper disable once LoopCanBeConvertedToQuery
+        foreach (var overrideInvocation in meta.Overrides)
+        {
+            var mdOverride = CreateOverride(semanticModel, resultType, overrideInvocation, contextParameter, localVariableRenamingRewriter, ref hasContextTag);
+            if (mdOverride != default)
+            {
+                overrides.Add(mdOverride);
+            }
+        }
+
+        switch (invArguments)
+        {
+            case [{ RefOrOutKeyword.IsMissing: false } targetValue]:
+                var argSymbol = GetArgSymbol(semanticModel, invArguments[0], resultType);
+                if (argSymbol is not null)
+                {
+                    return new MdResolver(
+                        semanticModel,
+                        invocation,
+                        position++,
+                        argSymbol,
+                        null,
+                        targetValue.Expression,
+                        overrides.ToImmutableArray());
+                }
+
+                break;
+
+            default:
+                var args = arguments.GetArgs(invocation.ArgumentList, "tag", "value");
+                var tag = args[0]?.Expression;
+                var hasCtx = HasContextTag(tag, contextParameter);
+                hasContextTag |= hasCtx;
+                var tagValue = hasCtx ? MdTag.ContextTag : tag is null ? null : semantic.GetConstantValue<object>(semanticModel, tag);
+                var resolverTag = new MdTag(0, tagValue);
+                if (args[1] is {} valueArg)
+                {
+                    var argType = GetArg(semanticModel, resultType, valueArg, invocation);
+                    if (argType is not null)
+                    {
+                        return new MdResolver(
+                            semanticModel,
+                            invocation,
+                            position++,
+                            argType,
+                            resolverTag,
+                            valueArg.Expression,
+                            overrides.ToImmutableArray());
+                    }
+                }
+
+                break;
+        }
+
+        return default;
+    }
+
+    private static ITypeSymbol? GetArg(
+        SemanticModel semanticModel,
+        ITypeSymbol resultType,
+        ArgumentSyntax valueArg,
+        InvocationExpressionSyntax invocation)
+    {
+        var argType = GetArgSymbol(semanticModel, valueArg, resultType);
+        if (argType is null
+            && invocation.SyntaxTree == semanticModel.SyntaxTree && semanticModel.GetOperation(invocation) is {} invocationOperation
+            && invocationOperation.ChildOperations.OfType<IDeclarationExpressionOperation>().FirstOrDefault() is { Type: {} declarationType })
+        {
+            argType = declarationType;
+        }
+        return argType;
+    }
+
+    private static bool HasContextTag(ExpressionSyntax? tag, ParameterSyntax contextParameter) =>
+        tag is MemberAccessExpressionSyntax memberAccessExpression
+        && memberAccessExpression.IsKind(SyntaxKind.SimpleMemberAccessExpression)
+        && memberAccessExpression.Name.Identifier.Text == nameof(IContext.Tag)
+        && memberAccessExpression.Expression is IdentifierNameSyntax identifierName
+        && identifierName.Identifier.Text == contextParameter.Identifier.Text;
 
     private static ITypeSymbol? GetArgSymbol(SemanticModel semanticModel, ArgumentSyntax argumentSyntax, ITypeSymbol defaultType)
     {

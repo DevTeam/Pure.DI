@@ -114,7 +114,7 @@ partial class Composition
   private readonly Composition _root;
   private readonly Lock _lock;
 
-  private XyzDependency? _singletonXyzDependency44;
+  private XyzDependency? _singletonXyzDependency52;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -134,18 +134,18 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonXyzDependency44 is null)
+      if (_root._singletonXyzDependency52 is null)
       {
         using (_lock.EnterScope())
         {
-          if (_root._singletonXyzDependency44 is null)
+          if (_root._singletonXyzDependency52 is null)
           {
-            _root._singletonXyzDependency44 = new XyzDependency();
+            _root._singletonXyzDependency52 = new XyzDependency();
           }
         }
       }
 
-      return _root._singletonXyzDependency44;
+      return _root._singletonXyzDependency52;
     }
   }
 
@@ -154,18 +154,18 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonXyzDependency44 is null)
+      if (_root._singletonXyzDependency52 is null)
       {
         using (_lock.EnterScope())
         {
-          if (_root._singletonXyzDependency44 is null)
+          if (_root._singletonXyzDependency52 is null)
           {
-            _root._singletonXyzDependency44 = new XyzDependency();
+            _root._singletonXyzDependency52 = new XyzDependency();
           }
         }
       }
 
-      return new Service(new AbcDependency(), _root._singletonXyzDependency44, new AbcDependency());
+      return new Service(new AbcDependency(), _root._singletonXyzDependency52, new AbcDependency());
     }
   }
 }

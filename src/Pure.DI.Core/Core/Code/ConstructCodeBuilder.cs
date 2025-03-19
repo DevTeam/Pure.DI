@@ -41,6 +41,7 @@ sealed class ConstructCodeBuilder(
                 break;
 
             case MdConstructKind.Accumulator:
+            case MdConstructKind.Override:
                 break;
 
             case MdConstructKind.None:
@@ -101,7 +102,7 @@ sealed class ConstructCodeBuilder(
         }
         else
         {
-            variable.VariableCode = instantiation;
+            variable.VariableCode =  instantiation;
         }
     }
 

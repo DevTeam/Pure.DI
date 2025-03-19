@@ -11,7 +11,7 @@ $r=Shouldly
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable UnusedTypeParameter
 // ReSharper disable UnusedMemberInSuper.Global
-namespace Pure.DI.UsageTests.Basics.GenericBuilderScenario;
+namespace Pure.DI.UsageTests.Generics.GenericBuilderScenario;
 
 using Shouldly;
 using Xunit;

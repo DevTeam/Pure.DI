@@ -2,7 +2,6 @@
 $v=true
 $p=99
 $d=Func with arguments
-$f=Using a binding of the form `.Bind<T>().To<T>("some statement")` is a kind of hack that allows you to replace an injection with just its own string.
 $r=Shouldly
 */
 
@@ -34,24 +33,9 @@ public class Scenario
         // FormatCode = On
 // {    
         DI.Setup(nameof(Composition))
-            .Bind<IClock>().As(Lifetime.Singleton).To<Clock>()
-            // Binds a dependency of type int
-            // to the source code statement "dependencyId"
-            .Bind<int>().To<int>("dependencyId")
-            // Binds a dependency of type int with tag "sub"
-            // to the source code statement "subId"
-            .Bind<int>("sub").To<int>("subId")
-            .Bind<Func<int, int, IDependency>>()
-            .To<Func<int, int, IDependency>>(ctx =>
-                (dependencyId, subId) =>
-                {
-                    // Builds up an instance of type Dependency
-                    // referring source code statements "dependencyId"
-                    // and source code statements "subId"
-                    ctx.Inject<Dependency>(out var dependency);
-                    return dependency;
-                })
-            .Bind<IService>().To<Service>()
+            .Bind().As(Lifetime.Singleton).To<Clock>()
+            .Bind().To<Dependency>()
+            .Bind().To<Service>()
 
             // Composition root
             .Root<IService>("Root");
@@ -59,9 +43,15 @@ public class Scenario
         var composition = new Composition();
         var service = composition.Root;
         service.Dependencies.Length.ShouldBe(3);
+
+        service.Dependencies[0].Name.ShouldBe("Abc");
         service.Dependencies[0].Id.ShouldBe(0);
+
+        service.Dependencies[1].Name.ShouldBe("Xyz");
         service.Dependencies[1].Id.ShouldBe(1);
+
         service.Dependencies[2].Id.ShouldBe(2);
+        service.Dependencies[2].Name.ShouldBe("");
 // }
         composition.SaveClassDiagram();
     }
@@ -80,20 +70,16 @@ class Clock : IClock
 
 interface IDependency
 {
-    int Id { get; }
+    string Name { get; }
 
-    int SubId { get; }
+    int Id { get; }
 }
 
-class Dependency(
-    IClock clock,
-    int id,
-    [Tag("sub")] int subId)
+class Dependency(string name, IClock clock, int id)
     : IDependency
 {
+    public string Name => name;
     public int Id => id;
-
-    public int SubId => subId;
 }
 
 interface IService
@@ -101,13 +87,13 @@ interface IService
     ImmutableArray<IDependency> Dependencies { get; }
 }
 
-class Service(Func<int, int, IDependency> dependencyFactory): IService
+class Service(Func<int, string, IDependency> dependencyFactory): IService
 {
     public ImmutableArray<IDependency> Dependencies { get; } =
     [
-        dependencyFactory(0, 99),
-        dependencyFactory(1, 99),
-        dependencyFactory(2, 99)
+        dependencyFactory(0, "Abc"),
+        dependencyFactory(1, "Xyz"),
+        dependencyFactory(2, "")
     ];
 }
 // }

@@ -100,28 +100,28 @@ partial class Composition
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public Service2<T3, T4> BuildUpGeneric<T3, T4>(Service2<T3, T4> buildingInstance)
-    where T3: struct
+  public Service2<T1, T5> BuildUpGeneric<T1, T5>(Service2<T1, T5> buildingInstance)
+    where T1: struct
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    Service2<T3, T4> transientService20;
-    Service2<T3, T4> localBuildingInstance59 = buildingInstance;
-    localBuildingInstance59.Dependency = new Dependency<T4>();
-    transientService20 = localBuildingInstance59;
+    Service2<T1, T5> transientService20;
+    Service2<T1, T5> localBuildingInstance134 = buildingInstance;
+    localBuildingInstance134.Dependency = new Dependency<T5>();
+    transientService20 = localBuildingInstance134;
     return transientService20;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public Service1<T3, T4> BuildUpGeneric<T3, T4>(Service1<T3, T4> buildingInstance)
-    where T3: struct
+  public Service1<T1, T5> BuildUpGeneric<T1, T5>(Service1<T1, T5> buildingInstance)
+    where T1: struct
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    T3 transientTT2 = (T3)(object)Guid.NewGuid();
-    Service1<T3, T4> transientService10;
-    Service1<T3, T4> localBuildingInstance60 = buildingInstance;
-    localBuildingInstance60.Dependency = new Dependency<T4>();
-    localBuildingInstance60.SetId(transientTT2);
-    transientService10 = localBuildingInstance60;
+    T1 transientTT2 = (T1)(object)Guid.NewGuid();
+    Service1<T1, T5> transientService10;
+    Service1<T1, T5> localBuildingInstance135 = buildingInstance;
+    localBuildingInstance135.Dependency = new Dependency<T5>();
+    localBuildingInstance135.SetId(transientTT2);
+    transientService10 = localBuildingInstance135;
     return transientService10;
   }
 
@@ -178,32 +178,32 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	DependencyᐸT4ᐳ --|> IDependencyᐸT4ᐳ
-	Composition ..> Service2ᐸT3ˏT4ᐳ : Service2ᐸT3ˏT4ᐳ BuildUpGenericᐸT3ˏT4ᐳ(Pure.DI.UsageTests.Basics.GenericBuildersScenario.Service2<T3, T4> buildingInstance)
-	Composition ..> Service1ᐸT3ˏT4ᐳ : Service1ᐸT3ˏT4ᐳ BuildUpGenericᐸT3ˏT4ᐳ(Pure.DI.UsageTests.Basics.GenericBuildersScenario.Service1<T3, T4> buildingInstance)
-	Service2ᐸT3ˏT4ᐳ *--  DependencyᐸT4ᐳ : IDependencyᐸT4ᐳ
-	Service1ᐸT3ˏT4ᐳ *--  DependencyᐸT4ᐳ : IDependencyᐸT4ᐳ
-	Service1ᐸT3ˏT4ᐳ *--  T3 : "Id"  T3
-	namespace Pure.DI.UsageTests.Basics.GenericBuildersScenario {
+	DependencyᐸT5ᐳ --|> IDependencyᐸT5ᐳ
+	Composition ..> Service2ᐸT1ˏT5ᐳ : Service2ᐸT1ˏT5ᐳ BuildUpGenericᐸT1ˏT5ᐳ(Pure.DI.UsageTests.Generics.GenericBuildersScenario.Service2<T1, T5> buildingInstance)
+	Composition ..> Service1ᐸT1ˏT5ᐳ : Service1ᐸT1ˏT5ᐳ BuildUpGenericᐸT1ˏT5ᐳ(Pure.DI.UsageTests.Generics.GenericBuildersScenario.Service1<T1, T5> buildingInstance)
+	Service2ᐸT1ˏT5ᐳ *--  DependencyᐸT5ᐳ : IDependencyᐸT5ᐳ
+	Service1ᐸT1ˏT5ᐳ *--  DependencyᐸT5ᐳ : IDependencyᐸT5ᐳ
+	Service1ᐸT1ˏT5ᐳ *--  T1 : "Id"  T1
+	namespace Pure.DI.UsageTests.Generics.GenericBuildersScenario {
 		class Composition {
 		<<partial>>
-		+Service2ᐸT3ˏT4ᐳ BuildUpGenericᐸT3ˏT4ᐳ(Pure.DI.UsageTests.Basics.GenericBuildersScenario.Service2<T3, T4> buildingInstance)
-		+Service1ᐸT3ˏT4ᐳ BuildUpGenericᐸT3ˏT4ᐳ(Pure.DI.UsageTests.Basics.GenericBuildersScenario.Service1<T3, T4> buildingInstance)
+		+Service2ᐸT1ˏT5ᐳ BuildUpGenericᐸT1ˏT5ᐳ(Pure.DI.UsageTests.Generics.GenericBuildersScenario.Service2<T1, T5> buildingInstance)
+		+Service1ᐸT1ˏT5ᐳ BuildUpGenericᐸT1ˏT5ᐳ(Pure.DI.UsageTests.Generics.GenericBuildersScenario.Service1<T1, T5> buildingInstance)
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
 		}
-		class DependencyᐸT4ᐳ {
+		class DependencyᐸT5ᐳ {
 			+Dependency()
 		}
-		class IDependencyᐸT4ᐳ {
+		class IDependencyᐸT5ᐳ {
 			<<interface>>
 		}
-		class Service1ᐸT3ˏT4ᐳ {
+		class Service1ᐸT1ˏT5ᐳ {
 			<<record>>
 		}
-		class Service2ᐸT3ˏT4ᐳ {
+		class Service2ᐸT1ˏT5ᐳ {
 			<<record>>
 		}
 	}

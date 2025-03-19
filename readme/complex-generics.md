@@ -102,8 +102,8 @@ partial class Composition
   private readonly Composition _root;
   private readonly Lock _lock;
 
-  private DependencyStruct<int> _singletonDependencyStruct51;
-  private bool _singletonDependencyStruct51Created;
+  private DependencyStruct<int> _singletonDependencyStruct59;
+  private bool _singletonDependencyStruct59Created;
 
   [OrdinalAttribute(128)]
   public Composition()
@@ -119,24 +119,24 @@ partial class Composition
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public Program<T3> GetRoot<T3>(T3 depArg)
-    where T3: notnull
+  public Program<T1> GetRoot<T1>(T1 depArg)
+    where T1: notnull
   {
     if (depArg is null) throw new ArgumentNullException(nameof(depArg));
-    if (!_root._singletonDependencyStruct51Created)
+    if (!_root._singletonDependencyStruct59Created)
     {
       using (_lock.EnterScope())
       {
-        if (!_root._singletonDependencyStruct51Created)
+        if (!_root._singletonDependencyStruct59Created)
         {
-          _root._singletonDependencyStruct51 = new DependencyStruct<int>();
+          _root._singletonDependencyStruct59 = new DependencyStruct<int>();
           Thread.MemoryBarrier();
-          _root._singletonDependencyStruct51Created = true;
+          _root._singletonDependencyStruct59Created = true;
         }
       }
     }
 
-    return new Program<T3>(new Service<T3, int, List<T3>, Dictionary<T3, int>>(new Dependency<T3>(depArg), _root._singletonDependencyStruct51));
+    return new Program<T1>(new Service<T1, int, List<T1>, Dictionary<T1, int>>(new Dependency<T1>(depArg), _root._singletonDependencyStruct59));
   }
 }
 ```
@@ -150,39 +150,39 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	ServiceᐸT3ˏInt32ˏListᐸT3ᐳˏDictionaryᐸT3ˏInt32ᐳᐳ --|> IServiceᐸT3ˏInt32ˏListᐸT3ᐳˏDictionaryᐸT3ˏInt32ᐳᐳ
-	DependencyᐸT3ᐳ --|> IDependencyᐸT3ᐳ
+	ServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ --|> IServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ
+	DependencyᐸT1ᐳ --|> IDependencyᐸT1ᐳ
 	DependencyStructᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ : "value type" 
-	Composition ..> ProgramᐸT3ᐳ : ProgramᐸT3ᐳ GetRootᐸT3ᐳ(T3 depArg)
-	ProgramᐸT3ᐳ *--  ServiceᐸT3ˏInt32ˏListᐸT3ᐳˏDictionaryᐸT3ˏInt32ᐳᐳ : IServiceᐸT3ˏInt32ˏListᐸT3ᐳˏDictionaryᐸT3ˏInt32ᐳᐳ
-	ServiceᐸT3ˏInt32ˏListᐸT3ᐳˏDictionaryᐸT3ˏInt32ᐳᐳ *--  DependencyᐸT3ᐳ : IDependencyᐸT3ᐳ
-	ServiceᐸT3ˏInt32ˏListᐸT3ᐳˏDictionaryᐸT3ˏInt32ᐳᐳ o-- "Singleton" DependencyStructᐸInt32ᐳ : "value type"  IDependencyᐸInt32ᐳ
-	DependencyᐸT3ᐳ o-- T3 : Argument "depArg"
+	Composition ..> ProgramᐸT1ᐳ : ProgramᐸT1ᐳ GetRootᐸT1ᐳ(T1 depArg)
+	ProgramᐸT1ᐳ *--  ServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ : IServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ
+	ServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ *--  DependencyᐸT1ᐳ : IDependencyᐸT1ᐳ
+	ServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ o-- "Singleton" DependencyStructᐸInt32ᐳ : "value type"  IDependencyᐸInt32ᐳ
+	DependencyᐸT1ᐳ o-- T1 : Argument "depArg"
 	namespace Pure.DI.UsageTests.Generics.ComplexGenericsScenario {
 		class Composition {
 		<<partial>>
-		+ProgramᐸT3ᐳ GetRootᐸT3ᐳ(T3 depArg)
+		+ProgramᐸT1ᐳ GetRootᐸT1ᐳ(T1 depArg)
 		}
 		class DependencyStructᐸInt32ᐳ {
 				<<struct>>
 			+DependencyStruct()
 		}
-		class DependencyᐸT3ᐳ {
-			+Dependency(T3 value)
+		class DependencyᐸT1ᐳ {
+			+Dependency(T1 value)
 		}
 		class IDependencyᐸInt32ᐳ {
 			<<interface>>
 		}
-		class IDependencyᐸT3ᐳ {
+		class IDependencyᐸT1ᐳ {
 			<<interface>>
 		}
-		class IServiceᐸT3ˏInt32ˏListᐸT3ᐳˏDictionaryᐸT3ˏInt32ᐳᐳ {
+		class IServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ {
 			<<interface>>
 		}
-		class ProgramᐸT3ᐳ {
+		class ProgramᐸT1ᐳ {
 		}
-		class ServiceᐸT3ˏInt32ˏListᐸT3ᐳˏDictionaryᐸT3ˏInt32ᐳᐳ {
-			+Service(IDependencyᐸT3ᐳ dependency1, IDependencyᐸInt32ᐳ dependency2)
+		class ServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ {
+			+Service(IDependencyᐸT1ᐳ dependency1, IDependencyᐸInt32ᐳ dependency2)
 		}
 	}
 ```

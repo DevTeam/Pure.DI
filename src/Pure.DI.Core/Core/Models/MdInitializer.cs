@@ -6,7 +6,8 @@ readonly record struct MdInitializer(
     SemanticModel SemanticModel,
     SyntaxNode Source,
     ITypeSymbol Type,
-    ExpressionSyntax Target)
+    ExpressionSyntax TargetArg,
+    ImmutableArray<MdOverride> Overrides)
 {
-    public override string ToString() => $"Initialize<{Type}>({Target})";
+    public override string ToString() => $"Initialize<{Type}>({TargetArg})";
 }

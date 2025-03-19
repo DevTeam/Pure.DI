@@ -2,5 +2,7 @@
 
 interface ILocalVariableRenamingRewriter
 {
-    LambdaExpressionSyntax Rewrite(BuildContext ctx, LambdaExpressionSyntax lambda);
+    SyntaxNode Rewrite(SemanticModel semanticModel, bool formatCode, bool isOverride, SyntaxNode lambda);
+
+    ILocalVariableRenamingRewriter Clone();
 }

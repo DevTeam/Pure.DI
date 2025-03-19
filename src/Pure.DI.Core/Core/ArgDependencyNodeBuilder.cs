@@ -13,7 +13,7 @@ sealed class ArgDependencyNodeBuilder : IBuilder<DependencyNodeBuildContext, IEn
                 continue;
             }
 
-            yield return new DependencyNode(0, binding, Arg: new DpArg(arg, binding));
+            yield return new DependencyNode(0, binding, ctx.TypeConstructor, Arg: new DpArg(arg, binding));
         }
     }
 }

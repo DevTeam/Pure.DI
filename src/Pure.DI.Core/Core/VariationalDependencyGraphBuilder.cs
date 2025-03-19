@@ -98,7 +98,7 @@ sealed class VariationalDependencyGraphBuilder(
 
                 cancellationToken.ThrowIfCancellationRequested();
 
-                var newNodes = SortByPriority(graphBuilder.TryBuild(setup, nodes, out var dependencyGraph))
+                var newNodes = SortByPriority(graphBuilder.TryBuild(setup, nodes, out var graph))
                     .Select(CreateProcessingNode)
                     .ToArray();
 
@@ -113,6 +113,12 @@ sealed class VariationalDependencyGraphBuilder(
                     continue;
                 }
 
+                if (graph is null)
+                {
+                    continue;
+                }
+
+                var dependencyGraph = new DependencyGraph(setup, graph);
                 if (dependencyGraph is { IsResolved: true })
                 {
                     return dependencyGraph;

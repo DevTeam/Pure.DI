@@ -97,7 +97,7 @@ partial class Composition
   private readonly Composition _root;
   private readonly Lock _lock;
 
-  private ClockService? _singletonClockService43;
+  private ClockService? _singletonClockService51;
 
   [OrdinalAttribute(128)]
   public Composition()
@@ -116,21 +116,21 @@ partial class Composition
   public Clock BuildUp(Clock buildingInstance)
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    if (_root._singletonClockService43 is null)
+    if (_root._singletonClockService51 is null)
     {
       using (_lock.EnterScope())
       {
-        if (_root._singletonClockService43 is null)
+        if (_root._singletonClockService51 is null)
         {
-          _root._singletonClockService43 = new ClockService();
+          _root._singletonClockService51 = new ClockService();
         }
       }
     }
 
     Clock transientClock0;
-    Clock localBuildingInstance106 = buildingInstance;
-    localBuildingInstance106.ClockService = _root._singletonClockService43;
-    transientClock0 = localBuildingInstance106;
+    Clock localBuildingInstance150 = buildingInstance;
+    localBuildingInstance150.ClockService = _root._singletonClockService51;
+    transientClock0 = localBuildingInstance150;
     return transientClock0;
   }
 }

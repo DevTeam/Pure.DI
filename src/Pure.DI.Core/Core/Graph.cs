@@ -6,6 +6,10 @@ sealed class Graph<TVertex, TEdge> : IGraph<TVertex, TEdge>
     where TEdge : IEdge<TVertex>
     where TVertex : notnull
 {
+    private readonly List<GraphEntry<TVertex, TEdge>> _entries = [];
+    private readonly List<TEdge> _edges = [];
+    private readonly Dictionary<TVertex, GraphEntry<TVertex, TEdge>> _inOutEdges;
+    private readonly Dictionary<TVertex, GraphEntry<TVertex, TEdge>> _outInEdges;
 
     public Graph(
         IEnumerable<GraphEntry<TVertex, TEdge>> entries,
@@ -16,6 +20,8 @@ sealed class Graph<TVertex, TEdge> : IGraph<TVertex, TEdge>
         var outInEdges = new Dictionary<TVertex, List<TEdge>>(comparer);
         foreach (var entry in entries)
         {
+            _entries.Add(entry);
+
             if (_inOutEdges.ContainsKey(entry.Target))
             {
                 continue;
@@ -39,13 +45,12 @@ sealed class Graph<TVertex, TEdge> : IGraph<TVertex, TEdge>
             i => i.Key,
             i => new GraphEntry<TVertex, TEdge>(i.Key, i.Value));
     }
-    private readonly List<TEdge> _edges = [];
-    private readonly Dictionary<TVertex, GraphEntry<TVertex, TEdge>> _inOutEdges;
-    private readonly Dictionary<TVertex, GraphEntry<TVertex, TEdge>> _outInEdges;
 
-    public IEnumerable<TVertex> Vertices => _inOutEdges.Keys;
+    public IReadOnlyCollection<GraphEntry<TVertex, TEdge>> Entries => _entries;
 
-    public IEnumerable<TEdge> Edges => _edges;
+    public IReadOnlyCollection<TVertex> Vertices => _inOutEdges.Keys;
+
+    public IReadOnlyCollection<TEdge> Edges => _edges;
 
     public bool TryGetInEdges(in TVertex target, out IReadOnlyCollection<TEdge> edges)
     {

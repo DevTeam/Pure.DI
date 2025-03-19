@@ -468,6 +468,99 @@ To run the above code, the following NuGet packages must be added:
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
+## Injections as required
+
+```c#
+using Shouldly;
+using Pure.DI;
+using System.Collections.Generic;
+
+DI.Setup(nameof(Composition))
+    .Bind().To<Dependency>()
+    .Bind().To<Service>()
+
+    // Composition root
+    .Root<IService>("Root");
+
+var composition = new Composition();
+var service = composition.Root;
+service.Dependencies.Count.ShouldBe(2);
+
+interface IDependency;
+
+class Dependency : IDependency;
+
+interface IService
+{
+    IReadOnlyList<IDependency> Dependencies { get; }
+}
+
+class Service(Func<IDependency> dependencyFactory): IService
+{
+    public IReadOnlyList<IDependency> Dependencies { get; } =
+    [
+        dependencyFactory(),
+        dependencyFactory()
+    ];
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+
+## Injections as required with arguments
+
+```c#
+using Shouldly;
+using Pure.DI;
+using System.Collections.Generic;
+
+DI.Setup(nameof(Composition))
+    .Bind().To<Dependency>()
+    .Bind().To<Service>()
+
+    // Composition root
+    .Root<IService>("Root");
+
+var composition = new Composition();
+var service = composition.Root;
+var dependencies = service.Dependencies;
+dependencies.Count.ShouldBe(2);
+dependencies[0].Id.ShouldBe(33);
+dependencies[1].Id.ShouldBe(99);
+
+interface IDependency
+{
+    int Id { get; }
+}
+
+class Dependency(int id) : IDependency
+{
+    public int Id { get; } = id;
+}
+
+interface IService
+{
+    IReadOnlyList<IDependency> Dependencies { get; }
+}
+
+class Service(Func<int, IDependency> dependencyFactoryWithArgs): IService
+{
+    public IReadOnlyList<IDependency> Dependencies { get; } =
+    [
+        dependencyFactoryWithArgs(33),
+        dependencyFactoryWithArgs(99)
+    ];
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+
 ## Transient
 
 The _Transient_ lifetime specifies to create a new dependency instance each time. It is the default lifetime and can be omitted.

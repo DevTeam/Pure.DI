@@ -19,7 +19,8 @@ readonly record struct Injection(
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool EqualTags(object? tag, object? otherTag) =>
-        SpecialEqualTags(tag, otherTag)
+        ReferenceEquals(tag, otherTag)
+        || SpecialEqualTags(tag, otherTag)
         || SpecialEqualTags(otherTag, tag)
         || Equals(tag, otherTag);
 

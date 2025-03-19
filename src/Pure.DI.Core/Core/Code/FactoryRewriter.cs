@@ -25,6 +25,7 @@ sealed class FactoryRewriter(
 
     private static readonly IdentifierNameSyntax InjectionMarkerExpression = SyntaxFactory.IdentifierName(Names.InjectionMarker);
     private static readonly IdentifierNameSyntax InitializationMarkerExpression = SyntaxFactory.IdentifierName(Names.InitializationMarker);
+    private static readonly IdentifierNameSyntax OverrideMarkerExpression = SyntaxFactory.IdentifierName(Names.OverrideMarker);
     private BuildContext? _ctx;
     private int _nestedBlockCounter;
     private int _nestedLambdaCounter;
@@ -160,6 +161,7 @@ sealed class FactoryRewriter(
         {
             nameof(IContext.Inject) => TryInject(invocation, out expressionSyntax),
             nameof(IContext.BuildUp) => TryInitialize(invocation, out expressionSyntax),
+            nameof(IContext.Override) => TryOverride(invocation, out expressionSyntax),
             _ => false
         };
 
@@ -242,6 +244,19 @@ sealed class FactoryRewriter(
 
         expressionSyntax = null;
         return false;
+    }
+
+    private bool TryOverride(InvocationExpressionSyntax invocation, out ExpressionSyntax? expressionSyntax)
+    {
+        var value = invocation.ArgumentList.Arguments.Count > 0 ? invocation.ArgumentList.Arguments[0].Expression : null;
+        if (value == null)
+        {
+            expressionSyntax = null;
+            return false;
+        }
+
+        expressionSyntax = triviaTools.PreserveTrivia(_ctx!.DependencyGraph.Source.Hints, OverrideMarkerExpression, invocation);
+        return true;
     }
 
     public override SyntaxNode? VisitMemberAccessExpression(MemberAccessExpressionSyntax node)

@@ -468,6 +468,99 @@ To run the above code, the following NuGet packages must be added:
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
+## Injections as required
+
+```c#
+using Shouldly;
+using Pure.DI;
+using System.Collections.Generic;
+
+DI.Setup(nameof(Composition))
+    .Bind().To<Dependency>()
+    .Bind().To<Service>()
+
+    // Composition root
+    .Root<IService>("Root");
+
+var composition = new Composition();
+var service = composition.Root;
+service.Dependencies.Count.ShouldBe(2);
+
+interface IDependency;
+
+class Dependency : IDependency;
+
+interface IService
+{
+    IReadOnlyList<IDependency> Dependencies { get; }
+}
+
+class Service(Func<IDependency> dependencyFactory): IService
+{
+    public IReadOnlyList<IDependency> Dependencies { get; } =
+    [
+        dependencyFactory(),
+        dependencyFactory()
+    ];
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+
+## Injections as required with arguments
+
+```c#
+using Shouldly;
+using Pure.DI;
+using System.Collections.Generic;
+
+DI.Setup(nameof(Composition))
+    .Bind().To<Dependency>()
+    .Bind().To<Service>()
+
+    // Composition root
+    .Root<IService>("Root");
+
+var composition = new Composition();
+var service = composition.Root;
+var dependencies = service.Dependencies;
+dependencies.Count.ShouldBe(2);
+dependencies[0].Id.ShouldBe(33);
+dependencies[1].Id.ShouldBe(99);
+
+interface IDependency
+{
+    int Id { get; }
+}
+
+class Dependency(int id) : IDependency
+{
+    public int Id { get; } = id;
+}
+
+interface IService
+{
+    IReadOnlyList<IDependency> Dependencies { get; }
+}
+
+class Service(Func<int, IDependency> dependencyFactoryWithArgs): IService
+{
+    public IReadOnlyList<IDependency> Dependencies { get; } =
+    [
+        dependencyFactoryWithArgs(33),
+        dependencyFactoryWithArgs(99)
+    ];
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+
 ## Class arguments
 
 Sometimes you need to pass some state to a composition class to use it when resolving dependencies. To do this, just use the `Arg<T>(string argName)` method, specify the type of argument and its name. You can also specify a tag for each argument. You can then use them as dependencies when building the object graph. If you have multiple arguments of the same type, just use tags to distinguish them. The values of the arguments are manipulated when you create a composition class by calling its constructor. It is important to remember that only those arguments that are used in the object graph will appear in the constructor. Arguments that are not involved will not be added to the constructor arguments.
@@ -1274,6 +1367,110 @@ class Service : IService
     // The required property will be injected automatically
     // without additional effort
     public required IDependency Dependency { get; init; }
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+
+## Overrides
+
+```c#
+using Shouldly;
+using Pure.DI;
+using System.Collections.Immutable;
+using System.Drawing;
+
+DI.Setup(nameof(Composition))
+    .Bind(Tag.Red).To(_ => Color.Red)
+    .Bind().As(Lifetime.Singleton).To<Clock>()
+    .Bind().To<Func<int, int, IDependency>>(ctx =>
+        (dependencyId, subId) =>
+        {
+            // Overrides with a lambda argument
+            ctx.Override(dependencyId);
+
+            // Overrides with tag using lambda argument
+            ctx.Override(subId, "sub");
+
+            // Overrides with some value
+            ctx.Override($"Dep {dependencyId} {subId}");
+
+            // Overrides with injected value
+            ctx.Inject(Tag.Red, out Color red);
+            ctx.Override(red);
+
+            ctx.Inject<Dependency>(out var dependency);
+            return dependency;
+        })
+    .Bind().To<Service>()
+
+    // Composition root
+    .Root<IService>("Root");
+
+var composition = new Composition();
+var service = composition.Root;
+service.Dependencies.Length.ShouldBe(3);
+
+service.Dependencies[0].Id.ShouldBe(0);
+service.Dependencies[0].SubId.ShouldBe(99);
+service.Dependencies[0].Name.ShouldBe("Dep 0 99");
+
+service.Dependencies[1].Id.ShouldBe(1);
+service.Dependencies[1].Name.ShouldBe("Dep 1 99");
+
+service.Dependencies[2].Id.ShouldBe(2);
+service.Dependencies[2].Name.ShouldBe("Dep 2 99");
+
+interface IClock
+{
+    DateTimeOffset Now { get; }
+}
+
+class Clock : IClock
+{
+    public DateTimeOffset Now => DateTimeOffset.Now;
+}
+
+interface IDependency
+{
+    string Name { get; }
+
+    int Id { get; }
+
+    int SubId { get; }
+}
+
+class Dependency(
+    string name,
+    IClock clock,
+    int id,
+    [Tag("sub")] int subId,
+    Color red)
+    : IDependency
+{
+    public string Name => name;
+
+    public int Id => id;
+
+    public int SubId => subId;
+}
+
+interface IService
+{
+    ImmutableArray<IDependency> Dependencies { get; }
+}
+
+class Service(Func<int, int, IDependency> dependencyFactory): IService
+{
+    public ImmutableArray<IDependency> Dependencies { get; } =
+    [
+        dependencyFactory(0, 99),
+        dependencyFactory(1, 99),
+        dependencyFactory(2, 99)
+    ];
 }
 ```
 
@@ -2233,8 +2430,8 @@ using Pure.DI;
 using System.Collections.Immutable;
 
 DI.Setup(nameof(Composition))
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>()
+    .Bind().To<Dependency>()
+    .Bind().To<Service>()
 
     // Composition root
     .Root<IService>("Root");
@@ -2894,24 +3091,9 @@ using Pure.DI;
 using System.Collections.Immutable;
 
 DI.Setup(nameof(Composition))
-    .Bind<IClock>().As(Lifetime.Singleton).To<Clock>()
-    // Binds a dependency of type int
-    // to the source code statement "dependencyId"
-    .Bind<int>().To<int>("dependencyId")
-    // Binds a dependency of type int with tag "sub"
-    // to the source code statement "subId"
-    .Bind<int>("sub").To<int>("subId")
-    .Bind<Func<int, int, IDependency>>()
-    .To<Func<int, int, IDependency>>(ctx =>
-        (dependencyId, subId) =>
-        {
-            // Builds up an instance of type Dependency
-            // referring source code statements "dependencyId"
-            // and source code statements "subId"
-            ctx.Inject<Dependency>(out var dependency);
-            return dependency;
-        })
-    .Bind<IService>().To<Service>()
+    .Bind().As(Lifetime.Singleton).To<Clock>()
+    .Bind().To<Dependency>()
+    .Bind().To<Service>()
 
     // Composition root
     .Root<IService>("Root");
@@ -2919,9 +3101,15 @@ DI.Setup(nameof(Composition))
 var composition = new Composition();
 var service = composition.Root;
 service.Dependencies.Length.ShouldBe(3);
+
+service.Dependencies[0].Name.ShouldBe("Abc");
 service.Dependencies[0].Id.ShouldBe(0);
+
+service.Dependencies[1].Name.ShouldBe("Xyz");
 service.Dependencies[1].Id.ShouldBe(1);
+
 service.Dependencies[2].Id.ShouldBe(2);
+service.Dependencies[2].Name.ShouldBe("");
 
 interface IClock
 {
@@ -2935,20 +3123,16 @@ class Clock : IClock
 
 interface IDependency
 {
-    int Id { get; }
+    string Name { get; }
 
-    int SubId { get; }
+    int Id { get; }
 }
 
-class Dependency(
-    IClock clock,
-    int id,
-    [Tag("sub")] int subId)
+class Dependency(string name, IClock clock, int id)
     : IDependency
 {
+    public string Name => name;
     public int Id => id;
-
-    public int SubId => subId;
 }
 
 interface IService
@@ -2956,13 +3140,13 @@ interface IService
     ImmutableArray<IDependency> Dependencies { get; }
 }
 
-class Service(Func<int, int, IDependency> dependencyFactory): IService
+class Service(Func<int, string, IDependency> dependencyFactory): IService
 {
     public ImmutableArray<IDependency> Dependencies { get; } =
     [
-        dependencyFactory(0, 99),
-        dependencyFactory(1, 99),
-        dependencyFactory(2, 99)
+        dependencyFactory(0, "Abc"),
+        dependencyFactory(1, "Xyz"),
+        dependencyFactory(2, "")
     ];
 }
 ```
@@ -2971,7 +3155,6 @@ To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
-Using a binding of the form `.Bind<T>().To<T>("some statement")` is a kind of hack that allows you to replace an injection with just its own string.
 
 ## Func with tag
 
@@ -3939,6 +4122,99 @@ class OtherService<T>(IDependency<T> dependency) : IService<T>;
 
 To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+
+
+## Generic injections as required
+
+```c#
+using Shouldly;
+using Pure.DI;
+using System.Collections.Generic;
+
+DI.Setup(nameof(Composition))
+    .Bind().To<Dependency<TT>>()
+    .Bind().To<Service<TT>>()
+
+    // Composition root
+    .Root<IService<int>>("Root");
+
+var composition = new Composition();
+var service = composition.Root;
+service.Dependencies.Count.ShouldBe(2);
+
+interface IDependency<T>;
+
+class Dependency<T> : IDependency<T>;
+
+interface IService<T>
+{
+    IReadOnlyList<IDependency<T>> Dependencies { get; }
+}
+
+class Service<T>(Func<IDependency<T>> dependencyFactory): IService<T>
+{
+    public IReadOnlyList<IDependency<T>> Dependencies { get; } =
+    [
+        dependencyFactory(),
+        dependencyFactory()
+    ];
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+
+## Generic injections as required with arguments
+
+```c#
+using Shouldly;
+using Pure.DI;
+using System.Collections.Generic;
+
+DI.Setup(nameof(Composition))
+    .Bind().To<Dependency<TT>>()
+    .Bind().To<Service<TT>>()
+
+    // Composition root
+    .Root<IService<string>>("Root");
+
+var composition = new Composition();
+var service = composition.Root;
+var dependencies = service.Dependencies;
+dependencies.Count.ShouldBe(2);
+dependencies[0].Id.ShouldBe(33);
+dependencies[1].Id.ShouldBe(99);
+
+interface IDependency<out T>
+{
+    int Id { get; }
+}
+
+class Dependency<T>(int id) : IDependency<T>
+{
+    public int Id { get; } = id;
+}
+
+interface IService<out T>
+{
+    IReadOnlyList<IDependency<T>> Dependencies { get; }
+}
+
+class Service<T>(Func<int, IDependency<T>> dependencyFactoryWithArgs): IService<T>
+{
+    public IReadOnlyList<IDependency<T>> Dependencies { get; } =
+    [
+        dependencyFactoryWithArgs(33),
+        dependencyFactoryWithArgs(99)
+    ];
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
 ## Constructor ordinal attribute
@@ -5985,8 +6261,8 @@ DI.Setup(nameof(Composition))
 var composition = new Composition();
 var (service, accumulator) = composition.Root;
 accumulator.Count.ShouldBe(3);
-accumulator[0].ShouldBeOfType<XyzDependency>();
-accumulator[1].ShouldBeOfType<AbcDependency>();
+accumulator[0].ShouldBeOfType<AbcDependency>();
+accumulator[1].ShouldBeOfType<XyzDependency>();
 accumulator[2].ShouldBeOfType<Service>();
 
 interface IAccumulating;
@@ -6056,9 +6332,9 @@ using System.Diagnostics;
 var composition = new Composition("Abc");
 var service = composition.Root;
 
-service.Dependency1.Id.ShouldBe(1);
-service.Dependency2.Id.ShouldBe(2);
-service.Name.ShouldBe("Abc_3");
+service.Name.ShouldBe("Abc_1");
+service.Dependency1.Id.ShouldBe(2);
+service.Dependency2.Id.ShouldBe(3);
 
 interface IDependency
 {
@@ -11344,26 +11620,60 @@ See also _To``1(System.Func{Pure.DI.IContext,``0})_.
 <details><summary>Method BuildUp``1(``0)</summary><blockquote>
 
 Builds up of an existing object. In other words, injects the necessary dependencies via methods, properties, or fields into an existing object. Cannot be used outside of the binding setup.
-             
+            
 ```c#
 
 DI.Setup("Composition")
-                 .Bind<IService>()
-                 To(ctx =>
-                 {
-                     var service = new Service();
-                     // Initialize an instance with all necessary dependencies
-                     ctx.BuildUp(service);
+                .Bind<IService>()
+                To(ctx =>
+                {
+                    var service = new Service();
+                    // Initialize an instance with all necessary dependencies
+                    ctx.BuildUp(service);
+                    return service;
+                })
             
-             
-                     return service;
-                 })
-             
 ```
 
 
  - parameter _value_ - An existing object for which the injection(s) is to be performed.
 Object type.
+See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+
+</blockquote></details>
+
+
+<details><summary>Method Override``1(``0,System.Object[])</summary><blockquote>
+
+Overrides the binding with the specified value. Cannot be used outside of the binding setting.
+            
+```c#
+
+DI.Setup("Composition")
+                .Bind().To<Func<int, int, IDependency>>(ctx =>
+                    (dependencyId, subId) =>
+                    {
+                        // Overrides with a lambda argument
+                        ctx.Override(dependencyId);
+                        // Overrides with tag using lambda argument
+                        ctx.Override(subId, "sub");
+                        // Overrides with some value
+                        ctx.Override($"Dep {dependencyId} {subId}");
+                        // Overrides with injected value
+                        ctx.Inject(Tag.Red, out Color red);
+                        ctx.Override(red);
+                        ctx.Inject<Dependency>(out var dependency);
+                        return dependency;
+                    })
+            
+```
+
+
+ - parameter _value_ - The object that will be used to override a binding.
+Object type that will be used to override a binding.
+ - parameter _tags_ - Injection tags that will be used to override a binding. See also _Tags(System.Object[])_
+.
+            
 See also _To``1(System.Func{Pure.DI.IContext,``0})_.
 
 </blockquote></details>
@@ -11834,12 +12144,12 @@ DI.Setup("Composition")
 </blockquote></details>
 
 
-<details><summary>Field UsingDeclarations</summary><blockquote>
+<details><summary>Field UniqueTag</summary><blockquote>
 
-Atomically generated smart tag with value "UsingDeclarations".
+Atomically generated smart tag with value "UniqueTag".
             It's used for:
             
-            class _Generator__CompositionClassBuilder_ <-- _IBuilder`2_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
+            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
@@ -11868,12 +12178,21 @@ Atomically generated smart tag with value "Injection".
 </blockquote></details>
 
 
-<details><summary>Field UniqueTag</summary><blockquote>
+<details><summary>Field UsingDeclarations</summary><blockquote>
 
-Atomically generated smart tag with value "UniqueTag".
+Atomically generated smart tag with value "UsingDeclarations".
             It's used for:
             
-            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve_
+            class _Generator__CompositionClassBuilder_ <-- _IBuilder`2_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field Override</summary><blockquote>
+
+Atomically generated smart tag with value "Override".
+            It's used for:
+            
+            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 

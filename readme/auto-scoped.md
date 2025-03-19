@@ -101,7 +101,7 @@ partial class Composition
   private readonly Composition _root;
   private readonly Lock _lock;
 
-  private Dependency? _scopedDependency43;
+  private Dependency? _scopedDependency51;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -127,13 +127,13 @@ partial class Composition
       {
         Composition transientComposition3 = this;
         IService transientIService2;
-        Composition localParentScope101 = transientComposition3;
+        Composition localParentScope145 = transientComposition3;
         // Creates a new scope from the parent scope
-        var localScope102 = new Composition(localParentScope101);
+        var localScope146 = new Composition(localParentScope145);
         // Provides a scope root
-        transientIService2 = localScope102.SessionRoot;
-        IService localValue100 = transientIService2;
-        return localValue100;
+        transientIService2 = localScope146.SessionRoot;
+        IService localValue144 = transientIService2;
+        return localValue144;
       });
       return new Program(perBlockFunc1);
     }
@@ -144,18 +144,18 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_scopedDependency43 is null)
+      if (_scopedDependency51 is null)
       {
         using (_lock.EnterScope())
         {
-          if (_scopedDependency43 is null)
+          if (_scopedDependency51 is null)
           {
-            _scopedDependency43 = new Dependency();
+            _scopedDependency51 = new Dependency();
           }
         }
       }
 
-      return new Service(_scopedDependency43);
+      return new Service(_scopedDependency51);
     }
   }
 }

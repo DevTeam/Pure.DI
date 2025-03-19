@@ -86,8 +86,8 @@ partial class Composition
     get
     {
       OtherAssembly.IMyService transientIMyService1;
-      OtherAssembly.CompositionInOtherProject localInstance_1182D1276 = _argBaseComposition;
-      transientIMyService1 = localInstance_1182D1276.MyService;
+      OtherAssembly.CompositionInOtherProject localInstance_1182D12745 = _argBaseComposition;
+      transientIMyService1 = localInstance_1182D12745.MyService;
       return new Program(transientIMyService1);
     }
   }

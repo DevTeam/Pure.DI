@@ -13,7 +13,7 @@ $d=Generic root arguments
 // ReSharper disable SuggestVarOrType_Elsewhere
 // ReSharper disable RedundantTypeArgumentsOfMethod
 // ReSharper disable UnusedMemberInSuper.Global
-namespace Pure.DI.UsageTests.Basics.GenericRootArgScenario;
+namespace Pure.DI.UsageTests.Generics.GenericRootArgScenario;
 
 using Xunit;
 

@@ -12,5 +12,6 @@ enum MdConstructKind
     OnCannotResolve,
     ExplicitDefaultValue,
     AsyncEnumerable,
-    Accumulator
+    Accumulator,
+    Override
 }

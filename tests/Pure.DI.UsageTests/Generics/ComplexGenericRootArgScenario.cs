@@ -14,7 +14,7 @@ $d=Complex generic root arguments
 // ReSharper disable RedundantTypeArgumentsOfMethod
 // ReSharper disable UnusedMemberInSuper.Global
 // ReSharper disable NotAccessedPositionalProperty.Global
-namespace Pure.DI.UsageTests.Basics.ComplexGenericRootArgScenario;
+namespace Pure.DI.UsageTests.Generics.ComplexGenericRootArgScenario;
 
 using Xunit;
 

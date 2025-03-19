@@ -5,10 +5,10 @@ using Models;
 abstract class ViewModel
     : INotifyPropertyChanged
 {
-
     public required IDispatcher Dispatcher { private get; init; }
 
     public required ILog<ViewModel> Log { private get; init; }
+
     public event PropertyChangedEventHandler? PropertyChanged;
 
     protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)

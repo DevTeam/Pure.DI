@@ -17,12 +17,12 @@ sealed class FactoryTypeRewriter(
         var newFactory = (LambdaExpressionSyntax)Visit(factory.Factory);
         return factory with
         {
-            Type = context.TypeConstructor.Construct(context.Setup, factory.SemanticModel.Compilation, factory.Type),
+            Type = context.TypeConstructor.Construct(context.Setup, factory.Type),
             Factory = newFactory,
             Resolvers = factory.Resolvers
                 .Select(resolver => resolver with
                 {
-                    ContractType = context.TypeConstructor.Construct(context.Setup, factory.SemanticModel.Compilation, resolver.ContractType),
+                    ContractType = context.TypeConstructor.Construct(context.Setup, resolver.ContractType),
                     Tag = CreateTag(context.Injection, resolver.Tag)
                 })
                 .ToImmutableArray()
@@ -92,7 +92,7 @@ sealed class FactoryTypeRewriter(
             return false;
         }
 
-        var newType = _context.TypeConstructor.Construct(_context.Setup, _context.State.SemanticModel.Compilation, type);
+        var newType = _context.TypeConstructor.Construct(_context.Setup, type);
         if (!inTree && types.TypeEquals(newType, type))
         {
             return false;

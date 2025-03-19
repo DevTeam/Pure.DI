@@ -6,29 +6,31 @@
 
 namespace Pure.DI.Core;
 
+using Dependency = Dependency;
+using DependencyNode = DependencyNode;
 using Injection=Injection;
 
 sealed class DependencyGraphBuilder(
-    IEnumerable<IBuilder<DependencyNodeBuildContext, IEnumerable<DependencyNode>>> dependencyNodeBuilders,
+    INodesFactory nodesFactory,
     IBuilder<ContractsBuildContext, ISet<Injection>> contractsBuilder,
     IMarker marker,
+    IBindingsFactory bindingsFactory,
     Func<ITypeConstructor> typeConstructorFactory,
-    Func<IBuilder<RewriterContext<MdFactory>, MdFactory>> factoryRewriterFactory,
     IFilter filter,
     ICache<INamedTypeSymbol, MdConstructKind> constructKinds,
     IRegistryManager<MdBinding> registryManager,
     ISymbolNames symbolNames,
-    ITypes types,
     Func<DependencyNode, ISet<Injection>, IProcessingNode> processingNodeFactory,
+    IGraphOverride graphOverride,
     CancellationToken cancellationToken)
     : IDependencyGraphBuilder
 {
     public IEnumerable<DependencyNode> TryBuild(
         MdSetup setup,
         IReadOnlyCollection<IProcessingNode> nodes,
-        out DependencyGraph? dependencyGraph)
+        out IGraph<DependencyNode, Dependency>? graph)
     {
-        dependencyGraph = null;
+        graph = null;
         var maxId = 0;
         var map = new Dictionary<Injection, DependencyNode>(nodes.Count);
         var contextMap = new Dictionary<Injection, DependencyNode>(nodes.Count);
@@ -106,7 +108,7 @@ sealed class DependencyGraphBuilder(
                 var typeConstructor = typeConstructorFactory();
                 if (accumulators.TryGetValue(injection.Type, out var accs))
                 {
-                    var accumulatorBinding = CreateAccumulatorBinding(
+                    var accumulatorBinding = bindingsFactory.CreateAccumulatorBinding(
                         setup,
                         targetNode,
                         ref maxId,
@@ -114,7 +116,7 @@ sealed class DependencyGraphBuilder(
                         hasExplicitDefaultValue,
                         explicitDefaultValue);
 
-                    return CreateNodes(setup, typeConstructor, accumulatorBinding);
+                    return nodesFactory.CreateNodes(setup, typeConstructor, accumulatorBinding);
                 }
 
                 switch (injection.Type)
@@ -123,7 +125,7 @@ sealed class DependencyGraphBuilder(
                         when namedTypeSymbol.IsGenericType || marker.IsMarkerBased(setup, namedTypeSymbol):
                     {
                         var isDone = false;
-                        foreach (var item in map)
+                        foreach (var item in map.OrderByDescending(i => i.Value.Binding.Id))
                         {
                             if (item.Key.Type is not INamedTypeSymbol nextNamedTypeSymbol)
                             {
@@ -149,15 +151,14 @@ sealed class DependencyGraphBuilder(
                             registryManager.Register(setup, sourceNode.Binding);
                             var contextTag = GetContextTag(injection, sourceNode);
                             var newInjection = injection with { Tag = contextTag ?? injection.Tag };
-                            var genericBinding = CreateGenericBinding(
+                            var genericBinding = bindingsFactory.CreateGenericBinding(
                                 setup,
-                                targetNode,
                                 newInjection,
                                 sourceNode,
                                 typeConstructor,
                                 ++maxId);
 
-                            var genericNode = CreateNodes(setup, typeConstructor, genericBinding).Single(i => i.Variation == sourceNode.Variation);
+                            var genericNode = nodesFactory.CreateNodes(setup, typeConstructor, genericBinding).Single(i => i.Variation == sourceNode.Variation);
                             UpdateMap(newInjection, genericNode);
                             queue.Enqueue(CreateNewProcessingNode(setup, newInjection.Tag, genericNode));
                             foreach (var contract in genericBinding.Contracts.Where(i => i.ContractType is not null))
@@ -190,16 +191,17 @@ sealed class DependencyGraphBuilder(
 
                                 default:
                                     var lifetime = constructKind == MdConstructKind.Enumerable ? Lifetime.PerBlock : Lifetime.Transient;
-                                    var constructBinding = CreateConstructBinding(
+                                    var constructBinding = bindingsFactory.CreateConstructBinding(
                                         setup,
                                         targetNode,
                                         injection,
                                         constructType,
                                         lifetime,
+                                        typeConstructor,
                                         ++maxId,
                                         constructKind);
 
-                                    foreach (var newNode in CreateNodes(setup, typeConstructor, constructBinding))
+                                    foreach (var newNode in nodesFactory.CreateNodes(setup, typeConstructor, constructBinding))
                                     {
                                         var contextTag = GetContextTag(injection, newNode);
                                         var newInjection = injection with { Tag = contextTag ?? injection.Tag };
@@ -224,16 +226,17 @@ sealed class DependencyGraphBuilder(
                     // Array construct
                     case IArrayTypeSymbol arrayType:
                     {
-                        var arrayBinding = CreateConstructBinding(
+                        var arrayBinding = bindingsFactory.CreateConstructBinding(
                             setup,
                             targetNode,
                             injection,
                             arrayType.ElementType,
                             Lifetime.Transient,
+                            typeConstructor,
                             ++maxId,
                             MdConstructKind.Array);
 
-                        foreach (var newNode in CreateNodes(setup, typeConstructor, arrayBinding))
+                        foreach (var newNode in nodesFactory.CreateNodes(setup, typeConstructor, arrayBinding))
                         {
                             var contextTag = GetContextTag(injection, newNode);
                             var newInjection = injection with { Tag = contextTag ?? injection.Tag };
@@ -248,18 +251,19 @@ sealed class DependencyGraphBuilder(
                 // ExplicitDefaultValue
                 if (hasExplicitDefaultValue)
                 {
-                    var explicitDefaultBinding = CreateConstructBinding(
+                    var explicitDefaultBinding = bindingsFactory.CreateConstructBinding(
                         setup,
                         targetNode,
                         injection,
                         injection.Type,
                         Lifetime.Transient,
+                        typeConstructor,
                         ++maxId,
                         MdConstructKind.ExplicitDefaultValue,
                         null,
                         hasExplicitDefaultValue, explicitDefaultValue);
 
-                    var newSourceNodes = CreateNodes(setup, typeConstructor, explicitDefaultBinding);
+                    var newSourceNodes = nodesFactory.CreateNodes(setup, typeConstructor, explicitDefaultBinding);
                     foreach (var newNode in newSourceNodes)
                     {
                         if (!edgesMap.TryGetValue(node, out var edges))
@@ -279,16 +283,17 @@ sealed class DependencyGraphBuilder(
                 if (symbolNames.GetName(injection.Type) == setup.Name.FullName)
                 {
                     // Composition
-                    var compositionBinding = CreateConstructBinding(
+                    var compositionBinding = bindingsFactory.CreateConstructBinding(
                         setup,
                         targetNode,
                         injection,
                         injection.Type,
                         Lifetime.Transient,
+                        typeConstructor,
                         ++maxId,
                         MdConstructKind.Composition);
 
-                    foreach (var newNode in CreateNodes(setup, typeConstructor, compositionBinding))
+                    foreach (var newNode in nodesFactory.CreateNodes(setup, typeConstructor, compositionBinding))
                     {
                         var contextTag = GetContextTag(injection, newNode);
                         var newInjection = injection with { Tag = contextTag ?? injection.Tag };
@@ -302,8 +307,8 @@ sealed class DependencyGraphBuilder(
                 // Auto-binding
                 if (injection.Type is { IsAbstract: false, SpecialType: Microsoft.CodeAnalysis.SpecialType.None })
                 {
-                    var autoBinding = CreateAutoBinding(setup, targetNode, injection, ++maxId);
-                    return CreateNodes(setup, typeConstructor, autoBinding).ToList();
+                    var autoBinding = bindingsFactory.CreateAutoBinding(setup, targetNode, injection, typeConstructor, ++maxId);
+                    return nodesFactory.CreateNodes(setup, typeConstructor, autoBinding).ToList();
                 }
 
                 // OnCannotResolve
@@ -315,7 +320,6 @@ sealed class DependencyGraphBuilder(
                 // Not processed
                 notProcessed.Add(node);
                 isProcessed = false;
-                break;
             }
 
             if (isProcessed)
@@ -348,7 +352,7 @@ sealed class DependencyGraphBuilder(
                 var injection = injectionInfo.Injection;
                 var dependency = map.TryGetValue(injection, out var sourceNode)
                     ? new Dependency(true, sourceNode, injection, node.Node)
-                    : new Dependency(false, new DependencyNode(0, node.Node.Binding), injection, node.Node);
+                    : new Dependency(false, new DependencyNode(0, node.Node.Binding, node.Node.TypeConstructor), injection, node.Node);
 
                 edges.Add(dependency);
             }
@@ -356,20 +360,9 @@ sealed class DependencyGraphBuilder(
             entries.Add(new GraphEntry<DependencyNode, Dependency>(node.Node, edges));
         }
 
-        var graph = new Graph<DependencyNode, Dependency>(entries);
-        var isResolved = graph.Edges.All(i => i.IsResolved);
-        dependencyGraph = new DependencyGraph(
-            isResolved,
-            setup,
-            graph,
-            map,
-            ImmutableSortedDictionary<Injection, Root>.Empty
-        );
-
+        graph = new Graph<DependencyNode, Dependency>(entries);
+        graph = graphOverride.Override(setup, graph, ref maxId);
         return ImmutableArray<DependencyNode>.Empty;
-
-        object? GetContextTag(Injection injection, DependencyNode node) =>
-            node.Factory is { Source.HasContextTag: true } ? injection.Tag : null;
 
         void UpdateMap(Injection injection, DependencyNode node)
         {
@@ -417,17 +410,18 @@ sealed class DependencyGraphBuilder(
                     (Hint.OnCannotResolveTagRegularExpression, Hint.OnCannotResolveTagWildcard, GetTagName),
                     (Hint.OnCannotResolveLifetimeRegularExpression, Hint.OnCannotResolveLifetimeWildcard, GetLifetimeName)))
             {
-                var onCannotResolveBinding = CreateConstructBinding(
+                var onCannotResolveBinding = bindingsFactory.CreateConstructBinding(
                     setup,
                     ownerNode,
                     unresolvedInjection,
                     unresolvedInjection.Type,
                     Lifetime.Transient,
+                    typeConstructor,
                     ++maxId,
                     MdConstructKind.OnCannotResolve,
                     unresolvedInjection.Tag);
 
-                var onCannotResolveNodes = CreateNodes(setup, typeConstructor, onCannotResolveBinding);
+                var onCannotResolveNodes = nodesFactory.CreateNodes(setup, typeConstructor, onCannotResolveBinding);
                 foreach (var onCannotResolveNode in onCannotResolveNodes)
                 {
                     map[unresolvedInjection] = onCannotResolveNode;
@@ -440,222 +434,6 @@ sealed class DependencyGraphBuilder(
         return false;
     }
 
-    private static MdTag? CreateTag(in Injection injection, in MdTag? tag)
-    {
-        if (!tag.HasValue || !ReferenceEquals(tag.Value.Value, MdTag.ContextTag))
-        {
-            return tag;
-        }
-
-        return new MdTag(0, injection.Tag);
-    }
-
-    private MdBinding CreateGenericBinding(
-        MdSetup setup,
-        DependencyNode targetNode,
-        Injection injection,
-        DependencyNode sourceNode,
-        ITypeConstructor typeConstructor,
-        int newId)
-    {
-        var semanticModel = targetNode.Binding.SemanticModel;
-        var compilation = semanticModel.Compilation;
-        var newContracts = sourceNode.Binding.Contracts
-            .Where(contract => contract.ContractType is not null)
-            .Select(contract => contract with
-            {
-                ContractType = typeConstructor.Construct(setup, compilation, contract.ContractType!),
-                Tags = contract.Tags.Select(tag => CreateTag(injection, tag)).Where(tag => tag.HasValue).Select(tag => tag!.Value).ToImmutableArray()
-            })
-            .ToImmutableArray();
-
-        return sourceNode.Binding with
-        {
-            Id = newId,
-            TypeConstructor = typeConstructor,
-            Contracts = newContracts,
-            Implementation = sourceNode.Binding.Implementation.HasValue
-                ? sourceNode.Binding.Implementation.Value with
-                {
-                    Type = typeConstructor.Construct(setup, compilation, sourceNode.Binding.Implementation.Value.Type)
-                }
-                : null,
-            Factory = sourceNode.Binding.Factory.HasValue
-                ? factoryRewriterFactory().Build(
-                    new RewriterContext<MdFactory>(setup, typeConstructor, injection, sourceNode.Binding.Factory.Value))
-                : null,
-            Arg = sourceNode.Binding.Arg.HasValue
-                ? sourceNode.Binding.Arg.Value with
-                {
-                    Type = typeConstructor.Construct(setup, compilation, sourceNode.Binding.Arg.Value.Type)
-                }
-                : null
-        };
-    }
-
-    private static MdBinding CreateAccumulatorBinding(MdSetup setup,
-        DependencyNode targetNode,
-        ref int maxId,
-        IReadOnlyCollection<MdAccumulator> accumulators,
-        bool hasExplicitDefaultValue,
-        object? explicitDefaultValue)
-    {
-        var accumulator = accumulators.First();
-        return new MdBinding(
-            ++maxId,
-            targetNode.Binding.Source,
-            setup,
-            targetNode.Binding.SemanticModel,
-            ImmutableArray.Create(new MdContract(targetNode.Binding.SemanticModel, accumulator.Source, accumulator.AccumulatorType, ContractKind.Implicit, ImmutableArray<MdTag>.Empty)),
-            ImmutableArray<MdTag>.Empty,
-            new MdLifetime(targetNode.Binding.SemanticModel, accumulator.Source, Lifetime.Transient),
-            null,
-            null,
-            null,
-            new MdConstruct(
-                targetNode.Binding.SemanticModel,
-                targetNode.Binding.Source,
-                accumulator.AccumulatorType,
-                accumulator.Type,
-                MdConstructKind.Accumulator,
-                ImmutableArray<MdContract>.Empty,
-                hasExplicitDefaultValue,
-                explicitDefaultValue,
-                accumulators));
-    }
-
-    private MdBinding CreateAutoBinding(
-        MdSetup setup,
-        DependencyNode targetNode,
-        Injection injection,
-        int newId)
-    {
-        var semanticModel = targetNode.Binding.SemanticModel;
-        var compilation = semanticModel.Compilation;
-        var sourceType = injection.Type;
-        var typeConstructor = typeConstructorFactory();
-        if (marker.IsMarkerBased(setup, injection.Type))
-        {
-            typeConstructor.TryBind(setup, injection.Type, injection.Type);
-            sourceType = typeConstructor.Construct(setup, compilation, injection.Type);
-        }
-
-        var newTags = injection.Tag is not null
-            ? ImmutableArray.Create(new MdTag(0, injection.Tag))
-            : ImmutableArray<MdTag>.Empty;
-
-        var newContracts = ImmutableArray.Create(new MdContract(semanticModel, setup.Source, sourceType, ContractKind.Implicit, ImmutableArray<MdTag>.Empty));
-        var newBinding = new MdBinding(
-            newId,
-            targetNode.Binding.Source,
-            setup,
-            semanticModel,
-            newContracts,
-            newTags,
-            new MdLifetime(semanticModel, setup.Source, Lifetime.Transient),
-            new MdImplementation(semanticModel, setup.Source, sourceType),
-            TypeConstructor: typeConstructor);
-        return newBinding;
-    }
-
-    private MdBinding CreateConstructBinding(
-        MdSetup setup,
-        DependencyNode targetNode,
-        Injection injection,
-        ITypeSymbol elementType,
-        Lifetime lifetime,
-        int newId,
-        MdConstructKind constructKind,
-        object? tag = null,
-        bool hasExplicitDefaultValue = false,
-        object? explicitDefaultValue = null)
-    {
-        elementType = elementType.WithNullableAnnotation(NullableAnnotation.NotAnnotated);
-        var dependencyContracts = new List<MdContract>();
-        var contracts = new HashSet<Injection>();
-        foreach (var nestedBinding in setup.Bindings.Where(i => i != targetNode.Binding))
-        {
-            var matchedContracts = GetMatchedMdContracts(setup, targetNode.Binding.SemanticModel.Compilation, elementType, nestedBinding).ToList();
-            if (matchedContracts.Count == 0)
-            {
-                continue;
-            }
-
-            var tags = matchedContracts.First().Tags
-                .Concat(nestedBinding.Tags)
-                .Select((i, position) => i with { Position = position })
-                .ToImmutableArray();
-
-            var isDuplicate = false;
-            if (constructKind is MdConstructKind.Enumerable or MdConstructKind.Array or MdConstructKind.Span or MdConstructKind.AsyncEnumerable)
-            {
-                foreach (var mdTag in tags.DefaultIfEmpty(new MdTag(0, null)))
-                {
-                    if (!contracts.Add(new Injection(InjectionKind.Construct, elementType, mdTag)))
-                    {
-                        isDuplicate = true;
-                    }
-                }
-            }
-
-            if (isDuplicate)
-            {
-                continue;
-            }
-
-            dependencyContracts.Add(new MdContract(targetNode.Binding.SemanticModel, targetNode.Binding.Source, elementType, ContractKind.Implicit, tags));
-        }
-
-        var newTags = tag is not null
-            ? ImmutableArray.Create(new MdTag(0, tag))
-            : ImmutableArray<MdTag>.Empty;
-        var newContracts = ImmutableArray.Create(new MdContract(targetNode.Binding.SemanticModel, targetNode.Binding.Source, injection.Type, ContractKind.Implicit, newTags));
-        var newBinding = new MdBinding(
-            newId,
-            targetNode.Binding.Source,
-            setup,
-            targetNode.Binding.SemanticModel,
-            newContracts,
-            ImmutableArray<MdTag>.Empty,
-            new MdLifetime(targetNode.Binding.SemanticModel, targetNode.Binding.Source, lifetime),
-            null,
-            null,
-            null,
-            new MdConstruct(
-                targetNode.Binding.SemanticModel,
-                targetNode.Binding.Source,
-                injection.Type,
-                elementType,
-                constructKind,
-                dependencyContracts.ToImmutableArray(),
-                hasExplicitDefaultValue,
-                explicitDefaultValue));
-
-        registryManager.Register(setup, newBinding);
-        return newBinding;
-    }
-
-    private IEnumerable<MdContract> GetMatchedMdContracts(MdSetup setup, Compilation compilation, ITypeSymbol elementType, MdBinding nestedBinding)
-    {
-        foreach (var contract in nestedBinding.Contracts)
-        {
-            var contractType = contract.ContractType;
-            if (contractType is not null && marker.IsMarkerBased(setup, contractType))
-            {
-                var typeConstructor = typeConstructorFactory();
-                if (typeConstructor.TryBind(setup, contractType, elementType))
-                {
-                    contractType = typeConstructor.Construct(setup, compilation, contractType);
-                }
-            }
-
-            if (types.TypeEquals(contractType, elementType))
-            {
-                yield return contract;
-            }
-        }
-    }
-
     private IProcessingNode CreateNewProcessingNode(MdSetup setup, object? contextTag, DependencyNode dependencyNode)
     {
         registryManager.Register(setup, dependencyNode.Binding);
@@ -663,10 +441,6 @@ sealed class DependencyGraphBuilder(
         return processingNodeFactory(dependencyNode, contracts);
     }
 
-    private IEnumerable<DependencyNode> CreateNodes(MdSetup setup, ITypeConstructor typeConstructor, MdBinding binding)
-    {
-        var newSetup = setup with { Roots = ImmutableArray<MdRoot>.Empty, Bindings = ImmutableArray.Create(binding) };
-        var ctx = new DependencyNodeBuildContext(newSetup, typeConstructor);
-        return dependencyNodeBuilders.SelectMany(builder => builder.Build(ctx));
-    }
+    private static object? GetContextTag(Injection injection, DependencyNode node) =>
+        node.Factory is { Source.HasContextTag: true } ? injection.Tag : null;
 }

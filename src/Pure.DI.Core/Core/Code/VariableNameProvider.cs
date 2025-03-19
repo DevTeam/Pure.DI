@@ -6,6 +6,11 @@ class VariableNameProvider(IIdGenerator idGenerator) : IVariableNameProvider
     {
         switch (node)
         {
+            case { Construct: { Source: { Kind: MdConstructKind.Override, State: DpOverride @override}}}:
+            {
+                return GetOverrideVariableName(@override.Source);
+            }
+
             case { Lifetime: Lifetime.Singleton }:
             {
                 var binding = node.Binding;
@@ -34,6 +39,9 @@ class VariableNameProvider(IIdGenerator idGenerator) : IVariableNameProvider
                 return GetVariableName(Names.TransientVariablePrefix, node.Type.Name, transientId);
         }
     }
+
+    public string GetOverrideVariableName(MdOverride @override) =>
+        GetVariableName(Names.OverriddenVariablePrefix, @override.ContractType.Name, @override.Id);
 
     public string GetLocalUniqueVariableName(string baseName) =>
         GetVariableName(Names.LocalVariablePrefix, baseName, idGenerator.Generate());

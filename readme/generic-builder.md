@@ -86,16 +86,16 @@ partial class Composition
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public Service<T1, T2> BuildUpGeneric<T1, T2>(Service<T1, T2> buildingInstance)
-    where T1: struct
+  public Service<T3, T4> BuildUpGeneric<T3, T4>(Service<T3, T4> buildingInstance)
+    where T3: struct
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    T1 transientTTS2 = (T1)(object)Guid.NewGuid();
-    Service<T1, T2> transientService0;
-    Service<T1, T2> localBuildingInstance58 = buildingInstance;
-    localBuildingInstance58.Dependency = new Dependency<T2>();
-    localBuildingInstance58.SetId(transientTTS2);
-    transientService0 = localBuildingInstance58;
+    T3 transientTTS2 = (T3)(object)Guid.NewGuid();
+    Service<T3, T4> transientService0;
+    Service<T3, T4> localBuildingInstance133 = buildingInstance;
+    localBuildingInstance133.Dependency = new Dependency<T4>();
+    localBuildingInstance133.SetId(transientTTS2);
+    transientService0 = localBuildingInstance133;
     return transientService0;
   }
 
@@ -152,26 +152,26 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	DependencyᐸT2ᐳ --|> IDependencyᐸT2ᐳ
-	Composition ..> ServiceᐸT1ˏT2ᐳ : ServiceᐸT1ˏT2ᐳ BuildUpGenericᐸT1ˏT2ᐳ(Pure.DI.UsageTests.Basics.GenericBuilderScenario.Service<T1, T2> buildingInstance)
-	ServiceᐸT1ˏT2ᐳ *--  DependencyᐸT2ᐳ : IDependencyᐸT2ᐳ
-	ServiceᐸT1ˏT2ᐳ *--  T1 : "Id"  T1
-	namespace Pure.DI.UsageTests.Basics.GenericBuilderScenario {
+	DependencyᐸT4ᐳ --|> IDependencyᐸT4ᐳ
+	Composition ..> ServiceᐸT3ˏT4ᐳ : ServiceᐸT3ˏT4ᐳ BuildUpGenericᐸT3ˏT4ᐳ(Pure.DI.UsageTests.Generics.GenericBuilderScenario.Service<T3, T4> buildingInstance)
+	ServiceᐸT3ˏT4ᐳ *--  DependencyᐸT4ᐳ : IDependencyᐸT4ᐳ
+	ServiceᐸT3ˏT4ᐳ *--  T3 : "Id"  T3
+	namespace Pure.DI.UsageTests.Generics.GenericBuilderScenario {
 		class Composition {
 		<<partial>>
-		+ServiceᐸT1ˏT2ᐳ BuildUpGenericᐸT1ˏT2ᐳ(Pure.DI.UsageTests.Basics.GenericBuilderScenario.Service<T1, T2> buildingInstance)
+		+ServiceᐸT3ˏT4ᐳ BuildUpGenericᐸT3ˏT4ᐳ(Pure.DI.UsageTests.Generics.GenericBuilderScenario.Service<T3, T4> buildingInstance)
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
 		}
-		class DependencyᐸT2ᐳ {
+		class DependencyᐸT4ᐳ {
 			+Dependency()
 		}
-		class IDependencyᐸT2ᐳ {
+		class IDependencyᐸT4ᐳ {
 			<<interface>>
 		}
-		class ServiceᐸT1ˏT2ᐳ {
+		class ServiceᐸT3ˏT4ᐳ {
 			<<record>>
 		}
 	}

@@ -18,15 +18,15 @@ sealed class FactoryDependencyNodeBuilder(
                 continue;
             }
 
-            var injections = new List<Injection>(factory.Resolvers.Length);
+            var resolvers = new List<DpResolver>(factory.Resolvers.Length);
             foreach (var resolver in factory.Resolvers)
             {
                 var tag = attributes.GetAttribute(resolver.SemanticModel, setup.TagAttributes, resolver.Attributes, default(object?)) ?? resolver.Tag?.Value;
-                injections.Add(new Injection(InjectionKind.FactoryInjection, resolver.ContractType.WithNullableAnnotation(NullableAnnotation.NotAnnotated), tag));
+                var injection = new Injection(InjectionKind.FactoryInjection, resolver.ContractType.WithNullableAnnotation(NullableAnnotation.NotAnnotated), tag);
+                resolvers.Add(new DpResolver(resolver, injection, CreateOverrides(resolver.Overrides)));
             }
 
-            var compilation = binding.SemanticModel.Compilation;
-            var initializers = new List<DpInitializer>();
+            var initializers = new List<DpInitializer>(factory.Initializers.Length);
             foreach (var initializer in factory.Initializers)
             {
                 if (initializer.Type is not INamedTypeSymbol targetType)
@@ -34,11 +34,19 @@ sealed class FactoryDependencyNodeBuilder(
                     continue;
                 }
 
-                var targetDp = instanceDpProvider.Get(setup, ctx.TypeConstructor, compilation, targetType);
-                initializers.Add(new DpInitializer(initializer, targetDp.Methods, targetDp.Properties, targetDp.Fields));
+                var targetDp = instanceDpProvider.Get(setup, ctx.TypeConstructor, targetType);
+                initializers.Add(new DpInitializer(initializer, targetDp.Methods, targetDp.Properties, targetDp.Fields, CreateOverrides(initializer.Overrides)));
             }
 
-            yield return new DependencyNode(0, binding, Factory: new DpFactory(factory, binding, injections.ToImmutableArray(), initializers.ToImmutableArray()));
+            var dpFactory = new DpFactory(factory, binding, resolvers.ToImmutableArray(), initializers.ToImmutableArray());
+            yield return new DependencyNode(0, binding, ctx.TypeConstructor, Factory: dpFactory);
         }
     }
+
+    private static ImmutableArray<DpOverride> CreateOverrides(in ImmutableArray<MdOverride> overrides) =>
+        overrides.IsDefault
+            ? ImmutableArray<DpOverride>.Empty
+            : overrides.AsEnumerable()
+                .Select(i => new DpOverride(i, i.Tags.Select(tag => new Injection(InjectionKind.Override, i.ContractType, tag.Value)).ToImmutableArray()))
+                .ToImmutableArray();
 }

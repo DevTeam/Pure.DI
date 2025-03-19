@@ -21,6 +21,7 @@ sealed class RootDependencyNodeBuilder : IBuilder<DependencyNodeBuildContext, IE
             yield return new DependencyNode(
                 0,
                 rootBinding,
+                ctx.TypeConstructor,
                 new DpRoot(
                     root,
                     rootBinding,

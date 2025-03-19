@@ -123,7 +123,7 @@ sealed class TypeConstructor(
         return result;
     }
 
-    public ITypeSymbol Construct(MdSetup setup, Compilation compilation, ITypeSymbol type)
+    public ITypeSymbol Construct(MdSetup setup, ITypeSymbol type)
     {
         if (!marker.IsMarkerBased(setup, type))
         {
@@ -144,18 +144,18 @@ sealed class TypeConstructor(
             {
                 var args = namedType.TypeArguments.Select(CreateConstruct);
                 return namedType.OriginalDefinition.Construct(args.ToArray());
-                ITypeSymbol CreateConstruct(ITypeSymbol typeArgument) => Construct(setup, compilation, typeArgument);
+                ITypeSymbol CreateConstruct(ITypeSymbol typeArgument) => Construct(setup, typeArgument);
             }
 
             case IArrayTypeSymbol arrayTypeSymbol:
             {
-                var originalElementType = Construct(setup, compilation, arrayTypeSymbol.ElementType);
+                var originalElementType = Construct(setup, arrayTypeSymbol.ElementType);
                 if (!_map.TryGetValue(originalElementType, out var elementType))
                 {
                     elementType = originalElementType;
                 }
 
-                return compilation.CreateArrayTypeSymbol(elementType, arrayTypeSymbol.Rank);
+                return setup.SemanticModel.Compilation.CreateArrayTypeSymbol(elementType, arrayTypeSymbol.Rank);
             }
 
             default:

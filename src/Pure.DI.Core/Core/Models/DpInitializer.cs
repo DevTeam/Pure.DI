@@ -2,11 +2,11 @@
 // ReSharper disable NotAccessedPositionalProperty.Global
 namespace Pure.DI.Core.Models;
 
-record DpInitializer(
-    in MdInitializer Source,
+record DpInitializer(in MdInitializer Source,
     in ImmutableArray<DpMethod> Methods,
     in ImmutableArray<DpProperty> Properties,
-    in ImmutableArray<DpField> Fields)
+    in ImmutableArray<DpField> Fields,
+    ImmutableArray<DpOverride> Overrides)
 {
     private IEnumerable<string> ToStrings(int indent)
     {

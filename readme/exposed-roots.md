@@ -69,7 +69,7 @@ partial class Composition
   private readonly Composition _root;
   private readonly Lock _lock;
 
-  private OtherAssembly.CompositionInOtherProject? _singletonCompositionInOtherProject43;
+  private OtherAssembly.CompositionInOtherProject? _singletonCompositionInOtherProject51;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -89,20 +89,20 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonCompositionInOtherProject43 is null)
+      if (_root._singletonCompositionInOtherProject51 is null)
       {
         using (_lock.EnterScope())
         {
-          if (_root._singletonCompositionInOtherProject43 is null)
+          if (_root._singletonCompositionInOtherProject51 is null)
           {
-            _root._singletonCompositionInOtherProject43 = new OtherAssembly.CompositionInOtherProject();
+            _root._singletonCompositionInOtherProject51 = new OtherAssembly.CompositionInOtherProject();
           }
         }
       }
 
       OtherAssembly.IMyService transientIMyService1;
-      OtherAssembly.CompositionInOtherProject localInstance_1182D1275 = _root._singletonCompositionInOtherProject43;
-      transientIMyService1 = localInstance_1182D1275.MyService;
+      OtherAssembly.CompositionInOtherProject localInstance_1182D12744 = _root._singletonCompositionInOtherProject51;
+      transientIMyService1 = localInstance_1182D12744.MyService;
       return new Program(transientIMyService1);
     }
   }

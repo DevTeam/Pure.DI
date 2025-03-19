@@ -124,43 +124,43 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var accumulator47 = new Owned();
+      var accumulator55 = new Owned();
       Func<Owned<IDependency>> perBlockFunc1 = new Func<Owned<IDependency>>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        var accumulator47 = new Owned();
+        var accumulator55 = new Owned();
+        Owned transientOwned3;
+        Owned localOwned49 = accumulator55;
+        transientOwned3 = localOwned49;
+        using (_lock.EnterScope())
+        {
+          accumulator55.Add(transientOwned3);
+        }
+
         Dependency transientDependency4 = new Dependency();
         using (_lock.EnterScope())
         {
-          accumulator47.Add(transientDependency4);
-        }
-
-        Owned transientOwned3;
-        Owned localOwned10 = accumulator47;
-        transientOwned3 = localOwned10;
-        using (_lock.EnterScope())
-        {
-          accumulator47.Add(transientOwned3);
+          accumulator55.Add(transientDependency4);
         }
 
         Owned<IDependency> perBlockOwned2;
         // Creates the owner of an instance
-        IOwned localOwned11 = transientOwned3;
-        IDependency localValue12 = transientDependency4;
-        perBlockOwned2 = new Owned<IDependency>(localValue12, localOwned11);
+        IOwned localOwned50 = transientOwned3;
+        IDependency localValue51 = transientDependency4;
+        perBlockOwned2 = new Owned<IDependency>(localValue51, localOwned50);
         using (_lock.EnterScope())
         {
-          accumulator47.Add(perBlockOwned2);
+          accumulator55.Add(perBlockOwned2);
         }
 
-        Owned<IDependency> localValue9 = perBlockOwned2;
-        return localValue9;
+        Owned<IDependency> localValue48 = perBlockOwned2;
+        return localValue48;
       });
       Service transientService0 = new Service(perBlockFunc1);
       using (_lock.EnterScope())
       {
-        accumulator47.Add(transientService0);
+        accumulator55.Add(transientService0);
       }
 
       return transientService0;

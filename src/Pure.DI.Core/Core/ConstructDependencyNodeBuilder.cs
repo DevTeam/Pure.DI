@@ -27,11 +27,11 @@ sealed class ConstructDependencyNodeBuilder : IBuilder<DependencyNodeBuildContex
                 injections.Add(
                     new Injection(
                         InjectionKind.Contract,
-                        ctx.TypeConstructor.Construct(setup, binding.SemanticModel.Compilation, contract.ContractType.WithNullableAnnotation(NullableAnnotation.NotAnnotated)),
+                        ctx.TypeConstructor.Construct(setup, contract.ContractType.WithNullableAnnotation(NullableAnnotation.NotAnnotated)),
                         tag));
             }
 
-            yield return new DependencyNode(0, binding, Construct: new DpConstruct(construct, binding, injections.ToImmutableArray()));
+            yield return new DependencyNode(0, binding, ctx.TypeConstructor, Construct: new DpConstruct(construct, binding, injections.ToImmutableArray()));
         }
     }
 }

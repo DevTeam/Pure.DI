@@ -83,8 +83,8 @@ partial class Composition
   private readonly Composition _root;
   private readonly Lock _lock;
 
-  private Service? _singletonService44;
-  private Dependency? _singletonDependency43;
+  private Service? _singletonService52;
+  private Dependency? _singletonDependency51;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -104,23 +104,23 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonService44 is null)
+      if (_root._singletonService52 is null)
       {
         using (_lock.EnterScope())
         {
-          if (_root._singletonService44 is null)
+          if (_root._singletonService52 is null)
           {
-            if (_root._singletonDependency43 is null)
+            if (_root._singletonDependency51 is null)
             {
-              _root._singletonDependency43 = new Dependency();
+              _root._singletonDependency51 = new Dependency();
             }
 
-            _root._singletonService44 = new Service(_root._singletonDependency43, _root._singletonDependency43);
+            _root._singletonService52 = new Service(_root._singletonDependency51, _root._singletonDependency51);
           }
         }
       }
 
-      return _root._singletonService44;
+      return _root._singletonService52;
     }
   }
 }

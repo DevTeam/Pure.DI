@@ -12,7 +12,7 @@ $r=Shouldly
 // ReSharper disable UnusedTypeParameter
 // ReSharper disable UnusedMemberInSuper.Global
 // ReSharper disable UnassignedGetOnlyAutoProperty
-namespace Pure.DI.UsageTests.Basics.GenericBuildersScenario;
+namespace Pure.DI.UsageTests.Generics.GenericBuildersScenario;
 
 using Shouldly;
 using Xunit;

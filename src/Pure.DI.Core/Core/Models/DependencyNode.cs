@@ -3,6 +3,7 @@ namespace Pure.DI.Core.Models;
 record DependencyNode(
     int Variation,
     in MdBinding Binding,
+    ITypeConstructor TypeConstructor,
     ITypeSymbol Type,
     ICollection<Accumulator> Accumulators,
     in DpRoot? Root,
@@ -15,6 +16,7 @@ record DependencyNode(
     public DependencyNode(
         int Variation,
         in MdBinding binding,
+        ITypeConstructor typeConstructor,
         in DpRoot? Root = null,
         in DpImplementation? Implementation = null,
         in DpFactory? Factory = null,
@@ -23,6 +25,7 @@ record DependencyNode(
         : this(
             Variation,
             binding,
+            typeConstructor,
             Root?.Source.RootType ?? binding.Type,
             [],
             Root,

@@ -2919,26 +2919,60 @@ See also _To``1(System.Func{Pure.DI.IContext,``0})_.
 <details><summary>Method BuildUp``1(``0)</summary><blockquote>
 
 Builds up of an existing object. In other words, injects the necessary dependencies via methods, properties, or fields into an existing object. Cannot be used outside of the binding setup.
-             
+            
 ```c#
 
 DI.Setup("Composition")
-                 .Bind<IService>()
-                 To(ctx =>
-                 {
-                     var service = new Service();
-                     // Initialize an instance with all necessary dependencies
-                     ctx.BuildUp(service);
+                .Bind<IService>()
+                To(ctx =>
+                {
+                    var service = new Service();
+                    // Initialize an instance with all necessary dependencies
+                    ctx.BuildUp(service);
+                    return service;
+                })
             
-             
-                     return service;
-                 })
-             
 ```
 
 
  - parameter _value_ - An existing object for which the injection(s) is to be performed.
 Object type.
+See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+
+</blockquote></details>
+
+
+<details><summary>Method Override``1(``0,System.Object[])</summary><blockquote>
+
+Overrides the binding with the specified value. Cannot be used outside of the binding setting.
+            
+```c#
+
+DI.Setup("Composition")
+                .Bind().To<Func<int, int, IDependency>>(ctx =>
+                    (dependencyId, subId) =>
+                    {
+                        // Overrides with a lambda argument
+                        ctx.Override(dependencyId);
+                        // Overrides with tag using lambda argument
+                        ctx.Override(subId, "sub");
+                        // Overrides with some value
+                        ctx.Override($"Dep {dependencyId} {subId}");
+                        // Overrides with injected value
+                        ctx.Inject(Tag.Red, out Color red);
+                        ctx.Override(red);
+                        ctx.Inject<Dependency>(out var dependency);
+                        return dependency;
+                    })
+            
+```
+
+
+ - parameter _value_ - The object that will be used to override a binding.
+Object type that will be used to override a binding.
+ - parameter _tags_ - Injection tags that will be used to override a binding. See also _Tags(System.Object[])_
+.
+            
 See also _To``1(System.Func{Pure.DI.IContext,``0})_.
 
 </blockquote></details>
@@ -3409,12 +3443,12 @@ DI.Setup("Composition")
 </blockquote></details>
 
 
-<details><summary>Field UsingDeclarations</summary><blockquote>
+<details><summary>Field UniqueTag</summary><blockquote>
 
-Atomically generated smart tag with value "UsingDeclarations".
+Atomically generated smart tag with value "UniqueTag".
             It's used for:
             
-            class _Generator__CompositionClassBuilder_ <-- _IBuilder`2_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
+            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
@@ -3443,12 +3477,21 @@ Atomically generated smart tag with value "Injection".
 </blockquote></details>
 
 
-<details><summary>Field UniqueTag</summary><blockquote>
+<details><summary>Field UsingDeclarations</summary><blockquote>
 
-Atomically generated smart tag with value "UniqueTag".
+Atomically generated smart tag with value "UsingDeclarations".
             It's used for:
             
-            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve_
+            class _Generator__CompositionClassBuilder_ <-- _IBuilder`2_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field Override</summary><blockquote>
+
+Atomically generated smart tag with value "Override".
+            It's used for:
+            
+            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
@@ -4272,6 +4315,8 @@ Creates an attribute instance.
 - [Simplified binding](readme/simplified-binding.md)
 - [Factory](readme/factory.md)
 - [Simplified factory](readme/simplified-factory.md)
+- [Injections as required](readme/injections-as-required.md)
+- [Injections as required with arguments](readme/injections-as-required-with-arguments.md)
 - [Class arguments](readme/class-arguments.md)
 - [Root arguments](readme/root-arguments.md)
 - [Tags](readme/tags.md)
@@ -4286,6 +4331,7 @@ Creates an attribute instance.
 - [Property injection](readme/property-injection.md)
 - [Default values](readme/default-values.md)
 - [Required properties or fields](readme/required-properties-or-fields.md)
+- [Overrides](readme/overrides.md)
 - [Root binding](readme/root-binding.md)
 - [Async Root](readme/async-root.md)
 - [Consumer types](readme/consumer-types.md)
@@ -4337,6 +4383,8 @@ Creates an attribute instance.
 - [Generic builder](readme/generic-builder.md)
 - [Generic builders](readme/generic-builders.md)
 - [Generic roots](readme/generic-roots.md)
+- [Generic injections as required](readme/generic-injections-as-required.md)
+- [Generic injections as required with arguments](readme/generic-injections-as-required-with-arguments.md)
 ### Attributes
 - [Constructor ordinal attribute](readme/constructor-ordinal-attribute.md)
 - [Dependency attribute](readme/dependency-attribute.md)
@@ -5187,9 +5235,9 @@ Contextual AI needs to understand the situation it’s in. This means knowing de
 
 | AI Context file | Size | Tokens |
 | --------------- | ---- | ------ |
-| [AI_CONTEXT_SMALL.md](AI_CONTEXT_SMALL.md) | 25KB | 6K |
-| [AI_CONTEXT_MEDIUM.md](AI_CONTEXT_MEDIUM.md) | 124KB | 31K |
-| [AI_CONTEXT_LARGE.md](AI_CONTEXT_LARGE.md) | 369KB | 94K |
+| [AI_CONTEXT_SMALL.md](AI_CONTEXT_SMALL.md) | 27KB | 7K |
+| [AI_CONTEXT_MEDIUM.md](AI_CONTEXT_MEDIUM.md) | 123KB | 31K |
+| [AI_CONTEXT_LARGE.md](AI_CONTEXT_LARGE.md) | 376KB | 96K |
 ## How to contribute to Pure.DI
 
 Thank you for your interest in contributing to the Pure.DI project! First of all, if you are going to make a big change or feature, please open a problem first. That way, we can coordinate and understand if the change you're going to work on fits with current priorities and if we can commit to reviewing and merging it within a reasonable timeframe. We don't want you to waste a lot of your valuable time on something that may not align with what we want for Pure.DI.

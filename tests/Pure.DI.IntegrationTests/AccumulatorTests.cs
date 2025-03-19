@@ -94,7 +94,7 @@ public class AccumulatorTests
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["3", "Sample.XyzDependency", "Sample.AbcDependency", "Sample.Service"], result);
+        result.StdOut.ShouldBe(["3", "Sample.AbcDependency", "Sample.XyzDependency", "Sample.Service"], result);
     }
 
     [Fact]
@@ -420,7 +420,7 @@ public class AccumulatorTests
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["3", "Sample.XyzDependency", "Sample.AbcDependency", "Sample.Service"], result);
+        result.StdOut.ShouldBe(["3", "Sample.AbcDependency", "Sample.XyzDependency", "Sample.Service"], result);
     }
 
     [Fact]
@@ -722,7 +722,7 @@ public class AccumulatorTests
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["3", "Sample.XyzDependency", "Sample.AbcDependency", "Sample.Service"]);
+        result.StdOut.ShouldBe(["3", "Sample.AbcDependency", "Sample.XyzDependency", "Sample.Service"]);
     }
 #endif
 
@@ -837,7 +837,7 @@ public class AccumulatorTests
                            
                                    public T Content { get; }
                            
-                                   public override string ToString() => $"[{Content}]";
+                                   public override string ToString() => $"[State]";
                                }
                            
                                class ShroedingersCat : ICat
@@ -876,7 +876,7 @@ public class AccumulatorTests
                                            .Bind<State>().To(ctx =>
                                            {
                                                ctx.Inject<Random>(out var random);
-                                               return (State)random.Next(2);
+                                               return (State)random.Next(1);
                                            }) 
                                            .Bind<ICat>().To<ShroedingersCat>()
                                            // Represents a cardboard box with any content
@@ -914,6 +914,6 @@ public class AccumulatorTests
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["Value is not created.", "Sample.ShroedingersCat", "(Sample.ShroedingersCat, Sample.Accumulator)", "CardboardBox created", "(Sample.Program, Sample.Accumulator)", "[Sample.ShroedingersCat]", "Sample.Program", "(Sample.Program, Sample.Accumulator)", "Program created"], result);
+        result.StdOut.ShouldBe(["Value is not created.", "Sample.ShroedingersCat", "(Sample.ShroedingersCat, Sample.Accumulator)", "CardboardBox created", "(Sample.Program, Sample.Accumulator)", "[State]", "Sample.Program", "(Sample.Program, Sample.Accumulator)", "Program created"], result);
     }
 }

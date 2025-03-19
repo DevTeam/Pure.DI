@@ -11,7 +11,6 @@ sealed class InstanceDpProvider(
     public InstanceDp Get(
         MdSetup setup,
         ITypeConstructor typeConstructor,
-        Compilation compilation,
         INamedTypeSymbol implementationType)
     {
         var setupAttributesBuilder = ImmutableArray.CreateBuilder<IMdAttribute>(
@@ -44,7 +43,7 @@ sealed class InstanceDpProvider(
 
                         if (ordinal.HasValue)
                         {
-                            methods.Add(new DpMethod(method, ordinal, GetParameters(setup, method.Parameters, compilation, typeConstructor)));
+                            methods.Add(new DpMethod(method, ordinal, GetParameters(setup, method.Parameters, typeConstructor)));
                         }
                     }
 
@@ -63,7 +62,7 @@ sealed class InstanceDpProvider(
                                     ordinal,
                                     new Injection(
                                         InjectionKind.Field,
-                                        attributes.GetAttribute(setup.SemanticModel, setup.TypeAttributes, field, typeConstructor.Construct(setup, compilation, type)),
+                                        attributes.GetAttribute(setup.SemanticModel, setup.TypeAttributes, field, typeConstructor.Construct(setup, type)),
                                         GetTagAttribute(setup, field))));
                         }
                     }
@@ -83,7 +82,7 @@ sealed class InstanceDpProvider(
                                     ordinal,
                                     new Injection(
                                         InjectionKind.Property,
-                                        attributes.GetAttribute(setup.SemanticModel, setup.TypeAttributes, property, typeConstructor.Construct(setup, compilation, type)),
+                                        attributes.GetAttribute(setup.SemanticModel, setup.TypeAttributes, property, typeConstructor.Construct(setup, type)),
                                         GetTagAttribute(setup, property))));
                         }
                     }
@@ -101,7 +100,6 @@ sealed class InstanceDpProvider(
     public ImmutableArray<DpParameter> GetParameters(
         in MdSetup setup,
         in ImmutableArray<IParameterSymbol> parameters,
-        Compilation compilation,
         ITypeConstructor typeConstructor)
     {
         if (parameters.Length == 0)
@@ -118,7 +116,7 @@ sealed class InstanceDpProvider(
                     parameter,
                     new Injection(
                         InjectionKind.Parameter,
-                        attributes.GetAttribute(setup.SemanticModel, setup.TypeAttributes, parameter, typeConstructor.Construct(setup, compilation, type)),
+                        attributes.GetAttribute(setup.SemanticModel, setup.TypeAttributes, parameter, typeConstructor.Construct(setup, type)),
                         GetTagAttribute(setup, parameter))));
         }
 

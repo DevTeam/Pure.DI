@@ -3,8 +3,11 @@
 namespace Pure.DI.Core.Models;
 
 record DependencyGraph(
-    bool IsResolved,
     in MdSetup Source,
     IGraph<DependencyNode, Dependency> Graph,
-    IReadOnlyDictionary<Injection, DependencyNode> Map,
-    IReadOnlyDictionary<Injection, Root> Roots);
+    ImmutableArray<Root> Roots = default)
+{
+    private readonly Lazy<bool> _isResolved = new(() => Graph.Edges.All(i => i.IsResolved));
+
+    public bool IsResolved => _isResolved.Value;
+}

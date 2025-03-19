@@ -43,7 +43,7 @@ sealed class BlockCodeBuilder(
             var accumulators = ctx.Accumulators.Select(accumulator => accumulator with { IsDeclared = true }).ToList();
             if (accumulators.Count > 0)
             {
-                ctx = ctx with { Accumulators = accumulators.ToImmutableArray() };
+                ctx = ctx with { Accumulators = accumulators.ToImmutableArray(), AvoidLocalFunction = false};
             }
 
             if (toCheckExistence)
@@ -72,11 +72,7 @@ sealed class BlockCodeBuilder(
             var content = new LinesBuilder();
             foreach (var statement in block.Statements)
             {
-                var curVar = statement.Current;
-                if (ctx.IsFactory || curVar.Injection.Kind != InjectionKind.FactoryInjection || curVar.Node.Lifetime != Lifetime.Transient)
-                {
-                    ctx.StatementBuilder.Build(ctx with { Variable = curVar, Code = content, IsFactory = false }, statement);
-                }
+                ctx.StatementBuilder.Build(ctx with { Variable = statement.Current, Code = content, AvoidLocalFunction = false }, statement);
             }
 
             if (content.Count == 0)
@@ -139,7 +135,8 @@ sealed class BlockCodeBuilder(
         {
             if (!isEmpty)
             {
-                if (block.Parent is not null
+                if (!ctx.AvoidLocalFunction
+                    && block.Parent is not null
                     && info is { PerBlockRefCount: > 1 }
                     && code.Count > 11)
                 {
