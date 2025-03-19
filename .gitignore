@@ -18,3 +18,4 @@ _ReSharper.Caches/
 samples/UnityApp/Library
 samples/UnityApp/UserSettings
 samples/UnityApp/Temp
+/src/Pure.DI.Core/Pure.DI.xml

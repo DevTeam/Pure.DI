@@ -54,7 +54,7 @@ namespace Pure.DI.MS
         /// <summary>
         /// An instance of <see cref="Pure.DI.MS.ServiceCollectionFactory"/>.
         /// </summary>
-        private static readonly ServiceCollectionFactory<TComposition> ServiceCollectionFactory = new ServiceCollectionFactory<TComposition>();
+        private static readonly ServiceCollectionFactory<TComposition> ServiceCollectionFactory = new global::Pure.DI.MS.ServiceCollectionFactory<TComposition>();
     
         /// <summary>
         /// <see cref="System.IServiceProvider"/> instance for resolving external dependencies.
@@ -74,8 +74,8 @@ namespace Pure.DI.MS
                 // Specifies not to attempt to resolve types whose fully qualified name
                 // begins with Microsoft.Extensions, Microsoft.AspNetCore
                 // since ServiceProvider will be used to retrieve them.
-                .Hint(Hint.OnCannotResolveContractTypeNameWildcard, "Microsoft.Extensions.*")
-                .Hint(Hint.OnCannotResolveContractTypeNameWildcard, "Microsoft.AspNetCore.*");
+                .Hint(global::Pure.DI.Hint.OnCannotResolveContractTypeNameWildcard, "Microsoft.Extensions.*")
+                .Hint(global::Pure.DI.Hint.OnCannotResolveContractTypeNameWildcard, "Microsoft.AspNetCore.*");
 
         /// <summary>
         /// Creates a service collection <see cref="Microsoft.Extensions.DependencyInjection.ServiceCollection"/> based on the registered composition.
