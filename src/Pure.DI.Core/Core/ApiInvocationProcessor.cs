@@ -776,11 +776,10 @@ sealed class ApiInvocationProcessor(
         var localVariableRenamingRewriter = localVariableRenamingRewriterFactory()!;
         var factoryApiWalker = factoryApiWalkerFactory();
         factoryApiWalker.Visit(lambdaExpression);
-        var position = 0;
         var resolversHasContextTag = false;
         var resolvers = factoryApiWalker.Meta
             .Where(i => i.Kind == FactoryMetaKind.Resolver)
-            .Select(meta => CreateResolver(semanticModel, resultType, meta, contextParameter, ref position, ref resolversHasContextTag, localVariableRenamingRewriter))
+            .Select(meta => CreateResolver(semanticModel, resultType, meta, contextParameter, ref resolversHasContextTag, localVariableRenamingRewriter))
             .Where(i => i != default)
             .ToImmutableArray();
 
@@ -891,6 +890,7 @@ sealed class ApiInvocationProcessor(
         return new MdInitializer(
             semanticModel,
             invocation,
+            meta.Position,
             targetType,
             targetArg.Expression,
             overrides.ToImmutableArray());
@@ -901,7 +901,6 @@ sealed class ApiInvocationProcessor(
         ITypeSymbol resultType,
         FactoryMeta meta,
         ParameterSyntax contextParameter,
-        ref int position,
         ref bool hasContextTag,
         ILocalVariableRenamingRewriter localVariableRenamingRewriter)
     {
@@ -931,7 +930,7 @@ sealed class ApiInvocationProcessor(
                     return new MdResolver(
                         semanticModel,
                         invocation,
-                        position++,
+                        meta.Position,
                         argSymbol,
                         null,
                         targetValue.Expression,
@@ -955,7 +954,7 @@ sealed class ApiInvocationProcessor(
                         return new MdResolver(
                             semanticModel,
                             invocation,
-                            position++,
+                            meta.Position,
                             argType,
                             resolverTag,
                             valueArg.Expression,

@@ -4,7 +4,8 @@ sealed class FactoryApiWalker : CSharpSyntaxWalker, IFactoryApiWalker
 {
     private readonly List<FactoryMeta> _meta = [];
     private readonly List<OverrideMeta> _overrides = [];
-    private int _position = 1;
+    private int _metaPosition = 1;
+    private int _overridesPosition = 1;
 
     public IReadOnlyCollection<FactoryMeta> Meta => _meta;
 
@@ -26,20 +27,20 @@ sealed class FactoryApiWalker : CSharpSyntaxWalker, IFactoryApiWalker
                         when invocation.ArgumentList.Arguments.Count is 1 or 2
                              && memberAccess is { Expression: IdentifierNameSyntax contextIdentifierName }
                              && contextIdentifierName.IsKind(SyntaxKind.IdentifierName):
-                        _meta.Add(new FactoryMeta(FactoryMetaKind.Resolver, invocation, _overrides.ToImmutableArray()));
+                        _meta.Add(new FactoryMeta(FactoryMetaKind.Resolver, invocation, _metaPosition++, _overrides.ToImmutableArray()));
                         _overrides.Clear();
                         break;
 
                     case nameof(IContext.BuildUp)
                         when invocation.ArgumentList.Arguments.Count is 1:
-                        _meta.Add(new FactoryMeta(FactoryMetaKind.Initializer, invocation, _overrides.ToImmutableArray()));
+                        _meta.Add(new FactoryMeta(FactoryMetaKind.Initializer, invocation, _metaPosition++, _overrides.ToImmutableArray()));
                         break;
 
                     case nameof(IContext.Override)
                         when invocation.ArgumentList.Arguments.Count > 0
                              && memberAccess is { Expression: IdentifierNameSyntax contextIdentifierName }
                              && contextIdentifierName.IsKind(SyntaxKind.IdentifierName):
-                        _overrides.Add(new OverrideMeta(_position++, invocation));
+                        _overrides.Add(new OverrideMeta(_overridesPosition++, invocation));
                         break;
                 }
 
@@ -52,13 +53,13 @@ sealed class FactoryApiWalker : CSharpSyntaxWalker, IFactoryApiWalker
                         when invocation.ArgumentList.Arguments.Count is 1 or 2
                              && memberAccess is { Expression: IdentifierNameSyntax contextIdentifierName }
                              && contextIdentifierName.IsKind(SyntaxKind.IdentifierName):
-                        _meta.Add(new FactoryMeta(FactoryMetaKind.Resolver, invocation, _overrides.ToImmutableArray()));
+                        _meta.Add(new FactoryMeta(FactoryMetaKind.Resolver, invocation, _metaPosition++, _overrides.ToImmutableArray()));
                         _overrides.Clear();
                         break;
 
                     case nameof(IContext.BuildUp)
                         when invocation.ArgumentList.Arguments.Count is 1:
-                        _meta.Add(new FactoryMeta(FactoryMetaKind.Initializer, invocation, _overrides.ToImmutableArray()));
+                        _meta.Add(new FactoryMeta(FactoryMetaKind.Initializer, invocation, _metaPosition++, _overrides.ToImmutableArray()));
                         _overrides.Clear();
                         break;
 
@@ -66,7 +67,7 @@ sealed class FactoryApiWalker : CSharpSyntaxWalker, IFactoryApiWalker
                         when invocation.ArgumentList.Arguments.Count > 0
                              && memberAccess is { Expression: IdentifierNameSyntax contextIdentifierName }
                              && contextIdentifierName.IsKind(SyntaxKind.IdentifierName):
-                        _overrides.Add(new OverrideMeta(_position++, invocation));
+                        _overrides.Add(new OverrideMeta(_overridesPosition++, invocation));
                         break;
                 }
 

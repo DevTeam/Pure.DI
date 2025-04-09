@@ -8,9 +8,7 @@ record DpFactory(
     in ImmutableArray<DpResolver> Resolvers,
     in ImmutableArray<DpInitializer> Initializers)
 {
-    public bool HasOverrides => Overrides.Any();
-
-    public IEnumerable<DpOverride> Overrides => Resolvers.SelectMany(i => i.Overrides).Concat(Initializers.SelectMany(i => i.Overrides));
+    public bool HasOverrides => Resolvers.SelectMany(i => i.Overrides).Concat(Initializers.SelectMany(i => i.Overrides)).Any();
 
     public IEnumerable<string> ToStrings(int indent)
     {
