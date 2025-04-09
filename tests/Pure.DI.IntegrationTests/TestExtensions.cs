@@ -7,6 +7,7 @@
 // ReSharper disable HeapView.ObjectAllocation.Possible
 // ReSharper disable HeapView.BoxingAllocation
 
+// ReSharper disable UnusedMethodReturnValue.Local
 namespace Pure.DI.IntegrationTests;
 
 using System.Collections.Concurrent;

@@ -8,7 +8,7 @@ $r=Shouldly
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
 // ReSharper disable ArrangeTypeModifiers
-
+// ReSharper disable UnusedTypeParameter
 namespace Pure.DI.UsageTests.Generics.GenericInjectionsAsRequiredScenario;
 
 using Shouldly;

@@ -1,7 +1,5 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
-using Core;
-
 public class TagsTests
 {
 

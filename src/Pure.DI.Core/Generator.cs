@@ -55,6 +55,7 @@ public sealed partial class Generator
                 return logger.WithTargetType(ctx.ConsumerTypes[0]);
             })
             .Bind().To<VariablesMap>()
+            .Bind().To(_ => RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline | RegexOptions.IgnoreCase)
 
             // Walkers
             .Bind<IMetadataWalker>().To<MetadataWalker>()
@@ -102,13 +103,6 @@ public sealed partial class Generator
             .Bind().To<InstanceDpProvider>()
             .Bind().To<Injections>()
             .Bind().To<NameFormatter>()
-            .Bind().To(_ => new Func<string, Regex>(
-                pattern => new Regex(
-                    pattern,
-                    RegexOptions.Compiled
-                    | RegexOptions.CultureInvariant
-                    | RegexOptions.Singleline
-                    | RegexOptions.IgnoreCase)))
             .Bind().To(ctx => new Func<DependencyNode, ISet<Injection>, IProcessingNode>((node, contracts) =>
             {
                 ctx.Inject(out IInjectionsWalker injectionsWalker);

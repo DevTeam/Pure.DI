@@ -1,7 +1,6 @@
 namespace Pure.DI.IntegrationTests;
 
 using System.Text;
-using Core;
 using Core.Models;
 
 public class GraphTests

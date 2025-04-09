@@ -23,7 +23,7 @@ sealed class ApiInvocationProcessor(
     : IApiInvocationProcessor
 {
     private static readonly char[] TypeNamePartsSeparators = ['.'];
-    private static object NullTag = new object();
+    private static readonly object NullTag = new();
 
     public void ProcessInvocation(
         IMetadataVisitor metadataVisitor,
@@ -777,16 +777,17 @@ sealed class ApiInvocationProcessor(
         var factoryApiWalker = factoryApiWalkerFactory();
         factoryApiWalker.Visit(lambdaExpression);
         var position = 0;
-        var hasContextTag = false;
+        var resolversHasContextTag = false;
         var resolvers = factoryApiWalker.Meta
             .Where(i => i.Kind == FactoryMetaKind.Resolver)
-            .Select(meta => CreateResolver(semanticModel, resultType, meta, contextParameter, ref position, ref hasContextTag, localVariableRenamingRewriter))
+            .Select(meta => CreateResolver(semanticModel, resultType, meta, contextParameter, ref position, ref resolversHasContextTag, localVariableRenamingRewriter))
             .Where(i => i != default)
             .ToImmutableArray();
 
+        var initializersHasContextTag = false;
         var initializers = factoryApiWalker.Meta
             .Where(i => i.Kind == FactoryMetaKind.Initializer)
-            .Select(meta => CreateInitializer(semanticModel, resultType, meta, contextParameter, ref hasContextTag, localVariableRenamingRewriter))
+            .Select(meta => CreateInitializer(semanticModel, resultType, meta, contextParameter, ref initializersHasContextTag, localVariableRenamingRewriter))
             .Where(i => i != default)
             .ToImmutableArray();
 
@@ -806,7 +807,7 @@ sealed class ApiInvocationProcessor(
                 contextParameter,
                 resolvers,
                 initializers,
-                hasContextTag));
+                resolversHasContextTag || initializersHasContextTag));
     }
 
     private MdOverride CreateOverride(
@@ -815,8 +816,9 @@ sealed class ApiInvocationProcessor(
         OverrideMeta @override,
         ParameterSyntax contextParameter,
         ILocalVariableRenamingRewriter localVariableRenamingRewriter,
-        ref bool hasContextTag)
+        out bool hasContextTag)
     {
+        hasContextTag = false;
         var invocation = @override.Expression;
         if (invocation.ArgumentList.Arguments.Count == 0)
         {
@@ -843,6 +845,7 @@ sealed class ApiInvocationProcessor(
             .DefaultIfEmpty(new MdTag(0, hasCtx ? MdTag.ContextTag : null))
             .ToImmutableArray();
 
+        hasContextTag = hasCtx;
         var valueExpression = (ExpressionSyntax)localVariableRenamingRewriter.Rewrite(semanticModel, false, true, valueArg.Expression);
         return new MdOverride(
             semanticModel,
@@ -878,7 +881,7 @@ sealed class ApiInvocationProcessor(
         // ReSharper disable once LoopCanBeConvertedToQuery
         foreach (var @override in meta.Overrides)
         {
-            var mdOverride = CreateOverride(semanticModel, resultType, @override, contextParameter, localVariableRenamingRewriter, ref hasContextTag);
+            var mdOverride = CreateOverride(semanticModel, resultType, @override, contextParameter, localVariableRenamingRewriter, out hasContextTag);
             if (mdOverride != default)
             {
                 overrides.Add(mdOverride);
@@ -912,7 +915,7 @@ sealed class ApiInvocationProcessor(
         // ReSharper disable once LoopCanBeConvertedToQuery
         foreach (var overrideInvocation in meta.Overrides)
         {
-            var mdOverride = CreateOverride(semanticModel, resultType, overrideInvocation, contextParameter, localVariableRenamingRewriter, ref hasContextTag);
+            var mdOverride = CreateOverride(semanticModel, resultType, overrideInvocation, contextParameter, localVariableRenamingRewriter, out hasContextTag);
             if (mdOverride != default)
             {
                 overrides.Add(mdOverride);

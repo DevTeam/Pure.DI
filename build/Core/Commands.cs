@@ -3,8 +3,6 @@
 
 namespace Build.Core;
 
-using Targets;
-
 [SuppressMessage("Reliability", "CA2012:Use ValueTasks correctly")]
 class Commands(RootCommand rootCommand)
 {

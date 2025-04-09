@@ -2,7 +2,8 @@
 
 class GraphOverride(
     INodesFactory nodesFactory,
-    IBindingsFactory bindingsFactory)
+    IBindingsFactory bindingsFactory,
+    CancellationToken cancellationToken)
     : IGraphOverride
 {
     public IGraph<DependencyNode, Dependency> Override(
@@ -16,6 +17,10 @@ class GraphOverride(
         foreach (var rootNode in from node in graph.Vertices where node.Root is not null select node)
         {
             Override(processedNodes, [], overrideMap, setup, graph, rootNode, ref maxId, overridingEntries);
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return graph;
+            }
         }
 
         if (overridingEntries.Count == 0)
@@ -27,14 +32,23 @@ class GraphOverride(
         foreach (var entry in graph.Entries)
         {
             entriesMap[entry.Target] = entry.Edges;
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return graph;
+            }
         }
 
         foreach (var overridingEntry in overridingEntries)
         {
             entriesMap[overridingEntry.Target] = overridingEntry.Edges;
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return graph;
+            }
         }
 
-        return new Graph<DependencyNode, Dependency>(entriesMap.Select(i => new GraphEntry<DependencyNode, Dependency>(i.Key, i.Value)));
+        return new Graph<DependencyNode, Dependency>(
+            entriesMap.Select(i => new GraphEntry<DependencyNode, Dependency>(i.Key, i.Value)));
     }
 
     private void Override(HashSet<DependencyNode> processedNodes,
@@ -69,6 +83,11 @@ class GraphOverride(
                 MdBinding? overrideBinding = null;
                 foreach (var overrideInjection in @override.Injections)
                 {
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        return;
+                    }
+
                     var injection = overrideInjection with { Type = typeConstructor.Construct(setup, overrideInjection.Type) };
                     var contractType = typeConstructor.Construct(setup, @override.Source.ContractType);
                     overriddenInjections.Add(injection);
@@ -100,6 +119,11 @@ class GraphOverride(
         var isOverridden = false;
         foreach (var dependency in dependencies)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return;
+            }
+
             if (!overriddenInjections.Contains(dependency.Injection) || !overrideMap.TryGetValue(dependency.Injection, out var overridingSourceNode))
             {
                 Override(processedNodes, overriddenInjections, overrideMap, setup, graph, dependency.Source, ref maxId, overridingEntries);

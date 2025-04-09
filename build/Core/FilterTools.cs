@@ -3,6 +3,7 @@ namespace Build.Core;
 
 using Doc;
 
+[SuppressMessage("Performance", "CA1822:Mark members as static")]
 class FilterTools
 {
     public bool AddExample(AIContextSize size, int priority, string groupName)

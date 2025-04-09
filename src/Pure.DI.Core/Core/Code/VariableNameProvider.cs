@@ -6,7 +6,7 @@ class VariableNameProvider(IIdGenerator idGenerator) : IVariableNameProvider
     {
         switch (node)
         {
-            case { Construct: { Source: { Kind: MdConstructKind.Override, State: DpOverride @override}}}:
+            case { Construct.Source: { Kind: MdConstructKind.Override, State: DpOverride @override}}:
             {
                 return GetOverrideVariableName(@override.Source);
             }

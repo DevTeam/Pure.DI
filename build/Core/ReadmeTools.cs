@@ -1,4 +1,5 @@
-﻿namespace Build.Core;
+﻿// ReSharper disable MemberCanBeMadeStatic.Global
+namespace Build.Core;
 
 class ReadmeTools
 {
