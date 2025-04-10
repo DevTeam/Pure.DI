@@ -1,12 +1,12 @@
 ﻿namespace Pure.DI.Core;
 
-class GraphOverride(
+class GraphOverrider(
     INodesFactory nodesFactory,
     IBindingsFactory bindingsFactory,
     CancellationToken cancellationToken)
-    : IGraphOverride
+    : IGraphRewriter
 {
-    public IGraph<DependencyNode, Dependency> Override(
+    public IGraph<DependencyNode, Dependency> Rewrite(
         MdSetup setup,
         IGraph<DependencyNode, Dependency> graph,
         ref int maxId)
@@ -84,6 +84,7 @@ class GraphOverride(
         var newDependencies = new List<Dependency>(dependencies.Count);
         var isOverridden = false;
         using var overridesEnumerator = overrides.GetEnumerator();
+        var lastDependencyPosition = 0;
         foreach (var dependency in dependencies)
         {
             if (cancellationToken.IsCancellationRequested)
@@ -91,46 +92,50 @@ class GraphOverride(
                 return;
             }
 
-            if (dependency.Injection.Kind == InjectionKind.FactoryInjection && overridesEnumerator.MoveNext())
+            if (dependency.Position.HasValue)
             {
-                foreach (var @override in overridesEnumerator.Current)
+                while (lastDependencyPosition < dependency.Position && overridesEnumerator.MoveNext())
                 {
-                    if (@override.Injections.IsDefaultOrEmpty)
+                    lastDependencyPosition++;
+                    foreach (var @override in overridesEnumerator.Current)
                     {
-                        continue;
-                    }
-
-                    MdBinding? overrideBinding = null;
-                    foreach (var overrideInjection in @override.Injections)
-                    {
-                        if (cancellationToken.IsCancellationRequested)
-                        {
-                            return;
-                        }
-
-                        var typeConstructor = targetNode.TypeConstructor;
-                        var injection = overrideInjection with { Type = typeConstructor.Construct(setup, overrideInjection.Type) };
-                        var contractType = typeConstructor.Construct(setup, @override.Source.ContractType);
-                        overriddenInjections.Add(injection);
-                        if (overrideMap.TryGetValue(injection, out _))
+                        if (@override.Injections.IsDefaultOrEmpty)
                         {
                             continue;
                         }
 
-                        overrideBinding ??= bindingsFactory.CreateConstructBinding(
-                            setup,
-                            targetNode,
-                            injection,
-                            contractType,
-                            Lifetime.PerResolve,
-                            typeConstructor,
-                            ++maxId,
-                            MdConstructKind.Override,
-                            state: @override);
-
-                        foreach (var sourceNode in nodesFactory.CreateNodes(setup, typeConstructor, overrideBinding))
+                        MdBinding? overrideBinding = null;
+                        foreach (var overrideInjection in @override.Injections)
                         {
-                            overrideMap[injection] = sourceNode;
+                            if (cancellationToken.IsCancellationRequested)
+                            {
+                                return;
+                            }
+
+                            var typeConstructor = targetNode.TypeConstructor;
+                            var injection = overrideInjection with { Type = typeConstructor.Construct(setup, overrideInjection.Type) };
+                            var contractType = typeConstructor.Construct(setup, @override.Source.ContractType);
+                            overriddenInjections.Add(injection);
+                            if (overrideMap.TryGetValue(injection, out _))
+                            {
+                                continue;
+                            }
+
+                            overrideBinding ??= bindingsFactory.CreateConstructBinding(
+                                setup,
+                                targetNode,
+                                injection,
+                                contractType,
+                                Lifetime.PerResolve,
+                                typeConstructor,
+                                ++maxId,
+                                MdConstructKind.Override,
+                                state: @override);
+
+                            foreach (var sourceNode in nodesFactory.CreateNodes(setup, typeConstructor, overrideBinding))
+                            {
+                                overrideMap[injection] = sourceNode;
+                            }
                         }
                     }
                 }

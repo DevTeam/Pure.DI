@@ -27,7 +27,8 @@ sealed class VariablesWalker : DependenciesWalker<Unit>, IVariablesWalker
         in Injection injection,
         bool hasExplicitDefaultValue,
         object? explicitDefaultValue,
-        in ImmutableArray<Location> locations)
+        in ImmutableArray<Location> locations,
+        int? position)
     {
         if (_variablesMap.TryGetValue(injection, out var variables))
         {
@@ -42,6 +43,6 @@ sealed class VariablesWalker : DependenciesWalker<Unit>, IVariablesWalker
             _result.Add(variable);
         }
 
-        base.VisitInjection(ctx, in injection, hasExplicitDefaultValue, explicitDefaultValue, locations);
+        base.VisitInjection(ctx, in injection, hasExplicitDefaultValue, explicitDefaultValue, locations, position);
     }
 }

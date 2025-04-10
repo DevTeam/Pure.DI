@@ -15,5 +15,6 @@ sealed class ConstructorInjectionsCounterWalker : DependenciesWalker<Unit>, ICon
         in Injection injection,
         bool hasExplicitDefaultValue,
         object? explicitDefaultValue,
-        in ImmutableArray<Location> locations) => Count++;
+        in ImmutableArray<Location> locations,
+        int? position) => Count++;
 }

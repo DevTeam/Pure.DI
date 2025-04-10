@@ -109,7 +109,8 @@ public sealed partial class Generator
                 return new ProcessingNode(injectionsWalker, node, contracts);
             }))
             .Bind().To<BindingsFactory>()
-            .Bind().To<GraphOverride>()
+            .Bind(Overrider).To<GraphOverrider>()
+            .Bind(Cleaner).To<GraphCleaner>()
             .Bind().To<NodesFactory>()
 
             // Validators

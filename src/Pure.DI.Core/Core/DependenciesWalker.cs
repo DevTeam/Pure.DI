@@ -43,7 +43,7 @@ class DependenciesWalker<TContext>
 
     public virtual void VisitRoot(in TContext ctx, in DpRoot root)
     {
-        VisitInjection(ctx, root.Injection, false, null, ImmutableArray.Create(root.Source.Source.GetLocation()));
+        VisitInjection(ctx, root.Injection, false, null, ImmutableArray.Create(root.Source.Source.GetLocation()), null);
     }
 
     public virtual void VisitImplementation(in TContext ctx, in DpImplementation implementation)
@@ -55,17 +55,17 @@ class DependenciesWalker<TContext>
 
         foreach (var field in implementation.Fields)
         {
-            VisitField(ctx, field);
+            VisitField(ctx, field, null);
         }
 
         foreach (var property in implementation.Properties)
         {
-            VisitProperty(ctx, property);
+            VisitProperty(ctx, property, null);
         }
 
         foreach (var method in implementation.Methods)
         {
-            VisitMethod(ctx, method);
+            VisitMethod(ctx, method, null);
         }
     }
 
@@ -90,19 +90,19 @@ class DependenciesWalker<TContext>
     {
         foreach (var injection in construct.Injections)
         {
-            VisitInjection(ctx, injection, false, null, ImmutableArray.Create(construct.Binding.Source.GetLocation()));
+            VisitInjection(ctx, injection, false, null, ImmutableArray.Create(construct.Binding.Source.GetLocation()), null);
         }
     }
 
-    public virtual void VisitMethod(in TContext ctx, in DpMethod method)
+    public virtual void VisitMethod(in TContext ctx, in DpMethod method, int? position)
     {
         foreach (var parameter in method.Parameters)
         {
-            VisitParameter(ctx, parameter);
+            VisitParameter(ctx, parameter, position);
         }
     }
 
-    public virtual void VisitProperty(in TContext ctx, in DpProperty property)
+    public virtual void VisitProperty(in TContext ctx, in DpProperty property, int? position)
     {
         if (property.Property.SetMethod is not {} setMethod)
         {
@@ -119,35 +119,38 @@ class DependenciesWalker<TContext>
             property.Injection,
             parameter.HasExplicitDefaultValue,
             parameter.HasExplicitDefaultValue ? parameter.ExplicitDefaultValue : null,
-            property.Property.Locations);
+            property.Property.Locations,
+            position);
     }
 
-    public virtual void VisitField(in TContext ctx, in DpField field)
+    public virtual void VisitField(in TContext ctx, in DpField field, int? position)
     {
         VisitInjection(
             ctx,
             field.Injection,
             field.Field.HasConstantValue,
             field.Field.HasConstantValue ? field.Field.ConstantValue : null,
-            field.Field.Locations);
+            field.Field.Locations,
+            position);
     }
 
     public virtual void VisitConstructor(in TContext ctx, in DpMethod constructor)
     {
         foreach (var parameter in constructor.Parameters)
         {
-            VisitParameter(ctx, parameter);
+            VisitParameter(ctx, parameter, null);
         }
     }
 
-    public virtual void VisitParameter(in TContext ctx, in DpParameter parameter)
+    public virtual void VisitParameter(in TContext ctx, in DpParameter parameter, int? position)
     {
         VisitInjection(
             ctx,
             parameter.Injection,
             parameter.ParameterSymbol.HasExplicitDefaultValue,
             parameter.ParameterSymbol.HasExplicitDefaultValue ? parameter.ParameterSymbol.ExplicitDefaultValue : null,
-            parameter.ParameterSymbol.Locations);
+            parameter.ParameterSymbol.Locations,
+            position);
     }
 
     public virtual void VisitInjection(
@@ -155,30 +158,31 @@ class DependenciesWalker<TContext>
         in Injection injection,
         bool hasExplicitDefaultValue,
         object? explicitDefaultValue,
-        in ImmutableArray<Location> locations)
+        in ImmutableArray<Location> locations,
+        int? position)
     {
     }
 
     public virtual void VisitResolver(in TContext ctx, DpResolver resolver)
     {
-        VisitInjection(ctx, resolver.Injection, false, null, ImmutableArray.Create(resolver.Source.Source.GetLocation()));
+        VisitInjection(ctx, resolver.Injection, false, null, ImmutableArray.Create(resolver.Source.Source.GetLocation()), resolver.Source.Position);
     }
 
     public virtual void VisitInitializer(in TContext ctx, DpInitializer initializer)
     {
         foreach (var field in initializer.Fields)
         {
-            VisitField(ctx, field);
+            VisitField(ctx, field, initializer.Source.Position);
         }
 
         foreach (var property in initializer.Properties)
         {
-            VisitProperty(ctx, property);
+            VisitProperty(ctx, property, initializer.Source.Position);
         }
 
         foreach (var method in initializer.Methods)
         {
-            VisitMethod(ctx, method);
+            VisitMethod(ctx, method, initializer.Source.Position);
         }
     }
 }

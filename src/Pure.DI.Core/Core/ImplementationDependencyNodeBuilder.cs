@@ -59,10 +59,12 @@ sealed class ImplementationDependencyNodeBuilder(
 
             if (constructors.Count == 0)
             {
-                throw new CompileErrorException(
+                var error = new CompileErrorException(
                     string.Format(Strings.Error_Template_CannotBeInstantiatedNoAccessibleConstructor, implementationType),
                     implementation.Source.GetLocation(),
                     LogId.ErrorInvalidMetadata);
+
+                yield return new DependencyNode(0, binding, ctx.TypeConstructor, Error: error);
             }
 
             var instanceDp = instanceDpProvider.Get(setup, ctx.TypeConstructor, implementationType);

@@ -11,7 +11,8 @@ record DependencyNode(
     in DpFactory? Factory,
     in DpArg? Arg,
     in DpConstruct? Construct,
-    Lifetime Lifetime)
+    Lifetime Lifetime,
+    CompileErrorException? Error)
 {
     public DependencyNode(
         int Variation,
@@ -21,7 +22,8 @@ record DependencyNode(
         in DpImplementation? Implementation = null,
         in DpFactory? Factory = null,
         in DpArg? Arg = null,
-        in DpConstruct? Construct = null)
+        in DpConstruct? Construct = null,
+        CompileErrorException? Error = null)
         : this(
             Variation,
             binding,
@@ -33,7 +35,8 @@ record DependencyNode(
             Factory,
             Arg,
             Construct,
-            binding.Lifetime?.Value ?? Lifetime.Transient)
+            binding.Lifetime?.Value ?? Lifetime.Transient,
+            Error)
     {
     }
 

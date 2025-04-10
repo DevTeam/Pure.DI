@@ -18,13 +18,14 @@ sealed class DependencyGraphLocationsWalker : DependenciesWalker<Unit>, IDepende
         in Injection injection,
         bool hasExplicitDefaultValue,
         object? explicitDefaultValue,
-        in ImmutableArray<Location> locations)
+        in ImmutableArray<Location> locations,
+        int? position)
     {
         if (injection.Equals(_injection))
         {
             _locationsBuilder.AddRange(locations);
         }
 
-        base.VisitInjection(ctx, in injection, hasExplicitDefaultValue, explicitDefaultValue, in locations);
+        base.VisitInjection(ctx, in injection, hasExplicitDefaultValue, explicitDefaultValue, in locations, position);
     }
 }

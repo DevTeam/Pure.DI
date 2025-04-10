@@ -11,9 +11,10 @@ sealed class InjectionsWalker : DependenciesWalker<Unit>, IInjectionsWalker
         in Injection injection,
         bool hasExplicitDefaultValue,
         object? explicitDefaultValue,
-        in ImmutableArray<Location> locations)
+        in ImmutableArray<Location> locations,
+        int? position)
     {
-        _result.Add(new InjectionInfo(injection, hasExplicitDefaultValue, explicitDefaultValue));
-        base.VisitInjection(Unit.Shared, in injection, hasExplicitDefaultValue, explicitDefaultValue, locations);
+        _result.Add(new InjectionInfo(injection, hasExplicitDefaultValue, explicitDefaultValue, position));
+        base.VisitInjection(Unit.Shared, in injection, hasExplicitDefaultValue, explicitDefaultValue, locations, position);
     }
 }

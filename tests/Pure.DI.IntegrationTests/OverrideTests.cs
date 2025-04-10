@@ -91,6 +91,142 @@ public class OverrideTests
     }
 
     [Fact]
+    public async Task ShouldSupportSeveralOverrides()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               enum Color { Red };
+                               
+                               interface IClock
+                               {
+                                   DateTimeOffset Now { get; }
+                               }
+                               
+                               class Clock : IClock
+                               {
+                                   public DateTimeOffset Now => DateTimeOffset.Now;
+                               }
+                               
+                               interface IDependency
+                               {
+                                   string Name { get; }
+                               
+                                   int Id { get; }
+                               
+                                   int SubId { get; }
+                               }
+                               
+                               class Dependency : IDependency
+                               {
+                                   private readonly string _name;
+                                   private readonly int _id;
+                                   private readonly int _subId;
+                                   
+                                   public Dependency(
+                                       string name,
+                                       IClock clock,
+                                       int id,
+                                       [Tag("sub")] int subId,
+                                       Color red)
+                                   {
+                                       _name = name;
+                                       _id = id;
+                                       _subId = subId;
+                                   }
+                                   public string Name => _name;
+                               
+                                   public int Id => _id;
+                               
+                                   public int SubId => _subId;
+                               }
+                               
+                               interface IService
+                               {
+                                   IList<IDependency> Dependencies { get; }
+                               }
+                               
+                               class Service : IService
+                               {
+                                   public Service(Func<int, int, IDependency> dependencyFactory)
+                                   {
+                                       Dependencies = new[]
+                                       {
+                                           dependencyFactory(0, 99),
+                                           dependencyFactory(1, 99),
+                                           dependencyFactory(2, 99)
+                                       };
+                                   }
+                               
+                                   public IList<IDependency> Dependencies { get; }
+                               }
+                               
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                       .Bind(Tag.Red).To(_ => Color.Red)
+                                       .Bind().As(Lifetime.Singleton).To<Clock>()
+                                       .Bind().To<Func<int, int, IDependency>>(ctx =>
+                                           (dependencyId, subId) =>
+                                           {
+                                               // Overrides with a lambda argument
+                                               ctx.Override(dependencyId);
+                                       
+                                               // Overrides with tag using lambda argument
+                                               ctx.Override(subId, "sub");
+                                       
+                                               // Overrides with some value
+                                               ctx.Override($"Dep {dependencyId} {subId}");
+                                       
+                                               // Overrides with injected value
+                                               ctx.Inject(Tag.Red, out Color red);
+                                               ctx.Override(red);
+                                       
+                                               ctx.Inject<Dependency>(out var dependency);
+                                               return dependency;
+                                           })
+                                       .Bind().To<Service>()
+                                       .Root<IService>("Root");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                       Console.WriteLine(service.Dependencies.Count);
+                                       
+                                       Console.WriteLine(service.Dependencies[0].Id);
+                                       Console.WriteLine(service.Dependencies[0].SubId);
+                                       Console.WriteLine(service.Dependencies[0].Name);
+                                       
+                                       Console.WriteLine(service.Dependencies[1].Id);
+                                       Console.WriteLine(service.Dependencies[1].Name);
+                                       
+                                       Console.WriteLine(service.Dependencies[2].Id);
+                                       Console.WriteLine(service.Dependencies[2].Name);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["3", "0", "99", "Dep 0 99", "1", "Dep 1 99", "2", "Dep 2 99"], result);
+    }
+
+    [Fact]
     public async Task ShouldSupportOverrideAfterCannotResolve()
     {
         // Given
@@ -186,6 +322,137 @@ public class OverrideTests
                                                // this also should work ctx.Inject<Clock>(new Clock());
                                                ctx.Inject<Clock>(out var clock);
                                                ctx.Override<IClock>(clock);
+                                               ctx.Override("Abc");
+                                               ctx.Inject<Dependency>(out var dependency);
+                                               return dependency;
+                                           })
+                                           .Bind().To<Service>()
+                                           .Root<IService>("Root");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportOverrideAfterCannotResolveAbstractDependency()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IClockDep
+                               {
+                               }
+                               
+                               class ClockDep: IClockDep
+                               {
+                               }
+                           
+                               interface IClock
+                               {
+                                   DateTimeOffset Now { get; }
+                               }
+                               
+                               class Clock : IClock
+                               {
+                                   public Clock(IClockDep unresolvedDep)
+                                   {
+                                   }
+                                   
+                                   public DateTimeOffset Now => DateTimeOffset.Now;
+                               }
+                               
+                               interface IDependency
+                               {
+                                   string Name { get; }
+                                   IClock Clock { get; }
+                                   IRepository Repository { get; }
+                               }
+                               
+                               interface IRepository
+                               {
+                                   IClock Clock { get; }
+                               }
+                               
+                               class Repository : IRepository
+                               {
+                                   public Repository(IClock clock)
+                                   {
+                                       Clock = clock;
+                                   }
+                               
+                                   public IClock Clock { get; }
+                               }
+                               
+                               class Dependency : IDependency
+                               {
+                                   private readonly string _name;
+                               
+                                   public Dependency(string name,
+                                       IClock clock,
+                                       IRepository repository)
+                                   {
+                                       _name = name;
+                                       Clock = clock;
+                                       Repository = repository;
+                                   }
+                               
+                                   public string Name => _name;
+                               
+                                   public IClock Clock { get; }
+                               
+                                   public IRepository Repository { get; }
+                               }
+                               
+                               interface IService
+                               {
+                                   IList<IDependency> Dependencies { get; }
+                               }
+                               
+                               class Service : IService
+                               {
+                                   public Service(Func<int, int, IDependency> dependencyFactory)
+                                   {
+                                       Dependencies = new[]
+                                       {
+                                           dependencyFactory(0, 99),
+                                           dependencyFactory(1, 99),
+                                           dependencyFactory(2, 99)
+                                       };
+                                   }
+                               
+                                   public IList<IDependency> Dependencies { get; }
+                               }
+                               
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind().To<Clock>()
+                                           .Bind().To<Repository>()
+                                           .Bind().To<Func<int, int, IDependency>>(ctx => (dependencyId, subId) =>
+                                           {
+                                               ctx.Override<IClock>(new Clock(new ClockDep()));
                                                ctx.Override("Abc");
                                                ctx.Inject<Dependency>(out var dependency);
                                                return dependency;
@@ -387,7 +654,7 @@ public class OverrideTests
         result.StdOut.ShouldBe(["Sample.LoggerA`1[System.String]", "Sample.LoggerA`1[System.Int32]"], result);
     }
 
-    [Fact(Skip = "Abc")]
+    [Fact]
     public async Task ShouldSupportBuildUpWhenOverride()
     {
         // Given
@@ -1979,6 +2246,378 @@ public class OverrideTests
                                }
                            }
                            """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Sample.LoggerA", "Sample.LoggerA"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportBuildUpOverrideWhenInjectAbstraction()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           #pragma warning disable CS8602
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface ILogger {}
+                               
+                               class LoggerA: ILogger
+                               {
+                               }
+                               
+                               interface IDependency 
+                               {
+                                    ILogger Logger { get; }
+                               }
+                           
+                               class Dependency: IDependency
+                               {
+                                   public Dependency(ILogger logger)
+                                   {
+                                        Logger = logger;
+                                   }
+                                   
+                                   public ILogger Logger { get; set; }
+                               }
+                           
+                               interface IService
+                               {
+                                   IDependency? Dep { get; }
+                                   
+                                   ILogger? Logger { get; }
+                               }
+                           
+                               class ServiceA: IService 
+                               {
+                                   [Dependency]
+                                   public IDependency? Dep { get; set; }
+                                   
+                                   [Dependency]
+                                   public ILogger? Logger { get; set; }
+                               }
+                               
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind().To<Dependency>()
+                                           .Bind().To<LoggerA>()
+                                           .Bind<IService>().To(ctx => 
+                                           {
+                                                ctx.Inject(out ILogger logger);
+                                                ctx.Override<ILogger>(logger);
+                                                var service = new ServiceA();
+                                                ctx.BuildUp(service);
+                                                return service;
+                                           })
+                                           .Root<IService>("Root");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root = composition.Root;
+                                       Console.WriteLine(root.Logger);
+                                       Console.WriteLine(root.Dep.Logger);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Sample.LoggerA", "Sample.LoggerA"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportBuildUpOverrideWhenCtor()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           #pragma warning disable CS8602
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface ILogger {}
+                               
+                               class LoggerA: ILogger
+                               {
+                               }
+                               
+                               interface IDependency 
+                               {
+                                    ILogger Logger { get; }
+                               }
+                           
+                               class Dependency: IDependency
+                               {
+                                   public Dependency(ILogger logger)
+                                   {
+                                        Logger = logger;
+                                   }
+                                   
+                                   public ILogger Logger { get; set; }
+                               }
+                           
+                               interface IService
+                               {
+                                   IDependency? Dep { get; }
+                                   
+                                   ILogger? Logger { get; }
+                               }
+                           
+                               class ServiceA: IService 
+                               {
+                                   [Dependency]
+                                   public IDependency? Dep { get; set; }
+                                   
+                                   [Dependency]
+                                   public ILogger? Logger { get; set; }
+                               }
+                               
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind().To<Dependency>()
+                                           .Bind<IService>().To(ctx => 
+                                           {
+                                                ctx.Override<ILogger>(new LoggerA());
+                                                var service = new ServiceA();
+                                                ctx.BuildUp(service);
+                                                return service;
+                                           })
+                                           .Root<IService>("Root");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root = composition.Root;
+                                       Console.WriteLine(root.Logger);
+                                       Console.WriteLine(root.Dep.Logger);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Sample.LoggerA", "Sample.LoggerA"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportOverrideWhenInitialInjectionsHasNoAnyConstructors()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface ILogger {}
+                               
+                               class LoggerBase: ILogger
+                               {
+                                    protected LoggerBase(int num)
+                                    {
+                                    }
+                               }
+                               
+                               class LoggerA: LoggerBase
+                               {
+                                    public LoggerA(): base(33)
+                                    {
+                                    }
+                               }
+                               
+                               interface IDependency 
+                               {
+                                    ILogger Logger { get; }
+                               }
+                           
+                               class Dependency: IDependency
+                               {
+                                   public Dependency(LoggerBase logger)
+                                   {
+                                        Logger = logger;
+                                   }
+                                   
+                                   public ILogger Logger { get; set; }
+                               }
+                           
+                               interface IService
+                               {
+                                   IDependency Dep { get; }
+                                   
+                                   ILogger Logger { get; }
+                               }
+                           
+                               class ServiceA: IService 
+                               {
+                                   public ServiceA(IDependency dep, ILogger logger)
+                                   {
+                                        Dep = dep;
+                                        Logger = logger;
+                                   }
+                           
+                                   public IDependency Dep { get; set; }
+                                   
+                                   public ILogger Logger { get; set; }
+                               }
+                               
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind().To<Dependency>()
+                                           .Bind<IService>().To(ctx => 
+                                           {
+                                                ctx.Inject(out LoggerA logger);
+                                                ctx.Override<ILogger>(logger);
+                                                ctx.Override<LoggerBase>(logger);
+                                                ctx.Inject(out ServiceA service);
+                                                return service;
+                                           })
+                                           .Root<IService>("Root");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root = composition.Root;
+                                       Console.WriteLine(root.Logger);
+                                       Console.WriteLine(root.Dep.Logger);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Sample.LoggerA", "Sample.LoggerA"], result);
+    }
+
+    [Theory]
+    [InlineData("MyEnum", "MyEnum.A")]
+    [InlineData("int", "33")]
+    [InlineData("char", "'a'")]
+    [InlineData("Type", "typeof(int)")]
+    [InlineData("int", "int.Max(1, 2)")]
+    public async Task ShouldSupportOverrideValue(string type, string value)
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public enum MyEnum
+                               {
+                                   None,
+                                   A,
+                                   B
+                               }
+                           
+                               interface ILogger {}
+                               
+                               class LoggerA: ILogger
+                               {
+                               }
+                               
+                               interface IDependency 
+                               {
+                                    ILogger Logger { get; }
+                               }
+                           
+                               class Dependency: IDependency
+                               {
+                                   public Dependency(ILogger logger, #type# val)
+                                   {
+                                        Logger = logger;
+                                   }
+                                   
+                                   public ILogger Logger { get; set; }
+                               }
+                           
+                               interface IService
+                               {
+                                   IDependency Dep { get; }
+                                   
+                                   ILogger Logger { get; }
+                               }
+                           
+                               class ServiceA: IService 
+                               {
+                                   public ServiceA(IDependency dep, #type# val, ILogger logger)
+                                   {
+                                        Dep = dep;
+                                        Logger = logger;
+                                   }
+                           
+                                   public IDependency Dep { get; set; }
+                                   
+                                   public ILogger Logger { get; set; }
+                               }
+                               
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind().To<Dependency>()
+                                           .Bind<IService>().To(ctx => 
+                                           {
+                                                ctx.Override(#value#);
+                                                ctx.Inject(out LoggerA logger);
+                                                ctx.Override<ILogger>(logger);
+                                                ctx.Inject(out ServiceA service);
+                                                return service;
+                                           })
+                                           .Root<IService>("Root");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root = composition.Root;
+                                       Console.WriteLine(root.Logger);
+                                       Console.WriteLine(root.Dep.Logger);
+                                   }
+                               }
+                           }
+                           """.Replace("#type#", type).Replace("#value#", value).RunAsync();
 
         // Then
         result.Success.ShouldBeTrue(result);

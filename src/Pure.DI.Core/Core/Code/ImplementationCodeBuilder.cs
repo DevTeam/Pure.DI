@@ -19,21 +19,21 @@ sealed class ImplementationCodeBuilder(
         var requiredFields = ImmutableArray.CreateBuilder<(Variable RequiredVariable, DpField RequiredField)>();
         foreach (var requiredField in implementation.Fields.Where(i => i.Field.IsRequired).OrderBy(i => i.Ordinal ?? int.MaxValue - 1))
         {
-            variablesWalker.VisitField(Unit.Shared, requiredField);
+            variablesWalker.VisitField(Unit.Shared, requiredField, null);
             requiredFields.Add((variablesWalker.GetResult().Single(), requiredField));
         }
 
         var requiredProperties = ImmutableArray.CreateBuilder<(Variable RequiredVariable, DpProperty RequiredProperty)>();
         foreach (var requiredProperty in implementation.Properties.Where(i => i.Property.IsRequired || i.Property.SetMethod?.IsInitOnly == true).OrderBy(i => i.Ordinal ?? int.MaxValue))
         {
-            variablesWalker.VisitProperty(Unit.Shared, requiredProperty);
+            variablesWalker.VisitProperty(Unit.Shared, requiredProperty, null);
             requiredProperties.Add((variablesWalker.GetResult().Single(), requiredProperty));
         }
 
         var visits = new List<(Action<BuildContext> Run, int? Ordinal)>();
         foreach (var field in implementation.Fields.Where(i => i.Field.IsRequired != true))
         {
-            variablesWalker.VisitField(Unit.Shared, field);
+            variablesWalker.VisitField(Unit.Shared, field, null);
             var fieldVariable = variablesWalker.GetResult().Single();
             visits.Add((VisitFieldAction, field.Ordinal));
             continue;
@@ -43,7 +43,7 @@ sealed class ImplementationCodeBuilder(
 
         foreach (var property in implementation.Properties.Where(i => !i.Property.IsRequired && i.Property.SetMethod?.IsInitOnly != true))
         {
-            variablesWalker.VisitProperty(Unit.Shared, property);
+            variablesWalker.VisitProperty(Unit.Shared, property, null);
             var propertyVariable = variablesWalker.GetResult().Single();
             visits.Add((VisitFieldAction, property.Ordinal));
             continue;
@@ -53,7 +53,7 @@ sealed class ImplementationCodeBuilder(
 
         foreach (var method in implementation.Methods)
         {
-            variablesWalker.VisitMethod(Unit.Shared, method);
+            variablesWalker.VisitMethod(Unit.Shared, method, null);
             var methodArgs = variablesWalker.GetResult();
             visits.Add((VisitMethodAction, method.Ordinal));
             continue;

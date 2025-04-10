@@ -25,27 +25,27 @@ sealed class GraphWalker<TContext, T> : IGraphWalker<TContext, T>
                 continue;
             }
 
-            foreach (var (isResolved, dependencyNode, _, _) in dependencies)
+            foreach (var dependency in dependencies)
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
                     break;
                 }
 
-                if (!isResolved)
+                if (!dependency.IsResolved)
                 {
                     continue;
                 }
 
-                var visitingInfo = visitor.Create(graph, dependencyNode, nodeInfo.Info);
+                var visitingInfo = visitor.Create(graph, dependency.Source, nodeInfo.Info);
                 if (!visitor.Visit(ctx, graph, visitingInfo))
                 {
                     continue;
                 }
 
-                if (processedNodes.Add(dependencyNode))
+                if (processedNodes.Add(dependency.Source))
                 {
-                    nodeInfos.Push(new NodeInfo(dependencyNode, visitingInfo));
+                    nodeInfos.Push(new NodeInfo(dependency.Source, visitingInfo));
                 }
             }
         }

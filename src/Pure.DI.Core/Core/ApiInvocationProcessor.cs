@@ -811,7 +811,6 @@ sealed class ApiInvocationProcessor(
 
     private MdOverride CreateOverride(
         SemanticModel semanticModel,
-        ITypeSymbol resultType,
         OverrideMeta @override,
         ParameterSyntax contextParameter,
         ILocalVariableRenamingRewriter localVariableRenamingRewriter,
@@ -830,7 +829,7 @@ sealed class ApiInvocationProcessor(
             return default;
         }
 
-        var argType = GetArg(semanticModel, resultType, valueArg, invocation);
+        var argType = GetArg(semanticModel, GetDefaultType(semanticModel, invocation, 0), valueArg, invocation);
         if (argType is null)
         {
             return default;
@@ -845,7 +844,19 @@ sealed class ApiInvocationProcessor(
             .ToImmutableArray();
 
         hasContextTag = hasCtx;
-        var valueExpression = (ExpressionSyntax)localVariableRenamingRewriter.Rewrite(semanticModel, false, true, valueArg.Expression);
+        ExpressionSyntax valueExpression;
+        switch (semanticModel.GetOperation(valueArg.Expression))
+        {
+            case IMemberReferenceOperation:
+            case IInvocationOperation:
+                valueExpression = valueArg.Expression;
+                break;
+
+            default:
+                valueExpression = (ExpressionSyntax)localVariableRenamingRewriter.Rewrite(semanticModel, false, true, valueArg.Expression);
+                break;
+        }
+
         return new MdOverride(
             semanticModel,
             invocation,
@@ -880,7 +891,7 @@ sealed class ApiInvocationProcessor(
         // ReSharper disable once LoopCanBeConvertedToQuery
         foreach (var @override in meta.Overrides)
         {
-            var mdOverride = CreateOverride(semanticModel, resultType, @override, contextParameter, localVariableRenamingRewriter, out hasContextTag);
+            var mdOverride = CreateOverride(semanticModel, @override, contextParameter, localVariableRenamingRewriter, out hasContextTag);
             if (mdOverride != default)
             {
                 overrides.Add(mdOverride);
@@ -914,7 +925,7 @@ sealed class ApiInvocationProcessor(
         // ReSharper disable once LoopCanBeConvertedToQuery
         foreach (var overrideInvocation in meta.Overrides)
         {
-            var mdOverride = CreateOverride(semanticModel, resultType, overrideInvocation, contextParameter, localVariableRenamingRewriter, out hasContextTag);
+            var mdOverride = CreateOverride(semanticModel, overrideInvocation, contextParameter, localVariableRenamingRewriter, out hasContextTag);
             if (mdOverride != default)
             {
                 overrides.Add(mdOverride);
@@ -924,20 +935,15 @@ sealed class ApiInvocationProcessor(
         switch (invArguments)
         {
             case [{ RefOrOutKeyword.IsMissing: false } targetValue]:
-                var argSymbol = GetArgSymbol(semanticModel, invArguments[0], resultType);
-                if (argSymbol is not null)
-                {
-                    return new MdResolver(
-                        semanticModel,
-                        invocation,
-                        meta.Position,
-                        argSymbol,
-                        null,
-                        targetValue.Expression,
-                        overrides.ToImmutableArray());
-                }
-
-                break;
+                var argSymbol = GetArgSymbol(semanticModel, invArguments[0], GetDefaultType(semanticModel, invocation, 1)) ?? resultType;
+                return new MdResolver(
+                    semanticModel,
+                    invocation,
+                    meta.Position,
+                    argSymbol,
+                    null,
+                    targetValue.Expression,
+                    overrides.ToImmutableArray());
 
             default:
                 var args = arguments.GetArgs(invocation.ArgumentList, "tag", "value");
@@ -948,18 +954,15 @@ sealed class ApiInvocationProcessor(
                 var resolverTag = new MdTag(0, tagValue);
                 if (args[1] is {} valueArg)
                 {
-                    var argType = GetArg(semanticModel, resultType, valueArg, invocation);
-                    if (argType is not null)
-                    {
-                        return new MdResolver(
-                            semanticModel,
-                            invocation,
-                            meta.Position,
-                            argType,
-                            resolverTag,
-                            valueArg.Expression,
-                            overrides.ToImmutableArray());
-                    }
+                    var argType = GetArg(semanticModel, GetDefaultType(semanticModel, invocation, 1), valueArg, invocation) ?? resultType;
+                    return new MdResolver(
+                        semanticModel,
+                        invocation,
+                        meta.Position,
+                        argType,
+                        resolverTag,
+                        valueArg.Expression,
+                        overrides.ToImmutableArray());
                 }
 
                 break;
@@ -968,9 +971,26 @@ sealed class ApiInvocationProcessor(
         return default;
     }
 
+    private ITypeSymbol? GetDefaultType(SemanticModel semanticModel, InvocationExpressionSyntax invocation, int typeArgPosition)
+    {
+        var name = invocation.Expression switch
+        {
+            MemberAccessExpressionSyntax memberAccess when memberAccess.Kind() == SyntaxKind.SimpleMemberAccessExpression => memberAccess.Name,
+            _ => null
+        };
+
+        ITypeSymbol? defaultType = null;
+        if (name is GenericNameSyntax genericName && genericName.TypeArgumentList.Arguments.Count > typeArgPosition)
+        {
+            defaultType = semantic.GetTypeSymbol<ITypeSymbol>(semanticModel, genericName.TypeArgumentList.Arguments[typeArgPosition]);
+        }
+
+        return defaultType;
+    }
+
     private static ITypeSymbol? GetArg(
         SemanticModel semanticModel,
-        ITypeSymbol resultType,
+        ITypeSymbol? resultType,
         ArgumentSyntax valueArg,
         InvocationExpressionSyntax invocation)
     {
@@ -981,6 +1001,7 @@ sealed class ApiInvocationProcessor(
         {
             argType = declarationType;
         }
+
         return argType;
     }
 
@@ -991,7 +1012,7 @@ sealed class ApiInvocationProcessor(
         && memberAccessExpression.Expression is IdentifierNameSyntax identifierName
         && identifierName.Identifier.Text == contextParameter.Identifier.Text;
 
-    private static ITypeSymbol? GetArgSymbol(SemanticModel semanticModel, ArgumentSyntax argumentSyntax, ITypeSymbol defaultType)
+    private static ITypeSymbol? GetArgSymbol(SemanticModel semanticModel, ArgumentSyntax argumentSyntax, ITypeSymbol? defaultType)
     {
         ITypeSymbol? argType = null;
         if (argumentSyntax.SyntaxTree != semanticModel.SyntaxTree)
@@ -1014,12 +1035,14 @@ sealed class ApiInvocationProcessor(
             }
         }
 
-        if (argType is null && semanticModel.GetOperation(argumentSyntax) is IArgumentOperation { Value.Type: {} valueType })
+        if (argType is null
+            && argumentSyntax.SyntaxTree == semanticModel.SyntaxTree
+            && semanticModel.GetOperation(argumentSyntax) is IArgumentOperation { Value.Type: {} valueType })
         {
             argType = valueType;
         }
 
-        return argType;
+        return argType ?? defaultType;
     }
 
     private static void CheckNotAsync(LambdaExpressionSyntax lambdaExpression)

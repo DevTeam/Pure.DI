@@ -6,6 +6,7 @@
 
 namespace Pure.DI.Core;
 
+using static Tag;
 using Dependency = Dependency;
 using DependencyNode = DependencyNode;
 using Injection=Injection;
@@ -21,7 +22,8 @@ sealed class DependencyGraphBuilder(
     IRegistryManager<MdBinding> registryManager,
     ISymbolNames symbolNames,
     Func<DependencyNode, ISet<Injection>, IProcessingNode> processingNodeFactory,
-    IGraphOverride graphOverride,
+    [Tag(Overrider)] IGraphRewriter graphOverrider,
+    [Tag(Cleaner)] IGraphRewriter graphCleaner,
     CancellationToken cancellationToken)
     : IDependencyGraphBuilder
 {
@@ -88,7 +90,13 @@ sealed class DependencyGraphBuilder(
 
             var targetNode = node.Node;
             var isProcessed = true;
-            foreach (var (injection, hasExplicitDefaultValue, explicitDefaultValue) in node.Injections)
+            if (targetNode.Error is not null)
+            {
+                notProcessed.Add(node);
+                continue;
+            }
+
+            foreach (var (injection, hasExplicitDefaultValue, explicitDefaultValue, _) in node.Injections)
             {
                 if (!processedInjection.Add(injection))
                 {
@@ -347,12 +355,11 @@ sealed class DependencyGraphBuilder(
                 edgesMap.Add(node, edges);
             }
 
-            foreach (var injectionInfo in node.Injections)
+            foreach (var injection in node.Injections)
             {
-                var injection = injectionInfo.Injection;
-                var dependency = map.TryGetValue(injection, out var sourceNode)
-                    ? new Dependency(true, sourceNode, injection, node.Node)
-                    : new Dependency(false, new DependencyNode(0, node.Node.Binding, node.Node.TypeConstructor), injection, node.Node);
+                var dependency = map.TryGetValue(injection.Injection, out var sourceNode) && sourceNode.Error is null
+                    ? new Dependency(true, sourceNode, injection.Injection, node.Node, injection.Position)
+                    : new Dependency(false, new DependencyNode(0, node.Node.Binding, node.Node.TypeConstructor), injection.Injection, node.Node, injection.Position, sourceNode?.Error);
 
                 edges.Add(dependency);
             }
@@ -361,7 +368,14 @@ sealed class DependencyGraphBuilder(
         }
 
         graph = new Graph<DependencyNode, Dependency>(entries);
-        graph = graphOverride.Override(setup, graph, ref maxId);
+        var lastId = maxId;
+        graph = graphOverrider.Rewrite(setup, graph, ref maxId);
+        // Has overrides
+        if (lastId != maxId)
+        {
+            graph = graphCleaner.Rewrite(setup, graph, ref maxId);
+        }
+
         return ImmutableArray<DependencyNode>.Empty;
 
         void UpdateMap(Injection injection, DependencyNode node)

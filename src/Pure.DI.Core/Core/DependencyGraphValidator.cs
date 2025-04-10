@@ -20,15 +20,15 @@ sealed class DependencyGraphValidator(
         }
 
         var isErrorReported = false;
-        foreach (var (_, dependencyNode, unresolvedInjection, target) in graph.Edges.Where(i => !i.IsResolved))
+        foreach (var dependency in graph.Edges.Where(i => !i.IsResolved))
         {
             cancellationToken.ThrowIfCancellationRequested();
             var setup = dependencyGraph.Source;
             if (setup.Hints.IsOnCannotResolveEnabled)
             {
-                string GetContractName() => typeResolver.Resolve(setup, unresolvedInjection.Type).Name;
-                string GetTagName() => unresolvedInjection.Tag.ValueToString();
-                string GetLifetimeName() => dependencyNode.Lifetime.ValueToString();
+                string GetContractName() => typeResolver.Resolve(setup, dependency.Injection.Type).Name;
+                string GetTagName() => dependency.Injection.Tag.ValueToString();
+                string GetLifetimeName() => dependency.Source.Lifetime.ValueToString();
                 if (filter.IsMeet(
                         setup,
                         (Hint.OnCannotResolveContractTypeNameRegularExpression, Hint.OnCannotResolveContractTypeNameWildcard, GetContractName),
@@ -40,10 +40,17 @@ sealed class DependencyGraphValidator(
             }
 
             isResolved = false;
-            var errorMessage = string.Format(Strings.Error_Template_UnableToResolve, unresolvedInjection, target);
-            var locationsWalker = dependencyGraphLocationsWalkerFactory().Initialize(unresolvedInjection);
-            locationsWalker.VisitDependencyNode(Unit.Shared, target);
-            foreach (var location in locationsWalker.Locations.Where(i => i.IsInSource).DefaultIfEmpty(target.Binding.Source.GetLocation()))
+            if (dependency.Target.Error is {} error)
+            {
+                logger.CompileError(error.ErrorMessage, error.Location, error.Id);
+                isErrorReported = true;
+                continue;
+            }
+
+            var errorMessage = string.Format(Strings.Error_Template_UnableToResolve, dependency.Injection, dependency.Target);
+            var locationsWalker = dependencyGraphLocationsWalkerFactory().Initialize(dependency.Injection);
+            locationsWalker.VisitDependencyNode(Unit.Shared, dependency.Target);
+            foreach (var location in locationsWalker.Locations.Where(i => i.IsInSource).DefaultIfEmpty(dependency.Target.Binding.Source.GetLocation()))
             {
                 logger.CompileError(errorMessage, location, LogId.ErrorUnableToResolve);
                 isErrorReported = true;

@@ -1,8 +1,8 @@
 ﻿namespace Pure.DI.Core;
 
-interface IGraphOverride
+interface IGraphRewriter
 {
-    IGraph<DependencyNode, Dependency> Override(
+    IGraph<DependencyNode, Dependency> Rewrite(
         MdSetup setup,
         IGraph<DependencyNode, Dependency> graph,
         ref int maxId);

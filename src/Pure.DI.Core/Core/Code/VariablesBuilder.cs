@@ -100,13 +100,13 @@ sealed class VariablesBuilder(
                             }
                         }
 
-                        foreach (var (_, dependencyNode, dependencyInjection, _) in dependencies.Where(i => i.IsResolved))
+                        foreach (var dependency in dependencies.Where(i => i.IsResolved))
                         {
-                            var hasCycle = path.TryGetValue(dependencyNode.Binding.Id, out var cycleVariable);
+                            var hasCycle = path.TryGetValue(dependency.Source.Binding.Id, out var cycleVariable);
                             var isAlreadyCreated = false;
                             if (hasCycle)
                             {
-                                isAlreadyCreated = nodeInfo.IsLazy(dependencyNode);
+                                isAlreadyCreated = nodeInfo.IsLazy(dependency.Source);
                                 if (isAlreadyCreated)
                                 {
                                     foreach (var pathVariable in path)
@@ -121,16 +121,16 @@ sealed class VariablesBuilder(
                                 currentBlock,
                                 map,
                                 blockMap,
-                                dependencyNode with { Accumulators = accumulators },
-                                dependencyInjection,
+                                dependency.Source with { Accumulators = accumulators },
+                                dependency.Injection,
                                 ref transientId,
                                 cycleVariable);
 
                             dependencyVariable.Info.AddTargetNode(variable.Node);
                             var isBlock = isFactoryWithOverrides
-                                          || dependencyNode.Lifetime is not Lifetime.Transient and not Lifetime.PerBlock
+                                          || dependency.Source.Lifetime is not Lifetime.Transient and not Lifetime.PerBlock
                                           || nodeInfo.IsDelegate(variable.Node)
-                                          || nodeInfo.IsDelegate(dependencyNode);
+                                          || nodeInfo.IsDelegate(dependency.Source);
                             if (isBlock)
                             {
                                 var dependencyBlock = new Block(blockId++, currentStatement, []);

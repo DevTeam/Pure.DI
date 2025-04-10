@@ -13,16 +13,4 @@ static class CollectionExtensions
         value = stack.Pop()!;
         return true;
     }
-
-    public static bool TryEnqueue<T>(this Queue<T> queue, [NotNullWhen(true)] out T? value)
-    {
-        if (queue.Count == 0)
-        {
-            value = default;
-            return false;
-        }
-
-        value = queue.Dequeue()!;
-        return true;
-    }
 }

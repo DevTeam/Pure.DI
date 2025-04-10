@@ -49,11 +49,11 @@ sealed class DependenciesToLinesWalker(int indent)
     {
         using (_lb.Indent())
         {
-            VisitMethod(ctx, constructor);
+            VisitMethod(ctx, constructor, null);
         }
     }
 
-    public override void VisitMethod(in Unit ctx, in DpMethod method)
+    public override void VisitMethod(in Unit ctx, in DpMethod method, int? position)
     {
         var typeArgs = "";
         if (method.Method.ContainingType.TypeArguments.Length > 0)
@@ -74,11 +74,11 @@ sealed class DependenciesToLinesWalker(int indent)
                 _lb.Append(", ");
             }
 
-            VisitParameter(ctx, parameter);
+            VisitParameter(ctx, parameter, position);
         }
 
         _lb.Append(")");
     }
 
-    public override void VisitParameter(in Unit ctx, in DpParameter parameter) => _lb.Append(parameter.ToString());
+    public override void VisitParameter(in Unit ctx, in DpParameter parameter, int? position) => _lb.Append(parameter.ToString());
 }

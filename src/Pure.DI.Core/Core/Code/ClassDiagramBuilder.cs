@@ -384,22 +384,22 @@ sealed class ClassDiagramBuilder(
             base.VisitConstructor(ctx, in constructor);
         }
 
-        public override void VisitMethod(in LinesBuilder ctx, in DpMethod method)
+        public override void VisitMethod(in LinesBuilder ctx, in DpMethod method, int? position)
         {
             ctx.AppendLine(builder.FormatMethod(setup, method.Method, options));
-            base.VisitMethod(ctx, in method);
+            base.VisitMethod(ctx, in method, position);
         }
 
-        public override void VisitProperty(in LinesBuilder ctx, in DpProperty property)
+        public override void VisitProperty(in LinesBuilder ctx, in DpProperty property, int? position)
         {
             ctx.AppendLine(builder.FormatProperty(setup, property.Property, options));
-            base.VisitProperty(ctx, in property);
+            base.VisitProperty(ctx, in property, position);
         }
 
-        public override void VisitField(in LinesBuilder ctx, in DpField field)
+        public override void VisitField(in LinesBuilder ctx, in DpField field, int? position)
         {
             ctx.AppendLine(builder.FormatField(setup, field.Field, options));
-            base.VisitField(ctx, in field);
+            base.VisitField(ctx, in field, position);
         }
     }
 

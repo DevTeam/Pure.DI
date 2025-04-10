@@ -1,3 +1,4 @@
+// ReSharper disable MemberCanBeMadeStatic.Global
 namespace Build.Core.Doc;
 
 using System.Xml.Linq;

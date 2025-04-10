@@ -25,19 +25,19 @@ sealed class InitializersWalker(IInjections injections)
         }
     }
 
-    public override void VisitInjection(in BuildContext ctx, in Injection injection, bool hasExplicitDefaultValue, object? explicitDefaultValue, in ImmutableArray<Location> locations)
+    public override void VisitInjection(in BuildContext ctx, in Injection injection, bool hasExplicitDefaultValue, object? explicitDefaultValue, in ImmutableArray<Location> locations, int? position)
     {
         if (_variablesEnumerator.MoveNext())
         {
             _variables.Add(_variablesEnumerator.Current);
         }
 
-        base.VisitInjection(in ctx, in injection, hasExplicitDefaultValue, explicitDefaultValue, in locations);
+        base.VisitInjection(in ctx, in injection, hasExplicitDefaultValue, explicitDefaultValue, in locations, position);
     }
 
-    public override void VisitMethod(in BuildContext ctx, in DpMethod method)
+    public override void VisitMethod(in BuildContext ctx, in DpMethod method, int? position)
     {
-        base.VisitMethod(in ctx, in method);
+        base.VisitMethod(in ctx, in method, position);
         var curCtx = ctx;
         var curMethod = method;
         var curVariables = _variables.ToList();
@@ -45,9 +45,9 @@ sealed class InitializersWalker(IInjections injections)
         _variables.Clear();
     }
 
-    public override void VisitProperty(in BuildContext ctx, in DpProperty property)
+    public override void VisitProperty(in BuildContext ctx, in DpProperty property, int? position)
     {
-        base.VisitProperty(in ctx, in property);
+        base.VisitProperty(in ctx, in property, position);
         var curCtx = ctx;
         var curProperty = property;
         var curVariable = _variables.Single();
@@ -55,9 +55,9 @@ sealed class InitializersWalker(IInjections injections)
         _variables.Clear();
     }
 
-    public override void VisitField(in BuildContext ctx, in DpField field)
+    public override void VisitField(in BuildContext ctx, in DpField field, int? position)
     {
-        base.VisitField(in ctx, in field);
+        base.VisitField(in ctx, in field, position);
         var curCtx = ctx;
         var curField = field;
         var curVariable = _variables.Single();
