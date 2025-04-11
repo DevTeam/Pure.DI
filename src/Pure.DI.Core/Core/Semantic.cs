@@ -43,9 +43,9 @@ sealed class Semantic(
             LogId.ErrorInvalidMetadata);
     }
 
-    public T GetRequiredConstantValue<T>(SemanticModel semanticModel, SyntaxNode node)
+    public T GetRequiredConstantValue<T>(SemanticModel semanticModel, SyntaxNode node, SmartTagKind smartTagKind)
     {
-        var value = GetConstantValue<T>(semanticModel, node);
+        var value = GetConstantValue<T>(semanticModel, node, smartTagKind);
         if (value is not null)
         {
             return value;
@@ -57,22 +57,22 @@ sealed class Semantic(
             LogId.ErrorInvalidMetadata);
     }
 
-    public T?[] GetConstantValues<T>(SemanticModel semanticModel, SyntaxNode node)
+    public T?[] GetConstantValues<T>(SemanticModel semanticModel, SyntaxNode node, SmartTagKind smartTagKind)
     {
 #if ROSLYN4_8_OR_GREATER
         if (node is CollectionExpressionSyntax collectionExpression)
         {
             return collectionExpression.Elements
                 .SelectMany(e => e.ChildNodes())
-                .Select(e => GetConstantValue<T>(semanticModel, e))
+                .Select(e => GetConstantValue<T>(semanticModel, e, smartTagKind))
                 .ToArray();
         }
 #endif
 
-        return [GetConstantValue<T>(semanticModel, node)];
+        return [GetConstantValue<T>(semanticModel, node, smartTagKind)];
     }
 
-    public T? GetConstantValue<T>(SemanticModel semanticModel, SyntaxNode node)
+    public T? GetConstantValue<T>(SemanticModel semanticModel, SyntaxNode node, SmartTagKind smartTagKind)
     {
         switch (node)
         {
@@ -116,8 +116,11 @@ sealed class Semantic(
                             {
                                 nameof(Tag.Type) when IsSpecialType(semanticModel, node, SpecialType.Tag) => (T)(object)Tag.Type,
                                 nameof(Tag.Unique) when IsSpecialType(semanticModel, node, SpecialType.Tag) => (T)(object)Tag.Unique,
-                                _ => (T)smartTags.Register(valueStr)
+                                _ => (T)smartTags.Register(SmartTagKind.Tag, valueStr)
                             };
+
+                        case nameof(Name) when typeof(T) == typeof(object):
+                            return (T)smartTags.Register(SmartTagKind.Name, valueStr);
                     }
                 }
 
@@ -129,7 +132,7 @@ sealed class Semantic(
                 {
                     nameof(Tag.Type) when IsSpecialType(semanticModel, node, SpecialType.Tag) => (T)(object)Tag.Type,
                     nameof(Tag.Unique) when IsSpecialType(semanticModel, node, SpecialType.Tag) => (T)(object)Tag.Unique,
-                    _ => (T)smartTags.Register(identifierNameSyntax.Identifier.Text)
+                    _ => (T)smartTags.Register(smartTagKind, identifierNameSyntax.Identifier.Text)
                 };
 
             case InvocationExpressionSyntax invocationExpressionSyntax:
@@ -140,7 +143,7 @@ sealed class Semantic(
                         if (invocationExpressionSyntax.ArgumentList.Arguments is var injectionSitesArgs)
                         {
                             var injectionSites = injectionSitesArgs
-                                .Select(injectionSiteArg => (Source: injectionSiteArg.Expression, Value: GetConstantValue<string>(semanticModel, injectionSiteArg.Expression)))
+                                .Select(injectionSiteArg => (Source: injectionSiteArg.Expression, Value: GetConstantValue<string>(semanticModel, injectionSiteArg.Expression, smartTagKind)))
                                 .Where(i => !string.IsNullOrWhiteSpace(i.Value))
                                 .Select(i => new MdInjectionSite(i.Source, i.Value!))
                                 .ToImmutableArray();
@@ -154,7 +157,7 @@ sealed class Semantic(
                     case MemberAccessExpressionSyntax { Name: GenericNameSyntax { TypeArgumentList.Arguments: [{} typeArg] }, Name.Identifier.Text: nameof(Tag.OnConstructorArg), Expression: IdentifierNameSyntax { Identifier.Text: nameof(Tag) } }:
                         if (invocationExpressionSyntax.ArgumentList.Arguments is [{} ctorArgName])
                         {
-                            var name = GetRequiredConstantValue<string>(semanticModel, ctorArgName.Expression);
+                            var name = GetRequiredConstantValue<string>(semanticModel, ctorArgName.Expression, smartTagKind);
                             var ctor = GetTypeSymbol<ITypeSymbol>(semanticModel, typeArg)
                                 .GetMembers()
                                 .OfType<IMethodSymbol>()
@@ -180,8 +183,8 @@ sealed class Semantic(
                     case MemberAccessExpressionSyntax { Name: GenericNameSyntax { TypeArgumentList.Arguments: [{} typeArg] }, Name.Identifier.Text: nameof(Tag.OnMethodArg), Expression: IdentifierNameSyntax { Identifier.Text: nameof(Tag) } }:
                         if (invocationExpressionSyntax.ArgumentList.Arguments is [{} methodNameArg, {} methodArgName])
                         {
-                            var methodName = GetRequiredConstantValue<string>(semanticModel, methodNameArg.Expression);
-                            var methodArg = GetRequiredConstantValue<string>(semanticModel, methodArgName.Expression);
+                            var methodName = GetRequiredConstantValue<string>(semanticModel, methodNameArg.Expression, smartTagKind);
+                            var methodArg = GetRequiredConstantValue<string>(semanticModel, methodArgName.Expression, smartTagKind);
                             var method = GetTypeSymbol<ITypeSymbol>(semanticModel, typeArg)
                                 .GetMembers()
                                 .OfType<IMethodSymbol>()
@@ -208,7 +211,7 @@ sealed class Semantic(
                     case MemberAccessExpressionSyntax { Name: GenericNameSyntax { TypeArgumentList.Arguments: [{} typeArg] }, Name.Identifier.Text: nameof(Tag.OnMember), Expression: IdentifierNameSyntax { Identifier.Text: nameof(Tag) } }:
                         if (invocationExpressionSyntax.ArgumentList.Arguments is [{} memberNameArg])
                         {
-                            var name = GetRequiredConstantValue<string>(semanticModel, memberNameArg.Expression);
+                            var name = GetRequiredConstantValue<string>(semanticModel, memberNameArg.Expression, smartTagKind);
                             var type = GetTypeSymbol<ITypeSymbol>(semanticModel, typeArg);
                             var member = type
                                 .GetMembers()

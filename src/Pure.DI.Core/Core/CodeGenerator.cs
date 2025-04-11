@@ -11,8 +11,7 @@ sealed class CodeGenerator(
     IObserver<LogEntry> logObserver,
     IBuilder<IEnumerable<SyntaxUpdate>, IEnumerable<MdSetup>> metadataBuilder,
     Func<IBuilder<MdSetup, CompositionCode?>> codeBuilderFactory,
-    IBuilder<TagContext, TagCode> tagClassBuildr,
-    ISmartTags smartTags,
+    IBuilder<TagContext, IEnumerable<TagCode>> tagClassBuildr,
     ISources sources,
     IGlobalProperties globalProperties,
     CancellationToken cancellationToken)
@@ -73,18 +72,15 @@ sealed class CodeGenerator(
         return Unit.Shared;
     }
 
-    private TagCode? BuildSmartTags(TagContext tagContext)
+    private Unit BuildSmartTags(TagContext tagContext)
     {
-        var tags = smartTags.GetAll();
-        if (tags.Count <= 0)
+        foreach (var tagCode in tagClassBuildr.Build(tagContext))
         {
-            return null;
+            using var rent = tagCode.Code.SaveToArray(Encoding.UTF8, out var buffer, out var size);
+            sources.AddSource($"{Names.GeneratorName}.Components.Api.{tagCode.ClassName}.g.cs", SourceText.From(buffer, size, Encoding.UTF8, SourceHashAlgorithm.Sha1, false, true));
         }
 
-        var tagCode = tagClassBuildr.Build(tagContext);
-        using var rent = tagCode.Code.SaveToArray(Encoding.UTF8, out var buffer, out var size);
-        sources.AddSource($"{Names.GeneratorName}.Components.Api.{nameof(Tag)}.g.cs", SourceText.From(buffer, size, Encoding.UTF8, SourceHashAlgorithm.Sha1, false, true));
-        return tagCode;
+        return Unit.Shared;
     }
 
     private CompositionCode? BuildCode(MdSetup setup) =>

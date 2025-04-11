@@ -129,7 +129,7 @@ sealed class ApiInvocationProcessor(
                         if (hintArgs is [{ Expression: {} hintNameExpression }, { Expression: {} hintValueExpression }])
                         {
                             var values = new LinkedList<string>();
-                            values.AddLast(semantic.GetRequiredConstantValue<string>(semanticModel, hintValueExpression));
+                            values.AddLast(semantic.GetRequiredConstantValue<object>(semanticModel, hintValueExpression, SmartTagKind.Name).ToString());
                             metadataVisitor.VisitHint(new MdHint(semantic.GetConstantValue<Hint>(semanticModel, hintNameExpression), values));
                         }
 
@@ -297,7 +297,7 @@ sealed class ApiInvocationProcessor(
                         }
 
                         var rootsArgs = arguments.GetArgs(invocation.ArgumentList, "name", "kind", "filter");
-                        var rootsName = rootsArgs[0] is {} rootsNameArg ? semantic.GetConstantValue<string>(semanticModel, rootsNameArg.Expression) ?? "" : "";
+                        var rootsName = rootsArgs[0] is {} rootsNameArg ? semantic.GetConstantValue<object>(semanticModel, rootsNameArg.Expression, SmartTagKind.Name)?.ToString() ?? "" : "";
                         var rootsKind = rootsArgs[1] is {} rootsKindArg ? semantic.GetConstantValue<RootKinds>(semanticModel, rootsKindArg.Expression) : RootKinds.Default;
                         var rootsWildcardFilter = (rootsArgs[2] is {} rootsFilterArg ? semantic.GetConstantValue<string>(semanticModel, rootsFilterArg.Expression) : "*") ?? "*";
                         var hasRootsType = false;
@@ -335,7 +335,7 @@ sealed class ApiInvocationProcessor(
                         }
 
                         var buildersArgs = arguments.GetArgs(invocation.ArgumentList, "name", "kind", "filter");
-                        var buildersName = buildersArgs[0] is {} buildersNameArg ? semantic.GetConstantValue<string>(semanticModel, buildersNameArg.Expression) ?? Names.DefaultBuilderName : Names.DefaultBuilderName;
+                        var buildersName = buildersArgs[0] is {} buildersNameArg ? semantic.GetConstantValue<object>(semanticModel, buildersNameArg.Expression, SmartTagKind.Name)?.ToString() ?? Names.DefaultBuilderName : Names.DefaultBuilderName;
                         var buildersKind = buildersArgs[1] is {} buildersKindArg ? semantic.GetConstantValue<RootKinds>(semanticModel, buildersKindArg.Expression) : RootKinds.Default;
                         var buildersWildcardFilter = (buildersArgs[2] is {} buildersFilterArg ? semantic.GetConstantValue<string>(semanticModel, buildersFilterArg.Expression) : "*") ?? "*";
                         var hasBuildersType = false;
@@ -370,7 +370,7 @@ sealed class ApiInvocationProcessor(
 
                         var builderType = semantic.GetTypeSymbol<INamedTypeSymbol>(semanticModel, builderRootTypeSyntax);
                         var builderArgs = arguments.GetArgs(invocation.ArgumentList, "name", "kind");
-                        var builderName = builderArgs[0] is {} builderNameArg ? GetName(builderNameArg, semantic.GetConstantValue<string>(semanticModel, builderNameArg.Expression), builderType) ?? Names.DefaultBuilderName : Names.DefaultBuilderName;
+                        var builderName = builderArgs[0] is {} builderNameArg ? GetName(builderNameArg, semantic.GetConstantValue<object>(semanticModel, builderNameArg.Expression, SmartTagKind.Name)?.ToString(), builderType) ?? Names.DefaultBuilderName : Names.DefaultBuilderName;
                         var builderKind = builderArgs[1] is {} builderKindArg ? semantic.GetConstantValue<RootKinds>(semanticModel, builderKindArg.Expression) : RootKinds.Default;
                         VisitBuilder(
                             name,
@@ -669,9 +669,9 @@ sealed class ApiInvocationProcessor(
         INamedTypeSymbol rootSymbol)
     {
         var rootArgs = arguments.GetArgs(invocation.ArgumentList, "name", "tag", "kind");
-        var tag = rootArgs[1] is {} tagArg ? semantic.GetConstantValue<object>(semanticModel, tagArg.Expression) : null;
+        var tag = rootArgs[1] is {} tagArg ? semantic.GetConstantValue<object>(semanticModel, tagArg.Expression, SmartTagKind.Tag) : null;
         var name = rootArgs[0] is {} nameArg
-            ? GetName(nameArg, semantic.GetConstantValue<string>(semanticModel, nameArg.Expression), rootSymbol, tag) ?? ""
+            ? GetName(nameArg, semantic.GetConstantValue<object>(semanticModel, nameArg.Expression, SmartTagKind.Name)?.ToString(), rootSymbol, tag) ?? ""
             : "";
         var kind = rootArgs[2] is {} kindArg ? semantic.GetConstantValue<RootKinds>(semanticModel, kindArg.Expression) : RootKinds.Default;
         metadataVisitor.VisitRoot(new MdRoot(source, semanticModel, rootSymbol, name, new MdTag(0, tag), kind, invocationComments, false));
@@ -689,7 +689,7 @@ sealed class ApiInvocationProcessor(
         tag ??= new MdTag(0, null);
         var rootArgs = arguments.GetArgs(invocation.ArgumentList, "name", "kind");
         var name = rootArgs[0] is {} nameArg
-            ? GetName(nameArg, semantic.GetConstantValue<string>(semanticModel, nameArg.Expression), rootSymbol, tag.Value.Value) ?? ""
+            ? GetName(nameArg, semantic.GetConstantValue<object>(semanticModel, nameArg.Expression, SmartTagKind.Name)?.ToString(), rootSymbol, tag.Value.Value) ?? ""
             : "";
         var kind = rootArgs[1] is {} kindArg ? semantic.GetConstantValue<RootKinds>(semanticModel, kindArg.Expression) : RootKinds.Default;
         metadataVisitor.VisitRoot(new MdRoot(source, semanticModel, rootSymbol, name, tag, kind, invocationComments, false));
@@ -741,7 +741,7 @@ sealed class ApiInvocationProcessor(
             var tags = BuildTags(semanticModel, args.Skip(1));
             var name = GetName(
                 nameArgExpression,
-                semantic.GetRequiredConstantValue<string>(semanticModel, nameArgExpression),
+                semantic.GetRequiredConstantValue<object>(semanticModel, nameArgExpression, SmartTagKind.Name).ToString(),
                 argType,
                 tags.IsEmpty ? null : tags[0].Value) ?? "";
 
@@ -950,7 +950,7 @@ sealed class ApiInvocationProcessor(
                 var tag = args[0]?.Expression;
                 var hasCtx = HasContextTag(tag, contextParameter);
                 hasContextTag |= hasCtx;
-                var tagValue = hasCtx ? MdTag.ContextTag : tag is null ? null : semantic.GetConstantValue<object>(semanticModel, tag);
+                var tagValue = hasCtx ? MdTag.ContextTag : tag is null ? null : semantic.GetConstantValue<object>(semanticModel, tag, SmartTagKind.Tag);
                 var resolverTag = new MdTag(0, tagValue);
                 if (args[1] is {} valueArg)
                 {
@@ -1086,7 +1086,7 @@ sealed class ApiInvocationProcessor(
         SemanticModel semanticModel,
         IEnumerable<ArgumentSyntax> args) =>
         args
-            .SelectMany(t => semantic.GetConstantValues<object>(semanticModel, t.Expression))
+            .SelectMany(t => semantic.GetConstantValues<object>(semanticModel, t.Expression, SmartTagKind.Tag))
             .Select((tag, i) => new MdTag(i, tag))
             .ToImmutableArray();
 

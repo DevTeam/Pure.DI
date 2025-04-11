@@ -1,3 +1,3 @@
 ﻿namespace Pure.DI.Core.Models;
 
-record TagCode(LinesBuilder Code);
+readonly record struct TagCode(string ClassName, LinesBuilder Code);

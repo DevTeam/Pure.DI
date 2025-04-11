@@ -71,7 +71,6 @@ class Clock : IClock
 interface IDependency
 {
     string Name { get; }
-
     int Id { get; }
 }
 

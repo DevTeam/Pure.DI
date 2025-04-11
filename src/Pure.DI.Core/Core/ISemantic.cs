@@ -10,11 +10,11 @@ interface ISemantic
     T GetTypeSymbol<T>(SemanticModel semanticModel, SyntaxNode node)
         where T : ITypeSymbol;
 
-    T GetRequiredConstantValue<T>(SemanticModel semanticModel, SyntaxNode node);
+    T GetRequiredConstantValue<T>(SemanticModel semanticModel, SyntaxNode node, SmartTagKind smartTagKind = SmartTagKind.Unknown);
 
-    T?[] GetConstantValues<T>(SemanticModel semanticModel, SyntaxNode node);
+    T?[] GetConstantValues<T>(SemanticModel semanticModel, SyntaxNode node, SmartTagKind smartTagKind = SmartTagKind.Unknown);
 
-    T? GetConstantValue<T>(SemanticModel semanticModel, SyntaxNode node);
+    T? GetConstantValue<T>(SemanticModel semanticModel, SyntaxNode node, SmartTagKind smartTagKind = SmartTagKind.Unknown);
 
     bool IsValidNamespace(INamespaceSymbol? namespaceSymbol);
 }

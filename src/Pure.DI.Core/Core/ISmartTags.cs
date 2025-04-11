@@ -2,7 +2,7 @@
 
 interface ISmartTags
 {
-    object Register(string name);
+    object Register(SmartTagKind kind, string name);
 
-    IReadOnlyCollection<SmartTag> GetAll();
+    IReadOnlyCollection<SmartTag> Get(SmartTagKind kind);
 }

@@ -6,7 +6,7 @@ sealed class SmartTags : ISmartTags
 {
     private readonly HashSet<SmartTag> _tags = [];
 
-    public object Register(string name)
+    public object Register(SmartTagKind kind, string name)
     {
         if (SyntaxFacts.IsValidIdentifier(name)
             && name != nameof(Tag.Type)
@@ -14,7 +14,7 @@ sealed class SmartTags : ISmartTags
         {
             lock (_tags)
             {
-                _tags.Add(new SmartTag(name));
+                _tags.Add(new SmartTag(kind, name));
                 return name;
             }
         }
@@ -22,11 +22,11 @@ sealed class SmartTags : ISmartTags
         return name;
     }
 
-    public IReadOnlyCollection<SmartTag> GetAll()
+    public IReadOnlyCollection<SmartTag> Get(SmartTagKind kind)
     {
         lock (_tags)
         {
-            return _tags.ToList();
+            return _tags.Where(i => i.Kind == kind).ToList();
         }
     }
 }

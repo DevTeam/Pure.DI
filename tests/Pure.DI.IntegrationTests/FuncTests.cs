@@ -955,4 +955,314 @@ public class FuncTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["True"], result);
     }
+
+    [Fact]
+    public async Task ShouldSupportStdFuncWithArg()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                           
+                               class Dependency: IDependency
+                               {
+                                   private string _name;
+                           
+                                   public Dependency(string name)
+                                   {
+                                       _name = name;
+                                   }
+                           
+                                   public override string ToString() => _name;
+                               }
+                           
+                               interface IService
+                               {
+                                   IDependency Dep { get; }
+                               }
+                           
+                               class Service: IService 
+                               {
+                                   private Func<string, IDependency> _depFactory;
+                                   public Service(Func<string, IDependency> depFactory)
+                                   { 
+                                       _depFactory = depFactory;
+                                   }
+                           
+                                   public IDependency Dep => _depFactory("Xyz");
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind().To<Dependency>()
+                                           .Bind().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                       Console.WriteLine(service.Dep.ToString());
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Xyz"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportStdFuncWith2Args()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                           
+                               class Dependency: IDependency
+                               {
+                                   private string _name;
+                                   private int _id;
+                           
+                                   public Dependency(string name, int id)
+                                   {
+                                       _name = name;
+                                       _id = id;
+                                   }
+                           
+                                   public override string ToString() => $"{_name} {_id}";
+                               }
+                           
+                               interface IService
+                               {
+                                   IDependency Dep { get; }
+                               }
+                           
+                               class Service: IService 
+                               {
+                                   private Func<string, int, IDependency> _depFactory;
+                                   public Service(Func<string, int, IDependency> depFactory)
+                                   { 
+                                       _depFactory = depFactory;
+                                   }
+                           
+                                   public IDependency Dep => _depFactory("Xyz", 33);
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind().To<Dependency>()
+                                           .Bind().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                       Console.WriteLine(service.Dep.ToString());
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Xyz 33"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportStdFuncWithComplexArg()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               
+                               interface IInfo {}
+                               
+                               class Info: IInfo {}
+                               
+                               interface IContext {}
+                               
+                               class Context: IContext
+                               {
+                                    public Context(IInfo Info) {}
+                               }
+                           
+                               class Dependency: IDependency
+                               {
+                                   private string _name;
+                                   private IContext _ctx;
+                           
+                                   public Dependency(string name, IContext ctx)
+                                   {
+                                       _name = name;
+                                       _ctx = ctx;
+                                   }
+                           
+                                   public override string ToString() => $"{_name} {_ctx}";
+                               }
+                           
+                               interface IService
+                               {
+                                   IDependency Dep { get; }
+                               }
+                           
+                               class Service: IService 
+                               {
+                                   private Func<string, IContext, IDependency> _depFactory;
+
+                                   public Service(Func<string, IContext, IDependency> depFactory)
+                                   { 
+                                       _depFactory = depFactory;
+                                   }
+                           
+                                   public IDependency Dep => _depFactory("Xyz", new Context(new Info()));
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind().To<Dependency>()
+                                           .Bind().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                       Console.WriteLine(service.Dep.ToString());
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Xyz Sample.Context"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportStdFuncWithComplexGenericArg()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               
+                               interface IInfo {}
+                               
+                               class Info: IInfo {}
+                               
+                               interface IContext<T> {}
+                               
+                               class Context<T>: IContext<T>
+                               {
+                                    public Context(IInfo Info) {}
+                               }
+                           
+                               class Dependency: IDependency
+                               {
+                                   private string _name;
+                                   private IContext<int> _ctx;
+                           
+                                   public Dependency(string name, IContext<int> ctx)
+                                   {
+                                       _name = name;
+                                       _ctx = ctx;
+                                   }
+                           
+                                   public override string ToString() => $"{_name} {_ctx}";
+                               }
+                           
+                               interface IService
+                               {
+                                   IDependency Dep { get; }
+                               }
+                           
+                               class Service: IService 
+                               {
+                                   private Func<string, IContext<int>, IDependency> _depFactory;
+
+                                   public Service(Func<string, IContext<int>, IDependency> depFactory)
+                                   { 
+                                       _depFactory = depFactory;
+                                   }
+                           
+                                   public IDependency Dep => _depFactory("Xyz", new Context<int>(new Info()));
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind().To<Dependency>()
+                                           .Bind().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                       Console.WriteLine(service.Dep.ToString());
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Xyz Sample.Context`1[System.Int32]"], result);
+    }
 }

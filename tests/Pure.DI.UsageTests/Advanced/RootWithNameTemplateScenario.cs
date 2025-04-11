@@ -1,7 +1,7 @@
 ﻿/*
 $v=true
 $p=2
-$d=Root with mame template
+$d=Root with name template
 */
 
 // ReSharper disable CheckNamespace

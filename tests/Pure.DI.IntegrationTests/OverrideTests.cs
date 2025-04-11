@@ -655,6 +655,99 @@ public class OverrideTests
     }
 
     [Fact]
+    public async Task ShouldSupportOverrideWhenOpenGeneric()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface ILogger<T> {}
+                               
+                               class LoggerA<T>: ILogger<T>
+                               {
+                               }
+                               
+                               interface IDependency 
+                               {
+                                    ILogger<int> Logger { get; }
+                               }
+                           
+                               class Dependency: IDependency
+                               {
+                                   public Dependency(ILogger<int> logger)
+                                   {
+                                        Logger = logger;
+                                   }
+                                   
+                                   public ILogger<int> Logger { get; set; }
+                               }
+                           
+                               interface IService<T>
+                               {
+                                   IDependency Dep { get; }
+                                   
+                                   ILogger<T> Logger { get; }
+                               }
+                           
+                               class ServiceA<T>: IService<T>
+                               {
+                                   public ServiceA(IDependency dep, ILogger<T> logger)
+                                   {
+                                        Dep = dep;
+                                        Logger = logger;
+                                   }
+                           
+                                   public IDependency Dep { get; set; }
+                                   
+                                   public ILogger<T> Logger { get; set; }
+                               }
+                               
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       // Resolve = Off
+                                       DI.Setup("Composition")
+                                           .Bind().To<Dependency>()
+                                           .Bind<IService<TT>>().To(ctx => 
+                                           {
+                                                ctx.Inject(out LoggerA<int> logger1);
+                                                ctx.Override<ILogger<int>>(logger1);
+                                                
+                                                ctx.Inject(out LoggerA<TT> logger2);
+                                                ctx.Override<ILogger<TT>>(logger2);
+                                                
+                                                ctx.Inject(out ServiceA<TT> service);
+                                                return service;
+                                           })
+                                           .Root<IService<TT>>("Root");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root = composition.Root<string>();
+                                       Console.WriteLine(root.Logger);
+                                       Console.WriteLine(root.Dep.Logger);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Sample.LoggerA`1[System.String]", "Sample.LoggerA`1[System.Int32]"], result);
+    }
+
+    [Fact]
     public async Task ShouldSupportBuildUpWhenOverride()
     {
         // Given
