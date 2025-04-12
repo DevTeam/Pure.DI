@@ -1455,4 +1455,188 @@ public class FuncTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Xyz Sample.Context`1[System.Int32]"], result);
     }
+
+    [Fact]
+    public async Task ShouldSupportBuildUpWhenStdFuncWithArg()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           #pragma warning disable CS8602
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface ILogger {}
+                               
+                               class LoggerA: ILogger
+                               {
+                                    public LoggerA(string name)
+                                    {
+                                        Console.WriteLine(name);
+                                    }
+                               }
+                               
+                               interface IDependency 
+                               {
+                                    ILogger Logger { get; }
+                               }
+                           
+                               class Dependency: IDependency
+                               {
+                                   public Dependency(Func<string, ILogger> loggerFactory, int id)
+                                   {
+                                        Console.WriteLine(id);
+                                        Logger = loggerFactory("Qwerty");
+                                   }
+                                   
+                                   public ILogger Logger { get; set; }
+                               }
+                           
+                               interface IService
+                               {
+                                   IDependency? Dep { get; }
+                                   
+                                   ILogger? Logger { get; }
+                               }
+                           
+                               class ServiceA: IService 
+                               {
+                                   [Dependency]
+                                   public Func<int, string, IDependency>? DepFactory { get; set; }
+                                   
+                                   [Dependency]
+                                   public Func<string, ILogger>? LoggerFactory { get; set; }
+                                   
+                                   public IDependency? Dep => DepFactory!.Invoke(33, "Xyz");
+                           
+                                   public ILogger? Logger => LoggerFactory!.Invoke("Abc");
+                               }
+                               
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind().To<LoggerA>()
+                                           .Bind().To<Dependency>()
+                                           .Bind<IService>().To(ctx => 
+                                           {
+                                                var service = new ServiceA();
+                                                ctx.BuildUp(service);
+                                                return service;
+                                           })
+                                           .Root<IService>("Root");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root = composition.Root;
+                                       Console.WriteLine(root.Dep);
+                                       Console.WriteLine(root.Logger);
+                                       Console.WriteLine(root.Dep.Logger);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["33", "Qwerty", "Sample.Dependency", "Abc", "Sample.LoggerA", "33", "Qwerty", "Sample.LoggerA"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportBuilderWhenStdFuncWithArg()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           #pragma warning disable CS8602
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface ILogger {}
+                               
+                               class LoggerA: ILogger
+                               {
+                                    public LoggerA(string name)
+                                    {
+                                        Console.WriteLine(name);
+                                    }
+                               }
+                               
+                               interface IDependency 
+                               {
+                                    ILogger Logger { get; }
+                               }
+                           
+                               class Dependency: IDependency
+                               {
+                                   public Dependency(Func<string, ILogger> loggerFactory, int id)
+                                   {
+                                        Console.WriteLine(id);
+                                        Logger = loggerFactory("Qwerty");
+                                   }
+                                   
+                                   public ILogger Logger { get; set; }
+                               }
+                           
+                               interface IService
+                               {
+                                   IDependency? Dep { get; }
+                                   
+                                   ILogger? Logger { get; }
+                               }
+                           
+                               class ServiceA: IService 
+                               {
+                                   [Dependency]
+                                   public Func<int, string, IDependency>? DepFactory { get; set; }
+                                   
+                                   [Dependency]
+                                   public Func<string, ILogger>? LoggerFactory { get; set; }
+                                   
+                                   public IDependency? Dep => DepFactory!.Invoke(33, "Xyz");
+                           
+                                   public ILogger? Logger => LoggerFactory!.Invoke("Abc");
+                               }
+                               
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind().To<LoggerA>()
+                                           .Bind().To<Dependency>()
+                                           .Builder<ServiceA>();
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root = composition.BuildUp(new ServiceA());
+                                       Console.WriteLine(root.Dep);
+                                       Console.WriteLine(root.Logger);
+                                       Console.WriteLine(root.Dep.Logger);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["33", "Qwerty", "Sample.Dependency", "Abc", "Sample.LoggerA", "33", "Qwerty", "Sample.LoggerA"], result);
+    }
 }
