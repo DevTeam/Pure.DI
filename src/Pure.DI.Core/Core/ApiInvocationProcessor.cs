@@ -23,7 +23,6 @@ sealed class ApiInvocationProcessor(
     : IApiInvocationProcessor
 {
     private static readonly char[] TypeNamePartsSeparators = ['.'];
-    private static readonly object NullTag = new();
 
     public void ProcessInvocation(
         IMetadataVisitor metadataVisitor,
@@ -860,7 +859,7 @@ sealed class ApiInvocationProcessor(
         return new MdOverride(
             semanticModel,
             invocation,
-            overrideIdProvider.GetId(argType, tags.Select(tag => tag.Value ?? NullTag).ToImmutableHashSet()),
+            overrideIdProvider.GetId(argType, tags),
             @override.Position,
             argType,
             tags,

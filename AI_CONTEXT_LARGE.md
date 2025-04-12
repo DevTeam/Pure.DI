@@ -3124,7 +3124,6 @@ class Clock : IClock
 interface IDependency
 {
     string Name { get; }
-
     int Id { get; }
 }
 
@@ -5752,7 +5751,7 @@ To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
 
 
-## Root with mame template
+## Root with name template
 
 ```c#
 using Pure.DI;
@@ -11801,6 +11800,13 @@ DI.Setup("Composition")
 </blockquote></details>
 
 
+<details><summary>Name</summary><blockquote>
+
+Represents well known names.
+            
+</blockquote></details>
+
+
 <details><summary>OrdinalAttribute</summary><blockquote>
 
 Represents an ordinal attribute.
@@ -12144,21 +12150,12 @@ DI.Setup("Composition")
 </blockquote></details>
 
 
-<details><summary>Field UniqueTag</summary><blockquote>
+<details><summary>Field Override</summary><blockquote>
 
-Atomically generated smart tag with value "UniqueTag".
+Atomically generated smart tag with value "Override".
             It's used for:
             
-            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve_
-</blockquote></details>
-
-
-<details><summary>Field GenericType</summary><blockquote>
-
-Atomically generated smart tag with value "GenericType".
-            It's used for:
-            
-            class _Generator__TypeResolver_ <-- _IIdGenerator_(GenericType) -- _IdGenerator_ as _PerResolve_
+            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
@@ -12171,10 +12168,12 @@ Atomically generated smart tag with value "CompositionClass".
 </blockquote></details>
 
 
-<details><summary>Field Injection</summary><blockquote>
+<details><summary>Field Overrider</summary><blockquote>
 
-Atomically generated smart tag with value "Injection".
+Atomically generated smart tag with value "Overrider".
+            It's used for:
             
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Overrider) -- _GraphOverrider_ as _PerBlock_
 </blockquote></details>
 
 
@@ -12187,12 +12186,37 @@ Atomically generated smart tag with value "UsingDeclarations".
 </blockquote></details>
 
 
-<details><summary>Field Override</summary><blockquote>
+<details><summary>Field Cleaner</summary><blockquote>
 
-Atomically generated smart tag with value "Override".
+Atomically generated smart tag with value "Cleaner".
             It's used for:
             
-            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field GenericType</summary><blockquote>
+
+Atomically generated smart tag with value "GenericType".
+            It's used for:
+            
+            class _Generator__TypeResolver_ <-- _IIdGenerator_(GenericType) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
+<details><summary>Field UniqueTag</summary><blockquote>
+
+Atomically generated smart tag with value "UniqueTag".
+            It's used for:
+            
+            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
+<details><summary>Field Injection</summary><blockquote>
+
+Atomically generated smart tag with value "Injection".
+            
 </blockquote></details>
 
 

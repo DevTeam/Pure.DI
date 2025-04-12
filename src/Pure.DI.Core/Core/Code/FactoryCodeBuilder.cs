@@ -270,11 +270,7 @@ sealed class FactoryCodeBuilder(
                 var indent = prefixes.Count;
                 using (code.Indent(indent))
                 {
-                    foreach (var @override in resolver.Overrides.OrderBy(i => i.Source.Position))
-                    {
-                        code.AppendLine($"{variableNameProvider.GetOverrideVariableName(@override.Source)} = {@override.Source.ValueExpression};");
-                    }
-
+                    BuildOverrides(factory, resolver.Overrides, code);
                     if (hasOverrides)
                     {
                         foreach (var argStatement in GetArgsStatements(argument))
@@ -293,11 +289,7 @@ sealed class FactoryCodeBuilder(
             if (line.Contains(InitializationStatement) && initializers.MoveNext())
             {
                 var (initialization, initializer) = initializers.Current;
-                foreach (var @override in initializer.Overrides.OrderBy(i => i.Source.Position))
-                {
-                    code.AppendLine($"{variableNameProvider.GetOverrideVariableName(@override.Source)} = {@override.Source.ValueExpression};");
-                }
-
+                BuildOverrides(factory, initializer.Overrides, code);
                 if (hasOverrides)
                 {
                     foreach (var argument in initializationArgs)
@@ -332,6 +324,14 @@ sealed class FactoryCodeBuilder(
         }
 
         ctx.Code.AppendLines(ctx.BuildTools.OnCreated(ctx, variable));
+    }
+
+    private void BuildOverrides(DpFactory factory, ImmutableArray<DpOverride> overrides, LinesBuilder code)
+    {
+        foreach (var @override in overrides.OrderBy(i => i.Source.Position).Select(i => factory.ResolveOverride(i)))
+        {
+            code.AppendLine($"{variableNameProvider.GetOverrideVariableName(@override.Source)} = {@override.Source.ValueExpression};");
+        }
     }
 
     private static IEnumerable<IStatement> GetArgsStatements(IStatement statement)

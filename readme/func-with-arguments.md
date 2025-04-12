@@ -40,7 +40,6 @@ class Clock : IClock
 interface IDependency
 {
     string Name { get; }
-
     int Id { get; }
 }
 
@@ -122,14 +121,14 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var overriddenTT25 = default(string);
-      var overriddenTT14 = default(int);
+      var overriddenString2 = default(string);
+      var overriddenInt320 = default(int);
       Func<int, string, IDependency> perBlockFunc1 = new Func<int, string, IDependency>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      (int localArg136, string localArg237) =>
+      (int localArg137, string localArg238) =>
       {
-        overriddenTT14 = localArg136;
-        overriddenTT25 = localArg237;
+        overriddenInt320 = localArg137;
+        overriddenString2 = localArg238;
         if (_root._singletonClock51 is null)
         {
           using (_lock.EnterScope())
@@ -141,7 +140,7 @@ partial class Composition
           }
         }
 
-        IDependency localValue103 = new Dependency(overriddenTT25, _root._singletonClock51, overriddenTT14);
+        IDependency localValue103 = new Dependency(overriddenString2, _root._singletonClock51, overriddenInt320);
         return localValue103;
       });
       return new Service(perBlockFunc1);
@@ -274,7 +273,6 @@ Class diagram:
 ---
 classDiagram
 	Service --|> IService
-	Clock --|> IClock
 	Dependency --|> IDependency
 	Composition ..> Service : IService Root
 	Service o-- "PerBlock" FuncᐸInt32ˏStringˏIDependencyᐳ : FuncᐸInt32ˏStringˏIDependencyᐳ
@@ -284,7 +282,6 @@ classDiagram
 	Dependency o-- "PerResolve" Int32 : Int32
 	namespace Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario {
 		class Clock {
-			+Clock()
 		}
 		class Composition {
 		<<partial>>
@@ -296,9 +293,6 @@ classDiagram
 		}
 		class Dependency {
 			+Dependency(String name, IClock clock, Int32 id)
-		}
-		class IClock {
-			<<interface>>
 		}
 		class IDependency {
 			<<interface>>

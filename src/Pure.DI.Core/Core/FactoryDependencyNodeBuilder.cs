@@ -38,7 +38,7 @@ sealed class FactoryDependencyNodeBuilder(
                 initializers.Add(new DpInitializer(initializer, targetDp.Methods, targetDp.Properties, targetDp.Fields, CreateOverrides(initializer.Overrides)));
             }
 
-            var dpFactory = new DpFactory(factory, binding, resolvers.ToImmutableArray(), initializers.ToImmutableArray());
+            var dpFactory = new DpFactory(factory, binding, resolvers.ToImmutableArray(), initializers.ToImmutableArray(), new Dictionary<int, DpOverride>());
             yield return new DependencyNode(0, binding, ctx.TypeConstructor, Factory: dpFactory);
         }
     }

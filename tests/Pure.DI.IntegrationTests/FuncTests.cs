@@ -1027,6 +1027,196 @@ public class FuncTests
     }
 
     [Fact]
+    public async Task ShouldSupportStdFuncWithDifferentArgs()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                           
+                               class Dependency: IDependency
+                               {
+                                   private string _name;
+                           
+                                   public Dependency(string name)
+                                   {
+                                       _name = name;
+                                   }
+                           
+                                   public override string ToString() => _name;
+                               }
+                               
+                               interface IDependency2 {}
+                           
+                               class Dependency2: IDependency2
+                               {
+                                   private int _id;
+                               
+                                   public Dependency2(int id)
+                                   {
+                                       _id = id;
+                                   }
+                               
+                                   public override string ToString() => _id.ToString();
+                               }
+                           
+                               interface IService
+                               {
+                                   IDependency Dep { get; }
+                               }
+                           
+                               class Service: IService 
+                               {
+                                   private Func<string, IDependency> _depFactory;
+                                   public Service(
+                                        Func<string, IDependency> depFactory,
+                                        Func<int, IDependency2> depFactory2)
+                                   { 
+                                       _depFactory = depFactory;
+                                       depFactory2(33);
+                                   }
+                           
+                                   public IDependency Dep => _depFactory("Xyz");
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind().To<Dependency>()
+                                           .Bind().To<Dependency2>()
+                                           .Bind().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                       Console.WriteLine(service.Dep.ToString());
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Xyz"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportStdFuncWithDifferentNestedArgs()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDep {}
+                               
+                               class Dep: IDep
+                               {
+                                   private char _sym;
+                               
+                                   public Dep(char sym)
+                                   {
+                                       _sym = sym;
+                                   }
+                               }
+                           
+                               interface IDependency {}
+                           
+                               class Dependency: IDependency
+                               {
+                                   private string _name;
+                           
+                                   public Dependency(string name, Func<char, IDep> depFactory)
+                                   {
+                                       _name = name;
+                                       depFactory('a');
+                                   }
+                           
+                                   public override string ToString() => _name;
+                               }
+                               
+                               interface IDependency2 {}
+                           
+                               class Dependency2: IDependency2
+                               {
+                                   private int _id;
+                               
+                                   public Dependency2(int id)
+                                   {
+                                       _id = id;
+                                   }
+                               
+                                   public override string ToString() => _id.ToString();
+                               }
+                           
+                               interface IService
+                               {
+                                   IDependency Dep { get; }
+                               }
+                           
+                               class Service: IService 
+                               {
+                                   private Func<string, IDependency> _depFactory;
+                                   public Service(
+                                        Func<string, IDependency> depFactory,
+                                        Func<int, IDependency2> depFactory2)
+                                   { 
+                                       _depFactory = depFactory;
+                                       depFactory2(33);
+                                   }
+                           
+                                   public IDependency Dep => _depFactory("Xyz");
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind().To<Dep>()
+                                           .Bind().To<Dependency>()
+                                           .Bind().To<Dependency2>()
+                                           .Bind().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                       Console.WriteLine(service.Dep.ToString());
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Xyz"], result);
+    }
+
+    [Fact]
     public async Task ShouldSupportStdFuncWith2Args()
     {
         // Given

@@ -315,7 +315,6 @@ Class diagram:
 ---
 classDiagram
 	Service --|> IService
-	Clock --|> IClock
 	Composition ..> Service : IService Root
 	Service *--  FuncᐸInt32ˏInt32ˏIDependencyᐳ : FuncᐸInt32ˏInt32ˏIDependencyᐳ
 	FuncᐸInt32ˏInt32ˏIDependencyᐳ *--  Color : "Red"  Color
@@ -327,7 +326,6 @@ classDiagram
 	Dependency o-- "PerResolve" Color : Color
 	namespace Pure.DI.UsageTests.Basics.OverridesScenario {
 		class Clock {
-			+Clock()
 		}
 		class Composition {
 		<<partial>>
@@ -339,9 +337,6 @@ classDiagram
 		}
 		class Dependency {
 			+Dependency(String name, IClock clock, Int32 id, Int32 subId, Color red)
-		}
-		class IClock {
-			<<interface>>
 		}
 		class IService {
 			<<interface>>
@@ -362,7 +357,7 @@ classDiagram
 	}
 	namespace System.Drawing {
 		class Color {
-				<<struct>>
+			<<struct>>
 		}
 	}
 ```

@@ -2,5 +2,5 @@
 
 interface IOverrideIdProvider
 {
-    int GetId(ITypeSymbol type, ISet<object> tags);
+    int GetId(ITypeSymbol type, in ImmutableArray<MdTag> tags);
 }

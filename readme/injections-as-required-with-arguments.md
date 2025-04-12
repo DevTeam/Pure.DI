@@ -98,13 +98,13 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var overriddenTT14 = default(int);
+      var overriddenInt320 = default(int);
       Func<int, IDependency> perBlockFunc1 = new Func<int, IDependency>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      (int localArg13) =>
+      (int localArg14) =>
       {
-        overriddenTT14 = localArg13;
-        IDependency localValue98 = new Dependency(overriddenTT14);
+        overriddenInt320 = localArg14;
+        IDependency localValue98 = new Dependency(overriddenInt320);
         return localValue98;
       });
       return new Service(perBlockFunc1);
