@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using Core.Code.Parts;
 using static Hint;
 using static Lifetime;
+using static Name;
 using static RootKinds;
 using static Tag;
 using Metadata = Core.Metadata;
@@ -30,18 +31,18 @@ public sealed partial class Generator
 
     [Conditional("DI")]
     private void Setup() => DI.Setup()
-        .Hint(Resolve, "Off")
+        .Hint(Resolve, Off)
 
         .Root<IEnumerable<Source>>(nameof(Api))
         .Root<IObserversRegistry>(nameof(Observers))
         .RootBind<Unit>(nameof(Generate), Internal)
             .To((IBuilder<IEnumerable<SyntaxUpdate>, Unit> generator, IEnumerable<SyntaxUpdate> updates) => generator.Build(updates))
 
-        .RootArg<IGeneratorOptions>("options")
-        .RootArg<ISources>("sources")
-        .RootArg<IGeneratorDiagnostic>("diagnostic")
-        .RootArg<IEnumerable<SyntaxUpdate>>("updates")
-        .RootArg<CancellationToken>("cancellationToken")
+        .RootArg<IGeneratorOptions>(options)
+        .RootArg<ISources>(sources)
+        .RootArg<IGeneratorDiagnostic>(diagnostic)
+        .RootArg<IEnumerable<SyntaxUpdate>>(updates)
+        .RootArg<CancellationToken>(cancellationToken)
 
         .DefaultLifetime(Transient)
             .Bind().To<ApiInvocationProcessor>()
@@ -103,11 +104,7 @@ public sealed partial class Generator
             .Bind().To<InstanceDpProvider>()
             .Bind().To<Injections>()
             .Bind().To<NameFormatter>()
-            .Bind().To(ctx => new Func<DependencyNode, ISet<Injection>, IProcessingNode>((node, contracts) =>
-            {
-                ctx.Inject(out IInjectionsWalker injectionsWalker);
-                return new ProcessingNode(injectionsWalker, node, contracts);
-            }))
+            .Bind().To<ProcessingNode>()
             .Bind().To<BindingsFactory>()
             .Bind(Overrider).To<GraphOverrider>()
             .Bind(Cleaner).To<GraphCleaner>()
