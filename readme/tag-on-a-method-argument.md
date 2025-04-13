@@ -111,8 +111,8 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService
 	XyzDependency --|> IDependency
+	Service --|> IService
 	Composition ..> Service : IService Root
 	Service *--  XyzDependency : IDependency
 	namespace Pure.DI.UsageTests.Advanced.TagOnMethodArgScenario {

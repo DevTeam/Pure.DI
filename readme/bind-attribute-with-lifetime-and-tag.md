@@ -132,8 +132,8 @@ Class diagram:
 classDiagram
 	Service --|> IService
 	Composition ..> Service : IService Root
-	Service o-- "Singleton" IDependency : "my tag"  IDependency
 	IDependency o-- "Singleton" Facade : Facade
+	Service o-- "Singleton" IDependency : "my tag"  IDependency
 	namespace Pure.DI.UsageTests.Basics.BindAttributeWithLifetimeAndTagScenario {
 		class Composition {
 		<<partial>>

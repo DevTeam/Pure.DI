@@ -109,6 +109,7 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
+	ServiceᐸT1ᐳ --|> IServiceᐸT1ᐳ
 	DependencyᐸT1ᐳ --|> IDependencyᐸT1ᐳ
 	Composition ..> OtherServiceᐸT1ᐳ : OtherServiceᐸT1ᐳ GetMyOtherService_TᐸT1ᐳ()
 	Composition ..> ServiceᐸT1ᐳ : ServiceᐸT1ᐳ GetMyService_TᐸT1ᐳ()
@@ -126,9 +127,13 @@ classDiagram
 		class IDependencyᐸT1ᐳ {
 			<<interface>>
 		}
+		class IServiceᐸT1ᐳ {
+			<<interface>>
+		}
 		class OtherServiceᐸT1ᐳ {
 		}
 		class ServiceᐸT1ᐳ {
+			+Service(IDependencyᐸT1ᐳ dependency)
 		}
 	}
 ```

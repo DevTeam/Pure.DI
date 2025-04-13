@@ -201,13 +201,13 @@ Class diagram:
 ---
 classDiagram
 	Owned --|> IOwned
-	Service --|> IService
 	Dependency --|> IDependency
 	Dependency --|> IAsyncDisposable
+	Service --|> IService
 	Composition ..> OwnedᐸIServiceᐳ : OwnedᐸIServiceᐳ Root
+	Service *--  Dependency : IDependency
 	OwnedᐸIServiceᐳ *--  Owned : IOwned
 	OwnedᐸIServiceᐳ *--  Service : IService
-	Service *--  Dependency : IDependency
 	namespace Pure.DI {
 		class IOwned {
 			<<interface>>
@@ -215,7 +215,7 @@ classDiagram
 		class Owned {
 		}
 		class OwnedᐸIServiceᐳ {
-			<<struct>>
+				<<struct>>
 		}
 	}
 	namespace Pure.DI.UsageTests.Advanced.TrackingAsyncDisposableScenario {

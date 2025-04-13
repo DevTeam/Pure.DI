@@ -235,9 +235,9 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService
 	AbcDependency --|> IDependency
 	XyzDependency --|> IDependency : 2 
+	Service --|> IService
 	Composition ..> Service : IService Root
 	Service *--  IAsyncEnumerableᐸIDependencyᐳ : IAsyncEnumerableᐸIDependencyᐳ
 	IAsyncEnumerableᐸIDependencyᐳ *--  AbcDependency : IDependency

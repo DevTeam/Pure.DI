@@ -287,8 +287,8 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService : "Service Key" 
 	Dependency --|> IDependency : "Dependency Key" 
+	Service --|> IService : "Service Key" 
 	Composition ..> Service : IService _
 	Composition ..> Dependency : IDependency _
 	Service o-- "Singleton" Dependency : "Dependency Key"  IDependency

@@ -157,8 +157,8 @@ Class diagram:
 classDiagram
 	Dependency --|> IDependency
 	Composition ..> Service : Service BuildUpService(Pure.DI.UsageTests.Basics.BuilderWithArgumentsScenario.Service buildingInstance, System.Guid serviceId)
-	Service *--  Dependency : IDependency
 	Service o-- Guid : Argument "serviceId"
+	Service *--  Dependency : IDependency
 	namespace Pure.DI.UsageTests.Basics.BuilderWithArgumentsScenario {
 		class Composition {
 		<<partial>>
@@ -175,7 +175,9 @@ classDiagram
 			<<interface>>
 		}
 		class Service {
-			<<record>>
+				<<record>>
+			+IDependency Dependency
+			+SetId(Guid id) : Void
 		}
 	}
 	namespace System {

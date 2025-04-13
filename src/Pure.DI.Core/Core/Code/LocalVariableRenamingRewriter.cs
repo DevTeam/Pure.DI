@@ -65,7 +65,7 @@ sealed class LocalVariableRenamingRewriter(
             && token.Parent is {} parent
             && (_semanticModel?.SyntaxTree != parent.SyntaxTree || _semanticModel.GetSymbolInfo(parent).Symbol is ILocalSymbol))
         {
-            token = triviaTools.PreserveTrivia(_formatCode, SyntaxFactory.Identifier(newName), token);
+            token = triviaTools.PreserveTrivia(token, SyntaxFactory.Identifier(newName), _formatCode);
         }
 
         return base.VisitToken(token);

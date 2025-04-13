@@ -264,15 +264,15 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService
 	AbcDependency --|> IDependency : typeof(Pure.DI.UsageTests.Advanced.AccumulatorScenario.AbcDependency) 
 	XyzDependency --|> IDependency : typeof(Pure.DI.UsageTests.Advanced.AccumulatorScenario.XyzDependency) 
+	Service --|> IService
 	Composition ..> ValueTupleᐸIServiceˏMyAccumulatorᐳ : ValueTupleᐸIServiceˏMyAccumulatorᐳ Root
-	ValueTupleᐸIServiceˏMyAccumulatorᐳ *--  Service : IService
-	ValueTupleᐸIServiceˏMyAccumulatorᐳ *--  MyAccumulator : MyAccumulator
+	Service o-- "PerBlock" AbcDependency : IDependency
 	Service *--  AbcDependency : typeof(Pure.DI.UsageTests.Advanced.AccumulatorScenario.AbcDependency)  IDependency
 	Service o-- "Singleton" XyzDependency : typeof(Pure.DI.UsageTests.Advanced.AccumulatorScenario.XyzDependency)  IDependency
-	Service o-- "PerBlock" AbcDependency : IDependency
+	ValueTupleᐸIServiceˏMyAccumulatorᐳ *--  Service : IService
+	ValueTupleᐸIServiceˏMyAccumulatorᐳ *--  MyAccumulator : MyAccumulator
 	namespace Pure.DI.UsageTests.Advanced.AccumulatorScenario {
 		class AbcDependency {
 			+AbcDependency()
@@ -302,7 +302,8 @@ classDiagram
 	}
 	namespace System {
 		class ValueTupleᐸIServiceˏMyAccumulatorᐳ {
-			<<struct>>
+				<<struct>>
+			+ValueTuple(IService item1, MyAccumulator item2)
 		}
 	}
 ```

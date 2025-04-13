@@ -139,13 +139,13 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService
 	Dependency --|> IDependency
+	Service --|> IService
 	Composition ..> Service : IService Root
-	Service *--  ILogger : ILogger
-	Service *--  Dependency : IDependency
 	ILogger o-- ILogger : "from arg"  Argument "logger"
 	Dependency *--  ILogger : ILogger
+	Service *--  ILogger : ILogger
+	Service *--  Dependency : IDependency
 	namespace Pure.DI.UsageTests.Basics.ConsumerTypesScenario {
 		class Composition {
 		<<partial>>

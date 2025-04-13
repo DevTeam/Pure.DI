@@ -154,8 +154,8 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService
 	Dependency --|> IDependency
+	Service --|> IService
 	Composition ..> Service : IService Root
 	Service o-- "Singleton" Dependency : IDependency
 	namespace Pure.DI.UsageTests.Hints.OnNewInstanceWildcardHintScenario {

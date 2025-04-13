@@ -243,9 +243,9 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService
 	AbcDependency --|> IDependency
 	XyzDependency --|> IDependency : 2 
+	Service --|> IService
 	Composition ..> Service : IService Root
 	Service *--  ArrayᐸIDependencyᐳ : ArrayᐸIDependencyᐳ
 	ArrayᐸIDependencyᐳ *--  AbcDependency : IDependency

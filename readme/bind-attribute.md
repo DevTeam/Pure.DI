@@ -132,8 +132,8 @@ Class diagram:
 classDiagram
 	Service --|> IService
 	Composition ..> Service : IService Root
-	Service *--  IDependency : IDependency
 	IDependency o-- "Singleton" Facade : Facade
+	Service *--  IDependency : IDependency
 	namespace Pure.DI.UsageTests.Basics.BindAttributeScenario {
 		class Composition {
 		<<partial>>

@@ -80,7 +80,7 @@ sealed class ClassDiagramBuilder(
 
             var typeSymbols = new HashSet<ITypeSymbol>(SymbolEqualityComparer.Default);
             var graph = composition.Source.Graph;
-            foreach (var node in graph.Vertices.GroupBy(i => i.Type, SymbolEqualityComparer.Default).Select(i => i.First()))
+            foreach (var node in graph.Vertices.GroupBy(i => i.Type, SymbolEqualityComparer.Default).Select(i => i.First()).OrderBy(i => i.Binding.Id))
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 if (node.Root is not null)
@@ -106,7 +106,8 @@ sealed class ClassDiagramBuilder(
             }
 
             // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
-            foreach (var type in typeSymbols)
+            // ReSharper disable once LoopCanBeConvertedToQuery
+            foreach (var type in typeSymbols.OrderBy(i => i.Name))
             {
                 if (!marker.IsMarker(setup, type))
                 {
@@ -114,7 +115,7 @@ sealed class ClassDiagramBuilder(
                 }
             }
 
-            foreach (var (dependency, count) in graph.Edges.GroupBy(i => i).Select(i => (dependency: i.First(), count: i.Count())))
+            foreach (var (dependency, count) in graph.Edges.GroupBy(i => i).Select(i => (dependency: i.First(), count: i.Count())).OrderBy(i => i.dependency.Target.Binding.Id).ThenBy(i => i.dependency.Source.Binding.Id))
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 var sourceType = FormatType(setup, dependency.Source.Type, DefaultFormatOptions);

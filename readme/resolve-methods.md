@@ -240,9 +240,9 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	OtherService --|> IService : "My Tag" 
-	Service --|> IService
 	Dependency --|> IDependency
+	Service --|> IService
+	OtherService --|> IService : "My Tag" 
 	Composition ..> OtherService : IService OtherService
 	Composition ..> Service : IService _
 	Service *--  Dependency : IDependency

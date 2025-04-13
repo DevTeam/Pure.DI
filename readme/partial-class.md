@@ -251,9 +251,9 @@ Class diagram:
 classDiagram
 	Dependency --|> IDependency
 	Composition ..> Service : Service Root
-	Service *--  String : "name with id"  String
-	Service *-- "2 " Dependency : IDependency
 	Dependency *--  Int64 : Int64
+	Service *-- "2 " Dependency : IDependency
+	Service *--  String : "name with id"  String
 	namespace Pure.DI.UsageTests.Advanced.PartialClassScenario {
 		class Composition {
 		<<partial>>
@@ -270,6 +270,7 @@ classDiagram
 			<<interface>>
 		}
 		class Service {
+			+Service(String name, IDependency dependency1, IDependency dependency2)
 		}
 	}
 	namespace System {

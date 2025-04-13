@@ -220,14 +220,14 @@ Class diagram:
 ---
 classDiagram
 	Composition --|> IDisposable
-	Service --|> IService
 	Dependency --|> IDependency
+	Service --|> IService
 	Composition ..> Program : Program ProgramRoot
 	Composition ..> Service : IService SessionRoot
-	Program o-- "PerBlock" FuncᐸSessionᐳ : FuncᐸSessionᐳ
 	Service o-- "Scoped" Dependency : IDependency
-	FuncᐸSessionᐳ *--  Session : Session
+	Program o-- "PerBlock" FuncᐸSessionᐳ : FuncᐸSessionᐳ
 	Session *--  Composition : Composition
+	FuncᐸSessionᐳ *--  Session : Session
 	namespace Pure.DI.UsageTests.Lifetimes.ScopeScenario {
 		class Composition {
 		<<partial>>
@@ -244,6 +244,7 @@ classDiagram
 			<<interface>>
 		}
 		class Program {
+			+Program(FuncᐸSessionᐳ sessionFactory)
 		}
 		class Service {
 			+Service(IDependency dependency)

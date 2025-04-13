@@ -121,14 +121,14 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var overriddenString2 = default(string);
-      var overriddenInt320 = default(int);
+      var overrString2 = default(string);
+      var overrInt320 = default(int);
       Func<int, string, IDependency> perBlockFunc1 = new Func<int, string, IDependency>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      (int localArg137, string localArg238) =>
+      (int localArg135, string localArg238) =>
       {
-        overriddenInt320 = localArg137;
-        overriddenString2 = localArg238;
+        overrInt320 = localArg135;
+        overrString2 = localArg238;
         if (_root._singletonClock51 is null)
         {
           using (_lock.EnterScope())
@@ -140,7 +140,7 @@ partial class Composition
           }
         }
 
-        IDependency localValue103 = new Dependency(overriddenString2, _root._singletonClock51, overriddenInt320);
+        IDependency localValue103 = new Dependency(overrString2, _root._singletonClock51, overrInt320);
         return localValue103;
       });
       return new Service(perBlockFunc1);
@@ -272,14 +272,14 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService
 	Dependency --|> IDependency
+	Service --|> IService
 	Composition ..> Service : IService Root
-	Service o-- "PerBlock" FuncᐸInt32ˏStringˏIDependencyᐳ : FuncᐸInt32ˏStringˏIDependencyᐳ
-	FuncᐸInt32ˏStringˏIDependencyᐳ *--  Dependency : IDependency
-	Dependency o-- "PerResolve" String : String
 	Dependency o-- "Singleton" Clock : IClock
 	Dependency o-- "PerResolve" Int32 : Int32
+	Dependency o-- "PerResolve" String : String
+	Service o-- "PerBlock" FuncᐸInt32ˏStringˏIDependencyᐳ : FuncᐸInt32ˏStringˏIDependencyᐳ
+	FuncᐸInt32ˏStringˏIDependencyᐳ *--  Dependency : IDependency
 	namespace Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario {
 		class Clock {
 		}

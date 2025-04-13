@@ -359,8 +359,8 @@ Class diagram:
 ---
 classDiagram
 	Composition --|> IDisposable
-	Service --|> IService
 	Dependency --|> IDependency
+	Service --|> IService
 	Composition ..> Service : IService _
 	Composition ..> Dependency : IDependency _
 	Service o-- "Singleton" Dependency : IDependency

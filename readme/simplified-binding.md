@@ -158,10 +158,10 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService
 	Dependency --|> IDependency
 	Dependency --|> IOtherDependency
 	Dependency --|> IEnumerableᐸStringᐳ
+	Service --|> IService
 	Composition ..> Service : IService MyService
 	Service o-- "PerBlock" Dependency : Dependency
 	Service o-- "PerBlock" Dependency : IDependency

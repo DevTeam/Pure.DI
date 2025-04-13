@@ -162,13 +162,13 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService
 	Dependency --|> IDependency
+	Service --|> IService
 	Composition ..> Service : IService Root
 	Composition ..> ILogger : ILogger Log
+	ILogger o-- ILogger : "from arg"  Argument "logger"
 	Service *--  ILogger : ILogger
 	Service *--  Dependency : IDependency
-	ILogger o-- ILogger : "from arg"  Argument "logger"
 	namespace Pure.DI.UsageTests.Advanced.DITracingViaSerilogScenario {
 		class Composition {
 		<<partial>>
@@ -190,7 +190,7 @@ classDiagram
 	}
 	namespace Serilog {
 		class ILogger {
-			<<interface>>
+				<<interface>>
 		}
 	}
 ```

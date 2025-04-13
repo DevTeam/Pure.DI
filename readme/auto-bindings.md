@@ -100,6 +100,7 @@ classDiagram
 			+Dependency()
 		}
 		class Service {
+			+Service(Dependency dependency)
 		}
 	}
 ```

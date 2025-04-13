@@ -180,6 +180,7 @@ classDiagram
 			<<interface>>
 		}
 		class ProgramᐸT1ᐳ {
+			+Program(IServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ service)
 		}
 		class ServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ {
 			+Service(IDependencyᐸT1ᐳ dependency1, IDependencyᐸInt32ᐳ dependency2)

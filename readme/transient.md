@@ -119,8 +119,8 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService
 	Dependency --|> IDependency
+	Service --|> IService
 	Composition ..> Service : IService Root
 	Service *-- "2 " Dependency : IDependency
 	namespace Pure.DI.UsageTests.Lifetimes.TransientScenario {

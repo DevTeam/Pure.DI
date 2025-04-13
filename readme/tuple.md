@@ -212,12 +212,12 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService
 	Dependency --|> IDependency
+	Service --|> IService
 	Composition ..> Service : IService Root
 	Service *--  ValueTupleᐸPointˏIDependencyᐳ : ValueTupleᐸPointˏIDependencyᐳ
-	ValueTupleᐸPointˏIDependencyᐳ *--  Point : Point
 	ValueTupleᐸPointˏIDependencyᐳ *--  Dependency : IDependency
+	ValueTupleᐸPointˏIDependencyᐳ *--  Point : Point
 	namespace Pure.DI.UsageTests.BCL.TupleScenario {
 		class Composition {
 		<<partial>>

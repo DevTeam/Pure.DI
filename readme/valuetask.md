@@ -221,8 +221,8 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService
 	Dependency --|> IDependency
+	Service --|> IService
 	Composition ..> Service : IService Root
 	Service *--  ValueTaskᐸIDependencyᐳ : ValueTaskᐸIDependencyᐳ
 	ValueTaskᐸIDependencyᐳ *--  Dependency : IDependency

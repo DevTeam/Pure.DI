@@ -127,14 +127,11 @@ sealed class FactoryRewriter(
     }
 
     private ExpressionStatementSyntax CreateAssignmentExpression(SyntaxNode returnBody, StatementSyntax owner) =>
-        triviaTools.PreserveTrivia(
-            _ctx!.DependencyGraph.Source.Hints,
-            SyntaxFactory.ExpressionStatement(
-                SyntaxFactory.AssignmentExpression(
-                    SyntaxKind.SimpleAssignmentExpression,
-                    SyntaxFactory.IdentifierName(variable.VariableName).WithLeadingTrivia(SyntaxFactory.Space).WithTrailingTrivia(SyntaxFactory.Space),
-                    (ExpressionSyntax)Visit(returnBody).WithLeadingTrivia(SyntaxFactory.Space))),
-            owner);
+        triviaTools.PreserveTrivia(owner, SyntaxFactory.ExpressionStatement(
+            SyntaxFactory.AssignmentExpression(
+                SyntaxKind.SimpleAssignmentExpression,
+                SyntaxFactory.IdentifierName(variable.VariableName).WithLeadingTrivia(SyntaxFactory.Space).WithTrailingTrivia(SyntaxFactory.Space),
+                (ExpressionSyntax)Visit(returnBody).WithLeadingTrivia(SyntaxFactory.Space))), _ctx!.DependencyGraph.Source.Hints.IsFormatCodeEnabled);
 
     public override SyntaxNode VisitExpressionStatement(ExpressionStatementSyntax node)
     {
@@ -180,7 +177,7 @@ sealed class FactoryRewriter(
             newNode = SyntaxFactory.Block().AddStatements(SyntaxFactory.ExpressionStatement(expressionSyntax).WithLeadingTrivia(SyntaxFactory.LineFeed).WithTrailingTrivia(SyntaxFactory.LineFeed));
         }
 
-        return triviaTools.PreserveTrivia(_ctx!.DependencyGraph.Source.Hints, newNode, node);
+        return triviaTools.PreserveTrivia(node, newNode, _ctx!.DependencyGraph.Source.Hints.IsFormatCodeEnabled);
     }
 
     private bool TryInject(
@@ -199,14 +196,14 @@ sealed class FactoryRewriter(
             case IdentifierNameSyntax identifierName:
                 injections.Add(new Injection(identifierName.Identifier.Text, false));
             {
-                expressionSyntax = triviaTools.PreserveTrivia(_ctx!.DependencyGraph.Source.Hints, InjectionMarkerExpression, invocation);
+                expressionSyntax = triviaTools.PreserveTrivia(invocation, InjectionMarkerExpression, _ctx!.DependencyGraph.Source.Hints.IsFormatCodeEnabled);
                 return true;
             }
 
             case DeclarationExpressionSyntax { Designation: SingleVariableDesignationSyntax singleVariableDesignationSyntax }:
                 injections.Add(new Injection(singleVariableDesignationSyntax.Identifier.Text, true));
             {
-                expressionSyntax = triviaTools.PreserveTrivia(_ctx!.DependencyGraph.Source.Hints, InjectionMarkerExpression, invocation);
+                expressionSyntax = triviaTools.PreserveTrivia(invocation, InjectionMarkerExpression, _ctx!.DependencyGraph.Source.Hints.IsFormatCodeEnabled);
                 return true;
             }
         }
@@ -230,14 +227,14 @@ sealed class FactoryRewriter(
             case IdentifierNameSyntax identifierName:
                 initializers.Add(new Initializer(identifierName.Identifier.Text));
             {
-                expressionSyntax = triviaTools.PreserveTrivia(_ctx!.DependencyGraph.Source.Hints, InitializationMarkerExpression, invocation);
+                expressionSyntax = triviaTools.PreserveTrivia(invocation, InitializationMarkerExpression, _ctx!.DependencyGraph.Source.Hints.IsFormatCodeEnabled);
                 return true;
             }
 
             case DeclarationExpressionSyntax { Designation: SingleVariableDesignationSyntax singleVariableDesignationSyntax }:
                 initializers.Add(new Initializer(singleVariableDesignationSyntax.Identifier.Text));
             {
-                expressionSyntax = triviaTools.PreserveTrivia(_ctx!.DependencyGraph.Source.Hints, InitializationMarkerExpression, invocation);
+                expressionSyntax = triviaTools.PreserveTrivia(invocation, InitializationMarkerExpression, _ctx!.DependencyGraph.Source.Hints.IsFormatCodeEnabled);
                 return true;
             }
         }
@@ -255,7 +252,7 @@ sealed class FactoryRewriter(
             return false;
         }
 
-        expressionSyntax = triviaTools.PreserveTrivia(_ctx!.DependencyGraph.Source.Hints, OverrideMarkerExpression, invocation);
+        expressionSyntax = triviaTools.PreserveTrivia(invocation, OverrideMarkerExpression, _ctx!.DependencyGraph.Source.Hints.IsFormatCodeEnabled);
         return true;
     }
 

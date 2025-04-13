@@ -223,8 +223,8 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService
 	Dependency --|> IDependency : "my tag" 
+	Service --|> IService
 	Composition ..> Service : IService Root
 	Service o-- "PerBlock" FuncᐸIDependencyᐳ : "my tag"  FuncᐸIDependencyᐳ
 	FuncᐸIDependencyᐳ *--  Dependency : "my tag"  IDependency

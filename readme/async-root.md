@@ -112,17 +112,17 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService
 	Dependency --|> IDependency
+	Service --|> IService
 	Composition ..> TaskᐸIServiceᐳ : TaskᐸIServiceᐳ GetMyServiceAsync(System.Threading.CancellationToken cancellationToken)
+	Service *--  Dependency : IDependency
 	TaskᐸIServiceᐳ o-- "PerBlock" FuncᐸIServiceᐳ : FuncᐸIServiceᐳ
 	TaskᐸIServiceᐳ o-- "PerBlock" TaskFactoryᐸIServiceᐳ : TaskFactoryᐸIServiceᐳ
 	FuncᐸIServiceᐳ *--  Service : IService
-	TaskFactoryᐸIServiceᐳ o-- CancellationToken : Argument "cancellationToken"
+	TaskFactoryᐸIServiceᐳ *--  TaskScheduler : TaskScheduler
 	TaskFactoryᐸIServiceᐳ *--  TaskCreationOptions : TaskCreationOptions
 	TaskFactoryᐸIServiceᐳ *--  TaskContinuationOptions : TaskContinuationOptions
-	TaskFactoryᐸIServiceᐳ *--  TaskScheduler : TaskScheduler
-	Service *--  Dependency : IDependency
+	TaskFactoryᐸIServiceᐳ o-- CancellationToken : Argument "cancellationToken"
 	namespace Pure.DI.UsageTests.Basics.AsyncRootScenario {
 		class Composition {
 		<<partial>>

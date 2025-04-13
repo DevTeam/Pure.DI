@@ -201,10 +201,13 @@ classDiagram
 			<<interface>>
 		}
 		class Service1ᐸT1ˏT5ᐳ {
-			<<record>>
+				<<record>>
+			+IDependencyᐸT5ᐳ Dependency
+			+SetId(T1 id) : Void
 		}
 		class Service2ᐸT1ˏT5ᐳ {
-			<<record>>
+				<<record>>
+			+IDependencyᐸT5ᐳ Dependency
 		}
 	}
 ```

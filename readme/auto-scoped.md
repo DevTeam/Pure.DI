@@ -173,10 +173,10 @@ classDiagram
 	Dependency --|> IDependency
 	Composition ..> Program : Program ProgramRoot
 	Composition ..> Service : Service SessionRoot
+	IService *--  Composition : Composition
 	Program o-- "PerBlock" FuncᐸIServiceᐳ : FuncᐸIServiceᐳ
 	Service o-- "Scoped" Dependency : IDependency
 	FuncᐸIServiceᐳ *--  IService : IService
-	IService *--  Composition : Composition
 	namespace Pure.DI.UsageTests.Lifetimes.AutoScopedScenario {
 		class Composition {
 		<<partial>>
@@ -193,8 +193,10 @@ classDiagram
 				<<interface>>
 		}
 		class Program {
+			+Program(FuncᐸIServiceᐳ serviceFactory)
 		}
 		class Service {
+			+Service(IDependency dependency)
 		}
 	}
 	namespace System {

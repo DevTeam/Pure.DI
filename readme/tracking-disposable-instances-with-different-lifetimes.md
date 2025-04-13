@@ -389,6 +389,7 @@ classDiagram
 	Composition --|> IDisposable
 	Owned --|> IOwned
 	Dependency --|> IDependency
+	Service --|> IService
 	Composition ..> Service : Service Root
 	Service o-- "PerBlock" FuncᐸOwnedᐸIDependencyᐳᐳ : FuncᐸOwnedᐸIDependencyᐳᐳ
 	Service o-- "PerBlock" FuncᐸOwnedᐸIDependencyᐳᐳ : "single"  FuncᐸOwnedᐸIDependencyᐳᐳ
@@ -423,7 +424,11 @@ classDiagram
 		class IDependency {
 			<<interface>>
 		}
+		class IService {
+			<<interface>>
+		}
 		class Service {
+			+Service(FuncᐸOwnedᐸIDependencyᐳᐳ dependencyFactory, FuncᐸOwnedᐸIDependencyᐳᐳ singleDependencyFactory)
 		}
 	}
 	namespace System {

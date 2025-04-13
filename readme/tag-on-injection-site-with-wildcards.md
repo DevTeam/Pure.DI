@@ -133,13 +133,13 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService
-	XyzDependency --|> IDependency
 	AbcDependency --|> IDependency
+	XyzDependency --|> IDependency
+	Service --|> IService
 	Composition ..> Service : IService Root
+	Service *--  AbcDependency : IDependency
 	Service *-- "2 " XyzDependency : IDependency
 	Service *--  ConsumerᐸStringᐳ : ConsumerᐸStringᐳ
-	Service *--  AbcDependency : IDependency
 	ConsumerᐸStringᐳ *--  AbcDependency : IDependency
 	namespace Pure.DI.UsageTests.Advanced.TagOnInjectionSiteWithWildcardsScenario {
 		class AbcDependency {

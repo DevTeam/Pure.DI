@@ -104,8 +104,8 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService
 	Dependency --|> IDependency
+	Service --|> IService
 	Composition ..> Service : IService MyService
 	Service *--  Dependency : IDependency
 	namespace Pure.DI.UsageTests.Basics.PropertyInjectionScenario {

@@ -143,15 +143,15 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Person --|> IPerson
 	Uri --|> IFormattable
 	Uri --|> ISpanFormattable
 	Uri --|> IEquatableᐸUriᐳ
 	Uri --|> ISerializable
+	Person --|> IPerson
 	PersonComposition ..> Person : IPerson Person
-	Person *--  String : "NikName"  String
 	Person o-- Int32 : Argument "personId"
 	Person *--  Uri : Uri
+	Person *--  String : "NikName"  String
 	namespace Pure.DI.UsageTests.Attributes.CustomAttributesScenario {
 		class IPerson {
 			<<interface>>

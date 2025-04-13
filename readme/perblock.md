@@ -134,9 +134,9 @@ Class diagram:
 classDiagram
 	Dependency --|> IDependency
 	Composition ..> Service : Service Root
+	ValueTupleᐸIDependencyˏIDependencyᐳ o-- "2 PerBlock instances" Dependency : IDependency
 	Service o-- "2 PerBlock instances" Dependency : IDependency
 	Service o-- "Singleton" ValueTupleᐸIDependencyˏIDependencyᐳ : ValueTupleᐸIDependencyˏIDependencyᐳ
-	ValueTupleᐸIDependencyˏIDependencyᐳ o-- "2 PerBlock instances" Dependency : IDependency
 	namespace Pure.DI.UsageTests.Lifetimes.PerBlockScenario {
 		class Composition {
 		<<partial>>
@@ -149,6 +149,7 @@ classDiagram
 			<<interface>>
 		}
 		class Service {
+			+Service(IDependency dep1, IDependency dep2, ValueTupleᐸIDependencyˏIDependencyᐳ deps)
 		}
 	}
 	namespace System {

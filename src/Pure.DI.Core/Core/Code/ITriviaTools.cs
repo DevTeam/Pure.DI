@@ -2,8 +2,8 @@
 
 interface ITriviaTools
 {
-    T PreserveTrivia<T>(IHints hints, T newNode, SyntaxNode prevNode)
-        where T : SyntaxNode;
+    TSyntax PreserveTrivia<TSyntax>(in SyntaxNode baseNode, in TSyntax newNode, bool format)
+        where TSyntax : SyntaxNode;
 
-    SyntaxToken PreserveTrivia(bool formatCode, SyntaxToken newToken, SyntaxToken prevToken);
+    SyntaxToken PreserveTrivia(in SyntaxToken baseToken, in SyntaxToken newToken, bool format);
 }

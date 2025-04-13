@@ -100,8 +100,8 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	GreetingService --|> IService
 	Service --|> IService : "base" 
+	GreetingService --|> IService
 	Composition ..> GreetingService : IService Root
 	GreetingService *--  Service : "base"  IService
 	namespace Pure.DI.UsageTests.Interception.DecoratorScenario {

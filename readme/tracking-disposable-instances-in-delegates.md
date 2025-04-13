@@ -287,6 +287,7 @@ Class diagram:
 classDiagram
 	Owned --|> IOwned
 	Dependency --|> IDependency
+	Service --|> IService
 	Composition ..> Service : Service Root
 	Service o-- "PerBlock" FuncᐸOwnedᐸIDependencyᐳᐳ : FuncᐸOwnedᐸIDependencyᐳᐳ
 	FuncᐸOwnedᐸIDependencyᐳᐳ o-- "PerBlock" OwnedᐸIDependencyᐳ : OwnedᐸIDependencyᐳ
@@ -317,7 +318,11 @@ classDiagram
 		class IDependency {
 			<<interface>>
 		}
+		class IService {
+			<<interface>>
+		}
 		class Service {
+			+Service(FuncᐸOwnedᐸIDependencyᐳᐳ dependencyFactory)
 		}
 	}
 	namespace System {

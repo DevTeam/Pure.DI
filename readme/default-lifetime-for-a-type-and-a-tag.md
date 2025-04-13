@@ -140,8 +140,8 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService
 	Dependency --|> IDependency : "some tag" 
+	Service --|> IService
 	Composition ..> Service : IService Root
 	Service o-- "Singleton" Dependency : "some tag"  IDependency
 	Service o-- "Singleton" Dependency : IDependency

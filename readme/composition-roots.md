@@ -294,9 +294,9 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
+	Service --|> IService
 	OtherService --|> IService : "Other" 
 	Dependency --|> IDependency
-	Service --|> IService
 	Composition ..> OtherService : IService MyOtherService
 	Composition ..> Dependency : IDependency _
 	Composition ..> Service : IService MyService

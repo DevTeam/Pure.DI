@@ -295,15 +295,15 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	XyzDependency --|> IDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.XyzDependency) 
-	Service --|> IService
 	AbcDependency --|> IDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.AbcDependency) 
 	AbcDependency --|> IDependency
+	XyzDependency --|> IDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.XyzDependency) 
+	Service --|> IService
 	Composition ..> XyzDependency : IDependency XyzRoot
 	Composition ..> Service : IService Root
 	Service *--  AbcDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.AbcDependency)  IDependency
-	Service o-- "Singleton" XyzDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.XyzDependency)  IDependency
 	Service *--  AbcDependency : IDependency
+	Service o-- "Singleton" XyzDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.XyzDependency)  IDependency
 	namespace Pure.DI.UsageTests.Advanced.TagTypeScenario {
 		class AbcDependency {
 			+AbcDependency()

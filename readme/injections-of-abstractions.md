@@ -112,11 +112,11 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService
 	Dependency --|> IDependency
+	Service --|> IService
 	Composition ..> Program : Program Root
-	Program *--  Service : IService
 	Service *--  Dependency : IDependency
+	Program *--  Service : IService
 	namespace Pure.DI.UsageTests.Basics.InjectionsOfAbstractionsScenario {
 		class Composition {
 		<<partial>>
@@ -132,6 +132,7 @@ classDiagram
 			<<interface>>
 		}
 		class Program {
+			+Program(IService service)
 		}
 		class Service {
 			+Service(IDependency dependency)

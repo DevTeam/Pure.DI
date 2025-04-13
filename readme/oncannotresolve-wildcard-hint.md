@@ -126,11 +126,11 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService
 	Dependency --|> IDependency
+	Service --|> IService
 	Composition ..> Service : IService Root
-	Service *--  Dependency : IDependency
 	Dependency *--  String : String
+	Service *--  Dependency : IDependency
 	namespace Pure.DI.UsageTests.Hints.OnCannotResolveWildcardHintScenario {
 		class Composition {
 		<<partial>>

@@ -185,9 +185,9 @@ classDiagram
 	Dependency --|> IDependency
 	Composition ..> Service2 : Service2 BuildUpService2(Pure.DI.UsageTests.Basics.BuildersWithNameTemplateScenario.Service2 buildingInstance)
 	Composition ..> Service1 : Service1 BuildUpService1(Pure.DI.UsageTests.Basics.BuildersWithNameTemplateScenario.Service1 buildingInstance)
-	Service2 *--  Dependency : IDependency
-	Service1 *--  Dependency : IDependency
 	Service1 *--  Guid : Guid
+	Service1 *--  Dependency : IDependency
+	Service2 *--  Dependency : IDependency
 	namespace Pure.DI.UsageTests.Basics.BuildersWithNameTemplateScenario {
 		class Composition {
 		<<partial>>
@@ -205,10 +205,13 @@ classDiagram
 			<<interface>>
 		}
 		class Service1 {
-			<<record>>
+				<<record>>
+			+IDependency Dependency
+			+SetId(Guid id) : Void
 		}
 		class Service2 {
-			<<record>>
+				<<record>>
+			+IDependency Dependency
 		}
 	}
 	namespace System {

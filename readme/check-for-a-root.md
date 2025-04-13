@@ -279,8 +279,8 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService
 	Dependency --|> IDependency : "MyDepTag" 
+	Service --|> IService
 	Composition ..> Service : IService Root
 	Composition ..> Dependency : IDependency _
 	Service *--  Dependency : "MyDepTag"  IDependency

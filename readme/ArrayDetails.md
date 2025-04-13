@@ -13,25 +13,25 @@ classDiagram
 	Service1 --|> IService1
 	Service2Array --|> IService2
 	Service3 --|> IService3
-	Service4 --|> IService4
 	Service3v2 --|> IService3 : 2 
 	Service3v3 --|> IService3 : 3 
 	Service3v4 --|> IService3 : 4 
+	Service4 --|> IService4
 	Array ..> CompositionRoot : CompositionRoot TestPureDIByCR()
+	Service1 *--  Service2Array : IService2
+	Service2Array *--  ArrayᐸIService3ᐳ : ArrayᐸIService3ᐳ
+	Service3 *-- "2 " Service4 : IService4
+	Service3v2 *-- "2 " Service4 : IService4
+	Service3v3 *-- "2 " Service4 : IService4
+	Service3v4 *-- "2 " Service4 : IService4
 	CompositionRoot *--  Service1 : IService1
 	CompositionRoot *-- "3 " Service2Array : IService2
 	CompositionRoot *--  Service3 : IService3
 	CompositionRoot *-- "2 " Service4 : IService4
-	Service1 *--  Service2Array : IService2
-	Service2Array *--  ArrayᐸIService3ᐳ : ArrayᐸIService3ᐳ
-	Service3 *-- "2 " Service4 : IService4
 	ArrayᐸIService3ᐳ *--  Service3 : IService3
 	ArrayᐸIService3ᐳ *--  Service3v2 : 2  IService3
 	ArrayᐸIService3ᐳ *--  Service3v3 : 3  IService3
 	ArrayᐸIService3ᐳ *--  Service3v4 : 4  IService3
-	Service3v2 *-- "2 " Service4 : IService4
-	Service3v3 *-- "2 " Service4 : IService4
-	Service3v4 *-- "2 " Service4 : IService4
 	class ArrayᐸIService3ᐳ {
 			<<array>>
 	}
@@ -47,6 +47,7 @@ classDiagram
 	}
 	namespace Pure.DI.Benchmarks.Model {
 		class CompositionRoot {
+			+CompositionRoot(IService1 service1, IService2 service21, IService2 service22, IService2 service23, IService3 service3, IService4 service41, IService4 service42)
 		}
 		class IService1 {
 			<<interface>>

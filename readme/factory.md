@@ -168,9 +168,9 @@ Class diagram:
 classDiagram
 	Service --|> IService
 	Composition ..> Service : IService GetMyService(bool isFake)
-	Service *--  IDependency : IDependency
 	IDependency o-- Boolean : "FakeArgTag"  Argument "isFake"
 	IDependency *--  Dependency : Dependency
+	Service *--  IDependency : IDependency
 	Dependency *--  DateTimeOffset : DateTimeOffset
 	namespace Pure.DI.UsageTests.Basics.FactoryScenario {
 		class Composition {

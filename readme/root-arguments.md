@@ -135,13 +135,13 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService
 	Dependency --|> IDependency
+	Service --|> IService
 	Composition ..> Service : IService CreateServiceWithArgs(int id, string dependencyName, string serviceName)
-	Service o-- String : "ForService"  Argument "serviceName"
-	Service *--  Dependency : IDependency
 	Dependency o-- Int32 : Argument "id"
 	Dependency o-- String : Argument "dependencyName"
+	Service *--  Dependency : IDependency
+	Service o-- String : "ForService"  Argument "serviceName"
 	namespace Pure.DI.UsageTests.Basics.RootArgumentsScenario {
 		class Composition {
 		<<partial>>

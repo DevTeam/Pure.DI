@@ -403,8 +403,8 @@ classDiagram
 	Dependency --|> IDependency
 	OtherComposition ..> Program : Program Program
 	OtherComposition ..> Service : IService Root
-	Program *--  Service : IService
 	Service *--  Dependency : IDependency
+	Program *--  Service : IService
 	namespace Pure.DI.UsageTests.Advanced.DependentCompositionsScenario {
 		class Dependency {
 			+Dependency()
@@ -425,6 +425,7 @@ classDiagram
 		+ object Resolve(Type type, object? tag)
 		}
 		class Program {
+			+Program(IService service)
 		}
 		class Service {
 			+Service(IDependency dependency)

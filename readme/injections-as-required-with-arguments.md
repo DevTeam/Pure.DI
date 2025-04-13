@@ -98,13 +98,13 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var overriddenInt320 = default(int);
+      var overrInt320 = default(int);
       Func<int, IDependency> perBlockFunc1 = new Func<int, IDependency>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       (int localArg14) =>
       {
-        overriddenInt320 = localArg14;
-        IDependency localValue98 = new Dependency(overriddenInt320);
+        overrInt320 = localArg14;
+        IDependency localValue98 = new Dependency(overrInt320);
         return localValue98;
       });
       return new Service(perBlockFunc1);
@@ -122,12 +122,12 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService
 	Dependency --|> IDependency
+	Service --|> IService
 	Composition ..> Service : IService Root
+	Dependency o-- "PerResolve" Int32 : Int32
 	Service o-- "PerBlock" FuncᐸInt32ˏIDependencyᐳ : FuncᐸInt32ˏIDependencyᐳ
 	FuncᐸInt32ˏIDependencyᐳ *--  Dependency : IDependency
-	Dependency o-- "PerResolve" Int32 : Int32
 	namespace Pure.DI.UsageTests.Basics.InjectionsAsRequiredWithArgumentsScenario {
 		class Composition {
 		<<partial>>

@@ -135,8 +135,8 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService
 	Dependency --|> IDependency
+	Service --|> IService
 	Composition ..> Service : IService Root
 	Service o-- "2 Singleton instances" Dependency : IDependency
 	namespace Pure.DI.UsageTests.Lifetimes.DefaultLifetimeScenario {

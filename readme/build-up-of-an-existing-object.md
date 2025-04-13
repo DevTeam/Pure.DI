@@ -123,13 +123,13 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
+	Dependency --|> IDependency
 	Service --|> IService
 	Service --|> IEquatableᐸServiceᐳ
-	Dependency --|> IDependency
 	Composition ..> Service : IService GetMyService(string name)
-	Service *--  Dependency : IDependency
 	Dependency o-- String : Argument "name"
 	Dependency *--  Guid : Guid
+	Service *--  Dependency : IDependency
 	namespace Pure.DI.UsageTests.Basics.BuildUpScenario {
 		class Composition {
 		<<partial>>

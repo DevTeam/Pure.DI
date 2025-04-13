@@ -214,9 +214,9 @@ Class diagram:
 classDiagram
 	Composition --|> IDisposable
 	Composition --|> IAsyncDisposable
-	Service --|> IService
 	Dependency --|> IDependency
 	Dependency --|> IAsyncDisposable
+	Service --|> IService
 	Composition ..> Service : IService Root
 	Service o-- "Singleton" Dependency : IDependency
 	namespace Pure.DI.UsageTests.Lifetimes.AsyncDisposableSingletonScenario {

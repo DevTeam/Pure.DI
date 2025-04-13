@@ -144,17 +144,17 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService
 	Dependency --|> IDependency
+	Service --|> IService
 	Composition ..> Service : IService GetRoot(System.Threading.CancellationToken cancellationToken)
 	Service *--  TaskᐸIDependencyᐳ : TaskᐸIDependencyᐳ
 	TaskᐸIDependencyᐳ o-- "PerBlock" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
 	TaskᐸIDependencyᐳ o-- "PerBlock" TaskFactoryᐸIDependencyᐳ : TaskFactoryᐸIDependencyᐳ
 	FuncᐸIDependencyᐳ *--  Dependency : IDependency
-	TaskFactoryᐸIDependencyᐳ o-- CancellationToken : Argument "cancellationToken"
 	TaskFactoryᐸIDependencyᐳ *--  TaskCreationOptions : TaskCreationOptions
 	TaskFactoryᐸIDependencyᐳ *--  TaskContinuationOptions : TaskContinuationOptions
 	TaskFactoryᐸIDependencyᐳ *--  TaskScheduler : TaskScheduler
+	TaskFactoryᐸIDependencyᐳ o-- CancellationToken : Argument "cancellationToken"
 	namespace Pure.DI.UsageTests.BCL.TaskScenario {
 		class Composition {
 		<<partial>>

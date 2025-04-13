@@ -153,10 +153,10 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var overriddenString2 = default(string);
-      var overriddenInt320 = default(int);
-      var overriddenInt321 = default(int);
-      var overriddenColor3 = default(Drawing.Color);
+      var overrString2 = default(string);
+      var overrInt320 = default(int);
+      var overrInt321 = default(int);
+      var overrColor3 = default(Drawing.Color);
       Func<int, int, IDependency> transientFunc1 =
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       (localDependencyId0, localSubId1) =>
@@ -165,12 +165,12 @@ partial class Composition
         // Overrides with tag using lambda argument
         // Overrides with some value
         // Overrides with injected value
-        overriddenInt320 = localDependencyId0;
-        overriddenInt321 = localSubId1;
-        overriddenString2 = $"Dep {localDependencyId0} {localSubId1}";
+        overrInt320 = localDependencyId0;
+        overrInt321 = localSubId1;
+        overrString2 = $"Dep {localDependencyId0} {localSubId1}";
         Drawing.Color transientColor2 = Color.Red;
         Drawing.Color localRed2 = transientColor2;
-        overriddenColor3 = localRed2;
+        overrColor3 = localRed2;
         if (_root._singletonClock52 is null)
         {
           using (_lock.EnterScope())
@@ -182,7 +182,7 @@ partial class Composition
           }
         }
 
-        Dependency localDependency99 = new Dependency(overriddenString2, _root._singletonClock52, overriddenInt320, overriddenInt321, overriddenColor3);
+        Dependency localDependency99 = new Dependency(overrString2, _root._singletonClock52, overrInt320, overrInt321, overrColor3);
         return localDependency99;
       };
       return new Service(transientFunc1);
@@ -316,13 +316,13 @@ Class diagram:
 classDiagram
 	Service --|> IService
 	Composition ..> Service : IService Root
-	Service *--  FuncᐸInt32ˏInt32ˏIDependencyᐳ : FuncᐸInt32ˏInt32ˏIDependencyᐳ
 	FuncᐸInt32ˏInt32ˏIDependencyᐳ *--  Color : "Red"  Color
 	FuncᐸInt32ˏInt32ˏIDependencyᐳ *--  Dependency : Dependency
-	Dependency o-- "PerResolve" String : String
+	Service *--  FuncᐸInt32ˏInt32ˏIDependencyᐳ : FuncᐸInt32ˏInt32ˏIDependencyᐳ
 	Dependency o-- "Singleton" Clock : IClock
 	Dependency o-- "PerResolve" Int32 : Int32
 	Dependency o-- "PerResolve" Int32 : "sub"  Int32
+	Dependency o-- "PerResolve" String : String
 	Dependency o-- "PerResolve" Color : Color
 	namespace Pure.DI.UsageTests.Basics.OverridesScenario {
 		class Clock {

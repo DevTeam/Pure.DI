@@ -172,7 +172,9 @@ classDiagram
 			<<interface>>
 		}
 		class ServiceᐸT3ˏT4ᐳ {
-			<<record>>
+				<<record>>
+			+IDependencyᐸT4ᐳ Dependency
+			+SetId(T3 id) : Void
 		}
 	}
 ```

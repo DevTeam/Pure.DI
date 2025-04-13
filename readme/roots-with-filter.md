@@ -119,6 +119,7 @@ classDiagram
 			<<interface>>
 		}
 		class Service2 {
+			+Service2(IDependency dependency)
 		}
 	}
 ```

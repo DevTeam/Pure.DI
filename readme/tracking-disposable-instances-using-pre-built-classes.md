@@ -385,15 +385,16 @@ Class diagram:
 classDiagram
 	Composition --|> IDisposable
 	Dependency --|> IDependency
+	Service --|> IService
 	Composition ..> Service : Service Root
 	Service o-- "PerBlock" FuncᐸOwnᐸIDependencyᐳᐳ : FuncᐸOwnᐸIDependencyᐳᐳ
 	Service o-- "PerBlock" FuncᐸOwnᐸIDependencyᐳᐳ : "single"  FuncᐸOwnᐸIDependencyᐳᐳ
 	FuncᐸOwnᐸIDependencyᐳᐳ o-- "PerBlock" OwnᐸIDependencyᐳ : OwnᐸIDependencyᐳ
 	FuncᐸOwnᐸIDependencyᐳᐳ o-- "PerBlock" OwnᐸIDependencyᐳ : "single"  OwnᐸIDependencyᐳ
-	OwnᐸIDependencyᐳ *--  Own : Own
 	OwnᐸIDependencyᐳ *--  Dependency : IDependency
 	OwnᐸIDependencyᐳ *--  Own : Own
 	OwnᐸIDependencyᐳ o-- "Singleton" Dependency : "single"  IDependency
+	OwnᐸIDependencyᐳ *--  Own : Own
 	namespace Pure.DI.Abstractions {
 		class Own {
 		}
@@ -416,7 +417,11 @@ classDiagram
 		class IDependency {
 			<<interface>>
 		}
+		class IService {
+			<<interface>>
+		}
 		class Service {
+			+Service(FuncᐸOwnᐸIDependencyᐳᐳ dependencyFactory, FuncᐸOwnᐸIDependencyᐳᐳ singleDependencyFactory)
 		}
 	}
 	namespace System {

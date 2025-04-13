@@ -126,12 +126,12 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService
 	Dependency --|> IDependency
 	Dependency --|> IEquatableᐸDependencyᐳ
+	Service --|> IService
 	Composition ..> Service : IService GetRoot(int id)
-	Service *--  Dependency : IDependency
 	Dependency o-- Int32 : Argument "id"
+	Service *--  Dependency : IDependency
 	namespace Pure.DI.UsageTests.Hints.OnDependencyInjectionRegularExpressionHintScenario {
 		class Composition {
 		<<partial>>

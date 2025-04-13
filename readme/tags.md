@@ -163,15 +163,15 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService
-	XyzDependency --|> IDependency : "XyzTag" 
 	AbcDependency --|> IDependency : "AbcTag" 
 	AbcDependency --|> IDependency
+	XyzDependency --|> IDependency : "XyzTag" 
+	Service --|> IService
 	Composition ..> Service : IService Root
 	Composition ..> XyzDependency : IDependency XyzRoot
 	Service *--  AbcDependency : "AbcTag"  IDependency
-	Service o-- "Singleton" XyzDependency : "XyzTag"  IDependency
 	Service *--  AbcDependency : IDependency
+	Service o-- "Singleton" XyzDependency : "XyzTag"  IDependency
 	namespace Pure.DI.UsageTests.Basics.TagsScenario {
 		class AbcDependency {
 			+AbcDependency()

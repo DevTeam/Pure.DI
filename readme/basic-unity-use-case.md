@@ -150,6 +150,7 @@ classDiagram
 	Clock o-- "Singleton" ClockService : IClockService
 	namespace Pure.DI.UsageTests.Unity.UnityBasicScenario {
 		class Clock {
+			-IClockService ClockService
 		}
 		class ClockService {
 			+ClockService()

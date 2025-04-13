@@ -180,15 +180,15 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService
-	XyzDependency --|> IDependency : "Xyz" 
 	AbcDependency --|> IDependency : "Abc" 
 	AbcDependency --|> IDependency
+	XyzDependency --|> IDependency : "Xyz" 
+	Service --|> IService
 	Composition ..> Service : IService Root
 	Composition ..> XyzDependency : IDependency XyzRoot
 	Service *--  AbcDependency : "Abc"  IDependency
-	Service o-- "Singleton" XyzDependency : "Xyz"  IDependency
 	Service *--  AbcDependency : IDependency
+	Service o-- "Singleton" XyzDependency : "Xyz"  IDependency
 	namespace Pure.DI.UsageTests.Basics.SmartTagsScenario {
 		class AbcDependency {
 			+AbcDependency()

@@ -227,9 +227,9 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService
 	AbcDependency --|> IDependency
 	XyzDependency --|> IDependency : 2 
+	Service --|> IService
 	Composition ..> Service : IService Root
 	Service o-- "PerBlock" IEnumerableᐸIDependencyᐳ : IEnumerableᐸIDependencyᐳ
 	IEnumerableᐸIDependencyᐳ *--  AbcDependency : IDependency
