@@ -98,12 +98,12 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var overrInt320 = default(int);
+      int overrInt320;
       Func<int, IDependency<string>> perBlockFunc1 = new Func<int, IDependency<string>>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      (int localArg14) =>
+      (int localArg116) =>
       {
-        overrInt320 = localArg14;
+        overrInt320 = localArg116;
         IDependency<string> localValue139 = new Dependency<string>(overrInt320);
         return localValue139;
       });

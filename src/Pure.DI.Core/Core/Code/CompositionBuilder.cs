@@ -42,11 +42,15 @@ sealed class CompositionBuilder(
             {
                 ctx.Code.AppendLine($"var {perResolveVar.VariableName} = default({typeResolver.Resolve(graph.Source, perResolveVar.InstanceType)});");
                 if (perResolveVar.Info.RefCount > 0
-                    && perResolveVar.InstanceType.IsValueType
-                    && perResolveVar.Injection.Kind != InjectionKind.Override)
+                    && perResolveVar.InstanceType.IsValueType)
                 {
                     ctx.Code.AppendLine($"var {perResolveVar.VariableName}Created = false;");
                 }
+            }
+
+            foreach (var overrideVar in map.GetOverrides())
+            {
+                ctx.Code.AppendLine($"{typeResolver.Resolve(graph.Source, overrideVar.InstanceType)} {overrideVar.VariableName};");
             }
 
             blockBuilder.Build(ctx, rootBlock);

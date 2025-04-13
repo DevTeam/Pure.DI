@@ -153,10 +153,10 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var overrString2 = default(string);
-      var overrInt320 = default(int);
-      var overrInt321 = default(int);
-      var overrColor3 = default(Drawing.Color);
+      string overrString2;
+      int overrInt320;
+      int overrInt321;
+      Drawing.Color overrColor3;
       Func<int, int, IDependency> transientFunc1 =
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       (localDependencyId0, localSubId1) =>

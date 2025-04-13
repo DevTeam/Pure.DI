@@ -121,14 +121,14 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var overrString2 = default(string);
-      var overrInt320 = default(int);
+      string overrString2;
+      int overrInt320;
       Func<int, string, IDependency> perBlockFunc1 = new Func<int, string, IDependency>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      (int localArg135, string localArg238) =>
+      (int localArg124, string localArg227) =>
       {
-        overrInt320 = localArg135;
-        overrString2 = localArg238;
+        overrInt320 = localArg124;
+        overrString2 = localArg227;
         if (_root._singletonClock51 is null)
         {
           using (_lock.EnterScope())
