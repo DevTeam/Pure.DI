@@ -138,7 +138,7 @@ sealed class BlockCodeBuilder(
                 if (!ctx.AvoidLocalFunction
                     && block.Parent is not null
                     && info is { PerBlockRefCount: > 1 }
-                    && code.Count > 11)
+                    && code.Count >= ctx.DependencyGraph.Source.Hints.LocalFunctionLines)
                 {
                     var localMethodCode = ctx.LocalFunctionsCode;
                     if (compilations.GetLanguageVersion(compilation) >= LanguageVersion.CSharp9)

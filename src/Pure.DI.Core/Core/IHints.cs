@@ -50,5 +50,7 @@ interface IHints : IReadOnlyDictionary<Hint, LinkedList<string>>
 
     string DisposeAsyncMethodModifiers { get; }
 
+    int LocalFunctionLines { get; }
+
     DiagnosticSeverity SeverityOfNotImplementedContract { get; }
 }

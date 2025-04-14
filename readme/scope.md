@@ -168,8 +168,8 @@ partial class Composition: IDisposable
       () =>
       {
         Composition transientComposition3 = this;
-        Session localValue147 = new Session(transientComposition3);
-        return localValue147;
+        Session localValue153 = new Session(transientComposition3);
+        return localValue153;
       });
       return new Program(perBlockFunc1);
     }

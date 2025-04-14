@@ -92,10 +92,10 @@ partial class Composition
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
     T3 transientTTS2 = (T3)(object)Guid.NewGuid();
     Service<T3, T4> transientService0;
-    Service<T3, T4> localBuildingInstance133 = buildingInstance;
-    localBuildingInstance133.Dependency = new Dependency<T4>();
-    localBuildingInstance133.SetId(transientTTS2);
-    transientService0 = localBuildingInstance133;
+    Service<T3, T4> localBuildingInstance137 = buildingInstance;
+    localBuildingInstance137.Dependency = new Dependency<T4>();
+    localBuildingInstance137.SetId(transientTTS2);
+    transientService0 = localBuildingInstance137;
     return transientService0;
   }
 

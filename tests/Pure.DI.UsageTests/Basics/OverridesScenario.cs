@@ -2,6 +2,7 @@
 $v=true
 $p=16
 $d=Overrides
+$h=This example demonstrates advanced dependency injection techniques using Pure.DI's override mechanism to customize dependency instantiation with runtime arguments and tagged parameters. The implementation creates multiple `IDependency` instances with values manipulated through explicit overrides.
 $r=Shouldly
 */
 

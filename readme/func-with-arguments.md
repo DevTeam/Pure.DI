@@ -121,28 +121,32 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      string overrString2;
-      int overrInt320;
-      Func<int, string, IDependency> perBlockFunc1 = new Func<int, string, IDependency>(
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      (int localArg124, string localArg227) =>
+      string overString2;
+      int overInt320;
+      Func<int, string, IDependency> perBlockFunc1;
+      var localLockObject105 = new Object();
+      Func<int, string, IDependency> localFactory106 = new Func<int, string, IDependency>((int localArg122, string localArg227) =>
       {
-        overrInt320 = localArg124;
-        overrString2 = localArg227;
-        if (_root._singletonClock51 is null)
+        lock (localLockObject105)
         {
-          using (_lock.EnterScope())
+          overInt320 = localArg122;
+          overString2 = localArg227;
+          if (_root._singletonClock51 is null)
           {
-            if (_root._singletonClock51 is null)
+            using (_lock.EnterScope())
             {
-              _root._singletonClock51 = new Clock();
+              if (_root._singletonClock51 is null)
+              {
+                _root._singletonClock51 = new Clock();
+              }
             }
           }
-        }
 
-        IDependency localValue103 = new Dependency(overrString2, _root._singletonClock51, overrInt320);
-        return localValue103;
+          IDependency localValue107 = new Dependency(overString2, _root._singletonClock51, overInt320);
+          return localValue107;
+        }
       });
+      perBlockFunc1 = localFactory106;
       return new Service(perBlockFunc1);
     }
   }

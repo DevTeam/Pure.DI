@@ -3450,6 +3450,15 @@ DI.Setup("Composition")
 </blockquote></details>
 
 
+<details><summary>Field UniqueTag</summary><blockquote>
+
+Atomically generated smart tag with value "UniqueTag".
+            It's used for:
+            
+            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
 <details><summary>Field Overrider</summary><blockquote>
 
 Atomically generated smart tag with value "Overrider".
@@ -3468,30 +3477,12 @@ Atomically generated smart tag with value "Cleaner".
 </blockquote></details>
 
 
-<details><summary>Field CompositionClass</summary><blockquote>
+<details><summary>Field Override</summary><blockquote>
 
-Atomically generated smart tag with value "CompositionClass".
+Atomically generated smart tag with value "Override".
             It's used for:
             
-            class _Generator__CodeBuilder_ <-- _IBuilder`2_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
-</blockquote></details>
-
-
-<details><summary>Field UniqueTag</summary><blockquote>
-
-Atomically generated smart tag with value "UniqueTag".
-            It's used for:
-            
-            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve_
-</blockquote></details>
-
-
-<details><summary>Field GenericType</summary><blockquote>
-
-Atomically generated smart tag with value "GenericType".
-            It's used for:
-            
-            class _Generator__TypeResolver_ <-- _IIdGenerator_(GenericType) -- _IdGenerator_ as _PerResolve_
+            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
@@ -3504,19 +3495,28 @@ Atomically generated smart tag with value "UsingDeclarations".
 </blockquote></details>
 
 
+<details><summary>Field CompositionClass</summary><blockquote>
+
+Atomically generated smart tag with value "CompositionClass".
+            It's used for:
+            
+            class _Generator__CodeBuilder_ <-- _IBuilder`2_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field GenericType</summary><blockquote>
+
+Atomically generated smart tag with value "GenericType".
+            It's used for:
+            
+            class _Generator__TypeResolver_ <-- _IIdGenerator_(GenericType) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
 <details><summary>Field Injection</summary><blockquote>
 
 Atomically generated smart tag with value "Injection".
             
-</blockquote></details>
-
-
-<details><summary>Field Override</summary><blockquote>
-
-Atomically generated smart tag with value "Override".
-            It's used for:
-            
-            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
@@ -5260,9 +5260,9 @@ Contextual AI needs to understand the situation it’s in. This means knowing de
 
 | AI Context file | Size | Tokens |
 | --------------- | ---- | ------ |
-| [AI_CONTEXT_SMALL.md](AI_CONTEXT_SMALL.md) | 27KB | 7K |
-| [AI_CONTEXT_MEDIUM.md](AI_CONTEXT_MEDIUM.md) | 123KB | 31K |
-| [AI_CONTEXT_LARGE.md](AI_CONTEXT_LARGE.md) | 377KB | 96K |
+| [AI_CONTEXT_SMALL.md](AI_CONTEXT_SMALL.md) | 29KB | 7K |
+| [AI_CONTEXT_MEDIUM.md](AI_CONTEXT_MEDIUM.md) | 124KB | 31K |
+| [AI_CONTEXT_LARGE.md](AI_CONTEXT_LARGE.md) | 379KB | 97K |
 ## How to contribute to Pure.DI
 
 Thank you for your interest in contributing to the Pure.DI project! First of all, if you are going to make a big change or feature, please open a problem first. That way, we can coordinate and understand if the change you're going to work on fits with current priorities and if we can commit to reviewing and merging it within a reasonable timeframe. We don't want you to waste a lot of your valuable time on something that may not align with what we want for Pure.DI.

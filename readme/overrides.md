@@ -1,5 +1,7 @@
 #### Overrides
 
+This example demonstrates advanced dependency injection techniques using Pure.DI's override mechanism to customize dependency instantiation with runtime arguments and tagged parameters. The implementation creates multiple `IDependency` instances with values manipulated through explicit overrides.
+
 
 ```c#
 using Shouldly;
@@ -153,10 +155,10 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      string overrString2;
-      int overrInt320;
-      int overrInt321;
-      Drawing.Color overrColor3;
+      string overString2;
+      int overInt320;
+      int overInt321;
+      Drawing.Color overColor3;
       Func<int, int, IDependency> transientFunc1 =
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       (localDependencyId0, localSubId1) =>
@@ -165,12 +167,12 @@ partial class Composition
         // Overrides with tag using lambda argument
         // Overrides with some value
         // Overrides with injected value
-        overrInt320 = localDependencyId0;
-        overrInt321 = localSubId1;
-        overrString2 = $"Dep {localDependencyId0} {localSubId1}";
+        overInt320 = localDependencyId0;
+        overInt321 = localSubId1;
+        overString2 = $"Dep {localDependencyId0} {localSubId1}";
         Drawing.Color transientColor2 = Color.Red;
         Drawing.Color localRed2 = transientColor2;
-        overrColor3 = localRed2;
+        overColor3 = localRed2;
         if (_root._singletonClock52 is null)
         {
           using (_lock.EnterScope())
@@ -182,8 +184,8 @@ partial class Composition
           }
         }
 
-        Dependency localDependency99 = new Dependency(overrString2, _root._singletonClock52, overrInt320, overrInt321, overrColor3);
-        return localDependency99;
+        Dependency localDependency101 = new Dependency(overString2, _root._singletonClock52, overInt320, overInt321, overColor3);
+        return localDependency101;
       };
       return new Service(transientFunc1);
     }

@@ -79,6 +79,15 @@ sealed class Hints : ConcurrentDictionary<Hint, LinkedList<string>>, IHints
     public DiagnosticSeverity SeverityOfNotImplementedContract =>
         GetHint(Hint.SeverityOfNotImplementedContract, DiagnosticSeverity.Error);
 
+    public int LocalFunctionLines
+    {
+        get
+        {
+            var val = GetHint(Hint.LocalFunctionLines, 12);
+            return val <= 0 ? 12 : val;
+        }
+    }
+
     private bool IsEnabled(Hint hint, SettingState defaultValue) =>
         GetHint(hint, defaultValue) == SettingState.On;
 

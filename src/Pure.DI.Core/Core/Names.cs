@@ -71,7 +71,7 @@ static class Names
     public const string ScopedVariablePrefix = "_scoped";
     public const string ArgVariablePrefix = "_arg";
     public const string LocalVariablePrefix = "local";
-    public const string OverriddenVariablePrefix = "overr";
+    public const string OverriddenVariablePrefix = "over";
     public static readonly string Salt = $"M{DateTime.Now.Month:00}D{DateTime.Now.Day:00}di";
     public static readonly string InjectionMarker = "injectMarker" + Salt;
     public static readonly string InitializationMarker = "initializeMarker" + Salt;

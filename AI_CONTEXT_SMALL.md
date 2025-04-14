@@ -470,6 +470,8 @@ To run the above code, the following NuGet packages must be added:
 
 ## Injections as required
 
+This example demonstrates using dependency injection with Pure.DI to dynamically create dependencies as needed via a factory function. The code defines a service (`Service`) that requires multiple instances of a dependency (`Dependency`). Instead of injecting pre-created instances, the service receives a `Func<IDependency>` factory delegate, allowing it to generate dependencies on demand.
+
 ```c#
 using Shouldly;
 using Pure.DI;
@@ -509,8 +511,16 @@ To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
+Key elements:
+- `Dependency` is bound to the `IDependency` interface, and `Service` is bound to `IService`.
+- The `Service` constructor accepts `Func<IDependency>`, enabling deferred creation of dependencies.
+- The `Service` calls the factory twice, resulting in two distinct `Dependency` instances stored in its `Dependencies` collection.
+
+This approach showcases how factories can control dependency lifetime and instance creation timing in a DI container. The Pure.DI configuration ensures the factory resolves new `IDependency` instances each time it's invoked, achieving "injections as required" functionality.
 
 ## Injections as required with arguments
+
+This example illustrates dependency injection with parameterized factory functions using Pure.DI, where dependencies are created with runtime-provided arguments. The scenario features a service that generates dependencies with specific IDs passed during instantiation.
 
 ```c#
 using Shouldly;
@@ -560,6 +570,15 @@ To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
+Key components:
+- `Dependency` class accepts an int id constructor argument, stored in its `Id` property.
+- `Service` receives `Func<int, IDependency>` delegate, enabling creation of dependencies with dynamic values.
+- `Service` creates two dependencies using the factory – one with ID `33`, another with ID `99`.
+
+Delayed dependency instantiation:
+- Injection of dependencies requiring runtime parameters
+- Creation of distinct instances with different configurations
+- Type-safe resolution of dependencies with constructor arguments
 
 ## Transient
 

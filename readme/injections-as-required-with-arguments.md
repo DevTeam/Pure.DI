@@ -1,5 +1,7 @@
 #### Injections as required with arguments
 
+This example illustrates dependency injection with parameterized factory functions using Pure.DI, where dependencies are created with runtime-provided arguments. The scenario features a service that generates dependencies with specific IDs passed during instantiation.
+
 
 ```c#
 using Shouldly;
@@ -72,6 +74,16 @@ dotnet run
 
 </details>
 
+Key components:
+- `Dependency` class accepts an int id constructor argument, stored in its `Id` property.
+- `Service` receives `Func<int, IDependency>` delegate, enabling creation of dependencies with dynamic values.
+- `Service` creates two dependencies using the factory – one with ID `33`, another with ID `99`.
+
+Delayed dependency instantiation:
+- Injection of dependencies requiring runtime parameters
+- Creation of distinct instances with different configurations
+- Type-safe resolution of dependencies with constructor arguments
+
 The following partial class will be generated:
 
 ```c#
@@ -98,15 +110,19 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      int overrInt320;
-      Func<int, IDependency> perBlockFunc1 = new Func<int, IDependency>(
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      (int localArg116) =>
+      int overInt320;
+      Func<int, IDependency> perBlockFunc1;
+      var localLockObject98 = new Object();
+      Func<int, IDependency> localFactory99 = new Func<int, IDependency>((int localArg18) =>
       {
-        overrInt320 = localArg116;
-        IDependency localValue98 = new Dependency(overrInt320);
-        return localValue98;
+        lock (localLockObject98)
+        {
+          overInt320 = localArg18;
+          IDependency localValue100 = new Dependency(overInt320);
+          return localValue100;
+        }
       });
+      perBlockFunc1 = localFactory99;
       return new Service(perBlockFunc1);
     }
   }

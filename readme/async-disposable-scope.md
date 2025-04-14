@@ -170,8 +170,8 @@ partial class Composition: IDisposable, IAsyncDisposable
       () =>
       {
         Composition transientComposition3 = this;
-        Session localValue143 = new Session(transientComposition3);
-        return localValue143;
+        Session localValue149 = new Session(transientComposition3);
+        return localValue149;
       });
       return new Program(perBlockFunc1);
     }

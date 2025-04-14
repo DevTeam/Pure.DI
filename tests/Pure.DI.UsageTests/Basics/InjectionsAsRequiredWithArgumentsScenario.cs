@@ -2,6 +2,16 @@
 $v=true
 $p=3
 $d=Injections as required with arguments
+$h=This example illustrates dependency injection with parameterized factory functions using Pure.DI, where dependencies are created with runtime-provided arguments. The scenario features a service that generates dependencies with specific IDs passed during instantiation.
+$f=Key components:
+$f=- `Dependency` class accepts an int id constructor argument, stored in its `Id` property.
+$f=- `Service` receives `Func<int, IDependency>` delegate, enabling creation of dependencies with dynamic values.
+$f=- `Service` creates two dependencies using the factory – one with ID `33`, another with ID `99`.
+$f=
+$f=Delayed dependency instantiation:
+$f=- Injection of dependencies requiring runtime parameters
+$f=- Creation of distinct instances with different configurations
+$f=- Type-safe resolution of dependencies with constructor arguments
 $r=Shouldly
 */
 
