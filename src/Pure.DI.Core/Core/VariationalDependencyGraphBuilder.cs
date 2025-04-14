@@ -18,6 +18,7 @@ sealed class VariationalDependencyGraphBuilder(
     IBuilder<ContractsBuildContext, ISet<Injection>> contractsBuilder,
     IDependencyGraphBuilder graphBuilder,
     Func<DependencyNode, ISet<Injection>, IProcessingNode> processingNodeFactory,
+    IRegistryManager<int> registryManager,
     CancellationToken cancellationToken)
     : IBuilder<MdSetup, DependencyGraph?>
 {
@@ -121,6 +122,17 @@ sealed class VariationalDependencyGraphBuilder(
                 var dependencyGraph = new DependencyGraph(setup, graph);
                 if (dependencyGraph is { IsResolved: true })
                 {
+                    foreach (var dependency in dependencyGraph.Graph.Edges)
+                    {
+                        registryManager.Register(setup, dependency.Target.Binding.OriginalId ?? dependency.Target.Binding.Id);
+                        registryManager.Register(setup, dependency.Source.Binding.OriginalId ?? dependency.Source.Binding.Id);
+                    }
+
+                    foreach (var node in dependencyGraph.Graph.Vertices)
+                    {
+                        registryManager.Register(setup, node.Binding.OriginalId ?? node.Binding.Id);
+                    }
+
                     return dependencyGraph;
                 }
 

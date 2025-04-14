@@ -19,7 +19,6 @@ sealed class DependencyGraphBuilder(
     Func<ITypeConstructor> typeConstructorFactory,
     IFilter filter,
     ICache<INamedTypeSymbol, MdConstructKind> constructKinds,
-    IRegistryManager<MdBinding> registryManager,
     ISymbolNames symbolNames,
     Func<DependencyNode, ISet<Injection>, IProcessingNode> processingNodeFactory,
     [Tag(Overrider)] IGraphRewriter graphOverrider,
@@ -105,10 +104,9 @@ sealed class DependencyGraphBuilder(
 
                 if (map.TryGetValue(injection, out var sourceNode))
                 {
-                    registryManager.Register(setup, sourceNode.Binding);
                     if (!marker.IsMarkerBased(setup, sourceNode.Type))
                     {
-                        queue.Enqueue(CreateNewProcessingNode(setup, injection.Tag, sourceNode));
+                        queue.Enqueue(CreateNewProcessingNode(injection.Tag, sourceNode));
                         continue;
                     }
                 }
@@ -156,7 +154,6 @@ sealed class DependencyGraphBuilder(
                             }
 
                             sourceNode = item.Value;
-                            registryManager.Register(setup, sourceNode.Binding);
                             var contextTag = GetContextTag(injection, sourceNode);
                             var newInjection = injection with { Tag = contextTag ?? injection.Tag };
                             var genericBinding = bindingsFactory.CreateGenericBinding(
@@ -168,7 +165,7 @@ sealed class DependencyGraphBuilder(
 
                             var genericNode = nodesFactory.CreateNodes(setup, typeConstructor, genericBinding).Single(i => i.Variation == sourceNode.Variation);
                             UpdateMap(newInjection, genericNode);
-                            queue.Enqueue(CreateNewProcessingNode(setup, newInjection.Tag, genericNode));
+                            queue.Enqueue(CreateNewProcessingNode(newInjection.Tag, genericNode));
                             foreach (var contract in genericBinding.Contracts.Where(i => i.ContractType is not null))
                             {
                                 foreach (var tag in contract.Tags.Select(i => i.Value).DefaultIfEmpty(null))
@@ -214,7 +211,7 @@ sealed class DependencyGraphBuilder(
                                         var contextTag = GetContextTag(injection, newNode);
                                         var newInjection = injection with { Tag = contextTag ?? injection.Tag };
                                         UpdateMap(newInjection, newNode);
-                                        var processingNode = CreateNewProcessingNode(setup, newInjection.Tag, newNode);
+                                        var processingNode = CreateNewProcessingNode(newInjection.Tag, newNode);
                                         queue.Enqueue(processingNode);
                                     }
 
@@ -249,7 +246,7 @@ sealed class DependencyGraphBuilder(
                             var contextTag = GetContextTag(injection, newNode);
                             var newInjection = injection with { Tag = contextTag ?? injection.Tag };
                             UpdateMap(newInjection, newNode);
-                            queue.Enqueue(CreateNewProcessingNode(setup, newInjection.Tag, newNode));
+                            queue.Enqueue(CreateNewProcessingNode(newInjection.Tag, newNode));
                         }
 
                         continue;
@@ -306,7 +303,7 @@ sealed class DependencyGraphBuilder(
                         var contextTag = GetContextTag(injection, newNode);
                         var newInjection = injection with { Tag = contextTag ?? injection.Tag };
                         UpdateMap(newInjection, newNode);
-                        queue.Enqueue(CreateNewProcessingNode(setup, newInjection.Tag, newNode));
+                        queue.Enqueue(CreateNewProcessingNode(newInjection.Tag, newNode));
                     }
 
                     continue;
@@ -439,7 +436,7 @@ sealed class DependencyGraphBuilder(
                 foreach (var onCannotResolveNode in onCannotResolveNodes)
                 {
                     map[unresolvedInjection] = onCannotResolveNode;
-                    processed.Add(CreateNewProcessingNode(setup, unresolvedInjection.Tag, onCannotResolveNode));
+                    processed.Add(CreateNewProcessingNode(unresolvedInjection.Tag, onCannotResolveNode));
                     return true;
                 }
             }
@@ -448,9 +445,8 @@ sealed class DependencyGraphBuilder(
         return false;
     }
 
-    private IProcessingNode CreateNewProcessingNode(MdSetup setup, object? contextTag, DependencyNode dependencyNode)
+    private IProcessingNode CreateNewProcessingNode(object? contextTag, DependencyNode dependencyNode)
     {
-        registryManager.Register(setup, dependencyNode.Binding);
         var contracts = contractsBuilder.Build(new ContractsBuildContext(dependencyNode.Binding, contextTag));
         return processingNodeFactory(dependencyNode, contracts);
     }

@@ -12,7 +12,8 @@ record MdBinding(
     in MdFactory? Factory = null,
     in MdArg? Arg = null,
     in MdConstruct? Construct = null,
-    ITypeConstructor? TypeConstructor = null)
+    ITypeConstructor? TypeConstructor = null,
+    int? OriginalId = null)
 {
     public ITypeSymbol Type => Implementation?.Type ?? Factory?.Type ?? Arg?.Type ?? Construct?.Type!;
 

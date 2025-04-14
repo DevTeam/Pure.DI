@@ -1,5 +1,7 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
+using Core;
+
 public class FuncTests
 {
     [Theory]
@@ -1645,5 +1647,181 @@ public class FuncTests
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["33", "Qwerty", "Sample.Dependency", "Abc", "Sample.LoggerA", "33", "Qwerty", "Sample.LoggerA"], result);
+    }
+
+    [Fact]
+    public async Task ShouldShowWarningWhenStdFuncOverrideClassArg()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               
+                               interface IInfo {}
+                               
+                               class Info: IInfo {}
+                               
+                               interface IContext<T> {}
+                               
+                               class Context<T>: IContext<T>
+                               {
+                                    public Context(IInfo Info) {}
+                               }
+                           
+                               class Dependency: IDependency
+                               {
+                                   private string _name;
+                                   private IContext<int> _ctx;
+                           
+                                   public Dependency(string name, IContext<int> ctx)
+                                   {
+                                       _name = name;
+                                       _ctx = ctx;
+                                   }
+                           
+                                   public override string ToString() => $"{_name} {_ctx}";
+                               }
+                           
+                               interface IService
+                               {
+                                   IDependency Dep { get; }
+                               }
+                           
+                               class Service: IService 
+                               {
+                                   private Func<string, IContext<int>, IDependency> _depFactory;
+
+                                   public Service(Func<string, IContext<int>, IDependency> depFactory)
+                                   { 
+                                       _depFactory = depFactory;
+                                   }
+                           
+                                   public IDependency Dep => _depFactory("Xyz", new Context<int>(new Info()));
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Arg<string>("str")
+                                           .Bind().To<Dependency>()
+                                           .Bind().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                       Console.WriteLine(service.Dep.ToString());
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(1, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningMetadataDefect && i.Location.GetSource() == "Arg<string>").ShouldBe(1, result);
+        result.StdOut.ShouldBe(["Xyz Sample.Context`1[System.Int32]"], result);
+    }
+
+    [Fact]
+    public async Task ShouldShowWarningWhenStdFuncOverrideRootArg()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               
+                               interface IInfo {}
+                               
+                               class Info: IInfo {}
+                               
+                               interface IContext<T> {}
+                               
+                               class Context<T>: IContext<T>
+                               {
+                                    public Context(IInfo Info) {}
+                               }
+                           
+                               class Dependency: IDependency
+                               {
+                                   private string _name;
+                                   private IContext<int> _ctx;
+                           
+                                   public Dependency(string name, IContext<int> ctx)
+                                   {
+                                       _name = name;
+                                       _ctx = ctx;
+                                   }
+                           
+                                   public override string ToString() => $"{_name} {_ctx}";
+                               }
+                           
+                               interface IService
+                               {
+                                   IDependency Dep { get; }
+                               }
+                           
+                               class Service: IService 
+                               {
+                                   private Func<string, IContext<int>, IDependency> _depFactory;
+
+                                   public Service(Func<string, IContext<int>, IDependency> depFactory)
+                                   { 
+                                       _depFactory = depFactory;
+                                   }
+                           
+                                   public IDependency Dep => _depFactory("Xyz", new Context<int>(new Info()));
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .RootArg<string>("str")
+                                           .Bind().To<Dependency>()
+                                           .Bind().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                       Console.WriteLine(service.Dep.ToString());
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(1, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningMetadataDefect && i.Location.GetSource() == "RootArg<string>").ShouldBe(1, result);
+        result.StdOut.ShouldBe(["Xyz Sample.Context`1[System.Int32]"], result);
     }
 }

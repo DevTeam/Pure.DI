@@ -25,6 +25,7 @@ class BindingsFactory(
 
         return sourceNode.Binding with
         {
+            OriginalId = sourceNode.Binding.Id,
             Id = newId,
             TypeConstructor = typeConstructor,
             Contracts = newContracts,
