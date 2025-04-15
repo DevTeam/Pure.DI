@@ -6,8 +6,8 @@ readonly record struct MdTag(
     int Position,
     object? Value)
 {
-
     public static readonly object ContextTag = new ContextTagObject();
+
     public bool Equals(MdTag other) => Equals(Value, other.Value);
 
     public override int GetHashCode() => Value != null ? Value.GetHashCode() : 0;

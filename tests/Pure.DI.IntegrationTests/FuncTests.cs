@@ -1824,4 +1824,59 @@ public class FuncTests
         result.Warnings.Count(i => i.Id == LogId.WarningMetadataDefect && i.Location.GetSource() == "RootArg<string>").ShouldBe(1, result);
         result.StdOut.ShouldBe(["Xyz Sample.Context`1[System.Int32]"], result);
     }
+
+    [Fact]
+    public async Task ShouldSupportRootToResolveWhenStdFuncWith2Args()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                           
+                               class Dependency: IDependency
+                               {
+                                   private string _name;
+                                   private int _id;
+                           
+                                   public Dependency(string name, int id)
+                                   {
+                                       _name = name;
+                                       _id = id;
+                                   }
+                           
+                                   public override string ToString() => $"{_name} {_id}";
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind().To<Dependency>()
+                                           .Root<Func<string, int, IDependency>>();
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var dep = composition.Resolve<Func<string, int, IDependency>>()("Asd", 55);
+                                       Console.WriteLine(dep);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Asd 55"], result);
+    }
 }
