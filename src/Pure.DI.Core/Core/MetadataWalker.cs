@@ -16,6 +16,7 @@ sealed class MetadataWalker(
     : CSharpSyntaxWalker, IMetadataWalker
 {
     private readonly Stack<InvocationExpressionSyntax> _invocations = new();
+    private readonly List<UsingDirectiveSyntax> _usingDirectives = [];
     private bool _isMetadata;
     private string _namespace = string.Empty;
     private SemanticModel? _semanticModel;
@@ -56,6 +57,36 @@ sealed class MetadataWalker(
             visitor.Apply();
         }
 
+        var usings = new List<string>();
+        var staticUsings = new List<string>();
+        var aliases = new List<(string, string)>();
+        foreach (var usingDirective in _usingDirectives)
+        {
+            if (_semanticModel?.GetSymbolInfo(usingDirective.Name!).Symbol?.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat) is not {} name)
+            {
+                continue;
+            }
+
+            if (usingDirective.StaticKeyword.IsKind(SyntaxKind.StaticKeyword))
+            {
+                staticUsings.Add(name);
+                continue;
+            }
+
+            if (usingDirective.Alias is {} alias)
+            {
+                aliases.Add((alias.Name.ToString(), name));
+                continue;
+            }
+
+            usings.Add(name);
+        }
+
+        if (usings.Count > 0 || staticUsings.Count > 0)
+        {
+            metadataVisitor.VisitUsingDirectives(new MdUsingDirectives(usings, staticUsings, aliases));
+        }
+
         metadataVisitor.VisitFinish();
     }
 
@@ -82,5 +113,15 @@ sealed class MetadataWalker(
     {
         _namespace = namespaceDeclaration.Name.ToString().Trim();
         base.VisitNamespaceDeclaration(namespaceDeclaration);
+    }
+
+    public override void VisitUsingDirective(UsingDirectiveSyntax node)
+    {
+        if (node.Name is not null && !node.GlobalKeyword.IsKind(SyntaxKind.GlobalKeyword))
+        {
+            _usingDirectives.Add(node);
+        }
+
+        base.VisitUsingDirective(node);
     }
 }

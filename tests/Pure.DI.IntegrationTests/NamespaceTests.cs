@@ -1,8 +1,9 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
+using static Path;
+
 public class NamespaceTests
 {
-
     [Fact]
     public async Task ShouldSupportNamespaceForFuncWithGenericParams()
     {
@@ -292,5 +293,143 @@ public class NamespaceTests
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["My.Sample.Composition"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportStaticUsing()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.IO;
+                           using Pure.DI;
+                           using static System.IO.Path;
+                           using static System.DateTime;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                           
+                               class Dependency: IDependency
+                               {
+                                   public Dependency(DateTime now)
+                                   {
+                                   }
+                               }
+                           
+                               interface IService
+                               {
+                                   IDependency? Dep { get; }
+                               }
+                           
+                               class Service: IService 
+                               {
+                                   [Ordinal(1)]
+                                   internal void Initialize([Tag(374)] char pathSeparator)
+                                   {
+                                       Console.WriteLine($"Initialize 1 {pathSeparator}");
+                                   }
+                           
+                                   [Ordinal(0)]
+                                   public IDependency? Dep { get; set; }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind(374).To(_ => PathSeparator)
+                                           .Bind().To(_ => Now)
+                                           .Bind().To<Dependency>()
+                                           .Root<Service>();
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Resolve<Service>();
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe([$"Initialize 1 {PathSeparator}"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportUsingAliases()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.IO;
+                           using Pure.DI;
+                           using static System.IO.Path;
+                           using MyDataTime = System.DateTime;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                           
+                               class Dependency: IDependency
+                               {
+                                   public Dependency(DateTime now)
+                                   {
+                                   }
+                               }
+                           
+                               interface IService
+                               {
+                                   IDependency? Dep { get; }
+                               }
+                           
+                               class Service: IService 
+                               {
+                                   [Ordinal(1)]
+                                   internal void Initialize([Tag(374)] char pathSeparator)
+                                   {
+                                       Console.WriteLine($"Initialize 1 {pathSeparator}");
+                                   }
+                           
+                                   [Ordinal(0)]
+                                   public IDependency? Dep { get; set; }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind(374).To(_ => PathSeparator)
+                                           .Bind().To(_ => MyDataTime.Now)
+                                           .Bind().To<Dependency>()
+                                           .Root<Service>();
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Resolve<Service>();
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe([$"Initialize 1 {PathSeparator}"], result);
     }
 }

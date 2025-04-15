@@ -17,7 +17,6 @@ sealed class ApiInvocationProcessor(
     INameFormatter nameFormatter,
     ITypes types,
     IWildcardMatcher wildcardMatcher,
-    Func<INamespacesWalker> namespacesWalkerFactory,
     Func<IFactoryApiWalker> factoryApiWalkerFactory,
     Func<ILocalVariableRenamingRewriter> localVariableRenamingRewriterFactory)
     : IApiInvocationProcessor
@@ -262,7 +261,7 @@ sealed class ApiInvocationProcessor(
                                         .SimpleLambdaExpression(SyntaxFactory.Parameter(SyntaxFactory.Identifier("_")))
                                         .WithExpressionBody(SyntaxFactory.IdentifierName(sourceCodeStatement));
                                     factoryType = semantic.GetTypeSymbol<ITypeSymbol>(semanticModel, implementationTypeSyntax);
-                                    VisitFactory(metadataVisitor, semanticModel, factoryType, lambda, true);
+                                    VisitFactory(metadataVisitor, semanticModel, factoryType, lambda);
                                     break;
 
                                 case []:
@@ -569,7 +568,7 @@ sealed class ApiInvocationProcessor(
         var builderLambdaExpression = (LambdaExpressionSyntax)SyntaxFactory.ParseExpression(factory.ToString());
 
         metadataVisitor.VisitContract(new MdContract(semanticModel, source, builderType, ContractKind.Explicit, ImmutableArray.Create(builderTag)));
-        VisitFactory(metadataVisitor, semanticModel, builderType, builderLambdaExpression, true);
+        VisitFactory(metadataVisitor, semanticModel, builderType, builderLambdaExpression);
 
         // Root
         metadataVisitor.VisitRoot(new MdRoot(source, semanticModel, builderType, builderName, builderTag, kind, invocationComments, true));
@@ -598,7 +597,7 @@ sealed class ApiInvocationProcessor(
 
         var paramAttributes = parameters.Select(i => i.AttributeLists.SelectMany(j => j.Attributes).ToList()).ToList();
         var resolvers = new List<MdResolver>();
-        var namespaces = new HashSet<string>();
+        var namespaces = new List<string>();
         for (var i = 0; i < argsTypes.Count; i++)
         {
             var argTypeSyntax = argsTypes[i];
@@ -636,7 +635,7 @@ sealed class ApiInvocationProcessor(
                 ImmutableArray<MdInitializer>.Empty,
                 false));
 
-        metadataVisitor.VisitUsingDirectives(new MdUsingDirectives(namespaces.ToImmutableArray(), ImmutableArray<string>.Empty));
+        metadataVisitor.VisitUsingDirectives(new MdUsingDirectives(namespaces, [], []));
     }
 
     private bool TryGetAttributeType(
@@ -753,8 +752,7 @@ sealed class ApiInvocationProcessor(
         IMetadataVisitor metadataVisitor,
         SemanticModel semanticModel,
         ITypeSymbol resultType,
-        LambdaExpressionSyntax lambdaExpression,
-        bool isManual = false)
+        LambdaExpressionSyntax lambdaExpression)
     {
         CheckNotAsync(lambdaExpression);
         ParameterSyntax contextParameter;
@@ -788,11 +786,6 @@ sealed class ApiInvocationProcessor(
             .Select(meta => CreateInitializer(semanticModel, resultType, meta, contextParameter, ref initializersHasContextTag, localVariableRenamingRewriter))
             .Where(i => i != default)
             .ToImmutableArray();
-
-        if (!isManual)
-        {
-            VisitUsingDirectives(metadataVisitor, semanticModel, lambdaExpression);
-        }
 
         metadataVisitor.VisitFactory(
             new MdFactory(
@@ -844,6 +837,7 @@ sealed class ApiInvocationProcessor(
 
         hasContextTag = hasCtx;
         ExpressionSyntax valueExpression;
+        // ReSharper disable once ConvertSwitchStatementToSwitchExpression
         switch (semanticModel.GetOperation(valueArg.Expression))
         {
             case IMemberReferenceOperation:
@@ -1052,19 +1046,19 @@ sealed class ApiInvocationProcessor(
         }
     }
 
-    private void VisitUsingDirectives(
+    /*private void VisitUsingDirectives(
         IMetadataVisitor metadataVisitor,
         SemanticModel semanticModel,
         SyntaxNode node)
     {
         var namespacesWalker = namespacesWalkerFactory().Initialize(semanticModel);
         namespacesWalker.Visit(node);
-        var namespaces = namespacesWalker.GetResult();
-        if (namespaces.Count > 0)
+        var usingDirectives = namespacesWalker.GetResult();
+        if (usingDirectives.UsingDirectives.Length > 0 || usingDirectives.StaticUsingDirectives.Length > 0)
         {
-            metadataVisitor.VisitUsingDirectives(new MdUsingDirectives(namespaces.ToImmutableArray(), ImmutableArray<string>.Empty));
+            metadataVisitor.VisitUsingDirectives(usingDirectives);
         }
-    }
+    }*/
 
     // ReSharper disable once SuggestBaseTypeForParameter
     private static void NotSupported(SyntaxNode source) =>

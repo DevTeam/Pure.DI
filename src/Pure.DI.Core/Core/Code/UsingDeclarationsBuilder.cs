@@ -13,14 +13,19 @@ sealed class UsingDeclarationsBuilder : IBuilder<CompositionCode, CompositionCod
             return composition;
         }
 
-        foreach (var usingDirective in composition.Source.Source.UsingDirectives.SelectMany(i => i.UsingDirectives).OrderBy(i => i).Distinct())
+        foreach (var usingDirective in composition.Source.Source.UsingDirectives.SelectMany(i => i.UsingDirectives).Distinct())
         {
             code.AppendLine($"using {usingDirective};");
         }
 
-        foreach (var usingDirective in composition.Source.Source.UsingDirectives.SelectMany(i => i.StaticUsingDirectives).OrderBy(i => i).Distinct())
+        foreach (var staticUsingDirective in composition.Source.Source.UsingDirectives.SelectMany(i => i.StaticUsingDirectives).Distinct())
         {
-            code.AppendLine($"using static {usingDirective};");
+            code.AppendLine($"using static {staticUsingDirective};");
+        }
+
+        foreach (var alias in composition.Source.Source.UsingDirectives.SelectMany(i => i.Aliases))
+        {
+            code.AppendLine($"using {alias.name}={alias.type};");
         }
 
         code.AppendLine();

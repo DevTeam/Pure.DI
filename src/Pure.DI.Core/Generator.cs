@@ -62,7 +62,6 @@ public sealed partial class Generator
             .Bind<IMetadataWalker>().To<MetadataWalker>()
             .Bind<IVariablesWalker>().To<VariablesWalker>()
             .Bind<IInjectionsWalker>().To<InjectionsWalker>()
-            .Bind<INamespacesWalker>().To<NamespacesWalker>()
             .Bind<IFactoryApiWalker>().To<FactoryApiWalker>()
             .Bind<IInitializersWalker>().To<InitializersWalker>()
             .Bind<IConstructorInjectionsCounterWalker>().To<ConstructorInjectionsCounterWalker>()

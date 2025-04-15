@@ -51,15 +51,8 @@ sealed class SetupsBuilder(
         _setup = setup;
     }
 
-    public void VisitUsingDirectives(in MdUsingDirectives usingDirectives)
-    {
-        if (usingDirectives.UsingDirectives.Length == 0 && usingDirectives.StaticUsingDirectives.Length == 0)
-        {
-            return;
-        }
-
+    public void VisitUsingDirectives(in MdUsingDirectives usingDirectives) =>
         _usingDirectives.Add(usingDirectives);
-    }
 
     public void VisitBinding(in MdBinding binding)
     {
@@ -225,7 +218,7 @@ sealed class SetupsBuilder(
             }
 
             var position = 0;
-            var namespaces = new HashSet<string>();
+            var namespaces = new List<string>();
             var resolvers = new List<MdResolver>();
             switch (member)
             {
@@ -349,7 +342,7 @@ sealed class SetupsBuilder(
                     false,
                     memberResolver));
 
-            VisitUsingDirectives(new MdUsingDirectives(namespaces.ToImmutableArray(), ImmutableArray<string>.Empty));
+            VisitUsingDirectives(new MdUsingDirectives(namespaces, [], []));
             continue;
 
             MdResolver CreateResolver(ITypeConstructor constructor, string name, ITypeSymbol injectedType, object? tag, ref int curPosition)
