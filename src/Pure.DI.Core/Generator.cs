@@ -4,12 +4,13 @@
 namespace Pure.DI;
 
 using System.Diagnostics;
-using System.Text.RegularExpressions;
 using Core.Code.Parts;
+using static System.Text.RegularExpressions.RegexOptions;
 using static Hint;
 using static Lifetime;
 using static Name;
 using static RootKinds;
+using static StringComparer;
 using static Tag;
 using Metadata = Core.Metadata;
 
@@ -48,7 +49,7 @@ public sealed partial class Generator
             .Bind().To<ApiInvocationProcessor>()
             .Bind().To<DependencyGraphBuilder>()
             .Bind().To<TypeConstructor>()
-            .Bind<IEqualityComparer<string>>().To(_ => StringComparer.InvariantCultureIgnoreCase)
+            .Bind<IEqualityComparer<string>>().To(_ => InvariantCultureIgnoreCase)
             .Bind().To<BindingBuilder>()
             .Bind<ILogger>().To(ctx =>
             {
@@ -56,7 +57,7 @@ public sealed partial class Generator
                 return logger.WithTargetType(ctx.ConsumerTypes[0]);
             })
             .Bind().To<VariablesMap>()
-            .Bind().To(_ => RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline | RegexOptions.IgnoreCase)
+            .Bind().To(_ => Compiled | CultureInvariant | Singleline | IgnoreCase)
 
             // Walkers
             .Bind<IMetadataWalker>().To<MetadataWalker>()
