@@ -1,4 +1,4 @@
-#### Injections as required with arguments
+#### Injections on demand with arguments
 
 This example illustrates dependency injection with parameterized factory functions using Pure.DI, where dependencies are created with runtime-provided arguments. The scenario features a service that generates dependencies with specific IDs passed during instantiation.
 
@@ -144,7 +144,7 @@ classDiagram
 	Dependency o-- "PerResolve" Int32 : Int32
 	Service o-- "PerBlock" FuncᐸInt32ˏIDependencyᐳ : FuncᐸInt32ˏIDependencyᐳ
 	FuncᐸInt32ˏIDependencyᐳ *--  Dependency : IDependency
-	namespace Pure.DI.UsageTests.Basics.InjectionsAsRequiredWithArgumentsScenario {
+	namespace Pure.DI.UsageTests.Basics.InjectionOnDemandWithArgumentsScenario {
 		class Composition {
 		<<partial>>
 		+IService Root

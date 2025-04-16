@@ -1,4 +1,4 @@
-#### Injections as required
+#### Injection on demand
 
 This example demonstrates using dependency injection with Pure.DI to dynamically create dependencies as needed via a factory function. The code defines a service (`Service`) that requires multiple instances of a dependency (`Dependency`). Instead of injecting pre-created instances, the service receives a `Func<IDependency>` factory delegate, allowing it to generate dependencies on demand.
 
@@ -122,7 +122,7 @@ classDiagram
 	Composition ..> Service : IService Root
 	Service o-- "PerBlock" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
 	FuncᐸIDependencyᐳ *--  Dependency : IDependency
-	namespace Pure.DI.UsageTests.Basics.InjectionsAsRequiredScenario {
+	namespace Pure.DI.UsageTests.Basics.InjectionOnDemandScenario {
 		class Composition {
 		<<partial>>
 		+IService Root

@@ -3459,21 +3459,21 @@ Atomically generated smart tag with value "Overrider".
 </blockquote></details>
 
 
-<details><summary>Field Cleaner</summary><blockquote>
-
-Atomically generated smart tag with value "Cleaner".
-            It's used for:
-            
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
-</blockquote></details>
-
-
 <details><summary>Field UniqueTag</summary><blockquote>
 
 Atomically generated smart tag with value "UniqueTag".
             It's used for:
             
             class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
+<details><summary>Field Cleaner</summary><blockquote>
+
+Atomically generated smart tag with value "Cleaner".
+            It's used for:
+            
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
 </blockquote></details>
 
 
@@ -3493,15 +3493,6 @@ Atomically generated smart tag with value "Injection".
 </blockquote></details>
 
 
-<details><summary>Field Override</summary><blockquote>
-
-Atomically generated smart tag with value "Override".
-            It's used for:
-            
-            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
-</blockquote></details>
-
-
 <details><summary>Field CompositionClass</summary><blockquote>
 
 Atomically generated smart tag with value "CompositionClass".
@@ -3517,6 +3508,15 @@ Atomically generated smart tag with value "UsingDeclarations".
             It's used for:
             
             class _Generator__CompositionClassBuilder_ <-- _IBuilder`2_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field Override</summary><blockquote>
+
+Atomically generated smart tag with value "Override".
+            It's used for:
+            
+            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
@@ -4340,8 +4340,8 @@ Creates an attribute instance.
 - [Simplified binding](readme/simplified-binding.md)
 - [Factory](readme/factory.md)
 - [Simplified factory](readme/simplified-factory.md)
-- [Injections as required](readme/injections-as-required.md)
-- [Injections as required with arguments](readme/injections-as-required-with-arguments.md)
+- [Injection on demand](readme/injection-on-demand.md)
+- [Injections on demand with arguments](readme/injections-on-demand-with-arguments.md)
 - [Class arguments](readme/class-arguments.md)
 - [Root arguments](readme/root-arguments.md)
 - [Tags](readme/tags.md)

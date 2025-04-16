@@ -1,7 +1,7 @@
 ﻿/*
 $v=true
 $p=3
-$d=Injections as required with arguments
+$d=Injections on demand with arguments
 $h=This example illustrates dependency injection with parameterized factory functions using Pure.DI, where dependencies are created with runtime-provided arguments. The scenario features a service that generates dependencies with specific IDs passed during instantiation.
 $f=Key components:
 $f=- `Dependency` class accepts an int id constructor argument, stored in its `Id` property.
@@ -19,7 +19,7 @@ $r=Shouldly
 // ReSharper disable CheckNamespace
 // ReSharper disable ArrangeTypeModifiers
 
-namespace Pure.DI.UsageTests.Basics.InjectionsAsRequiredWithArgumentsScenario;
+namespace Pure.DI.UsageTests.Basics.InjectionOnDemandWithArgumentsScenario;
 
 using Shouldly;
 using Xunit;

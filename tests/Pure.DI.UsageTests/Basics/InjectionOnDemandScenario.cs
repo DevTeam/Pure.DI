@@ -1,7 +1,7 @@
 ﻿/*
 $v=true
 $p=3
-$d=Injections as required
+$d=Injection on demand
 $h=This example demonstrates using dependency injection with Pure.DI to dynamically create dependencies as needed via a factory function. The code defines a service (`Service`) that requires multiple instances of a dependency (`Dependency`). Instead of injecting pre-created instances, the service receives a `Func<IDependency>` factory delegate, allowing it to generate dependencies on demand.
 $f=Key elements:
 $f=- `Dependency` is bound to the `IDependency` interface, and `Service` is bound to `IService`.
@@ -16,7 +16,7 @@ $r=Shouldly
 // ReSharper disable CheckNamespace
 // ReSharper disable ArrangeTypeModifiers
 
-namespace Pure.DI.UsageTests.Basics.InjectionsAsRequiredScenario;
+namespace Pure.DI.UsageTests.Basics.InjectionOnDemandScenario;
 
 using Shouldly;
 using Xunit;
