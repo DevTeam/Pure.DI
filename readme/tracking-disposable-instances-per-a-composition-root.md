@@ -157,13 +157,65 @@ partial class Composition
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public object Resolve(Type type)
   {
+    var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets[index];
+    return pair.Key == type ? pair.Value.Resolve(this) : Resolve(type, index);
+  }
+
+  [MethodImpl(MethodImplOptions.NoInlining)]
+  private object Resolve(Type type, int index)
+  {
+    var finish = index + _bucketSize;
+    while (++index < finish)
+    {
+      ref var pair = ref _buckets[index];
+      if (pair.Key == type)
+      {
+        return pair.Value.Resolve(this);
+      }
+    }
+
     throw new InvalidOperationException($"{CannotResolveMessage} {OfTypeMessage} {type}.");
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public object Resolve(Type type, object? tag)
   {
+    var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets[index];
+    return pair.Key == type ? pair.Value.ResolveByTag(this, tag) : Resolve(type, tag, index);
+  }
+
+  [MethodImpl(MethodImplOptions.NoInlining)]
+  private object Resolve(Type type, object? tag, int index)
+  {
+    var finish = index + _bucketSize;
+    while (++index < finish)
+    {
+      ref var pair = ref _buckets[index];
+      if (pair.Key == type)
+      {
+        return pair.Value.ResolveByTag(this, tag);
+      }
+    }
+
     throw new InvalidOperationException($"{CannotResolveMessage} \"{tag}\" {OfTypeMessage} {type}.");
+  }
+
+  private readonly static int _bucketSize;
+  private readonly static Pair<Type, IResolver<Composition, object>>[] _buckets;
+
+  static Composition()
+  {
+    var valResolver_0000 = new Resolver_0000();
+    Resolver<Owned<IService>>.Value = valResolver_0000;
+    _buckets = Buckets<Type, IResolver<Composition, object>>.Create(
+      1,
+      out _bucketSize,
+      new Pair<Type, IResolver<Composition, object>>[1]
+      {
+         new Pair<Type, IResolver<Composition, object>>(typeof(Owned<IService>), valResolver_0000)
+      });
   }
 
   private const string CannotResolveMessage = "Cannot resolve composition root ";
@@ -181,6 +233,35 @@ partial class Composition
     public virtual T ResolveByTag(Composition composite, object tag)
     {
       throw new InvalidOperationException($"{CannotResolveMessage}\"{tag}\" {OfTypeMessage}{typeof(T)}.");
+    }
+  }
+
+  private sealed class Resolver_0000: Resolver<Owned<IService>>, IResolver<Composition, object>
+  {
+    public override Owned<IService> Resolve(Composition composition)
+    {
+      return composition.Root;
+    }
+
+    public override Owned<IService> ResolveByTag(Composition composition, object tag)
+    {
+      switch (tag)
+      {
+        case null:
+          return composition.Root;
+
+        default:
+          return base.ResolveByTag(composition, tag);
+      }
+    }
+    object IResolver<Composition, object>.Resolve(Composition composition)
+    {
+      return Resolve(composition);
+    }
+
+    object IResolver<Composition, object>.ResolveByTag(Composition composition, object tag)
+    {
+      return ResolveByTag(composition, tag);
     }
   }
 }
