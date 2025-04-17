@@ -19,7 +19,7 @@
             <Pack>true</Pack>
             <PackagePath>contentFiles/cs</PackagePath>
         </Compile>
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.2" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.4" />
     </ItemGroup>
 
 </Project>
