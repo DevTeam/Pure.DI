@@ -8,12 +8,14 @@ using static Tag;
 
 sealed class CompositionClassBuilder(
     [Tag(UsingDeclarations)] IBuilder<CompositionCode, CompositionCode> usingDeclarations,
-    IReadOnlyCollection<IClassPartBuilder> classPartBuilders,
+    IEnumerable<IClassPartBuilder> classPartBuilders,
     [Tag(typeof(ClassCommenter))] ICommenter<Unit> classCommenter,
     IInformation information,
     CancellationToken cancellationToken)
     : IBuilder<CompositionCode, CompositionCode>
 {
+    private readonly List<IClassPartBuilder> _classPartBuilders = classPartBuilders.OrderBy(i => i.Part).ToList();
+
     public CompositionCode Build(CompositionCode composition)
     {
         var code = composition.Code;
@@ -56,7 +58,7 @@ sealed class CompositionClassBuilder(
         {
             var prevCount = composition.MembersCount;
             // Generate class members
-            foreach (var builder in classPartBuilders)
+            foreach (var builder in _classPartBuilders)
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 if (prevCount != composition.MembersCount)

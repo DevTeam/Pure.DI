@@ -12,6 +12,7 @@ using static Name;
 using static RootKinds;
 using static StringComparer;
 using static Tag;
+using static Unit;
 using Metadata = Core.Metadata;
 
 // @formatter:off
@@ -46,6 +47,7 @@ public sealed partial class Generator
         .RootArg<CancellationToken>(cancellationToken)
 
         .DefaultLifetime(Transient)
+            .Bind().To(_ => GetType().Assembly)
             .Bind().To<ApiInvocationProcessor>()
             .Bind().To<DependencyGraphBuilder>()
             .Bind().To<TypeConstructor>()
@@ -73,12 +75,11 @@ public sealed partial class Generator
         .DefaultLifetime(Singleton)
             .Bind().To<Cache<TT1, TT2>>()
             .Bind().To<ObserversRegistry>()
-            .Bind().To((IBuilder<Unit, IEnumerable<Source>> api) => api.Build(Unit.Shared))
+            .Bind().To((IBuilder<Unit, IEnumerable<Source>> api) => api.Build(Shared))
             .Bind().To<Metadata>()
             .Bind().To<Information>()
 
         .DefaultLifetime(PerBlock)
-            .Bind().To(_ => typeof(CodeGenerator).Assembly)
             .Bind().To<Arguments>()
             .Bind().To<Comments>()
             .Bind().To<BuildTools>()
@@ -171,8 +172,6 @@ public sealed partial class Generator
             .Bind(Unique).To<ToStringMethodBuilder>()
 
         .DefaultLifetime(PerResolve)
-            .Bind<IReadOnlyCollection<IClassPartBuilder>>()
-                .To((IEnumerable<IClassPartBuilder> builders) => builders.OrderBy(i => i.Part).ToList())
             .Bind().To<TypeResolver>()
             .Bind().To<LogObserver>()
             .Bind().To<Types>()
