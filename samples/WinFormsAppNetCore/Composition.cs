@@ -24,7 +24,6 @@ partial class Composition
 
         // Models
         .Bind().To<Log<TT>>()
-        .Bind().To(_ => TimeSpan.FromSeconds(1))
         .Bind().To<Timer>()
         .Bind().As(PerBlock).To<SystemClock>()
 

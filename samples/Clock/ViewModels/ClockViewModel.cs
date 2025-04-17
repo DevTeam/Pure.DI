@@ -8,12 +8,12 @@ class ClockViewModel : ViewModel, IClockViewModel, IDisposable, IObserver<Tick>
     public ClockViewModel(
         ILog<ClockViewModel> log,
         IClock clock,
-        ITimer timer)
+        Func<TimeSpan, ITimer> timerFactory)
     {
         _log = log;
         _clock = clock;
         _now = _clock.Now;
-        _timerToken = timer.Subscribe(this);
+        _timerToken = timerFactory(TimeSpan.FromSeconds(1)).Subscribe(this);
         log.Info("Created");
     }
     private readonly IClock _clock;

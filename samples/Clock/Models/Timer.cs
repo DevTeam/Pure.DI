@@ -5,7 +5,6 @@ using System.Collections.Generic;
 // ReSharper disable once ClassNeverInstantiated.Global
 class Timer : ITimer, IDisposable
 {
-
     // ReSharper disable once MemberCanBePrivate.Global
     public Timer(ILog<Timer> log, TimeSpan period)
     {

@@ -16,14 +16,14 @@ public class ClockViewModelTest
         // Given
         var subscription = new Mock<IDisposable>();
         var timer = new Mock<ITimer>();
-        timer
-            .Setup(i => i.Subscribe(It.IsAny<IObserver<Tick>>()))
-            .Returns(subscription.Object);
+        timer.Setup(i => i.Subscribe(It.IsAny<IObserver<Tick>>())).Returns(subscription.Object);
+        var timerFactory = new Mock<Func<TimeSpan, ITimer>>();
+        timerFactory.Setup(i => i(It.IsAny<TimeSpan>())).Returns(timer.Object);
 
         var viewModel = new ClockViewModel(
             Mock.Of<ILog<ClockViewModel>>(),
             Mock.Of<IClock>(),
-            timer.Object)
+            timerFactory.Object)
         {
             Dispatcher = _dispatcher.Object,
             Log = Mock.Of<ILog<ViewModel>>()
@@ -43,11 +43,13 @@ public class ClockViewModelTest
         var now = new DateTimeOffset(2020, 8, 19, 19, 39, 47, TimeSpan.Zero);
         var clock = new Mock<IClock>();
         clock.SetupGet(i => i.Now).Returns(now);
+        var timerFactory = new Mock<Func<TimeSpan, ITimer>>();
+        timerFactory.Setup(i => i(It.IsAny<TimeSpan>())).Returns(Mock.Of<ITimer>());
 
         var viewModel = new ClockViewModel(
             Mock.Of<ILog<ClockViewModel>>(),
             clock.Object,
-            Mock.Of<ITimer>())
+            timerFactory.Object)
         {
             Dispatcher = _dispatcher.Object,
             Log = Mock.Of<ILog<ViewModel>>()
@@ -68,15 +70,16 @@ public class ClockViewModelTest
         // Given
         var timer = new Mock<ITimer>();
         IObserver<Tick>? observer = null;
-        timer
-            .Setup(i => i.Subscribe(It.IsAny<IObserver<Tick>>()))
+        timer.Setup(i => i.Subscribe(It.IsAny<IObserver<Tick>>()))
             .Callback(new Action<IObserver<Tick>>(o => { observer = o; }))
             .Returns(Mock.Of<IDisposable>());
+        var timerFactory = new Mock<Func<TimeSpan, ITimer>>();
+        timerFactory.Setup(i => i(It.IsAny<TimeSpan>())).Returns(timer.Object);
 
         var viewModel = new ClockViewModel(
             Mock.Of<ILog<ClockViewModel>>(),
             Mock.Of<IClock>(),
-            timer.Object)
+            timerFactory.Object)
         {
             Dispatcher = _dispatcher.Object,
             Log = Mock.Of<ILog<ViewModel>>()

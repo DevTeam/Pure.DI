@@ -26,7 +26,6 @@ partial class Composition : ServiceProviderFactory<Composition>
 
         // Services
         .Bind().To<Log<TT>>()
-        .Bind().To(_ => TimeSpan.FromSeconds(1))
         .Bind().As(Singleton).To<Timer>()
         .Bind().As(PerBlock).To<SystemClock>()
         .Bind().As(Singleton).To<WeatherForecastService>()

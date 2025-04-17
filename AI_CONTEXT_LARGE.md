@@ -7442,7 +7442,6 @@ internal partial class Composition
 
         // Models
         .Bind().To<Log<TT>>()
-        .Bind().To(_ => TimeSpan.FromSeconds(1))
         .Bind().As(Singleton).To<Clock.Models.Timer>()
         .Bind().As(PerBlock).To<SystemClock>()
     
@@ -8656,7 +8655,6 @@ internal partial class Composition
 
         // Models
         .Bind().To<Log<TT>>()
-        .Bind().To(_ => TimeSpan.FromSeconds(1))
         .Bind().To<Clock.Models.Timer>()
         .Bind().As(PerBlock).To<SystemClock>()
     
@@ -8739,7 +8737,6 @@ internal partial class Composition
 
         // Models
         .Bind().To<Log<TT>>()
-        .Bind().To(_ => TimeSpan.FromSeconds(1))
         .Bind().To<Clock.Models.Timer>()
         .Bind().As(PerBlock).To<SystemClock>()
     
@@ -12180,24 +12177,6 @@ Atomically generated smart tag with value "Overrider".
 </blockquote></details>
 
 
-<details><summary>Field UniqueTag</summary><blockquote>
-
-Atomically generated smart tag with value "UniqueTag".
-            It's used for:
-            
-            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve_
-</blockquote></details>
-
-
-<details><summary>Field Cleaner</summary><blockquote>
-
-Atomically generated smart tag with value "Cleaner".
-            It's used for:
-            
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
-</blockquote></details>
-
-
 <details><summary>Field GenericType</summary><blockquote>
 
 Atomically generated smart tag with value "GenericType".
@@ -12211,6 +12190,24 @@ Atomically generated smart tag with value "GenericType".
 
 Atomically generated smart tag with value "Injection".
             
+</blockquote></details>
+
+
+<details><summary>Field Cleaner</summary><blockquote>
+
+Atomically generated smart tag with value "Cleaner".
+            It's used for:
+            
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field Override</summary><blockquote>
+
+Atomically generated smart tag with value "Override".
+            It's used for:
+            
+            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
@@ -12232,12 +12229,12 @@ Atomically generated smart tag with value "UsingDeclarations".
 </blockquote></details>
 
 
-<details><summary>Field Override</summary><blockquote>
+<details><summary>Field UniqueTag</summary><blockquote>
 
-Atomically generated smart tag with value "Override".
+Atomically generated smart tag with value "UniqueTag".
             It's used for:
             
-            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
+            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
