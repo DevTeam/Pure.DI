@@ -21,7 +21,6 @@ internal partial class Composition
 
         // Models
         .Bind().To<Log<TT>>()
-        .Bind().To(_ => TimeSpan.FromSeconds(1))
         .Bind().As(Singleton).To<Clock.Models.Timer>()
         .Bind().As(PerBlock).To<SystemClock>()
     
