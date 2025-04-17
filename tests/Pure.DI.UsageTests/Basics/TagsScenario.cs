@@ -2,7 +2,13 @@
 $v=true
 $p=6
 $d=Tags
-$h=Sometimes it's important to take control of building a dependency graph. For example, when there are multiple implementations of the same contract. In this case, _tags_ will help:
+$h=Sometimes it's important to take control of building a dependency graph. For example, when there are different implementations of the same interface. In this case, _tags_ will help:
+$f=The example shows how to:
+$f=- Define multiple bindings for the same interface
+$f=- Use tags to differentiate between implementations
+$f=- Control lifetime management
+$f=- Inject tagged dependencies into constructors
+$f=
 $f=The tag can be a constant, a type, a [smart tag](smart-tags.md), or a value of an `Enum` type. The _default_ and _null_ tags are also supported.
 $r=Shouldly
 */
@@ -34,9 +40,7 @@ public class Scenario
             // The `default` tag is used to resolve dependencies
             // when the tag was not specified by the consumer
             .Bind<IDependency>("AbcTag", default).To<AbcDependency>()
-            .Bind<IDependency>("XyzTag")
-            .As(Lifetime.Singleton)
-            .To<XyzDependency>()
+            .Bind<IDependency>("XyzTag").As(Lifetime.Singleton).To<XyzDependency>()
             .Bind<IService>().To<Service>()
 
             // "XyzRoot" is root name, "XyzTag" is tag

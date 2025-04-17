@@ -100,17 +100,17 @@ partial class Composition
     {
       int overInt320;
       Func<int, IDependency<string>> perBlockFunc1;
-      var localLockObject143 = new Object();
-      Func<int, IDependency<string>> localFactory144 = new Func<int, IDependency<string>>((int localArg15) =>
+      var localLockObject142 = new Object();
+      Func<int, IDependency<string>> localFactory143 = new Func<int, IDependency<string>>((int localArg13) =>
       {
-        lock (localLockObject143)
+        lock (localLockObject142)
         {
-          overInt320 = localArg15;
-          IDependency<string> localValue145 = new Dependency<string>(overInt320);
-          return localValue145;
+          overInt320 = localArg13;
+          IDependency<string> localValue144 = new Dependency<string>(overInt320);
+          return localValue144;
         }
       });
-      perBlockFunc1 = localFactory144;
+      perBlockFunc1 = localFactory143;
       return new Service<string>(perBlockFunc1);
     }
   }

@@ -184,8 +184,8 @@ partial class Composition
           }
         }
 
-        Dependency localDependency101 = new Dependency(overString2, _root._singletonClock52, overInt320, overInt321, overColor3);
-        return localDependency101;
+        Dependency localDependency100 = new Dependency(overString2, _root._singletonClock52, overInt320, overInt321, overColor3);
+        return localDependency100;
       };
       return new Service(transientFunc1);
     }

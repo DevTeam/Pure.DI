@@ -1,6 +1,6 @@
 #### Tags
 
-Sometimes it's important to take control of building a dependency graph. For example, when there are multiple implementations of the same contract. In this case, _tags_ will help:
+Sometimes it's important to take control of building a dependency graph. For example, when there are different implementations of the same interface. In this case, _tags_ will help:
 
 
 ```c#
@@ -11,9 +11,7 @@ DI.Setup(nameof(Composition))
     // The `default` tag is used to resolve dependencies
     // when the tag was not specified by the consumer
     .Bind<IDependency>("AbcTag", default).To<AbcDependency>()
-    .Bind<IDependency>("XyzTag")
-    .As(Lifetime.Singleton)
-    .To<XyzDependency>()
+    .Bind<IDependency>("XyzTag").As(Lifetime.Singleton).To<XyzDependency>()
     .Bind<IService>().To<Service>()
 
     // "XyzRoot" is root name, "XyzTag" is tag
@@ -86,6 +84,12 @@ dotnet run
 ```
 
 </details>
+
+The example shows how to:
+- Define multiple bindings for the same interface
+- Use tags to differentiate between implementations
+- Control lifetime management
+- Inject tagged dependencies into constructors
 
 The tag can be a constant, a type, a [smart tag](smart-tags.md), or a value of an `Enum` type. The _default_ and _null_ tags are also supported.
 

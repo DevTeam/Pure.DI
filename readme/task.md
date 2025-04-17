@@ -111,25 +111,25 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     () =>
     {
-      IDependency localValue114 = new Dependency();
-      return localValue114;
+      IDependency localValue113 = new Dependency();
+      return localValue113;
     });
     TaskCreationOptions transientTaskCreationOptions4 = TaskCreationOptions.None;
     TaskContinuationOptions transientTaskContinuationOptions5 = TaskContinuationOptions.None;
     TaskScheduler transientTaskScheduler6 = TaskScheduler.Current;
     TaskFactory<IDependency> perBlockTaskFactory3;
-    CancellationToken localCancellationToken115 = cancellationToken;
-    TaskCreationOptions localTaskCreationOptions116 = transientTaskCreationOptions4;
-    TaskContinuationOptions localTaskContinuationOptions117 = transientTaskContinuationOptions5;
-    TaskScheduler localTaskScheduler118 = transientTaskScheduler6;
-    perBlockTaskFactory3 = new TaskFactory<IDependency>(localCancellationToken115, localTaskCreationOptions116, localTaskContinuationOptions117, localTaskScheduler118);
+    CancellationToken localCancellationToken114 = cancellationToken;
+    TaskCreationOptions localTaskCreationOptions115 = transientTaskCreationOptions4;
+    TaskContinuationOptions localTaskContinuationOptions116 = transientTaskContinuationOptions5;
+    TaskScheduler localTaskScheduler117 = transientTaskScheduler6;
+    perBlockTaskFactory3 = new TaskFactory<IDependency>(localCancellationToken114, localTaskCreationOptions115, localTaskContinuationOptions116, localTaskScheduler117);
     Task<IDependency> transientTask1;
     // Injects an instance factory
-    Func<IDependency> localFactory119 = perBlockFunc2;
+    Func<IDependency> localFactory118 = perBlockFunc2;
     // Injects a task factory creating and scheduling task objects
-    TaskFactory<IDependency> localTaskFactory120 = perBlockTaskFactory3;
+    TaskFactory<IDependency> localTaskFactory119 = perBlockTaskFactory3;
     // Creates and starts a task using the instance factory
-    transientTask1 = localTaskFactory120.StartNew(localFactory119);
+    transientTask1 = localTaskFactory119.StartNew(localFactory118);
     return new Service(transientTask1);
   }
 }

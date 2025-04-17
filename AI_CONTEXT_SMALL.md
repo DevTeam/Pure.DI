@@ -317,71 +317,39 @@ For class `Dependency`, the `Bind().To<Dependency>()` binding will be equivalent
 
 ## Factory
 
-This example demonstrates how to create and initialize an instance manually.
-At the compilation stage, the set of dependencies that an object needs in order to be created is determined. In most cases, this happens automatically according to the set of constructors and their arguments and does not require any additional customization efforts. But sometimes it is necessary to manually create an object, as in lines of code:
+This example demonstrates how to create and initialize an instance manually. At the compilation stage, the set of dependencies that the object to be created needs is determined. In most cases, this happens automatically, according to the set of constructors and their arguments, and does not require additional customization efforts. But sometimes it is necessary to manually create and/or initialize an object, as in lines of code:
 
 ```c#
 using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Bind().To(_ => DateTimeOffset.Now)
-    .RootArg<bool>("isFake", "FakeArgTag")
     .Bind<IDependency>().To<IDependency>(ctx =>
     {
-        // When building a composition of objects,
-        // all of this code will be outside the lambda function.
-
-        // Some custom logic for creating an instance.
-        // For example, here's how you can inject and initialize
-        // an instance of a particular type:
-
-        ctx.Inject<bool>("FakeArgTag", out var isFake);
-        if (isFake)
-        {
-            return new FakeDependency();
-        }
-
+        // Some logic for creating an instance:
         ctx.Inject(out Dependency dependency);
         dependency.Initialize();
         return dependency;
-
     })
     .Bind<IService>().To<Service>()
 
     // Composition root
-    .Root<IService>("GetMyService");
+    .Root<IService>("MyService");
 
 var composition = new Composition();
-
-var service = composition.GetMyService(isFake: false);
-service.Dependency.ShouldBeOfType<Dependency>();
+var service = composition.MyService;
 service.Dependency.IsInitialized.ShouldBeTrue();
-        
-var serviceWithFakeDependency = composition.GetMyService(isFake: true);
-serviceWithFakeDependency.Dependency.ShouldBeOfType<FakeDependency>();
 
 interface IDependency
 {
-    DateTimeOffset Time { get; }
-
     bool IsInitialized { get; }
 }
 
-class Dependency(DateTimeOffset time) : IDependency
+class Dependency : IDependency
 {
-    public DateTimeOffset Time { get; } = time;
-
     public bool IsInitialized { get; private set; }
 
     public void Initialize() => IsInitialized = true;
-}
-
-class FakeDependency : IDependency
-{
-    public DateTimeOffset Time => DateTimeOffset.MinValue;
-
-    public bool IsInitialized => true;
 }
 
 interface IService
@@ -399,7 +367,11 @@ To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
-This approach is more expensive to maintain, but allows you to create objects more flexibly by passing them some state and introducing dependencies. As in the case of automatic dependency injecting, objects give up control on embedding, and the whole process takes place when the object graph is created.
+There are scenarios where manual control over the creation process is required, such as:
+- When additional initialization logic is needed
+- When complex construction steps are required
+- When specific object states need to be set during creation
+
 > [!IMPORTANT]
 > The method `Inject()`cannot be used outside of the binding setup.
 
@@ -412,13 +384,13 @@ using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Bind("now datetime").To(_ => DateTimeOffset.Now)
+    .Bind("now").To(_ => DateTimeOffset.Now)
     // Injects Dependency and DateTimeOffset instances
     // and performs further initialization logic
     // defined in the lambda function
     .Bind<IDependency>().To((
         Dependency dependency,
-        [Tag("now datetime")] DateTimeOffset time) =>
+        [Tag("now")] DateTimeOffset time) =>
     {
         dependency.Initialize(time);
         return dependency;
@@ -467,6 +439,7 @@ To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
+The example creates a `service` that depends on a `dependency` initialized with a specific timestamp. The `Tag` attribute allows specifying named dependencies for more complex scenarios.
 
 ## Injection on demand
 

@@ -69,7 +69,21 @@ dotnet run
 
 </details>
 
-The default builder method name is `BuildUp`. The first argument to this method will always be the instance to be built.
+Important Notes:
+- The default builder method name is `BuildUp`
+- The first argument to the builder method is always the instance to be built
+
+Advantages:
+- Allows working with pre-existing objects
+- Provides flexibility in dependency injection
+- Supports partial injection of dependencies
+- Can be used with legacy code
+
+Use Cases:
+- When objects are created outside the DI container
+- For working with third-party libraries
+- When migrating existing code to DI
+- For complex object graphs where full construction is not feasible
 
 The following partial class will be generated:
 

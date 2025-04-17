@@ -83,7 +83,9 @@ dotnet run
 
 </details>
 
-The default builder method name is `BuildUp`. The first argument to this method will always be the instance to be built.
+Important Notes:
+- The default builder method name is `BuildUp`
+- The first argument to the builder method is always the instance to be built
 
 The following partial class will be generated:
 

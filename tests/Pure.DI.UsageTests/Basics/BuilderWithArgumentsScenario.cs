@@ -2,8 +2,22 @@
 $v=true
 $p=9
 $d=Builder with arguments
-$h=Builders can be used with arguments as in the example below:
-$f=The default builder method name is `BuildUp`. The first argument to this method will always be the instance to be built. The remaining arguments of this method will be listed in the order in which they are defined in the setup.
+$h=This example demonstrates how to use builders with custom arguments in dependency injection. It shows how to pass additional parameters during the build-up process.
+$f=Important Notes:
+$f=- The default builder method name is `BuildUp`
+$f=- The first argument to the builder method is always the instance to be built
+$f=- Additional arguments are passed in the order they are defined in the setup
+$f=- Root arguments can be used to provide custom values during build-up
+$f=
+$f=Use Cases:
+$f=- When additional parameters are required during object construction
+$f=- For scenarios where dependencies depend on runtime values
+$f=- When specific initialization data is needed
+$f=- For conditional injection based on provided arguments
+$f=
+$f=Best Practices
+$f=- Keep the number of builder arguments minimal
+$f=- Use meaningful names for root arguments
 $r=Shouldly
 */
 

@@ -1,6 +1,6 @@
 #### Builder with arguments
 
-Builders can be used with arguments as in the example below:
+This example demonstrates how to use builders with custom arguments in dependency injection. It shows how to pass additional parameters during the build-up process.
 
 
 ```c#
@@ -70,7 +70,21 @@ dotnet run
 
 </details>
 
-The default builder method name is `BuildUp`. The first argument to this method will always be the instance to be built. The remaining arguments of this method will be listed in the order in which they are defined in the setup.
+Important Notes:
+- The default builder method name is `BuildUp`
+- The first argument to the builder method is always the instance to be built
+- Additional arguments are passed in the order they are defined in the setup
+- Root arguments can be used to provide custom values during build-up
+
+Use Cases:
+- When additional parameters are required during object construction
+- For scenarios where dependencies depend on runtime values
+- When specific initialization data is needed
+- For conditional injection based on provided arguments
+
+Best Practices
+- Keep the number of builder arguments minimal
+- Use meaningful names for root arguments
 
 The following partial class will be generated:
 

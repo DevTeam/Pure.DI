@@ -1,6 +1,6 @@
 #### Build up of an existing object
 
-In other words, injecting the necessary dependencies via methods, properties, or fields into an existing object.
+This example demonstrates the Build-Up pattern in dependency injection, where an existing object is injected with necessary dependencies through its properties, methods, or fields.
 
 
 ```c#
@@ -36,14 +36,12 @@ interface IDependency
 class Dependency : IDependency
 {
     // The Dependency attribute specifies to perform an injection and its order
-    [Dependency]
-    public string Name { get; set; } = "";
+    [Dependency] public string Name { get; set; } = "";
 
     public Guid Id { get; private set; } = Guid.Empty;
 
     // The Dependency attribute specifies to perform an injection and its order
-    [Dependency]
-    public void SetId(Guid id) => Id = id;
+    [Dependency] public void SetId(Guid id) => Id = id;
 }
 
 interface IService
@@ -80,6 +78,10 @@ dotnet run
 ```
 
 </details>
+
+Key Concepts:
+**Build-Up** - injecting dependencies into an already created object
+**Dependency Attribute** - marker for identifying injectable members
 
 The following partial class will be generated:
 

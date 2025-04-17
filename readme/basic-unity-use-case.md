@@ -128,9 +128,9 @@ partial class Composition
     }
 
     Clock transientClock0;
-    Clock localBuildingInstance156 = buildingInstance;
-    localBuildingInstance156.ClockService = _root._singletonClockService51;
-    transientClock0 = localBuildingInstance156;
+    Clock localBuildingInstance155 = buildingInstance;
+    localBuildingInstance155.ClockService = _root._singletonClockService51;
+    transientClock0 = localBuildingInstance155;
     return transientClock0;
   }
 }

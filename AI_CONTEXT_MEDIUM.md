@@ -317,71 +317,39 @@ For class `Dependency`, the `Bind().To<Dependency>()` binding will be equivalent
 
 ## Factory
 
-This example demonstrates how to create and initialize an instance manually.
-At the compilation stage, the set of dependencies that an object needs in order to be created is determined. In most cases, this happens automatically according to the set of constructors and their arguments and does not require any additional customization efforts. But sometimes it is necessary to manually create an object, as in lines of code:
+This example demonstrates how to create and initialize an instance manually. At the compilation stage, the set of dependencies that the object to be created needs is determined. In most cases, this happens automatically, according to the set of constructors and their arguments, and does not require additional customization efforts. But sometimes it is necessary to manually create and/or initialize an object, as in lines of code:
 
 ```c#
 using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Bind().To(_ => DateTimeOffset.Now)
-    .RootArg<bool>("isFake", "FakeArgTag")
     .Bind<IDependency>().To<IDependency>(ctx =>
     {
-        // When building a composition of objects,
-        // all of this code will be outside the lambda function.
-
-        // Some custom logic for creating an instance.
-        // For example, here's how you can inject and initialize
-        // an instance of a particular type:
-
-        ctx.Inject<bool>("FakeArgTag", out var isFake);
-        if (isFake)
-        {
-            return new FakeDependency();
-        }
-
+        // Some logic for creating an instance:
         ctx.Inject(out Dependency dependency);
         dependency.Initialize();
         return dependency;
-
     })
     .Bind<IService>().To<Service>()
 
     // Composition root
-    .Root<IService>("GetMyService");
+    .Root<IService>("MyService");
 
 var composition = new Composition();
-
-var service = composition.GetMyService(isFake: false);
-service.Dependency.ShouldBeOfType<Dependency>();
+var service = composition.MyService;
 service.Dependency.IsInitialized.ShouldBeTrue();
-        
-var serviceWithFakeDependency = composition.GetMyService(isFake: true);
-serviceWithFakeDependency.Dependency.ShouldBeOfType<FakeDependency>();
 
 interface IDependency
 {
-    DateTimeOffset Time { get; }
-
     bool IsInitialized { get; }
 }
 
-class Dependency(DateTimeOffset time) : IDependency
+class Dependency : IDependency
 {
-    public DateTimeOffset Time { get; } = time;
-
     public bool IsInitialized { get; private set; }
 
     public void Initialize() => IsInitialized = true;
-}
-
-class FakeDependency : IDependency
-{
-    public DateTimeOffset Time => DateTimeOffset.MinValue;
-
-    public bool IsInitialized => true;
 }
 
 interface IService
@@ -399,7 +367,11 @@ To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
-This approach is more expensive to maintain, but allows you to create objects more flexibly by passing them some state and introducing dependencies. As in the case of automatic dependency injecting, objects give up control on embedding, and the whole process takes place when the object graph is created.
+There are scenarios where manual control over the creation process is required, such as:
+- When additional initialization logic is needed
+- When complex construction steps are required
+- When specific object states need to be set during creation
+
 > [!IMPORTANT]
 > The method `Inject()`cannot be used outside of the binding setup.
 
@@ -412,13 +384,13 @@ using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Bind("now datetime").To(_ => DateTimeOffset.Now)
+    .Bind("now").To(_ => DateTimeOffset.Now)
     // Injects Dependency and DateTimeOffset instances
     // and performs further initialization logic
     // defined in the lambda function
     .Bind<IDependency>().To((
         Dependency dependency,
-        [Tag("now datetime")] DateTimeOffset time) =>
+        [Tag("now")] DateTimeOffset time) =>
     {
         dependency.Initialize(time);
         return dependency;
@@ -467,6 +439,7 @@ To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
+The example creates a `service` that depends on a `dependency` initialized with a specific timestamp. The `Tag` attribute allows specifying named dependencies for more complex scenarios.
 
 ## Injection on demand
 
@@ -731,7 +704,7 @@ When using composition root arguments, compilation warnings are shown if `Resolv
 
 ## Tags
 
-Sometimes it's important to take control of building a dependency graph. For example, when there are multiple implementations of the same contract. In this case, _tags_ will help:
+Sometimes it's important to take control of building a dependency graph. For example, when there are different implementations of the same interface. In this case, _tags_ will help:
 
 ```c#
 using Shouldly;
@@ -741,9 +714,7 @@ DI.Setup(nameof(Composition))
     // The `default` tag is used to resolve dependencies
     // when the tag was not specified by the consumer
     .Bind<IDependency>("AbcTag", default).To<AbcDependency>()
-    .Bind<IDependency>("XyzTag")
-    .As(Lifetime.Singleton)
-    .To<XyzDependency>()
+    .Bind<IDependency>("XyzTag").As(Lifetime.Singleton).To<XyzDependency>()
     .Bind<IService>().To<Service>()
 
     // "XyzRoot" is root name, "XyzTag" is tag
@@ -793,6 +764,12 @@ class Service(
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+The example shows how to:
+- Define multiple bindings for the same interface
+- Use tags to differentiate between implementations
+- Control lifetime management
+- Inject tagged dependencies into constructors
 
 The tag can be a constant, a type, a [smart tag](smart-tags.md), or a value of an `Enum` type. The _default_ and _null_ tags are also supported.
 
@@ -883,7 +860,7 @@ To run the above code, the following NuGet packages must be added:
 
 ## Build up of an existing object
 
-In other words, injecting the necessary dependencies via methods, properties, or fields into an existing object.
+This example demonstrates the Build-Up pattern in dependency injection, where an existing object is injected with necessary dependencies through its properties, methods, or fields.
 
 ```c#
 using Shouldly;
@@ -918,14 +895,12 @@ interface IDependency
 class Dependency : IDependency
 {
     // The Dependency attribute specifies to perform an injection and its order
-    [Dependency]
-    public string Name { get; set; } = "";
+    [Dependency] public string Name { get; set; } = "";
 
     public Guid Id { get; private set; } = Guid.Empty;
 
     // The Dependency attribute specifies to perform an injection and its order
-    [Dependency]
-    public void SetId(Guid id) => Id = id;
+    [Dependency] public void SetId(Guid id) => Id = id;
 }
 
 interface IService
@@ -940,6 +915,9 @@ To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
+Key Concepts:
+**Build-Up** - injecting dependencies into an already created object
+**Dependency Attribute** - marker for identifying injectable members
 
 ## Builder
 
@@ -988,11 +966,25 @@ To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
-The default builder method name is `BuildUp`. The first argument to this method will always be the instance to be built.
+Important Notes:
+- The default builder method name is `BuildUp`
+- The first argument to the builder method is always the instance to be built
+
+Advantages:
+- Allows working with pre-existing objects
+- Provides flexibility in dependency injection
+- Supports partial injection of dependencies
+- Can be used with legacy code
+
+Use Cases:
+- When objects are created outside the DI container
+- For working with third-party libraries
+- When migrating existing code to DI
+- For complex object graphs where full construction is not feasible
 
 ## Builder with arguments
 
-Builders can be used with arguments as in the example below:
+This example demonstrates how to use builders with custom arguments in dependency injection. It shows how to pass additional parameters during the build-up process.
 
 ```c#
 using Shouldly;
@@ -1038,7 +1030,21 @@ To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
-The default builder method name is `BuildUp`. The first argument to this method will always be the instance to be built. The remaining arguments of this method will be listed in the order in which they are defined in the setup.
+Important Notes:
+- The default builder method name is `BuildUp`
+- The first argument to the builder method is always the instance to be built
+- Additional arguments are passed in the order they are defined in the setup
+- Root arguments can be used to provide custom values during build-up
+
+Use Cases:
+- When additional parameters are required during object construction
+- For scenarios where dependencies depend on runtime values
+- When specific initialization data is needed
+- For conditional injection based on provided arguments
+
+Best Practices
+- Keep the number of builder arguments minimal
+- Use meaningful names for root arguments
 
 ## Builders
 
@@ -1101,7 +1107,9 @@ To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
-The default builder method name is `BuildUp`. The first argument to this method will always be the instance to be built.
+Important Notes:
+- The default builder method name is `BuildUp`
+- The first argument to the builder method is always the instance to be built
 
 ## Builders with a name template
 

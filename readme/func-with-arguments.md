@@ -124,13 +124,13 @@ partial class Composition
       string overString2;
       int overInt320;
       Func<int, string, IDependency> perBlockFunc1;
-      var localLockObject105 = new Object();
-      Func<int, string, IDependency> localFactory106 = new Func<int, string, IDependency>((int localArg117, string localArg224) =>
+      var localLockObject104 = new Object();
+      Func<int, string, IDependency> localFactory105 = new Func<int, string, IDependency>((int localArg122, string localArg227) =>
       {
-        lock (localLockObject105)
+        lock (localLockObject104)
         {
-          overInt320 = localArg117;
-          overString2 = localArg224;
+          overInt320 = localArg122;
+          overString2 = localArg227;
           if (_root._singletonClock51 is null)
           {
             using (_lock.EnterScope())
@@ -142,11 +142,11 @@ partial class Composition
             }
           }
 
-          IDependency localValue107 = new Dependency(overString2, _root._singletonClock51, overInt320);
-          return localValue107;
+          IDependency localValue106 = new Dependency(overString2, _root._singletonClock51, overInt320);
+          return localValue106;
         }
       });
-      perBlockFunc1 = localFactory106;
+      perBlockFunc1 = localFactory105;
       return new Service(perBlockFunc1);
     }
   }

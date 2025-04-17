@@ -2,7 +2,10 @@
 $v=true
 $p=9
 $d=Build up of an existing object
-$h=In other words, injecting the necessary dependencies via methods, properties, or fields into an existing object.
+$h=This example demonstrates the Build-Up pattern in dependency injection, where an existing object is injected with necessary dependencies through its properties, methods, or fields.
+$f=Key Concepts:
+$f=**Build-Up** - injecting dependencies into an already created object
+$f=**Dependency Attribute** - marker for identifying injectable members
 $r=Shouldly
 */
 
@@ -61,14 +64,12 @@ interface IDependency
 class Dependency : IDependency
 {
     // The Dependency attribute specifies to perform an injection and its order
-    [Dependency]
-    public string Name { get; set; } = "";
+    [Dependency] public string Name { get; set; } = "";
     
     public Guid Id { get; private set; } = Guid.Empty;
 
     // The Dependency attribute specifies to perform an injection and its order
-    [Dependency]
-    public void SetId(Guid id) => Id = id;
+    [Dependency] public void SetId(Guid id) => Id = id;
 }
 
 interface IService

@@ -8,13 +8,13 @@ using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Bind("now datetime").To(_ => DateTimeOffset.Now)
+    .Bind("now").To(_ => DateTimeOffset.Now)
     // Injects Dependency and DateTimeOffset instances
     // and performs further initialization logic
     // defined in the lambda function
     .Bind<IDependency>().To((
         Dependency dependency,
-        [Tag("now datetime")] DateTimeOffset time) =>
+        [Tag("now")] DateTimeOffset time) =>
     {
         dependency.Initialize(time);
         return dependency;
@@ -86,6 +86,8 @@ dotnet run
 
 </details>
 
+The example creates a `service` that depends on a `dependency` initialized with a specific timestamp. The `Tag` attribute allows specifying named dependencies for more complex scenarios.
+
 The following partial class will be generated:
 
 ```c#
@@ -111,10 +113,10 @@ partial class Composition
     {
       DateTimeOffset transientDateTimeOffset3 = DateTimeOffset.Now;
       Dependency transientDependency1;
-      Dependency localDependency102 = new Dependency();
-      DateTimeOffset localTime103 = transientDateTimeOffset3;
-      localDependency102.Initialize(localTime103);
-      transientDependency1 = localDependency102;
+      Dependency localDependency101 = new Dependency();
+      DateTimeOffset localTime102 = transientDateTimeOffset3;
+      localDependency101.Initialize(localTime102);
+      transientDependency1 = localDependency101;
       return new Service(transientDependency1);
     }
   }
@@ -133,7 +135,7 @@ classDiagram
 	Dependency --|> IDependency
 	Service --|> IService
 	Composition ..> Service : IService MyService
-	Dependency *--  DateTimeOffset : "now datetime"  DateTimeOffset
+	Dependency *--  DateTimeOffset : "now"  DateTimeOffset
 	Service *--  Dependency : IDependency
 	namespace Pure.DI.UsageTests.Basics.SimplifiedFactoryScenario {
 		class Composition {

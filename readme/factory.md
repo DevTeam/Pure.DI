@@ -1,7 +1,6 @@
 #### Factory
 
-This example demonstrates how to create and initialize an instance manually.
-At the compilation stage, the set of dependencies that an object needs in order to be created is determined. In most cases, this happens automatically according to the set of constructors and their arguments and does not require any additional customization efforts. But sometimes it is necessary to manually create an object, as in lines of code:
+This example demonstrates how to create and initialize an instance manually. At the compilation stage, the set of dependencies that the object to be created needs is determined. In most cases, this happens automatically, according to the set of constructors and their arguments, and does not require additional customization efforts. But sometimes it is necessary to manually create and/or initialize an object, as in lines of code:
 
 
 ```c#
@@ -9,63 +8,32 @@ using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Bind().To(_ => DateTimeOffset.Now)
-    .RootArg<bool>("isFake", "FakeArgTag")
     .Bind<IDependency>().To<IDependency>(ctx =>
     {
-        // When building a composition of objects,
-        // all of this code will be outside the lambda function.
-
-        // Some custom logic for creating an instance.
-        // For example, here's how you can inject and initialize
-        // an instance of a particular type:
-
-        ctx.Inject<bool>("FakeArgTag", out var isFake);
-        if (isFake)
-        {
-            return new FakeDependency();
-        }
-
+        // Some logic for creating an instance:
         ctx.Inject(out Dependency dependency);
         dependency.Initialize();
         return dependency;
-
     })
     .Bind<IService>().To<Service>()
 
     // Composition root
-    .Root<IService>("GetMyService");
+    .Root<IService>("MyService");
 
 var composition = new Composition();
-
-var service = composition.GetMyService(isFake: false);
-service.Dependency.ShouldBeOfType<Dependency>();
+var service = composition.MyService;
 service.Dependency.IsInitialized.ShouldBeTrue();
-        
-var serviceWithFakeDependency = composition.GetMyService(isFake: true);
-serviceWithFakeDependency.Dependency.ShouldBeOfType<FakeDependency>();
 
 interface IDependency
 {
-    DateTimeOffset Time { get; }
-
     bool IsInitialized { get; }
 }
 
-class Dependency(DateTimeOffset time) : IDependency
+class Dependency : IDependency
 {
-    public DateTimeOffset Time { get; } = time;
-
     public bool IsInitialized { get; private set; }
 
     public void Initialize() => IsInitialized = true;
-}
-
-class FakeDependency : IDependency
-{
-    public DateTimeOffset Time => DateTimeOffset.MinValue;
-
-    public bool IsInitialized => true;
 }
 
 interface IService
@@ -106,7 +74,11 @@ dotnet run
 
 </details>
 
-This approach is more expensive to maintain, but allows you to create objects more flexibly by passing them some state and introducing dependencies. As in the case of automatic dependency injecting, objects give up control on embedding, and the whole process takes place when the object graph is created.
+There are scenarios where manual control over the creation process is required, such as:
+- When additional initialization logic is needed
+- When complex construction steps are required
+- When specific object states need to be set during creation
+
 > [!IMPORTANT]
 > The method `Inject()`cannot be used outside of the binding setup.
 
@@ -117,7 +89,7 @@ partial class Composition
 {
   private readonly Composition _root;
 
-  [OrdinalAttribute(128)]
+  [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;
@@ -128,31 +100,18 @@ partial class Composition
     _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
   }
 
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public IService GetMyService(bool isFake)
+  public IService MyService
   {
-    DateTimeOffset transientDateTimeOffset3 = DateTimeOffset.Now;
-    IDependency transientIDependency1;
-    // When building a composition of objects,
-    // all of this code will be outside the lambda function.
-    // Some custom logic for creating an instance.
-    // For example, here's how you can inject and initialize
-    // an instance of a particular type:
-    bool localIsFake95 = isFake;
-    if (localIsFake95)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get
     {
-      {
-        transientIDependency1 = new FakeDependency();
-        goto transientIDependency1Finish;
-      }
+      IDependency transientIDependency1;
+      // Some logic for creating an instance:
+      Dependency localDependency95 = new Dependency();
+      localDependency95.Initialize();
+      transientIDependency1 = localDependency95;
+      return new Service(transientIDependency1);
     }
-
-    Dependency localDependency96 = new Dependency(transientDateTimeOffset3);
-    localDependency96.Initialize();
-    transientIDependency1 = localDependency96;
-    transientIDependency1Finish:
-      ;
-    return new Service(transientIDependency1);
   }
 }
 ```
@@ -167,18 +126,16 @@ Class diagram:
 ---
 classDiagram
 	Service --|> IService
-	Composition ..> Service : IService GetMyService(bool isFake)
-	IDependency o-- Boolean : "FakeArgTag"  Argument "isFake"
+	Composition ..> Service : IService MyService
 	IDependency *--  Dependency : Dependency
 	Service *--  IDependency : IDependency
-	Dependency *--  DateTimeOffset : DateTimeOffset
 	namespace Pure.DI.UsageTests.Basics.FactoryScenario {
 		class Composition {
 		<<partial>>
-		+IService GetMyService(bool isFake)
+		+IService MyService
 		}
 		class Dependency {
-			+Dependency(DateTimeOffset time)
+			+Dependency()
 		}
 		class IDependency {
 				<<interface>>
@@ -188,14 +145,6 @@ classDiagram
 		}
 		class Service {
 			+Service(IDependency dependency)
-		}
-	}
-	namespace System {
-		class Boolean {
-				<<struct>>
-		}
-		class DateTimeOffset {
-				<<struct>>
 		}
 	}
 ```

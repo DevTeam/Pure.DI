@@ -3,6 +3,7 @@ $v=true
 $p=2
 $d=Simplified factory
 $h=This example shows how to create and initialize an instance manually in a simplified form. When you use a lambda function to specify custom instance initialization logic, each parameter of that function represents an injection of a dependency. Starting with C# 10, you can also put the `Tag(...)` attribute in front of the parameter to specify the tag of the injected dependency.
+$f=The example creates a `service` that depends on a `dependency` initialized with a specific timestamp. The `Tag` attribute allows specifying named dependencies for more complex scenarios.
 $r=Shouldly
 */
 
@@ -30,13 +31,13 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Bind("now datetime").To(_ => DateTimeOffset.Now)
+            .Bind("now").To(_ => DateTimeOffset.Now)
             // Injects Dependency and DateTimeOffset instances
             // and performs further initialization logic
             // defined in the lambda function
             .Bind<IDependency>().To((
                 Dependency dependency,
-                [Tag("now datetime")] DateTimeOffset time) =>
+                [Tag("now")] DateTimeOffset time) =>
             {
                 dependency.Initialize(time);
                 return dependency;

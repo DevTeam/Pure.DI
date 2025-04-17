@@ -127,13 +127,13 @@ partial class Composition
       {
         Composition transientComposition3 = this;
         IService transientIService2;
-        Composition localParentScope151 = transientComposition3;
+        Composition localParentScope150 = transientComposition3;
         // Creates a new scope from the parent scope
-        var localScope152 = new Composition(localParentScope151);
+        var localScope151 = new Composition(localParentScope150);
         // Provides a scope root
-        transientIService2 = localScope152.SessionRoot;
-        IService localValue150 = transientIService2;
-        return localValue150;
+        transientIService2 = localScope151.SessionRoot;
+        IService localValue149 = transientIService2;
+        return localValue149;
       });
       return new Program(perBlockFunc1);
     }

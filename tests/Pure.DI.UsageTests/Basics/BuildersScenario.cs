@@ -3,7 +3,9 @@ $v=true
 $p=9
 $d=Builders
 $h=Sometimes you need builders for all types inherited from <see cref=“T”/> available at compile time at the point where the method is called.
-$f=The default builder method name is `BuildUp`. The first argument to this method will always be the instance to be built.
+$f=Important Notes:
+$f=- The default builder method name is `BuildUp`
+$f=- The first argument to the builder method is always the instance to be built
 $r=Shouldly
 */
 
