@@ -1,7 +1,5 @@
 // ReSharper disable ClassNeverInstantiated.Global
-namespace BlazorWebAssemblyApp;
-
-using Clock.ViewModels;
+namespace Clock.Models;
 
 class Dispatcher : IDispatcher
 {

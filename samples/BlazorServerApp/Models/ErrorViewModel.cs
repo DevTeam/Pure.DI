@@ -11,8 +11,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 public class ErrorViewModel(ILogger<ErrorViewModel> logger)
     : PageModel, IErrorViewModel
 {
-
     private readonly ILogger<ErrorViewModel> _logger = logger;
+
     public string? RequestId { get; set; }
 
     public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);

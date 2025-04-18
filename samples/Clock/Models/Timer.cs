@@ -5,6 +5,10 @@ using System.Collections.Generic;
 // ReSharper disable once ClassNeverInstantiated.Global
 class Timer : ITimer, IDisposable
 {
+    private readonly ILog<Timer> _log;
+    private readonly List<IObserver<Tick>> _observers = [];
+    private readonly System.Threading.Timer _timer;
+
     // ReSharper disable once MemberCanBePrivate.Global
     public Timer(ILog<Timer> log, TimeSpan period)
     {
@@ -12,9 +16,6 @@ class Timer : ITimer, IDisposable
         _timer = new System.Threading.Timer(Tick, null, TimeSpan.Zero, period);
         _log.Info("Created");
     }
-    private readonly ILog<Timer> _log;
-    private readonly List<IObserver<Tick>> _observers = [];
-    private readonly System.Threading.Timer _timer;
 
     public void Dispose()
     {

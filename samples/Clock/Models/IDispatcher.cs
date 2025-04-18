@@ -1,4 +1,4 @@
-﻿namespace Clock.ViewModels;
+﻿namespace Clock.Models;
 
 public interface IDispatcher
 {

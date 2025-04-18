@@ -4,11 +4,11 @@ using Models;
 
 public class ClockViewModelTest
 {
+    private readonly Mock<IDispatcher> _dispatcher = new();
 
     public ClockViewModelTest() =>
         _dispatcher.Setup(i => i.Dispatch(It.IsAny<Action>()))
             .Callback<Action>(action => action());
-    private readonly Mock<IDispatcher> _dispatcher = new();
 
     [Fact]
     public void ShouldDisposeTimerSubscriptionWhenDispose()

@@ -6,6 +6,8 @@ using WeatherForecast;
 [Route("[controller]")]
 public class WeatherForecastController : ControllerBase
 {
+    private readonly ILogger<WeatherForecastController> _logger;
+    private readonly IWeatherForecastService _weatherForecastService;
 
     internal WeatherForecastController(
         ILogger<WeatherForecastController> logger,
@@ -14,8 +16,6 @@ public class WeatherForecastController : ControllerBase
         _logger = logger;
         _weatherForecastService = weatherForecastService;
     }
-    private readonly ILogger<WeatherForecastController> _logger;
-    private readonly IWeatherForecastService _weatherForecastService;
 
     [HttpGet(Name = "GetWeatherForecast")]
     public async IAsyncEnumerable<WeatherForecast> Get()

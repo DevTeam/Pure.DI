@@ -1,5 +1,4 @@
-﻿
-// ReSharper disable WithExpressionModifiesAllMembers
+﻿// ReSharper disable WithExpressionModifiesAllMembers
 
 namespace WebApp.Controllers;
 

@@ -5,11 +5,11 @@ using Models;
 
 public class ViewModelTest
 {
+    private readonly Mock<IDispatcher> _dispatcher = new();
 
     public ViewModelTest() =>
         _dispatcher.Setup(i => i.Dispatch(It.IsAny<Action>()))
             .Callback<Action>(action => action());
-    private readonly Mock<IDispatcher> _dispatcher = new();
 
     private class TestViewModel : ViewModel
     {

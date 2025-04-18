@@ -1,6 +1,6 @@
 ﻿namespace WinFormsAppNetCore;
 
-using Clock.ViewModels;
+using Clock.Models;
 
 // ReSharper disable once ClassNeverInstantiated.Global
 class Dispatcher(Lazy<FormMain> formMain) : IDispatcher

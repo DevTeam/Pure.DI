@@ -5,6 +5,11 @@ using Models;
 // ReSharper disable once ClassNeverInstantiated.Global
 class ClockViewModel : ViewModel, IClockViewModel, IDisposable, IObserver<Tick>
 {
+    private readonly IClock _clock;
+    private readonly ILog<ClockViewModel> _log;
+    private readonly IDisposable _timerToken;
+    private DateTimeOffset _now;
+
     public ClockViewModel(
         ILog<ClockViewModel> log,
         IClock clock,
@@ -16,10 +21,6 @@ class ClockViewModel : ViewModel, IClockViewModel, IDisposable, IObserver<Tick>
         _timerToken = timerFactory(TimeSpan.FromSeconds(1)).Subscribe(this);
         log.Info("Created");
     }
-    private readonly IClock _clock;
-    private readonly ILog<ClockViewModel> _log;
-    private readonly IDisposable _timerToken;
-    private DateTimeOffset _now;
 
     public string Time => _now.ToString("T");
 
