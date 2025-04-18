@@ -16,6 +16,7 @@
         <InternalsVisibleTo Include="BlazorWebAssemblyApp"/>
         <InternalsVisibleTo Include="BlazorServerApp"/>
         <InternalsVisibleTo Include="MAUIApp"/>
+        <InternalsVisibleTo Include="MAUIReactorApp"/>
     </ItemGroup>
 
 </Project>
