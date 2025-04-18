@@ -26,7 +26,7 @@ internal partial class Composition
 
         // Models
         .Bind().To<Log<TT>>()
-        .Bind().As(Singleton).To<Clock.Models.Timer>()
+        .Bind().As(Singleton).To<Timer>()
         .Bind().As(PerBlock).To<SystemClock>()
     
         // Infrastructure
@@ -92,15 +92,15 @@ public class App : Application
                     desktop.MainWindow = composition.MainWindow;
                     break;
 
-                case ISingleViewApplicationLifetime singleViewPlatform:
-                    singleViewPlatform.MainView = composition.MainWindow;
+                case ISingleViewApplicationLifetime singleView:
+                    singleView.MainView = composition.MainWindow;
                     break;
             }
 
             // Handles disposables
-            if (ApplicationLifetime is IControlledApplicationLifetime controlledApplicationLifetime)
+            if (ApplicationLifetime is IControlledApplicationLifetime controlledLifetime)
             {
-                controlledApplicationLifetime.Exit += (_, _) => composition.Dispose();
+                controlledLifetime.Exit += (_, _) => composition.Dispose();
             }
         }
 

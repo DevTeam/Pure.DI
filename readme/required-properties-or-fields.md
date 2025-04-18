@@ -1,6 +1,6 @@
 #### Required properties or fields
 
-All properties or fields marked with the _required_ keyword automatically become injected dependencies.
+This example demonstrates how the `required` modifier can be used to automatically inject dependencies into properties and fields. When a property or field is marked with `required`, the DI will automatically inject the dependency without additional effort.
 
 
 ```c#
@@ -69,6 +69,8 @@ dotnet run
 ```
 
 </details>
+
+This approach simplifies dependency injection by eliminating the need to manually configure bindings for required dependencies, making the code more concise and easier to maintain.
 
 The following partial class will be generated:
 

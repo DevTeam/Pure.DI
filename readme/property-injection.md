@@ -32,8 +32,7 @@ class Service : IService
     // The Dependency attribute specifies to perform an injection,
     // the integer value in the argument specifies
     // the ordinal of injection
-    [Dependency]
-    public IDependency? Dependency { get; set; }
+    [Dependency] public IDependency? Dependency { get; set; }
 }
 ```
 
@@ -63,6 +62,11 @@ dotnet run
 ```
 
 </details>
+
+The key points are:
+- The property must be writable
+- The `Dependency` (or `Ordinal`) attribute is used to mark the property for injection
+- The container automatically injects the dependency when resolving the object graph
 
 The following partial class will be generated:
 

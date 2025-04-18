@@ -1,5 +1,7 @@
 #### Default values
 
+This example demonstrates how to use default values in dependency injection when explicit injection is not possible.
+
 
 ```c#
 using Shouldly;
@@ -64,6 +66,16 @@ dotnet run
 ```
 
 </details>
+
+The key points are:
+- Default constructor arguments can be used for simple values
+- The DI container will use these defaults if no explicit bindings are provided
+
+This example illustrates how to handle default values in a dependency injection scenario:
+- **Constructor Default Argument**: The `Service` class has a constructor with a default value for the name parameter. If no value is provided, “My Service” will be used.
+- **Required Property with Default**: The Dependency property is marked as required but has a default instantiation. This ensures that:
+  - The property must be set
+  - If no explicit injection occurs, a default value will be used
 
 The following partial class will be generated:
 

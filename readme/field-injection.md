@@ -32,9 +32,15 @@ class Service : IService
     // The Dependency attribute specifies to perform an injection,
     // the integer value in the argument specifies
     // the ordinal of injection
-    [Dependency] internal IDependency? DependencyVal;
+    [Dependency] public IDependency? DependencyVal;
 
-    public IDependency? Dependency => DependencyVal;
+    public IDependency? Dependency
+    {
+        get
+        {
+            return DependencyVal;
+        }
+    }
 }
 ```
 
@@ -64,6 +70,11 @@ dotnet run
 ```
 
 </details>
+
+The key points are:
+- The field must be writable
+- The `Dependency` (or `Ordinal`) attribute is used to mark the field for injection
+- The container automatically injects the dependency when resolving the object graph
 
 The following partial class will be generated:
 
@@ -125,7 +136,7 @@ classDiagram
 		}
 		class Service {
 			+Service()
-			~IDependency DependencyVal
+			+IDependency DependencyVal
 		}
 	}
 ```

@@ -3,6 +3,10 @@ $v=true
 $p=9
 $d=Field injection
 $h=To use dependency injection for a field, make sure the field is writable and simply add the _Ordinal_ attribute to that field, specifying an ordinal that will be used to determine the injection order:
+$f=The key points are:
+$f=- The field must be writable
+$f=- The `Dependency` (or `Ordinal`) attribute is used to mark the field for injection
+$f=- The container automatically injects the dependency when resolving the object graph
 $r=Shouldly
 */
 
@@ -11,6 +15,7 @@ $r=Shouldly
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable ArrangeTypeModifiers
 
+// ReSharper disable ArrangeAccessorOwnerBody
 namespace Pure.DI.UsageTests.Basics.FieldInjectionScenario;
 
 using Shouldly;
@@ -57,8 +62,14 @@ class Service : IService
     // The Dependency attribute specifies to perform an injection,
     // the integer value in the argument specifies
     // the ordinal of injection
-    [Dependency] internal IDependency? DependencyVal;
+    [Dependency] public IDependency? DependencyVal;
 
-    public IDependency? Dependency => DependencyVal;
+    public IDependency? Dependency
+    {
+        get
+        {
+            return DependencyVal;
+        }
+    }
 }
 // }

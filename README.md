@@ -3450,15 +3450,6 @@ DI.Setup("Composition")
 </blockquote></details>
 
 
-<details><summary>Field UniqueTag</summary><blockquote>
-
-Atomically generated smart tag with value "UniqueTag".
-            It's used for:
-            
-            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve_
-</blockquote></details>
-
-
 <details><summary>Field Overrider</summary><blockquote>
 
 Atomically generated smart tag with value "Overrider".
@@ -3468,12 +3459,39 @@ Atomically generated smart tag with value "Overrider".
 </blockquote></details>
 
 
+<details><summary>Field Cleaner</summary><blockquote>
+
+Atomically generated smart tag with value "Cleaner".
+            It's used for:
+            
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
+</blockquote></details>
+
+
 <details><summary>Field GenericType</summary><blockquote>
 
 Atomically generated smart tag with value "GenericType".
             It's used for:
             
             class _Generator__TypeResolver_ <-- _IIdGenerator_(GenericType) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
+<details><summary>Field Override</summary><blockquote>
+
+Atomically generated smart tag with value "Override".
+            It's used for:
+            
+            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
+<details><summary>Field UsingDeclarations</summary><blockquote>
+
+Atomically generated smart tag with value "UsingDeclarations".
+            It's used for:
+            
+            class _Generator__CompositionClassBuilder_ <-- _IBuilder`2_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
 </blockquote></details>
 
 
@@ -3493,30 +3511,12 @@ Atomically generated smart tag with value "CompositionClass".
 </blockquote></details>
 
 
-<details><summary>Field UsingDeclarations</summary><blockquote>
+<details><summary>Field UniqueTag</summary><blockquote>
 
-Atomically generated smart tag with value "UsingDeclarations".
+Atomically generated smart tag with value "UniqueTag".
             It's used for:
             
-            class _Generator__CompositionClassBuilder_ <-- _IBuilder`2_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
-</blockquote></details>
-
-
-<details><summary>Field Override</summary><blockquote>
-
-Atomically generated smart tag with value "Override".
-            It's used for:
-            
-            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
-</blockquote></details>
-
-
-<details><summary>Field Cleaner</summary><blockquote>
-
-Atomically generated smart tag with value "Cleaner".
-            It's used for:
-            
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
+            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
@@ -5261,8 +5261,8 @@ Contextual AI needs to understand the situation it’s in. This means knowing de
 | AI Context file | Size | Tokens |
 | --------------- | ---- | ------ |
 | [AI_CONTEXT_SMALL.md](AI_CONTEXT_SMALL.md) | 28KB | 7K |
-| [AI_CONTEXT_MEDIUM.md](AI_CONTEXT_MEDIUM.md) | 124KB | 31K |
-| [AI_CONTEXT_LARGE.md](AI_CONTEXT_LARGE.md) | 379KB | 97K |
+| [AI_CONTEXT_MEDIUM.md](AI_CONTEXT_MEDIUM.md) | 123KB | 31K |
+| [AI_CONTEXT_LARGE.md](AI_CONTEXT_LARGE.md) | 381KB | 97K |
 ## How to contribute to Pure.DI
 
 Thank you for your interest in contributing to the Pure.DI project! First of all, if you are going to make a big change or feature, please open a problem first. That way, we can coordinate and understand if the change you're going to work on fits with current priorities and if we can commit to reviewing and merging it within a reasonable timeframe. We don't want you to waste a lot of your valuable time on something that may not align with what we want for Pure.DI.

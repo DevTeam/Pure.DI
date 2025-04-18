@@ -24,7 +24,7 @@ internal partial class Composition
 
         // Models
         .Bind().To<Log<TT>>()
-        .Bind().To<Clock.Models.Timer>()
+        .Bind().To<Timer>()
         .Bind().As(PerBlock).To<SystemClock>()
     
         // Infrastructure

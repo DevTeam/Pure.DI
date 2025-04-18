@@ -3,6 +3,10 @@ $v=true
 $p=9
 $d=Method injection
 $h=To use dependency implementation for a method, simply add the _Ordinal_ attribute to that method, specifying the sequence number that will be used to define the call to that method:
+$f=The key points are:
+$f=- The method must be available to be called from a composition class
+$f=- The `Dependency` (or `Ordinal`) attribute is used to mark the method for injection
+$f=- The container automatically calls the method to inject dependencies
 $r=Shouldly
 */
 

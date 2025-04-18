@@ -19,15 +19,15 @@ public class App : Application
                     desktop.MainWindow = composition.Root.CreateMainWindow();
                     break;
 
-                case ISingleViewApplicationLifetime singleViewPlatform:
-                    singleViewPlatform.MainView = composition.Root.CreateMainWindow();
+                case ISingleViewApplicationLifetime singleView:
+                    singleView.MainView = composition.Root.CreateMainWindow();
                     break;
             }
 
             // Handles disposables
-            if (ApplicationLifetime is IControlledApplicationLifetime controlledApplicationLifetime)
+            if (ApplicationLifetime is IControlledApplicationLifetime controlledLifetime)
             {
-                controlledApplicationLifetime.Exit += (_, _) => {
+                controlledLifetime.Exit += (_, _) => {
                     // Disposal of root objects with lifetime Transient, PerBlock, PerResolve
                     composition.Root.Owned.Dispose();
                     // Dispose of singletons

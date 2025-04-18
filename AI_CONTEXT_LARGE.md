@@ -1209,9 +1209,15 @@ class Service : IService
     // The Dependency attribute specifies to perform an injection,
     // the integer value in the argument specifies
     // the ordinal of injection
-    [Dependency] internal IDependency? DependencyVal;
+    [Dependency] public IDependency? DependencyVal;
 
-    public IDependency? Dependency => DependencyVal;
+    public IDependency? Dependency
+    {
+        get
+        {
+            return DependencyVal;
+        }
+    }
 }
 ```
 
@@ -1219,6 +1225,10 @@ To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
+The key points are:
+- The field must be writable
+- The `Dependency` (or `Ordinal`) attribute is used to mark the field for injection
+- The container automatically injects the dependency when resolving the object graph
 
 ## Method injection
 
@@ -1265,6 +1275,10 @@ To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
+The key points are:
+- The method must be available to be called from a composition class
+- The `Dependency` (or `Ordinal`) attribute is used to mark the method for injection
+- The container automatically calls the method to inject dependencies
 
 ## Property injection
 
@@ -1299,8 +1313,7 @@ class Service : IService
     // The Dependency attribute specifies to perform an injection,
     // the integer value in the argument specifies
     // the ordinal of injection
-    [Dependency]
-    public IDependency? Dependency { get; set; }
+    [Dependency] public IDependency? Dependency { get; set; }
 }
 ```
 
@@ -1308,8 +1321,14 @@ To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
+The key points are:
+- The property must be writable
+- The `Dependency` (or `Ordinal`) attribute is used to mark the property for injection
+- The container automatically injects the dependency when resolving the object graph
 
 ## Default values
+
+This example demonstrates how to use default values in dependency injection when explicit injection is not possible.
 
 ```c#
 using Shouldly;
@@ -1352,10 +1371,19 @@ To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
+The key points are:
+- Default constructor arguments can be used for simple values
+- The DI container will use these defaults if no explicit bindings are provided
+
+This example illustrates how to handle default values in a dependency injection scenario:
+- **Constructor Default Argument**: The `Service` class has a constructor with a default value for the name parameter. If no value is provided, “My Service” will be used.
+- **Required Property with Default**: The Dependency property is marked as required but has a default instantiation. This ensures that:
+  - The property must be set
+  - If no explicit injection occurs, a default value will be used
 
 ## Required properties or fields
 
-All properties or fields marked with the _required_ keyword automatically become injected dependencies.
+This example demonstrates how the `required` modifier can be used to automatically inject dependencies into properties and fields. When a property or field is marked with `required`, the DI will automatically inject the dependency without additional effort.
 
 ```c#
 using Shouldly;
@@ -1401,6 +1429,7 @@ To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
+This approach simplifies dependency injection by eliminating the need to manually configure bindings for required dependencies, making the code more concise and easier to maintain.
 
 ## Overrides
 
@@ -7450,7 +7479,7 @@ internal partial class Composition
 
         // Models
         .Bind().To<Log<TT>>()
-        .Bind().As(Singleton).To<Clock.Models.Timer>()
+        .Bind().As(Singleton).To<Timer>()
         .Bind().As(PerBlock).To<SystemClock>()
     
         // Infrastructure
@@ -7516,15 +7545,15 @@ public class App : Application
                     desktop.MainWindow = composition.MainWindow;
                     break;
 
-                case ISingleViewApplicationLifetime singleViewPlatform:
-                    singleViewPlatform.MainView = composition.MainWindow;
+                case ISingleViewApplicationLifetime singleView:
+                    singleView.MainView = composition.MainWindow;
                     break;
             }
 
             // Handles disposables
-            if (ApplicationLifetime is IControlledApplicationLifetime controlledApplicationLifetime)
+            if (ApplicationLifetime is IControlledApplicationLifetime controlledLifetime)
             {
-                controlledApplicationLifetime.Exit += (_, _) => composition.Dispose();
+                controlledLifetime.Exit += (_, _) => composition.Dispose();
             }
         }
 
@@ -8660,7 +8689,7 @@ internal partial class Composition
 
         // Models
         .Bind().To<Log<TT>>()
-        .Bind().To<Clock.Models.Timer>()
+        .Bind().To<Timer>()
         .Bind().As(PerBlock).To<SystemClock>()
     
         // Infrastructure
@@ -8742,7 +8771,7 @@ internal partial class Composition
 
         // Models
         .Bind().To<Log<TT>>()
-        .Bind().To<Clock.Models.Timer>()
+        .Bind().To<Timer>()
         .Bind().As(PerBlock).To<SystemClock>()
     
         // Infrastructure
@@ -8815,7 +8844,7 @@ internal partial class Composition
 
         // Models
         .Bind().To<Log<TT>>()
-        .Bind().As(Singleton).To<Clock.Models.Timer>()
+        .Bind().As(Singleton).To<Timer>()
         .Bind().As(PerBlock).To<SystemClock>()
     
         // Infrastructure
@@ -12172,15 +12201,6 @@ DI.Setup("Composition")
 </blockquote></details>
 
 
-<details><summary>Field UniqueTag</summary><blockquote>
-
-Atomically generated smart tag with value "UniqueTag".
-            It's used for:
-            
-            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve_
-</blockquote></details>
-
-
 <details><summary>Field Overrider</summary><blockquote>
 
 Atomically generated smart tag with value "Overrider".
@@ -12190,12 +12210,39 @@ Atomically generated smart tag with value "Overrider".
 </blockquote></details>
 
 
+<details><summary>Field Cleaner</summary><blockquote>
+
+Atomically generated smart tag with value "Cleaner".
+            It's used for:
+            
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
+</blockquote></details>
+
+
 <details><summary>Field GenericType</summary><blockquote>
 
 Atomically generated smart tag with value "GenericType".
             It's used for:
             
             class _Generator__TypeResolver_ <-- _IIdGenerator_(GenericType) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
+<details><summary>Field Override</summary><blockquote>
+
+Atomically generated smart tag with value "Override".
+            It's used for:
+            
+            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
+<details><summary>Field UsingDeclarations</summary><blockquote>
+
+Atomically generated smart tag with value "UsingDeclarations".
+            It's used for:
+            
+            class _Generator__CompositionClassBuilder_ <-- _IBuilder`2_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
 </blockquote></details>
 
 
@@ -12215,30 +12262,12 @@ Atomically generated smart tag with value "CompositionClass".
 </blockquote></details>
 
 
-<details><summary>Field UsingDeclarations</summary><blockquote>
+<details><summary>Field UniqueTag</summary><blockquote>
 
-Atomically generated smart tag with value "UsingDeclarations".
+Atomically generated smart tag with value "UniqueTag".
             It's used for:
             
-            class _Generator__CompositionClassBuilder_ <-- _IBuilder`2_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
-</blockquote></details>
-
-
-<details><summary>Field Override</summary><blockquote>
-
-Atomically generated smart tag with value "Override".
-            It's used for:
-            
-            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
-</blockquote></details>
-
-
-<details><summary>Field Cleaner</summary><blockquote>
-
-Atomically generated smart tag with value "Cleaner".
-            It's used for:
-            
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
+            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 

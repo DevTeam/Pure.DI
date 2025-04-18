@@ -1209,9 +1209,15 @@ class Service : IService
     // The Dependency attribute specifies to perform an injection,
     // the integer value in the argument specifies
     // the ordinal of injection
-    [Dependency] internal IDependency? DependencyVal;
+    [Dependency] public IDependency? DependencyVal;
 
-    public IDependency? Dependency => DependencyVal;
+    public IDependency? Dependency
+    {
+        get
+        {
+            return DependencyVal;
+        }
+    }
 }
 ```
 
@@ -1219,6 +1225,10 @@ To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
+The key points are:
+- The field must be writable
+- The `Dependency` (or `Ordinal`) attribute is used to mark the field for injection
+- The container automatically injects the dependency when resolving the object graph
 
 ## Method injection
 
@@ -1265,6 +1275,10 @@ To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
+The key points are:
+- The method must be available to be called from a composition class
+- The `Dependency` (or `Ordinal`) attribute is used to mark the method for injection
+- The container automatically calls the method to inject dependencies
 
 ## Property injection
 
@@ -1299,8 +1313,7 @@ class Service : IService
     // The Dependency attribute specifies to perform an injection,
     // the integer value in the argument specifies
     // the ordinal of injection
-    [Dependency]
-    public IDependency? Dependency { get; set; }
+    [Dependency] public IDependency? Dependency { get; set; }
 }
 ```
 
@@ -1308,6 +1321,10 @@ To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
+The key points are:
+- The property must be writable
+- The `Dependency` (or `Ordinal`) attribute is used to mark the property for injection
+- The container automatically injects the dependency when resolving the object graph
 
 ## Transient
 
@@ -3769,58 +3786,6 @@ class Person([MyTag("NikName")] string name) : IPerson
 
     [MyOrdinal(2)]
     public void Initialize([MyGenericType<Uri>] object state) =>
-        _state = state;
-
-    public override string ToString() => $"{Id} {name} {_state}";
-}
-```
-
-To run the above code, the following NuGet packages must be added:
- - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
- - [Shouldly](https://www.nuget.org/packages/Shouldly)
-
-
-## Custom universal attribute
-
-You can use a combined attribute, and each method in the list above has an optional parameter that defines the argument number (the default is 0) from where to get the appropriate metadata for _tag_, _ordinal_, or _type_.
-
-```c#
-using Shouldly;
-using Pure.DI;
-
-DI.Setup(nameof(PersonComposition))
-    .TagAttribute<InjectAttribute<TT>>()
-    .OrdinalAttribute<InjectAttribute<TT>>(1)
-    .TypeAttribute<InjectAttribute<TT>>()
-    .Arg<int>("personId")
-    .Bind().To(_ => new Uri("https://github.com/DevTeam/Pure.DI"))
-    .Bind("NikName").To(_ => "Nik")
-    .Bind().To<Person>()
-
-    // Composition root
-    .Root<IPerson>("Person");
-
-var composition = new PersonComposition(personId: 123);
-var person = composition.Person;
-person.ToString().ShouldBe("123 Nik https://github.com/DevTeam/Pure.DI");
-
-[AttributeUsage(
-    AttributeTargets.Constructor
-    | AttributeTargets.Method
-    | AttributeTargets.Parameter
-    | AttributeTargets.Property
-    | AttributeTargets.Field)]
-class InjectAttribute<T>(object? tag = null, int ordinal = 0) : Attribute;
-
-interface IPerson;
-
-class Person([Inject<string>("NikName")] string name) : IPerson
-{
-    private object? _state;
-
-    [Inject<int>(ordinal: 1)] internal object Id = "";
-
-    public void Initialize([Inject<Uri>] object state) =>
         _state = state;
 
     public override string ToString() => $"{Id} {name} {_state}";

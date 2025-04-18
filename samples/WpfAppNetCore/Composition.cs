@@ -7,7 +7,7 @@ namespace WpfAppNetCore;
 
 using Pure.DI;
 using static Pure.DI.Lifetime;
-using Timer=Clock.Models.Timer;
+using Timer = Clock.Models.Timer;
 
 partial class Composition
 {

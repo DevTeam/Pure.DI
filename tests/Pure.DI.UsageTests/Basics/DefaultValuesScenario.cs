@@ -2,6 +2,16 @@
 $v=true
 $p=15
 $d=Default values
+$h=This example demonstrates how to use default values in dependency injection when explicit injection is not possible.
+$f=The key points are:
+$f=- Default constructor arguments can be used for simple values
+$f=- The DI container will use these defaults if no explicit bindings are provided
+$f=
+$f=This example illustrates how to handle default values in a dependency injection scenario:
+$f=- **Constructor Default Argument**: The `Service` class has a constructor with a default value for the name parameter. If no value is provided, “My Service” will be used.
+$f=- **Required Property with Default**: The Dependency property is marked as required but has a default instantiation. This ensures that:
+$f=  - The property must be set
+$f=  - If no explicit injection occurs, a default value will be used
 $r=Shouldly
 */
 

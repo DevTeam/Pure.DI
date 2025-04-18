@@ -67,6 +67,11 @@ dotnet run
 
 </details>
 
+The key points are:
+- The method must be available to be called from a composition class
+- The `Dependency` (or `Ordinal`) attribute is used to mark the method for injection
+- The container automatically calls the method to inject dependencies
+
 The following partial class will be generated:
 
 ```c#

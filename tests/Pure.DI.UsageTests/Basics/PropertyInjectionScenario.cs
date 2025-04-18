@@ -3,6 +3,10 @@ $v=true
 $p=9
 $d=Property injection
 $h=To use dependency injection on a property, make sure the property is writable and simply add the _Ordinal_ attribute to that property, specifying the ordinal that will be used to determine the injection order:
+$f=The key points are:
+$f=- The property must be writable
+$f=- The `Dependency` (or `Ordinal`) attribute is used to mark the property for injection
+$f=- The container automatically injects the dependency when resolving the object graph
 $r=Shouldly
 */
 
@@ -57,7 +61,6 @@ class Service : IService
     // The Dependency attribute specifies to perform an injection,
     // the integer value in the argument specifies
     // the ordinal of injection
-    [Dependency]
-    public IDependency? Dependency { get; set; }
+    [Dependency] public IDependency? Dependency { get; set; }
 }
 // }
