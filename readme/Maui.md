@@ -18,7 +18,8 @@ internal partial class Composition: ServiceProviderFactory<Composition>
         // Specifies not to attempt to resolve types whose fully qualified name
         // begins with Microsoft.Extensions., Microsoft.Maui.
         // since ServiceProvider will be used to retrieve them.
-        .Hint(Hint.OnCannotResolveContractTypeNameRegularExpression, "^Microsoft\\.(Extensions|Maui)\\..+$")
+        .Hint(Hint.OnCannotResolveContractTypeNameWildcard, "Microsoft.Extensions.*")
+        .Hint(Hint.OnCannotResolveContractTypeNameWildcard, "Microsoft.Maui.*")
 
         // Roots
         .Root<AppShell>(nameof(AppShell))
