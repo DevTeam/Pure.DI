@@ -147,7 +147,7 @@ This constructor creates a composition instance for the new scope. This allows `
 <details>
 <summary>Composition Roots</summary>
 
-### Public Composition Roots
+### Regular Composition Roots
 
 To create an object graph quickly and conveniently, a set of properties (or a methods) is formed. These properties/methods are here called roots of compositions. The type of a property/method is the type of the root object created by the composition. Accordingly, each invocation of a property/method leads to the creation of a composition with a root element of this type.
 
@@ -155,6 +155,11 @@ To create an object graph quickly and conveniently, a set of properties (or a me
 DI.Setup("Composition")
     .Bind<IService>().To<Service>()
     .Root<IService>("MyService");
+
+var composition = new Composition();
+var service = composition.MyService;
+service = composition.Resolve<IService>();
+service = composition.Resolve(typeof(IService));
 ```
 
 In this case, the property for the _IService_ type will be named _MyService_ and will be available for direct use. The result of its use will be the creation of a composition of objects with the root of _IService_ type:
@@ -172,9 +177,21 @@ public IService MyService
 
 This is [recommended way](https://blog.ploeh.dk/2011/07/28/CompositionRoot/) to create a composition root. A composition class can contain any number of roots.
 
-### Private Composition Roots
+In addition, the composition  roots can be resolved using the `Resolve()` methods:
 
-If the root name is empty, a private composition root with a random name is created:
+```c#
+service = composition.Resolve<IService>();
+service = composition.Resolve(typeof(IService));
+```
+
+>![TIP]
+>- There is no limit to the number of roots, but you should consider limiting the number of roots. Ideally, an application should have a single composition root
+>- The name of the composition root is arbitrarily chosen depending on its purpose, but should be restricted by the property naming conventions in C# since it is the same name as a property in the composition class
+>- It is recommended that composition roots be resolved using normal properties or methods instead of methods of type `Resolve()`.
+
+### Anonymous Composition Roots
+
+If the root name is empty, an anonymous composition root with a random name is created:
 
 ```c#
 private IService RootM07D16di_0001
@@ -183,15 +200,17 @@ private IService RootM07D16di_0001
 }
 ```
 
-This root is available in _Resolve_ methods in the same way as public roots. For example:
+These properties (or methods) have an arbitrary name and access modifier `private` and cannot be used directly from the code. Do not attempt to use them, as their names are arbitrarily changed. Anonymous composition roots can be resolved by `Resolve` methods:
 
 ```c#
 DI.Setup("Composition")
     .Bind<IService>().To<Service>()
     .Root<IService>();
-```
 
-These properties have an arbitrary name and access modifier _private_ and cannot be used directly from the code. Do not attempt to use them, as their names are arbitrarily changed. Private composition roots can be resolved by _Resolve_ methods.
+var composition = new Composition();
+var service = composition.Resolve<IService>();
+service = composition.Resolve(typeof(IService));
+```
 
 </details>
 
@@ -212,7 +231,7 @@ public object Resolve(Type type) { ... }
 public object Resolve(Type type, object? tag) { ... }
 ```
 
-These methods can resolve both public and private composition roots that do not depend on any arguments of the composition roots. They are useful when using the [Service Locator](https://martinfowler.com/articles/injection.html) approach, where the code resolves composition roots in place:
+These methods can resolve both public and anonymous composition roots that do not depend on any arguments of the composition roots. They are useful when using the [Service Locator](https://martinfowler.com/articles/injection.html) approach, where the code resolves composition roots in place:
 
 ```c#
 var composition = new Composition();
@@ -330,7 +349,7 @@ The list of hints will be gradually expanded to meet the needs and desires for f
 
 ### Resolve Hint
 
-Determines whether to generate [_Resolve_ methods](#resolve). By default, a set of four _Resolve_ methods are generated. Set this hint to _Off_ to disable the generation of resolve methods. This will reduce the generation time of the class composition, and in this case no [private composition roots](#private-composition-roots) will be generated. The class composition will be smaller and will only have [public roots](#public-composition-roots). When the _Resolve_ hint is disabled, only the public roots properties are available, so be sure to explicitly define them using the `Root<T>(string name)` method with an explicit composition root name.
+Determines whether to generate [_Resolve_ methods](#resolve). By default, a set of four _Resolve_ methods are generated. Set this hint to _Off_ to disable the generation of resolve methods. This will reduce the generation time of the class composition, and in this case no [anonymous composition roots](#private-composition-roots) will be generated. The class composition will be smaller and will only have [public roots](#public-composition-roots). When the _Resolve_ hint is disabled, only the public roots properties are available, so be sure to explicitly define them using the `Root<T>(string name)` method with an explicit composition root name.
 
 ### OnNewInstance Hint
 

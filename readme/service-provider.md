@@ -1,6 +1,10 @@
 #### Service provider
 
-The `// ObjectResolveMethodName = GetService` hint overrides the _object Resolve(Type type)_ method name in _GetService_, allowing the _IServiceProvider_ interface to be implemented in a partial class.
+The `// ObjectResolveMethodName = GetService` hint overriding the `object Resolve(Type type)` method name in `GetService()`, allowing the `IServiceProvider` interface to be implemented in a partial class.
+> [!IMPORTANT]
+> Only composition roots (regular or anonymous) can be resolved through the `IServiceProvider` interface. These roots must be registered using `Root(...)` or `RootBind()` calls.
+
+This example demonstrates how to implement a custom `IServiceProvider` using a partial class, utilizing a specific hint to override the default `Resolve()` method name:
 
 
 ```c#
@@ -70,6 +74,10 @@ dotnet run
 ```
 
 </details>
+
+Important Notes:
+- Hint Overriding: The `ObjectResolveMethodName = GetService` hint overrides the default object `Resolve(Type type)` method name to implement `IServiceProvider` interface
+- Roots: Only roots can be resolved. Use `Root(...)` or `RootBind()` calls for registration
 
 The following partial class will be generated:
 

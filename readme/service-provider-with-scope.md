@@ -1,5 +1,8 @@
 #### Service provider with scope
 
+> [!IMPORTANT]
+> Only composition roots (regular or anonymous) can be resolved through the `IServiceProvider` interface. These roots must be registered using `Root(...)` or `RootBind()` calls.
+
 
 ```c#
 using Shouldly;

@@ -12,7 +12,7 @@ using Timer = Clock.Models.Timer;
 partial class Composition
 {
     void Setup() => DI.Setup()
-        // Provides the composition root for clock view model
+        // Provides the composition root for the clock view model
         .Root<IClockViewModel>(nameof(ClockViewModel))
 
         // View Models

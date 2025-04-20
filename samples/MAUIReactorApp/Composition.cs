@@ -12,6 +12,9 @@ using Timer = Clock.Models.Timer;
 
 partial class Composition: ServiceProviderFactory<Composition>
 {
+    // IMPORTANT:
+    // Only composition roots (regular or anonymous) can be resolved through the `IServiceProvider` interface.
+    // These roots must be registered using `Root(...)` or `RootBind()` calls.
     private static void Setup() => DI.Setup()
         .DependsOn(Base)
         // Specifies not to attempt to resolve types whose fully qualified name
