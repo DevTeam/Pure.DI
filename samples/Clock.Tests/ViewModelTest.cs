@@ -13,10 +13,10 @@ public class ViewModelTest
 
     private class TestViewModel : ViewModel
     {
+        private readonly List<string?> _propertyNames = [];
 
         public TestViewModel() =>
             PropertyChanged += (_, args) => { _propertyNames.Add(args.PropertyName); };
-        private readonly List<string?> _propertyNames = [];
 
         public ReadOnlyCollection<string?> PropertyNames => _propertyNames.AsReadOnly();
 

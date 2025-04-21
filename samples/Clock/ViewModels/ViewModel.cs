@@ -2,8 +2,7 @@
 
 using Models;
 
-abstract class ViewModel
-    : INotifyPropertyChanged
+abstract class ViewModel : INotifyPropertyChanged
 {
     public required IDispatcher Dispatcher { private get; init; }
 

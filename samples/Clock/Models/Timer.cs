@@ -9,7 +9,6 @@ class Timer : ITimer, IDisposable
     private readonly List<IObserver<Tick>> _observers = [];
     private readonly System.Threading.Timer _timer;
 
-    // ReSharper disable once MemberCanBePrivate.Global
     public Timer(ILog<Timer> log, TimeSpan period)
     {
         _log = log;

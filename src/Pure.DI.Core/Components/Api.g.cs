@@ -1021,6 +1021,9 @@ namespace Pure.DI
         /// <seealso cref="IConfiguration.Hint"/>
         SystemThreadingLock,
 
+        /// <summary>
+        /// Undocumented feature, for now only for internal use.
+        /// </summary>
         LocalFunctionLines
     }
 

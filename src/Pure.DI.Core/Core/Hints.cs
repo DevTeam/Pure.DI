@@ -77,28 +77,39 @@ sealed class Hints : ConcurrentDictionary<Hint, LinkedList<string>>, IHints
         GetValueOrDefault(Hint.DisposeAsyncMethodModifiers, Names.DefaultApiMethodModifiers);
 
     public DiagnosticSeverity SeverityOfNotImplementedContract =>
-        GetHint(Hint.SeverityOfNotImplementedContract, DiagnosticSeverity.Error);
+        GetEnumHint(Hint.SeverityOfNotImplementedContract, DiagnosticSeverity.Error);
 
     public int LocalFunctionLines
     {
         get
         {
-            var val = GetHint(Hint.LocalFunctionLines, 12);
+            var val = GetIntHint(Hint.LocalFunctionLines, 12);
             return val <= 0 ? 12 : val;
         }
     }
 
     private bool IsEnabled(Hint hint, SettingState defaultValue) =>
-        GetHint(hint, defaultValue) == SettingState.On;
+        GetEnumHint(hint, defaultValue) == SettingState.On;
 
-    private T GetHint<T>(Hint hint, T defaultValue = default)
-        where T : struct =>
-        TryGetValue(hint, out var values) && values.Count > 0 && Enum.TryParse<T>(values.Last.Value, true, out var value)
+    private T GetEnumHint<T>(Hint hint, T defaultValue)
+        where T : struct, Enum =>
+        GetValue(hint) is {} valueStr && Enum.TryParse<T>(valueStr, true, out var value)
+            ? value
+            : defaultValue;
+
+    private int GetIntHint(Hint hint, int defaultValue) =>
+        GetValue(hint) is {} valueStr && int.TryParse(valueStr, out var value)
             ? value
             : defaultValue;
 
     private string GetValueOrDefault(Hint hint, string defaultValue) =>
-        TryGetValue(hint, out var values) && values.Count > 0 && !string.IsNullOrWhiteSpace(values.Last.Value)
+        GetValue(hint) ?? defaultValue;
+
+    private string? GetValue(Hint hint) =>
+        TryGetValue(hint, out var values)
+        && values.Count > 0
+        && values.Last.Value is {} valueStr
+        && !string.IsNullOrWhiteSpace(valueStr)
             ? values.Last.Value
-            : defaultValue;
+            : null;
 }
