@@ -91,7 +91,7 @@ This example demonstrates several ways to create a composition root.
 > [!TIP]
 > There is no limit to the number of roots, but you should consider limiting the number of roots. Ideally, an application should have a single composition root.
 
-If you use classic DI containers, the composition is created dynamically every time you call a method similar to `T Resolve<T>()` or `object GetService(Type type)`. The root of the composition there is simply the root type of the composition of objects in memory T or Type type. There can be as many of these as you like. In the case of Pure.DI, the number of composition roots is limited because for each composition root a separate property or method is created at compile time. Therefore, each root is defined explicitly by calling the `Root(string rootName)` method.
+If you use classic DI containers, the composition is resolved dynamically every time you call a method similar to `T Resolve<T>()` or `object GetService(Type type)`. The root of the composition there is simply the root type of the composition of objects in memory `T` or `Type` type. There can be as many of these as you like. In the case of Pure.DI, the number of composition roots is limited because for each composition root a separate property or method is created at compile time. Therefore, each root is defined explicitly by calling the `Root(string rootName)` method.
 
 ```c#
 using Pure.DI;
@@ -101,15 +101,15 @@ DI.Setup(nameof(Composition))
     .Bind<IService>("Other").To<OtherService>()
     .Bind<IDependency>().To<Dependency>()
 
-    // Specifies to create a regular public composition root
+    // Specifies to create a regular composition root
     // of type "IService" with the name "MyService"
     .Root<IService>("MyService")
 
-    // Specifies to create a private composition root
+    // Specifies to create an anonymous composition root
     // that is only accessible from "Resolve()" methods
     .Root<IDependency>()
 
-    // Specifies to create a regular public composition root
+    // Specifies to create a regular composition root
     // of type "IService" with the name "MyOtherService"
     // using the "Other" tag
     .Root<IService>("MyOtherService", "Other");
@@ -143,7 +143,7 @@ class OtherService : IService;
 To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
 
-The name of the root of a composition is arbitrarily chosen depending on its purpose, but should be restricted by the property naming conventions in C# since it is the same name as a property in the composition class. In reality, the _Root_ property has the form:
+The name of the composition root is arbitrarily chosen depending on its purpose, but should be restricted by the property naming conventions in C# since it is the same name as a property in the composition class. In reality, the _Root_ property has the form:
 ```c#
 public IService Root
 {
@@ -3312,7 +3312,11 @@ To run the above code, the following NuGet packages must be added:
 
 ## Service provider
 
-The `// ObjectResolveMethodName = GetService` hint overrides the _object Resolve(Type type)_ method name in _GetService_, allowing the _IServiceProvider_ interface to be implemented in a partial class.
+The `// ObjectResolveMethodName = GetService` hint overriding the `object Resolve(Type type)` method name in `GetService()`, allowing the `IServiceProvider` interface to be implemented in a partial class.
+> [!IMPORTANT]
+> Only composition roots (regular or anonymous) can be resolved through the `IServiceProvider` interface. These roots must be registered using `Root(...)` or `RootBind()` calls.
+
+This example demonstrates how to implement a custom `IServiceProvider` using a partial class, utilizing a specific hint to override the default `Resolve()` method name:
 
 ```c#
 using Shouldly;
@@ -3358,8 +3362,14 @@ To run the above code, the following NuGet packages must be added:
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
  - [Microsoft.Extensions.DependencyInjection](https://www.nuget.org/packages/Microsoft.Extensions.DependencyInjection)
 
+Important Notes:
+- Hint Overriding: The `ObjectResolveMethodName = GetService` hint overrides the default object `Resolve(Type type)` method name to implement `IServiceProvider` interface
+- Roots: Only roots can be resolved. Use `Root(...)` or `RootBind()` calls for registration
 
 ## Service provider with scope
+
+> [!IMPORTANT]
+> Only composition roots (regular or anonymous) can be resolved through the `IServiceProvider` interface. These roots must be registered using `Root(...)` or `RootBind()` calls.
 
 ```c#
 using Shouldly;
@@ -5201,7 +5211,7 @@ To run the above code, the following NuGet packages must be added:
 
 ## Resolve hint
 
-Hints are used to fine-tune code generation. The _Resolve_ hint determines whether to generate _Resolve_ methods. By default a set of four _Resolve_ methods are generated. Set this hint to _Off_ to disable the generation of resolve methods. This will reduce class composition generation time and no private composition roots will be generated in this case. When the _Resolve_ hint is disabled, only the public root properties are available, so be sure to define them explicitly with the `Root<T>(...)` method.
+Hints are used to fine-tune code generation. The _Resolve_ hint determines whether to generate _Resolve_ methods. By default, a set of four _Resolve_ methods are generated. Set this hint to _Off_ to disable the generation of resolve methods. This will reduce class composition generation time, and no anonymous composition roots will be generated in this case. When the _Resolve_ hint is disabled, only the regular root properties are available, so be sure to define them explicitly with the `Root<T>(...)` method.
 In addition, setup hints can be comments before the _Setup_ method in the form ```hint = value```, for example: `// Resolve = Off`.
 
 ```c#
@@ -7657,6 +7667,9 @@ using static Pure.DI.Lifetime;
 
 internal partial class Composition: ServiceProviderFactory<Composition>
 {
+    // IMPORTANT:
+    // Only composition roots (regular or anonymous) can be resolved through the `IServiceProvider` interface.
+    // These roots must be registered using `Root(...)` or `RootBind()` calls.
     void Setup() => DI.Setup()
         // Use the DI setup from the base class
         .DependsOn(Base)
@@ -7741,6 +7754,9 @@ using static Pure.DI.Lifetime;
 
 internal partial class Composition: ServiceProviderFactory<Composition>
 {
+    // IMPORTANT:
+    // Only composition roots (regular or anonymous) can be resolved through the `IServiceProvider` interface.
+    // These roots must be registered using `Root(...)` or `RootBind()` calls.
     void Setup() => DI.Setup()
         // Use the DI setup from the base class
         .DependsOn(Base)
@@ -8050,6 +8066,9 @@ using static Pure.DI.Lifetime;
 
 internal partial class Composition: ServiceProviderFactory<Composition>
 {
+    // IMPORTANT:
+    // Only composition roots (regular or anonymous) can be resolved through the `IServiceProvider` interface.
+    // These roots must be registered using `Root(...)` or `RootBind()` calls.
     void Setup() => DI.Setup()
         // Use the DI setup from the base class
         .DependsOn(Base)
@@ -8118,13 +8137,17 @@ using static Pure.DI.Lifetime;
 
 internal partial class Composition: ServiceProviderFactory<Composition>
 {
+    // IMPORTANT:
+    // Only composition roots (regular or anonymous) can be resolved through the `IServiceProvider` interface.
+    // These roots must be registered using `Root(...)` or `RootBind()` calls.
     void Setup() => DI.Setup()
         // Use the DI setup from the base class
         .DependsOn(Base)
         // Specifies not to attempt to resolve types whose fully qualified name
         // begins with Microsoft.Extensions., Microsoft.Maui.
         // since ServiceProvider will be used to retrieve them.
-        .Hint(Hint.OnCannotResolveContractTypeNameRegularExpression, "^Microsoft\\.(Extensions|Maui)\\..+$")
+        .Hint(Hint.OnCannotResolveContractTypeNameWildcard, "Microsoft.Extensions.*")
+        .Hint(Hint.OnCannotResolveContractTypeNameWildcard, "Microsoft.Maui.*")
 
         // Roots
         .Root<AppShell>(nameof(AppShell))
@@ -8348,6 +8371,9 @@ using static Pure.DI.Lifetime;
 
 internal partial class Composition: ServiceProviderFactory<Composition>
 {
+    // IMPORTANT:
+    // Only composition roots (regular or anonymous) can be resolved through the `IServiceProvider` interface.
+    // These roots must be registered using `Root(...)` or `RootBind()` calls.
     void Setup() => DI.Setup()
         // Use the DI setup from the base class
         .DependsOn(Base)
@@ -8541,6 +8567,9 @@ using static Pure.DI.Lifetime;
 
 internal partial class Composition: ServiceProviderFactory<Composition>
 {
+    // IMPORTANT:
+    // Only composition roots (regular or anonymous) can be resolved through the `IServiceProvider` interface.
+    // These roots must be registered using `Root(...)` or `RootBind()` calls.
     void Setup() => DI.Setup()
         // Use the DI setup from the base class
         .DependsOn(Base)
@@ -8611,6 +8640,9 @@ using static Pure.DI.Lifetime;
 
 internal partial class Composition: ServiceProviderFactory<Composition>
 {
+    // IMPORTANT:
+    // Only composition roots (regular or anonymous) can be resolved through the `IServiceProvider` interface.
+    // These roots must be registered using `Root(...)` or `RootBind()` calls.
     void Setup() => DI.Setup()
         // Use the DI setup from the base class
         .DependsOn(Base)
@@ -12201,21 +12233,12 @@ DI.Setup("Composition")
 </blockquote></details>
 
 
-<details><summary>Field Overrider</summary><blockquote>
+<details><summary>Field UniqueTag</summary><blockquote>
 
-Atomically generated smart tag with value "Overrider".
+Atomically generated smart tag with value "UniqueTag".
             It's used for:
             
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Overrider) -- _GraphOverrider_ as _PerBlock_
-</blockquote></details>
-
-
-<details><summary>Field Cleaner</summary><blockquote>
-
-Atomically generated smart tag with value "Cleaner".
-            It's used for:
-            
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
+            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
@@ -12228,6 +12251,13 @@ Atomically generated smart tag with value "GenericType".
 </blockquote></details>
 
 
+<details><summary>Field Injection</summary><blockquote>
+
+Atomically generated smart tag with value "Injection".
+            
+</blockquote></details>
+
+
 <details><summary>Field Override</summary><blockquote>
 
 Atomically generated smart tag with value "Override".
@@ -12237,19 +12267,12 @@ Atomically generated smart tag with value "Override".
 </blockquote></details>
 
 
-<details><summary>Field UsingDeclarations</summary><blockquote>
+<details><summary>Field Overrider</summary><blockquote>
 
-Atomically generated smart tag with value "UsingDeclarations".
+Atomically generated smart tag with value "Overrider".
             It's used for:
             
-            class _Generator__CompositionClassBuilder_ <-- _IBuilder`2_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
-</blockquote></details>
-
-
-<details><summary>Field Injection</summary><blockquote>
-
-Atomically generated smart tag with value "Injection".
-            
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Overrider) -- _GraphOverrider_ as _PerBlock_
 </blockquote></details>
 
 
@@ -12262,12 +12285,21 @@ Atomically generated smart tag with value "CompositionClass".
 </blockquote></details>
 
 
-<details><summary>Field UniqueTag</summary><blockquote>
+<details><summary>Field Cleaner</summary><blockquote>
 
-Atomically generated smart tag with value "UniqueTag".
+Atomically generated smart tag with value "Cleaner".
             It's used for:
             
-            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve_
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field UsingDeclarations</summary><blockquote>
+
+Atomically generated smart tag with value "UsingDeclarations".
+            It's used for:
+            
+            class _Generator__CompositionClassBuilder_ <-- _IBuilder`2_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
 </blockquote></details>
 
 

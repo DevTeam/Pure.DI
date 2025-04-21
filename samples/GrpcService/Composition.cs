@@ -9,6 +9,9 @@ using Services;
 
 partial class Composition : ServiceProviderFactory<Composition>
 {
+    // IMPORTANT:
+    // Only composition roots (regular or anonymous) can be resolved through the `IServiceProvider` interface.
+    // These roots must be registered using `Root(...)` or `RootBind()` calls.
     static void Setup() => DI.Setup()
         // Use the DI setup from the base class
         .DependsOn(Base)

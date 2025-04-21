@@ -64,7 +64,7 @@ sealed class ClassCommenter(
                     }
                     else
                     {
-                        term.Append("Private composition root of type ");
+                        term.Append("Anonymous composition root of type ");
                         term.Append(formatter.FormatRef(root.Injection.Type));
                         term.Append('.');
                     }

@@ -8,14 +8,18 @@ using Pure.DI.MS;
 using static Pure.DI.Lifetime;
 using Timer = Clock.Models.Timer;
 
-internal partial class Composition: ServiceProviderFactory<Composition>
+partial class Composition: ServiceProviderFactory<Composition>
 {
+    // IMPORTANT:
+    // Only composition roots (regular or anonymous) can be resolved through the `IServiceProvider` interface.
+    // These roots must be registered using `Root(...)` or `RootBind()` calls.
     private static void Setup() => DI.Setup()
         .DependsOn(Base)
         // Specifies not to attempt to resolve types whose fully qualified name
         // begins with Microsoft.Extensions., Microsoft.Maui.
         // since ServiceProvider will be used to retrieve them.
-        .Hint(Hint.OnCannotResolveContractTypeNameRegularExpression, "^Microsoft\\.(Extensions|Maui)\\..+$")
+        .Hint(Hint.OnCannotResolveContractTypeNameWildcard, "Microsoft.Extensions.*")
+        .Hint(Hint.OnCannotResolveContractTypeNameWildcard, "Microsoft.Maui.*")
 
         // Roots
         .Root<AppShell>(nameof(AppShell))

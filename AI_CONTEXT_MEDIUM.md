@@ -91,7 +91,7 @@ This example demonstrates several ways to create a composition root.
 > [!TIP]
 > There is no limit to the number of roots, but you should consider limiting the number of roots. Ideally, an application should have a single composition root.
 
-If you use classic DI containers, the composition is created dynamically every time you call a method similar to `T Resolve<T>()` or `object GetService(Type type)`. The root of the composition there is simply the root type of the composition of objects in memory T or Type type. There can be as many of these as you like. In the case of Pure.DI, the number of composition roots is limited because for each composition root a separate property or method is created at compile time. Therefore, each root is defined explicitly by calling the `Root(string rootName)` method.
+If you use classic DI containers, the composition is resolved dynamically every time you call a method similar to `T Resolve<T>()` or `object GetService(Type type)`. The root of the composition there is simply the root type of the composition of objects in memory `T` or `Type` type. There can be as many of these as you like. In the case of Pure.DI, the number of composition roots is limited because for each composition root a separate property or method is created at compile time. Therefore, each root is defined explicitly by calling the `Root(string rootName)` method.
 
 ```c#
 using Pure.DI;
@@ -101,15 +101,15 @@ DI.Setup(nameof(Composition))
     .Bind<IService>("Other").To<OtherService>()
     .Bind<IDependency>().To<Dependency>()
 
-    // Specifies to create a regular public composition root
+    // Specifies to create a regular composition root
     // of type "IService" with the name "MyService"
     .Root<IService>("MyService")
 
-    // Specifies to create a private composition root
+    // Specifies to create an anonymous composition root
     // that is only accessible from "Resolve()" methods
     .Root<IDependency>()
 
-    // Specifies to create a regular public composition root
+    // Specifies to create a regular composition root
     // of type "IService" with the name "MyOtherService"
     // using the "Other" tag
     .Root<IService>("MyOtherService", "Other");
@@ -143,7 +143,7 @@ class OtherService : IService;
 To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
 
-The name of the root of a composition is arbitrarily chosen depending on its purpose, but should be restricted by the property naming conventions in C# since it is the same name as a property in the composition class. In reality, the _Root_ property has the form:
+The name of the composition root is arbitrarily chosen depending on its purpose, but should be restricted by the property naming conventions in C# since it is the same name as a property in the composition class. In reality, the _Root_ property has the form:
 ```c#
 public IService Root
 {
