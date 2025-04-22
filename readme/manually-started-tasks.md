@@ -7,7 +7,6 @@ By default, tasks are started automatically when they are injected. But you can 
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Hint(Hint.Resolve, "Off")
     // Overrides the default binding that performs an auto-start of a task
     // when it is created. This binding will simply create the task.
     // The start will be handled by the consumer.

@@ -9,8 +9,6 @@ using Pure.DI;
 using static Pure.DI.Lifetime;
 
 DI.Setup(nameof(Composition))
-    // This hint indicates to not generate methods such as Resolve
-    .Hint(Hint.Resolve, "Off")
     .Bind().As(PerBlock).To<Dependency>()
     .Bind().As(Singleton).To<(IDependency dep3, IDependency dep4)>()
 

@@ -47,6 +47,10 @@ class Service(IDependency dependency) : IService;
 
 partial class Composition
 {
+// }
+    // This hint indicates to not generate methods such as Resolve
+    // Resolve = Off
+// {
     // This method will not be called in runtime
     static void Setup1() =>
         DI.Setup()

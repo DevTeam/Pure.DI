@@ -1,6 +1,6 @@
 #### Resolve methods
 
-This example shows how to resolve the composition roots using the _Resolve_ methods by _Service Locator_ approach. `Resolve` methods are generated automatically for each registered root.
+This example shows how to resolve the roots of a composition using `Resolve` methods to use the composition as a _Service Locator_. The `Resolve` methods are generated automatically without additional effort.
 
 
 ```c#
@@ -68,13 +68,10 @@ dotnet run
 
 </details>
 
-_Resolve_ methods are similar to calls to the roots of a composition. Composition roots are common properties. Their use is efficient and does not cause exceptions. And that is why it is recommended to use them. In contrast, _Resolve_ methods have a number of disadvantages:
-
-- They provide access to an unlimited set of dependencies.
-
-- Their use can potentially lead to runtime exceptions, for example, when the corresponding root has not been defined.
-
-- Lead to performance degradation because they search for the root of a composition based on its type.
+_Resolve_ methods are similar to calls to composition roots. Composition roots are properties (or methods). Their use is efficient and does not cause exceptions. This is why they are recommended to be used. In contrast, _Resolve_ methods have a number of disadvantages:
+- They provide access to an unlimited set of dependencies (_Service Locator_).
+- Their use can potentially lead to runtime exceptions. For example, when the corresponding root has not been defined.
+- Sometimes cannot be used directly, e.g., for MAUI/WPF/Avalonia binding.
 
 The following partial class will be generated:
 

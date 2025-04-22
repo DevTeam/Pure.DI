@@ -9,8 +9,6 @@ using Pure.DI;
 using static Pure.DI.Lifetime;
 
 DI.Setup(nameof(Composition))
-    // This hint indicates to not generate methods such as Resolve
-    .Hint(Hint.Resolve, "Off")
     .Bind().As(Transient).To<Dependency>()
     .Bind().To<Service>()
     .Root<IService>("Root");

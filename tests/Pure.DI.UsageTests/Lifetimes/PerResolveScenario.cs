@@ -25,10 +25,10 @@ public class Scenario
     [Fact]
     public void Run()
     {
+        // This hint indicates to not generate methods such as Resolve
+        // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            // This hint indicates to not generate methods such as Resolve
-            .Hint(Hint.Resolve, "Off")
             .Bind().As(PerResolve).To<Dependency>()
             .Bind().As(Singleton).To<(IDependency dep3, IDependency dep4)>()
 

@@ -21,6 +21,8 @@ public class Scenario
     [Fact]
     public async Task Run()
     {
+        // This hint indicates to not generate methods such as Resolve
+        // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
             .Bind<IDependency>().To<Dependency>()

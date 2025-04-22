@@ -97,9 +97,11 @@ partial class Program(Func<Session> sessionFactory)
 partial class Composition
 {
     static void Setup() =>
+// }
+        // This hint indicates to not generate methods such as Resolve
+        // Resolve = Off
+// {
         DI.Setup()
-            // This hint indicates to not generate methods such as Resolve
-            .Hint(Hint.Resolve, "Off")
             .Bind().As(Scoped).To<Dependency>()
             .Bind().To<Service>()
 

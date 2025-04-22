@@ -34,8 +34,8 @@ class Service : IService
 partial class Composition
 {
     private void Setup() =>
-        DI.Setup(nameof(Composition))
 
+        DI.Setup(nameof(Composition))
             .Hint(Hint.OnNewInstance, "On")
             .Hint(Hint.OnDependencyInjection, "On")
             // Excluding loggers

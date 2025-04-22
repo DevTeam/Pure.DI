@@ -73,9 +73,11 @@ partial class Program(Func<IService> serviceFactory)
 partial class Composition
 {
     static void Setup() =>
+// }
+        // This hint indicates to not generate methods such as Resolve
+        // Resolve = Off
+// {
         DI.Setup()
-            // This hint indicates to not generate methods such as Resolve
-            .Hint(Hint.Resolve, "Off")
             .Bind().As(Scoped).To<Dependency>()
             // Session composition root
             .Root<Service>("SessionRoot", kind: RootKinds.Private)
@@ -84,7 +86,7 @@ partial class Composition
             {
                 // Creates a new scope from the parent scope
                 var scope = new Composition(parentScope);
-                // Provides a scope root
+                // Provides the session root in a new scope
                 return scope.SessionRoot;
             })
 

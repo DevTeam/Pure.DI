@@ -9,8 +9,6 @@ using Pure.DI;
 using static Pure.DI.Lifetime;
 
 DI.Setup(nameof(Composition))
-    // This hint indicates to not generate methods such as Resolve
-    .Hint(Hint.Resolve, "Off")
     // Default lifetime applied to a specific type
     .DefaultLifetime<IDependency>(Singleton, "some tag")
     .Bind("some tag").To<Dependency>()

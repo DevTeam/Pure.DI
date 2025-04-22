@@ -98,48 +98,6 @@ partial class Composition
     transientService0 = localBuildingInstance136;
     return transientService0;
   }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public T Resolve<T>()
-  {
-    return Resolver<T>.Value.Resolve(this);
-  }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public T Resolve<T>(object? tag)
-  {
-    return Resolver<T>.Value.ResolveByTag(this, tag);
-  }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public object Resolve(Type type)
-  {
-    throw new InvalidOperationException($"{CannotResolveMessage} {OfTypeMessage} {type}.");
-  }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public object Resolve(Type type, object? tag)
-  {
-    throw new InvalidOperationException($"{CannotResolveMessage} \"{tag}\" {OfTypeMessage} {type}.");
-  }
-
-  private const string CannotResolveMessage = "Cannot resolve composition root ";
-  private const string OfTypeMessage = "of type ";
-
-  private class Resolver<T>: IResolver<Composition, T>
-  {
-    public static IResolver<Composition, T> Value = new Resolver<T>();
-
-    public virtual T Resolve(Composition composite)
-    {
-      throw new InvalidOperationException($"{CannotResolveMessage}{OfTypeMessage}{typeof(T)}.");
-    }
-
-    public virtual T ResolveByTag(Composition composite, object tag)
-    {
-      throw new InvalidOperationException($"{CannotResolveMessage}\"{tag}\" {OfTypeMessage}{typeof(T)}.");
-    }
-  }
 }
 ```
 
@@ -160,10 +118,6 @@ classDiagram
 		class Composition {
 		<<partial>>
 		+ServiceᐸT3ˏT4ᐳ BuildUpGenericᐸT3ˏT4ᐳ(Pure.DI.UsageTests.Generics.GenericBuilderScenario.Service<T3, T4> buildingInstance)
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
 		}
 		class DependencyᐸT4ᐳ {
 			+Dependency()

@@ -39,9 +39,10 @@ public class Scenario
     [Fact]
     public void Run()
     {
+        // This hint indicates to not generate methods such as Resolve
+        // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Hint(Hint.Resolve, "Off")
             // Binds to exposed composition roots from other project
             .RootArg<CompositionInOtherProject>("baseComposition")
             .Root<Program>("GetProgram");
