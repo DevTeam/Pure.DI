@@ -94,7 +94,7 @@ namespace Pure.DI
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
-        ///     .Bind&lt;IDependency&gt;().As(Lifetime.Singleton).To&lt;Dependency&gt;();
+        ///     .Bind&lt;IDependency&gt;().As(Lifetime.Scoped).To&lt;Dependency&gt;();
         /// </code>
         /// </example>
         /// </summary>

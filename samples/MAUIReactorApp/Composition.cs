@@ -7,8 +7,8 @@ using Clock.ViewModels;
 using Components;
 using Pure.DI;
 using Pure.DI.MS;
+using Clock.Models;
 using static Pure.DI.Lifetime;
-using Timer = Clock.Models.Timer;
 
 partial class Composition: ServiceProviderFactory<Composition>
 {

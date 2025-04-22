@@ -1714,6 +1714,13 @@ See also _Hint(Pure.DI.Hint,System.String)_.
 </blockquote></details>
 
 
+<details><summary>Field LocalFunctionLines</summary><blockquote>
+
+Undocumented feature, for now only for internal use.
+            
+</blockquote></details>
+
+
 </blockquote></details>
 
 
@@ -3089,7 +3096,7 @@ Ensures that there will be a single instance of the dependency for each scope.
 ```c#
 
 DI.Setup("Composition")
-                .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>();
+                .Bind<IDependency>().As(Lifetime.Scoped).To<Dependency>();
             
 ```
 
@@ -3450,21 +3457,21 @@ DI.Setup("Composition")
 </blockquote></details>
 
 
-<details><summary>Field UniqueTag</summary><blockquote>
-
-Atomically generated smart tag with value "UniqueTag".
-            It's used for:
-            
-            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve_
-</blockquote></details>
-
-
 <details><summary>Field GenericType</summary><blockquote>
 
 Atomically generated smart tag with value "GenericType".
             It's used for:
             
             class _Generator__TypeResolver_ <-- _IIdGenerator_(GenericType) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
+<details><summary>Field Overrider</summary><blockquote>
+
+Atomically generated smart tag with value "Overrider".
+            It's used for:
+            
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Overrider) -- _GraphOverrider_ as _PerBlock_
 </blockquote></details>
 
 
@@ -3484,12 +3491,21 @@ Atomically generated smart tag with value "Override".
 </blockquote></details>
 
 
-<details><summary>Field Overrider</summary><blockquote>
+<details><summary>Field Cleaner</summary><blockquote>
 
-Atomically generated smart tag with value "Overrider".
+Atomically generated smart tag with value "Cleaner".
             It's used for:
             
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Overrider) -- _GraphOverrider_ as _PerBlock_
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field UniqueTag</summary><blockquote>
+
+Atomically generated smart tag with value "UniqueTag".
+            It's used for:
+            
+            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
@@ -3499,15 +3515,6 @@ Atomically generated smart tag with value "CompositionClass".
             It's used for:
             
             class _Generator__CodeBuilder_ <-- _IBuilder`2_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
-</blockquote></details>
-
-
-<details><summary>Field Cleaner</summary><blockquote>
-
-Atomically generated smart tag with value "Cleaner".
-            It's used for:
-            
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
 </blockquote></details>
 
 
