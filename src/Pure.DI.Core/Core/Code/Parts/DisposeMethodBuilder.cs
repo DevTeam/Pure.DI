@@ -68,7 +68,7 @@ sealed class DisposeMethodBuilder(
         code.AppendLine("/// <param name=\"disposableInstance\">The disposable instance.</param>");
         code.AppendLine("/// <param name=\"exception\">Exception occurring during disposal.</param>");
         code.AppendLine("/// <typeparam name=\"T\">The actual type of instance being disposed of.</typeparam>");
-        code.AppendLine($"partial void {Names.OnDisposeExceptionMethodName}<T>(T disposableInstance, Exception exception) where T : {Names.IDisposableTypeName};");
+        code.AppendLine($"partial void {Names.OnDisposeExceptionMethodName}<T>(T disposableInstance, {Names.ExceptionTypeName} exception) where T : {Names.IDisposableTypeName};");
         membersCounter++;
 
         // ReSharper disable once InvertIf
@@ -120,7 +120,7 @@ sealed class DisposeMethodBuilder(
             code.AppendLine("/// <param name=\"asyncDisposableInstance\">The disposable instance.</param>");
             code.AppendLine("/// <param name=\"exception\">Exception occurring during disposal.</param>");
             code.AppendLine("/// <typeparam name=\"T\">The actual type of instance being disposed of.</typeparam>");
-            code.AppendLine($"partial void {Names.OnDisposeAsyncExceptionMethodName}<T>(T asyncDisposableInstance, Exception exception) where T : {Names.IAsyncDisposableTypeName};");
+            code.AppendLine($"partial void {Names.OnDisposeAsyncExceptionMethodName}<T>(T asyncDisposableInstance, {Names.ExceptionTypeName} exception) where T : {Names.IAsyncDisposableTypeName};");
             membersCounter++;
         }
 
@@ -150,7 +150,7 @@ sealed class DisposeMethodBuilder(
                 }
             }
 
-            code.AppendLine($"catch ({Names.SystemNamespace}Exception exception)");
+            code.AppendLine($"catch ({Names.ExceptionTypeName} exception)");
             using (code.CreateBlock())
             {
                 code.AppendLine($"{Names.OnDisposeAsyncExceptionMethodName}(asyncDisposableInstance, exception);");
@@ -171,7 +171,7 @@ sealed class DisposeMethodBuilder(
                 code.AppendLine("disposableInstance.Dispose();");
             }
 
-            code.AppendLine($"catch ({Names.SystemNamespace}Exception exception)");
+            code.AppendLine($"catch ({Names.ExceptionTypeName} exception)");
             using (code.CreateBlock())
             {
                 code.AppendLine($"{Names.OnDisposeExceptionMethodName}(disposableInstance, exception);");

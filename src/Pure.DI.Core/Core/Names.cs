@@ -40,6 +40,7 @@ static class Names
     public const string IContextTypeName = $"{ApiNamespace}{nameof(IContext)}";
     public const string IConfigurationTypeName = $"{ApiNamespace}{nameof(IConfiguration)}";
     public const string ObjectTypeName = $"{SystemNamespace}Object";
+    public const string ExceptionTypeName = $"{SystemNamespace}Exception";
     public const string ValueTaskTypeName = $"{SystemNamespace}Threading.Tasks.ValueTask";
     public const string LockTypeName = $"{SystemNamespace}Threading.Lock";
     public const string SpanTypeName = $"{SystemNamespace}Span<>";
