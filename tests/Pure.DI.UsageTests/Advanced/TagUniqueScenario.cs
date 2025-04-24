@@ -28,6 +28,8 @@ public class Scenario
     [Fact]
     public void Run()
     {
+        // This hint indicates to not generate methods such as Resolve
+        // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
             .Bind<IDependency<TT>>(Tag.Unique).To<AbcDependency<TT>>()

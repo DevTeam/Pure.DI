@@ -79,10 +79,12 @@ class Service(IDependency dependency) : IService
 partial class Composition
 {
     static void Setup() =>
-        DI.Setup()
 // }
-            .Hint(Hint.SystemThreadingLock, "Off")
+        // This hint indicates to not generate methods such as Resolve
+        // Resolve = Off
+        // SystemThreadingLock = Off
 // {
+        DI.Setup()
             .Bind().To<Dependency>()
             .Bind().To<Service>()
 

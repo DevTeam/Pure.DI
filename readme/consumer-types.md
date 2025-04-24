@@ -45,8 +45,8 @@ class Service : IService
 partial class Composition
 {
     private void Setup() =>
-        DI.Setup(nameof(Composition))
 
+        DI.Setup(nameof(Composition))
             .Arg<Serilog.ILogger>("logger", "from arg")
             .Bind().To(ctx =>
             {

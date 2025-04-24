@@ -48,6 +48,7 @@ public class Scenario
     [Fact]
     public void Run()
     {
+        // This hint indicates to not generate methods such as Resolve
         // Resolve = Off
 // {
         //# using static Pure.DI.Tag;

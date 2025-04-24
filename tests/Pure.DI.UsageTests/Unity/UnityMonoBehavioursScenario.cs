@@ -115,7 +115,8 @@ internal partial class Composition
     
     private static void Setup() =>
 // }
-        // Resolve = off
+        // This hint indicates to not generate methods such as Resolve
+        // Resolve = Off
 // {
         DI.Setup()
             .Bind().As(Lifetime.Singleton).To<ClockService>()

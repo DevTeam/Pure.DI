@@ -25,9 +25,10 @@ public class Scenario
     [Fact]
     public async Task Run()
     {
+        // This hint indicates to not generate methods such as Resolve
+        // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Hint(Hint.Resolve, "Off")
             // Overrides the default binding that performs an auto-start of a task
             // when it is created. This binding will simply create the task.
             // The start will be handled by the consumer.

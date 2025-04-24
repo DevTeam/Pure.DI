@@ -164,7 +164,7 @@ This can be done if these methods are not needed, in case only certain compositi
 
 ## Resolve methods
 
-This example shows how to resolve the composition roots using the _Resolve_ methods by _Service Locator_ approach. `Resolve` methods are generated automatically for each registered root.
+This example shows how to resolve the roots of a composition using `Resolve` methods to use the composition as a _Service Locator_. The `Resolve` methods are generated automatically without additional effort.
 
 ```c#
 using Pure.DI;
@@ -209,13 +209,10 @@ class OtherService : IService;
 To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
 
-_Resolve_ methods are similar to calls to the roots of a composition. Composition roots are common properties. Their use is efficient and does not cause exceptions. And that is why it is recommended to use them. In contrast, _Resolve_ methods have a number of disadvantages:
-
-- They provide access to an unlimited set of dependencies.
-
-- Their use can potentially lead to runtime exceptions, for example, when the corresponding root has not been defined.
-
-- Lead to performance degradation because they search for the root of a composition based on its type.
+_Resolve_ methods are similar to calls to composition roots. Composition roots are properties (or methods). Their use is efficient and does not cause exceptions. This is why they are recommended to be used. In contrast, _Resolve_ methods have a number of disadvantages:
+- They provide access to an unlimited set of dependencies (_Service Locator_).
+- Their use can potentially lead to runtime exceptions. For example, when the corresponding root has not been defined.
+- Sometimes cannot be used directly, e.g., for MAUI/WPF/Avalonia binding.
 
 ## Simplified binding
 
@@ -1336,8 +1333,6 @@ using Pure.DI;
 using static Pure.DI.Lifetime;
 
 DI.Setup(nameof(Composition))
-    // This hint indicates to not generate methods such as Resolve
-    .Hint(Hint.Resolve, "Off")
     .Bind().As(Transient).To<Dependency>()
     .Bind().To<Service>()
     .Root<IService>("Root");
@@ -1395,8 +1390,6 @@ using Pure.DI;
 using static Pure.DI.Lifetime;
 
 DI.Setup(nameof(Composition))
-    // This hint indicates to not generate methods such as Resolve
-    .Hint(Hint.Resolve, "Off")
     .Bind().As(Singleton).To<Dependency>()
     .Bind().To<Service>()
     .Root<IService>("Root");
@@ -1457,8 +1450,6 @@ using Pure.DI;
 using static Pure.DI.Lifetime;
 
 DI.Setup(nameof(Composition))
-    // This hint indicates to not generate methods such as Resolve
-    .Hint(Hint.Resolve, "Off")
     .Bind().As(PerResolve).To<Dependency>()
     .Bind().As(Singleton).To<(IDependency dep3, IDependency dep4)>()
 
@@ -1509,8 +1500,6 @@ using Pure.DI;
 using static Pure.DI.Lifetime;
 
 DI.Setup(nameof(Composition))
-    // This hint indicates to not generate methods such as Resolve
-    .Hint(Hint.Resolve, "Off")
     .Bind().As(PerBlock).To<Dependency>()
     .Bind().As(Singleton).To<(IDependency dep3, IDependency dep4)>()
 
@@ -1621,9 +1610,8 @@ partial class Program(Func<Session> sessionFactory)
 partial class Composition
 {
     static void Setup() =>
+
         DI.Setup()
-            // This hint indicates to not generate methods such as Resolve
-            .Hint(Hint.Resolve, "Off")
             .Bind().As(Scoped).To<Dependency>()
             .Bind().To<Service>()
 
@@ -1684,9 +1672,8 @@ partial class Program(Func<IService> serviceFactory)
 partial class Composition
 {
     static void Setup() =>
+
         DI.Setup()
-            // This hint indicates to not generate methods such as Resolve
-            .Hint(Hint.Resolve, "Off")
             .Bind().As(Scoped).To<Dependency>()
             // Session composition root
             .Root<Service>("SessionRoot", kind: RootKinds.Private)
@@ -1695,7 +1682,7 @@ partial class Composition
             {
                 // Creates a new scope from the parent scope
                 var scope = new Composition(parentScope);
-                // Provides a scope root
+                // Provides the session root in a new scope
                 return scope.SessionRoot;
             })
 
@@ -1721,8 +1708,6 @@ using Pure.DI;
 using static Pure.DI.Lifetime;
 
 DI.Setup(nameof(Composition))
-    // This hint indicates to not generate methods such as Resolve
-    .Hint(Hint.Resolve, "Off")
     // Default Lifetime applies
     // to all bindings until the end of the chain
     // or the next call to the DefaultLifetime method
@@ -1775,8 +1760,6 @@ using Pure.DI;
 using static Pure.DI.Lifetime;
 
 DI.Setup(nameof(Composition))
-    // This hint indicates to not generate methods such as Resolve
-    .Hint(Hint.Resolve, "Off")
     // Default lifetime applied to a specific type
     .DefaultLifetime<IDependency>(Singleton)
     .Bind().To<Dependency>()
@@ -1827,8 +1810,6 @@ using Pure.DI;
 using static Pure.DI.Lifetime;
 
 DI.Setup(nameof(Composition))
-    // This hint indicates to not generate methods such as Resolve
-    .Hint(Hint.Resolve, "Off")
     // Default lifetime applied to a specific type
     .DefaultLifetime<IDependency>(Singleton, "some tag")
     .Bind("some tag").To<Dependency>()
@@ -1934,8 +1915,6 @@ using Pure.DI;
 using static Pure.DI.Lifetime;
 
 DI.Setup(nameof(Composition))
-    // This hint indicates to not generate methods such as Resolve
-    .Hint(Hint.Resolve, "Off")
     .Bind().As(Singleton).To<Dependency>()
     .Bind().To<Service>()
     .Root<IService>("Root");
@@ -2053,9 +2032,8 @@ partial class Program(Func<Session> sessionFactory)
 partial class Composition
 {
     static void Setup() =>
+
         DI.Setup()
-            // This hint indicates to not generate methods such as Resolve
-            .Hint(Hint.Resolve, "Off")
             .Bind().As(Scoped).To<Dependency>()
             .Bind().To<Service>()
 
@@ -2439,7 +2417,6 @@ By default, tasks are started automatically when they are injected. But you can 
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Hint(Hint.Resolve, "Off")
     // Overrides the default binding that performs an auto-start of a task
     // when it is created. This binding will simply create the task.
     // The start will be handled by the consumer.

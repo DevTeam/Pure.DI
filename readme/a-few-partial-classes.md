@@ -19,6 +19,7 @@ class Service(IDependency dependency) : IService;
 
 partial class Composition
 {
+
     // This method will not be called in runtime
     static void Setup1() =>
         DI.Setup()

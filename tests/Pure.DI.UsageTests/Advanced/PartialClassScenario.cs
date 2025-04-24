@@ -87,6 +87,10 @@ public partial class Composition
     // In fact, this method will not be called at runtime
     [Conditional("DI")]
     void Setup() =>
+// }
+        // This hint indicates to not generate methods such as Resolve
+        // Resolve = Off
+// {
         DI.Setup()
             .Bind<IDependency>().To<Dependency>()
             .Bind<long>().To(_ => GenerateId())

@@ -92,10 +92,11 @@ class Service : IService
 partial class Composition
 {
     private void Setup() =>
-        DI.Setup(nameof(Composition))
 // }
-            .Hint(Hint.Resolve, "Off")
+        // This hint indicates to not generate methods such as Resolve
+        // Resolve = Off
 // {
+        DI.Setup(nameof(Composition))
             .Arg<Serilog.ILogger>("logger", "from arg")
             .Bind().To(ctx =>
             {

@@ -18,7 +18,6 @@ using Pure.DI;
 using OtherAssembly;
 
 DI.Setup(nameof(Composition))
-    .Hint(Hint.Resolve, "Off")
     // Binds to exposed composition roots from other project
     .RootArg<CompositionInOtherProject>("baseComposition")
     .Root<Program>("GetProgram");

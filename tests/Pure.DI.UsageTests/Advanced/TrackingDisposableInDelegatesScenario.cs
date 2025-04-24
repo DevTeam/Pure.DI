@@ -81,6 +81,10 @@ class Service(Func<Owned<IDependency>> dependencyFactory)
 partial class Composition
 {
     static void Setup() =>
+// }
+        // This hint indicates to not generate methods such as Resolve
+        // Resolve = Off
+// {
         DI.Setup()
             .Bind().To<Dependency>()
             .Bind().To<Service>()

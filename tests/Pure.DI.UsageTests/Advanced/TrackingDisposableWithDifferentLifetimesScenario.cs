@@ -104,6 +104,10 @@ class Service(
 partial class Composition
 {
     static void Setup() =>
+// }
+        // This hint indicates to not generate methods such as Resolve
+        // Resolve = Off
+// {
         DI.Setup()
             .Bind().To<Dependency>()
             .Bind("single").As(Lifetime.Singleton).To<Dependency>()

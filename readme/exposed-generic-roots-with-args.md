@@ -21,7 +21,6 @@ using static Pure.DI.Lifetime;
 using OtherAssembly;
 
 DI.Setup(nameof(Composition))
-    .Hint(Hint.Resolve, "Off")
     .RootArg<int>("id")
     // Binds to exposed composition roots from other project
     .Bind().As(Singleton).To<CompositionWithGenericRootsAndArgsInOtherProject>()

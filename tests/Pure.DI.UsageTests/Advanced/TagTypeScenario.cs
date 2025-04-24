@@ -27,6 +27,8 @@ public class Scenario
     [Fact]
     public void Run()
     {
+        // This hint indicates to not generate methods such as Resolve
+        // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
             // Tag.Type here is the same as typeof(AbcDependency)

@@ -34,6 +34,8 @@ public class Scenario
     [Fact]
     public void Run()
     {
+        // This hint indicates to not generate methods such as Resolve
+        // Resolve = Off
 // {
         // This setup does not generate code, but can be used as a dependency
         // and requires the use of the "DependsOn" call to add it as a dependency

@@ -24,8 +24,9 @@ public class Scenario
     [Fact]
     public void Run()
     {
+        // This hint indicates to not generate methods such as Resolve
         // Resolve = Off
-// {        
+// {
         DI.Setup("Composition")
             .Root<Service>("My{type}");
 
