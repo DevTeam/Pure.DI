@@ -3457,6 +3457,15 @@ DI.Setup("Composition")
 </blockquote></details>
 
 
+<details><summary>Field GenericType</summary><blockquote>
+
+Atomically generated smart tag with value "GenericType".
+            It's used for:
+            
+            class _Generator__TypeResolver_ <-- _IIdGenerator_(GenericType) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
 <details><summary>Field Overrider</summary><blockquote>
 
 Atomically generated smart tag with value "Overrider".
@@ -3466,21 +3475,10 @@ Atomically generated smart tag with value "Overrider".
 </blockquote></details>
 
 
-<details><summary>Field CompositionClass</summary><blockquote>
+<details><summary>Field Injection</summary><blockquote>
 
-Atomically generated smart tag with value "CompositionClass".
-            It's used for:
+Atomically generated smart tag with value "Injection".
             
-            class _Generator__CodeBuilder_ <-- _IBuilder`2_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
-</blockquote></details>
-
-
-<details><summary>Field GenericType</summary><blockquote>
-
-Atomically generated smart tag with value "GenericType".
-            It's used for:
-            
-            class _Generator__TypeResolver_ <-- _IIdGenerator_(GenericType) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
@@ -3493,28 +3491,30 @@ Atomically generated smart tag with value "Cleaner".
 </blockquote></details>
 
 
-<details><summary>Field UsingDeclarations</summary><blockquote>
-
-Atomically generated smart tag with value "UsingDeclarations".
-            It's used for:
-            
-            class _Generator__CompositionClassBuilder_ <-- _IBuilder`2_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
-</blockquote></details>
-
-
-<details><summary>Field Injection</summary><blockquote>
-
-Atomically generated smart tag with value "Injection".
-            
-</blockquote></details>
-
-
 <details><summary>Field Override</summary><blockquote>
 
 Atomically generated smart tag with value "Override".
             It's used for:
             
             class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
+<details><summary>Field CompositionClass</summary><blockquote>
+
+Atomically generated smart tag with value "CompositionClass".
+            It's used for:
+            
+            class _Generator__CodeBuilder_ <-- _IBuilder`2_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field UsingDeclarations</summary><blockquote>
+
+Atomically generated smart tag with value "UsingDeclarations".
+            It's used for:
+            
+            class _Generator__CompositionClassBuilder_ <-- _IBuilder`2_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
 </blockquote></details>
 
 
