@@ -12,20 +12,20 @@ namespace Pure.DI.MS
     /// <summary>
     /// A base class for a composition that can be used as a service provider factory <see cref="Microsoft.Extensions.DependencyInjection.IServiceProviderFactory{TContainerBuilder}"/>.
     /// <example>
-    /// For example:
     /// <code>
-    /// internal partial class Composition: ServiceProviderFactory&lt;Composition&gt;
+    /// partial class Composition : ServiceProviderFactory&lt;Composition&gt;
     /// {
-    ///     void Setup() =&gt;
-    ///         DI.Setup(nameof(Composition))
-    ///             // Use the DI setup from the base class
-    ///             .DependsOn(Base)
-    ///             .Root&lt;HomeController&gt;();
+    ///     void Setup() =&gt; DI.Setup()
+    ///         // Use the DI setup from the base class
+    ///         .DependsOn(Base)
+    ///         .Bind().As(Singleton).To&lt;WeatherForecastService&gt;()
+    ///         // Registers controllers as roots
+    ///         .Roots&lt;ControllerBase&gt;();
     /// }
     /// </code>
     /// </example> 
     /// </summary>
-    /// <typeparam name="TComposition"></typeparam>
+    /// <typeparam name="TComposition">Composition class type.</typeparam>
 #if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 #endif
@@ -72,10 +72,11 @@ namespace Pure.DI.MS
                 .Hint(global::Pure.DI.Hint.OnNewRoot, "On")
                 .Hint(global::Pure.DI.Hint.OnNewRootPartial, "Off")
                 // Specifies not to attempt to resolve types whose fully qualified name
-                // begins with Microsoft.Extensions, Microsoft.AspNetCore
+                // begins with Microsoft.Extensions, Microsoft.AspNetCore, Microsoft.Maui
                 // since ServiceProvider will be used to retrieve them.
                 .Hint(global::Pure.DI.Hint.OnCannotResolveContractTypeNameWildcard, "Microsoft.Extensions.*")
-                .Hint(global::Pure.DI.Hint.OnCannotResolveContractTypeNameWildcard, "Microsoft.AspNetCore.*");
+                .Hint(global::Pure.DI.Hint.OnCannotResolveContractTypeNameWildcard, "Microsoft.AspNetCore.*")
+                .Hint(global::Pure.DI.Hint.OnCannotResolveContractTypeNameWildcard, "Microsoft.Maui.*");
 
         /// <summary>
         /// Creates a service collection <see cref="Microsoft.Extensions.DependencyInjection.ServiceCollection"/> based on the registered composition.

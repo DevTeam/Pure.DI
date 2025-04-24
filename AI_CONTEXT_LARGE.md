@@ -7479,9 +7479,9 @@ using static Pure.DI.Lifetime;
 internal partial class Composition
 {
     void Setup() => DI.Setup()
-        // Provides the composition root for main window
+        // Provides the composition root for the main window
         .Root<MainWindow>(nameof(MainWindow))
-        // Provides the composition root for Clock view model
+        // Provides the composition root for a Clock view model
         .Root<IClockViewModel>(nameof(ClockViewModel))
         
         // View Models
@@ -7675,10 +7675,10 @@ internal partial class Composition: ServiceProviderFactory<Composition>
         .DependsOn(Base)
         // View Models
         .Bind().To<ClockViewModel>()
-            // Provides the composition root for Clock view model
+            // Provides the composition root for a Clock view model
             .Root<IClockViewModel>(nameof(ClockViewModel))
         .Bind().To<ErrorViewModel>()
-            // Provides the composition root for Error view model
+            // Provides the composition root for the Error view model
             .Root<IErrorViewModel>()
 
         // Services
@@ -7762,7 +7762,7 @@ internal partial class Composition: ServiceProviderFactory<Composition>
         .DependsOn(Base)
         // View Models
         .Bind().As(Singleton).To<ClockViewModel>()
-            // Provides the composition root for Clock view model
+            // Provides the composition root for a Clock view model
             .Root<IClockViewModel>(nameof(ClockViewModel))
 
         // Services
@@ -8143,11 +8143,6 @@ internal partial class Composition: ServiceProviderFactory<Composition>
     void Setup() => DI.Setup()
         // Use the DI setup from the base class
         .DependsOn(Base)
-        // Specifies not to attempt to resolve types whose fully qualified name
-        // begins with Microsoft.Extensions., Microsoft.Maui.
-        // since ServiceProvider will be used to retrieve them.
-        .Hint(Hint.OnCannotResolveContractTypeNameWildcard, "Microsoft.Extensions.*")
-        .Hint(Hint.OnCannotResolveContractTypeNameWildcard, "Microsoft.Maui.*")
 
         // Roots
         .Root<AppShell>(nameof(AppShell))
@@ -12258,6 +12253,15 @@ Atomically generated smart tag with value "Overrider".
 </blockquote></details>
 
 
+<details><summary>Field UniqueTag</summary><blockquote>
+
+Atomically generated smart tag with value "UniqueTag".
+            It's used for:
+            
+            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
 <details><summary>Field Injection</summary><blockquote>
 
 Atomically generated smart tag with value "Injection".
@@ -12274,30 +12278,21 @@ Atomically generated smart tag with value "Override".
 </blockquote></details>
 
 
-<details><summary>Field Cleaner</summary><blockquote>
-
-Atomically generated smart tag with value "Cleaner".
-            It's used for:
-            
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
-</blockquote></details>
-
-
-<details><summary>Field UniqueTag</summary><blockquote>
-
-Atomically generated smart tag with value "UniqueTag".
-            It's used for:
-            
-            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve_
-</blockquote></details>
-
-
 <details><summary>Field CompositionClass</summary><blockquote>
 
 Atomically generated smart tag with value "CompositionClass".
             It's used for:
             
             class _Generator__CodeBuilder_ <-- _IBuilder`2_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field Cleaner</summary><blockquote>
+
+Atomically generated smart tag with value "Cleaner".
+            It's used for:
+            
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
 </blockquote></details>
 
 

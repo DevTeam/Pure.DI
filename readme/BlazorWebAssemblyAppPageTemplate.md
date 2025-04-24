@@ -22,7 +22,7 @@ internal partial class Composition: ServiceProviderFactory<Composition>
         .DependsOn(Base)
         // View Models
         .Bind().As(Singleton).To<ClockViewModel>()
-            // Provides the composition root for Clock view model
+            // Provides the composition root for a Clock view model
             .Root<IClockViewModel>(nameof(ClockViewModel))
 
         // Services

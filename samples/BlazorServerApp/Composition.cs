@@ -21,10 +21,10 @@ partial class Composition : ServiceProviderFactory<Composition>
         .DependsOn(Base)
         // View Models
         .Bind().To<ClockViewModel>()
-            // Provides the composition root for Clock view model
+            // Provides the composition root for a Clock view model
             .Root<IClockViewModel>(nameof(ClockViewModel))
         .Bind().To<ErrorViewModel>()
-        // Provides the composition root for Error view model
+        // Provides the composition root for the Error view model
         .Root<IErrorViewModel>()
 
         // Services

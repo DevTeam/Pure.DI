@@ -14,9 +14,9 @@ using static Pure.DI.Lifetime;
 partial class Composition
 {
     void Setup() => DI.Setup()
-        // Provides the composition root for main window
+        // Provides the composition root for the main window
         .Root<MainWindow>(nameof(MainWindow))
-        // Provides the composition root for Clock view model
+        // Provides the composition root for a Clock view model
         .Root<IClockViewModel>(nameof(ClockViewModel))
 
         // View Models
