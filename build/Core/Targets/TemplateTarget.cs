@@ -42,13 +42,14 @@ class TemplateTarget(
         };
 
         var projectDirectory = Path.Combine("src", ProjectName);
+        var packagesDirectory = env.GetPath(PathType.PackagesDirectory);
         await new DotNetPack()
             .WithProject(Path.Combine(projectDirectory, $"{ProjectName}.csproj"))
             .WithProps(props)
-            .WithOutput(env.GetPath(PathType.PackagesDirectory))
+            .WithOutput(packagesDirectory)
             .BuildAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
-        var targetPackage = Path.Combine(env.GetPath(PathType.PackagesDirectory), "bin", $"{ProjectName}.{packageVersion}.nupkg");
+        var targetPackage = Path.Combine(packagesDirectory, $"{ProjectName}.{packageVersion}.nupkg");
         artifactsWriter.PublishArtifact($"{targetPackage} => .");
 
         if (string.IsNullOrWhiteSpace(settings.NuGetKey))
