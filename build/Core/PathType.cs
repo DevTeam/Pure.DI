@@ -5,5 +5,6 @@ enum PathType
     SolutionDirectory,
     TempDirectory,
     BenchmarksResultDirectory,
-    SourceDirectory
+    SourceDirectory,
+    PackagesDirectory
 }

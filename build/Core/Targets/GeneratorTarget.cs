@@ -5,11 +5,10 @@ using System.Runtime.CompilerServices;
 class GeneratorTarget(
     Settings settings,
     Commands commands,
-    Packages packages)
+    Packages packages,
+    Env env)
     : IInitializable, ITarget<Package>
 {
-    private const string PackagesDir = ".packages";
-
     private string PackageName => $"Pure.DI.{settings.NextVersion}.nupkg";
 
     public Task InitializeAsync(CancellationToken cancellationToken) => commands.RegisterAsync(
@@ -19,7 +18,7 @@ class GeneratorTarget(
     public async Task<Package> RunAsync(CancellationToken cancellationToken)
     {
         var generatorProjectDirectory = Path.Combine("src", "Pure.DI");
-        var mergedPackagePath = Path.GetFullPath(Path.Combine(generatorProjectDirectory, PackagesDir, PackageName));
+        var mergedPackagePath = Path.GetFullPath(Path.Combine(generatorProjectDirectory, env.GetPath(PathType.PackagesDirectory), PackageName));
         var generatorPackages = CreateGeneratorPackagesAsync(generatorProjectDirectory, cancellationToken);
         var mergedPackage = await packages.MergeAsync(generatorPackages, mergedPackagePath, cancellationToken);
         return new Package(mergedPackage, true, settings.NextVersion);
@@ -86,7 +85,7 @@ class GeneratorTarget(
                 .BuildAsync(cancellationToken: cancellationToken).EnsureSuccess();
         }
 
-        var packagePath = Path.Combine(PackagesDir, analyzerRoslynVersion.ToString());
+        var packagePath = Path.Combine(env.GetPath(PathType.PackagesDirectory), analyzerRoslynVersion.ToString());
 
         await new DotNetPack()
             .WithShortName($"packing {codeAnalysis.AnalyzerRoslynPackageVersion}")
@@ -95,9 +94,9 @@ class GeneratorTarget(
             .WithNoBuild(true)
             .WithNoLogo(true)
             .WithProject(Path.Combine(projectDirectory, "Pure.DI.csproj"))
-            .WithOutput(Path.Combine(projectDirectory, packagePath))
+            .WithOutput(packagePath)
             .BuildAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
-        return Path.Combine(projectDirectory, packagePath, PackageName);
+        return Path.Combine(packagePath, PackageName);
     }
 }

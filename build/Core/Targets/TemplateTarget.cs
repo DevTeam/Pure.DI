@@ -7,6 +7,7 @@ class TemplateTarget(
     Settings settings,
     Commands commands,
     Versions versions,
+    Env env,
     ITeamCityArtifactsWriter artifactsWriter)
     : IInitializable, ITarget<Package>
 {
@@ -44,9 +45,10 @@ class TemplateTarget(
         await new DotNetPack()
             .WithProject(Path.Combine(projectDirectory, $"{ProjectName}.csproj"))
             .WithProps(props)
+            .WithOutput(env.GetPath(PathType.PackagesDirectory))
             .BuildAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
-        var targetPackage = Path.Combine(projectDirectory, "bin", $"{ProjectName}.{packageVersion}.nupkg");
+        var targetPackage = Path.Combine(env.GetPath(PathType.PackagesDirectory), "bin", $"{ProjectName}.{packageVersion}.nupkg");
         artifactsWriter.PublishArtifact($"{targetPackage} => .");
 
         if (string.IsNullOrWhiteSpace(settings.NuGetKey))

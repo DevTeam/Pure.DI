@@ -12,7 +12,8 @@ using NuGet.Versioning;
 class LibrariesTarget(
     Settings settings,
     Commands commands,
-    Sdk sdk)
+    Sdk sdk,
+    Env env)
     : IInitializable, ITarget<IReadOnlyCollection<Library>>
 {
     public Task InitializeAsync(CancellationToken cancellationToken) => commands.RegisterAsync(
@@ -50,6 +51,7 @@ class LibrariesTarget(
                     ("version", settings.NextVersion.ToString()))
                 .WithConfiguration(settings.Configuration).WithNoBuild(true).WithNoLogo(true)
                 .WithProject(Path.Combine(Path.GetFullPath(Path.Combine("src", library.Name)), $"{library.Name}.csproj"))
+                .WithOutput(Path.GetDirectoryName(library.Package.Path) ?? "")
                 .WithShortName($"packing {library.Name}")
                 .BuildAsync(cancellationToken: cancellationToken).EnsureSuccess();
         }
@@ -59,8 +61,7 @@ class LibrariesTarget(
 
     private string GetPackagePath(string library, NuGetVersion version)
     {
-        var libraryProjectDirectory = Path.GetFullPath(Path.Combine("src", library));
-        var libraryPackageDir = Path.Combine(libraryProjectDirectory, "bin", settings.Configuration);
+        var libraryPackageDir = env.GetPath(PathType.PackagesDirectory);
         var libraryPackageName = $"{library}.{version.ToString()}.nupkg";
         return Path.Combine(libraryPackageDir, libraryPackageName);
     }

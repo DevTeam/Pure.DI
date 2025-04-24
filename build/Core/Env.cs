@@ -12,6 +12,7 @@ class Env
             PathType.TempDirectory => Path.Combine(Path.GetTempPath(), "Pure.DI", $"{Guid.NewGuid().ToString()[..4]}"),
             PathType.BenchmarksResultDirectory => Path.Combine(GetPath(PathType.SolutionDirectory), "benchmarks", "data"),
             PathType.SourceDirectory => Path.Combine(GetPath(PathType.SolutionDirectory), "src"),
+            PathType.PackagesDirectory => Path.Combine(GetPath(PathType.SolutionDirectory), ".packages"),
             _ => throw new ArgumentOutOfRangeException(nameof(pathType), pathType, null)
         };
 
