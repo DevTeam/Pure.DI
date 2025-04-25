@@ -174,8 +174,9 @@ sealed class ApiInvocationProcessor(
                                 ImmutableArray<MdTagAttribute>.Empty,
                                 ImmutableArray<MdOrdinalAttribute>.Empty,
                                 ImmutableArray<MdAccumulator>.Empty,
-                                Array.Empty<MdTagOnSites>(),
-                                comments.FilterHints(invocationComments).ToList()));
+                                [],
+                                comments.FilterHints(invocationComments).ToList(),
+                                null));
                         break;
 
                     case nameof(IConfiguration.DefaultLifetime):

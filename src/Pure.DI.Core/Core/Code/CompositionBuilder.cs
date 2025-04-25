@@ -12,6 +12,7 @@ sealed class CompositionBuilder(
     ICodeBuilder<IStatement> statementBuilder,
     IBuilder<CompositionCode, LinesBuilder> classDiagramBuilder,
     Func<IVariablesMap> variablesMapFactory,
+    IVariableNameProvider variableNameProvider,
     CancellationToken cancellationToken)
     : IBuilder<DependencyGraph, CompositionCode>
 {
@@ -48,9 +49,13 @@ sealed class CompositionBuilder(
                 }
             }
 
-            foreach (var overrideVar in map.GetOverrides())
+            if (graph.Source.Overrides is {} overrides)
             {
-                ctx.Code.AppendLine($"{typeResolver.Resolve(graph.Source, overrideVar.InstanceType)} {overrideVar.VariableName};");
+                foreach (var @override in overrides.GetOverrides(root.Node))
+                {
+                    var variableName = variableNameProvider.GetOverrideVariableName(@override.Source);
+                    ctx.Code.AppendLine($"{typeResolver.Resolve(graph.Source, @override.Source.ContractType)} {variableName};");
+                }
             }
 
             blockBuilder.Build(ctx, rootBlock);

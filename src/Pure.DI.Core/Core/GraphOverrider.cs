@@ -17,7 +17,7 @@ class GraphOverrider(
         var nodesMap = new Dictionary<Injection, DependencyNode>();
         foreach (var rootNode in from node in graph.Vertices where node.Root is not null select node)
         {
-            Override(processedNodes, [], nodesMap, [], setup, graph, rootNode, ref maxId, entries);
+            Override(processedNodes, [], nodesMap, [], setup, graph, rootNode, rootNode, ref maxId, entries);
             if (cancellationToken.IsCancellationRequested)
             {
                 return graph;
@@ -46,6 +46,7 @@ class GraphOverrider(
         Dictionary<int, DpOverride> overridesMap,
         MdSetup setup,
         IGraph<DependencyNode, Dependency> graph,
+        DependencyNode rootNode,
         DependencyNode targetNode,
         ref int maxId,
         List<GraphEntry<DependencyNode, Dependency>> entries)
@@ -83,6 +84,11 @@ class GraphOverrider(
                 return targetNode;
             }
 
+            if (targetNode.Root is not null)
+            {
+                rootNode = dependency.Source;
+            }
+
             if (dependency.Position.HasValue)
             {
                 while (lastDependencyPosition < dependency.Position && overridesEnumerator.MoveNext())
@@ -102,6 +108,7 @@ class GraphOverrider(
                             @override.Source with { Id = overrideId, ContractType = contractType },
                             @override.Injections.Select(i => i with { Type = typeConstructor.Construct(setup, i.Type) }).ToImmutableArray());
 
+                        setup.Overrides?.Register(rootNode, currentOverride);
                         overridesMap[@override.Source.Id] = currentOverride;
                         MdBinding? overrideBinding = null;
                         foreach (var injection in currentOverride.Injections)
@@ -122,7 +129,7 @@ class GraphOverrider(
                                 targetNode,
                                 injection,
                                 contractType,
-                                Lifetime.PerResolve,
+                                Lifetime.Transient,
                                 typeConstructor,
                                 ++maxId,
                                 MdConstructKind.Override,
@@ -141,7 +148,7 @@ class GraphOverrider(
             if (!overriddenInjections.Contains(currentDependency.Injection)
                 || !nodesMap.TryGetValue(currentDependency.Injection, out var overridingSourceNode))
             {
-                var source = Override(processedNodes, overriddenInjections, nodesMap, overridesMap, setup, graph, currentDependency.Source, ref maxId, entries);
+                var source = Override(processedNodes, overriddenInjections, nodesMap, overridesMap, setup, graph, rootNode, currentDependency.Source, ref maxId, entries);
                 currentDependency = currentDependency with { Source = source };
             }
             else

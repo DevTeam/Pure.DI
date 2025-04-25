@@ -11,6 +11,7 @@
 namespace Pure.DI.IntegrationTests;
 
 using System.Collections.Concurrent;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -224,7 +225,8 @@ public static class TestExtensions
                 MetadataReference.CreateFromFile(typeof(Console).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(Uri).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(Regex).Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(IAsyncEnumerable<>).Assembly.Location));
+                MetadataReference.CreateFromFile(typeof(IAsyncEnumerable<>).Assembly.Location),
+                MetadataReference.CreateFromFile(typeof(INotifyPropertyChanged).Assembly.Location));
 
     private static CSharpCompilation Check(this CSharpCompilation compilation, List<string> output, Options? options, string? generatedCode)
     {

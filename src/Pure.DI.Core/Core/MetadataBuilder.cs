@@ -13,6 +13,7 @@ sealed class MetadataBuilder(
     Func<IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>> setupsBuilderFactory,
     Func<ISetupFinalizer> setupFinalizerFactory,
     ICompilations compilations,
+    Func<IOverridesRegistry> overridesFactory,
     CancellationToken cancellationToken)
     : IBuilder<IEnumerable<SyntaxUpdate>, IEnumerable<MdSetup>>
 {
@@ -187,6 +188,7 @@ sealed class MetadataBuilder(
             ordinalAttributesBuilder.ToImmutable(),
             accumulators.ToImmutable(),
             tagOn,
-            comments);
+            comments,
+            overridesFactory());
     }
 }

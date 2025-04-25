@@ -28,10 +28,6 @@ sealed class VariablesMap : Dictionary<MdBinding, Variable>, IVariablesMap
         this.Any(i => i.Key.Lifetime?.Value is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve);
 
     public IEnumerable<Variable> GetPerResolves() => this
-        .Where(i => i.Key.Lifetime?.Value == Lifetime.PerResolve && i.Key.Construct is not { Kind: MdConstructKind.Override })
-        .Select(i => i.Value);
-
-    public IEnumerable<Variable> GetOverrides() => this
-        .Where(i => i.Key.Construct is { Kind: MdConstructKind.Override })
+        .Where(i => i.Key.Lifetime?.Value == Lifetime.PerResolve)
         .Select(i => i.Value);
 }

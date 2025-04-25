@@ -9,6 +9,4 @@ interface IVariablesMap : IDictionary<MdBinding, Variable>
     IEnumerable<Variable> GetSingletons();
 
     IEnumerable<Variable> GetPerResolves();
-
-    IEnumerable<Variable> GetOverrides();
 }

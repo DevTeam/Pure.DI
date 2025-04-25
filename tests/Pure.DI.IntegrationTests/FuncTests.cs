@@ -1879,4 +1879,282 @@ public class FuncTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Asd 55"], result);
     }
+
+#if ROSLYN4_8_OR_GREATER
+    [Fact]
+    public async Task ShouldSupportFunWithArgWhenOverrideValueIsNotUsed()
+    {
+        // Given
+
+        // When
+
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using System.ComponentModel;
+                           using System.Diagnostics;
+                           using System.Runtime.CompilerServices;
+                           using System.Threading;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public interface IClock
+                               {
+                                   DateTimeOffset Now { get; }
+                               }
+                               
+                               public class Clock : IClock
+                               {
+                                   public DateTimeOffset Now => DateTimeOffset.Now;
+                               }
+                               
+                               public interface IDispatcher
+                               {
+                                   void Dispatch(Action action);
+                               }
+                               
+                               public class Dispatcher : IDispatcher
+                               {
+                                   public void Dispatch(Action action) => action();
+                               }
+                               
+                               public interface ILog<T>
+                               {
+                                   void Info(string message);
+                               }
+                               
+                               public class Log<T> : ILog<T>
+                               {
+                                   private readonly IClock _clock;
+                               
+                                   public Log(IClock clock)
+                                   {
+                                       _clock = clock;
+                                   }
+                               
+                                   public void Info(string message) =>
+                                       Debug.WriteLine($"{_clock.Now:HH:mm:ss.fff} {typeof(T).Name,-32} {message}");
+                               }
+                               
+                               public interface ISubject<T> : IObservable<T>, IObserver<T>
+                               {
+                               }
+                               
+                               public class Subject<T> : ISubject<T>, IObservable<T>, IObserver<T>
+                               {
+                                   private readonly List<IObserver<T>> _observers = new();
+                                   private readonly ILog<Subject<T>> _log;
+                               
+                                   public Subject(ILog<Subject<T>> log)
+                                   {
+                                       _log = log;
+                                   }
+                               
+                                   public IDisposable Subscribe(IObserver<T> observer)
+                                   {
+                                       lock (_observers)
+                                       {
+                                           _observers.Add(observer);
+                                           var subscription = new Subscription(_observers, observer);
+                                           _log.Info("Subscribed");
+                                           return subscription;
+                                       }
+                                   }
+                               
+                                   public void OnNext(T value)
+                                   {
+                                       _log.Info($"OnNext {value}");
+                                       List<IObserver<T>> observers;
+                                       lock (_observers)
+                                       {
+                                           observers = new List<IObserver<T>>(_observers);
+                                       }
+                               
+                                       foreach (var observer in observers)
+                                       {
+                                           observer.OnNext(value);
+                                       }
+                                   }
+                               
+                                   public void OnCompleted()
+                                   {
+                                       _log.Info("OnCompleted");
+                                       Clear();
+                                   }
+                               
+                                   public void OnError(Exception error)
+                                   {
+                                       _log.Info("OnError");
+                                       Clear();
+                                   }
+                               
+                                   private void Clear()
+                                   {
+                                       lock (_observers)
+                                       {
+                                           _observers.Clear();
+                                       }
+                                   }
+                               
+                                   private class Subscription : IDisposable
+                                   {
+                                       private readonly ICollection<IObserver<T>> _observers1;
+                                       private readonly IObserver<T> _observer;
+                               
+                                       public Subscription(ICollection<IObserver<T>> observers,
+                                           IObserver<T> observer)
+                                       {
+                                           _observers1 = observers;
+                                           _observer = observer;
+                                       }
+                               
+                                       public void Dispose()
+                                       {
+                                           lock (_observers1)
+                                           {
+                                               _observers1.Remove(_observer);
+                                           }
+                                       }
+                                   }
+                               }
+                               
+                               public readonly record struct Tick;
+                               
+                               public class Metronome : IObservable<Tick>, IDisposable
+                               {
+                                   private readonly ILog<Metronome> _log;
+                                   private readonly ISubject<Tick> _subject;
+                                   private readonly Timer _timer;
+                               
+                                   public Metronome(
+                                       ILog<Metronome> log,
+                                       ISubject<Tick> subject,
+                                       TimeSpan period)
+                                   {
+                                       _log = log;
+                                       _subject = subject;
+                                       _timer = new Timer(Tick, null, TimeSpan.Zero, period);
+                                       _log.Info("Created");
+                                   }
+                               
+                                   public IDisposable Subscribe(IObserver<Tick> observer)
+                                   {
+                                       var subscription = _subject.Subscribe(observer);
+                                       _log.Info("Subscribed");
+                                       return subscription;
+                                   }
+                               
+                                   public void Dispose()
+                                   {
+                                       _timer.Dispose();
+                                       _log.Info("Disposed");
+                                   }
+                               
+                                   private void Tick(object? state) => _subject.OnNext(default);
+                               }
+                               
+                               public abstract class ViewModel : INotifyPropertyChanged
+                               {
+                                   public required IDispatcher Dispatcher { private get; init; }
+                               
+                                   public required ILog<ViewModel> Log { private get; init; }
+                               
+                                   public event PropertyChangedEventHandler? PropertyChanged;
+                               
+                                   protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+                                   {
+                                       Log.Info($"Property \"{propertyName}\" changed");
+                                       if (PropertyChanged is {} propertyChanged)
+                                       {
+                                           Dispatcher.Dispatch(() => propertyChanged(this, new PropertyChangedEventArgs(propertyName)));
+                                       }
+                                   }
+                               }
+                               
+                               public interface IClockViewModel: INotifyPropertyChanged
+                               {
+                                   string Time { get; }
+                               
+                                   string Date { get; }
+                               }
+                               
+                               public class ClockViewModel : ViewModel, IClockViewModel, IDisposable, IObserver<Tick>
+                               {
+                                   private readonly IClock _clock;
+                                   private readonly ILog<ClockViewModel> _log;
+                                   private readonly IDisposable _timerToken;
+                                   private DateTimeOffset _now;
+                               
+                                   public ClockViewModel(
+                                       ILog<ClockViewModel> log,
+                                       IClock clock,
+                                       Func<TimeSpan, IObservable<Tick>> timerFactory)
+                                   {
+                                       _log = log;
+                                       _clock = clock;
+                                       _now = _clock.Now;
+                                       _timerToken = timerFactory(TimeSpan.FromSeconds(1)).Subscribe(this);
+                                       log.Info("Created");
+                                   }
+                               
+                                   public string Time => _now.ToString("T");
+                               
+                                   public string Date => _now.ToString("d");
+                               
+                                   void IDisposable.Dispose()
+                                   {
+                                       _timerToken.Dispose();
+                                       _log.Info("Disposed");
+                                   }
+                               
+                                   void IObserver<Tick>.OnNext(Tick value)
+                                   {
+                                       _now = _clock.Now;
+                                       _log.Info("Tick");
+                                       OnPropertyChanged(nameof(Date));
+                                       OnPropertyChanged(nameof(Time));
+                                   }
+                               
+                                   void IObserver<Tick>.OnError(Exception error) {}
+                               
+                                   void IObserver<Tick>.OnCompleted() {}
+                               }
+                               
+                               internal partial class Service
+                               {
+                                    public Service(IClockViewModel clock)
+                                    {
+                                    }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Root<Service>("Root")
+                                           .Bind().To<Subject<TT>>()
+                                           .Bind().As(Lifetime.Singleton).To<ClockViewModel>()
+                                           .Bind().As(Lifetime.Singleton).To<Metronome>()
+                                           .Bind().As(Lifetime.PerBlock).To<Clock>()
+                                           .Bind().To<Log<TT>>()
+                                           .Bind().To<Dispatcher>();
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       using var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Latest));
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
+#endif
 }
