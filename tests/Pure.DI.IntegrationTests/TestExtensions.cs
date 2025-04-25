@@ -96,7 +96,7 @@ public static class TestExtensions
 
         compilation.Check(stdOut, options, generatedCode);
 
-        var tempFileName = Path.Combine(Environment.CurrentDirectory, Guid.NewGuid().ToString()[..4]);
+        var tempFileName = Path.Combine(Environment.CurrentDirectory, Guid.NewGuid().ToString().Replace("-", string.Empty)[..8]);
         var assemblyPath = Path.ChangeExtension(tempFileName, "exe");
         var configPath = Path.ChangeExtension(tempFileName, "runtimeconfig.json");
         var runtime = RuntimeInformation.FrameworkDescription.Split(" ")[1];
@@ -179,7 +179,7 @@ public static class TestExtensions
         }
         finally
         {
-            var attempts = 3;
+            var attempts = 5;
             while (attempts-- > 0)
             {
                 try
@@ -196,9 +196,13 @@ public static class TestExtensions
 
                     attempts = 0;
                 }
+                catch (IOException)
+                {
+                    Thread.Sleep(1000);
+                }
                 catch (UnauthorizedAccessException)
                 {
-                    Thread.Sleep(300);
+                    Thread.Sleep(1000);
                 }
             }
         }
