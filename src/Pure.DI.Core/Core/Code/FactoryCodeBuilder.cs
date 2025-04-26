@@ -13,7 +13,8 @@ sealed class FactoryCodeBuilder(
     ISymbolNames symbolNames,
     IVariableNameProvider variableNameProvider,
     Func<IFactoryValidator> factoryValidatorFactory,
-    Func<IInitializersWalker> initializersWalkerFactory)
+    Func<IInitializersWalker> initializersWalkerFactory,
+    IOverridesRegistry overridesRegistry)
     : ICodeBuilder<DpFactory>
 {
     public const string DefaultInstanceValueName = "instance_1182D127";
@@ -270,7 +271,7 @@ sealed class FactoryCodeBuilder(
                 var indent = prefixes.Count;
                 using (code.Indent(indent))
                 {
-                    BuildOverrides(factory, resolver.Overrides, code);
+                    BuildOverrides(ctx, factory, resolver.Overrides, code);
                     if (hasOverrides)
                     {
                         foreach (var argStatement in GetArgsStatements(argument))
@@ -289,7 +290,7 @@ sealed class FactoryCodeBuilder(
             if (line.Contains(InitializationStatement) && initializers.MoveNext())
             {
                 var (initialization, initializer) = initializers.Current;
-                BuildOverrides(factory, initializer.Overrides, code);
+                BuildOverrides(ctx, factory, initializer.Overrides, code);
                 if (hasOverrides)
                 {
                     foreach (var argument in initializationArgs)
@@ -326,11 +327,12 @@ sealed class FactoryCodeBuilder(
         ctx.Code.AppendLines(ctx.BuildTools.OnCreated(ctx, variable));
     }
 
-    private void BuildOverrides(DpFactory factory, ImmutableArray<DpOverride> overrides, LinesBuilder code)
+    private void BuildOverrides(BuildContext ctx, DpFactory factory, ImmutableArray<DpOverride> overrides, LinesBuilder code)
     {
         foreach (var @override in overrides.OrderBy(i => i.Source.Position).Select(i => factory.ResolveOverride(i)))
         {
             code.AppendLine($"{variableNameProvider.GetOverrideVariableName(@override.Source)} = {@override.Source.ValueExpression};");
+            overridesRegistry.Register(ctx.Root, @override);
         }
     }
 

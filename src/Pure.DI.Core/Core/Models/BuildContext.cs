@@ -1,6 +1,7 @@
 namespace Pure.DI.Core.Models;
 
 record BuildContext(
+    Root Root,
     int Level,
     IBuildTools BuildTools,
     ICodeBuilder<IStatement> StatementBuilder,

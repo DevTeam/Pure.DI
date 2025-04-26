@@ -108,7 +108,6 @@ class GraphOverrider(
                             @override.Source with { Id = overrideId, ContractType = contractType },
                             @override.Injections.Select(i => i with { Type = typeConstructor.Construct(setup, i.Type) }).ToImmutableArray());
 
-                        setup.Overrides?.Register(rootNode, currentOverride);
                         overridesMap[@override.Source.Id] = currentOverride;
                         MdBinding? overrideBinding = null;
                         foreach (var injection in currentOverride.Injections)

@@ -2,7 +2,7 @@
 
 interface IOverridesRegistry
 {
-    void Register(DependencyNode rootNode, DpOverride @override);
+    void Register(Root root, DpOverride @override);
 
-    IEnumerable<DpOverride> GetOverrides(DependencyNode rootNode);
+    IEnumerable<DpOverride> GetOverrides(Root root);
 }

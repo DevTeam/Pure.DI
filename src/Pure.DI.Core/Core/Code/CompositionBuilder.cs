@@ -13,6 +13,7 @@ sealed class CompositionBuilder(
     IBuilder<CompositionCode, LinesBuilder> classDiagramBuilder,
     Func<IVariablesMap> variablesMapFactory,
     IVariableNameProvider variableNameProvider,
+    IOverridesRegistry overridesRegistry,
     CancellationToken cancellationToken)
     : IBuilder<DependencyGraph, CompositionCode>
 {
@@ -28,6 +29,7 @@ sealed class CompositionBuilder(
             cancellationToken.ThrowIfCancellationRequested();
             var rootBlock = variablesBuilder.Build(graph, map, root.Node, root.Injection);
             var ctx = new BuildContext(
+                root,
                 0,
                 buildTools,
                 statementBuilder,
@@ -49,18 +51,17 @@ sealed class CompositionBuilder(
                 }
             }
 
-            if (graph.Source.Overrides is {} overrides)
+            var bodyCode = new LinesBuilder();
+            blockBuilder.Build(ctx with { Code = bodyCode }, rootBlock);
+            foreach (var @override in overridesRegistry.GetOverrides(root))
             {
-                foreach (var @override in overrides.GetOverrides(root.Node))
-                {
-                    var variableName = variableNameProvider.GetOverrideVariableName(@override.Source);
-                    ctx.Code.AppendLine($"{typeResolver.Resolve(graph.Source, @override.Source.ContractType)} {variableName};");
-                }
+                var variableName = variableNameProvider.GetOverrideVariableName(@override.Source);
+                ctx.Code.AppendLine($"{typeResolver.Resolve(graph.Source, @override.Source.ContractType)} {variableName};");
             }
 
-            blockBuilder.Build(ctx, rootBlock);
-            ctx.Code.AppendLine($"return {buildTools.OnInjected(ctx, rootBlock.Current)};");
-            ctx.Code.AppendLines(ctx.LocalFunctionsCode.Lines);
+            bodyCode.AppendLine($"return {buildTools.OnInjected(ctx, rootBlock.Current)};");
+            bodyCode.AppendLines(ctx.LocalFunctionsCode.Lines);
+            ctx.Code.AppendLines(bodyCode.Lines);
 
             var args = GetRootArgs(map.Values).ToList();
             var processedRoot = root with

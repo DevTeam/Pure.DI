@@ -15,4 +15,22 @@ record Root(
     public bool IsPublic => !string.IsNullOrWhiteSpace(Name);
 
     public string DisplayName => this.GetPropertyName();
+
+    public virtual bool Equals(Root? other)
+    {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+        return Node.Equals(other.Node) && Injection.Equals(other.Injection) && Name == other.Name;
+    }
+
+    public override int GetHashCode()
+    {
+        unchecked
+        {
+            var hashCode = Node.GetHashCode();
+            hashCode = (hashCode * 397) ^ Injection.GetHashCode();
+            hashCode = (hashCode * 397) ^ Name.GetHashCode();
+            return hashCode;
+        }
+    }
 }

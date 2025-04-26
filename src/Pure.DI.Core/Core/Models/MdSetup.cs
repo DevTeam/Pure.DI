@@ -21,8 +21,7 @@ record MdSetup(
     in ImmutableArray<MdOrdinalAttribute> OrdinalAttributes,
     in ImmutableArray<MdAccumulator> Accumulators,
     IReadOnlyCollection<MdTagOnSites> TagOn,
-    IReadOnlyCollection<string> Comments,
-    IOverridesRegistry? Overrides)
+    IReadOnlyCollection<string> Comments)
 {
     public virtual bool Equals(MdSetup? other) =>
         other is not null && (ReferenceEquals(this, other) || Name.Equals(other.Name));

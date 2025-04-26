@@ -71,7 +71,6 @@ public sealed partial class Generator
             .Bind<IDependencyGraphLocationsWalker>().To<DependencyGraphLocationsWalker>()
             .Bind<IFactoryValidator>().To<FactoryValidator>()
             .Bind<ILocalVariableRenamingRewriter>().To<LocalVariableRenamingRewriter>()
-            .Bind().To<OverridesRegistry>()
 
         .DefaultLifetime(Singleton)
             .Bind().To<Cache<TT1, TT2>>()
@@ -188,6 +187,7 @@ public sealed partial class Generator
             .Bind().To<SmartTags>()
             .Bind().To<GenericTypeArguments>()
             .Bind().To<VariableNameProvider>()
-            .Bind().To<OverrideIdProvider>();
+            .Bind().To<OverrideIdProvider>()
+            .Bind().To<OverridesRegistry>();
 }
 // @formatter:on
