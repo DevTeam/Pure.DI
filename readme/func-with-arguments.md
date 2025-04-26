@@ -121,16 +121,16 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      string overString2;
       int overInt320;
+      string overString2;
       Func<int, string, IDependency> perBlockFunc1;
       var localLockObject104 = new Object();
-      Func<int, string, IDependency> localFactory105 = new Func<int, string, IDependency>((int localArg113, string localArg219) =>
+      Func<int, string, IDependency> localFactory105 = new Func<int, string, IDependency>((int localArg120, string localArg227) =>
       {
         lock (localLockObject104)
         {
-          overInt320 = localArg113;
-          overString2 = localArg219;
+          overInt320 = localArg120;
+          overString2 = localArg227;
           if (_root._singletonClock51 is null)
           {
             using (_lock.EnterScope())
@@ -166,8 +166,8 @@ classDiagram
 	Service --|> IService
 	Composition ..> Service : IService Root
 	Dependency o-- "Singleton" Clock : IClock
-	Dependency o-- "PerResolve" Int32 : Int32
-	Dependency o-- "PerResolve" String : String
+	Dependency *--  Int32 : Int32
+	Dependency *--  String : String
 	Service o-- "PerBlock" FuncᐸInt32ˏStringˏIDependencyᐳ : FuncᐸInt32ˏStringˏIDependencyᐳ
 	FuncᐸInt32ˏStringˏIDependencyᐳ *--  Dependency : IDependency
 	namespace Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario {

@@ -78,19 +78,16 @@ The following partial class will be generated:
 partial class Composition
 {
   private readonly Composition _root;
-  private readonly Lock _lock;
 
   [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;
-    _lock = new Lock();
   }
 
   internal Composition(Composition parentScope)
   {
     _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = _root._lock;
   }
 
   public IService<string> Root
@@ -101,11 +98,11 @@ partial class Composition
       int overInt320;
       Func<int, IDependency<string>> perBlockFunc1;
       var localLockObject142 = new Object();
-      Func<int, IDependency<string>> localFactory143 = new Func<int, IDependency<string>>((int localArg19) =>
+      Func<int, IDependency<string>> localFactory143 = new Func<int, IDependency<string>>((int localArg13) =>
       {
         lock (localLockObject142)
         {
-          overInt320 = localArg19;
+          overInt320 = localArg13;
           IDependency<string> localValue144 = new Dependency<string>(overInt320);
           return localValue144;
         }
@@ -131,7 +128,7 @@ classDiagram
 	Composition ..> ServiceᐸStringᐳ : IServiceᐸStringᐳ Root
 	ServiceᐸStringᐳ o-- "PerBlock" FuncᐸInt32ˏIDependencyᐸStringᐳᐳ : FuncᐸInt32ˏIDependencyᐸStringᐳᐳ
 	FuncᐸInt32ˏIDependencyᐸStringᐳᐳ *--  DependencyᐸStringᐳ : IDependencyᐸStringᐳ
-	DependencyᐸStringᐳ o-- "PerResolve" Int32 : Int32
+	DependencyᐸStringᐳ *--  Int32 : Int32
 	namespace Pure.DI.UsageTests.Generics.GenericInjectionsAsRequiredWithArgumentsScenario {
 		class Composition {
 		<<partial>>

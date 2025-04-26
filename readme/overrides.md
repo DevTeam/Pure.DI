@@ -155,9 +155,9 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      string overString2;
       int overInt320;
       int overInt321;
+      string overString2;
       Drawing.Color overColor3;
       Func<int, int, IDependency> transientFunc1 =
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -208,10 +208,10 @@ classDiagram
 	FuncᐸInt32ˏInt32ˏIDependencyᐳ *--  Dependency : Dependency
 	Service *--  FuncᐸInt32ˏInt32ˏIDependencyᐳ : FuncᐸInt32ˏInt32ˏIDependencyᐳ
 	Dependency o-- "Singleton" Clock : IClock
-	Dependency o-- "PerResolve" Int32 : Int32
-	Dependency o-- "PerResolve" Int32 : "sub"  Int32
-	Dependency o-- "PerResolve" String : String
-	Dependency o-- "PerResolve" Color : Color
+	Dependency *--  Int32 : Int32
+	Dependency *--  Int32 : "sub"  Int32
+	Dependency *--  String : String
+	Dependency *--  Color : Color
 	namespace Pure.DI.UsageTests.Basics.OverridesScenario {
 		class Clock {
 		}
