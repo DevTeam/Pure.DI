@@ -1378,7 +1378,7 @@ namespace Pure.DI
         Partial = 1 << 6,
         
         /// <summary>
-        /// Specifies to create a exposed root of the composition.
+        /// Specifies to create an exposed root of the composition.
         /// </summary>
         /// <seealso cref="BindAttribute"/>
         Exposed = 1 << 7,
@@ -1387,6 +1387,16 @@ namespace Pure.DI
         /// Specifies to use a <c>protected</c> access modifier for the root of the composition.
         /// </summary>
         Protected = 1 << 8,
+
+        /// <summary>
+        /// Specifies to use a <c>virtual</c> modifier for the root of the composition.
+        /// </summary>
+        Virtual = 1 << 9,
+        
+        /// <summary>
+        /// Specifies to use a <c>override</c> modifier for the root of the composition.
+        /// </summary>
+        Override = 1 << 10,
     }
     
     /// <summary>

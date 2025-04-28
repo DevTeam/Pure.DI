@@ -179,7 +179,7 @@ public sealed partial class Generator
             .Bind(UniqueTag).To<IdGenerator>()
             .Bind(GenericType).To<IdGenerator>()
             .Bind(Injection).To<IdGenerator>()
-            .Bind(Override).To<IdGenerator>()
+            .Bind(Tag.Override).To<IdGenerator>()
             .Bind().To<IdGenerator>()
             .Bind().To<Registry<TT>>()
             .Bind().To<Locks>()

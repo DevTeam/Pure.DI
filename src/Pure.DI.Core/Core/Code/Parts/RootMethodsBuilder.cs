@@ -83,6 +83,16 @@ sealed class RootMethodsBuilder(
             name.Append(" partial");
         }
 
+        if ((root.Kind & RootKinds.Virtual) == RootKinds.Virtual)
+        {
+            name.Append(" virtual");
+        }
+
+        if ((root.Kind & RootKinds.Override) == RootKinds.Override)
+        {
+            name.Append(" override");
+        }
+
         name.Append(' ');
         name.Append(root.TypeDescription.Name);
 
