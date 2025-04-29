@@ -77,8 +77,8 @@ sealed class VariationalDependencyGraphBuilder(
         try
         {
             var maxIterations = globalProperties.MaxIterations;
-            DependencyGraph? first = null;
             var maxAttempts = 0x2000;
+            DependencyGraph? dependencyGraph = null;
             while (variator.TryGetNextVariants(variants, out var nodes))
             {
                 if (maxAttempts-- == 0)
@@ -119,7 +119,7 @@ sealed class VariationalDependencyGraphBuilder(
                     continue;
                 }
 
-                var dependencyGraph = new DependencyGraph(setup, graph);
+                dependencyGraph = new DependencyGraph(setup, graph);
                 if (dependencyGraph is { IsResolved: true })
                 {
                     foreach (var dependency in dependencyGraph.Graph.Edges)
@@ -136,7 +136,6 @@ sealed class VariationalDependencyGraphBuilder(
                     return dependencyGraph;
                 }
 
-                first ??= dependencyGraph;
                 continue;
 
                 IProcessingNode CreateProcessingNode(DependencyNode dependencyNode) =>
@@ -145,7 +144,7 @@ sealed class VariationalDependencyGraphBuilder(
                         contractsBuilder.Build(new ContractsBuildContext(dependencyNode.Binding, MdTag.ContextTag)));
             }
 
-            return first;
+            return dependencyGraph;
         }
         finally
         {
