@@ -111,7 +111,7 @@ sealed class ClassDiagramBuilder(
             {
                 if (!marker.IsMarker(setup, type))
                 {
-                    classes.Add(new Class(type.ContainingNamespace?.ToDisplayString() ?? "", FormatType(setup, type, DefaultFormatOptions), "", type, new LinesBuilder()));
+                    classes.Add(new Class(ResolveNamespaceName(type.ContainingNamespace), FormatType(setup, type, DefaultFormatOptions), "", type, new LinesBuilder()));
                 }
             }
 
@@ -121,7 +121,7 @@ sealed class ClassDiagramBuilder(
                 var sourceType = FormatType(setup, dependency.Source.Type, DefaultFormatOptions);
                 if (!marker.IsMarker(setup, dependency.Source.Type))
                 {
-                    classes.Add(new Class(dependency.Source.Type.ContainingNamespace?.ToDisplayString() ?? "", sourceType, "", dependency.Source.Type, new LinesBuilder()));
+                    classes.Add(new Class(ResolveNamespaceName(dependency.Source.Type.ContainingNamespace), sourceType, "", dependency.Source.Type, new LinesBuilder()));
                 }
 
                 if (dependency.Target.Root is not null && rootProperties.TryGetValue(dependency.Injection, out var root))
@@ -133,7 +133,7 @@ sealed class ClassDiagramBuilder(
                     var targetType = FormatType(setup, dependency.Target.Type, DefaultFormatOptions);
                     if (!marker.IsMarker(setup, dependency.Target.Type))
                     {
-                        classes.Add(new Class(dependency.Target.Type.ContainingNamespace?.ToDisplayString() ?? "", targetType, "", dependency.Target.Type, new LinesBuilder()));
+                        classes.Add(new Class(ResolveNamespaceName(dependency.Target.Type.ContainingNamespace), targetType, "", dependency.Target.Type, new LinesBuilder()));
                     }
 
                     if (dependency.Source.Arg is {} arg)
@@ -327,6 +327,11 @@ sealed class ClassDiagramBuilder(
         return typeName.StartsWith(Names.GlobalNamespacePrefix) ? typeName[Names.GlobalNamespacePrefix.Length..] : typeName;
     }
 
+    private static string ResolveNamespaceName(INamespaceSymbol? namespaceSymbol) =>
+        namespaceSymbol == null || namespaceSymbol.IsGlobalNamespace
+            ? ""
+            : namespaceSymbol.ToDisplayString();
+
     private static string Format(Accessibility accessibility) =>
         accessibility switch
         {
@@ -356,7 +361,7 @@ sealed class ClassDiagramBuilder(
         {
             var lines = new LinesBuilder();
             var name = builder.FormatType(setup, node.Type, options);
-            var cls = new Class(node.Type.ContainingNamespace?.ToDisplayString() ?? "", name, "", node.Type, lines);
+            var cls = new Class(ResolveNamespaceName(node.Type.ContainingNamespace), name, "", node.Type, lines);
             if (!marker.IsMarker(setup, node.Type))
             {
                 classes.Add(cls);
