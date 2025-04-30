@@ -516,7 +516,7 @@ public class ErrorsAndWarningsTests
     }
 
     [Fact]
-    public async Task ShouldSupportUnresolvedDependency()
+    public async Task ShouldShowErrorWhenUnresolvedDependency()
     {
         // Given
 
@@ -562,6 +562,62 @@ public class ErrorsAndWarningsTests
 
         // Then
         result.Success.ShouldBeFalse(result);
+        result.Logs.Count(i => i.Id == LogId.ErrorUnableToResolve).ShouldBe(1, result);
+        result.Logs.Count(i => i.Id == LogId.ErrorUnableToResolve && i.Location.GetSource() == "abc").ShouldBe(1, result);
+    }
+
+    [Fact]
+    public async Task ShouldShowMinimumNumbersOfErrorsWhenUnresolvedDependency()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           namespace Sample
+                           {
+                               using System;
+                               using Pure.DI;
+                               using Sample;
+                           
+                               internal interface IService
+                               {
+                               }
+                           
+                               internal interface IDependency
+                               {
+                               }
+                           
+                               internal class Service : IService
+                               {
+                                   internal Service(IDependency dependency, int id, string abc)
+                                   {
+                                   }
+                                   
+                                   internal Service(int id, string abc)
+                                   {
+                                   }
+                               }
+                           
+                               internal class Dependency : IDependency
+                               {
+                                   public Dependency(int id, string abc) {}
+                               }
+                           
+                               internal partial class Composition
+                               {                   
+                                   void Setup() => Pure.DI.DI.Setup("Composition")
+                                       .Bind<int>().To(_ => 99)
+                                       .Bind<IDependency>().To<Dependency>()
+                                       .Bind<IService>().To<Service>().Root<IService>("Root"); 
+                               }
+                           
+                               public class Program { public static void Main() { } }       
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Logs.Count(i => i.Id == LogId.ErrorUnableToResolve).ShouldBe(1, result);
         result.Logs.Count(i => i.Id == LogId.ErrorUnableToResolve && i.Location.GetSource() == "abc").ShouldBe(1, result);
     }
 
