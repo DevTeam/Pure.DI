@@ -3316,7 +3316,7 @@ Specifies to create a partial root of the composition.
 
 <details><summary>Field Exposed</summary><blockquote>
 
-Specifies to create a exposed root of the composition.
+Specifies to create an exposed root of the composition.
             
 See also _BindAttribute_.
 
@@ -3326,6 +3326,20 @@ See also _BindAttribute_.
 <details><summary>Field Protected</summary><blockquote>
 
 Specifies to use a  `protected`  access modifier for the root of the composition.
+            
+</blockquote></details>
+
+
+<details><summary>Field Virtual</summary><blockquote>
+
+Specifies to use a  `virtual`  modifier for the root of the composition.
+            
+</blockquote></details>
+
+
+<details><summary>Field Override</summary><blockquote>
+
+Specifies to use a  `override`  modifier for the root of the composition.
             
 </blockquote></details>
 
@@ -3475,28 +3489,12 @@ Atomically generated smart tag with value "GenericType".
 </blockquote></details>
 
 
-<details><summary>Field Injection</summary><blockquote>
-
-Atomically generated smart tag with value "Injection".
-            
-</blockquote></details>
-
-
 <details><summary>Field Cleaner</summary><blockquote>
 
 Atomically generated smart tag with value "Cleaner".
             It's used for:
             
             class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
-</blockquote></details>
-
-
-<details><summary>Field Override</summary><blockquote>
-
-Atomically generated smart tag with value "Override".
-            It's used for:
-            
-            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
@@ -3515,6 +3513,22 @@ Atomically generated smart tag with value "UsingDeclarations".
             It's used for:
             
             class _Generator__CompositionClassBuilder_ <-- _IBuilder`2_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field Injection</summary><blockquote>
+
+Atomically generated smart tag with value "Injection".
+            
+</blockquote></details>
+
+
+<details><summary>Field Override</summary><blockquote>
+
+Atomically generated smart tag with value "Override".
+            It's used for:
+            
+            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 

@@ -110,11 +110,11 @@ partial class Composition
       int overInt320;
       Func<int, IDependency> perBlockFunc1;
       var localLockObject97 = new Object();
-      Func<int, IDependency> localFactory98 = new Func<int, IDependency>((int localArg13) =>
+      Func<int, IDependency> localFactory98 = new Func<int, IDependency>((int localArg110) =>
       {
         lock (localLockObject97)
         {
-          overInt320 = localArg13;
+          overInt320 = localArg110;
           IDependency localValue99 = new Dependency(overInt320);
           return localValue99;
         }

@@ -7620,7 +7620,7 @@ The [project file](/samples/AvaloniaApp/AvaloniaApp.csproj) looks like this:
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.1.63">
+        <PackageReference Include="Pure.DI" Version="2.1.64">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -7703,11 +7703,11 @@ The [project file](/samples/BlazorServerApp/BlazorServerApp.csproj) looks like t
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.1.63">
+        <PackageReference Include="Pure.DI" Version="2.1.64">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.1.63" />
+        <PackageReference Include="Pure.DI.MS" Version="2.1.64" />
     </ItemGroup>
 
 </Project>
@@ -7787,11 +7787,11 @@ The [project file](/samples/BlazorWebAssemblyApp/BlazorWebAssemblyApp.csproj) lo
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.1.63">
+        <PackageReference Include="Pure.DI" Version="2.1.64">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.1.63" />
+        <PackageReference Include="Pure.DI.MS" Version="2.1.64" />
     </ItemGroup>
 
 </Project>
@@ -7822,7 +7822,7 @@ The [project file](/samples/ShroedingersCatNativeAOT/ShroedingersCatNativeAOT.cs
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.1.63">
+        <PackageReference Include="Pure.DI" Version="2.1.64">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -7928,7 +7928,7 @@ The [project file](/samples/ShroedingersCat/ShroedingersCat.csproj) looks like t
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.1.63">
+        <PackageReference Include="Pure.DI" Version="2.1.64">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -8019,7 +8019,7 @@ The [project file](/samples/ShroedingersCatTopLevelStatements/ShroedingersCatTop
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.1.63">
+        <PackageReference Include="Pure.DI" Version="2.1.64">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -8088,11 +8088,11 @@ The [project file](/samples/GrpcService/GrpcService.csproj) looks like this:
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.1.63">
+        <PackageReference Include="Pure.DI" Version="2.1.64">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.1.63" />
+        <PackageReference Include="Pure.DI.MS" Version="2.1.64" />
     </ItemGroup>
 
 </Project>
@@ -8317,11 +8317,11 @@ The [project file](/samples/MAUIApp/MAUIApp.csproj) looks like this:
         <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)"/>
         <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)"/>
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0"/>
-        <PackageReference Include="Pure.DI" Version="2.1.63">
+        <PackageReference Include="Pure.DI" Version="2.1.64">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.1.63" />
+        <PackageReference Include="Pure.DI.MS" Version="2.1.64" />
     </ItemGroup>
 
 </Project>
@@ -8411,11 +8411,11 @@ The [project file](/samples/WebAPI/WebAPI.csproj) looks like this:
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.1.63">
+        <PackageReference Include="Pure.DI" Version="2.1.64">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.1.63" />
+        <PackageReference Include="Pure.DI.MS" Version="2.1.64" />
     </ItemGroup>
 
 </Project>
@@ -8582,11 +8582,11 @@ The [project file](/samples/WebAPI/WebAPI.csproj) looks like this:
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.1.63">
+        <PackageReference Include="Pure.DI" Version="2.1.64">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.1.63" />
+        <PackageReference Include="Pure.DI.MS" Version="2.1.64" />
     </ItemGroup>
 
 </Project>
@@ -8655,11 +8655,11 @@ The [project file](/samples/WebApp/WebApp.csproj) looks like this:
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.1.63">
+        <PackageReference Include="Pure.DI" Version="2.1.64">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.1.63" />
+        <PackageReference Include="Pure.DI.MS" Version="2.1.64" />
     </ItemGroup>
 
 </Project>
@@ -8739,7 +8739,7 @@ The [project file](/samples/WinFormsAppNetCore/WinFormsAppNetCore.csproj) looks 
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.1.63">
+        <PackageReference Include="Pure.DI" Version="2.1.64">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -8815,7 +8815,7 @@ The [project file](/samples/WinFormsApp/WinFormsApp.csproj) looks like this:
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.1.63">
+        <PackageReference Include="Pure.DI" Version="2.1.64">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -8943,7 +8943,7 @@ The [project file](/samples/WpfAppNetCore/WpfAppNetCore.csproj) looks like this:
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.1.63">
+        <PackageReference Include="Pure.DI" Version="2.1.64">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -12076,7 +12076,7 @@ Specifies to create a partial root of the composition.
 
 <details><summary>Field Exposed</summary><blockquote>
 
-Specifies to create a exposed root of the composition.
+Specifies to create an exposed root of the composition.
             
 See also _BindAttribute_.
 
@@ -12086,6 +12086,20 @@ See also _BindAttribute_.
 <details><summary>Field Protected</summary><blockquote>
 
 Specifies to use a  `protected`  access modifier for the root of the composition.
+            
+</blockquote></details>
+
+
+<details><summary>Field Virtual</summary><blockquote>
+
+Specifies to use a  `virtual`  modifier for the root of the composition.
+            
+</blockquote></details>
+
+
+<details><summary>Field Override</summary><blockquote>
+
+Specifies to use a  `override`  modifier for the root of the composition.
             
 </blockquote></details>
 
@@ -12235,28 +12249,12 @@ Atomically generated smart tag with value "GenericType".
 </blockquote></details>
 
 
-<details><summary>Field Injection</summary><blockquote>
-
-Atomically generated smart tag with value "Injection".
-            
-</blockquote></details>
-
-
 <details><summary>Field Cleaner</summary><blockquote>
 
 Atomically generated smart tag with value "Cleaner".
             It's used for:
             
             class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
-</blockquote></details>
-
-
-<details><summary>Field Override</summary><blockquote>
-
-Atomically generated smart tag with value "Override".
-            It's used for:
-            
-            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
@@ -12275,6 +12273,22 @@ Atomically generated smart tag with value "UsingDeclarations".
             It's used for:
             
             class _Generator__CompositionClassBuilder_ <-- _IBuilder`2_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field Injection</summary><blockquote>
+
+Atomically generated smart tag with value "Injection".
+            
+</blockquote></details>
+
+
+<details><summary>Field Override</summary><blockquote>
+
+Atomically generated smart tag with value "Override".
+            It's used for:
+            
+            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
