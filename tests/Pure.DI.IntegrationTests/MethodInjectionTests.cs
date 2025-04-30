@@ -2,8 +2,13 @@
 
 public class MethodInjectionTests
 {
-    [Fact]
-    public async Task ShouldSupportMethodInjection()
+    [Theory]
+    [InlineData(Lifetime.Transient, "Initialize dep", "Initialize dep", "Initialize", "False", "Activate")]
+    [InlineData(Lifetime.PerBlock, "Initialize dep", "Initialize", "True", "Activate")]
+    [InlineData(Lifetime.Singleton, "Initialize dep", "Initialize", "True", "Activate")]
+    [InlineData(Lifetime.Scoped, "Initialize dep", "Initialize", "True", "Activate")]
+    [InlineData(Lifetime.PerResolve, "Initialize dep", "Initialize", "True", "Activate")]
+    internal async Task ShouldSupportMethodInjection(Lifetime lifetime, params string[] output)
     {
         // Given
 
@@ -55,7 +60,7 @@ public class MethodInjectionTests
                                    internal void Initialize(IDependency dep)
                                    {
                                        Console.WriteLine("Initialize");
-                                       Console.WriteLine(dep != Dep);
+                                       Console.WriteLine(dep == Dep);
                                    }
                                }
                            
@@ -64,7 +69,7 @@ public class MethodInjectionTests
                                    private static void SetupComposition()
                                    {
                                        DI.Setup("Composition")
-                                           .Bind<IDependency>().To<Dependency>()
+                                           .Bind<IDependency>().As(Lifetime.#lifetime#).To<Dependency>()
                                            .Bind<IService>().To<Service>()
                                            .Arg<string>("depName", 374)
                                            .Root<IService>("Service");
@@ -80,11 +85,11 @@ public class MethodInjectionTests
                                    }
                                }
                            }
-                           """.RunAsync();
+                           """.Replace("#lifetime#", lifetime.ToString()).RunAsync();
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["Initialize dep", "Initialize dep", "Initialize", "True", "Activate"], result);
+        result.StdOut.ShouldBe([..output], result);
     }
 
     [Fact]

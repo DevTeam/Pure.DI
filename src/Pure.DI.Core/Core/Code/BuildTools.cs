@@ -63,7 +63,7 @@ sealed class BuildTools(
     {
         if (variable.Node.Arg is not null)
         {
-            return Array.Empty<Line>();
+            return [];
         }
 
         var baseTypes = new Lazy<ImmutableHashSet<ISymbol?>>(() =>

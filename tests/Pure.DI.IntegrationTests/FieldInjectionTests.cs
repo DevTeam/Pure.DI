@@ -2,8 +2,13 @@
 
 public class FieldInjectionTests
 {
-    [Fact]
-    public async Task ShouldSupportFieldInjection()
+    [Theory]
+    [InlineData(Lifetime.Transient)]
+    [InlineData(Lifetime.PerBlock)]
+    [InlineData(Lifetime.Singleton)]
+    [InlineData(Lifetime.Scoped)]
+    [InlineData(Lifetime.PerResolve)]
+    internal async Task ShouldSupportFieldInjection(Lifetime lifetime)
     {
         // Given
 
@@ -62,7 +67,7 @@ public class FieldInjectionTests
                                    {
                                        DI.Setup("Composition")
                                            .Bind<IDependency>().To<Dependency>()
-                                           .Bind<IService>().To<Service>()
+                                           .Bind<IService>().As(Lifetime.#lifetime#).To<Service>()
                                            .Root<IService>("Service")
                                            .OrdinalAttribute<CustomOrdinalAttribute>();
                                    }
@@ -79,7 +84,7 @@ public class FieldInjectionTests
                                    }
                                }
                            }
-                           """.RunAsync();
+                           """.Replace("#lifetime#", lifetime.ToString()).RunAsync();
 
         // Then
         result.Success.ShouldBeTrue(result);

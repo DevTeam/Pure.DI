@@ -2,9 +2,13 @@
 
 public class PropertyInjectionTests
 {
-
-    [Fact]
-    public async Task ShouldSupportInitPropertyInjection()
+    [Theory]
+    [InlineData(Lifetime.Transient)]
+    [InlineData(Lifetime.PerBlock)]
+    [InlineData(Lifetime.Singleton)]
+    [InlineData(Lifetime.Scoped)]
+    [InlineData(Lifetime.PerResolve)]
+    internal async Task ShouldSupportInitPropertyInjection(Lifetime lifetime)
     {
         // Given
 
@@ -74,7 +78,7 @@ public class PropertyInjectionTests
                                    {
                                        DI.Setup("Composition")
                                            .Bind<IDependency>().To<Dependency>()
-                                           .Bind<IService>().To<Service>()
+                                           .Bind<IService>().As(Lifetime.#lifetime#).To<Service>()
                                            .Root<IService>("Service")
                                            .OrdinalAttribute<CustomOrdinalAttribute>();
                                    }
@@ -89,14 +93,20 @@ public class PropertyInjectionTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.CSharp9));
+                           """.Replace("#lifetime#", lifetime.ToString()).RunAsync(new Options(LanguageVersion.CSharp9));
 
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["OtherDep1", "True", "OtherDep0", "True"], result);
     }
-    [Fact]
-    public async Task ShouldSupportPropertyInjection()
+
+    [Theory]
+    [InlineData(Lifetime.Transient)]
+    [InlineData(Lifetime.PerBlock)]
+    [InlineData(Lifetime.Singleton)]
+    [InlineData(Lifetime.Scoped)]
+    [InlineData(Lifetime.PerResolve)]
+    internal async Task ShouldSupportPropertyInjection(Lifetime lifetime)
     {
         // Given
 
@@ -166,7 +176,7 @@ public class PropertyInjectionTests
                                    {
                                        DI.Setup("Composition")
                                            .Bind<IDependency>().To<Dependency>()
-                                           .Bind<IService>().To<Service>()
+                                           .Bind<IService>().As(Lifetime.#lifetime#).To<Service>()
                                            .Root<IService>("Service")
                                            .OrdinalAttribute<CustomOrdinalAttribute>();
                                    }
@@ -181,7 +191,7 @@ public class PropertyInjectionTests
                                    }
                                }
                            }
-                           """.RunAsync();
+                           """.Replace("#lifetime#", lifetime.ToString()).RunAsync();
 
         // Then
         result.Success.ShouldBeTrue(result);

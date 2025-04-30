@@ -38,7 +38,7 @@ sealed class ImplementationCodeBuilder(
             visits.Add((VisitFieldAction, field.Ordinal));
             continue;
 
-            void VisitFieldAction(BuildContext context) => injections.FieldInjection(variable.VariableName, context, field, fieldVariable);
+            void VisitFieldAction(BuildContext context) => injections.FieldInjection(context.Variable.VariableName, context, field, fieldVariable);
         }
 
         foreach (var property in implementation.Properties.Where(i => !i.Property.IsRequired && i.Property.SetMethod?.IsInitOnly != true))
@@ -48,7 +48,7 @@ sealed class ImplementationCodeBuilder(
             visits.Add((VisitFieldAction, property.Ordinal));
             continue;
 
-            void VisitFieldAction(BuildContext context) => injections.PropertyInjection(variable.VariableName, context, property, propertyVariable);
+            void VisitFieldAction(BuildContext context) => injections.PropertyInjection(context.Variable.VariableName, context, property, propertyVariable);
         }
 
         foreach (var method in implementation.Methods)
@@ -58,7 +58,7 @@ sealed class ImplementationCodeBuilder(
             visits.Add((VisitMethodAction, method.Ordinal));
             continue;
 
-            void VisitMethodAction(BuildContext context) => injections.MethodInjection(variable.VariableName, context, method, methodArgs);
+            void VisitMethodAction(BuildContext context) => injections.MethodInjection(context.Variable.VariableName, context, method, methodArgs);
         }
 
         var onCreatedStatements = ctx.BuildTools.OnCreated(ctx, ctx.Variable).ToList();
