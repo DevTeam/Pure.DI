@@ -17,12 +17,20 @@ partial class Composition: ServiceProviderFactory<Composition>
     // These roots must be registered using `Root(...)` or `RootBind()` calls.
     private static void Setup() => DI.Setup()
         .DependsOn(Base)
+        .Hint(Hint.OnCannotResolveContractTypeNameWildcard, "Microsoft.Extensions.*")
+        .Hint(Hint.OnCannotResolveContractTypeNameWildcard, "Microsoft.AspNetCore.*")
+        .Hint(Hint.OnCannotResolveContractTypeNameWildcard, "Microsoft.Maui.*")
+        .Hint(Hint.OnCannotResolveContractTypeNameWildcard, "System.Net.Http*")
 
         // Roots
         .Root<Composition>()
+        .Root<IService>()
 
         // Builders
         .Builder<ClockPage>()
+
+        .Bind().As(Singleton).To<MyService>()
+        .Bind().As(Singleton).To<ApiHelper>()
 
         // View Models
         .Bind().As(Singleton).To<ClockViewModel>()

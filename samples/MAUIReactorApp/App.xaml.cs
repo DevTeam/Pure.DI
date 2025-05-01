@@ -6,7 +6,7 @@ namespace MAUIReactorApp;
 
 public partial class App
 {
-    public App(IServiceProvider serviceProvider)
+    public App(IServiceProvider serviceProvider, IService service)
         : base(serviceProvider) =>
         InitializeComponent();
 }
