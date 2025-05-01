@@ -17,9 +17,6 @@ partial class Composition: ServiceProviderFactory<Composition>
     // These roots must be registered using `Root(...)` or `RootBind()` calls.
     private static void Setup() => DI.Setup()
         .DependsOn(Base)
-        .Hint(Hint.OnCannotResolveContractTypeNameWildcard, "Microsoft.Extensions.*")
-        .Hint(Hint.OnCannotResolveContractTypeNameWildcard, "Microsoft.AspNetCore.*")
-        .Hint(Hint.OnCannotResolveContractTypeNameWildcard, "Microsoft.Maui.*")
         .Hint(Hint.OnCannotResolveContractTypeNameWildcard, "System.Net.Http*")
 
         // Roots
