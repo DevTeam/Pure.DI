@@ -126,7 +126,11 @@ sealed class MetadataBuilder(
             kind = setup.Kind;
             foreach (var setting in setup.Hints)
             {
-                settings[setting.Key] = setting.Value;
+                var items = settings.GetOrAdd(setting.Key, _ => new LinkedList<string>());
+                foreach (var newValue in setting.Value)
+                {
+                    items.AddLast(newValue);
+                }
             }
 
             if (resolveDependsOn)

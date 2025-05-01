@@ -327,6 +327,7 @@ public class PartialMethodsTests
                                        // OnCannotResolve = On
                                        // OnCannotResolveContractTypeNameRegularExpression = int
                                        DI.Setup("Composition")
+                                           .Hint(Hint.OnCannotResolveContractTypeNameWildcard, "string")
                                            .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
                                            .Bind<IService>().To<Service>()
                                            .Root<IService>("Root");
@@ -342,10 +343,103 @@ public class PartialMethodsTests
                                    }
                                }
                            }
-                           """.RunAsync();
+                           """.RunAsync(new Options(LanguageVersion.CSharp9));
 
         // Then
-        result.Success.ShouldBeFalse(result);
+        result.Success.ShouldBeTrue(result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportOnCannotResolveWhenFilterByContractAndDependsOnBaseComposition()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               internal interface IDependency { }
+                           
+                               internal class Dependency : IDependency
+                               { 
+                                   public Dependency([Tag("some ID")] int id)
+                                   {
+                                       Console.WriteLine($"Dependency {id} created");
+                                   }
+                               }
+                           
+                               internal interface IService
+                               {
+                                   public IDependency Dependency1 { get; }
+                                           
+                                   public IDependency Dependency2 { get; }
+                               }
+                           
+                               internal class Service : IService
+                               {
+                                   public Service(string name, IDependency dependency1, Func<IDependency> dependencyFactory)
+                                   {
+                                       Dependency1 = dependency1;
+                                       Dependency2 = dependencyFactory();
+                                       Console.WriteLine($"Service '{name}' created");
+                                   }
+                           
+                                   public IDependency Dependency1 { get; }
+                                           
+                                   public IDependency Dependency2 { get; }
+                               }
+                           
+                               internal partial class Composition
+                               {
+                                   private partial T OnCannotResolve<T>(object? tag, Lifetime lifetime) 
+                                   {
+                                       if (typeof(T) == typeof(string))
+                                       {
+                                           return (T)(object)"MyService";
+                                       }    
+                           
+                                       if (typeof(T) == typeof(int) && Equals(tag, "some ID"))
+                                       {
+                                           return (T)(object)99;
+                                       }
+                                       
+                                       throw new Exception("Cannot resolve."); 
+                                   }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       // OnCannotResolve = On
+                                       DI.Setup("CompositionBase", CompositionKind.Internal)
+                                           .Hint(Hint.OnCannotResolveContractTypeNameWildcard, "int")
+                                           .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>();
+                               
+                                       DI.Setup("Composition")
+                                           .DependsOn("CompositionBase")
+                                           .Hint(Hint.OnCannotResolveContractTypeNameWildcard, "string")
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Root");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
     }
 
     [Fact]
