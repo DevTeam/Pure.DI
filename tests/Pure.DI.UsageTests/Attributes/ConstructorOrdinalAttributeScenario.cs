@@ -16,6 +16,7 @@ $r=Shouldly
 
 namespace Pure.DI.UsageTests.Attributes.ConstructorOrdinalAttributeScenario;
 
+using System.Diagnostics.CodeAnalysis;
 using Shouldly;
 using Xunit;
 
@@ -23,6 +24,7 @@ using Xunit;
 //# using Pure.DI;
 // }
 
+[SuppressMessage("WRN", "DIW001:WRN")]
 public class Scenario
 {
     [Fact]

@@ -119,7 +119,7 @@ sealed class BindingBuilder(
                                     semanticModel,
                                     contractsSource,
                                     contract,
-                                    ContractKind.Implicit,
+                                    ContractKind.Explicit,
                                     tags));
                         }
                     }

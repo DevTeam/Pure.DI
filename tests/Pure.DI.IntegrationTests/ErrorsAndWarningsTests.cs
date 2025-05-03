@@ -1143,6 +1143,107 @@ public class ErrorsAndWarningsTests
     }
 
     [Fact]
+    public async Task ShouldShowWarningWhenBindingWasNotUsedForTheSameTag()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               internal interface IDependency { }
+
+                               internal class Dependency : IDependency { }
+
+                               internal interface IService { }
+
+                               internal class Service : IService { }
+                               
+                               internal class Service2 : IService { }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Bind().To<Service>()
+                                           .Bind().To<Service2>()
+                                           .Root<IService>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(2, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningOverriddenBinding && i.Message.Contains("Sample.IService")).ShouldBe(1, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningMetadataDefect && i.Location.GetSource() == "Service").ShouldBe(1, result);
+    }
+
+    [Fact]
+    public async Task ShouldShowWarningWhenBindingWasNotUsedForOtherTag()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               internal interface IDependency { }
+
+                               internal class Dependency : IDependency { }
+
+                               internal interface IService { }
+
+                               internal class Service : IService { }
+                               
+                               internal class Service2 : IService { }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Bind().To<Service>()
+                                           .Bind("Abc").To<Service2>()
+                                           .Root<IService>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(1, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningMetadataDefect && i.Location.GetSource() == "Service2").ShouldBe(1, result);
+    }
+
+    [Fact]
     public async Task ShouldShowErrorWhenCannotResolveByTag()
     {
         // Given
@@ -1255,8 +1356,9 @@ public class ErrorsAndWarningsTests
         // Then
         result.Success.ShouldBeFalse(result);
         result.Errors.Count.ShouldBe(0, result);
-        result.Warnings.Count.ShouldBe(1, result);
+        result.Warnings.Count.ShouldBe(2, result);
         result.Warnings.Count(i => i.Id == LogId.WarningMetadataDefect && i.Location.GetSource() == "\"Sample.Service.Service:abc\"").ShouldBe(1, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningMetadataDefect && i.Location.GetSource() == "Dep").ShouldBe(1, result);
         result.StdOut.ShouldBe(["Sample.Service"], result);
     }
 

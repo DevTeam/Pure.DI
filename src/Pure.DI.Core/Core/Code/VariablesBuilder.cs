@@ -52,7 +52,7 @@ sealed class VariablesBuilder(
                     case Variable variable:
                     {
                         var isAccumulator = IsAccumulator(variable, out var mdAccumulators);
-                        IReadOnlyCollection<Dependency> dependencies = Array.Empty<Dependency>();
+                        IReadOnlyCollection<Dependency> dependencies = [];
                         if (!isAccumulator)
                         {
                             if (!graph.TryGetInEdges(variable.Node, out dependencies)

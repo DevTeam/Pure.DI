@@ -205,7 +205,6 @@ public class SimpleFactoryTests
                                    private static void SetupComposition()
                                    {
                                        DI.Setup("Composition")
-                                           .Bind().To(_ => DateTimeOffset.Now)
                                            .Bind().To((Dependency dependency) => dependency.Initialize(DateTimeOffset.Now))
                                            .Bind().To<Service>()
                                            .Root<IService>("MyService");
@@ -426,7 +425,6 @@ public class SimpleFactoryTests
                                    private static void SetupComposition()
                                    {
                                        DI.Setup("Composition")
-                                           .Bind().To(_ => DateTimeOffset.Now)
                                            .Bind().To<Dependency, IDependency>(dependency => dependency.Initialize(DateTimeOffset.Now))
                                            .Bind().To<Service>()
                                            .Root<IService>("MyService");

@@ -10,7 +10,8 @@ sealed class SetupsBuilder(
     Func<ITypeConstructor> typeConstructorFactory,
     ISemantic semantic,
     ISymbolNames symbolNames,
-    Func<ILocalVariableRenamingRewriter> localVariableRenamingRewriterFactory)
+    Func<ILocalVariableRenamingRewriter> localVariableRenamingRewriterFactory,
+    IRegistryManager<int> registryManager)
     : IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>, IMetadataVisitor, ISetupFinalizer
 {
     private readonly List<MdAccumulator> _accumulators = [];
@@ -33,7 +34,7 @@ sealed class SetupsBuilder(
         var checkSum = update.Node.SyntaxTree.GetText().GetChecksum();
         if (!setupCache.Get(checkSum, _ => true))
         {
-            return Array.Empty<MdSetup>();
+            return [];
         }
 
         metadataSyntaxWalkerFactory().Visit(this, update);
@@ -200,13 +201,20 @@ sealed class SetupsBuilder(
 
         var contract = contacts.First();
 
-        var membersToBind =
+        var membersToBind = (
             from member in type.GetMembers()
             where member.DeclaredAccessibility >= Accessibility.Internal && member.CanBeReferencedByName && member is IFieldSymbol or IPropertySymbol or IMethodSymbol
             from attribute in member.GetAttributes()
             where attribute.AttributeClass is not null && symbolNames.GetGlobalName(attribute.AttributeClass) == Names.BindAttributeName
-            select (attribute, member);
+            select (attribute, member))
+            .ToList();
 
+        if (membersToBind.Count == 0)
+        {
+            return;
+        }
+
+        registryManager.Register(setup, binding.Id);
         var typeConstructor = typeConstructorFactory();
         foreach (var (attribute, member) in membersToBind)
         {

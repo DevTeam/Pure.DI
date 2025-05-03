@@ -62,7 +62,7 @@ sealed class ApiInvocationProcessor(
                                 semanticModel,
                                 invocation.ArgumentList,
                                 null,
-                                ContractKind.Implicit,
+                                ContractKind.Explicit,
                                 BuildTags(semanticModel, invocation.ArgumentList.Arguments)));
                         break;
 

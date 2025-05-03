@@ -19,6 +19,7 @@ $r=Shouldly
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Advanced.TagOnMethodArgScenario;
 
+using System.Diagnostics.CodeAnalysis;
 using Pure.DI;
 using UsageTests;
 using Xunit;
@@ -27,6 +28,7 @@ using Xunit;
 //# using Pure.DI;
 // }
 
+[SuppressMessage("WRN", "DIW001:WRN")]
 public class Scenario
 {
     [Fact]

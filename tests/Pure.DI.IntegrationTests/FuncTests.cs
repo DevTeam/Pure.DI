@@ -2154,7 +2154,9 @@ public class FuncTests
                            }
                            """.RunAsync(new Options(LanguageVersion.Latest));
         // Then
-        result.Success.ShouldBeTrue(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(1, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningMetadataDefect && i.Location.GetSource() == "Metronome").ShouldBe(1, result);
     }
 #endif
 }

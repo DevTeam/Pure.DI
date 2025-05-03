@@ -1,5 +1,7 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
+using Core;
+
 public class OverrideTests
 {
     [Fact]
@@ -474,7 +476,9 @@ public class OverrideTests
                            """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(1, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningMetadataDefect && i.Location.GetSource() == "Clock").ShouldBe(1, result);
     }
 
     [Fact]

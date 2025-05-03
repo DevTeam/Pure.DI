@@ -1267,20 +1267,22 @@ public class TagsTests
                                using Pure.DI;
                                using Sample;
                                
-                               internal class Dep { }
+                               internal interface IDep { }
+                               
+                               internal class Dep: IDep { }
                            
                                internal interface IService { }
                            
                                internal class Service: IService
                                {
-                                   public required Dep? MyField;
+                                   public required IDep? MyField;
                                }
                                
                                internal partial class Composition
                                {                   
                                    void Setup() => 
                                        DI.Setup("Composition")
-                                           .Bind("Sample.Service:MyField").To<Dep>()
+                                           .Bind(Tag.On("Sample.Service:MyField")).To<Dep>()
                                            .Bind().To<Service>()
                                            .Root<Service>("Root"); 
                                }
