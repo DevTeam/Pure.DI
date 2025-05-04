@@ -7,7 +7,8 @@
 
 namespace Pure.DI.Core;
 
-class DependenciesWalker<TContext>
+class DependenciesWalker<TContext>(
+    ILocationProvider locationProvider)
 {
     public virtual void VisitDependencyNode(in TContext ctx, DependencyNode node)
     {
@@ -43,7 +44,7 @@ class DependenciesWalker<TContext>
 
     public virtual void VisitRoot(in TContext ctx, in DpRoot root)
     {
-        VisitInjection(ctx, root.Injection, false, null, ImmutableArray.Create(root.Source.Source.GetLocation()), null);
+        VisitInjection(ctx, root.Injection, false, null, ImmutableArray.Create(locationProvider.GetLocation(root.Source.Source)), null);
     }
 
     public virtual void VisitImplementation(in TContext ctx, in DpImplementation implementation)
@@ -90,7 +91,7 @@ class DependenciesWalker<TContext>
     {
         foreach (var injection in construct.Injections)
         {
-            VisitInjection(ctx, injection, false, null, ImmutableArray.Create(construct.Binding.Source.GetLocation()), null);
+            VisitInjection(ctx, injection, false, null, ImmutableArray.Create(locationProvider.GetLocation(construct.Binding.Source)), null);
         }
     }
 
@@ -165,7 +166,7 @@ class DependenciesWalker<TContext>
 
     public virtual void VisitResolver(in TContext ctx, DpResolver resolver)
     {
-        VisitInjection(ctx, resolver.Injection, false, null, ImmutableArray.Create(resolver.Source.Source.GetLocation()), resolver.Source.Position);
+        VisitInjection(ctx, resolver.Injection, false, null, ImmutableArray.Create(locationProvider.GetLocation(resolver.Source.Source)), resolver.Source.Position);
     }
 
     public virtual void VisitInitializer(in TContext ctx, DpInitializer initializer)

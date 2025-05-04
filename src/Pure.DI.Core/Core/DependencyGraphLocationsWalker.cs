@@ -1,6 +1,7 @@
 ﻿namespace Pure.DI.Core;
 
-sealed class DependencyGraphLocationsWalker : DependenciesWalker<Unit>, IDependencyGraphLocationsWalker
+sealed class DependencyGraphLocationsWalker(ILocationProvider locationProvider)
+    : DependenciesWalker<Unit>(locationProvider), IDependencyGraphLocationsWalker
 {
     private readonly ImmutableArray<Location>.Builder _locationsBuilder = ImmutableArray.CreateBuilder<Location>();
     private Injection? _injection;

@@ -2,7 +2,10 @@
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.Core;
 
-sealed class TagOnSitesValidator(ILogger logger, IRegistry<MdInjectionSite> registry)
+sealed class TagOnSitesValidator(
+    ILogger logger,
+    IRegistry<MdInjectionSite> registry,
+    ILocationProvider locationProvider)
     : IValidator<DependencyGraph>
 {
     public bool Validate(DependencyGraph data)
@@ -13,7 +16,7 @@ sealed class TagOnSitesValidator(ILogger logger, IRegistry<MdInjectionSite> regi
             {
                 logger.CompileWarning(
                     string.Format(Strings.Warning_Template_InjectionSiteIsNotUsed, injectionSite.Site),
-                    injectionSite.Source.GetLocation(),
+                    locationProvider.GetLocation(injectionSite.Source),
                     LogId.WarningMetadataDefect);
             }
         }

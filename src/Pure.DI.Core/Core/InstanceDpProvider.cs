@@ -6,7 +6,8 @@ sealed class InstanceDpProvider(
     IAttributes attributes,
     IWildcardMatcher wildcardMatcher,
     IRegistryManager<MdInjectionSite> registryManager,
-    IInjectionSiteFactory injectionSiteFactory) : IInstanceDpProvider
+    IInjectionSiteFactory injectionSiteFactory,
+    ILocationProvider locationProvider) : IInstanceDpProvider
 {
     public InstanceDp Get(
         MdSetup setup,
@@ -43,7 +44,7 @@ sealed class InstanceDpProvider(
 
                         if (ordinal.HasValue)
                         {
-                            methods.Add(new DpMethod(method, ordinal, GetParameters(setup, method.Parameters, typeConstructor)));
+                            methods.Add(new DpMethod(method, ordinal, GetParameters(setup, method.Parameters, typeConstructor), locationProvider));
                         }
                     }
 

@@ -13,6 +13,7 @@ sealed class MetadataBuilder(
     Func<IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>> setupsBuilderFactory,
     Func<ISetupFinalizer> setupFinalizerFactory,
     ICompilations compilations,
+    ILocationProvider locationProvider,
     CancellationToken cancellationToken)
     : IBuilder<IEnumerable<SyntaxUpdate>, IEnumerable<MdSetup>>
 {
@@ -30,7 +31,7 @@ sealed class MetadataBuilder(
             {
                 throw new CompileErrorException(
                     string.Format(Strings.Error_Template_UnsupportLanguage, Names.GeneratorName, languageVersion.ToDisplayString(), LanguageVersion.CSharp8.ToDisplayString()),
-                    update.Node.GetLocation(),
+                    locationProvider.GetLocation(update.Node),
                     LogId.ErrorNotSupportedLanguageVersion);
             }
 
@@ -88,7 +89,7 @@ sealed class MetadataBuilder(
                 {
                     throw new CompileErrorException(
                         string.Format(Strings.Error_Template_CannotFindSetup, compositionTypeName),
-                        dependsOn.Source.GetLocation(),
+                        locationProvider.GetLocation(dependsOn.Source),
                         LogId.ErrorCannotFindSetup);
                 }
 

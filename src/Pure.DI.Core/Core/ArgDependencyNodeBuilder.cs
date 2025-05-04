@@ -2,7 +2,8 @@
 
 namespace Pure.DI.Core;
 
-sealed class ArgDependencyNodeBuilder : IBuilder<DependencyNodeBuildContext, IEnumerable<DependencyNode>>
+sealed class ArgDependencyNodeBuilder(ILocationProvider locationProvider)
+    : IBuilder<DependencyNodeBuildContext, IEnumerable<DependencyNode>>
 {
     public IEnumerable<DependencyNode> Build(DependencyNodeBuildContext ctx)
     {
@@ -13,7 +14,7 @@ sealed class ArgDependencyNodeBuilder : IBuilder<DependencyNodeBuildContext, IEn
                 continue;
             }
 
-            yield return new DependencyNode(0, binding, ctx.TypeConstructor, Arg: new DpArg(arg, binding));
+            yield return new DependencyNode(0, binding, ctx.TypeConstructor, Arg: new DpArg(arg, binding, locationProvider));
         }
     }
 }

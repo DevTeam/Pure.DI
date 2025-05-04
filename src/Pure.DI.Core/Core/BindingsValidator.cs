@@ -2,7 +2,10 @@
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.Core;
 
-sealed class BindingsValidator(ILogger logger, IRegistry<int> registry)
+sealed class BindingsValidator(
+    ILogger logger,
+    IRegistry<int> registry,
+    ILocationProvider locationProvider)
     : IValidator<DependencyGraph>
 {
     public bool Validate(DependencyGraph graph)
@@ -13,7 +16,7 @@ sealed class BindingsValidator(ILogger logger, IRegistry<int> registry)
             {
                 logger.CompileWarning(
                     Strings.Warning_BindingIsNotUsed,
-                    binding.Source.GetLocation(),
+                    locationProvider.GetLocation(binding.Source),
                     LogId.WarningMetadataDefect);
             }
         }

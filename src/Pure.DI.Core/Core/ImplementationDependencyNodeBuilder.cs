@@ -9,7 +9,8 @@ sealed class ImplementationDependencyNodeBuilder(
     IBuilder<DpImplementation, IEnumerable<DpImplementation>> implementationVariantsBuilder,
     IAttributes attributes,
     IInstanceDpProvider instanceDpProvider,
-    Func<IConstructorInjectionsCounterWalker> constructorInjectionsCounterWalkerFactory)
+    Func<IConstructorInjectionsCounterWalker> constructorInjectionsCounterWalkerFactory,
+    ILocationProvider locationProvider)
     : IBuilder<DependencyNodeBuildContext, IEnumerable<DependencyNode>>
 {
     public IEnumerable<DependencyNode> Build(DependencyNodeBuildContext ctx)
@@ -32,7 +33,7 @@ sealed class ImplementationDependencyNodeBuilder(
             {
                 throw new CompileErrorException(
                     string.Format(Strings.Error_Template_CannotConstructAbstractType, implementationType),
-                    implementation.Source.GetLocation(),
+                    locationProvider.GetLocation(implementation.Source),
                     LogId.ErrorInvalidMetadata);
             }
 
@@ -54,14 +55,15 @@ sealed class ImplementationDependencyNodeBuilder(
                     new DpMethod(
                         constructor,
                         attributes.GetAttribute(setup.SemanticModel, setup.OrdinalAttributes, constructor, default(int?)),
-                        instanceDpProvider.GetParameters(setup, constructor.Parameters, ctx.TypeConstructor)));
+                        instanceDpProvider.GetParameters(setup, constructor.Parameters, ctx.TypeConstructor),
+                        locationProvider));
             }
 
             if (constructors.Count == 0)
             {
                 var error = new CompileErrorException(
                     string.Format(Strings.Error_Template_CannotBeInstantiatedNoAccessibleConstructor, implementationType),
-                    implementation.Source.GetLocation(),
+                    locationProvider.GetLocation(implementation.Source),
                     LogId.ErrorInvalidMetadata);
 
                 yield return new DependencyNode(0, binding, ctx.TypeConstructor, Error: error);
@@ -76,7 +78,8 @@ sealed class ImplementationDependencyNodeBuilder(
                         constructor,
                         instanceDp.Methods,
                         instanceDp.Properties,
-                        instanceDp.Fields))
+                        instanceDp.Fields,
+                        locationProvider))
                 .ToList();
 
             var implementationsWithOrdinal = implementations

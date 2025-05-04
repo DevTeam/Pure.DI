@@ -3,7 +3,8 @@
 
 namespace Pure.DI.Core;
 
-sealed class ConstructDependencyNodeBuilder : IBuilder<DependencyNodeBuildContext, IEnumerable<DependencyNode>>
+sealed class ConstructDependencyNodeBuilder(ILocationProvider locationProvider)
+    : IBuilder<DependencyNodeBuildContext, IEnumerable<DependencyNode>>
 {
     public IEnumerable<DependencyNode> Build(DependencyNodeBuildContext ctx)
     {
@@ -31,7 +32,7 @@ sealed class ConstructDependencyNodeBuilder : IBuilder<DependencyNodeBuildContex
                         tag));
             }
 
-            yield return new DependencyNode(0, binding, ctx.TypeConstructor, Construct: new DpConstruct(construct, binding, injections.ToImmutableArray()));
+            yield return new DependencyNode(0, binding, ctx.TypeConstructor, Construct: new DpConstruct(construct, binding, injections.ToImmutableArray(), locationProvider));
         }
     }
 }

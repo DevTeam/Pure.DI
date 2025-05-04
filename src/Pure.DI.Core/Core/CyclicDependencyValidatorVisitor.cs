@@ -2,7 +2,8 @@
 
 sealed class CyclicDependencyValidatorVisitor(
     ILogger logger,
-    INodeInfo nodeInfo)
+    INodeInfo nodeInfo,
+    ILocationProvider locationProvider)
     : IGraphVisitor<HashSet<object>, ImmutableArray<DependencyNode>>
 {
     public ImmutableArray<DependencyNode> Create(
@@ -43,7 +44,7 @@ sealed class CyclicDependencyValidatorVisitor(
             }
 
             var pathStr = string.Join(" <-- ", path.Select(i => i.Type));
-            logger.CompileError(string.Format(Strings.Error_Template_CyclicDependency, pathStr), node.Binding.Source.GetLocation(), LogId.ErrorCyclicDependency);
+            logger.CompileError(string.Format(Strings.Error_Template_CyclicDependency, pathStr), locationProvider.GetLocation(node.Binding.Source), LogId.ErrorCyclicDependency);
             result = false;
             break;
         }

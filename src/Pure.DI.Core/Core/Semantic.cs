@@ -9,6 +9,7 @@ sealed class Semantic(
     IWildcardMatcher wildcardMatcher,
     ITypes types,
     ISmartTags smartTags,
+    ILocationProvider locationProvider,
     CancellationToken cancellationToken)
     : ISemantic
 {
@@ -39,7 +40,7 @@ sealed class Semantic(
 
         throw new CompileErrorException(
             string.Format(Strings.Error_Template_NotSupported, node),
-            node.GetLocation(),
+            locationProvider.GetLocation(node),
             LogId.ErrorInvalidMetadata);
     }
 
@@ -53,7 +54,7 @@ sealed class Semantic(
 
         throw new CompileErrorException(
             string.Format(Strings.Error_Template_MustBeValueOfType, node, typeof(T)),
-            node.GetLocation(),
+            locationProvider.GetLocation(node),
             LogId.ErrorInvalidMetadata);
     }
 
@@ -170,7 +171,7 @@ sealed class Semantic(
                             {
                                 throw new CompileErrorException(
                                     string.Format(Strings.Error_Template_NoAccessibleConstructor, typeArg, name),
-                                    invocationExpressionSyntax.GetLocation(),
+                                    locationProvider.GetLocation(invocationExpressionSyntax),
                                     LogId.ErrorInvalidMetadata);
                             }
 
@@ -198,7 +199,7 @@ sealed class Semantic(
                             {
                                 throw new CompileErrorException(
                                     string.Format(Strings.Error_Template_NoAccessibleMethod, typeArg, methodName, methodArg),
-                                    invocationExpressionSyntax.GetLocation(),
+                                    locationProvider.GetLocation(invocationExpressionSyntax),
                                     LogId.ErrorInvalidMetadata);
                             }
 
@@ -224,7 +225,7 @@ sealed class Semantic(
                             {
                                 throw new CompileErrorException(
                                     string.Format(Strings.Error_Template_NoAccessibleFieldOrProperty, name, typeArg),
-                                    invocationExpressionSyntax.GetLocation(),
+                                    locationProvider.GetLocation(invocationExpressionSyntax),
                                     LogId.ErrorInvalidMetadata);
                             }
 
@@ -258,7 +259,7 @@ sealed class Semantic(
 
         throw new CompileErrorException(
             string.Format(Strings.Error_Template_MustBeApiCall, node, typeof(T)),
-            node.GetLocation(),
+            locationProvider.GetLocation(node),
             LogId.ErrorInvalidMetadata);
     }
 

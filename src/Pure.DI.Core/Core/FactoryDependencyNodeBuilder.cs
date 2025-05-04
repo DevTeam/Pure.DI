@@ -5,7 +5,8 @@ namespace Pure.DI.Core;
 
 sealed class FactoryDependencyNodeBuilder(
     IAttributes attributes,
-    IInstanceDpProvider instanceDpProvider)
+    IInstanceDpProvider instanceDpProvider,
+    ILocationProvider locationProvider)
     : IBuilder<DependencyNodeBuildContext, IEnumerable<DependencyNode>>
 {
     public IEnumerable<DependencyNode> Build(DependencyNodeBuildContext ctx)
@@ -35,10 +36,10 @@ sealed class FactoryDependencyNodeBuilder(
                 }
 
                 var targetDp = instanceDpProvider.Get(setup, ctx.TypeConstructor, targetType);
-                initializers.Add(new DpInitializer(initializer, targetDp.Methods, targetDp.Properties, targetDp.Fields, CreateOverrides(initializer.Overrides)));
+                initializers.Add(new DpInitializer(initializer, targetDp.Methods, targetDp.Properties, targetDp.Fields, CreateOverrides(initializer.Overrides), locationProvider));
             }
 
-            var dpFactory = new DpFactory(factory, binding, resolvers.ToImmutableArray(), initializers.ToImmutableArray(), new Dictionary<int, DpOverride>());
+            var dpFactory = new DpFactory(factory, binding, resolvers.ToImmutableArray(), initializers.ToImmutableArray(), new Dictionary<int, DpOverride>(), locationProvider);
             yield return new DependencyNode(0, binding, ctx.TypeConstructor, Factory: dpFactory);
         }
     }

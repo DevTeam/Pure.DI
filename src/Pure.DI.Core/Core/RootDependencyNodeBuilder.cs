@@ -2,7 +2,8 @@
 
 namespace Pure.DI.Core;
 
-sealed class RootDependencyNodeBuilder : IBuilder<DependencyNodeBuildContext, IEnumerable<DependencyNode>>
+sealed class RootDependencyNodeBuilder(ILocationProvider locationProvider)
+    : IBuilder<DependencyNodeBuildContext, IEnumerable<DependencyNode>>
 {
     public IEnumerable<DependencyNode> Build(DependencyNodeBuildContext ctx)
     {
@@ -28,7 +29,8 @@ sealed class RootDependencyNodeBuilder : IBuilder<DependencyNodeBuildContext, IE
                     new Injection(
                         InjectionKind.Root,
                         root.RootType.WithNullableAnnotation(NullableAnnotation.NotAnnotated),
-                        root.Tag?.Value)));
+                        root.Tag?.Value),
+                    locationProvider));
         }
     }
 }

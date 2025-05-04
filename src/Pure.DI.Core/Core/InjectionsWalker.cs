@@ -1,6 +1,7 @@
 namespace Pure.DI.Core;
 
-sealed class InjectionsWalker : DependenciesWalker<Unit>, IInjectionsWalker
+sealed class InjectionsWalker(ILocationProvider locationProvider)
+    : DependenciesWalker<Unit>(locationProvider), IInjectionsWalker
 {
     private readonly List<InjectionInfo> _result = [];
 

@@ -7,7 +7,8 @@ record DpFactory(
     in MdBinding Binding,
     in ImmutableArray<DpResolver> Resolvers,
     in ImmutableArray<DpInitializer> Initializers,
-    IReadOnlyDictionary<int, DpOverride> OverridesMap)
+    IReadOnlyDictionary<int, DpOverride> OverridesMap,
+    ILocationProvider LocationProvider)
 {
     public bool HasOverrides => Resolvers.SelectMany(i => i.Overrides).Concat(Initializers.SelectMany(i => i.Overrides)).Any();
 
@@ -16,7 +17,7 @@ record DpFactory(
 
     public IEnumerable<string> ToStrings(int indent)
     {
-        var walker = new DependenciesToLinesWalker(indent);
+        var walker = new DependenciesToLinesWalker(indent, LocationProvider);
         walker.VisitFactory(Unit.Shared, this);
         return walker;
     }

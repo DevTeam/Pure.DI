@@ -14,7 +14,8 @@ sealed class FactoryCodeBuilder(
     IVariableNameProvider variableNameProvider,
     Func<IFactoryValidator> factoryValidatorFactory,
     Func<IInitializersWalker> initializersWalkerFactory,
-    IOverridesRegistry overridesRegistry)
+    IOverridesRegistry overridesRegistry,
+    ILocationProvider locationProvider)
     : ICodeBuilder<DpFactory>
 {
     public const string DefaultInstanceValueName = "instance_1182D127";
@@ -203,7 +204,7 @@ sealed class FactoryCodeBuilder(
         {
             throw new CompileErrorException(
                 string.Format(Strings.Error_Template_LifetimeDoesNotSupportCyclicDependencies, variable.Node.Lifetime),
-                factory.Source.Source.GetLocation(),
+                locationProvider.GetLocation(factory.Source.Source),
                 LogId.ErrorInvalidMetadata);
         }
 
@@ -211,7 +212,7 @@ sealed class FactoryCodeBuilder(
         {
             throw new CompileErrorException(
                 Strings.Error_InvalidNumberOfInitializers,
-                factory.Source.Source.GetLocation(),
+                locationProvider.GetLocation(factory.Source.Source),
                 LogId.ErrorInvalidMetadata);
         }
 

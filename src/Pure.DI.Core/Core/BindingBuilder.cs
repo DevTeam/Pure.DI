@@ -8,7 +8,8 @@ using static Tag;
 sealed class BindingBuilder(
     [Tag(UniqueTag)] IIdGenerator idGenerator,
     IBaseSymbolsProvider baseSymbolsProvider,
-    ITypes types)
+    ITypes types,
+    ILocationProvider locationProvider)
     : IBindingBuilder
 {
     private readonly List<MdContract> _contracts = [];
@@ -140,7 +141,7 @@ sealed class BindingBuilder(
                     _arg);
             }
 
-            throw new CompileErrorException(Strings.Error_InvalidBinding, setup.Source.GetLocation(), LogId.ErrorInvalidMetadata);
+            throw new CompileErrorException(Strings.Error_InvalidBinding, locationProvider.GetLocation(setup.Source), LogId.ErrorInvalidMetadata);
         }
         finally
         {

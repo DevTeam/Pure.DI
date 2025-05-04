@@ -1,7 +1,7 @@
 namespace Pure.DI.Core;
 
-sealed class DependenciesToLinesWalker(int indent)
-    : DependenciesWalker<Unit>, IEnumerable<string>
+sealed class DependenciesToLinesWalker(int indent, ILocationProvider locationProvider)
+    : DependenciesWalker<Unit>(locationProvider), IEnumerable<string>
 {
     private readonly LinesBuilder _lb = new(indent);
 

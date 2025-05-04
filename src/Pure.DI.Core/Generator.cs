@@ -110,6 +110,7 @@ public sealed partial class Generator
             .Bind(Overrider).To<GraphOverrider>()
             .Bind(Cleaner).To<GraphCleaner>()
             .Bind().To<NodesFactory>()
+            .Bind().To<LocationProvider>()
 
             // Validators
             .Bind(Type).To<MetadataValidator>()

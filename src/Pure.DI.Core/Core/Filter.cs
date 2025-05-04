@@ -8,7 +8,8 @@ sealed class Filter(
     ILogger logger,
     Func<string, Regex> regexFactory,
     ICache<string, Regex> regexCache,
-    IWildcardMatcher wildcardMatcher)
+    IWildcardMatcher wildcardMatcher,
+    ILocationProvider locationProvider)
     : IFilter
 {
     public bool IsMeet(
@@ -46,7 +47,7 @@ sealed class Filter(
                 }
                 catch (ArgumentException ex)
                 {
-                    logger.CompileError(string.Format(Strings.Error_Template_InvalidRegularExpression, regularExpression, ex.Message), setup.Source.GetLocation(), LogId.ErrorInvalidMetadata);
+                    logger.CompileError(string.Format(Strings.Error_Template_InvalidRegularExpression, regularExpression, ex.Message), locationProvider.GetLocation(setup.Source), LogId.ErrorInvalidMetadata);
                 }
             }
         }
@@ -65,7 +66,7 @@ sealed class Filter(
                 }
                 catch (Exception ex)
                 {
-                    logger.CompileError(string.Format(Strings.Error_Template_InvalidWildcard, wildcard, ex.Message), setup.Source.GetLocation(), LogId.ErrorInvalidMetadata);
+                    logger.CompileError(string.Format(Strings.Error_Template_InvalidWildcard, wildcard, ex.Message), locationProvider.GetLocation(setup.Source), LogId.ErrorInvalidMetadata);
                 }
             }
         }

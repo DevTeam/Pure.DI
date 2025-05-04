@@ -3,7 +3,8 @@
 namespace Pure.DI.Core;
 
 sealed class RootValidator(
-    ILogger logger)
+    ILogger logger,
+    ILocationProvider locationProvider)
     : IValidator<CompositionCode>
 {
     public bool Validate(CompositionCode composition)
@@ -25,7 +26,7 @@ sealed class RootValidator(
         {
             logger.CompileWarning(
                 string.Format(Strings.Warning_Template_RootCannotBeResolvedByResolveMethods, Format(root), string.Join(", ", args.Select(i => i.VariableName))),
-                root.Source.Source.GetLocation(),
+                locationProvider.GetLocation(root.Source.Source),
                 LogId.WarningRootArgInResolveMethod);
         }
 
@@ -39,7 +40,7 @@ sealed class RootValidator(
         {
             logger.CompileWarning(
                 string.Format(Strings.Warning_Template_RootCannotBeResolvedByResolveMethods, Format(root), string.Join(", ", root.TypeDescription.TypeArgs)),
-                root.Source.Source.GetLocation(),
+                locationProvider.GetLocation(root.Source.Source),
                 LogId.WarningTypeArgInResolveMethod);
         }
 

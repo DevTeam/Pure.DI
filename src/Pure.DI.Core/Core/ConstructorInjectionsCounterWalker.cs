@@ -1,6 +1,7 @@
 ﻿namespace Pure.DI.Core;
 
-sealed class ConstructorInjectionsCounterWalker : DependenciesWalker<Unit>, IConstructorInjectionsCounterWalker
+sealed class ConstructorInjectionsCounterWalker(ILocationProvider locationProvider)
+    : DependenciesWalker<Unit>(locationProvider), IConstructorInjectionsCounterWalker
 {
     public int Count { get; private set; }
 

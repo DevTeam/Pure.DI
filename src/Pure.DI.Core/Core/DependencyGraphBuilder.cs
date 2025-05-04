@@ -23,6 +23,7 @@ sealed class DependencyGraphBuilder(
     Func<DependencyNode, ISet<Injection>, IProcessingNode> processingNodeFactory,
     [Tag(Overrider)] IGraphRewriter graphOverrider,
     [Tag(Cleaner)] IGraphRewriter graphCleaner,
+    ILocationProvider locationProvider,
     CancellationToken cancellationToken)
     : IDependencyGraphBuilder
 {
@@ -83,7 +84,7 @@ sealed class DependencyGraphBuilder(
             {
                 throw new CompileErrorException(
                     string.Format(Strings.Error_Template_TooLargeComposition, counter),
-                    setup.Source.GetLocation(),
+                    locationProvider.GetLocation(setup.Source),
                     LogId.ErrorInvalidMetadata);
             }
 

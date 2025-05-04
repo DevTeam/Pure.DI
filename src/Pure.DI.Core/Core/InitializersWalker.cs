@@ -1,8 +1,9 @@
 ﻿// ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
 namespace Pure.DI.Core;
 
-sealed class InitializersWalker(IInjections injections)
-    : DependenciesWalker<BuildContext>, IInitializersWalker
+sealed class InitializersWalker(
+    IInjections injections, ILocationProvider locationProvider)
+    : DependenciesWalker<BuildContext>(locationProvider), IInitializersWalker
 {
     private readonly List<(Action Run, int? Ordinal)> _actions = [];
     private readonly List<Variable> _variables = [];

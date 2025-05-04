@@ -1,6 +1,7 @@
 namespace Pure.DI.Core;
 
-sealed class VariablesWalker : DependenciesWalker<Unit>, IVariablesWalker
+sealed class VariablesWalker(ILocationProvider locationProvider)
+    : DependenciesWalker<Unit>(locationProvider), IVariablesWalker
 {
     private readonly List<Variable> _result = [];
     private ICollection<Variable> _variables = [];

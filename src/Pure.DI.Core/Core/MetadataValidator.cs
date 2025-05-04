@@ -7,14 +7,15 @@ namespace Pure.DI.Core;
 sealed class MetadataValidator(
     ILogger logger,
     IBaseSymbolsProvider baseSymbolsProvider,
-    IMarker marker)
+    IMarker marker,
+    ILocationProvider locationProvider)
     : IValidator<MdSetup>
 {
     public bool Validate(MdSetup setup)
     {
         if (setup is { Kind: CompositionKind.Public, Roots.Length: 0 })
         {
-            logger.CompileWarning(Strings.Warning_NoRoots, setup.Source.GetLocation(), LogId.WarningMetadataDefect);
+            logger.CompileWarning(Strings.Warning_NoRoots, locationProvider.GetLocation(setup.Source), LogId.WarningMetadataDefect);
         }
 
         var isValid = setup.Bindings
@@ -31,7 +32,7 @@ sealed class MetadataValidator(
             && (!SyntaxFacts.IsValidIdentifier(setup.Name.ClassName)
                 || !IsValidOrEmptyIdentifier(setup.Name.Namespace.Replace('.', '_'))))
         {
-            logger.CompileError(string.Format(Strings.Error_Template_InvalidCompositionTypeName, setup.Name), (setup.Name.Source ?? setup.Source).GetLocation(), LogId.ErrorInvalidMetadata);
+            logger.CompileError(string.Format(Strings.Error_Template_InvalidCompositionTypeName, setup.Name), locationProvider.GetLocation((setup.Name.Source ?? setup.Source)), LogId.ErrorInvalidMetadata);
             isValid = false;
         }
 
@@ -42,7 +43,7 @@ sealed class MetadataValidator(
                 continue;
             }
 
-            logger.CompileError(string.Format(Strings.Error_Template_InvalidRootName, root.Name), root.Source.GetLocation(), LogId.ErrorInvalidMetadata);
+            logger.CompileError(string.Format(Strings.Error_Template_InvalidRootName, root.Name), locationProvider.GetLocation(root.Source), LogId.ErrorInvalidMetadata);
             isValid = false;
         }
 
@@ -56,7 +57,7 @@ sealed class MetadataValidator(
 
             foreach (var root in roots.Skip(1))
             {
-                logger.CompileError(string.Format(Strings.Error_Template_RootDuplicate, root.Name, roots[0].Name), root.Source.GetLocation(), LogId.ErrorInvalidMetadata);
+                logger.CompileError(string.Format(Strings.Error_Template_RootDuplicate, root.Name, roots[0].Name), locationProvider.GetLocation(root.Source), LogId.ErrorInvalidMetadata);
                 isValid = false;
             }
         }
@@ -65,12 +66,12 @@ sealed class MetadataValidator(
         {
             if (marker.IsMarkerBased(setup, accumulator.AccumulatorType))
             {
-                logger.CompileError(Strings.Error_AccumulatorTypeCannotBeGenericTypeMarker, accumulator.Source.GetLocation(), LogId.ErrorInvalidMetadata);
+                logger.CompileError(Strings.Error_AccumulatorTypeCannotBeGenericTypeMarker, locationProvider.GetLocation(accumulator.Source), LogId.ErrorInvalidMetadata);
             }
 
             if (marker.IsMarkerBased(setup, accumulator.Type))
             {
-                logger.CompileError(Strings.Error_AccumulatorCannotAccumulateGenericTypeMarker, accumulator.Source.GetLocation(), LogId.ErrorInvalidMetadata);
+                logger.CompileError(Strings.Error_AccumulatorCannotAccumulateGenericTypeMarker, locationProvider.GetLocation(accumulator.Source), LogId.ErrorInvalidMetadata);
             }
         }
 
@@ -95,12 +96,12 @@ sealed class MetadataValidator(
         var isValid = true;
         ITypeSymbol? implementationType = null;
         SemanticModel? semanticModel = null;
-        var location = binding.Source.GetLocation();
+        var location = locationProvider.GetLocation(binding.Source);
         if (binding.Implementation is {} implementation)
         {
             semanticModel = implementation.SemanticModel;
             implementationType = implementation.Type;
-            location = implementation.Source.GetLocation();
+            location = locationProvider.GetLocation(implementation.Source);
         }
         else
         {
@@ -108,7 +109,7 @@ sealed class MetadataValidator(
             {
                 semanticModel = factory.SemanticModel;
                 implementationType = factory.Type;
-                location = factory.Source.GetLocation();
+                location = locationProvider.GetLocation(factory.Source);
             }
             else
             {
@@ -116,7 +117,7 @@ sealed class MetadataValidator(
                 {
                     semanticModel = arg.SemanticModel;
                     implementationType = arg.Type;
-                    location = arg.Source.GetLocation();
+                    location = locationProvider.GetLocation(arg.Source);
                     if (!IsValidIdentifier(arg.ArgName))
                     {
                         logger.CompileError(string.Format(Strings.Error_Template_InvalidArgumentName, arg.ArgName), location, LogId.ErrorInvalidMetadata);

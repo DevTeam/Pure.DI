@@ -2,7 +2,8 @@
 
 sealed class LifetimesValidatorVisitor(
     ILogger logger,
-    ILifetimeAnalyzer lifetimeAnalyzer)
+    ILifetimeAnalyzer lifetimeAnalyzer,
+    ILocationProvider locationProvider)
     : IGraphVisitor<HashSet<object>, ImmutableArray<DependencyNode>>
 {
     public ImmutableArray<DependencyNode> Create(
@@ -26,7 +27,7 @@ sealed class LifetimesValidatorVisitor(
             {
                 if (errors.Add(new ErrorKey(actualTargetLifetimeNode, dependencyNode)))
                 {
-                    logger.CompileError(string.Format(Strings.Error_Template_TypeWithLifetimeRequiresDirectOrTransitiveInjection, actualTargetLifetimeNode.Type, actualTargetLifetimeNode.Lifetime, dependencyNode.Type, dependencyNode.Lifetime), dependencyNode.Binding.Source.GetLocation(), LogId.ErrorLifetimeDefect);
+                    logger.CompileError(string.Format(Strings.Error_Template_TypeWithLifetimeRequiresDirectOrTransitiveInjection, actualTargetLifetimeNode.Type, actualTargetLifetimeNode.Lifetime, dependencyNode.Type, dependencyNode.Lifetime), locationProvider.GetLocation(dependencyNode.Binding.Source), LogId.ErrorLifetimeDefect);
                 }
             }
 

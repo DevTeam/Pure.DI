@@ -9,11 +9,12 @@ record DpImplementation(
     in DpMethod Constructor,
     in ImmutableArray<DpMethod> Methods,
     in ImmutableArray<DpProperty> Properties,
-    in ImmutableArray<DpField> Fields)
+    in ImmutableArray<DpField> Fields,
+    ILocationProvider LocationProvider)
 {
     public IEnumerable<string> ToStrings(int indent)
     {
-        var walker = new DependenciesToLinesWalker(indent);
+        var walker = new DependenciesToLinesWalker(indent, LocationProvider);
         walker.VisitImplementation(Unit.Shared, this);
         return walker;
     }

@@ -5,7 +5,8 @@ namespace Pure.DI.Core;
 
 sealed class Attributes(
     ISemantic semantic,
-    ISymbolNames symbolNames)
+    ISymbolNames symbolNames,
+    ILocationProvider locationProvider)
     : IAttributes
 {
     public T GetAttribute<TMdAttribute, T>(
@@ -47,7 +48,7 @@ sealed class Attributes(
 
                         throw new CompileErrorException(
                             string.Format(Strings.Error_Template_InvalidAttributeArgumentPosition, attributeMetadata.ArgumentPosition, attributeMetadata.Source, args.Length),
-                            attributeMetadata.Source.GetLocation(),
+                            locationProvider.GetLocation(attributeMetadata.Source),
                             LogId.ErrorInvalidMetadata);
                     }
 
@@ -62,7 +63,7 @@ sealed class Attributes(
                 case > 1:
                     throw new CompileErrorException(
                         string.Format(Strings.Error_Template_AttributeMemberCannotBeProcessed, member, member.ContainingType),
-                        attributeMetadata.Source.GetLocation(),
+                        locationProvider.GetLocation(attributeMetadata.Source),
                         LogId.ErrorInvalidMetadata);
             }
         }
@@ -92,7 +93,7 @@ sealed class Attributes(
                 {
                     throw new CompileErrorException(
                         string.Format(Strings.Error_Template_InvalidAttributeArgumentPosition, attributeMetadata.ArgumentPosition, attributeMetadata.Source, args.Count),
-                        attributeMetadata.Source.GetLocation(),
+                        locationProvider.GetLocation(attributeMetadata.Source),
                         LogId.ErrorInvalidMetadata);
                 }
 

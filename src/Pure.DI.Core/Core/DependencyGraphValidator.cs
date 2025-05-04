@@ -7,6 +7,7 @@ sealed class DependencyGraphValidator(
     ITypeResolver typeResolver,
     IFilter filter,
     Func<IDependencyGraphLocationsWalker> dependencyGraphLocationsWalkerFactory,
+    ILocationProvider locationProvider,
     CancellationToken cancellationToken)
     : IValidator<DependencyGraph>
 {
@@ -50,7 +51,7 @@ sealed class DependencyGraphValidator(
             var errorMessage = string.Format(Strings.Error_Template_UnableToResolve, dependency.Injection, dependency.Target);
             var locationsWalker = dependencyGraphLocationsWalkerFactory().Initialize(dependency.Injection);
             locationsWalker.VisitDependencyNode(Unit.Shared, dependency.Target);
-            foreach (var location in locationsWalker.Locations.Where(i => i.IsInSource).DefaultIfEmpty(dependency.Target.Binding.Source.GetLocation()))
+            foreach (var location in locationsWalker.Locations.Where(i => i.IsInSource).DefaultIfEmpty(locationProvider.GetLocation(dependency.Target.Binding.Source)))
             {
                 logger.CompileError(errorMessage, location, LogId.ErrorUnableToResolve);
                 isErrorReported = true;
@@ -59,7 +60,7 @@ sealed class DependencyGraphValidator(
 
         if (!isResolved && !isErrorReported)
         {
-            logger.CompileError(Strings.Error_CannotBuildDependencyGraph, dependencyGraph.Source.Source.GetLocation(), LogId.ErrorUnableToResolve);
+            logger.CompileError(Strings.Error_CannotBuildDependencyGraph, locationProvider.GetLocation(dependencyGraph.Source.Source), LogId.ErrorUnableToResolve);
         }
 
         throw HandledException.Shared;

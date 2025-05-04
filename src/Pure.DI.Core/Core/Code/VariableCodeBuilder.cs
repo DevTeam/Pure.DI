@@ -7,8 +7,9 @@ namespace Pure.DI.Core.Code;
 sealed class VariableCodeBuilder(
     ICodeBuilder<DpImplementation> implementationBuilder,
     ICodeBuilder<DpFactory> factoryBuilder,
-    ICodeBuilder<DpConstruct> constructBuilder)
-    : DependenciesWalker<BuildContext>, ICodeBuilder<Variable>
+    ICodeBuilder<DpConstruct> constructBuilder,
+    ILocationProvider locationProvider)
+    : DependenciesWalker<BuildContext>(locationProvider), ICodeBuilder<Variable>
 {
     public void Build(BuildContext ctx, in Variable variable) =>
         VisitDependencyNode(ctx, variable.Node);

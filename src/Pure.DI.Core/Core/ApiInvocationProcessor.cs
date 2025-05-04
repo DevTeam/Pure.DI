@@ -18,7 +18,8 @@ sealed class ApiInvocationProcessor(
     ITypes types,
     IWildcardMatcher wildcardMatcher,
     Func<IFactoryApiWalker> factoryApiWalkerFactory,
-    Func<ILocalVariableRenamingRewriter> localVariableRenamingRewriterFactory)
+    Func<ILocalVariableRenamingRewriter> localVariableRenamingRewriterFactory,
+    ILocationProvider locationProvider)
     : IApiInvocationProcessor
 {
     private static readonly char[] TypeNamePartsSeparators = ['.'];
@@ -96,12 +97,12 @@ sealed class ApiInvocationProcessor(
 
                                     if (symbol.TypeArguments.Length == 2 && symbol.TypeArguments is [_, {} resultType])
                                     {
-                                        VisitFactory(metadataVisitor, semanticModel, resultType, lambdaExpression);
+                                        VisitFactory(name, metadataVisitor, semanticModel, resultType, lambdaExpression);
                                         break;
                                     }
                                 }
 
-                                VisitFactory(metadataVisitor, semanticModel, type, lambdaExpression);
+                                VisitFactory(name, metadataVisitor, semanticModel, type, lambdaExpression);
                                 break;
 
                             case []:
@@ -207,7 +208,7 @@ sealed class ApiInvocationProcessor(
                     case nameof(IConfiguration.RootBind):
                         if (genericName.TypeArgumentList.Arguments is not [{} rootBindType])
                         {
-                            throw new CompileErrorException(Strings.Error_InvalidRootType, name.GetLocation(), LogId.ErrorInvalidMetadata);
+                            throw new CompileErrorException(Strings.Error_InvalidRootType, locationProvider.GetLocation(name), LogId.ErrorInvalidMetadata);
                         }
 
                         var tagArguments = invocation.ArgumentList.Arguments.SkipWhile((arg, i) => arg.NameColon?.Name.Identifier.Text != "tags" && i < 2);
@@ -253,7 +254,7 @@ sealed class ApiInvocationProcessor(
                             {
                                 case [{ Expression: LambdaExpressionSyntax lambdaExpression }]:
                                     var factoryType = semantic.GetTypeSymbol<ITypeSymbol>(semanticModel, implementationTypeSyntax);
-                                    VisitFactory(metadataVisitor, semanticModel, factoryType, lambdaExpression);
+                                    VisitFactory(name, metadataVisitor, semanticModel, factoryType, lambdaExpression);
                                     break;
 
                                 case [{ Expression: LiteralExpressionSyntax { Token.Value: string sourceCodeStatement } }]:
@@ -261,12 +262,12 @@ sealed class ApiInvocationProcessor(
                                         .SimpleLambdaExpression(SyntaxFactory.Parameter(SyntaxFactory.Identifier("_")))
                                         .WithExpressionBody(SyntaxFactory.IdentifierName(sourceCodeStatement));
                                     factoryType = semantic.GetTypeSymbol<ITypeSymbol>(semanticModel, implementationTypeSyntax);
-                                    VisitFactory(metadataVisitor, semanticModel, factoryType, lambda);
+                                    VisitFactory(name, metadataVisitor, semanticModel, factoryType, lambda);
                                     break;
 
                                 case []:
                                     var implementationType = semantic.GetTypeSymbol<INamedTypeSymbol>(semanticModel, implementationTypeSyntax);
-                                    metadataVisitor.VisitImplementation(new MdImplementation(semanticModel, implementationTypeSyntax, implementationType));
+                                    metadataVisitor.VisitImplementation(new MdImplementation(semanticModel, name, implementationType));
                                     break;
 
                                 default:
@@ -291,7 +292,7 @@ sealed class ApiInvocationProcessor(
                             // ReSharper disable once MergeIntoNegatedPattern
                             || rootsType.SpecialType == Microsoft.CodeAnalysis.SpecialType.System_Object)
                         {
-                            throw new CompileErrorException(Strings.Error_InvalidRootsRype, name.GetLocation(), LogId.ErrorInvalidMetadata);
+                            throw new CompileErrorException(Strings.Error_InvalidRootsRype, locationProvider.GetLocation(name), LogId.ErrorInvalidMetadata);
                         }
 
                         var rootsArgs = arguments.GetArgs(invocation.ArgumentList, "name", "kind", "filter");
@@ -308,7 +309,7 @@ sealed class ApiInvocationProcessor(
 
                         if (!hasRootsType)
                         {
-                            throw new CompileErrorException(string.Format(Strings.Error_Template_NoTypeForWildcard, symbolNames.GetName(rootsType), rootsWildcardFilter), name.GetLocation(), LogId.ErrorInvalidMetadata);
+                            throw new CompileErrorException(string.Format(Strings.Error_Template_NoTypeForWildcard, symbolNames.GetName(rootsType), rootsWildcardFilter), locationProvider.GetLocation(name), LogId.ErrorInvalidMetadata);
                         }
 
                         break;
@@ -316,7 +317,7 @@ sealed class ApiInvocationProcessor(
                     case nameof(IConfiguration.Root):
                         if (genericName.TypeArgumentList.Arguments is not [{} rootTypeSyntax])
                         {
-                            throw new CompileErrorException(Strings.Error_InvalidRootType, name.GetLocation(), LogId.ErrorInvalidMetadata);
+                            throw new CompileErrorException(Strings.Error_InvalidRootType, locationProvider.GetLocation(name), LogId.ErrorInvalidMetadata);
                         }
 
                         var rootSymbol = semantic.GetTypeSymbol<INamedTypeSymbol>(semanticModel, rootTypeSyntax);
@@ -329,7 +330,7 @@ sealed class ApiInvocationProcessor(
                             // ReSharper disable once MergeIntoNegatedPattern
                             || buildersRootType.SpecialType == Microsoft.CodeAnalysis.SpecialType.System_Object)
                         {
-                            throw new CompileErrorException(Strings.Error_InvalidBuildersType, name.GetLocation(), LogId.ErrorInvalidMetadata);
+                            throw new CompileErrorException(Strings.Error_InvalidBuildersType, locationProvider.GetLocation(name), LogId.ErrorInvalidMetadata);
                         }
 
                         var buildersArgs = arguments.GetArgs(invocation.ArgumentList, "name", "kind", "filter");
@@ -355,7 +356,7 @@ sealed class ApiInvocationProcessor(
 
                         if (!hasBuildersType)
                         {
-                            throw new CompileErrorException(string.Format(Strings.Error_Template_NoTypeForWildcard, symbolNames.GetName(buildersRootType), buildersWildcardFilter), name.GetLocation(), LogId.ErrorInvalidMetadata);
+                            throw new CompileErrorException(string.Format(Strings.Error_Template_NoTypeForWildcard, symbolNames.GetName(buildersRootType), buildersWildcardFilter), locationProvider.GetLocation(name), LogId.ErrorInvalidMetadata);
                         }
 
                         break;
@@ -363,7 +364,7 @@ sealed class ApiInvocationProcessor(
                     case nameof(IConfiguration.Builder):
                         if (genericName.TypeArgumentList.Arguments is not [{} builderRootTypeSyntax])
                         {
-                            throw new CompileErrorException(Strings.Error_InvalidBuilderType, name.GetLocation(), LogId.ErrorInvalidMetadata);
+                            throw new CompileErrorException(Strings.Error_InvalidBuilderType, locationProvider.GetLocation(name), LogId.ErrorInvalidMetadata);
                         }
 
                         var builderType = semantic.GetTypeSymbol<INamedTypeSymbol>(semanticModel, builderRootTypeSyntax);
@@ -529,7 +530,7 @@ sealed class ApiInvocationProcessor(
                     var marker = types.GetMarker(index, semanticModel.Compilation);
                     if (marker is null)
                     {
-                        throw new CompileErrorException(Strings.Error_TooManyTypeParameters, source.GetLocation(), LogId.ErrorInvalidMetadata);
+                        throw new CompileErrorException(Strings.Error_TooManyTypeParameters, locationProvider.GetLocation(source), LogId.ErrorInvalidMetadata);
                     }
 
                     markers.Add(marker);
@@ -568,7 +569,7 @@ sealed class ApiInvocationProcessor(
         var builderLambdaExpression = (LambdaExpressionSyntax)SyntaxFactory.ParseExpression(factory.ToString());
 
         metadataVisitor.VisitContract(new MdContract(semanticModel, source, builderType, ContractKind.Explicit, ImmutableArray.Create(builderTag)));
-        VisitFactory(metadataVisitor, semanticModel, builderType, builderLambdaExpression);
+        VisitFactory(source, metadataVisitor, semanticModel, builderType, builderLambdaExpression);
 
         // Root
         metadataVisitor.VisitRoot(new MdRoot(source, semanticModel, builderType, builderName, builderTag, kind, invocationComments, true));
@@ -749,6 +750,7 @@ sealed class ApiInvocationProcessor(
     }
 
     private void VisitFactory(
+        SyntaxNode source,
         IMetadataVisitor metadataVisitor,
         SemanticModel semanticModel,
         ITypeSymbol resultType,
@@ -790,7 +792,7 @@ sealed class ApiInvocationProcessor(
         metadataVisitor.VisitFactory(
             new MdFactory(
                 semanticModel,
-                lambdaExpression,
+                source,
                 resultType,
                 localVariableRenamingRewriter,
                 lambdaExpression,
@@ -1038,11 +1040,11 @@ sealed class ApiInvocationProcessor(
         return argType ?? defaultType;
     }
 
-    private static void CheckNotAsync(LambdaExpressionSyntax lambdaExpression)
+    private void CheckNotAsync(LambdaExpressionSyntax lambdaExpression)
     {
         if (lambdaExpression.AsyncKeyword.IsKind(SyntaxKind.AsyncKeyword))
         {
-            throw new CompileErrorException(Strings.Error_AsynchronousFactoryWithAsyncNotSupported, lambdaExpression.AsyncKeyword.GetLocation(), LogId.ErrorInvalidMetadata);
+            throw new CompileErrorException(Strings.Error_AsynchronousFactoryWithAsyncNotSupported, locationProvider.GetLocation(lambdaExpression.AsyncKeyword), LogId.ErrorInvalidMetadata);
         }
     }
 
@@ -1061,8 +1063,8 @@ sealed class ApiInvocationProcessor(
     }*/
 
     // ReSharper disable once SuggestBaseTypeForParameter
-    private static void NotSupported(SyntaxNode source) =>
-        throw new CompileErrorException(string.Format(Strings.Error_Template_NotSupported, source), source.GetLocation(), LogId.ErrorInvalidMetadata);
+    private void NotSupported(SyntaxNode source) =>
+        throw new CompileErrorException(string.Format(Strings.Error_Template_NotSupported, source), locationProvider.GetLocation(source), LogId.ErrorInvalidMetadata);
 
     private IReadOnlyList<T> BuildConstantArgs<T>(
         SemanticModel semanticModel,
@@ -1071,7 +1073,7 @@ sealed class ApiInvocationProcessor(
             .SelectMany(a => semantic.GetConstantValues<T>(semanticModel, a.Expression).Select(value => (value, a.Expression)))
             .Select(a => a.value ?? throw new CompileErrorException(
                 string.Format(Strings.Error_Template_MustBeValueOfType, a.Expression, typeof(T)),
-                a.Expression.GetLocation(),
+                locationProvider.GetLocation(a.Expression),
                 LogId.ErrorInvalidMetadata))
             .ToList();
 
@@ -1124,7 +1126,7 @@ sealed class ApiInvocationProcessor(
         var name = nameFormatter.Format(nameTemplate!, type?.OriginalDefinition, tag);
         if (!SyntaxFacts.IsValidIdentifier(name))
         {
-            throw new CompileErrorException(string.Format(Strings.Error_Template_InvalidIdentifier, name), source.GetLocation(), LogId.ErrorInvalidMetadata);
+            throw new CompileErrorException(string.Format(Strings.Error_Template_InvalidIdentifier, name), locationProvider.GetLocation(source), LogId.ErrorInvalidMetadata);
         }
 
         return name;

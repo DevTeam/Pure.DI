@@ -1,6 +1,7 @@
 ﻿namespace Pure.DI.Core.Code;
 
-sealed class FactoryValidator : CSharpSyntaxWalker, IFactoryValidator
+sealed class FactoryValidator(ILocationProvider locationProvider)
+    : CSharpSyntaxWalker, IFactoryValidator
 {
     private string? _contextParameterName;
 
@@ -16,7 +17,7 @@ sealed class FactoryValidator : CSharpSyntaxWalker, IFactoryValidator
         {
             if (node.Parent is ArgumentSyntax)
             {
-                throw new CompileErrorException(string.Format(Strings.Error_Template_CannotUseContextDirectly, _contextParameterName), node.GetLocation(), LogId.ErrorInvalidMetadata);
+                throw new CompileErrorException(string.Format(Strings.Error_Template_CannotUseContextDirectly, _contextParameterName), locationProvider.GetLocation(node), LogId.ErrorInvalidMetadata);
             }
         }
 

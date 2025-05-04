@@ -12,6 +12,7 @@ sealed class ClassDiagramBuilder(
     ITypeResolver typeResolver,
     IRootAccessModifierResolver rootAccessModifierResolver,
     ITypes types,
+    ILocationProvider locationProvider,
     CancellationToken cancellationToken)
     : IBuilder<CompositionCode, LinesBuilder>
 {
@@ -101,7 +102,7 @@ sealed class ClassDiagramBuilder(
                     lines.AppendLine($"{FormatType(setup, node.Type, DefaultFormatOptions)} --|> {FormatType(setup, contract.Type, DefaultFormatOptions)}{(string.IsNullOrWhiteSpace(tag) ? "" : $" : {tag}")}");
                 }
 
-                var classDiagramWalker = new ClassDiagramWalker(setup, marker, this, classes, DefaultFormatOptions);
+                var classDiagramWalker = new ClassDiagramWalker(setup, marker, this, classes, DefaultFormatOptions, locationProvider);
                 classDiagramWalker.VisitDependencyNode(new LinesBuilder(), node);
             }
 
@@ -354,8 +355,9 @@ sealed class ClassDiagramBuilder(
         IMarker marker,
         ClassDiagramBuilder builder,
         IList<Class> classes,
-        FormatOptions options)
-        : DependenciesWalker<LinesBuilder>
+        FormatOptions options,
+        ILocationProvider locationProvider)
+        : DependenciesWalker<LinesBuilder>(locationProvider)
     {
         public override void VisitDependencyNode(in LinesBuilder ctx, DependencyNode node)
         {

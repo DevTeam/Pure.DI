@@ -5,11 +5,12 @@ namespace Pure.DI.Core.Models;
 record DpRoot(
     in MdRoot Source,
     in MdBinding Binding,
-    in Injection Injection)
+    in Injection Injection,
+    ILocationProvider LocationProvider)
 {
     public IEnumerable<string> ToStrings(int indent)
     {
-        var walker = new DependenciesToLinesWalker(indent);
+        var walker = new DependenciesToLinesWalker(indent, LocationProvider);
         walker.VisitRoot(Unit.Shared, this);
         return walker;
     }
