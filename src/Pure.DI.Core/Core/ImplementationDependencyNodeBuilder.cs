@@ -54,7 +54,7 @@ sealed class ImplementationDependencyNodeBuilder(
                 constructors.Add(
                     new DpMethod(
                         constructor,
-                        attributes.GetAttribute(setup.SemanticModel, setup.OrdinalAttributes, constructor, false, default(int?)),
+                        attributes.GetAttribute(setup.SemanticModel, setup.OrdinalAttributes, constructor, AttributeKind.Ordinal, default(int?)),
                         instanceDpProvider.GetParameters(setup, constructor.Parameters, ctx.TypeConstructor),
                         locationProvider));
             }

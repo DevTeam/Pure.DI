@@ -13,7 +13,7 @@ sealed class Attributes(
         SemanticModel semanticModel,
         in ImmutableArray<TMdAttribute> metadata,
         ISymbol member,
-        bool isTag,
+        AttributeKind kind,
         T defaultValue)
         where TMdAttribute : IMdAttribute
     {
@@ -44,7 +44,7 @@ sealed class Attributes(
                         if (attr.ApplicationSyntaxReference?.GetSyntax() is AttributeSyntax { ArgumentList: {} argumentList }
                             && attributeMetadata.ArgumentPosition < argumentList.Arguments.Count)
                         {
-                            return semantic.GetConstantValue<T>(semanticModel, argumentList.Arguments[attributeMetadata.ArgumentPosition].Expression, isTag ? SmartTagKind.Tag : SmartTagKind.Unknown)
+                            return semantic.GetConstantValue<T>(semanticModel, argumentList.Arguments[attributeMetadata.ArgumentPosition].Expression, GetSmartTagKind(kind))
                                    ?? defaultValue;
                         }
 
@@ -77,6 +77,7 @@ sealed class Attributes(
         SemanticModel semanticModel,
         in ImmutableArray<TMdAttribute> metadata,
         in ImmutableArray<AttributeSyntax> attributes,
+        AttributeKind kind,
         T defaultValue)
         where TMdAttribute : IMdAttribute
     {
@@ -100,7 +101,7 @@ sealed class Attributes(
                 }
 
                 var argSyntax = args[attributeMetadata.ArgumentPosition];
-                var val = semantic.GetConstantValue<object>(semanticModel, argSyntax.Expression);
+                var val = semantic.GetConstantValue<object>(semanticModel, argSyntax.Expression, GetSmartTagKind(kind));
                 if (val is T value)
                 {
                     return value;
@@ -110,6 +111,9 @@ sealed class Attributes(
 
         return defaultValue;
     }
+
+    private static SmartTagKind GetSmartTagKind(AttributeKind kind) =>
+        kind == AttributeKind.Tag ? SmartTagKind.Tag : SmartTagKind.Unknown;
 
     private IReadOnlyList<AttributeData> GetAttributes(ISymbol member, INamedTypeSymbol attributeType) =>
         member

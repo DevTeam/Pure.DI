@@ -22,7 +22,7 @@ sealed class FactoryDependencyNodeBuilder(
             var resolvers = new List<DpResolver>(factory.Resolvers.Length);
             foreach (var resolver in factory.Resolvers)
             {
-                var tag = attributes.GetAttribute(resolver.SemanticModel, setup.TagAttributes, resolver.Attributes, default(object?)) ?? resolver.Tag?.Value;
+                var tag = attributes.GetAttribute(resolver.SemanticModel, setup.TagAttributes, resolver.Attributes, AttributeKind.Tag, default(object?)) ?? resolver.Tag?.Value;
                 var injection = new Injection(InjectionKind.FactoryInjection, resolver.ContractType.WithNullableAnnotation(NullableAnnotation.NotAnnotated), tag);
                 resolvers.Add(new DpResolver(resolver, injection, CreateOverrides(resolver.Overrides)));
             }

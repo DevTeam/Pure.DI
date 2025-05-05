@@ -6,7 +6,7 @@ interface IAttributes
         SemanticModel semanticModel,
         in ImmutableArray<TMdAttribute> metadata,
         ISymbol member,
-        bool isTag,
+        AttributeKind kind,
         T defaultValue)
         where TMdAttribute : IMdAttribute;
 
@@ -14,6 +14,7 @@ interface IAttributes
         SemanticModel semanticModel,
         in ImmutableArray<TMdAttribute> metadata,
         in ImmutableArray<AttributeSyntax> attributes,
+        AttributeKind kind,
         T defaultValue)
         where TMdAttribute : IMdAttribute;
 }
