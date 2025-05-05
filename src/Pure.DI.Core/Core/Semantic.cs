@@ -247,14 +247,14 @@ sealed class Semantic(
         }
 
         var operation = semanticModel.GetOperation(node);
-        if (operation?.ConstantValue.Value is not null)
+        if (operation?.ConstantValue.Value is T value)
         {
-            return (T)operation.ConstantValue.Value!;
+            return value;
         }
 
-        if (typeof(T) == typeof(object) && operation is ITypeOfOperation typeOfOperation)
+        if (typeof(T) == typeof(object) && operation is ITypeOfOperation { TypeOperand: T val })
         {
-            return (T)typeOfOperation.TypeOperand;
+            return val;
         }
 
         throw new CompileErrorException(

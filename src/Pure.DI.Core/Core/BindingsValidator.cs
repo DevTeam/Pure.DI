@@ -10,9 +10,9 @@ sealed class BindingsValidator(
 {
     public bool Validate(DependencyGraph graph)
     {
-        foreach (var binding in graph.Source.Bindings.Where(i => i.SourceSetup.Kind == CompositionKind.Public && i.Contracts.Any(c => c.Kind == ContractKind.Explicit)))
+        foreach (var binding in graph.Source.Bindings.Where(i => i.SourceSetup.Kind == CompositionKind.Public && i.Contracts.All(c => c.Kind == ContractKind.Explicit)))
         {
-            if (!registry.IsRegistered(graph.Source, binding.OriginalId ?? binding.Id))
+            if (!GetIds(binding).Any(id => registry.IsRegistered(graph.Source, id)))
             {
                 logger.CompileWarning(
                     Strings.Warning_BindingIsNotUsed,
@@ -22,5 +22,18 @@ sealed class BindingsValidator(
         }
 
         return true;
+    }
+
+    private IEnumerable<int> GetIds(MdBinding binding)
+    {
+        if (!binding.OriginalIds.IsDefaultOrEmpty)
+        {
+            foreach (var id in binding.OriginalIds)
+            {
+                yield return id;
+            }
+        }
+
+        yield return binding.Id;
     }
 }

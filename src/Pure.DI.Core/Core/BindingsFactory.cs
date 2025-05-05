@@ -3,8 +3,7 @@
 class BindingsFactory(
     Func<IBuilder<RewriterContext<MdFactory>, MdFactory>> factoryRewriterFactory,
     ITypes types,
-    IMarker marker,
-    IRegistryManager<MdBinding> registryManager)
+    IMarker marker)
     : IBindingsFactory
 {
     public MdBinding CreateGenericBinding(
@@ -25,8 +24,8 @@ class BindingsFactory(
 
         return sourceNode.Binding with
         {
-            OriginalId = sourceNode.Binding.Id,
             Id = newId,
+            OriginalIds = ImmutableArray.Create(sourceNode.Binding.Id),
             TypeConstructor = typeConstructor,
             Contracts = newContracts,
             Implementation = sourceNode.Binding.Implementation.HasValue
@@ -130,37 +129,42 @@ class BindingsFactory(
         elementType = elementType.WithNullableAnnotation(NullableAnnotation.NotAnnotated);
         var dependencyContracts = new List<MdContract>();
         var contracts = new HashSet<Injection>();
-        foreach (var nestedBinding in setup.Bindings.Where(i => i != targetNode.Binding))
+        var originalIds = new HashSet<int>();
+        if (constructKind is MdConstructKind.Array or MdConstructKind.AsyncEnumerable or MdConstructKind.Enumerable or MdConstructKind.Span)
         {
-            var matchedContracts = GetMatchedMdContracts(setup, elementType, nestedBinding, typeConstructor).ToList();
-            if (matchedContracts.Count == 0)
+            foreach (var nestedBinding in setup.Bindings.Where(i => i != targetNode.Binding))
             {
-                continue;
-            }
-
-            var tags = matchedContracts.First().Tags
-                .Concat(nestedBinding.Tags)
-                .Select((i, position) => i with { Position = position })
-                .ToImmutableArray();
-
-            var isDuplicate = false;
-            if (constructKind is MdConstructKind.Enumerable or MdConstructKind.Array or MdConstructKind.Span or MdConstructKind.AsyncEnumerable)
-            {
-                foreach (var mdTag in tags.DefaultIfEmpty(new MdTag(0, null)))
+                var matchedContracts = GetMatchedMdContracts(setup, elementType, nestedBinding, typeConstructor).ToList();
+                if (matchedContracts.Count == 0)
                 {
-                    if (!contracts.Add(new Injection(InjectionKind.Construct, elementType, mdTag)))
+                    continue;
+                }
+
+                var tags = matchedContracts.First().Tags
+                    .Concat(nestedBinding.Tags)
+                    .Select((i, position) => i with { Position = position })
+                    .ToImmutableArray();
+
+                var isDuplicate = false;
+                if (constructKind is MdConstructKind.Enumerable or MdConstructKind.Array or MdConstructKind.Span or MdConstructKind.AsyncEnumerable)
+                {
+                    foreach (var mdTag in tags.DefaultIfEmpty(new MdTag(0, null)))
                     {
-                        isDuplicate = true;
+                        if (!contracts.Add(new Injection(InjectionKind.Construct, elementType, mdTag)))
+                        {
+                            isDuplicate = true;
+                        }
                     }
                 }
-            }
 
-            if (isDuplicate)
-            {
-                continue;
-            }
+                if (isDuplicate)
+                {
+                    continue;
+                }
 
-            dependencyContracts.Add(new MdContract(targetNode.Binding.SemanticModel, targetNode.Binding.Source, elementType, ContractKind.Implicit, tags));
+                originalIds.Add(nestedBinding.Id);
+                dependencyContracts.Add(new MdContract(targetNode.Binding.SemanticModel, targetNode.Binding.Source, elementType, ContractKind.Implicit, tags));
+            }
         }
 
         var newTags = tag is not null
@@ -187,9 +191,9 @@ class BindingsFactory(
                 dependencyContracts.ToImmutableArray(),
                 hasExplicitDefaultValue,
                 explicitDefaultValue,
-                state));
+                state),
+            OriginalIds: originalIds.ToImmutableArray());
 
-        registryManager.Register(setup, newBinding);
         return newBinding;
     }
 

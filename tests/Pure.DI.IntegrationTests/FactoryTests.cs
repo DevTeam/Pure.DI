@@ -1986,6 +1986,67 @@ public class FactoryTests
     }
 
     [Fact]
+    public async Task ShouldSupportInjectWithSmartTagWhenItTheSameAsSomeTypeName()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+                           using static Pure.DI.Tag;
+                           
+                           namespace Sample
+                           {
+                              interface IDependency {}
+                           
+                              class Dependency: IDependency {}
+                           
+                              interface IService
+                              {
+                                  IDependency Dep { get; }
+                              }
+                           
+                              class Service: IService
+                              {
+                                  public Service([Tag(Injection)]IDependency dep)
+                                  {
+                                      Dep = dep;
+                                  }
+                           
+                                  public IDependency Dep { get; }
+                              }
+                           
+                              static class Setup
+                              {
+                                  private static void SetupComposition()
+                                  {
+                                      DI.Setup("Composition")
+                                          .Bind<IDependency>(Injection).To(ctx => new Dependency())
+                                          .Bind<IService>().To<Service>()
+                                          .Root<IService>("Service");
+                                  }
+                              }
+                           
+                              public class Program
+                              {
+                                  public static void Main()
+                                  {
+                                      var composition = new Composition();
+                                      var service1 = composition.Service;
+                                      var service2 = composition.Service;
+                                      Console.WriteLine(service1.Dep != service2.Dep);
+                                  }
+                              }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
     public async Task ShouldSupportInjectWithTag()
     {
         // Given

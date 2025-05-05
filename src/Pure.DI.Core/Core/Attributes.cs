@@ -13,6 +13,7 @@ sealed class Attributes(
         SemanticModel semanticModel,
         in ImmutableArray<TMdAttribute> metadata,
         ISymbol member,
+        bool isTag,
         T defaultValue)
         where TMdAttribute : IMdAttribute
     {
@@ -43,7 +44,8 @@ sealed class Attributes(
                         if (attr.ApplicationSyntaxReference?.GetSyntax() is AttributeSyntax { ArgumentList: {} argumentList }
                             && attributeMetadata.ArgumentPosition < argumentList.Arguments.Count)
                         {
-                            return semantic.GetConstantValue<T>(semanticModel, argumentList.Arguments[attributeMetadata.ArgumentPosition].Expression) ?? defaultValue;
+                            return semantic.GetConstantValue<T>(semanticModel, argumentList.Arguments[attributeMetadata.ArgumentPosition].Expression, isTag ? SmartTagKind.Tag : SmartTagKind.Unknown)
+                                   ?? defaultValue;
                         }
 
                         throw new CompileErrorException(

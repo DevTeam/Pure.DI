@@ -6,6 +6,7 @@ interface IAttributes
         SemanticModel semanticModel,
         in ImmutableArray<TMdAttribute> metadata,
         ISymbol member,
+        bool isTag,
         T defaultValue)
         where TMdAttribute : IMdAttribute;
 

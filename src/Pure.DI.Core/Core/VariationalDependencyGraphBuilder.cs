@@ -125,13 +125,13 @@ sealed class VariationalDependencyGraphBuilder(
                 {
                     foreach (var dependency in dependencyGraph.Graph.Edges)
                     {
-                        registryManager.Register(setup, dependency.Target.Binding.OriginalId ?? dependency.Target.Binding.Id);
-                        registryManager.Register(setup, dependency.Source.Binding.OriginalId ?? dependency.Source.Binding.Id);
+                        RegisterNode(setup, dependency.Target);
+                        RegisterNode(setup, dependency.Source);
                     }
 
                     foreach (var node in dependencyGraph.Graph.Vertices)
                     {
-                        registryManager.Register(setup, node.Binding.OriginalId ?? node.Binding.Id);
+                        RegisterNode(setup, node);
                     }
 
                     return dependencyGraph;
@@ -154,6 +154,19 @@ sealed class VariationalDependencyGraphBuilder(
                 variant.Dispose();
             }
         }
+    }
+    private void RegisterNode(MdSetup setup, DependencyNode node)
+    {
+        var binding = node.Binding;
+        if (!binding.OriginalIds.IsDefaultOrEmpty)
+        {
+            foreach (var id in binding.OriginalIds)
+            {
+                registryManager.Register(setup, id);
+            }
+        }
+
+        registryManager.Register(setup, binding.Id);
     }
 
     [SuppressMessage("ReSharper", "NotDisposedResourceIsReturned")]
