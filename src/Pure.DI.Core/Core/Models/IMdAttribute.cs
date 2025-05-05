@@ -6,7 +6,7 @@ interface IMdAttribute
 {
     SemanticModel SemanticModel { get; }
 
-    SyntaxNode Source { get; }
+    InvocationExpressionSyntax Source { get; }
 
     INamedTypeSymbol AttributeType { get; }
 

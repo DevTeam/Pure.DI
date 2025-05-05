@@ -5,7 +5,7 @@ namespace Pure.DI.Core.Models;
 
 readonly record struct MdContract(
     SemanticModel SemanticModel,
-    SyntaxNode Source,
+    InvocationExpressionSyntax Source,
     ITypeSymbol? ContractType,
     ContractKind Kind,
     in ImmutableArray<MdTag> Tags)

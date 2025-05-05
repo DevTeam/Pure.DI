@@ -5,7 +5,7 @@ namespace Pure.DI.Core.Models;
 
 readonly record struct MdDependsOn(
     SemanticModel SemanticModel,
-    SyntaxNode Source,
+    InvocationExpressionSyntax Source,
     in ImmutableArray<CompositionName> CompositionTypeNames)
 {
     public override string ToString() => $"DependsOn(\"{string.Join(", ", CompositionTypeNames.Select(i => $"\"{i.FullName}\""))}\")";

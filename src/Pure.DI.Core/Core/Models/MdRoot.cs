@@ -1,7 +1,7 @@
 namespace Pure.DI.Core.Models;
 
 readonly record struct MdRoot(
-    SyntaxNode Source,
+    InvocationExpressionSyntax Source,
     SemanticModel SemanticModel,
     ITypeSymbol RootType,
     string Name,

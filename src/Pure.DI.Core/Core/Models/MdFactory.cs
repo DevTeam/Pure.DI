@@ -4,7 +4,7 @@ namespace Pure.DI.Core.Models;
 
 readonly record struct MdFactory(
     SemanticModel SemanticModel,
-    SyntaxNode Source,
+    InvocationExpressionSyntax Source,
     ITypeSymbol Type,
     ILocalVariableRenamingRewriter LocalVariableRenamingRewriter,
     LambdaExpressionSyntax Factory,

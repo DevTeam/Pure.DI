@@ -4,7 +4,7 @@ namespace Pure.DI.Core.Models;
 
 readonly record struct MdTypeAttribute(
     SemanticModel SemanticModel,
-    SyntaxNode Source,
+    InvocationExpressionSyntax Source,
     INamedTypeSymbol AttributeType,
     int ArgumentPosition) : IMdAttribute
 {

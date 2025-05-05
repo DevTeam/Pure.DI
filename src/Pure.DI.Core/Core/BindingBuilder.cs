@@ -20,7 +20,7 @@ sealed class BindingBuilder(
     private MdImplementation? _implementation;
     private MdLifetime? _lifetime;
     private SemanticModel? _semanticModel;
-    private SyntaxNode? _source;
+    private InvocationExpressionSyntax? _source;
 
     public void AddDefaultLifetime(MdDefaultLifetime defaultLifetime) =>
         _defaultLifetimes.AddFirst(defaultLifetime);

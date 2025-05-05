@@ -2,7 +2,7 @@ namespace Pure.DI.Core.Models;
 
 record MdBinding(
     int Id,
-    in SyntaxNode Source,
+    in InvocationExpressionSyntax Source,
     in MdSetup SourceSetup,
     in SemanticModel SemanticModel,
     in ImmutableArray<MdContract> Contracts,

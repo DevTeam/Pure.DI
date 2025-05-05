@@ -61,7 +61,7 @@ sealed class ApiInvocationProcessor(
                         metadataVisitor.VisitContract(
                             new MdContract(
                                 semanticModel,
-                                invocation.ArgumentList,
+                                invocation,
                                 null,
                                 ContractKind.Explicit,
                                 BuildTags(semanticModel, invocation.ArgumentList.Arguments)));
@@ -97,19 +97,19 @@ sealed class ApiInvocationProcessor(
 
                                     if (symbol.TypeArguments.Length == 2 && symbol.TypeArguments is [_, {} resultType])
                                     {
-                                        VisitFactory(name, metadataVisitor, semanticModel, resultType, lambdaExpression);
+                                        VisitFactory(invocation, metadataVisitor, semanticModel, resultType, lambdaExpression);
                                         break;
                                     }
                                 }
 
-                                VisitFactory(name, metadataVisitor, semanticModel, type, lambdaExpression);
+                                VisitFactory(invocation, metadataVisitor, semanticModel, type, lambdaExpression);
                                 break;
 
                             case []:
                                 break;
 
                             default:
-                                NotSupported(name);
+                                NotSupported(invocation);
                                 break;
                         }
 
@@ -118,7 +118,7 @@ sealed class ApiInvocationProcessor(
                     case nameof(IBinding.As):
                         if (invocation.ArgumentList.Arguments is [{ Expression: {} lifetimeExpression }])
                         {
-                            metadataVisitor.VisitLifetime(new MdLifetime(semanticModel, invocation.ArgumentList, semantic.GetRequiredConstantValue<Lifetime>(semanticModel, lifetimeExpression)));
+                            metadataVisitor.VisitLifetime(new MdLifetime(semanticModel, invocation, semantic.GetRequiredConstantValue<Lifetime>(semanticModel, lifetimeExpression)));
                         }
 
                         break;
@@ -161,7 +161,7 @@ sealed class ApiInvocationProcessor(
                         metadataVisitor.VisitSetup(
                             new MdSetup(
                                 semanticModel,
-                                name,
+                                invocation,
                                 CreateCompositionName(setupCompositionTypeName, @namespace, invocation.ArgumentList),
                                 ImmutableArray<MdUsingDirectives>.Empty,
                                 setupKind,
@@ -182,7 +182,7 @@ sealed class ApiInvocationProcessor(
                     case nameof(IConfiguration.DefaultLifetime):
                         if (invocation.ArgumentList.Arguments is [{ Expression: {} defaultLifetimeSyntax }])
                         {
-                            metadataVisitor.VisitDefaultLifetime(new MdDefaultLifetime(new MdLifetime(semanticModel, invocation.ArgumentList, semantic.GetRequiredConstantValue<Lifetime>(semanticModel, defaultLifetimeSyntax))));
+                            metadataVisitor.VisitDefaultLifetime(new MdDefaultLifetime(new MdLifetime(semanticModel, invocation, semantic.GetRequiredConstantValue<Lifetime>(semanticModel, defaultLifetimeSyntax))));
                         }
 
                         break;
@@ -190,7 +190,7 @@ sealed class ApiInvocationProcessor(
                     case nameof(IConfiguration.DependsOn):
                         if (BuildConstantArgs<string>(semanticModel, invocation.ArgumentList.Arguments) is [..] compositionTypeNames)
                         {
-                            metadataVisitor.VisitDependsOn(new MdDependsOn(semanticModel, invocation.ArgumentList, compositionTypeNames.Select(i => CreateCompositionName(i, @namespace, invocation.ArgumentList)).ToImmutableArray()));
+                            metadataVisitor.VisitDependsOn(new MdDependsOn(semanticModel, invocation, compositionTypeNames.Select(i => CreateCompositionName(i, @namespace, invocation.ArgumentList)).ToImmutableArray()));
                         }
 
                         break;
@@ -208,14 +208,14 @@ sealed class ApiInvocationProcessor(
                     case nameof(IConfiguration.RootBind):
                         if (genericName.TypeArgumentList.Arguments is not [{} rootBindType])
                         {
-                            throw new CompileErrorException(Strings.Error_InvalidRootType, locationProvider.GetLocation(name), LogId.ErrorInvalidMetadata);
+                            throw new CompileErrorException(Strings.Error_InvalidRootType, locationProvider.GetLocation(invocation), LogId.ErrorInvalidMetadata);
                         }
 
                         var tagArguments = invocation.ArgumentList.Arguments.SkipWhile((arg, i) => arg.NameColon?.Name.Identifier.Text != "tags" && i < 2);
                         var tags = BuildTags(semanticModel, tagArguments);
                         VisitBind(metadataVisitor, semanticModel, invocation, tags, genericName);
                         var rootBindSymbol = semantic.GetTypeSymbol<INamedTypeSymbol>(semanticModel, rootBindType);
-                        VisitRoot(name, tags.FirstOrDefault(), metadataVisitor, semanticModel, invocation, invocationComments, rootBindSymbol);
+                        VisitRoot(invocation, tags.FirstOrDefault(), metadataVisitor, semanticModel, invocation, invocationComments, rootBindSymbol);
                         break;
 
                     case nameof(IBinding.To):
@@ -254,7 +254,7 @@ sealed class ApiInvocationProcessor(
                             {
                                 case [{ Expression: LambdaExpressionSyntax lambdaExpression }]:
                                     var factoryType = semantic.GetTypeSymbol<ITypeSymbol>(semanticModel, implementationTypeSyntax);
-                                    VisitFactory(name, metadataVisitor, semanticModel, factoryType, lambdaExpression);
+                                    VisitFactory(invocation, metadataVisitor, semanticModel, factoryType, lambdaExpression);
                                     break;
 
                                 case [{ Expression: LiteralExpressionSyntax { Token.Value: string sourceCodeStatement } }]:
@@ -262,16 +262,16 @@ sealed class ApiInvocationProcessor(
                                         .SimpleLambdaExpression(SyntaxFactory.Parameter(SyntaxFactory.Identifier("_")))
                                         .WithExpressionBody(SyntaxFactory.IdentifierName(sourceCodeStatement));
                                     factoryType = semantic.GetTypeSymbol<ITypeSymbol>(semanticModel, implementationTypeSyntax);
-                                    VisitFactory(name, metadataVisitor, semanticModel, factoryType, lambda);
+                                    VisitFactory(invocation, metadataVisitor, semanticModel, factoryType, lambda);
                                     break;
 
                                 case []:
                                     var implementationType = semantic.GetTypeSymbol<INamedTypeSymbol>(semanticModel, implementationTypeSyntax);
-                                    metadataVisitor.VisitImplementation(new MdImplementation(semanticModel, name, implementationType));
+                                    metadataVisitor.VisitImplementation(new MdImplementation(semanticModel, invocation, implementationType));
                                     break;
 
                                 default:
-                                    NotSupported(name);
+                                    NotSupported(invocation);
                                     break;
                             }
                         }
@@ -279,11 +279,11 @@ sealed class ApiInvocationProcessor(
                         break;
 
                     case nameof(IConfiguration.Arg):
-                        VisitArg(metadataVisitor, semanticModel, ArgKind.Class, invocation, genericName, invocationComments);
+                        VisitArg(invocation, metadataVisitor, semanticModel, ArgKind.Class, invocation, genericName, invocationComments);
                         break;
 
                     case nameof(IConfiguration.RootArg):
-                        VisitArg(metadataVisitor, semanticModel, ArgKind.Root, invocation, genericName, invocationComments);
+                        VisitArg(invocation, metadataVisitor, semanticModel, ArgKind.Root, invocation, genericName, invocationComments);
                         break;
 
                     case nameof(IConfiguration.Roots):
@@ -292,7 +292,7 @@ sealed class ApiInvocationProcessor(
                             // ReSharper disable once MergeIntoNegatedPattern
                             || rootsType.SpecialType == Microsoft.CodeAnalysis.SpecialType.System_Object)
                         {
-                            throw new CompileErrorException(Strings.Error_InvalidRootsRype, locationProvider.GetLocation(name), LogId.ErrorInvalidMetadata);
+                            throw new CompileErrorException(Strings.Error_InvalidRootsRype, locationProvider.GetLocation(invocation), LogId.ErrorInvalidMetadata);
                         }
 
                         var rootsArgs = arguments.GetArgs(invocation.ArgumentList, "name", "kind", "filter");
@@ -300,16 +300,16 @@ sealed class ApiInvocationProcessor(
                         var rootsKind = rootsArgs[1] is {} rootsKindArg ? semantic.GetConstantValue<RootKinds>(semanticModel, rootsKindArg.Expression) : RootKinds.Default;
                         var rootsWildcardFilter = (rootsArgs[2] is {} rootsFilterArg ? semantic.GetConstantValue<string>(semanticModel, rootsFilterArg.Expression) : "*") ?? "*";
                         var hasRootsType = false;
-                        foreach (var rootType in GetRelatedTypes(name, semanticModel, invocation, rootsType, rootsWildcardFilter))
+                        foreach (var rootType in GetRelatedTypes(invocation, semanticModel, invocation, rootsType, rootsWildcardFilter))
                         {
                             var rootName = GetName((SyntaxNode?)rootsArgs[1] ?? invocation, rootsName, rootType) ?? "";
-                            metadataVisitor.VisitRoot(new MdRoot(name, semanticModel, rootType, rootName, new MdTag(0, null), rootsKind, invocationComments, false));
+                            metadataVisitor.VisitRoot(new MdRoot(invocation, semanticModel, rootType, rootName, new MdTag(0, null), rootsKind, invocationComments, false));
                             hasRootsType = true;
                         }
 
                         if (!hasRootsType)
                         {
-                            throw new CompileErrorException(string.Format(Strings.Error_Template_NoTypeForWildcard, symbolNames.GetName(rootsType), rootsWildcardFilter), locationProvider.GetLocation(name), LogId.ErrorInvalidMetadata);
+                            throw new CompileErrorException(string.Format(Strings.Error_Template_NoTypeForWildcard, symbolNames.GetName(rootsType), rootsWildcardFilter), locationProvider.GetLocation(invocation), LogId.ErrorInvalidMetadata);
                         }
 
                         break;
@@ -317,11 +317,11 @@ sealed class ApiInvocationProcessor(
                     case nameof(IConfiguration.Root):
                         if (genericName.TypeArgumentList.Arguments is not [{} rootTypeSyntax])
                         {
-                            throw new CompileErrorException(Strings.Error_InvalidRootType, locationProvider.GetLocation(name), LogId.ErrorInvalidMetadata);
+                            throw new CompileErrorException(Strings.Error_InvalidRootType, locationProvider.GetLocation(invocation), LogId.ErrorInvalidMetadata);
                         }
 
                         var rootSymbol = semantic.GetTypeSymbol<INamedTypeSymbol>(semanticModel, rootTypeSyntax);
-                        VisitRoot(name, metadataVisitor, semanticModel, invocation, invocationComments, rootSymbol);
+                        VisitRoot(invocation, metadataVisitor, semanticModel, invocation, invocationComments, rootSymbol);
                         break;
 
                     case nameof(IConfiguration.Builders):
@@ -330,7 +330,7 @@ sealed class ApiInvocationProcessor(
                             // ReSharper disable once MergeIntoNegatedPattern
                             || buildersRootType.SpecialType == Microsoft.CodeAnalysis.SpecialType.System_Object)
                         {
-                            throw new CompileErrorException(Strings.Error_InvalidBuildersType, locationProvider.GetLocation(name), LogId.ErrorInvalidMetadata);
+                            throw new CompileErrorException(Strings.Error_InvalidBuildersType, locationProvider.GetLocation(invocation), LogId.ErrorInvalidMetadata);
                         }
 
                         var buildersArgs = arguments.GetArgs(invocation.ArgumentList, "name", "kind", "filter");
@@ -338,11 +338,11 @@ sealed class ApiInvocationProcessor(
                         var buildersKind = buildersArgs[1] is {} buildersKindArg ? semantic.GetConstantValue<RootKinds>(semanticModel, buildersKindArg.Expression) : RootKinds.Default;
                         var buildersWildcardFilter = (buildersArgs[2] is {} buildersFilterArg ? semantic.GetConstantValue<string>(semanticModel, buildersFilterArg.Expression) : "*") ?? "*";
                         var hasBuildersType = false;
-                        foreach (var buildersType in GetRelatedTypes(name, semanticModel, invocation, buildersRootType, buildersWildcardFilter))
+                        foreach (var buildersType in GetRelatedTypes(invocation, semanticModel, invocation, buildersRootType, buildersWildcardFilter))
                         {
                             var buildersItemName = GetName((SyntaxNode?)buildersArgs[0] ?? invocation, buildersName, buildersType) ?? Names.DefaultBuilderName;
                             VisitBuilder(
-                                name,
+                                invocation,
                                 metadataVisitor,
                                 semanticModel,
                                 buildersRootTypeSyntax,
@@ -356,7 +356,7 @@ sealed class ApiInvocationProcessor(
 
                         if (!hasBuildersType)
                         {
-                            throw new CompileErrorException(string.Format(Strings.Error_Template_NoTypeForWildcard, symbolNames.GetName(buildersRootType), buildersWildcardFilter), locationProvider.GetLocation(name), LogId.ErrorInvalidMetadata);
+                            throw new CompileErrorException(string.Format(Strings.Error_Template_NoTypeForWildcard, symbolNames.GetName(buildersRootType), buildersWildcardFilter), locationProvider.GetLocation(invocation), LogId.ErrorInvalidMetadata);
                         }
 
                         break;
@@ -364,7 +364,7 @@ sealed class ApiInvocationProcessor(
                     case nameof(IConfiguration.Builder):
                         if (genericName.TypeArgumentList.Arguments is not [{} builderRootTypeSyntax])
                         {
-                            throw new CompileErrorException(Strings.Error_InvalidBuilderType, locationProvider.GetLocation(name), LogId.ErrorInvalidMetadata);
+                            throw new CompileErrorException(Strings.Error_InvalidBuilderType, locationProvider.GetLocation(invocation), LogId.ErrorInvalidMetadata);
                         }
 
                         var builderType = semantic.GetTypeSymbol<INamedTypeSymbol>(semanticModel, builderRootTypeSyntax);
@@ -372,7 +372,7 @@ sealed class ApiInvocationProcessor(
                         var builderName = builderArgs[0] is {} builderNameArg ? GetName(builderNameArg, semantic.GetConstantValue<object>(semanticModel, builderNameArg.Expression, SmartTagKind.Name)?.ToString(), builderType) ?? Names.DefaultBuilderName : Names.DefaultBuilderName;
                         var builderKind = builderArgs[1] is {} builderKindArg ? semantic.GetConstantValue<RootKinds>(semanticModel, builderKindArg.Expression) : RootKinds.Default;
                         VisitBuilder(
-                            name,
+                            invocation,
                             metadataVisitor,
                             semanticModel,
                             builderRootTypeSyntax,
@@ -401,7 +401,7 @@ sealed class ApiInvocationProcessor(
                         {
                             var attr = new MdGenericTypeArgumentAttribute(
                                 semanticModel,
-                                invocation.ArgumentList,
+                                invocation,
                                 genericTypeArgumentAttributeType);
                             metadataVisitor.VisitGenericTypeArgumentAttribute(attr);
                         }
@@ -413,7 +413,7 @@ sealed class ApiInvocationProcessor(
                         {
                             var attr = new MdTypeAttribute(
                                 semanticModel,
-                                invocation.ArgumentList,
+                                invocation,
                                 typeAttributeType,
                                 BuildConstantArgs<object>(semanticModel, invocation.ArgumentList.Arguments) is [int positionVal] ? positionVal : 0);
                             metadataVisitor.VisitTypeAttribute(attr);
@@ -426,7 +426,7 @@ sealed class ApiInvocationProcessor(
                         {
                             var attr = new MdTagAttribute(
                                 semanticModel,
-                                invocation.ArgumentList,
+                                invocation,
                                 tagAttributeType,
                                 BuildConstantArgs<object>(semanticModel, invocation.ArgumentList.Arguments) is [int positionVal] ? positionVal : 0);
                             metadataVisitor.VisitTagAttribute(attr);
@@ -439,7 +439,7 @@ sealed class ApiInvocationProcessor(
                         {
                             var attr = new MdOrdinalAttribute(
                                 semanticModel,
-                                invocation.ArgumentList,
+                                invocation,
                                 ordinalAttributeType,
                                 BuildConstantArgs<object>(semanticModel, invocation.ArgumentList.Arguments) is [int positionVal] ? positionVal : 0);
                             metadataVisitor.VisitOrdinalAttribute(attr);
@@ -482,7 +482,7 @@ sealed class ApiInvocationProcessor(
                             var defaultLifetimeTags = BuildTags(semanticModel, defaultLifetimeTagArguments);
                             metadataVisitor.VisitDefaultLifetime(
                                 new MdDefaultLifetime(
-                                    new MdLifetime(semanticModel, invocation.ArgumentList, semantic.GetRequiredConstantValue<Lifetime>(semanticModel, defaultLifetimeSyntax)),
+                                    new MdLifetime(semanticModel, invocation, semantic.GetRequiredConstantValue<Lifetime>(semanticModel, defaultLifetimeSyntax)),
                                     defaultLifetimeTypeSymbol,
                                     defaultLifetimeTags));
                         }
@@ -541,7 +541,7 @@ sealed class ApiInvocationProcessor(
     }
 
     private void VisitBuilder(
-        SyntaxNode source,
+        InvocationExpressionSyntax source,
         IMetadataVisitor metadataVisitor,
         SemanticModel semanticModel,
         SyntaxNode typeSource,
@@ -556,7 +556,7 @@ sealed class ApiInvocationProcessor(
 
         // RootArg
         metadataVisitor.VisitContract(new MdContract(semanticModel, source, builderType, ContractKind.Explicit, ImmutableArray.Create(builderArgTag)));
-        metadataVisitor.VisitArg(new MdArg(semanticModel, typeSource, builderType, Names.BuildingInstance, ArgKind.Root, true, ["Instance for the build-up."]));
+        metadataVisitor.VisitArg(new MdArg(semanticModel, source, builderType, Names.BuildingInstance, ArgKind.Root, true, ["Instance for the build-up."]));
 
         // Factory
         var factory = new StringBuilder();
@@ -613,7 +613,7 @@ sealed class ApiInvocationProcessor(
             resolvers.Add(new MdResolver
             {
                 SemanticModel = semanticModel,
-                Source = argTypeSyntax,
+                Source = source,
                 ContractType = argType,
                 Tag = new MdTag(0, null),
                 ArgumentType = argTypeSyntax,
@@ -660,7 +660,7 @@ sealed class ApiInvocationProcessor(
     }
 
     private void VisitRoot(
-        SyntaxNode source,
+        InvocationExpressionSyntax source,
         IMetadataVisitor metadataVisitor,
         SemanticModel semanticModel,
         InvocationExpressionSyntax invocation,
@@ -677,7 +677,7 @@ sealed class ApiInvocationProcessor(
     }
 
     private void VisitRoot(
-        SyntaxNode source,
+        InvocationExpressionSyntax source,
         MdTag? tag,
         IMetadataVisitor metadataVisitor,
         SemanticModel semanticModel,
@@ -717,7 +717,7 @@ sealed class ApiInvocationProcessor(
             metadataVisitor.VisitContract(
                 new MdContract(
                     semanticModel,
-                    invocation.ArgumentList,
+                    invocation,
                     semantic.GetTypeSymbol<ITypeSymbol>(semanticModel, contractType),
                     ContractKind.Explicit,
                     tags));
@@ -725,6 +725,7 @@ sealed class ApiInvocationProcessor(
     }
 
     private void VisitArg(
+        InvocationExpressionSyntax source,
         IMetadataVisitor metadataVisitor,
         SemanticModel semanticModel,
         ArgKind kind,
@@ -744,13 +745,13 @@ sealed class ApiInvocationProcessor(
                 argType,
                 tags.IsEmpty ? null : tags[0].Value) ?? "";
 
-            metadataVisitor.VisitContract(new MdContract(semanticModel, genericName, argType, ContractKind.Explicit, tags.ToImmutableArray()));
-            metadataVisitor.VisitArg(new MdArg(semanticModel, genericName, argType, name, kind, false, argComments));
+            metadataVisitor.VisitContract(new MdContract(semanticModel, source, argType, ContractKind.Explicit, tags.ToImmutableArray()));
+            metadataVisitor.VisitArg(new MdArg(semanticModel, source, argType, name, kind, false, argComments));
         }
     }
 
     private void VisitFactory(
-        SyntaxNode source,
+        InvocationExpressionSyntax source,
         IMetadataVisitor metadataVisitor,
         SemanticModel semanticModel,
         ITypeSymbol resultType,
@@ -1047,20 +1048,6 @@ sealed class ApiInvocationProcessor(
             throw new CompileErrorException(Strings.Error_AsynchronousFactoryWithAsyncNotSupported, locationProvider.GetLocation(lambdaExpression.AsyncKeyword), LogId.ErrorInvalidMetadata);
         }
     }
-
-    /*private void VisitUsingDirectives(
-        IMetadataVisitor metadataVisitor,
-        SemanticModel semanticModel,
-        SyntaxNode node)
-    {
-        var namespacesWalker = namespacesWalkerFactory().Initialize(semanticModel);
-        namespacesWalker.Visit(node);
-        var usingDirectives = namespacesWalker.GetResult();
-        if (usingDirectives.UsingDirectives.Length > 0 || usingDirectives.StaticUsingDirectives.Length > 0)
-        {
-            metadataVisitor.VisitUsingDirectives(usingDirectives);
-        }
-    }*/
 
     // ReSharper disable once SuggestBaseTypeForParameter
     private void NotSupported(SyntaxNode source) =>

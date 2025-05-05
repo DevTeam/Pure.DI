@@ -6,7 +6,7 @@ namespace Pure.DI.Core.Models;
 
 record MdSetup(
     SemanticModel SemanticModel,
-    SyntaxNode Source,
+    InvocationExpressionSyntax Source,
     in CompositionName Name,
     in ImmutableArray<MdUsingDirectives> UsingDirectives,
     CompositionKind Kind,

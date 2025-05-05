@@ -96,12 +96,13 @@ sealed class MetadataValidator(
         var isValid = true;
         ITypeSymbol? implementationType = null;
         SemanticModel? semanticModel = null;
-        var location = locationProvider.GetLocation(binding.Source);
+        var bindingCopy = binding;
+        var location = () => locationProvider.GetLocation(bindingCopy.Source);
         if (binding.Implementation is {} implementation)
         {
             semanticModel = implementation.SemanticModel;
             implementationType = implementation.Type;
-            location = locationProvider.GetLocation(implementation.Source);
+            location = () => locationProvider.GetLocation(implementation.Source);
         }
         else
         {
@@ -109,7 +110,7 @@ sealed class MetadataValidator(
             {
                 semanticModel = factory.SemanticModel;
                 implementationType = factory.Type;
-                location = locationProvider.GetLocation(factory.Source);
+                location = () => locationProvider.GetLocation(factory.Source);
             }
             else
             {
@@ -117,16 +118,16 @@ sealed class MetadataValidator(
                 {
                     semanticModel = arg.SemanticModel;
                     implementationType = arg.Type;
-                    location = locationProvider.GetLocation(arg.Source);
+                    location = () => locationProvider.GetLocation(arg.Source);
                     if (!IsValidIdentifier(arg.ArgName))
                     {
-                        logger.CompileError(string.Format(Strings.Error_Template_InvalidArgumentName, arg.ArgName), location, LogId.ErrorInvalidMetadata);
+                        logger.CompileError(string.Format(Strings.Error_Template_InvalidArgumentName, arg.ArgName), location(), LogId.ErrorInvalidMetadata);
                         isValid = false;
                     }
 
                     if (arg.Kind == ArgKind.Class && marker.IsMarkerBased(setup, arg.Type))
                     {
-                        logger.CompileError(Strings.Error_ClassArgumentTypeCannotBeGenericTypeMarker, location, LogId.ErrorInvalidMetadata);
+                        logger.CompileError(Strings.Error_ClassArgumentTypeCannotBeGenericTypeMarker, location(), LogId.ErrorInvalidMetadata);
                     }
                 }
             }
@@ -134,7 +135,7 @@ sealed class MetadataValidator(
 
         if (implementationType == null || implementationType is IErrorTypeSymbol || semanticModel == null)
         {
-            logger.CompileError(Strings.Error_InvalidBindingDueToCompilationError, location, LogId.ErrorInvalidMetadata);
+            logger.CompileError(Strings.Error_InvalidBindingDueToCompilationError, location(), LogId.ErrorInvalidMetadata);
             return false;
         }
 
@@ -159,16 +160,16 @@ sealed class MetadataValidator(
                 switch (severityOfNotImplementedContract)
                 {
                     case DiagnosticSeverity.Error:
-                        logger.CompileError(message, location, LogId.ErrorInvalidMetadata);
+                        logger.CompileError(message, location(), LogId.ErrorInvalidMetadata);
                         isValid = false;
                         break;
 
                     case DiagnosticSeverity.Warning:
-                        logger.CompileWarning(message, location, LogId.WarningMetadataDefect);
+                        logger.CompileWarning(message, location(), LogId.WarningMetadataDefect);
                         break;
 
                     case DiagnosticSeverity.Info:
-                        logger.CompileInfo(message, location, LogId.InfoMetadataDefect);
+                        logger.CompileInfo(message, location(), LogId.InfoMetadataDefect);
                         break;
                 }
             }
