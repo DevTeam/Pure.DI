@@ -116,11 +116,11 @@ sealed class Semantic(
                             return valueStr switch
                             {
                                 nameof(Tag.Type) when IsSpecialType(semanticModel, node, SpecialType.Tag) => (T)(object)Tag.Type,
-                                nameof(Tag.Unique) when IsSpecialType(semanticModel, node, SpecialType.Tag) => (T)(object)Tag.Unique,
+                                nameof(Tag.Unique) when smartTagKind == SmartTagKind.Tag && IsSpecialType(semanticModel, node, SpecialType.Tag) => (T)(object)Tag.Unique,
                                 _ => (T)smartTags.Register(SmartTagKind.Tag, valueStr)
                             };
 
-                        case nameof(Name) when typeof(T) == typeof(object):
+                        case nameof(Name) when smartTagKind == SmartTagKind.Name && typeof(T) == typeof(object):
                             return (T)smartTags.Register(SmartTagKind.Name, valueStr);
                     }
                 }

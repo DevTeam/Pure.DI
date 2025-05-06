@@ -39,7 +39,7 @@ sealed class Attributes(
                     }
 
                     var args = attr.ConstructorArguments;
-                    if (attributeMetadata.ArgumentPosition >= args.Length)
+                    if (attributeMetadata.ArgumentPosition >= args.Length || args[attributeMetadata.ArgumentPosition].Kind == TypedConstantKind.Error)
                     {
                         if (attr.ApplicationSyntaxReference?.GetSyntax() is AttributeSyntax { ArgumentList: {} argumentList }
                             && attributeMetadata.ArgumentPosition < argumentList.Arguments.Count)
@@ -47,7 +47,10 @@ sealed class Attributes(
                             return semantic.GetConstantValue<T>(semanticModel, argumentList.Arguments[attributeMetadata.ArgumentPosition].Expression, GetSmartTagKind(kind))
                                    ?? defaultValue;
                         }
+                    }
 
+                    if (attributeMetadata.ArgumentPosition >= args.Length)
+                    {
                         throw new CompileErrorException(
                             string.Format(Strings.Error_Template_InvalidAttributeArgumentPosition, attributeMetadata.ArgumentPosition, attributeMetadata.Source, args.Length),
                             locationProvider.GetLocation(attributeMetadata.Source),
