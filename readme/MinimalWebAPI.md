@@ -75,11 +75,11 @@ The [project file](/samples/WebAPI/WebAPI.csproj) looks like this:
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.1.68">
+        <PackageReference Include="Pure.DI" Version="2.1.69">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.1.68" />
+        <PackageReference Include="Pure.DI.MS" Version="2.1.69" />
     </ItemGroup>
 
 </Project>
