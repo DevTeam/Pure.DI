@@ -17,7 +17,7 @@ sealed class LogInfoBuilder : IBuilder<LogEntry, LogInfo>
         };
 
         DiagnosticDescriptor? descriptor = null;
-        if (!string.IsNullOrWhiteSpace(logEntry.Id))
+        if (logEntry.Id is not null && !string.IsNullOrWhiteSpace(logEntry.Id))
         {
             var message = new StringBuilder(logEntry.Message);
             if (logEntry.Exception is {} exception)
@@ -29,7 +29,7 @@ sealed class LogInfoBuilder : IBuilder<LogEntry, LogInfo>
                 message.Append('"');
             }
 
-            descriptor = new DiagnosticDescriptor(logEntry.Id!, severityCode, message.ToString(), severityCode, logEntry.Severity, true);
+            descriptor = new DiagnosticDescriptor(logEntry.Id, severityCode, message.ToString(), severityCode, logEntry.Severity, true);
         }
 
         return new LogInfo(logEntry, descriptor);

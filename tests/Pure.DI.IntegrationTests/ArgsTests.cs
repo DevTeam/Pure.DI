@@ -87,8 +87,8 @@ public class ArgsTests
         result.Success.ShouldBeFalse(result);
         result.Errors.Count.ShouldBe(0, result);
         result.Warnings.Count.ShouldBe(2, result);
-        result.Warnings.Count(i => i.Id == LogId.WarningRootArgInResolveMethod && i.Location.GetSource() == "Root<Dependency2>()").ShouldBe(1, result);
-        result.Warnings.Count(i => i.Id == LogId.WarningRootArgInResolveMethod && i.Location.GetSource() == "Root<IService>(\"GetService\")").ShouldBe(1, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningRootArgInResolveMethod && i.Locations.FirstOrDefault().GetSource() == "Root<Dependency2>()").ShouldBe(1, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningRootArgInResolveMethod && i.Locations.FirstOrDefault().GetSource() == "Root<IService>(\"GetService\")").ShouldBe(1, result);
         result.StdOut.ShouldBe(["Some Name_99"], result);
     }
 
@@ -533,8 +533,8 @@ public class ArgsTests
         result.Success.ShouldBeFalse(result);
         result.Errors.Count.ShouldBe(0, result);
         result.Warnings.Count.ShouldBe(2, result);
-        result.Warnings.Count(i => i.Id == LogId.WarningRootArgInResolveMethod && i.Location.GetSource() == "Root<IService>(\"GetService\")").ShouldBe(1, result);
-        result.Warnings.Count(i => i.Id == LogId.WarningRootArgInResolveMethod && i.Location.GetSource() == "Root<Dependency2>()").ShouldBe(1, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningRootArgInResolveMethod && i.Locations.FirstOrDefault().GetSource() == "Root<IService>(\"GetService\")").ShouldBe(1, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningRootArgInResolveMethod && i.Locations.FirstOrDefault().GetSource() == "Root<Dependency2>()").ShouldBe(1, result);
         result.StdOut.ShouldBe(["Some Name_99"], result);
     }
 

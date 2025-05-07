@@ -1733,7 +1733,7 @@ public class FuncTests
         result.Success.ShouldBeFalse(result);
         result.Errors.Count.ShouldBe(0, result);
         result.Warnings.Count.ShouldBe(1, result);
-        result.Warnings.Count(i => i.Id == LogId.WarningMetadataDefect && i.Location.GetSource() == "Arg<string>(\"str\")").ShouldBe(1, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningMetadataDefect && i.Locations.FirstOrDefault().GetSource() == "Arg<string>(\"str\")").ShouldBe(1, result);
         result.StdOut.ShouldBe(["Xyz Sample.Context`1[System.Int32]"], result);
     }
 
@@ -1821,7 +1821,7 @@ public class FuncTests
         result.Success.ShouldBeFalse(result);
         result.Errors.Count.ShouldBe(0, result);
         result.Warnings.Count.ShouldBe(1, result);
-        result.Warnings.Count(i => i.Id == LogId.WarningMetadataDefect && i.Location.GetSource() == "RootArg<string>(\"str\")").ShouldBe(1, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningMetadataDefect && i.Locations.FirstOrDefault().GetSource() == "RootArg<string>(\"str\")").ShouldBe(1, result);
         result.StdOut.ShouldBe(["Xyz Sample.Context`1[System.Int32]"], result);
     }
 
@@ -2156,7 +2156,7 @@ public class FuncTests
         // Then
         result.Errors.Count.ShouldBe(0, result);
         result.Warnings.Count.ShouldBe(1, result);
-        result.Warnings.Count(i => i.Id == LogId.WarningMetadataDefect && i.Location.GetSource() == "To<Metronome>()").ShouldBe(1, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningMetadataDefect && i.Locations.FirstOrDefault().GetSource() == "To<Metronome>()").ShouldBe(1, result);
     }
 #endif
 }

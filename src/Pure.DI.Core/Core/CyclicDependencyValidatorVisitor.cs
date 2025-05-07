@@ -4,20 +4,26 @@ sealed class CyclicDependencyValidatorVisitor(
     ILogger logger,
     INodeInfo nodeInfo,
     ILocationProvider locationProvider)
-    : IGraphVisitor<HashSet<object>, ImmutableArray<DependencyNode>>
+    : IGraphVisitor<HashSet<object>, ImmutableArray<Dependency>>
 {
-    public ImmutableArray<DependencyNode> Create(
+    public ImmutableArray<Dependency> Create(
         IGraph<DependencyNode, Dependency> graph,
-        DependencyNode currentNode,
-        ImmutableArray<DependencyNode> parent) =>
+        DependencyNode rootNode,
+        ImmutableArray<Dependency> parent) =>
+        ImmutableArray<Dependency>.Empty;
+
+    public ImmutableArray<Dependency> Append(
+        IGraph<DependencyNode, Dependency> graph,
+        Dependency dependency,
+        ImmutableArray<Dependency> parent = default) =>
         parent.IsDefaultOrEmpty
-            ? ImmutableArray.Create(currentNode)
-            : parent.Add(currentNode);
+            ? ImmutableArray.Create(dependency)
+            : parent.Add(dependency);
 
     public bool Visit(
         HashSet<object> errors,
         IGraph<DependencyNode, Dependency> graph,
-        in ImmutableArray<DependencyNode> path)
+        in ImmutableArray<Dependency> path)
     {
         if (path.Length < 2)
         {
@@ -26,14 +32,15 @@ sealed class CyclicDependencyValidatorVisitor(
 
         var nodes = new HashSet<DependencyNode>();
         var result = true;
-        foreach (var node in path)
+        foreach (var dependency in path)
         {
-            if (nodeInfo.IsLazy(node))
+            var source = dependency.Source;
+            if (nodeInfo.IsLazy(source))
             {
                 nodes.Clear();
             }
 
-            if (nodes.Add(node))
+            if (nodes.Add(source))
             {
                 continue;
             }
@@ -43,8 +50,12 @@ sealed class CyclicDependencyValidatorVisitor(
                 continue;
             }
 
-            var pathStr = string.Join(" <-- ", path.Select(i => i.Type));
-            logger.CompileError(string.Format(Strings.Error_Template_CyclicDependency, pathStr), locationProvider.GetLocation(node.Binding.Source), LogId.ErrorCyclicDependency);
+            var pathStr = string.Join(" <-- ", path.Select(i => i.Source.Type));
+            var locations = dependency.Injection.Source.Locations
+                .AddRange(path.SelectMany(i => i.Injection.Source.Locations))
+                .Add(locationProvider.GetLocation(source.Binding.Source));
+
+            logger.CompileError(string.Format(Strings.Error_Template_CyclicDependency, pathStr), locations, LogId.ErrorCyclicDependency);
             result = false;
             break;
         }

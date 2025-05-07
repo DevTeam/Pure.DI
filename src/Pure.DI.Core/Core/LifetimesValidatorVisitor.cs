@@ -4,36 +4,46 @@ sealed class LifetimesValidatorVisitor(
     ILogger logger,
     ILifetimeAnalyzer lifetimeAnalyzer,
     ILocationProvider locationProvider)
-    : IGraphVisitor<HashSet<object>, ImmutableArray<DependencyNode>>
+    : IGraphVisitor<HashSet<object>, ImmutableArray<Dependency>>
 {
-    public ImmutableArray<DependencyNode> Create(
+    public ImmutableArray<Dependency> Create(
         IGraph<DependencyNode, Dependency> graph,
-        DependencyNode currentNode,
-        ImmutableArray<DependencyNode> parent) =>
+        DependencyNode rootNode,
+        ImmutableArray<Dependency> parent) =>
+        ImmutableArray<Dependency>.Empty;
+
+    public ImmutableArray<Dependency> Append(
+        IGraph<DependencyNode, Dependency> graph,
+        Dependency dependency,
+        ImmutableArray<Dependency> parent = default) =>
         parent.IsDefaultOrEmpty
-            ? ImmutableArray.Create(currentNode)
-            : parent.Add(currentNode);
+            ? ImmutableArray.Create(dependency)
+            : parent.Add(dependency);
 
     public bool Visit(
         HashSet<object> errors,
         IGraph<DependencyNode, Dependency> graph,
-        in ImmutableArray<DependencyNode> path)
+        in ImmutableArray<Dependency> path)
     {
-        var actualTargetLifetimeNode = path[0];
+        var actualTargetLifetimeNode = path[0].Target;
         for (var i = 1; i < path.Length; i++)
         {
-            var dependencyNode = path[i];
-            if (!lifetimeAnalyzer.ValidateLifetimes(actualTargetLifetimeNode.Lifetime, dependencyNode.Lifetime))
+            var dependency = path[i];
+            var targetNode = dependency.Target;
+            if (!lifetimeAnalyzer.ValidateLifetimes(actualTargetLifetimeNode.Lifetime, targetNode.Lifetime))
             {
-                if (errors.Add(new ErrorKey(actualTargetLifetimeNode, dependencyNode)))
+                if (errors.Add(new ErrorKey(actualTargetLifetimeNode, targetNode)))
                 {
-                    logger.CompileError(string.Format(Strings.Error_Template_TypeWithLifetimeRequiresDirectOrTransitiveInjection, actualTargetLifetimeNode.Type, actualTargetLifetimeNode.Lifetime, dependencyNode.Type, dependencyNode.Lifetime), locationProvider.GetLocation(dependencyNode.Binding.Source), LogId.ErrorLifetimeDefect);
+                    logger.CompileError(
+                        string.Format(Strings.Error_Template_TypeWithLifetimeRequiresDirectOrTransitiveInjection, actualTargetLifetimeNode.Type, actualTargetLifetimeNode.Lifetime, targetNode.Type, targetNode.Lifetime),
+                        ImmutableArray.Create(locationProvider.GetLocation(targetNode.Binding.Source)),
+                        LogId.ErrorLifetimeDefect);
                 }
             }
 
-            if (lifetimeAnalyzer.GetActualDependencyLifetime(actualTargetLifetimeNode.Lifetime, dependencyNode.Lifetime) == dependencyNode.Lifetime)
+            if (lifetimeAnalyzer.GetActualDependencyLifetime(actualTargetLifetimeNode.Lifetime, targetNode.Lifetime) == targetNode.Lifetime)
             {
-                actualTargetLifetimeNode = dependencyNode;
+                actualTargetLifetimeNode = targetNode;
             }
         }
 

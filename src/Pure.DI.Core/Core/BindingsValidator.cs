@@ -16,7 +16,7 @@ sealed class BindingsValidator(
             {
                 logger.CompileWarning(
                     Strings.Warning_BindingIsNotUsed,
-                    locationProvider.GetLocation(binding.Source),
+                    ImmutableArray.Create(locationProvider.GetLocation(binding.Source), locationProvider.GetLocation(graph.Source.Source)),
                     LogId.WarningMetadataDefect);
             }
         }

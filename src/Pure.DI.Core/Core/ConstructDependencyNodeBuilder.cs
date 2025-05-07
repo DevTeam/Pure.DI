@@ -29,7 +29,8 @@ sealed class ConstructDependencyNodeBuilder(ILocationProvider locationProvider)
                     new Injection(
                         InjectionKind.Contract,
                         ctx.TypeConstructor.Construct(setup, contract.ContractType.WithNullableAnnotation(NullableAnnotation.NotAnnotated)),
-                        tag));
+                        tag,
+                        contract.ContractType));
             }
 
             yield return new DependencyNode(0, binding, ctx.TypeConstructor, Construct: new DpConstruct(construct, binding, injections.ToImmutableArray(), locationProvider));

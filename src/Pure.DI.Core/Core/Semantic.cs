@@ -40,7 +40,7 @@ sealed class Semantic(
 
         throw new CompileErrorException(
             string.Format(Strings.Error_Template_NotSupported, node),
-            locationProvider.GetLocation(node),
+            ImmutableArray.Create(locationProvider.GetLocation(node)),
             LogId.ErrorInvalidMetadata);
     }
 
@@ -54,7 +54,7 @@ sealed class Semantic(
 
         throw new CompileErrorException(
             string.Format(Strings.Error_Template_MustBeValueOfType, node, typeof(T)),
-            locationProvider.GetLocation(node),
+            ImmutableArray.Create(locationProvider.GetLocation(node)),
             LogId.ErrorInvalidMetadata);
     }
 
@@ -171,7 +171,7 @@ sealed class Semantic(
                             {
                                 throw new CompileErrorException(
                                     string.Format(Strings.Error_Template_NoAccessibleConstructor, typeArg, name),
-                                    locationProvider.GetLocation(invocationExpressionSyntax),
+                                    ImmutableArray.Create(locationProvider.GetLocation(invocationExpressionSyntax)),
                                     LogId.ErrorInvalidMetadata);
                             }
 
@@ -199,7 +199,7 @@ sealed class Semantic(
                             {
                                 throw new CompileErrorException(
                                     string.Format(Strings.Error_Template_NoAccessibleMethod, typeArg, methodName, methodArg),
-                                    locationProvider.GetLocation(invocationExpressionSyntax),
+                                    ImmutableArray.Create(locationProvider.GetLocation(invocationExpressionSyntax)),
                                     LogId.ErrorInvalidMetadata);
                             }
 
@@ -225,7 +225,7 @@ sealed class Semantic(
                             {
                                 throw new CompileErrorException(
                                     string.Format(Strings.Error_Template_NoAccessibleFieldOrProperty, name, typeArg),
-                                    locationProvider.GetLocation(invocationExpressionSyntax),
+                                    ImmutableArray.Create(locationProvider.GetLocation(invocationExpressionSyntax)),
                                     LogId.ErrorInvalidMetadata);
                             }
 
@@ -259,7 +259,7 @@ sealed class Semantic(
 
         throw new CompileErrorException(
             string.Format(Strings.Error_Template_MustBeApiCall, node, typeof(T)),
-            locationProvider.GetLocation(node),
+            ImmutableArray.Create(locationProvider.GetLocation(node)),
             LogId.ErrorInvalidMetadata);
     }
 

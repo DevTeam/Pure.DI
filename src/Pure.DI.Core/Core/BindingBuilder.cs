@@ -141,7 +141,10 @@ sealed class BindingBuilder(
                     _arg);
             }
 
-            throw new CompileErrorException(Strings.Error_InvalidBinding, locationProvider.GetLocation(setup.Source), LogId.ErrorInvalidMetadata);
+            throw new CompileErrorException(
+                Strings.Error_InvalidBinding,
+                ImmutableArray.Create(locationProvider.GetLocation(setup.Source)),
+                LogId.ErrorInvalidMetadata);
         }
         finally
         {

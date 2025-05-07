@@ -15,7 +15,10 @@ sealed class MetadataValidator(
     {
         if (setup is { Kind: CompositionKind.Public, Roots.Length: 0 })
         {
-            logger.CompileWarning(Strings.Warning_NoRoots, locationProvider.GetLocation(setup.Source), LogId.WarningMetadataDefect);
+            logger.CompileWarning(
+                Strings.Warning_NoRoots,
+                ImmutableArray.Create(locationProvider.GetLocation(setup.Source)),
+                LogId.WarningMetadataDefect);
         }
 
         var isValid = setup.Bindings
@@ -32,7 +35,10 @@ sealed class MetadataValidator(
             && (!SyntaxFacts.IsValidIdentifier(setup.Name.ClassName)
                 || !IsValidOrEmptyIdentifier(setup.Name.Namespace.Replace('.', '_'))))
         {
-            logger.CompileError(string.Format(Strings.Error_Template_InvalidCompositionTypeName, setup.Name), locationProvider.GetLocation((setup.Name.Source ?? setup.Source)), LogId.ErrorInvalidMetadata);
+            logger.CompileError(
+                string.Format(Strings.Error_Template_InvalidCompositionTypeName, setup.Name),
+                ImmutableArray.Create(locationProvider.GetLocation(setup.Name.Source ?? setup.Source)),
+                LogId.ErrorInvalidMetadata);
             isValid = false;
         }
 
@@ -43,11 +49,14 @@ sealed class MetadataValidator(
                 continue;
             }
 
-            logger.CompileError(string.Format(Strings.Error_Template_InvalidRootName, root.Name), locationProvider.GetLocation(root.Source), LogId.ErrorInvalidMetadata);
+            logger.CompileError(
+                string.Format(Strings.Error_Template_InvalidRootName, root.Name),
+                ImmutableArray.Create(locationProvider.GetLocation(root.Source)),
+                LogId.ErrorInvalidMetadata);
             isValid = false;
         }
 
-        foreach (var routeGroups in setup.Roots.GroupBy(root => new Injection(InjectionKind.Root, root.RootType, root.Tag?.Value)))
+        foreach (var routeGroups in setup.Roots.GroupBy(root => new Injection(InjectionKind.Root, root.RootType, root.Tag?.Value, root.RootType)))
         {
             var roots = routeGroups.ToList();
             if (roots.Count <= 1)
@@ -57,7 +66,10 @@ sealed class MetadataValidator(
 
             foreach (var root in roots.Skip(1))
             {
-                logger.CompileError(string.Format(Strings.Error_Template_RootDuplicate, root.Name, roots[0].Name), locationProvider.GetLocation(root.Source), LogId.ErrorInvalidMetadata);
+                logger.CompileError(
+                    string.Format(Strings.Error_Template_RootDuplicate, root.Name, roots[0].Name),
+                    ImmutableArray.Create(locationProvider.GetLocation(root.Source)),
+                    LogId.ErrorInvalidMetadata);
                 isValid = false;
             }
         }
@@ -66,12 +78,18 @@ sealed class MetadataValidator(
         {
             if (marker.IsMarkerBased(setup, accumulator.AccumulatorType))
             {
-                logger.CompileError(Strings.Error_AccumulatorTypeCannotBeGenericTypeMarker, locationProvider.GetLocation(accumulator.Source), LogId.ErrorInvalidMetadata);
+                logger.CompileError(
+                    Strings.Error_AccumulatorTypeCannotBeGenericTypeMarker,
+                    ImmutableArray.Create(locationProvider.GetLocation(accumulator.Source)),
+                    LogId.ErrorInvalidMetadata);
             }
 
             if (marker.IsMarkerBased(setup, accumulator.Type))
             {
-                logger.CompileError(Strings.Error_AccumulatorCannotAccumulateGenericTypeMarker, locationProvider.GetLocation(accumulator.Source), LogId.ErrorInvalidMetadata);
+                logger.CompileError(
+                    Strings.Error_AccumulatorCannotAccumulateGenericTypeMarker,
+                    ImmutableArray.Create(locationProvider.GetLocation(accumulator.Source)),
+                    LogId.ErrorInvalidMetadata);
             }
         }
 
@@ -121,13 +139,19 @@ sealed class MetadataValidator(
                     location = () => locationProvider.GetLocation(arg.Source);
                     if (!IsValidIdentifier(arg.ArgName))
                     {
-                        logger.CompileError(string.Format(Strings.Error_Template_InvalidArgumentName, arg.ArgName), location(), LogId.ErrorInvalidMetadata);
+                        logger.CompileError(
+                            string.Format(Strings.Error_Template_InvalidArgumentName, arg.ArgName),
+                            ImmutableArray.Create(location()),
+                            LogId.ErrorInvalidMetadata);
                         isValid = false;
                     }
 
                     if (arg.Kind == ArgKind.Class && marker.IsMarkerBased(setup, arg.Type))
                     {
-                        logger.CompileError(Strings.Error_ClassArgumentTypeCannotBeGenericTypeMarker, location(), LogId.ErrorInvalidMetadata);
+                        logger.CompileError(
+                            Strings.Error_ClassArgumentTypeCannotBeGenericTypeMarker,
+                            ImmutableArray.Create(location()),
+                            LogId.ErrorInvalidMetadata);
                     }
                 }
             }
@@ -135,7 +159,10 @@ sealed class MetadataValidator(
 
         if (implementationType == null || implementationType is IErrorTypeSymbol || semanticModel == null)
         {
-            logger.CompileError(Strings.Error_InvalidBindingDueToCompilationError, location(), LogId.ErrorInvalidMetadata);
+            logger.CompileError(
+                Strings.Error_InvalidBindingDueToCompilationError,
+                ImmutableArray.Create(location()),
+                LogId.ErrorInvalidMetadata);
             return false;
         }
 
@@ -160,16 +187,16 @@ sealed class MetadataValidator(
                 switch (severityOfNotImplementedContract)
                 {
                     case DiagnosticSeverity.Error:
-                        logger.CompileError(message, location(), LogId.ErrorInvalidMetadata);
+                        logger.CompileError(message, ImmutableArray.Create(location()), LogId.ErrorInvalidMetadata);
                         isValid = false;
                         break;
 
                     case DiagnosticSeverity.Warning:
-                        logger.CompileWarning(message, location(), LogId.WarningMetadataDefect);
+                        logger.CompileWarning(message, ImmutableArray.Create(location()), LogId.WarningMetadataDefect);
                         break;
 
                     case DiagnosticSeverity.Info:
-                        logger.CompileInfo(message, location(), LogId.InfoMetadataDefect);
+                        logger.CompileInfo(message, ImmutableArray.Create(location()), LogId.InfoMetadataDefect);
                         break;
                 }
             }

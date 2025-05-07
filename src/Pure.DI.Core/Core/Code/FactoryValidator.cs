@@ -17,7 +17,10 @@ sealed class FactoryValidator(ILocationProvider locationProvider)
         {
             if (node.Parent is ArgumentSyntax)
             {
-                throw new CompileErrorException(string.Format(Strings.Error_Template_CannotUseContextDirectly, _contextParameterName), locationProvider.GetLocation(node), LogId.ErrorInvalidMetadata);
+                throw new CompileErrorException(
+                    string.Format(Strings.Error_Template_CannotUseContextDirectly, _contextParameterName),
+                    ImmutableArray.Create(locationProvider.GetLocation(node)),
+                    LogId.ErrorInvalidMetadata);
             }
         }
 

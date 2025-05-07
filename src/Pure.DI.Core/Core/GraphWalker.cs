@@ -37,7 +37,7 @@ sealed class GraphWalker<TContext, T> : IGraphWalker<TContext, T>
                     continue;
                 }
 
-                var visitingInfo = visitor.Create(graph, dependency.Source, nodeInfo.Info);
+                var visitingInfo = visitor.Append(graph, dependency, nodeInfo.Info);
                 if (!visitor.Visit(ctx, graph, visitingInfo))
                 {
                     continue;

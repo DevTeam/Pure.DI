@@ -1,11 +1,9 @@
 // ReSharper disable ClassNeverInstantiated.Global
-
 // ReSharper disable UnusedMember.Global
 namespace Pure.DI.Core;
 
 sealed class Logger : ILogger
 {
-
     private Logger(IObserversProvider observersProvider, Type targetType)
     {
         _observersProvider = observersProvider;

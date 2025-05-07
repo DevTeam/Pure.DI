@@ -5,7 +5,8 @@ using System.Runtime.CompilerServices;
 readonly record struct Injection(
     InjectionKind Kind,
     ITypeSymbol Type,
-    object? Tag)
+    object? Tag,
+    ISymbol Source)
 {
     public override string ToString() => $"{Type}{(Tag != null && Tag is not MdTagOnSites ? $"({Tag.ValueToString()})" : "")}";
 

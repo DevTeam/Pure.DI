@@ -64,7 +64,8 @@ sealed class InstanceDpProvider(
                                     new Injection(
                                         InjectionKind.Field,
                                         attributes.GetAttribute(setup.SemanticModel, setup.TypeAttributes, field, AttributeKind.Type, typeConstructor.Construct(setup, type)),
-                                        GetTagAttribute(setup, field))));
+                                        GetTagAttribute(setup, field),
+                                        field)));
                         }
                     }
 
@@ -84,7 +85,8 @@ sealed class InstanceDpProvider(
                                     new Injection(
                                         InjectionKind.Property,
                                         attributes.GetAttribute(setup.SemanticModel, setup.TypeAttributes, property, AttributeKind.Type, typeConstructor.Construct(setup, type)),
-                                        GetTagAttribute(setup, property))));
+                                        GetTagAttribute(setup, property),
+                                        property)));
                         }
                     }
 
@@ -118,7 +120,8 @@ sealed class InstanceDpProvider(
                     new Injection(
                         InjectionKind.Parameter,
                         attributes.GetAttribute(setup.SemanticModel, setup.TypeAttributes, parameter, AttributeKind.Type, typeConstructor.Construct(setup, type)),
-                        GetTagAttribute(setup, parameter))));
+                        GetTagAttribute(setup, parameter),
+                        parameter)));
         }
 
         return dependenciesBuilder.MoveToImmutable();

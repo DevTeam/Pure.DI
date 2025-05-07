@@ -150,7 +150,7 @@ class BindingsFactory(
                 {
                     foreach (var mdTag in tags.DefaultIfEmpty(new MdTag(0, null)))
                     {
-                        if (!contracts.Add(new Injection(InjectionKind.Construct, elementType, mdTag)))
+                        if (!contracts.Add(new Injection(InjectionKind.Construct, elementType, mdTag, injection.Source)))
                         {
                             isDuplicate = true;
                         }

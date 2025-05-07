@@ -29,7 +29,8 @@ sealed class RootDependencyNodeBuilder(ILocationProvider locationProvider)
                     new Injection(
                         InjectionKind.Root,
                         root.RootType.WithNullableAnnotation(NullableAnnotation.NotAnnotated),
-                        root.Tag?.Value),
+                        root.Tag?.Value,
+                        root.RootType),
                     locationProvider));
         }
     }

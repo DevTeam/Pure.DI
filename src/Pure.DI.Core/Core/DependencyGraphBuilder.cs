@@ -84,7 +84,7 @@ sealed class DependencyGraphBuilder(
             {
                 throw new CompileErrorException(
                     string.Format(Strings.Error_Template_TooLargeComposition, counter),
-                    locationProvider.GetLocation(setup.Source),
+                    ImmutableArray.Create(locationProvider.GetLocation(setup.Source)),
                     LogId.ErrorInvalidMetadata);
             }
 
@@ -171,7 +171,7 @@ sealed class DependencyGraphBuilder(
                             {
                                 foreach (var tag in contract.Tags.Select(i => i.Value).DefaultIfEmpty(null))
                                 {
-                                    newInjection = new Injection(InjectionKind.Contract, contract.ContractType!, contextTag ?? tag);
+                                    newInjection = new Injection(InjectionKind.Contract, contract.ContractType!, contextTag ?? tag, injection.Source);
                                     UpdateMap(newInjection, genericNode);
                                 }
                             }

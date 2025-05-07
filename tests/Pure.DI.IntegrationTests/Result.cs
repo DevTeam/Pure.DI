@@ -21,14 +21,14 @@ readonly record struct Result(
         text.AppendLine("Errors:");
         foreach (var error in Errors)
         {
-            text.AppendLine($"{error.Message} at {error.Location.GetSource()}");
+            text.AppendLine($"{error.Message} at {error.Locations.FirstOrDefault().GetSource()}");
         }
 
         text.AppendLine();
         text.AppendLine("Warnings:");
         foreach (var warning in Warnings)
         {
-            text.AppendLine($"{warning.Message} at {warning.Location.GetSource()}");
+            text.AppendLine($"{warning.Message} at {warning.Locations.FirstOrDefault().GetSource()}");
         }
 
         text.AppendLine();

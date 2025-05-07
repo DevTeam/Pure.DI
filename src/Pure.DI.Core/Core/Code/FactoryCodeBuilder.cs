@@ -204,7 +204,7 @@ sealed class FactoryCodeBuilder(
         {
             throw new CompileErrorException(
                 string.Format(Strings.Error_Template_LifetimeDoesNotSupportCyclicDependencies, variable.Node.Lifetime),
-                locationProvider.GetLocation(factory.Source.Source),
+                ImmutableArray.Create(locationProvider.GetLocation(factory.Source.Source)),
                 LogId.ErrorInvalidMetadata);
         }
 
@@ -212,7 +212,7 @@ sealed class FactoryCodeBuilder(
         {
             throw new CompileErrorException(
                 Strings.Error_InvalidNumberOfInitializers,
-                locationProvider.GetLocation(factory.Source.Source),
+                ImmutableArray.Create(locationProvider.GetLocation(factory.Source.Source)),
                 LogId.ErrorInvalidMetadata);
         }
 

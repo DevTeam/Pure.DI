@@ -6,7 +6,12 @@ interface IGraphVisitor<in TContext, T>
 {
     T Create(
         IGraph<DependencyNode, Dependency> graph,
-        DependencyNode currentNode,
+        DependencyNode rootNode,
+        T? parent = default);
+
+    T Append(
+        IGraph<DependencyNode, Dependency> graph,
+        Dependency dependency,
         T? parent = default);
 
     bool Visit(

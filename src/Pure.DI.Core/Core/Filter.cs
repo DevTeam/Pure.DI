@@ -47,7 +47,10 @@ sealed class Filter(
                 }
                 catch (ArgumentException ex)
                 {
-                    logger.CompileError(string.Format(Strings.Error_Template_InvalidRegularExpression, regularExpression, ex.Message), locationProvider.GetLocation(setup.Source), LogId.ErrorInvalidMetadata);
+                    logger.CompileError(
+                        string.Format(Strings.Error_Template_InvalidRegularExpression, regularExpression, ex.Message),
+                        ImmutableArray.Create(locationProvider.GetLocation(setup.Source)),
+                        LogId.ErrorInvalidMetadata);
                 }
             }
         }
@@ -66,7 +69,10 @@ sealed class Filter(
                 }
                 catch (Exception ex)
                 {
-                    logger.CompileError(string.Format(Strings.Error_Template_InvalidWildcard, wildcard, ex.Message), locationProvider.GetLocation(setup.Source), LogId.ErrorInvalidMetadata);
+                    logger.CompileError(
+                        string.Format(Strings.Error_Template_InvalidWildcard, wildcard, ex.Message),
+                        ImmutableArray.Create(locationProvider.GetLocation(setup.Source)),
+                        LogId.ErrorInvalidMetadata);
                 }
             }
         }

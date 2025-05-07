@@ -57,7 +57,7 @@ sealed class ExceptionHandler(ILogger logger)
     }
 
     private void OnCompileException(CompileErrorException exception) =>
-        logger.CompileError(exception.ErrorMessage, exception.Location, exception.Id);
+        logger.CompileError(exception.ErrorMessage, exception.Locations, exception.Id);
 
     private void OnHandledException(HandledException handledException) =>
         logger.Log(
@@ -68,7 +68,7 @@ sealed class ExceptionHandler(ILogger logger)
                 DiagnosticSeverity.Hidden,
 #endif
                 Strings.Info_CodeGenerationAborted,
-                null,
+                default,
                 LogId.InfoGenerationInterrupted,
                 handledException));
 
@@ -77,7 +77,7 @@ sealed class ExceptionHandler(ILogger logger)
             new LogEntry(
                 DiagnosticSeverity.Error,
                 Strings.Error_UnhandledError,
-                null,
+                default,
                 LogId.ErrorUnhandled,
                 exception));
 }

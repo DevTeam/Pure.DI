@@ -31,7 +31,7 @@ sealed class MetadataBuilder(
             {
                 throw new CompileErrorException(
                     string.Format(Strings.Error_Template_UnsupportLanguage, Names.GeneratorName, languageVersion.ToDisplayString(), LanguageVersion.CSharp8.ToDisplayString()),
-                    locationProvider.GetLocation(update.Node),
+                    ImmutableArray.Create(locationProvider.GetLocation(update.Node)),
                     LogId.ErrorNotSupportedLanguageVersion);
             }
 
@@ -89,7 +89,7 @@ sealed class MetadataBuilder(
                 {
                     throw new CompileErrorException(
                         string.Format(Strings.Error_Template_CannotFindSetup, compositionTypeName),
-                        locationProvider.GetLocation(dependsOn.Source),
+                        ImmutableArray.Create(locationProvider.GetLocation(dependsOn.Source)),
                         LogId.ErrorCannotFindSetup);
                 }
 

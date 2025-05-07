@@ -43,7 +43,7 @@ sealed class DependencyGraphValidator(
             isResolved = false;
             if (dependency.Target.Error is {} error)
             {
-                logger.CompileError(error.ErrorMessage, error.Location, error.Id);
+                logger.CompileError(error.ErrorMessage, error.Locations, error.Id);
                 isErrorReported = true;
                 continue;
             }
@@ -51,16 +51,17 @@ sealed class DependencyGraphValidator(
             var errorMessage = string.Format(Strings.Error_Template_UnableToResolve, dependency.Injection, dependency.Target);
             var locationsWalker = dependencyGraphLocationsWalkerFactory().Initialize(dependency.Injection);
             locationsWalker.VisitDependencyNode(Unit.Shared, dependency.Target);
-            foreach (var location in locationsWalker.Locations.Where(i => i.IsInSource).DefaultIfEmpty(locationProvider.GetLocation(dependency.Target.Binding.Source)))
-            {
-                logger.CompileError(errorMessage, location, LogId.ErrorUnableToResolve);
-                isErrorReported = true;
-            }
+            var locations = locationsWalker.Locations.ToImmutableArray().Add(locationProvider.GetLocation(dependency.Target.Binding.Source));
+            logger.CompileError(errorMessage, locations, LogId.ErrorUnableToResolve);
+            isErrorReported = true;
         }
 
         if (!isResolved && !isErrorReported)
         {
-            logger.CompileError(Strings.Error_CannotBuildDependencyGraph, locationProvider.GetLocation(dependencyGraph.Source.Source), LogId.ErrorUnableToResolve);
+            logger.CompileError(
+                Strings.Error_CannotBuildDependencyGraph,
+                ImmutableArray.Create(locationProvider.GetLocation(dependencyGraph.Source.Source)),
+                LogId.ErrorUnableToResolve);
         }
 
         throw HandledException.Shared;

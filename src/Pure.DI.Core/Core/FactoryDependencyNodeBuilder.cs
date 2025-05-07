@@ -23,7 +23,7 @@ sealed class FactoryDependencyNodeBuilder(
             foreach (var resolver in factory.Resolvers)
             {
                 var tag = attributes.GetAttribute(resolver.SemanticModel, setup.TagAttributes, resolver.Attributes, AttributeKind.Tag, default(object?)) ?? resolver.Tag?.Value;
-                var injection = new Injection(InjectionKind.FactoryInjection, resolver.ContractType.WithNullableAnnotation(NullableAnnotation.NotAnnotated), tag);
+                var injection = new Injection(InjectionKind.FactoryInjection, resolver.ContractType.WithNullableAnnotation(NullableAnnotation.NotAnnotated), tag, resolver.ContractType);
                 resolvers.Add(new DpResolver(resolver, injection, CreateOverrides(resolver.Overrides)));
             }
 
@@ -48,6 +48,6 @@ sealed class FactoryDependencyNodeBuilder(
         overrides.IsDefault
             ? ImmutableArray<DpOverride>.Empty
             : overrides.AsEnumerable()
-                .Select(i => new DpOverride(i, i.Tags.Select(tag => new Injection(InjectionKind.Override, i.ContractType, tag.Value)).ToImmutableArray()))
+                .Select(i => new DpOverride(i, i.Tags.Select(tag => new Injection(InjectionKind.Override, i.ContractType, tag.Value, i.ContractType)).ToImmutableArray()))
                 .ToImmutableArray();
 }

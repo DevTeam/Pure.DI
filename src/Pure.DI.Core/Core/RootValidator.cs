@@ -26,7 +26,7 @@ sealed class RootValidator(
         {
             logger.CompileWarning(
                 string.Format(Strings.Warning_Template_RootCannotBeResolvedByResolveMethods, Format(root), string.Join(", ", args.Select(i => i.VariableName))),
-                locationProvider.GetLocation(root.Source.Source),
+                ImmutableArray.Create(locationProvider.GetLocation(root.Source.Source)),
                 LogId.WarningRootArgInResolveMethod);
         }
 
@@ -40,7 +40,7 @@ sealed class RootValidator(
         {
             logger.CompileWarning(
                 string.Format(Strings.Warning_Template_RootCannotBeResolvedByResolveMethods, Format(root), string.Join(", ", root.TypeDescription.TypeArgs)),
-                locationProvider.GetLocation(root.Source.Source),
+                ImmutableArray.Create(locationProvider.GetLocation(root.Source.Source)),
                 LogId.WarningTypeArgInResolveMethod);
         }
 
