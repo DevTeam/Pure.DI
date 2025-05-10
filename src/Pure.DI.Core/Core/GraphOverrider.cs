@@ -12,12 +12,12 @@ class GraphOverrider(
         IGraph<DependencyNode, Dependency> graph,
         ref int maxId)
     {
-        var entries = new List<GraphEntry<DependencyNode, Dependency>>();
-        var processedNodes = new Dictionary<DependencyNode, DependencyNode>();
-        var nodesMap = new Dictionary<Injection, DependencyNode>();
+        var entries = new List<GraphEntry<DependencyNode, Dependency>>(graph.Entries.Count);
+        var processed = new Dictionary<int, DependencyNode>(graph.Entries.Count);
+        var nodesMap = new Dictionary<Injection, DependencyNode>(graph.Entries.Count);
         foreach (var rootNode in from node in graph.Vertices where node.Root is not null select node)
         {
-            Override(processedNodes, [], nodesMap, [], setup, graph, rootNode, rootNode, ref maxId, entries);
+            Override(processed, nodesMap, [], setup, graph, rootNode, rootNode, ref maxId, entries);
             if (cancellationToken.IsCancellationRequested)
             {
                 return graph;
@@ -40,8 +40,7 @@ class GraphOverrider(
     }
 
     private DependencyNode Override(
-        Dictionary<DependencyNode, DependencyNode> processedNodes,
-        HashSet<Injection> overriddenInjections,
+        Dictionary<int, DependencyNode> processed,
         Dictionary<Injection, DependencyNode> nodesMap,
         Dictionary<int, DpOverride> overridesMap,
         MdSetup setup,
@@ -51,17 +50,17 @@ class GraphOverrider(
         ref int maxId,
         List<GraphEntry<DependencyNode, Dependency>> entries)
     {
-        if (processedNodes.TryGetValue(targetNode, out var node))
-        {
-            return node;
-        }
-
         if (!graph.TryGetInEdges(targetNode, out var dependencies))
         {
             return targetNode;
         }
 
-        IEnumerable<ImmutableArray<DpOverride>> overrides = [];
+        if (processed.TryGetValue(targetNode.Binding.Id, out var node))
+        {
+            return node;
+        }
+
+        IEnumerable<ImmutableArray<DpOverride>> overrides;
         if (targetNode.Factory is {} factory)
         {
             overridesMap = new Dictionary<int, DpOverride>(overridesMap);
@@ -71,9 +70,12 @@ class GraphOverrider(
                 .OrderBy(i => i.Position)
                 .Select(i => i.Overrides);
         }
+        else
+        {
+            overrides = [];
+        }
 
-        processedNodes.Add(targetNode, targetNode);
-
+        processed.Add(targetNode.Binding.Id, targetNode);
         var newDependencies = new List<Dependency>(dependencies.Count);
         var lastDependencyPosition = 0;
         using var overridesEnumerator = overrides.GetEnumerator();
@@ -104,21 +106,18 @@ class GraphOverrider(
                         var typeConstructor = targetNode.TypeConstructor;
                         var contractType = typeConstructor.Construct(setup, @override.Source.ContractType);
                         var overrideId = overrideIdProvider.GetId(contractType, @override.Source.Tags);
-                        var currentOverride = new DpOverride(
-                            @override.Source with { Id = overrideId, ContractType = contractType },
-                            @override.Injections.Select(i => i with { Type = typeConstructor.Construct(setup, i.Type) }).ToImmutableArray());
-
+                        var injections = @override.Injections.Select(i => i with { Type = typeConstructor.Construct(setup, i.Type) }).ToImmutableArray();
+                        var currentOverride = new DpOverride(@override.Source with { Id = overrideId, ContractType = contractType }, injections);
                         overridesMap[@override.Source.Id] = currentOverride;
                         MdBinding? overrideBinding = null;
-                        foreach (var injection in currentOverride.Injections)
+                        foreach (var injection in injections)
                         {
                             if (cancellationToken.IsCancellationRequested)
                             {
                                 return targetNode;
                             }
 
-                            overriddenInjections.Add(injection);
-                            if (nodesMap.TryGetValue(injection, out _))
+                            if (nodesMap.ContainsKey(injection))
                             {
                                 continue;
                             }
@@ -144,10 +143,9 @@ class GraphOverrider(
             }
 
             var currentDependency = dependency with { Target = targetNode };
-            if (!overriddenInjections.Contains(currentDependency.Injection)
-                || !nodesMap.TryGetValue(currentDependency.Injection, out var overridingSourceNode))
+            if (!nodesMap.TryGetValue(currentDependency.Injection, out var overridingSourceNode))
             {
-                var source = Override(processedNodes, overriddenInjections, nodesMap, overridesMap, setup, graph, rootNode, currentDependency.Source, ref maxId, entries);
+                var source = Override(processed, nodesMap, overridesMap, setup, graph, rootNode, currentDependency.Source, ref maxId, entries);
                 currentDependency = currentDependency with { Source = source };
             }
             else
