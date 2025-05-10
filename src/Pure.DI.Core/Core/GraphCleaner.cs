@@ -10,10 +10,10 @@ class GraphCleaner(
         ref int maxId)
     {
         var existingEntries = new List<GraphEntry<DependencyNode, Dependency>>();
-        var processedNodes = new HashSet<DependencyNode>();
+        var processed = new HashSet<int>();
         foreach (var rootNode in from node in graph.Vertices where node.Root is not null select node)
         {
-            Clean(processedNodes, graph, rootNode, existingEntries);
+            Clean(processed, graph, rootNode, existingEntries);
             if (cancellationToken.IsCancellationRequested)
             {
                 return graph;
@@ -24,30 +24,31 @@ class GraphCleaner(
     }
 
     private void Clean(
-        HashSet<DependencyNode> processedNodes,
+        HashSet<int> processed,
         IGraph<DependencyNode, Dependency> graph,
         DependencyNode targetNode,
         List<GraphEntry<DependencyNode, Dependency>> existingEntries)
     {
-        if (!processedNodes.Add(targetNode))
+        var stack = new Stack<DependencyNode>(existingEntries.Count);
+        stack.Push(targetNode);
+        while (stack.TryPop(out var currentNode))
         {
-            return;
-        }
+            if (!graph.TryGetInEdges(currentNode, out var dependencies)
+                || !processed.Add(currentNode.Binding.Id))
+            {
+                continue;
+            }
 
-        if (!graph.TryGetInEdges(targetNode, out var dependencies))
-        {
-            return;
-        }
+            existingEntries.Add(new GraphEntry<DependencyNode, Dependency>(currentNode, dependencies));
+            foreach (var dependency in dependencies.Reverse())
+            {
+                stack.Push(dependency.Source);
+            }
 
-        existingEntries.Add(new GraphEntry<DependencyNode, Dependency>(targetNode, dependencies));
-        foreach (var dependency in dependencies)
-        {
             if (cancellationToken.IsCancellationRequested)
             {
                 return;
             }
-
-            Clean(processedNodes, graph, dependency.Source, existingEntries);
         }
     }
 }

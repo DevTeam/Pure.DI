@@ -512,7 +512,7 @@ public class ErrorsAndWarningsTests
 
         // Then
         result.Success.ShouldBeFalse(result);
-        result.Logs.Count(i => i.Id == LogId.ErrorCyclicDependency && i.Locations.FirstOrDefault().GetSource() == "dep").ShouldBe(1, result);
+        result.Errors.Count(i => i.Id == LogId.ErrorCyclicDependency && i.Locations.FirstOrDefault().GetSource() == "dep").ShouldBe(1, result);
     }
 
     [Fact]

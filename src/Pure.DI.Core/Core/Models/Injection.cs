@@ -6,7 +6,7 @@ readonly record struct Injection(
     InjectionKind Kind,
     ITypeSymbol Type,
     object? Tag,
-    ISymbol Source)
+    ImmutableArray<Location> Locations)
 {
     public override string ToString() => $"{Type}{(Tag != null && Tag is not MdTagOnSites ? $"({Tag.ValueToString()})" : "")}";
 

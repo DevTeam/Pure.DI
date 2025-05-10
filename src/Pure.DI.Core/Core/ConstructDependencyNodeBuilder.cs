@@ -30,7 +30,7 @@ sealed class ConstructDependencyNodeBuilder(ILocationProvider locationProvider)
                         InjectionKind.Contract,
                         ctx.TypeConstructor.Construct(setup, contract.ContractType.WithNullableAnnotation(NullableAnnotation.NotAnnotated)),
                         tag,
-                        contract.ContractType));
+                        contract.ContractType.Locations));
             }
 
             yield return new DependencyNode(0, binding, ctx.TypeConstructor, Construct: new DpConstruct(construct, binding, injections.ToImmutableArray(), locationProvider));

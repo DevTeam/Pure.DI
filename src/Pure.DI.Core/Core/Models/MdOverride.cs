@@ -5,7 +5,7 @@ namespace Pure.DI.Core.Models;
 
 readonly record struct MdOverride(
     SemanticModel SemanticModel,
-    SyntaxNode Source,
+    InvocationExpressionSyntax Source,
     int Id,
     int Position,
     ITypeSymbol ContractType,

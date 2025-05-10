@@ -9,7 +9,7 @@ readonly record struct MdResolver(
     int Position,
     ITypeSymbol ContractType,
     MdTag? Tag,
-    ExpressionSyntax TargetValue,
+    ExpressionSyntax? TargetValue,
     ImmutableArray<MdOverride> Overrides,
     TypeSyntax? ArgumentType = null,
     ParameterSyntax? Parameter = null,

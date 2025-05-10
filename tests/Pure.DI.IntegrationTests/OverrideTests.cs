@@ -93,6 +93,97 @@ public class OverrideTests
     }
 
     [Fact]
+    public async Task ShouldSupportSimpleOverrideWhenCyclicDependency()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface ILogger {}
+                               
+                               class LoggerA: ILogger
+                               {
+                                    public LoggerA(IService service)
+                                    {
+                                    }
+                               }
+                               
+                               interface IDependency 
+                               {
+                                    ILogger Logger { get; }
+                               }
+                           
+                               class Dependency: IDependency
+                               {
+                                   public Dependency(ILogger logger)
+                                   {
+                                        Logger = logger;
+                                   }
+                                   
+                                   public ILogger Logger { get; set; }
+                               }
+                           
+                               interface IService
+                               {
+                                   IDependency Dep { get; }
+                                   
+                                   ILogger Logger { get; }
+                               }
+                           
+                               class ServiceA: IService 
+                               {
+                                   public ServiceA(IDependency dep, ILogger logger)
+                                   {
+                                        Dep = dep;
+                                        Logger = logger;
+                                   }
+                           
+                                   public IDependency Dep { get; set; }
+                                   
+                                   public ILogger Logger { get; set; }
+                               }
+                               
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind().To<Dependency>()
+                                           .Bind<IService>().To(ctx => 
+                                           {
+                                                ctx.Inject(out LoggerA logger);
+                                                ctx.Override<ILogger>(logger);
+                                                ctx.Inject(out ServiceA service);
+                                                return service;
+                                           })
+                                           .Root<IService>("Root");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root = composition.Root;
+                                       Console.WriteLine(root.Logger);
+                                       Console.WriteLine(root.Dep.Logger);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count(i => i.Id == LogId.ErrorCyclicDependency && i.Locations.FirstOrDefault().GetSource() == "LoggerA logger").ShouldBe(1, result);
+    }
+
+    [Fact]
     public async Task ShouldSupportSeveralOverrides()
     {
         // Given

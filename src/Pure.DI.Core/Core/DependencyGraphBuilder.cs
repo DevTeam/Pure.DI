@@ -171,7 +171,7 @@ sealed class DependencyGraphBuilder(
                             {
                                 foreach (var tag in contract.Tags.Select(i => i.Value).DefaultIfEmpty(null))
                                 {
-                                    newInjection = new Injection(InjectionKind.Contract, contract.ContractType!, contextTag ?? tag, injection.Source);
+                                    newInjection = new Injection(InjectionKind.Contract, contract.ContractType!, contextTag ?? tag, injection.Locations);
                                     UpdateMap(newInjection, genericNode);
                                 }
                             }

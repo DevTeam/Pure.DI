@@ -23,7 +23,14 @@ sealed class FactoryDependencyNodeBuilder(
             foreach (var resolver in factory.Resolvers)
             {
                 var tag = attributes.GetAttribute(resolver.SemanticModel, setup.TagAttributes, resolver.Attributes, AttributeKind.Tag, default(object?)) ?? resolver.Tag?.Value;
-                var injection = new Injection(InjectionKind.FactoryInjection, resolver.ContractType.WithNullableAnnotation(NullableAnnotation.NotAnnotated), tag, resolver.ContractType);
+                var locations = ImmutableArray<Location>.Empty;
+                if (resolver.TargetValue is not null)
+                {
+                    locations = locations.Add(locationProvider.GetLocation(resolver.TargetValue));
+                }
+
+                locations = locations.AddRange(resolver.ContractType.Locations);
+                var injection = new Injection(InjectionKind.FactoryInjection, resolver.ContractType.WithNullableAnnotation(NullableAnnotation.NotAnnotated), tag, locations);
                 resolvers.Add(new DpResolver(resolver, injection, CreateOverrides(resolver.Overrides)));
             }
 
@@ -44,10 +51,15 @@ sealed class FactoryDependencyNodeBuilder(
         }
     }
 
-    private static ImmutableArray<DpOverride> CreateOverrides(in ImmutableArray<MdOverride> overrides) =>
+    private ImmutableArray<DpOverride> CreateOverrides(in ImmutableArray<MdOverride> overrides) =>
         overrides.IsDefault
             ? ImmutableArray<DpOverride>.Empty
             : overrides.AsEnumerable()
-                .Select(i => new DpOverride(i, i.Tags.Select(tag => new Injection(InjectionKind.Override, i.ContractType, tag.Value, i.ContractType)).ToImmutableArray()))
+                .Select(i => new DpOverride(i, i.Tags.Select(tag =>
+                    new Injection(
+                        InjectionKind.Override,
+                        i.ContractType,
+                        tag.Value,
+                        ImmutableArray.Create(locationProvider.GetLocation(i.Source)).AddRange(i.ContractType.Locations))).ToImmutableArray()))
                 .ToImmutableArray();
 }
