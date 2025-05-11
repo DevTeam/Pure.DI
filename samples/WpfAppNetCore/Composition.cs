@@ -1,28 +1,22 @@
-// ReSharper disable UnusedMember.Local
-// ReSharper disable UnusedMember.Global
-// ReSharper disable RedundantNameQualifier
-// ReSharper disable ArrangeTypeMemberModifiers
+using Pure.DI;
+using static Pure.DI.Lifetime;
 
 namespace WpfAppNetCore;
 
-using Pure.DI;
-using static Pure.DI.Lifetime;
-using Timer = Clock.Models.Timer;
-
 partial class Composition
 {
-    void Setup() => DI.Setup()
-        // Provides the composition root for the clock view model
-        .Root<IClockViewModel>(nameof(ClockViewModel))
+    [Conditional("DI")]
+    private void Setup() => DI.Setup()
+        .Hint(Hint.Resolve, "Off")
 
-        // View Models
+        .Root<IAppViewModel>(nameof(App))
+        .Root<IClockViewModel>(nameof(Clock))
+
         .Bind().As(Singleton).To<ClockViewModel>()
-
-        // Models
-        .Bind().To<Log<TT>>()
-        .Bind().As(Singleton).To<Timer>()
-        .Bind().As(PerBlock).To<SystemClock>()
+        .Bind().To<ClockModel>()
+        .Bind().As(Singleton).To<Ticks>()
 
         // Infrastructure
-        .Bind().To<Dispatcher>();
+        .Bind().To<DebugLog<TT>>()
+        .Bind().To<WpfDispatcher>();
 }

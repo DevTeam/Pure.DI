@@ -1,8 +1,9 @@
-using WebAPI;
 var builder = WebApplication.CreateBuilder(args);
 
+using var composition = new Composition();
+
 // Uses Composition as an alternative IServiceProviderFactory
-builder.Host.UseServiceProviderFactory(new Composition());
+builder.Host.UseServiceProviderFactory(composition);
 
 // It is required for controllers to be registered as regular services.
 builder.Services.AddMvc().AddControllersAsServices();

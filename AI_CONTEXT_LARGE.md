@@ -7457,25 +7457,25 @@ The definition of the composition is in [Composition.cs](/samples/AvaloniaApp/Co
 ```csharp
 using Pure.DI;
 using static Pure.DI.Lifetime;
+using static Pure.DI.RootKinds;
 
-internal partial class Composition
+namespace AvaloniaApp;
+
+partial class Composition
 {
-    void Setup() => DI.Setup()
-        // Provides the composition root for the main window
-        .Root<MainWindow>(nameof(MainWindow))
-        // Provides the composition root for a Clock view model
-        .Root<IClockViewModel>(nameof(ClockViewModel))
-        
-        // View Models
-        .Bind().As(Singleton).To<ClockViewModel>()
+    private void Setup() => DI.Setup()
+        .Root<IAppViewModel>(nameof(App), kind: Virtual)
+        .Root<IClockViewModel>(nameof(Clock), kind: Virtual)
 
-        // Models
-        .Bind().To<Log<TT>>()
-        .Bind().As(Singleton).To<Timer>()
-        .Bind().As(PerBlock).To<SystemClock>()
-    
+        .OrdinalAttribute<InitializableAttribute>()
+
+        .Bind().As(Singleton).To<ClockViewModel>()
+        .Bind().To<ClockModel>()
+        .Bind().As(Singleton).To<Ticks>()
+
         // Infrastructure
-        .Bind().To<Dispatcher>();
+        .Bind().To<DebugLog<TT>>()
+        .Bind().To<AvaloniaDispatcher>();
 }
 ```
 
@@ -7500,10 +7500,10 @@ A single instance of the _Composition_ class is defined as a static resource in 
     <FluentTheme />
   </Application.Styles>
 
-  <!--Creates a shared resource of type `Composition` and with key _‘Composition’_,
-  which will be further used as a data context in the views.-->
   <Application.Resources>
-    <app:Composition x:Key="Composition" />
+    <!--Creates a shared resource of type Composition and with key "Composition",
+    which will be further used as a data context in the views.-->
+    <app:Composition x:Key="Composition"  />
   </Application.Resources>
 
 </Application>
@@ -7517,7 +7517,7 @@ This markup fragment
 </Application.Resources>
 ```
 
-creates a shared resource of type `Composition` and with key _‘Composition’_, which will be further used as a data context in the views.
+creates a shared resource of type `Composition` with key _"Composition"_, which will be further used as a data context in the views.
 
 The associated application [App.axaml.cs](/samples/AvaloniaApp/App.axaml.cs) class is looking like:
 
@@ -7534,11 +7534,11 @@ public class App : Application
             switch (ApplicationLifetime)
             {
                 case IClassicDesktopStyleApplicationLifetime desktop:
-                    desktop.MainWindow = composition.MainWindow;
+                    desktop.MainWindow = new MainWindow();
                     break;
 
                 case ISingleViewApplicationLifetime singleView:
-                    singleView.MainView = composition.MainWindow;
+                    singleView.MainView = new MainWindow();
                     break;
             }
 
@@ -7559,27 +7559,28 @@ Advantages over classical DI container libraries:
 - The code is simpler, more compact, and requires less maintenance effort.
 - The main window is created in a pure DI paradigm, and it can be easily supplied with all necessary dependencies via DI as regular types.
 
-You can now use bindings to model views without even editing the views `.cs` code files. All previously defined composition roots are now accessible from [markup](/samples/AvaloniaApp/Views/MainWindow.xaml) without any effort, such as _ClockViewModel_:
+You can now use bindings and use the code-behind file-less approach. All previously defined composition roots are now available from [markup](/samples/AvaloniaApp/Views/MainWindow.xaml) without any effort, e.g. _Clock_:
 
 ```xml
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        x:Class="AvaloniaApp.Views.MainWindow"
-        DataContext="{StaticResource Composition}"
         xmlns:app="clr-namespace:AvaloniaApp"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="AvaloniaApp.MainWindow"
+        DataContext="{StaticResource Composition}"
         x:DataType="app:Composition"
-        Title="{Binding ClockViewModel.Time}"
+        Design.DataContext="{d:DesignInstance app:DesignTimeComposition}"
+        Title="{Binding App.Title}"
         Icon="/Assets/avalonia-logo.ico"
         FontFamily="Consolas"
         FontWeight="Bold">
 
-    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" DataContext="{Binding ClockViewModel}">
-        <TextBlock Text="{Binding Date}" FontSize="64" HorizontalAlignment="Center" />
-        <TextBlock Text="{Binding Time}" FontSize="128" HorizontalAlignment="Center" />
-    </StackPanel>
+  <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" DataContext="{Binding Clock}">
+    <TextBlock Text="{Binding Date}" FontSize="64" HorizontalAlignment="Center" />
+    <TextBlock Text="{Binding Time}" FontSize="128" HorizontalAlignment="Center" />
+  </StackPanel>
 
 </Window>
 ```
@@ -7590,6 +7591,8 @@ To use bindings in views:
 
   `DataContext="{StaticResource Composition}"`
 
+  and `Design.DataContext="{d:DesignInstance app:DesignTimeComposition}"` for the design time
+
 - Specify the data type in the context:
 
   `xmlns:app="clr-namespace:AvaloniaApp"`
@@ -7598,7 +7601,12 @@ To use bindings in views:
 
 - Use the bindings as usual:
 
-  `Title="{Binding ClockViewModel.Time}"`
+```xml
+  <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" DataContext="{Binding Clock}">
+    <TextBlock Text="{Binding Date}" FontSize="64" HorizontalAlignment="Center" />
+    <TextBlock Text="{Binding Time}" FontSize="128" HorizontalAlignment="Center" />
+  </StackPanel>
+```
 
 Advantages over classical DI container libraries:
 - The code-behind `.cs` files for views are free of any logic.
@@ -7610,15 +7618,7 @@ The [project file](/samples/AvaloniaApp/AvaloniaApp.csproj) looks like this:
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
-
-    <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
-        <OutputType>WinExe</OutputType>
-        <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
-        <ApplicationManifest>app.manifest</ApplicationManifest>
-        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-    </PropertyGroup>
-
+    ...
     <ItemGroup>
         <PackageReference Include="Pure.DI" Version="2.1.69">
             <PrivateAssets>all</PrivateAssets>
@@ -7645,37 +7645,26 @@ Composition setup file is [Composition.cs](/samples/BlazorServerApp/Composition.
 
 ```c#
 using Pure.DI;
+using Pure.DI.MS;
 using static Pure.DI.Lifetime;
 
-internal partial class Composition: ServiceProviderFactory<Composition>
-{
-    // IMPORTANT:
-    // Only composition roots (regular or anonymous) can be resolved through the `IServiceProvider` interface.
-    // These roots must be registered using `Root(...)` or `RootBind()` calls.
-    void Setup() => DI.Setup()
-        // Use the DI setup from the base class
-        .DependsOn(Base)
-        // View Models
-        .Bind().To<ClockViewModel>()
-            // Provides the composition root for a Clock view model
-            .Root<IClockViewModel>(nameof(ClockViewModel))
-        .Bind().To<ErrorViewModel>()
-            // Provides the composition root for the Error view model
-            .Root<IErrorViewModel>()
+namespace BlazorServerApp;
 
-        // Services
-        .Bind().To<Log<TT>>()
-        .Bind().As(Singleton).To<Timer>()
-        .Bind().As(PerBlock).To<SystemClock>()
-        .Bind().As(Singleton).To<WeatherForecastService>()
-            // Provides the composition root for Weather Forecast service
-            .Root<IWeatherForecastService>()
-        .Bind().As(Singleton).To<CounterService>()
-            // Provides the composition root for Counter service
-            .Root<ICounterService>()
-        
+partial class Composition: ServiceProviderFactory<Composition>
+{
+    private void Setup() => DI.Setup()
+        .DependsOn(Base)
+
+        .Root<IAppViewModel>()
+        .Root<IClockViewModel>()
+
+        .Bind().To<ClockViewModel>()
+        .Bind().To<ClockModel>()
+        .Bind().As(Singleton).To<Ticks>()
+
         // Infrastructure
-        .Bind().To<Dispatcher>();
+        .Bind().To<MicrosoftLoggerAdapter<TT>>()
+        .Bind().To<CurrentThreadDispatcher>();
 }
 ```
 
@@ -7695,13 +7684,7 @@ The [project file](/samples/BlazorServerApp/BlazorServerApp.csproj) looks like t
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk.Web">
-
-    <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
-        <Nullable>enable</Nullable>
-        <ImplicitUsings>enable</ImplicitUsings>
-    </PropertyGroup>
-
+    ...
     <ItemGroup>
         <PackageReference Include="Pure.DI" Version="2.1.69">
             <PrivateAssets>all</PrivateAssets>
@@ -7732,34 +7715,26 @@ Composition setup file is [Composition.cs](/samples/BlazorWebAssemblyApp/Composi
 
 ```c#
 using Pure.DI;
+using Pure.DI.MS;
 using static Pure.DI.Lifetime;
 
-internal partial class Composition: ServiceProviderFactory<Composition>
-{
-    // IMPORTANT:
-    // Only composition roots (regular or anonymous) can be resolved through the `IServiceProvider` interface.
-    // These roots must be registered using `Root(...)` or `RootBind()` calls.
-    void Setup() => DI.Setup()
-        // Use the DI setup from the base class
-        .DependsOn(Base)
-        // View Models
-        .Bind().As(Singleton).To<ClockViewModel>()
-            // Provides the composition root for a Clock view model
-            .Root<IClockViewModel>(nameof(ClockViewModel))
+namespace BlazorWebAssemblyApp;
 
-        // Services
-        .Bind().To<Log<TT>>()
-        .Bind().As(Singleton).To<Timer>()
-        .Bind().As(PerBlock).To<SystemClock>()
-        .Bind().As(Singleton).To<WeatherForecastService>()
-            // Provides the composition root for Weather Forecast service
-            .Root<IWeatherForecastService>()
-        .Bind().As(Singleton).To<CounterService>()
-            // Provides the composition root for Counter service
-            .Root<ICounterService>()
-        
+partial class Composition: ServiceProviderFactory<Composition>
+{
+    private void Setup() => DI.Setup()
+        .DependsOn(Base)
+
+        .Root<IAppViewModel>()
+        .Root<IClockViewModel>()
+
+        .Bind().As(Singleton).To<ClockViewModel>()
+        .Bind().To<ClockModel>()
+        .Bind().As(Singleton).To<Ticks>()
+
         // Infrastructure
-        .Bind().To<Dispatcher>();
+        .Bind().To<MicrosoftLoggerAdapter<TT>>()
+        .Bind().To<CurrentThreadDispatcher>();
 }
 ```
 
@@ -7779,13 +7754,7 @@ The [project file](/samples/BlazorWebAssemblyApp/BlazorWebAssemblyApp.csproj) lo
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk.Web">
-
-    <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
-        <Nullable>enable</Nullable>
-        <ImplicitUsings>enable</ImplicitUsings>
-    </PropertyGroup>
-
+    ...
     <ItemGroup>
         <PackageReference Include="Pure.DI" Version="2.1.69">
             <PrivateAssets>all</PrivateAssets>
@@ -7814,13 +7783,7 @@ The [project file](/samples/ShroedingersCatNativeAOT/ShroedingersCatNativeAOT.cs
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
-
-    <PropertyGroup>
-        <PublishAot>true</PublishAot>
-        <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-        <OutputType>Exe</OutputType>
-    </PropertyGroup>
-
+    ...
     <ItemGroup>
         <PackageReference Include="Pure.DI" Version="2.1.69">
             <PrivateAssets>all</PrivateAssets>
@@ -7921,12 +7884,7 @@ The [project file](/samples/ShroedingersCat/ShroedingersCat.csproj) looks like t
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
-
-    <PropertyGroup>
-        <OutputType>Exe</OutputType>
-        <TargetFramework>net9.0</TargetFramework>
-    </PropertyGroup>
-
+    ...
     <ItemGroup>
         <PackageReference Include="Pure.DI" Version="2.1.69">
             <PrivateAssets>all</PrivateAssets>
@@ -8012,12 +7970,7 @@ The [project file](/samples/ShroedingersCatTopLevelStatements/ShroedingersCatTop
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
-
-    <PropertyGroup>
-        <OutputType>Exe</OutputType>
-        <TargetFramework>net9.0</TargetFramework>
-    </PropertyGroup>
-
+    ...
     <ItemGroup>
         <PackageReference Include="Pure.DI" Version="2.1.69">
             <PrivateAssets>all</PrivateAssets>
@@ -8044,18 +7997,25 @@ Composition setup file is [Composition.cs](/samples/GrpcService/Composition.cs):
 
 ```c#
 using Pure.DI;
+using Pure.DI.MS;
 using static Pure.DI.Lifetime;
 
-internal partial class Composition: ServiceProviderFactory<Composition>
+namespace GrpcService;
+
+partial class Composition : ServiceProviderFactory<Composition>
 {
-    // IMPORTANT:
-    // Only composition roots (regular or anonymous) can be resolved through the `IServiceProvider` interface.
-    // These roots must be registered using `Root(...)` or `RootBind()` calls.
-    void Setup() => DI.Setup()
-        // Use the DI setup from the base class
+    private void Setup() => DI.Setup()
         .DependsOn(Base)
-        // Provides the composition root for Greeter service
-        .Root<GreeterService>();
+
+        .Root<ClockService>()
+
+        .Bind().As(Singleton).To<ClockViewModel>()
+        .Bind().To<ClockModel>()
+        .Bind().As(Singleton).To<Ticks>()
+
+        // Infrastructure
+        .Bind().To<MicrosoftLoggerAdapter<TT>>()
+        .Bind().To<CurrentThreadDispatcher>();
 }
 ```
 
@@ -8065,28 +8025,20 @@ The web application entry point is in the [Program.cs](/samples/GrpcService/Prog
 
 ```c#
 var builder = WebApplication.CreateBuilder(args);
-
-// Additional configuration is required to successfully run gRPC on macOS.
-// For instructions on how to configure Kestrel and gRPC clients on macOS, visit https://go.microsoft.com/fwlink/?linkid=2099682
-
-// Add services to the container.
 builder.Services.AddGrpc();
 
+using var composition = new Composition();
+
 // Uses Composition as an alternative IServiceProviderFactory
-builder.Host.UseServiceProviderFactory(new Composition());
+builder.Host.UseServiceProviderFactory(composition);
+...
 ```
 
 The [project file](/samples/GrpcService/GrpcService.csproj) looks like this:
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk.Web">
-
-    <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
-        <Nullable>enable</Nullable>
-        <ImplicitUsings>enable</ImplicitUsings>
-    </PropertyGroup>
-
+    ...
     <ItemGroup>
         <PackageReference Include="Pure.DI" Version="2.1.69">
             <PrivateAssets>all</PrivateAssets>
@@ -8115,31 +8067,26 @@ The definition of the composition is in [Composition.cs](/samples/MAUIApp/Compos
 
 ```csharp
 using Pure.DI;
+using Pure.DI.MS;
 using static Pure.DI.Lifetime;
 
-internal partial class Composition: ServiceProviderFactory<Composition>
+namespace MAUIApp;
+
+partial class Composition: ServiceProviderFactory<Composition>
 {
-    // IMPORTANT:
-    // Only composition roots (regular or anonymous) can be resolved through the `IServiceProvider` interface.
-    // These roots must be registered using `Root(...)` or `RootBind()` calls.
-    void Setup() => DI.Setup()
-        // Use the DI setup from the base class
+    private void Setup() => DI.Setup()
         .DependsOn(Base)
 
-        // Roots
-        .Root<AppShell>(nameof(AppShell))
-        .Root<IClockViewModel>(nameof(ClockViewModel))
-        
-        // View Models
-        .Bind().As(Singleton).To<ClockViewModel>()
+        .Root<IAppViewModel>(nameof(App))
+        .Root<IClockViewModel>(nameof(Clock))
 
-        // Models
-        .Bind().To<Log<TT>>()
-        .Bind().As(Singleton).To<Timer>()
-        .Bind().As(PerBlock).To<SystemClock>()
-    
+        .Bind().As(Singleton).To<ClockViewModel>()
+        .Bind().To<ClockModel>()
+        .Bind().As(Singleton).To<Ticks>()
+
         // Infrastructure
-        .Bind().To<Dispatcher>();
+        .Bind().To<MicrosoftLoggerAdapter<TT>>()
+        .Bind().To<MauiDispatcher>();
 }
 ```
 
@@ -8148,6 +8095,8 @@ The composition class inherits from the `ServiceProviderFactory<T>` class, where
 The web application entry point is in the [MauiProgram.cs](/samples/MAUIApp/MauiProgram.cs) file:
 
 ```c#
+namespace MAUIApp;
+
 public static class MauiProgram
 {
     public static MauiApp CreateMauiApp()
@@ -8159,7 +8108,11 @@ public static class MauiProgram
         builder.ConfigureContainer(composition);
         
         builder
-            .UseMauiApp(_ => new App(composition))
+            .UseMauiApp(_ => new App
+            {
+                // Overrides the resource with an initialized Composition instance
+                Resources = { ["Composition"] = composition }
+            })
             .ConfigureLifecycleEvents(events =>
             {
                 // Handles disposables
@@ -8210,7 +8163,7 @@ A single instance of the _Composition_ class is defined as a static resource in 
 </Application>
 ```
 
-All previously defined composition roots are now accessible from [markup](/samples/MAUIApp/MainWindow.xaml) without any effort, such as _ClockViewModel_:
+All previously defined composition roots are now accessible from [markup](/samples/MAUIApp/MainWindow.xaml) without any effort:
 
 ```xaml
 <?xml version="1.0" encoding="utf-8"?>
@@ -8218,34 +8171,30 @@ All previously defined composition roots are now accessible from [markup](/sampl
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MAUIApp.MainPage"
-             BindingContext="{StaticResource Composition}">
+             xmlns:local="clr-namespace:MAUIApp"
+             xmlns:clock="clr-namespace:Clock;assembly=Clock"
+             BindingContext="{Binding Source={StaticResource Composition}, x:DataType=local:Composition, Path=Clock}"
+             x:DataType="clock:IClockViewModel">
 
     <ScrollView>
+
         <VerticalStackLayout
             Spacing="25"
             Padding="30,0"
-            VerticalOptions="Center"
-            BindingContext="{Binding ClockViewModel}">
-
-            <Image
-                Source="dotnet_bot.png"
-                SemanticProperties.Description="Cute dot net bot waving hi to you!"
-                HeightRequest="200"
-                HorizontalOptions="Center" />
+            VerticalOptions="Center">
 
             <Label
                 Text="{Binding Date}"
                 SemanticProperties.HeadingLevel="Level1"
-                FontSize="32"
+                FontSize="64"
                 HorizontalOptions="Center" />
 
             <Label
                 Text="{Binding Time}"
                 SemanticProperties.HeadingLevel="Level2"
-                SemanticProperties.Description="Welcome to dot net Multi platform App U I"
-                FontSize="18"
+                FontSize="128"
                 HorizontalOptions="Center" />
-            
+
         </VerticalStackLayout>
     </ScrollView>
 
@@ -8256,67 +8205,8 @@ The [project file](/samples/MAUIApp/MAUIApp.csproj) looks like this:
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
-
-    <PropertyGroup>
-        <TargetFrameworks>net8.0-android;net8.0-ios;net8.0-maccatalyst</TargetFrameworks>
-        <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net8.0-windows10.0.19041.0</TargetFrameworks>
-        <!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
-        <!-- <TargetFrameworks>$(TargetFrameworks);net8.0-tizen</TargetFrameworks> -->
-
-        <!-- Note for MacCatalyst:
-        The default runtime is maccatalyst-x64, except in Release config, in which case the default is maccatalyst-x64;maccatalyst-arm64.
-        When specifying both architectures, use the plural <RuntimeIdentifiers> instead of the singular <RuntimeIdentifer>.
-        The Mac App Store will NOT accept apps with ONLY maccatalyst-arm64 indicated;
-        either BOTH runtimes must be indicated or ONLY macatalyst-x64. -->
-        <!-- For example: <RuntimeIdentifiers>maccatalyst-x64;maccatalyst-arm64</RuntimeIdentifiers> -->
-
-        <OutputType>Exe</OutputType>
-        <RootNamespace>MAUIApp</RootNamespace>
-        <UseMaui>true</UseMaui>
-        <SingleProject>true</SingleProject>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-
-        <!-- Display name -->
-        <ApplicationTitle>MAUIApp</ApplicationTitle>
-
-        <!-- App Identifier -->
-        <ApplicationId>com.companyname.mauiapp</ApplicationId>
-
-        <!-- Versions -->
-        <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
-        <ApplicationVersion>1</ApplicationVersion>
-
-        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">11.0</SupportedOSPlatformVersion>
-        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">13.1</SupportedOSPlatformVersion>
-        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
-        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
-        <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
-        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
-    </PropertyGroup>
-
+    ...
     <ItemGroup>
-        <!-- App Icon -->
-        <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4"/>
-
-        <!-- Splash Screen -->
-        <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128"/>
-
-        <!-- Images -->
-        <MauiImage Include="Resources\Images\*"/>
-        <MauiImage Update="Resources\Images\dotnet_bot.svg" BaseSize="168,208"/>
-
-        <!-- Custom Fonts -->
-        <MauiFont Include="Resources\Fonts\*"/>
-
-        <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
-        <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)"/>
-        <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)"/>
-        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0"/>
         <PackageReference Include="Pure.DI" Version="2.1.69">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -8344,21 +8234,27 @@ Composition setup file is [Composition.cs](/samples/MinimalWebAPI/Composition.cs
 
 ```c#
 using Pure.DI;
+using Pure.DI.MS;
 using static Pure.DI.Lifetime;
 
-internal partial class Composition: ServiceProviderFactory<Composition>
-{
-    // IMPORTANT:
-    // Only composition roots (regular or anonymous) can be resolved through the `IServiceProvider` interface.
-    // These roots must be registered using `Root(...)` or `RootBind()` calls.
-    void Setup() => DI.Setup()
-        // Use the DI setup from the base class
-        .DependsOn(Base)
-        .Bind().As(Singleton).To<WeatherForecastService>()
-            .Root<IWeatherForecastService>()
+namespace MinimalWebAPI;
 
-        // Application composition root
-        .Root<Program>("Root");
+partial class Composition : ServiceProviderFactory<Composition>
+{
+    private void Setup() => DI.Setup()
+        .DependsOn(Base)
+
+        // Owned is used here to dispose of all disposable instances associated with the root.
+        .Root<Owned<Program>>(nameof(Root))
+        .Root<IClockViewModel>()
+
+        .Bind().To<ClockViewModel>()
+        .Bind().To<ClockModel>()
+        .Bind().As(Singleton).To<Ticks>()
+
+        // Infrastructure
+        .Bind().To<MicrosoftLoggerAdapter<TT>>()
+        .Bind().To<CurrentThreadDispatcher>();
 }
 ```
 
@@ -8367,7 +8263,9 @@ The composition class inherits from the `ServiceProviderFactory<T>` class, where
 The web application entry point is in the [Program.cs](/samples/MinimalWebAPI/Program.cs) file:
 
 ```c#
-var composition = new Composition();
+using MinimalWebAPI;
+
+using var composition = new Composition();
 var builder = WebApplication.CreateBuilder(args);
 
 // Uses Composition as an alternative IServiceProviderFactory
@@ -8375,23 +8273,21 @@ builder.Host.UseServiceProviderFactory(composition);
 
 var app = builder.Build();
 
-// Creates an application composition root of type `Program`
-var compositionRoot = composition.Root;
-compositionRoot.Run(app);
+// Creates an application composition root of type `Owned<Program>`
+using var root = composition.Root;
+root.Value.Run(app);
 
-internal partial class Program(
-    // Dependencies could be injected here
-    ILogger<Program> logger,
-    IWeatherForecastService weatherForecast)
+partial class Program(
+    IClockViewModel clock,
+    IAppViewModel appModel)
 {
     private void Run(WebApplication app)
     {
-        app.MapGet("/", async (
+        app.MapGet("/", (
             // Dependencies can be injected here as well
-            [FromServices] IWeatherForecastService anotherOneWeatherForecast) =>
-        {
+            [FromServices] ILogger<Program> logger) => {
             logger.LogInformation("Start of request execution");
-            return await anotherOneWeatherForecast.CreateWeatherForecastAsync().ToListAsync();
+            return new ClockResult(appModel.Title, clock.Date, clock.Time);
         });
 
         app.Run();
@@ -8403,13 +8299,7 @@ The [project file](/samples/WebAPI/WebAPI.csproj) looks like this:
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk.Web">
-
-    <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <Nullable>enable</Nullable>
-        <ImplicitUsings>enable</ImplicitUsings>
-    </PropertyGroup>
-
+    ...
     <ItemGroup>
         <PackageReference Include="Pure.DI" Version="2.1.69">
             <PrivateAssets>all</PrivateAssets>
@@ -8536,23 +8426,25 @@ Composition setup file is [Composition.cs](/samples/WebAPI/Composition.cs):
 
 ```c#
 using Pure.DI;
-using Controllers;
-using Microsoft.AspNetCore.Mvc;
 using Pure.DI.MS;
-using WeatherForecast;
 using static Pure.DI.Lifetime;
 
-internal partial class Composition: ServiceProviderFactory<Composition>
+namespace WebAPI;
+
+partial class Composition: ServiceProviderFactory<Composition>
 {
-    // IMPORTANT:
-    // Only composition roots (regular or anonymous) can be resolved through the `IServiceProvider` interface.
-    // These roots must be registered using `Root(...)` or `RootBind()` calls.
-    void Setup() => DI.Setup()
-        // Use the DI setup from the base class
+    private void Setup() => DI.Setup()
         .DependsOn(Base)
-        .Bind().As(Singleton).To<WeatherForecastService>()
-        // Registers controllers as roots
-        .Roots<ControllerBase>();
+
+        .Roots<ControllerBase>()
+
+        .Bind().As(Singleton).To<ClockViewModel>()
+        .Bind().To<ClockModel>()
+        .Bind().As(Singleton).To<Ticks>()
+
+        // Infrastructure
+        .Bind().To<MicrosoftLoggerAdapter<TT>>()
+        .Bind().To<CurrentThreadDispatcher>();
 }
 ```
 
@@ -8563,24 +8455,17 @@ The web application entry point is in the [Program.cs](/samples/WebAPI/Program.c
 ```c#
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddControllersWithViews().AddControllersAsServices();
+using var composition = new Composition();
 
 // Uses Composition as an alternative IServiceProviderFactory
-builder.Host.UseServiceProviderFactory(new Composition());
+builder.Host.UseServiceProviderFactory(composition);
 ```
 
 The [project file](/samples/WebAPI/WebAPI.csproj) looks like this:
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk.Web">
-
-    <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
-        <Nullable>enable</Nullable>
-        <ImplicitUsings>enable</ImplicitUsings>
-    </PropertyGroup>
-
+    ...
     <ItemGroup>
         <PackageReference Include="Pure.DI" Version="2.1.69">
             <PrivateAssets>all</PrivateAssets>
@@ -8610,22 +8495,24 @@ Composition setup file is [Composition.cs](/samples/WebApp/Composition.cs):
 ```c#
 using Pure.DI;
 using Pure.DI.MS;
-using Controllers;
-using Microsoft.AspNetCore.Mvc;
-using WeatherForecast;
 using static Pure.DI.Lifetime;
 
-internal partial class Composition: ServiceProviderFactory<Composition>
+namespace WebApp;
+
+partial class Composition: ServiceProviderFactory<Composition>
 {
-    // IMPORTANT:
-    // Only composition roots (regular or anonymous) can be resolved through the `IServiceProvider` interface.
-    // These roots must be registered using `Root(...)` or `RootBind()` calls.
-    void Setup() => DI.Setup()
-        // Use the DI setup from the base class
+    private void Setup() => DI.Setup()
         .DependsOn(Base)
-        .Bind().As(Singleton).To<WeatherForecastService>()
-        // Registers controllers as roots
-        .Roots<Controller>();
+
+        .Roots<ControllerBase>()
+
+        .Bind().As(Singleton).To<ClockViewModel>()
+        .Bind().To<ClockModel>()
+        .Bind().As(Singleton).To<Ticks>()
+
+        // Infrastructure
+        .Bind().To<MicrosoftLoggerAdapter<TT>>()
+        .Bind().To<CurrentThreadDispatcher>();
 }
 ```
 
@@ -8639,21 +8526,17 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews().AddControllersAsServices();
 
+using var composition = new Composition();
+
 // Uses Composition as an alternative IServiceProviderFactory
-builder.Host.UseServiceProviderFactory(new Composition());
+builder.Host.UseServiceProviderFactory(composition);
 ```
 
 The [project file](/samples/WebApp/WebApp.csproj) looks like this:
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk.Web">
-
-    <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
-        <Nullable>enable</Nullable>
-        <ImplicitUsings>enable</ImplicitUsings>
-    </PropertyGroup>
-
+    ...
     <ItemGroup>
         <PackageReference Include="Pure.DI" Version="2.1.69">
             <PrivateAssets>all</PrivateAssets>
@@ -8684,46 +8567,40 @@ The composition definition is in the file [Composition.cs](/samples/WinFormsAppN
 using Pure.DI;
 using static Pure.DI.Lifetime;
 
-internal partial class Composition
+namespace WinFormsAppNetCore;
+
+partial class Composition
 {
-    void Setup() => DI.Setup()
-        // Provides the composition root for main form
-        .Root<Owned<FormMain>>(nameof(Root))
+    private void Setup() => DI.Setup()
+        .Root<Program>(nameof(Root))
 
-        // Forms
         .Bind().As(Singleton).To<FormMain>()
-        
-        // View Models
-        .Bind().To<ClockViewModel>()
+        .Bind().As(Singleton).To<ClockViewModel>()
+        .Bind().To<ClockModel>()
+        .Bind().As(Singleton).To<Ticks>()
 
-        // Models
-        .Bind().To<Log<TT>>()
-        .Bind().To<Timer>()
-        .Bind().As(PerBlock).To<SystemClock>()
-    
         // Infrastructure
-        .Bind().To<Dispatcher>();
+        .Bind().To<DebugLog<TT>>()
+        .Bind().To<WinFormsDispatcher>();
 }
 ```
 
 A single instance of the _Composition_ class is defined in the _Main_ method of the [Program.cs](/samples/WinFormsAppNetCore/Program.cs) file:
 
 ```c#
-public static class Program
+namespace WinFormsAppNetCore;
+
+public class Program(FormMain formMain)
 {
-    /// <summary>
-    ///  The main entry point for the application.
-    /// </summary>
     [STAThread]
     public static void Main()
     {
-        // To customize application configuration such as set high DPI settings or default font,
-        // see https://aka.ms/applicationconfiguration.
         ApplicationConfiguration.Initialize();
         using var composition = new Composition();
-        using var root = composition.Root;
-        Application.Run(root.Value);
+        composition.Root.Run();
     }
+
+    private void Run() => Application.Run(formMain);
 }
 ```
 
@@ -8731,13 +8608,7 @@ The [project file](/samples/WinFormsAppNetCore/WinFormsAppNetCore.csproj) looks 
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
-
-    <PropertyGroup>
-        <OutputType>WinExe</OutputType>
-        <UseWPF>true</UseWPF>
-        <TargetFramework>net9.0-windows</TargetFramework>
-    </PropertyGroup>
-
+    ...
     <ItemGroup>
         <PackageReference Include="Pure.DI" Version="2.1.69">
             <PrivateAssets>all</PrivateAssets>
@@ -8766,45 +8637,42 @@ The composition definition is in the file [Composition.cs](/samples/WinFormsApp/
 using Pure.DI;
 using static Pure.DI.Lifetime;
 
-internal partial class Composition
+namespace WinFormsApp;
+
+partial class Composition
 {
-    void Setup() => DI.Setup()
-        // Provides the composition root for main form
-        .Root<Owned<FormMain>>(nameof(Root))
+    private void Setup() => DI.Setup()
+        .Root<Program>(nameof(Root))
 
-        // Forms
         .Bind().As(Singleton).To<FormMain>()
-        
-        // View Models
-        .Bind().To<ClockViewModel>()
+        .Bind().As(Singleton).To<ClockViewModel>()
+        .Bind().To<ClockModel>()
+        .Bind().As(Singleton).To<Ticks>()
 
-        // Models
-        .Bind().To<Log<TT>>()
-        .Bind().To<Timer>()
-        .Bind().As(PerBlock).To<SystemClock>()
-    
         // Infrastructure
-        .Bind().As(Singleton).To<Dispatcher>();
+        .Bind().To<DebugLog<TT>>()
+        .Bind().To<WinFormsDispatcher>();
 }
 ```
 
 A single instance of the _Composition_ class is defined in the _Main_ method of the [Program.cs](/samples/WinFormsApp/Program.cs) file:
 
 ```c#
-public static class Program
+namespace WinFormsApp;
+
+public class Program(FormMain formMain)
 {
-    /// <summary>
-    /// The main entry point for the application.
-    /// </summary>
     [STAThread]
     public static void Main()
     {
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
         using var composition = new Composition();
-        using var root = composition.Root;
-        Application.Run(root.Value);
+        var root = composition.Root;
+        root.Run();
     }
+
+    private void Run() => Application.Run(formMain);
 }
 ```
 
@@ -8813,7 +8681,7 @@ The [project file](/samples/WinFormsApp/WinFormsApp.csproj) looks like this:
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-
+    ...
     <ItemGroup>
         <PackageReference Include="Pure.DI" Version="2.1.69">
             <PrivateAssets>all</PrivateAssets>
@@ -8842,22 +8710,21 @@ The definition of the composition is in [Composition.cs](/samples/WpfAppNetCore/
 using Pure.DI;
 using static Pure.DI.Lifetime;
 
-internal partial class Composition
-{
-    void Setup() => DI.Setup()
-        // Provides the composition root for clock view model
-        .Root<IClockViewModel>(nameof(ClockViewModel))
-        
-        // View Models
-        .Bind().As(Singleton).To<ClockViewModel>()
+namespace WpfAppNetCore;
 
-        // Models
-        .Bind().To<Log<TT>>()
-        .Bind().As(Singleton).To<Timer>()
-        .Bind().As(PerBlock).To<SystemClock>()
-    
+partial class Composition
+{
+    private void Setup() => DI.Setup()
+        .Root<IAppViewModel>(nameof(App))
+        .Root<IClockViewModel>(nameof(Clock))
+
+        .Bind().As(Singleton).To<ClockViewModel>()
+        .Bind().To<ClockModel>()
+        .Bind().As(Singleton).To<Ticks>()
+
         // Infrastructure
-        .Bind().To<Dispatcher>();
+        .Bind().To<DebugLog<TT>>()
+        .Bind().To<WpfDispatcher>();
 }
 ```
 
@@ -8874,12 +8741,12 @@ A single instance of the _Composition_ class is defined as a static resource in 
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:app="clr-namespace:WpfAppNetCore"
-             StartupUri="/Views/MainWindow.xaml"
+             StartupUri="/MainWindow.xaml"
              Exit="OnExit">
 
-    <!--Creates a shared resource of type `Composition` and with key _‘Composition’_,
-    which will be further used as a data context in the views.-->
     <Application.Resources>
+        <!--Creates a shared resource of type Composition and with key "Composition",
+        which will be further used as a data context in the views.-->
         <app:Composition x:Key="Composition" />
     </Application.Resources>
 
@@ -8894,7 +8761,7 @@ This markup fragment
 </Application.Resources>
 ```
 
-creates a shared resource of type `Composition` and with key _‘Composition’_, which will be further used as a data context in the views.
+creates a shared resource of type `Composition` and with key _"Composition"_, which will be further used as a data context in the views.
 
 Advantages over classical DI container libraries:
 - No explicit initialisation of data contexts is required. Data contexts are configured directly in `.axaml` files according to the MVVM approach.
@@ -8906,9 +8773,14 @@ You can now use bindings to model views without even editing the views `.cs` cod
 ```xaml
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:app="clr-namespace:WpfAppNetCore"
+        mc:Ignorable="d"
         DataContext="{StaticResource Composition}"
-        Title="{Binding ClockViewModel.Time}">
-    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" DataContext="{Binding ClockViewModel}">
+        d:DataContext="{d:DesignInstance app:DesignTimeComposition}"
+        Title="{Binding App.Title}">
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" DataContext="{Binding Clock}">
         <TextBlock Text="{Binding Date}" FontSize="64" HorizontalAlignment="Center"/>
         <TextBlock Text="{Binding Time}" FontSize="128" HorizontalAlignment="Center"/>        
     </StackPanel>
@@ -8921,9 +8793,11 @@ To use bindings in views:
 
   `DataContext="{StaticResource Composition}"`
 
+  and `d:DataContext="{d:DesignInstance app:DesignTimeComposition}"` for the design time
+
 - Use the bindings as usual:
 
-  `Title="{Binding ClockViewModel.Time}"`
+  `Title="{Binding App.Title}"`
 
 Advantages over classical DI container libraries:
 - The code-behind `.cs` files for views are free of any logic.
@@ -8935,13 +8809,7 @@ The [project file](/samples/WpfAppNetCore/WpfAppNetCore.csproj) looks like this:
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
-
-    <PropertyGroup>
-        <OutputType>WinExe</OutputType>
-        <UseWPF>true</UseWPF>
-        <TargetFramework>net9.0-windows</TargetFramework>
-    </PropertyGroup>
-
+   ...
     <ItemGroup>
         <PackageReference Include="Pure.DI" Version="2.1.69">
             <PrivateAssets>all</PrivateAssets>
@@ -12231,15 +12099,6 @@ DI.Setup("Composition")
 </blockquote></details>
 
 
-<details><summary>Field Overrider</summary><blockquote>
-
-Atomically generated smart tag with value "Overrider".
-            It's used for:
-            
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Overrider) -- _GraphOverrider_ as _PerBlock_
-</blockquote></details>
-
-
 <details><summary>Field UniqueTag</summary><blockquote>
 
 Atomically generated smart tag with value "UniqueTag".
@@ -12249,39 +12108,21 @@ Atomically generated smart tag with value "UniqueTag".
 </blockquote></details>
 
 
-<details><summary>Field CompositionClass</summary><blockquote>
-
-Atomically generated smart tag with value "CompositionClass".
-            It's used for:
-            
-            class _Generator__CodeBuilder_ <-- _IBuilder`2_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
-</blockquote></details>
-
-
-<details><summary>Field Cleaner</summary><blockquote>
-
-Atomically generated smart tag with value "Cleaner".
-            It's used for:
-            
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
-</blockquote></details>
-
-
-<details><summary>Field UsingDeclarations</summary><blockquote>
-
-Atomically generated smart tag with value "UsingDeclarations".
-            It's used for:
-            
-            class _Generator__CompositionClassBuilder_ <-- _IBuilder`2_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
-</blockquote></details>
-
-
 <details><summary>Field GenericType</summary><blockquote>
 
 Atomically generated smart tag with value "GenericType".
             It's used for:
             
             class _Generator__TypeResolver_ <-- _IIdGenerator_(GenericType) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
+<details><summary>Field Overrider</summary><blockquote>
+
+Atomically generated smart tag with value "Overrider".
+            It's used for:
+            
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Overrider) -- _GraphOverrider_ as _PerBlock_
 </blockquote></details>
 
 
@@ -12300,6 +12141,33 @@ Atomically generated smart tag with value "Injection".
             It's used for:
             
             class _Generator__BuildTools_ <-- _IIdGenerator_(Injection) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
+<details><summary>Field CompositionClass</summary><blockquote>
+
+Atomically generated smart tag with value "CompositionClass".
+            It's used for:
+            
+            class _Generator__CodeBuilder_ <-- _IBuilder`2_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field UsingDeclarations</summary><blockquote>
+
+Atomically generated smart tag with value "UsingDeclarations".
+            It's used for:
+            
+            class _Generator__CompositionClassBuilder_ <-- _IBuilder`2_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field Cleaner</summary><blockquote>
+
+Atomically generated smart tag with value "Cleaner".
+            It's used for:
+            
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
 </blockquote></details>
 
 

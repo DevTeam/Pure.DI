@@ -8,37 +8,26 @@ Composition setup file is [Composition.cs](/samples/BlazorServerApp/Composition.
 
 ```c#
 using Pure.DI;
+using Pure.DI.MS;
 using static Pure.DI.Lifetime;
 
-internal partial class Composition: ServiceProviderFactory<Composition>
-{
-    // IMPORTANT:
-    // Only composition roots (regular or anonymous) can be resolved through the `IServiceProvider` interface.
-    // These roots must be registered using `Root(...)` or `RootBind()` calls.
-    void Setup() => DI.Setup()
-        // Use the DI setup from the base class
-        .DependsOn(Base)
-        // View Models
-        .Bind().To<ClockViewModel>()
-            // Provides the composition root for a Clock view model
-            .Root<IClockViewModel>(nameof(ClockViewModel))
-        .Bind().To<ErrorViewModel>()
-            // Provides the composition root for the Error view model
-            .Root<IErrorViewModel>()
+namespace BlazorServerApp;
 
-        // Services
-        .Bind().To<Log<TT>>()
-        .Bind().As(Singleton).To<Timer>()
-        .Bind().As(PerBlock).To<SystemClock>()
-        .Bind().As(Singleton).To<WeatherForecastService>()
-            // Provides the composition root for Weather Forecast service
-            .Root<IWeatherForecastService>()
-        .Bind().As(Singleton).To<CounterService>()
-            // Provides the composition root for Counter service
-            .Root<ICounterService>()
-        
+partial class Composition: ServiceProviderFactory<Composition>
+{
+    private void Setup() => DI.Setup()
+        .DependsOn(Base)
+
+        .Root<IAppViewModel>()
+        .Root<IClockViewModel>()
+
+        .Bind().To<ClockViewModel>()
+        .Bind().To<ClockModel>()
+        .Bind().As(Singleton).To<Ticks>()
+
         // Infrastructure
-        .Bind().To<Dispatcher>();
+        .Bind().To<MicrosoftLoggerAdapter<TT>>()
+        .Bind().To<CurrentThreadDispatcher>();
 }
 ```
 
@@ -58,13 +47,7 @@ The [project file](/samples/BlazorServerApp/BlazorServerApp.csproj) looks like t
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk.Web">
-
-    <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
-        <Nullable>enable</Nullable>
-        <ImplicitUsings>enable</ImplicitUsings>
-    </PropertyGroup>
-
+    ...
     <ItemGroup>
         <PackageReference Include="Pure.DI" Version="2.1.69">
             <PrivateAssets>all</PrivateAssets>

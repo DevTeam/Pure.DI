@@ -16,7 +16,7 @@ public class Clock : MonoBehaviour
     private Transform secondsPivot;
 
     [Dependency]
-    public IClockService ClockService { private get; set; }
+    public IClockModel ClockModel { private get; set; }
 
     void Start()
     {
@@ -26,7 +26,7 @@ public class Clock : MonoBehaviour
 
     void Update()
     {
-        var now = ClockService.Now.TimeOfDay;
+        var now = ClockModel.Now.TimeOfDay;
         hoursPivot.localRotation = Quaternion.Euler(0f, 0f, HoursToDegrees * (float)now.TotalHours);
         minutesPivot.localRotation = Quaternion.Euler(0f, 0f, MinutesToDegrees * (float)now.TotalMinutes);
         secondsPivot.localRotation = Quaternion.Euler(0f, 0f, SecondsToDegrees * (float)now.TotalSeconds);

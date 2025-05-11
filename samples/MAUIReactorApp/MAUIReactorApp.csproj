@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>$(BaseTargetFramework)-android;$(BaseTargetFramework)-ios;$(BaseTargetFramework)-maccatalyst</TargetFrameworks>
-        <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);$(BaseTargetFramework)-windows10.0.19041.0</TargetFrameworks>
+        <TargetFrameworks>$(targetFrameworkVersion)-android;$(targetFrameworkVersion)-ios;$(targetFrameworkVersion)-maccatalyst</TargetFrameworks>
+        <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);$(targetFrameworkVersion)-windows10.0.19041.0</TargetFrameworks>
         <!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
-        <!-- <TargetFrameworks>$(TargetFrameworks);net9.0-tizen</TargetFrameworks> -->
+        <!-- <TargetFrameworks>$(TargetFrameworks);$(targetFrameworkVersion)-tizen</TargetFrameworks> -->
 
         <!-- Note for MacCatalyst:
         The default runtime is maccatalyst-x64, except in Release config, in which case the default is maccatalyst-x64;maccatalyst-arm64.
@@ -62,7 +62,7 @@
     <ItemGroup Condition="'$(Configuration)'=='Debug'">
         <RuntimeHostConfigurationOption Include="MauiReactor.HotReload" Value="true" Trim="false"/>
     </ItemGroup>
-    <ItemGroup Condition="'$(Configuration)|$(TargetFramework)'=='Release|net9.0-ios'">
+    <ItemGroup Condition="'$(Configuration)|$(TargetFramework)'=='Release|$(targetFrameworkVersion)-ios'">
         <RuntimeHostConfigurationOption Include="MauiReactor.HotReload" Value="false" Trim="true"/>
     </ItemGroup>
 

@@ -1,3 +1,5 @@
 global using System;
-global using Clock.Models;
-global using Clock.ViewModels;
+global using System.Diagnostics;
+global using Clock;
+global using Microsoft.Extensions.Logging;
+global using Microsoft.Maui.LifecycleEvents;

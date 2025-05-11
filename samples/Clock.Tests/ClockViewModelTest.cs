@@ -1,39 +1,15 @@
 namespace Clock.Tests;
 
-using Models;
-
 public class ClockViewModelTest
 {
+    private readonly Mock<IClockModel> _clock = new();
+    private readonly Mock<ITicks> _ticks = new();
     private readonly Mock<IDispatcher> _dispatcher = new();
 
-    public ClockViewModelTest() =>
-        _dispatcher.Setup(i => i.Dispatch(It.IsAny<Action>()))
-            .Callback<Action>(action => action());
-
-    [Fact]
-    public void ShouldDisposeTimerSubscriptionWhenDispose()
+    public ClockViewModelTest()
     {
-        // Given
-        var subscription = new Mock<IDisposable>();
-        var timer = new Mock<ITimer>();
-        timer.Setup(i => i.Subscribe(It.IsAny<IObserver<Tick>>())).Returns(subscription.Object);
-        var timerFactory = new Mock<Func<TimeSpan, ITimer>>();
-        timerFactory.Setup(i => i(It.IsAny<TimeSpan>())).Returns(timer.Object);
-
-        var viewModel = new ClockViewModel(
-            Mock.Of<ILog<ClockViewModel>>(),
-            Mock.Of<IClock>(),
-            timerFactory.Object)
-        {
-            Dispatcher = _dispatcher.Object,
-            Log = Mock.Of<ILog<ViewModel>>()
-        };
-
-        // When
-        ((IDisposable)viewModel).Dispose();
-
-        // Then
-        subscription.Verify(i => i.Dispose(), Times.Once);
+        _dispatcher.Setup(i => i.Dispatch(It.IsAny<Action>())).Callback<Action>(action => action());
+        _ticks.Raise(i => i.Tick += null);
     }
 
     [Fact]
@@ -41,21 +17,11 @@ public class ClockViewModelTest
     {
         // Given
         var now = new DateTimeOffset(2020, 8, 19, 19, 39, 47, TimeSpan.Zero);
-        var clock = new Mock<IClock>();
-        clock.SetupGet(i => i.Now).Returns(now);
-        var timerFactory = new Mock<Func<TimeSpan, ITimer>>();
-        timerFactory.Setup(i => i(It.IsAny<TimeSpan>())).Returns(Mock.Of<ITimer>());
-
-        var viewModel = new ClockViewModel(
-            Mock.Of<ILog<ClockViewModel>>(),
-            clock.Object,
-            timerFactory.Object)
-        {
-            Dispatcher = _dispatcher.Object,
-            Log = Mock.Of<ILog<ViewModel>>()
-        };
+        _clock.SetupGet(i => i.Now).Returns(now);
+        var viewModel = CreateInstance();
 
         // When
+        _ticks.Raise(i => i.Tick += null);
         var date = viewModel.Date;
         var time = viewModel.Time;
 
@@ -68,32 +34,26 @@ public class ClockViewModelTest
     public void ShouldRefreshDateTimeWhenTimerTick()
     {
         // Given
-        var timer = new Mock<ITimer>();
-        IObserver<Tick>? observer = null;
-        timer.Setup(i => i.Subscribe(It.IsAny<IObserver<Tick>>()))
-            .Callback(new Action<IObserver<Tick>>(o => { observer = o; }))
-            .Returns(Mock.Of<IDisposable>());
-        var timerFactory = new Mock<Func<TimeSpan, ITimer>>();
-        timerFactory.Setup(i => i(It.IsAny<TimeSpan>())).Returns(timer.Object);
-
-        var viewModel = new ClockViewModel(
-            Mock.Of<ILog<ClockViewModel>>(),
-            Mock.Of<IClock>(),
-            timerFactory.Object)
-        {
-            Dispatcher = _dispatcher.Object,
-            Log = Mock.Of<ILog<ViewModel>>()
-        };
+        var viewModel = CreateInstance();
 
         var propertyNames = new List<string?>();
         viewModel.PropertyChanged += (_, args) => { propertyNames.Add(args.PropertyName); };
 
         // When
-        observer?.OnNext(default);
-        observer?.OnNext(default);
+        var now1 = new DateTimeOffset(2020, 8, 19, 19, 39, 47, TimeSpan.Zero);
+        _clock.SetupGet(i => i.Now).Returns(now1);
+        _ticks.Raise(i => i.Tick += null);
+
+        var now2 = new DateTimeOffset(2020, 8, 19, 19, 44, 48, TimeSpan.Zero);
+        _clock.SetupGet(i => i.Now).Returns(now2);
+        _ticks.Raise(i => i.Tick += null);
 
         // Then
-        propertyNames.Count(i => i == nameof(IClockViewModel.Date)).ShouldBe(2);
-        propertyNames.Count(i => i == nameof(IClockViewModel.Time)).ShouldBe(2);
+        propertyNames.AsEnumerable().Count(i => i == nameof(IAppViewModel.Title)).ShouldBe(2);
+        propertyNames.AsEnumerable().Count(i => i == nameof(IClockViewModel.Date)).ShouldBe(2);
+        propertyNames.AsEnumerable().Count(i => i == nameof(IClockViewModel.Time)).ShouldBe(2);
     }
+
+    private ClockViewModel CreateInstance() =>
+        new(Mock.Of<ILog<ClockViewModel>>(), _clock.Object, _ticks.Object) { Dispatcher = _dispatcher.Object };
 }

@@ -1,27 +1,18 @@
 ﻿@page "/"
 @using System.ComponentModel
-@using Clock.ViewModels
-@inject IClockViewModel ClockViewModel
+@using Clock
+@inject IAppViewModel App
+@inject IClockViewModel Clock
 
-<PageTitle>Index</PageTitle>
+<PageTitle>@App.Title</PageTitle>
 
-<h1>Hello, world!</h1>
-
-Welcome to your Pure.DI Blazor WebAssembly example.
-
-<hr/>
-
-<p>Date: @ClockViewModel.Date</p>
-<p>Time: @ClockViewModel.Time</p>
-
-<hr/>
-
-<img src="https://github.com/DevTeam/Pure.DI/blob/master/readme/di.gif?raw=true" alt="Pure.DI" width="800"/>
+<p style="font-size:64px">@Clock.Date</p>
+<p style="font-size:128px">@Clock.Time</p>
 
 @code {
     protected override void OnInitialized()
     {
-        ((INotifyPropertyChanged)ClockViewModel).PropertyChanged += (_, _) => StateHasChanged();
+        ((INotifyPropertyChanged)Clock).PropertyChanged += (_, _) => StateHasChanged();
         base.OnInitialized();
     }
 }

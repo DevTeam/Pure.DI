@@ -1,33 +1,23 @@
-// ReSharper disable UnusedMember.Local
-// ReSharper disable UnusedMember.Global
-// ReSharper disable RedundantNameQualifier
-namespace MAUIApp;
-
 using Pure.DI;
 using Pure.DI.MS;
 using static Pure.DI.Lifetime;
-using Timer = Clock.Models.Timer;
+
+namespace MAUIApp;
 
 partial class Composition: ServiceProviderFactory<Composition>
 {
-    // IMPORTANT:
-    // Only composition roots (regular or anonymous) can be resolved through the `IServiceProvider` interface.
-    // These roots must be registered using `Root(...)` or `RootBind()` calls.
-    private static void Setup() => DI.Setup()
+    [Conditional("DI")]
+    private void Setup() => DI.Setup()
         .DependsOn(Base)
 
-        // Roots
-        .Root<AppShell>(nameof(AppShell))
-        .Root<IClockViewModel>(nameof(ClockViewModel))
-        
-        // View Models
-        .Bind().As(Singleton).To<ClockViewModel>()
+        .Root<IAppViewModel>(nameof(App))
+        .Root<IClockViewModel>(nameof(Clock))
 
-        // Models
-        .Bind().To<Log<TT>>()
-        .Bind().As(Singleton).To<Timer>()
-        .Bind().As(PerBlock).To<SystemClock>()
-    
+        .Bind().As(Singleton).To<ClockViewModel>()
+        .Bind().To<ClockModel>()
+        .Bind().As(Singleton).To<Ticks>()
+
         // Infrastructure
-        .Bind().To<Dispatcher>();
+        .Bind().To<MicrosoftLoggerAdapter<TT>>()
+        .Bind().To<MauiDispatcher>();
 }

@@ -125,12 +125,12 @@ partial class Composition
       string overString2;
       Func<int, string, IDependency> perBlockFunc1;
       var localLockObject104 = new Object();
-      Func<int, string, IDependency> localFactory105 = new Func<int, string, IDependency>((int localArg19, string localArg215) =>
+      Func<int, string, IDependency> localFactory105 = new Func<int, string, IDependency>((int localArg15, string localArg28) =>
       {
         lock (localLockObject104)
         {
-          overInt320 = localArg19;
-          overString2 = localArg215;
+          overInt320 = localArg15;
+          overString2 = localArg28;
           if (_root._singletonClock51 is null)
           {
             using (_lock.EnterScope())

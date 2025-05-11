@@ -1,45 +1,52 @@
 ﻿namespace Clock.Tests;
 
-using System.Collections.ObjectModel;
-using Models;
-
 public class ViewModelTest
 {
     private readonly Mock<IDispatcher> _dispatcher = new();
+    private readonly TestViewModel _model;
 
-    public ViewModelTest() =>
-        _dispatcher.Setup(i => i.Dispatch(It.IsAny<Action>()))
-            .Callback<Action>(action => action());
-
-    private class TestViewModel : ViewModel
+    public ViewModelTest()
     {
-        private readonly List<string?> _propertyNames = [];
+        _dispatcher.Setup(i => i.Dispatch(It.IsAny<Action>())).Callback<Action>(action => action());
+        _model = new TestViewModel { Dispatcher = _dispatcher.Object };
+    }
 
-        public TestViewModel() =>
-            PropertyChanged += (_, args) => { _propertyNames.Add(args.PropertyName); };
+    [Fact]
+    public void ShouldDispatchPropertyChangedEvents()
+    {
+        // Given
 
-        public ReadOnlyCollection<string?> PropertyNames => _propertyNames.AsReadOnly();
+        // When
+        _model.RaiseOnPropertyChanged("Abc", "SomeName");
 
-        public void RaiseOnPropertyChanged(string? propertyName = null) =>
-            OnPropertyChanged(propertyName);
+        // Then
+        _dispatcher.Verify(i => i.Dispatch(It.IsAny<Action>()), Times.Once);
     }
 
     [Fact]
     public void ShouldRaisePropertyChangedEvent()
     {
         // Given
-        var model = new TestViewModel
-        {
-            Dispatcher = _dispatcher.Object,
-            Log = Mock.Of<ILog<ViewModel>>()
-        };
 
         // When
-        model.RaiseOnPropertyChanged("SomeName");
+        _model.RaiseOnPropertyChanged("Abc", "SomeName");
 
         // Then
-        model.PropertyNames.Count.ShouldBe(1);
-        model.PropertyNames.ShouldContain("SomeName");
-        _dispatcher.Verify(i => i.Dispatch(It.IsAny<Action>()), Times.Once);
+        _model.PropertyNames.ShouldContain("SomeName");
+    }
+
+    private class TestViewModel : ViewModel
+    {
+        private readonly List<string?> _propertyNames = [];
+
+        public TestViewModel()
+        {
+            PropertyChanged += (_, args) => { _propertyNames.Add(args.PropertyName); };
+        }
+
+        public IReadOnlyCollection<string?> PropertyNames => _propertyNames;
+
+        public void RaiseOnPropertyChanged(string newPropertyValue, string? propertyName = null) =>
+            OnPropertyChanged(newPropertyValue, propertyName);
     }
 }

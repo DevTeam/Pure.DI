@@ -12,25 +12,25 @@ The definition of the composition is in [Composition.cs](/samples/AvaloniaApp/Co
 ```csharp
 using Pure.DI;
 using static Pure.DI.Lifetime;
+using static Pure.DI.RootKinds;
 
-internal partial class Composition
+namespace AvaloniaApp;
+
+partial class Composition
 {
-    void Setup() => DI.Setup()
-        // Provides the composition root for the main window
-        .Root<MainWindow>(nameof(MainWindow))
-        // Provides the composition root for a Clock view model
-        .Root<IClockViewModel>(nameof(ClockViewModel))
-        
-        // View Models
-        .Bind().As(Singleton).To<ClockViewModel>()
+    private void Setup() => DI.Setup()
+        .Root<IAppViewModel>(nameof(App), kind: Virtual)
+        .Root<IClockViewModel>(nameof(Clock), kind: Virtual)
 
-        // Models
-        .Bind().To<Log<TT>>()
-        .Bind().As(Singleton).To<Timer>()
-        .Bind().As(PerBlock).To<SystemClock>()
-    
+        .OrdinalAttribute<InitializableAttribute>()
+
+        .Bind().As(Singleton).To<ClockViewModel>()
+        .Bind().To<ClockModel>()
+        .Bind().As(Singleton).To<Ticks>()
+
         // Infrastructure
-        .Bind().To<Dispatcher>();
+        .Bind().To<DebugLog<TT>>()
+        .Bind().To<AvaloniaDispatcher>();
 }
 ```
 
@@ -55,10 +55,10 @@ A single instance of the _Composition_ class is defined as a static resource in 
     <FluentTheme />
   </Application.Styles>
 
-  <!--Creates a shared resource of type `Composition` and with key _‘Composition’_,
-  which will be further used as a data context in the views.-->
   <Application.Resources>
-    <app:Composition x:Key="Composition" />
+    <!--Creates a shared resource of type Composition and with key "Composition",
+    which will be further used as a data context in the views.-->
+    <app:Composition x:Key="Composition"  />
   </Application.Resources>
 
 </Application>
@@ -72,7 +72,7 @@ This markup fragment
 </Application.Resources>
 ```
 
-creates a shared resource of type `Composition` and with key _‘Composition’_, which will be further used as a data context in the views.
+creates a shared resource of type `Composition` with key _"Composition"_, which will be further used as a data context in the views.
 
 The associated application [App.axaml.cs](/samples/AvaloniaApp/App.axaml.cs) class is looking like:
 
@@ -89,11 +89,11 @@ public class App : Application
             switch (ApplicationLifetime)
             {
                 case IClassicDesktopStyleApplicationLifetime desktop:
-                    desktop.MainWindow = composition.MainWindow;
+                    desktop.MainWindow = new MainWindow();
                     break;
 
                 case ISingleViewApplicationLifetime singleView:
-                    singleView.MainView = composition.MainWindow;
+                    singleView.MainView = new MainWindow();
                     break;
             }
 
@@ -114,27 +114,28 @@ Advantages over classical DI container libraries:
 - The code is simpler, more compact, and requires less maintenance effort.
 - The main window is created in a pure DI paradigm, and it can be easily supplied with all necessary dependencies via DI as regular types.
 
-You can now use bindings to model views without even editing the views `.cs` code files. All previously defined composition roots are now accessible from [markup](/samples/AvaloniaApp/Views/MainWindow.xaml) without any effort, such as _ClockViewModel_:
+You can now use bindings and use the code-behind file-less approach. All previously defined composition roots are now available from [markup](/samples/AvaloniaApp/Views/MainWindow.xaml) without any effort, e.g. _Clock_:
 
 ```xml
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        x:Class="AvaloniaApp.Views.MainWindow"
-        DataContext="{StaticResource Composition}"
         xmlns:app="clr-namespace:AvaloniaApp"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="AvaloniaApp.MainWindow"
+        DataContext="{StaticResource Composition}"
         x:DataType="app:Composition"
-        Title="{Binding ClockViewModel.Time}"
+        Design.DataContext="{d:DesignInstance app:DesignTimeComposition}"
+        Title="{Binding App.Title}"
         Icon="/Assets/avalonia-logo.ico"
         FontFamily="Consolas"
         FontWeight="Bold">
 
-    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" DataContext="{Binding ClockViewModel}">
-        <TextBlock Text="{Binding Date}" FontSize="64" HorizontalAlignment="Center" />
-        <TextBlock Text="{Binding Time}" FontSize="128" HorizontalAlignment="Center" />
-    </StackPanel>
+  <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" DataContext="{Binding Clock}">
+    <TextBlock Text="{Binding Date}" FontSize="64" HorizontalAlignment="Center" />
+    <TextBlock Text="{Binding Time}" FontSize="128" HorizontalAlignment="Center" />
+  </StackPanel>
 
 </Window>
 ```
@@ -145,6 +146,8 @@ To use bindings in views:
 
   `DataContext="{StaticResource Composition}"`
 
+  and `Design.DataContext="{d:DesignInstance app:DesignTimeComposition}"` for the design time
+
 - Specify the data type in the context:
 
   `xmlns:app="clr-namespace:AvaloniaApp"`
@@ -153,7 +156,12 @@ To use bindings in views:
 
 - Use the bindings as usual:
 
-  `Title="{Binding ClockViewModel.Time}"`
+```xml
+  <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" DataContext="{Binding Clock}">
+    <TextBlock Text="{Binding Date}" FontSize="64" HorizontalAlignment="Center" />
+    <TextBlock Text="{Binding Time}" FontSize="128" HorizontalAlignment="Center" />
+  </StackPanel>
+```
 
 Advantages over classical DI container libraries:
 - The code-behind `.cs` files for views are free of any logic.
@@ -165,15 +173,7 @@ The [project file](/samples/AvaloniaApp/AvaloniaApp.csproj) looks like this:
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
-
-    <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
-        <OutputType>WinExe</OutputType>
-        <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
-        <ApplicationManifest>app.manifest</ApplicationManifest>
-        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-    </PropertyGroup>
-
+    ...
     <ItemGroup>
         <PackageReference Include="Pure.DI" Version="2.1.69">
             <PrivateAssets>all</PrivateAssets>

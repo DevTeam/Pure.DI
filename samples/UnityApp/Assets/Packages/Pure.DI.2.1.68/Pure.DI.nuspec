@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>Pure.DI</id>
+    <version>2.1.68</version>
+    <authors>Pure.DI</authors>
+    <developmentDependency>true</developmentDependency>
+    <license type="expression">MIT</license>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <icon>common\icon.png</icon>
+    <readme>README.md</readme>
+    <projectUrl>https://github.com/DevTeam/Pure.DI/</projectUrl>
+    <description>Pure.DI is not a framework or library, but a source code generator for creating object graphs. To make them accurate, the developer uses a set of intuitive hints from the Pure.DI API. During the compilation phase, Pure.DI determines the optimal graph structure, checks its correctness, and generates partial class code to create object graphs in the Pure DI paradigm using only basic language constructs. The resulting generated code is robust, works everywhere, throws no exceptions, does not depend on .NET library calls or .NET reflections, is efficient in terms of performance and memory consumption, and is subject to all optimizations. This code can be easily integrated into an application because it does not use unnecessary delegates, additional calls to any methods, type conversions, boxing/unboxing, etc.</description>
+    <copyright>Copyright (C) 2025 Nikolay Pianikov</copyright>
+    <tags>ioc solid dotnet dependency-injection inversion-of-control di injection-container injection-framework dip csharp-sourcegenerator</tags>
+    <repository type="git" url="https://github.com/DevTeam/Pure.DI.git" commit="e472648f6fcb0c60e71bc99a4110c18bce51177e" />
+  </metadata>
+</package>

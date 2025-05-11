@@ -1,32 +1,25 @@
-// ReSharper disable UnusedMember.Local
-// ReSharper disable UnusedMember.Global
-// ReSharper disable RedundantNameQualifier
-// ReSharper disable ArrangeTypeMemberModifiers
+using Pure.DI;
+using static Pure.DI.Lifetime;
+using static Pure.DI.RootKinds;
 
 namespace AvaloniaApp;
 
-using Clock.Models;
-using Clock.ViewModels;
-using Pure.DI;
-using Views;
-using static Pure.DI.Lifetime;
-
 partial class Composition
 {
-    void Setup() => DI.Setup()
-        // Provides the composition root for the main window
-        .Root<MainWindow>(nameof(MainWindow))
-        // Provides the composition root for a Clock view model
-        .Root<IClockViewModel>(nameof(ClockViewModel))
+    [Conditional("DI")]
+    private void Setup() => DI.Setup()
+        .Hint(Hint.Resolve, "Off")
 
-        // View Models
+        .Root<IAppViewModel>(nameof(App), kind: Virtual)
+        .Root<IClockViewModel>(nameof(Clock), kind: Virtual)
+
+        .OrdinalAttribute<InitializableAttribute>()
+
         .Bind().As(Singleton).To<ClockViewModel>()
-
-        // Models
-        .Bind().To<Log<TT>>()
-        .Bind().As(Singleton).To<Timer>()
-        .Bind().As(PerBlock).To<SystemClock>()
+        .Bind().To<ClockModel>()
+        .Bind().As(Singleton).To<Ticks>()
 
         // Infrastructure
-        .Bind().To<Dispatcher>();
+        .Bind().To<DebugLog<TT>>()
+        .Bind().To<AvaloniaDispatcher>();
 }

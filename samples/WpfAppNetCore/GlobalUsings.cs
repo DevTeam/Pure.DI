@@ -1,3 +1,4 @@
 global using System;
-global using Clock.Models;
-global using Clock.ViewModels;
+global using System.Diagnostics;
+global using System.Windows;
+global using Clock;

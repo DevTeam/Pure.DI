@@ -8,13 +8,7 @@ The [project file](/samples/ShroedingersCatNativeAOT/ShroedingersCatNativeAOT.cs
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
-
-    <PropertyGroup>
-        <PublishAot>true</PublishAot>
-        <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-        <OutputType>Exe</OutputType>
-    </PropertyGroup>
-
+    ...
     <ItemGroup>
         <PackageReference Include="Pure.DI" Version="2.1.69">
             <PrivateAssets>all</PrivateAssets>

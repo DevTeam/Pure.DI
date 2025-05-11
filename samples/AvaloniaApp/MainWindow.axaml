@@ -1,0 +1,21 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:app="clr-namespace:AvaloniaApp"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="AvaloniaApp.MainWindow"
+        DataContext="{StaticResource Composition}"
+        x:DataType="app:Composition"
+        Design.DataContext="{d:DesignInstance app:DesignTimeComposition}"
+        Title="{Binding App.Title}"
+        Icon="/Assets/avalonia-logo.ico"
+        FontFamily="Consolas"
+        FontWeight="Bold">
+
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" DataContext="{Binding Clock}">
+        <TextBlock Text="{Binding Date}" FontSize="64" HorizontalAlignment="Center" />
+        <TextBlock Text="{Binding Time}" FontSize="128" HorizontalAlignment="Center" />
+    </StackPanel>
+
+</Window>

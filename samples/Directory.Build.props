@@ -1,0 +1,12 @@
+<Project>
+    <Import Project="..\Directory.Build.props"/>
+
+    <PropertyGroup>
+        <targetFrameworkVersion>$(BaseTargetFramework)</targetFrameworkVersion>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <LangVersion>latest</LangVersion>
+    </PropertyGroup>
+
+</Project>
+

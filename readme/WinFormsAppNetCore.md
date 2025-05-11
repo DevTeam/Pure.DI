@@ -10,46 +10,40 @@ The composition definition is in the file [Composition.cs](/samples/WinFormsAppN
 using Pure.DI;
 using static Pure.DI.Lifetime;
 
-internal partial class Composition
+namespace WinFormsAppNetCore;
+
+partial class Composition
 {
-    void Setup() => DI.Setup()
-        // Provides the composition root for main form
-        .Root<Owned<FormMain>>(nameof(Root))
+    private void Setup() => DI.Setup()
+        .Root<Program>(nameof(Root))
 
-        // Forms
         .Bind().As(Singleton).To<FormMain>()
-        
-        // View Models
-        .Bind().To<ClockViewModel>()
+        .Bind().As(Singleton).To<ClockViewModel>()
+        .Bind().To<ClockModel>()
+        .Bind().As(Singleton).To<Ticks>()
 
-        // Models
-        .Bind().To<Log<TT>>()
-        .Bind().To<Timer>()
-        .Bind().As(PerBlock).To<SystemClock>()
-    
         // Infrastructure
-        .Bind().To<Dispatcher>();
+        .Bind().To<DebugLog<TT>>()
+        .Bind().To<WinFormsDispatcher>();
 }
 ```
 
 A single instance of the _Composition_ class is defined in the _Main_ method of the [Program.cs](/samples/WinFormsAppNetCore/Program.cs) file:
 
 ```c#
-public static class Program
+namespace WinFormsAppNetCore;
+
+public class Program(FormMain formMain)
 {
-    /// <summary>
-    ///  The main entry point for the application.
-    /// </summary>
     [STAThread]
     public static void Main()
     {
-        // To customize application configuration such as set high DPI settings or default font,
-        // see https://aka.ms/applicationconfiguration.
         ApplicationConfiguration.Initialize();
         using var composition = new Composition();
-        using var root = composition.Root;
-        Application.Run(root.Value);
+        composition.Root.Run();
     }
+
+    private void Run() => Application.Run(formMain);
 }
 ```
 
@@ -57,13 +51,7 @@ The [project file](/samples/WinFormsAppNetCore/WinFormsAppNetCore.csproj) looks 
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
-
-    <PropertyGroup>
-        <OutputType>WinExe</OutputType>
-        <UseWPF>true</UseWPF>
-        <TargetFramework>net9.0-windows</TargetFramework>
-    </PropertyGroup>
-
+    ...
     <ItemGroup>
         <PackageReference Include="Pure.DI" Version="2.1.69">
             <PrivateAssets>all</PrivateAssets>

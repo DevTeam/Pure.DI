@@ -2,15 +2,8 @@
 
 public partial class App
 {
-    private readonly Composition _composition;
-
-    internal App(Composition composition)
-    {
-        InitializeComponent();
-        _composition = composition;
-        Resources["Composition"] = composition;
-    }
+    public App() => InitializeComponent();
 
     protected override Window CreateWindow(IActivationState? activationState) =>
-        new(_composition.AppShell);
+        new(new AppShell());
 }

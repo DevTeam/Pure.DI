@@ -67,12 +67,7 @@ The [project file](/samples/ShroedingersCatTopLevelStatements/ShroedingersCatTop
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
-
-    <PropertyGroup>
-        <OutputType>Exe</OutputType>
-        <TargetFramework>$(targetFrameworkVersion)</TargetFramework>
-    </PropertyGroup>
-
+    ...
     <ItemGroup>
         <PackageReference Include="Pure.DI" Version="$(version)">
             <PrivateAssets>all</PrivateAssets>

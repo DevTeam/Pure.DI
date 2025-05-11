@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>$(BaseTargetFramework)-windows</TargetFramework>
+        <TargetFramework>$(targetFrameworkVersion)-windows</TargetFramework>
         <OutputType>WinExe</OutputType>
         <UseWindowsForms>true</UseWindowsForms>
-        <ApplicationIcon>../../docs/icon.ico</ApplicationIcon>
+        <ApplicationIcon>../icon.ico</ApplicationIcon>
     </PropertyGroup>
 
     <ItemGroup>

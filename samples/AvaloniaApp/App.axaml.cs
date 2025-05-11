@@ -1,9 +1,5 @@
 namespace AvaloniaApp;
 
-using Avalonia;
-using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Markup.Xaml;
-
 public class App : Application
 {
     public override void Initialize() => AvaloniaXamlLoader.Load(this);
@@ -16,11 +12,11 @@ public class App : Application
             switch (ApplicationLifetime)
             {
                 case IClassicDesktopStyleApplicationLifetime desktop:
-                    desktop.MainWindow = composition.MainWindow;
+                    desktop.MainWindow = new MainWindow();
                     break;
 
                 case ISingleViewApplicationLifetime singleView:
-                    singleView.MainView = composition.MainWindow;
+                    singleView.MainView = new MainWindow();
                     break;
             }
 

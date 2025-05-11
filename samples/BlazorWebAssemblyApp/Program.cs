@@ -1,6 +1,3 @@
-using BlazorWebAssemblyApp;
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
 // Uses Composition as an alternative IServiceProviderFactory

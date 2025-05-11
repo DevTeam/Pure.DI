@@ -1,8 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-
-namespace MAUIApp;
-
-using Microsoft.Maui.LifecycleEvents;
+﻿namespace MAUIApp;
 
 public static class MauiProgram
 {
@@ -15,7 +11,11 @@ public static class MauiProgram
         builder.ConfigureContainer(composition);
         
         builder
-            .UseMauiApp(_ => new App(composition))
+            .UseMauiApp(_ => new App
+            {
+                // Overrides the resource with an initialized Composition instance
+                Resources = { ["Composition"] = composition }
+            })
             .ConfigureLifecycleEvents(events =>
             {
                 // Handles disposables

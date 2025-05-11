@@ -1,10 +1,13 @@
 ﻿@inherits LayoutComponentBase
+@using System.ComponentModel
+@using Clock
+@inject IAppViewModel App
 
-<PageTitle>Pure.DI Blazor server example</PageTitle>
+<PageTitle>@App.Title</PageTitle>
 
 <div class="page">
-    <div class="sidebar">
-        <NavMenu/>
+    <div class="top-row ps-3">
+        <div class="container-fluid">@App.Title</div>
     </div>
 
     <main>
@@ -17,3 +20,11 @@
         </article>
     </main>
 </div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        ((INotifyPropertyChanged)App).PropertyChanged += (_, _) => InvokeAsync(StateHasChanged);
+        base.OnInitialized();
+    }
+}

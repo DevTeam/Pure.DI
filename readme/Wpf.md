@@ -10,22 +10,21 @@ The definition of the composition is in [Composition.cs](/samples/WpfAppNetCore/
 using Pure.DI;
 using static Pure.DI.Lifetime;
 
-internal partial class Composition
-{
-    void Setup() => DI.Setup()
-        // Provides the composition root for clock view model
-        .Root<IClockViewModel>(nameof(ClockViewModel))
-        
-        // View Models
-        .Bind().As(Singleton).To<ClockViewModel>()
+namespace WpfAppNetCore;
 
-        // Models
-        .Bind().To<Log<TT>>()
-        .Bind().As(Singleton).To<Timer>()
-        .Bind().As(PerBlock).To<SystemClock>()
-    
+partial class Composition
+{
+    private void Setup() => DI.Setup()
+        .Root<IAppViewModel>(nameof(App))
+        .Root<IClockViewModel>(nameof(Clock))
+
+        .Bind().As(Singleton).To<ClockViewModel>()
+        .Bind().To<ClockModel>()
+        .Bind().As(Singleton).To<Ticks>()
+
         // Infrastructure
-        .Bind().To<Dispatcher>();
+        .Bind().To<DebugLog<TT>>()
+        .Bind().To<WpfDispatcher>();
 }
 ```
 
@@ -42,12 +41,12 @@ A single instance of the _Composition_ class is defined as a static resource in 
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:app="clr-namespace:WpfAppNetCore"
-             StartupUri="/Views/MainWindow.xaml"
+             StartupUri="/MainWindow.xaml"
              Exit="OnExit">
 
-    <!--Creates a shared resource of type `Composition` and with key _‘Composition’_,
-    which will be further used as a data context in the views.-->
     <Application.Resources>
+        <!--Creates a shared resource of type Composition and with key "Composition",
+        which will be further used as a data context in the views.-->
         <app:Composition x:Key="Composition" />
     </Application.Resources>
 
@@ -62,7 +61,7 @@ This markup fragment
 </Application.Resources>
 ```
 
-creates a shared resource of type `Composition` and with key _‘Composition’_, which will be further used as a data context in the views.
+creates a shared resource of type `Composition` and with key _"Composition"_, which will be further used as a data context in the views.
 
 Advantages over classical DI container libraries:
 - No explicit initialisation of data contexts is required. Data contexts are configured directly in `.axaml` files according to the MVVM approach.
@@ -74,9 +73,14 @@ You can now use bindings to model views without even editing the views `.cs` cod
 ```xaml
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:app="clr-namespace:WpfAppNetCore"
+        mc:Ignorable="d"
         DataContext="{StaticResource Composition}"
-        Title="{Binding ClockViewModel.Time}">
-    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" DataContext="{Binding ClockViewModel}">
+        d:DataContext="{d:DesignInstance app:DesignTimeComposition}"
+        Title="{Binding App.Title}">
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" DataContext="{Binding Clock}">
         <TextBlock Text="{Binding Date}" FontSize="64" HorizontalAlignment="Center"/>
         <TextBlock Text="{Binding Time}" FontSize="128" HorizontalAlignment="Center"/>        
     </StackPanel>
@@ -89,9 +93,11 @@ To use bindings in views:
 
   `DataContext="{StaticResource Composition}"`
 
+  and `d:DataContext="{d:DesignInstance app:DesignTimeComposition}"` for the design time
+
 - Use the bindings as usual:
 
-  `Title="{Binding ClockViewModel.Time}"`
+  `Title="{Binding App.Title}"`
 
 Advantages over classical DI container libraries:
 - The code-behind `.cs` files for views are free of any logic.
@@ -103,13 +109,7 @@ The [project file](/samples/WpfAppNetCore/WpfAppNetCore.csproj) looks like this:
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
-
-    <PropertyGroup>
-        <OutputType>WinExe</OutputType>
-        <UseWPF>true</UseWPF>
-        <TargetFramework>net9.0-windows</TargetFramework>
-    </PropertyGroup>
-
+   ...
     <ItemGroup>
         <PackageReference Include="Pure.DI" Version="2.1.69">
             <PrivateAssets>all</PrivateAssets>

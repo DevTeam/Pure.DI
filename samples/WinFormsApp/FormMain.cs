@@ -1,16 +1,15 @@
-﻿using System.Windows.Forms;
-
-namespace WinFormsApp;
+﻿namespace WinFormsApp;
 
 using System.ComponentModel;
-using Clock.ViewModels;
 
-internal partial class FormMain : Form
+public partial class FormMain : Form
 {
+    private readonly IAppViewModel _appViewModel;
     private readonly IClockViewModel _clockViewModel;
 
-    internal FormMain(IClockViewModel clockViewModel)
+    internal FormMain(IAppViewModel appViewModel, IClockViewModel clockViewModel)
     {
+        _appViewModel = appViewModel;
         _clockViewModel = clockViewModel;
         InitializeComponent();
         UpdateDateTime();
@@ -22,6 +21,7 @@ internal partial class FormMain : Form
 
     private void UpdateDateTime()
     {
+        Text = _appViewModel.Title;
         labelDate.Text = _clockViewModel.Date;
         labelTime.Text = _clockViewModel.Time;
     }

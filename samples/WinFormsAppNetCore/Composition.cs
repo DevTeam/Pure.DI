@@ -1,32 +1,22 @@
-// ReSharper disable UnusedMember.Local
-// ReSharper disable UnusedMember.Global
-// ReSharper disable RedundantNameQualifier
-// ReSharper disable ArrangeTypeMemberModifiers
-
-namespace WinFormsAppNetCore;
-
-using Clock.Models;
-using Clock.ViewModels;
 using Pure.DI;
 using static Pure.DI.Lifetime;
 
+namespace WinFormsAppNetCore;
+
 partial class Composition
 {
-    void Setup() => DI.Setup()
-        // Provides the composition root for main form
-        .Root<Owned<FormMain>>(nameof(Root))
+    [Conditional("DI")]
+    private void Setup() => DI.Setup()
+        .Hint(Hint.Resolve, "Off")
 
-        // Forms
+        .Root<Program>(nameof(Root))
+
         .Bind().As(Singleton).To<FormMain>()
-
-        // View Models
-        .Bind().To<ClockViewModel>()
-
-        // Models
-        .Bind().To<Log<TT>>()
-        .Bind().To<Timer>()
-        .Bind().As(PerBlock).To<SystemClock>()
+        .Bind().As(Singleton).To<ClockViewModel>()
+        .Bind().To<ClockModel>()
+        .Bind().As(Singleton).To<Ticks>()
 
         // Infrastructure
-        .Bind().To<Dispatcher>();
+        .Bind().To<DebugLog<TT>>()
+        .Bind().To<WinFormsDispatcher>();
 }

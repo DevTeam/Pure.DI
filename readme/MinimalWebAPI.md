@@ -8,21 +8,27 @@ Composition setup file is [Composition.cs](/samples/MinimalWebAPI/Composition.cs
 
 ```c#
 using Pure.DI;
+using Pure.DI.MS;
 using static Pure.DI.Lifetime;
 
-internal partial class Composition: ServiceProviderFactory<Composition>
-{
-    // IMPORTANT:
-    // Only composition roots (regular or anonymous) can be resolved through the `IServiceProvider` interface.
-    // These roots must be registered using `Root(...)` or `RootBind()` calls.
-    void Setup() => DI.Setup()
-        // Use the DI setup from the base class
-        .DependsOn(Base)
-        .Bind().As(Singleton).To<WeatherForecastService>()
-            .Root<IWeatherForecastService>()
+namespace MinimalWebAPI;
 
-        // Application composition root
-        .Root<Program>("Root");
+partial class Composition : ServiceProviderFactory<Composition>
+{
+    private void Setup() => DI.Setup()
+        .DependsOn(Base)
+
+        // Owned is used here to dispose of all disposable instances associated with the root.
+        .Root<Owned<Program>>(nameof(Root))
+        .Root<IClockViewModel>()
+
+        .Bind().To<ClockViewModel>()
+        .Bind().To<ClockModel>()
+        .Bind().As(Singleton).To<Ticks>()
+
+        // Infrastructure
+        .Bind().To<MicrosoftLoggerAdapter<TT>>()
+        .Bind().To<CurrentThreadDispatcher>();
 }
 ```
 
@@ -31,7 +37,9 @@ The composition class inherits from the `ServiceProviderFactory<T>` class, where
 The web application entry point is in the [Program.cs](/samples/MinimalWebAPI/Program.cs) file:
 
 ```c#
-var composition = new Composition();
+using MinimalWebAPI;
+
+using var composition = new Composition();
 var builder = WebApplication.CreateBuilder(args);
 
 // Uses Composition as an alternative IServiceProviderFactory
@@ -39,23 +47,21 @@ builder.Host.UseServiceProviderFactory(composition);
 
 var app = builder.Build();
 
-// Creates an application composition root of type `Program`
-var compositionRoot = composition.Root;
-compositionRoot.Run(app);
+// Creates an application composition root of type `Owned<Program>`
+using var root = composition.Root;
+root.Value.Run(app);
 
-internal partial class Program(
-    // Dependencies could be injected here
-    ILogger<Program> logger,
-    IWeatherForecastService weatherForecast)
+partial class Program(
+    IClockViewModel clock,
+    IAppViewModel appModel)
 {
     private void Run(WebApplication app)
     {
-        app.MapGet("/", async (
+        app.MapGet("/", (
             // Dependencies can be injected here as well
-            [FromServices] IWeatherForecastService anotherOneWeatherForecast) =>
-        {
+            [FromServices] ILogger<Program> logger) => {
             logger.LogInformation("Start of request execution");
-            return await anotherOneWeatherForecast.CreateWeatherForecastAsync().ToListAsync();
+            return new ClockResult(appModel.Title, clock.Date, clock.Time);
         });
 
         app.Run();
@@ -67,13 +73,7 @@ The [project file](/samples/WebAPI/WebAPI.csproj) looks like this:
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk.Web">
-
-    <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <Nullable>enable</Nullable>
-        <ImplicitUsings>enable</ImplicitUsings>
-    </PropertyGroup>
-
+    ...
     <ItemGroup>
         <PackageReference Include="Pure.DI" Version="2.1.69">
             <PrivateAssets>all</PrivateAssets>

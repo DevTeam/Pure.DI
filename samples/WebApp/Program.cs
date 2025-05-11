@@ -1,11 +1,12 @@
-using WebApp;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews().AddControllersAsServices();
 
+using var composition = new Composition();
+
 // Uses Composition as an alternative IServiceProviderFactory
-builder.Host.UseServiceProviderFactory(new Composition());
+builder.Host.UseServiceProviderFactory(composition);
 
 var app = builder.Build();
 
@@ -26,6 +27,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     "default",
-    "{controller=Home}/{action=Index}/{id?}");
+    "{controller=Clock}/{action=Clock}/{id?}");
 
 app.Run();

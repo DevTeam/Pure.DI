@@ -23,7 +23,7 @@
         <PackageReference Include="SimpleInjector" Version="5.5.0"/>
         <PackageReference Include="Unity" Version="5.11.10"/>
         <PackageReference Include="DryIoc.dll" Version="5.4.3"/>
-        <PackageReference Include="Autofac" Version="8.2.1" />
+        <PackageReference Include="Autofac" Version="8.3.0" />
         <PackageReference Include="LightInject" Version="7.0.1"/>
         <PackageReference Include="Ninject" Version="3.3.6"/>
         <PackageReference Include="Castle.Windsor" Version="6.0.0"/>

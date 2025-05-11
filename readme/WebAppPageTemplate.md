@@ -9,22 +9,24 @@ Composition setup file is [Composition.cs](/samples/WebApp/Composition.cs):
 ```c#
 using Pure.DI;
 using Pure.DI.MS;
-using Controllers;
-using Microsoft.AspNetCore.Mvc;
-using WeatherForecast;
 using static Pure.DI.Lifetime;
 
-internal partial class Composition: ServiceProviderFactory<Composition>
+namespace WebApp;
+
+partial class Composition: ServiceProviderFactory<Composition>
 {
-    // IMPORTANT:
-    // Only composition roots (regular or anonymous) can be resolved through the `IServiceProvider` interface.
-    // These roots must be registered using `Root(...)` or `RootBind()` calls.
-    void Setup() => DI.Setup()
-        // Use the DI setup from the base class
+    private void Setup() => DI.Setup()
         .DependsOn(Base)
-        .Bind().As(Singleton).To<WeatherForecastService>()
-        // Registers controllers as roots
-        .Roots<Controller>();
+
+        .Roots<ControllerBase>()
+
+        .Bind().As(Singleton).To<ClockViewModel>()
+        .Bind().To<ClockModel>()
+        .Bind().As(Singleton).To<Ticks>()
+
+        // Infrastructure
+        .Bind().To<MicrosoftLoggerAdapter<TT>>()
+        .Bind().To<CurrentThreadDispatcher>();
 }
 ```
 
@@ -38,21 +40,17 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews().AddControllersAsServices();
 
+using var composition = new Composition();
+
 // Uses Composition as an alternative IServiceProviderFactory
-builder.Host.UseServiceProviderFactory(new Composition());
+builder.Host.UseServiceProviderFactory(composition);
 ```
 
 The [project file](/samples/WebApp/WebApp.csproj) looks like this:
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk.Web">
-
-    <PropertyGroup>
-        <TargetFramework>$(targetFrameworkVersion)</TargetFramework>
-        <Nullable>enable</Nullable>
-        <ImplicitUsings>enable</ImplicitUsings>
-    </PropertyGroup>
-
+    ...
     <ItemGroup>
         <PackageReference Include="Pure.DI" Version="$(version)">
             <PrivateAssets>all</PrivateAssets>

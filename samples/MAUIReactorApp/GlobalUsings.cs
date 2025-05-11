@@ -1,7 +1,6 @@
 ﻿global using System;
-global using Clock.Models;
-global using Clock.ViewModels;
-global using Pure.DI;
+global using System.ComponentModel;
+global using Clock;
 global using Microsoft.Maui;
 global using Microsoft.Maui.Hosting;
 global using Microsoft.Maui.Graphics;

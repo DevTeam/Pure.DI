@@ -1,5 +1,4 @@
 ﻿using MauiReactor;
-using MAUIReactorApp.Components;
 using MAUIReactorApp.Resources.Styles;
 
 namespace MAUIReactorApp;

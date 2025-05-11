@@ -29,51 +29,51 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.labelDate = new System.Windows.Forms.Label();
-            this.labelTime = new System.Windows.Forms.Label();
-            this.SuspendLayout();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
+            labelDate = new System.Windows.Forms.Label();
+            labelTime = new System.Windows.Forms.Label();
+            SuspendLayout();
             // 
             // labelDate
             // 
-            this.labelDate.Dock = System.Windows.Forms.DockStyle.Top;
-            this.labelDate.Font = new System.Drawing.Font("Microsoft Sans Serif", 19.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.labelDate.Location = new System.Drawing.Point(0, 0);
-            this.labelDate.Name = "labelDate";
-            this.labelDate.Size = new System.Drawing.Size(800, 115);
-            this.labelDate.TabIndex = 0;
-            this.labelDate.Text = "labelDate";
-            this.labelDate.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            labelDate.Dock = System.Windows.Forms.DockStyle.Top;
+            labelDate.Font = new System.Drawing.Font("Segoe UI", 64.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)204));
+            labelDate.Location = new System.Drawing.Point(0, 0);
+            labelDate.Name = "labelDate";
+            labelDate.Size = new System.Drawing.Size(1000, 403);
+            labelDate.TabIndex = 0;
+            labelDate.Text = "Date";
+            labelDate.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             // 
             // labelTime
             // 
-            this.labelTime.Dock = System.Windows.Forms.DockStyle.Top;
-            this.labelTime.Font = new System.Drawing.Font("Microsoft Sans Serif", 19.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.labelTime.Location = new System.Drawing.Point(0, 115);
-            this.labelTime.Name = "labelTime";
-            this.labelTime.Size = new System.Drawing.Size(800, 115);
-            this.labelTime.TabIndex = 1;
-            this.labelTime.Text = "labelTime";
-            this.labelTime.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            labelTime.Dock = System.Windows.Forms.DockStyle.Fill;
+            labelTime.Font = new System.Drawing.Font("Segoe UI", 127.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)204));
+            labelTime.Location = new System.Drawing.Point(0, 403);
+            labelTime.Name = "labelTime";
+            labelTime.Size = new System.Drawing.Size(1000, 197);
+            labelTime.TabIndex = 1;
+            labelTime.Text = "Time";
+            labelTime.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // FormMain
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 256);
-            this.Controls.Add(this.labelTime);
-            this.Controls.Add(this.labelDate);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
-            this.Name = "FormMain";
-            this.ShowIcon = false;
-            this.Text = "Clock";
-            this.ResumeLayout(false);
+            AutoScaleDimensions = new System.Drawing.SizeF(13F, 32F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            ClientSize = new System.Drawing.Size(1000, 600);
+            Controls.Add(labelTime);
+            Controls.Add(labelDate);
+            FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            Icon = ((System.Drawing.Icon)resources.GetObject("$this.Icon"));
+            Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            Text = "Clock";
+            TransparencyKey = System.Drawing.Color.Transparent;
+            WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            ResumeLayout(false);
         }
 
-        private System.Windows.Forms.Label labelTime;
-
         private System.Windows.Forms.Label labelDate;
+        private System.Windows.Forms.Label labelTime;
 
         #endregion
     }

@@ -1,21 +1,19 @@
-﻿using System;
-using System.Windows.Forms;
+﻿namespace WinFormsApp;
 
-namespace WinFormsApp
+public class Program(FormMain formMain)
 {
-    public static class Program
+    /// <summary>
+    /// The main entry point for the application.
+    /// </summary>
+    [STAThread]
+    public static void Main()
     {
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
-        [STAThread]
-        public static void Main()
-        {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            using var composition = new Composition();
-            using var root = composition.Root;
-            Application.Run(root.Value);
-        }
+        Application.EnableVisualStyles();
+        Application.SetCompatibleTextRenderingDefault(false);
+        using var composition = new Composition();
+        var root = composition.Root;
+        root.Run();
     }
+
+    private void Run() => Application.Run(formMain);
 }

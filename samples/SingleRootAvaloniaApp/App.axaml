@@ -9,10 +9,13 @@
         <FluentTheme />
     </Application.Styles>
 
-    <!--Creates a shared resource of type `Composition` and with key _‘Composition’_,
-    which will be further used as a data context in the views.-->
     <Application.Resources>
-        <app:Composition x:Key="Composition" />
+        <!--Creates a shared resource of type Composition and with key "Composition",
+        which will be further used as a data context in the views.-->
+        <app:Composition x:Key="Composition"  />
+
+        <!--Design time composition-->
+        <app:DesignTimeComposition x:Key="DesignTimeComposition" />
     </Application.Resources>
 
 </Application>

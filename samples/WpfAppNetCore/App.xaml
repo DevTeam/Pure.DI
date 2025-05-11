@@ -2,12 +2,12 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:app="clr-namespace:WpfAppNetCore"
-             StartupUri="/Views/MainWindow.xaml"
+             StartupUri="/MainWindow.xaml"
              Exit="OnExit">
 
-    <!--Creates a shared resource of type `Composition` and with key _‘Composition’_,
-    which will be further used as a data context in the views.-->
     <Application.Resources>
+        <!--Creates a shared resource of type Composition and with key "Composition",
+        which will be further used as a data context in the views.-->
         <app:Composition x:Key="Composition" />
     </Application.Resources>
 

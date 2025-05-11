@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option csharp_namespace = "GrpcService";
+
+package clock;
+
+service ClockGrpcService {
+  rpc GetNow (NowRequest) returns (NowReply);
+}
+
+message NowRequest {
+}
+
+message NowReply {
+  string title = 1;
+  string date = 2;
+  string time = 3;
+}

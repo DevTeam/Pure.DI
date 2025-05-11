@@ -10,45 +10,42 @@ The composition definition is in the file [Composition.cs](/samples/WinFormsApp/
 using Pure.DI;
 using static Pure.DI.Lifetime;
 
-internal partial class Composition
+namespace WinFormsApp;
+
+partial class Composition
 {
-    void Setup() => DI.Setup()
-        // Provides the composition root for main form
-        .Root<Owned<FormMain>>(nameof(Root))
+    private void Setup() => DI.Setup()
+        .Root<Program>(nameof(Root))
 
-        // Forms
         .Bind().As(Singleton).To<FormMain>()
-        
-        // View Models
-        .Bind().To<ClockViewModel>()
+        .Bind().As(Singleton).To<ClockViewModel>()
+        .Bind().To<ClockModel>()
+        .Bind().As(Singleton).To<Ticks>()
 
-        // Models
-        .Bind().To<Log<TT>>()
-        .Bind().To<Timer>()
-        .Bind().As(PerBlock).To<SystemClock>()
-    
         // Infrastructure
-        .Bind().As(Singleton).To<Dispatcher>();
+        .Bind().To<DebugLog<TT>>()
+        .Bind().To<WinFormsDispatcher>();
 }
 ```
 
 A single instance of the _Composition_ class is defined in the _Main_ method of the [Program.cs](/samples/WinFormsApp/Program.cs) file:
 
 ```c#
-public static class Program
+namespace WinFormsApp;
+
+public class Program(FormMain formMain)
 {
-    /// <summary>
-    /// The main entry point for the application.
-    /// </summary>
     [STAThread]
     public static void Main()
     {
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
         using var composition = new Composition();
-        using var root = composition.Root;
-        Application.Run(root.Value);
+        var root = composition.Root;
+        root.Run();
     }
+
+    private void Run() => Application.Run(formMain);
 }
 ```
 
@@ -57,7 +54,7 @@ The [project file](/samples/WinFormsApp/WinFormsApp.csproj) looks like this:
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-
+    ...
     <ItemGroup>
         <PackageReference Include="Pure.DI" Version="$(version)">
             <PrivateAssets>all</PrivateAssets>

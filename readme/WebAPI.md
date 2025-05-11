@@ -8,23 +8,25 @@ Composition setup file is [Composition.cs](/samples/WebAPI/Composition.cs):
 
 ```c#
 using Pure.DI;
-using Controllers;
-using Microsoft.AspNetCore.Mvc;
 using Pure.DI.MS;
-using WeatherForecast;
 using static Pure.DI.Lifetime;
 
-internal partial class Composition: ServiceProviderFactory<Composition>
+namespace WebAPI;
+
+partial class Composition: ServiceProviderFactory<Composition>
 {
-    // IMPORTANT:
-    // Only composition roots (regular or anonymous) can be resolved through the `IServiceProvider` interface.
-    // These roots must be registered using `Root(...)` or `RootBind()` calls.
-    void Setup() => DI.Setup()
-        // Use the DI setup from the base class
+    private void Setup() => DI.Setup()
         .DependsOn(Base)
-        .Bind().As(Singleton).To<WeatherForecastService>()
-        // Registers controllers as roots
-        .Roots<ControllerBase>();
+
+        .Roots<ControllerBase>()
+
+        .Bind().As(Singleton).To<ClockViewModel>()
+        .Bind().To<ClockModel>()
+        .Bind().As(Singleton).To<Ticks>()
+
+        // Infrastructure
+        .Bind().To<MicrosoftLoggerAdapter<TT>>()
+        .Bind().To<CurrentThreadDispatcher>();
 }
 ```
 
@@ -35,24 +37,17 @@ The web application entry point is in the [Program.cs](/samples/WebAPI/Program.c
 ```c#
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddControllersWithViews().AddControllersAsServices();
+using var composition = new Composition();
 
 // Uses Composition as an alternative IServiceProviderFactory
-builder.Host.UseServiceProviderFactory(new Composition());
+builder.Host.UseServiceProviderFactory(composition);
 ```
 
 The [project file](/samples/WebAPI/WebAPI.csproj) looks like this:
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk.Web">
-
-    <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
-        <Nullable>enable</Nullable>
-        <ImplicitUsings>enable</ImplicitUsings>
-    </PropertyGroup>
-
+    ...
     <ItemGroup>
         <PackageReference Include="Pure.DI" Version="2.1.69">
             <PrivateAssets>all</PrivateAssets>
