@@ -1771,7 +1771,7 @@ DI.Setup("Composition")
             
 ```
 
-The type of dependency to be bound. Common type markers such as _TT_, _TTList`1_ and others are also supported.
+The type of a dependency to be bound. Common type markers such as _TT_, _TTList`1_ and others are also supported.
  - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
 
  - returns Reference to the setup continuation chain.
@@ -1794,7 +1794,7 @@ See also _As(Pure.DI.Lifetime)_.
 <details><summary>Method Bind``2(System.Object[])</summary><blockquote>
 
 Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
-            The type 1 of dependency to be bound.The type 2 of dependency to be bound.
+            Type 1 of a dependency to be bound.Type 2 of a dependency to be bound.
  - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
 
  - returns Reference to the setup continuation chain.
@@ -1817,7 +1817,7 @@ See also _As(Pure.DI.Lifetime)_.
 <details><summary>Method Bind``3(System.Object[])</summary><blockquote>
 
 Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
-            The type 1 of dependency to be bound.The type 2 of dependency to be bound.The type 3 of dependency to be bound.
+            Type 1 of a dependency to be bound.Type 2 of a dependency to be bound.Type 3 of a dependency to be bound.
  - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
 
  - returns Reference to the setup continuation chain.
@@ -1840,7 +1840,7 @@ See also _As(Pure.DI.Lifetime)_.
 <details><summary>Method Bind``4(System.Object[])</summary><blockquote>
 
 Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
-            The type 1 of dependency to be bound.The type 2 of dependency to be bound.The type 3 of dependency to be bound.The type 3 of dependency to be bound.
+            Type 1 of a dependency to be bound.Type 2 of a dependency to be bound.Type 3 of a dependency to be bound.Type 3 of a dependency to be bound.
  - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
 
  - returns Reference to the setup continuation chain.
@@ -2265,7 +2265,7 @@ DI.Setup("Composition")
             
 ```
 
-The type of dependency to be bound.
+The type of a dependency to be bound.
  - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
 
  - returns Reference to the setup continuation chain.
@@ -2288,7 +2288,7 @@ See also _As(Pure.DI.Lifetime)_.
 <details><summary>Method Bind``2(System.Object[])</summary><blockquote>
 
 Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
-            The type 1 of dependency to be bound.The type 2 of dependency to be bound.
+            Type 1 of a dependency to be bound.Type 2 of a dependency to be bound.
  - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
 
  - returns Reference to the setup continuation chain.
@@ -2311,7 +2311,7 @@ See also _As(Pure.DI.Lifetime)_.
 <details><summary>Method Bind``3(System.Object[])</summary><blockquote>
 
 Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
-            The type 1 of dependency to be bound.The type 2 of dependency to be bound.The type 3 of dependency to be bound.
+            Type 1 of a dependency to be bound.Type 2 of a dependency to be bound.Type 3 of a dependency to be bound.
  - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
 
  - returns Reference to the setup continuation chain.
@@ -2334,7 +2334,7 @@ See also _As(Pure.DI.Lifetime)_.
 <details><summary>Method Bind``4(System.Object[])</summary><blockquote>
 
 Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
-            The type 1 of dependency to be bound.The type 2 of dependency to be bound.The type 3 of dependency to be bound.The type 4 of dependency to be bound.
+            Type 1 of a dependency to be bound.Type 2 of a dependency to be bound.Type 3 of a dependency to be bound.Type 4 of a dependency to be bound.
  - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
 
  - returns Reference to the setup continuation chain.
@@ -2365,7 +2365,7 @@ DI.Setup("Composition")
             
 ```
 
-The type of dependency to be bound.
+The type of a dependency to be bound.
  - parameter _name_ - Specifies the name of the root of the composition. If the value is empty, a private root will be created, which can be used when calling  `Resolve`  methods.
             The name supports templating:
             TemplateDescription{type}Will be replaced by the short name of the root type without its namespaces.{TYPE}Will be replaced with the full name of the root type.{tag}Will be replaced with the first tag name.

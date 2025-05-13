@@ -38,8 +38,7 @@ public sealed class ClockViewModel
         private set => _date = OnPropertyChanged(value);
     }
 
-    [Initializable]
-    public void OnTick()
+    private void OnTick()
     {
         _now = _clockModel.Now;
         _log.Info($"Updating by {_now}");

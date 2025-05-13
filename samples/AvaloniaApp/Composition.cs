@@ -13,8 +13,6 @@ partial class Composition
         .Root<IAppViewModel>(nameof(App), kind: Virtual)
         .Root<IClockViewModel>(nameof(Clock), kind: Virtual)
 
-        .OrdinalAttribute<InitializableAttribute>()
-
         .Bind().As(Singleton).To<ClockViewModel>()
         .Bind().To<ClockModel>()
         .Bind().As(Singleton).To<Ticks>()

@@ -47,7 +47,7 @@ namespace Pure.DI
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().As(Lifetime.Transient).To&lt;Dependency&gt;();
         /// </code>
-        /// This is the default lifetime, it can be omitted, for example:
+        /// This is the default lifetime, it can be omitted, for example,
         /// <code>
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
@@ -79,7 +79,7 @@ namespace Pure.DI
         PerResolve,
         
         /// <summary>
-        /// Does not guarantee that there will be a single instance of the dependency for each root of the composition, but is useful to reduce the number of instances of type.
+        /// Does not guarantee that there will be a single instance of the dependency for each root of the composition, but is useful to reduce the number of instances created.
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
@@ -102,7 +102,7 @@ namespace Pure.DI
     }
     
     /// <summary>
-    /// Hints for the code generator and can be used to fine tune code generation.
+    /// Hints for the code generator and can be used to fine-tune code generation.
     /// <example>
     /// <code>
     /// // Resolve = Off
@@ -301,7 +301,7 @@ namespace Pure.DI
         OnNewInstanceLifetimeWildcard,
         
         /// <summary>
-        /// <c>On</c> or <c>Off</c>. Determines whether to use partial <c>OnDependencyInjection</c> method to control of dependency injection. <c>Off</c> by default.
+        /// <c>On</c> or <c>Off</c>. Determines whether to use partial <c>OnDependencyInjection</c> method to control of a dependency injection. <c>Off</c> by default.
         /// <example>
         /// <code>
         /// // OnDependencyInjection = On
@@ -741,7 +741,7 @@ namespace Pure.DI
         ThreadSafe,
         
         /// <summary>
-        /// Overrides modifiers of the method <c>public T Resolve&lt;T&gt;()</c>. "public" by default.
+        /// Overrides modifiers of the method <c>public T Resolve&lt;T&gt;()</c>. "Public" by default.
         /// <example>
         /// <code>
         /// // ResolveMethodModifiers = internal
@@ -1028,7 +1028,7 @@ namespace Pure.DI
     }
 
     /// <summary>
-    /// Represents a generic type argument attribute. It allows you to create custom generic type argument such as <see cref="TTS"/>, <see cref="TTDictionary{TKey,TValue}"/>, etc. 
+    /// Represents a generic type argument attribute. It allows you to create custom generic type argument such as <see cref="TTS"/>, <see cref="TTDictionary{TKey,TValue}"/>, etc.
     /// <example>
     /// <code>
     /// [GenericTypeArgument]
@@ -1108,7 +1108,7 @@ namespace Pure.DI
         /// Creates an attribute instance.
         /// </summary>
         /// <param name="ordinal">The injection ordinal.</param>
-        public OrdinalAttribute(int ordinal) { }
+        public OrdinalAttribute(int ordinal = 0) { }
     }
 
     /// <summary>
@@ -1179,7 +1179,7 @@ namespace Pure.DI
     }
 
     /// <summary>
-    /// The injection type can be defined manually using the <c>Type</c> attribute.This attribute explicitly overrides an injected type, otherwise it would be determined automatically based on the type of the constructor/method, property, or field parameter.
+    /// The injection type can be defined manually using the <c>Type</c> attribute. This attribute explicitly overrides an injected type, otherwise it would be determined automatically based on the type of the constructor/method, property, or field parameter.
     /// This attribute is part of the API, but you can use your own attribute at any time, and this allows you to define them in the assembly and namespace you want.
     /// <example>
     /// <code>
@@ -1400,7 +1400,7 @@ namespace Pure.DI
     }
     
     /// <summary>
-    /// Represents well known tags.
+    /// Represents well-known tags.
     /// </summary>
     /// <seealso cref="IConfiguration.Bind{T}"/>
     /// <seealso cref="IBinding.Tags"/>
@@ -1426,7 +1426,7 @@ namespace Pure.DI
         public static readonly Tag Unique = Shared;
 
         /// <summary>
-        /// Tag of target implementation type.
+        /// Tag of a target implementation type.
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
@@ -1449,7 +1449,7 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <param name="injectionSites">Set of labels for inection each, must be specified in a special format: &lt;namespace&gt;.&lt;type&gt;.&lt;member&gt;[:argument]. The argument is specified only for the constructor and methods. The wildcards &apos;*&apos; and &apos;?&apos; are supported. All names are case-sensitive. The global namespace prefix &apos;global::&apos; must be omitted.</param>
+        /// <param name="injectionSites">Set of labels for injection each must be specified in a special format: &lt;namespace&gt;.&lt;type&gt;.&lt;member&gt;[:argument]. The argument is specified only for the constructor and methods. The wildcards &apos;*&apos; and &apos;?&apos; are supported. All names are case-sensitive. The global namespace prefix &apos;global::&apos; must be omitted.</param>
         public static Tag On(params string[] injectionSites) => Shared;
         
         /// <summary>
@@ -1468,7 +1468,7 @@ namespace Pure.DI
         public static Tag OnConstructorArg<T>(string argName) => Shared;
         
         /// <summary>
-        /// This tag allows you to define which binding will be used for explicit injection for property or field of the type.
+        /// This tag allows you to define which binding will be used for explicit injection for a property or field of the type.
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
@@ -1500,7 +1500,7 @@ namespace Pure.DI
     }
 
     /// <summary>
-    /// Represents well known names.
+    /// Represents well-known names.
     /// </summary>
 #if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
@@ -1795,8 +1795,8 @@ namespace Pure.DI
         /// <summary>
         /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
         /// </summary>
-        /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
-        /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
+        /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="IBinding.To{T}()"/>
@@ -1810,9 +1810,9 @@ namespace Pure.DI
         /// <summary>
         /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
         /// </summary>
-        /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
-        /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
-        /// <typeparam name="T3">The type 3 of dependency to be bound.</typeparam>
+        /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T3">Type 3 of a dependency to be bound.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="IBinding.To{T}()"/>
@@ -1826,10 +1826,10 @@ namespace Pure.DI
         /// <summary>
         /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
         /// </summary>
-        /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
-        /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
-        /// <typeparam name="T3">The type 3 of dependency to be bound.</typeparam>
-        /// <typeparam name="T4">The type 4 of dependency to be bound.</typeparam>
+        /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T3">Type 3 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T4">Type 4 of a dependency to be bound.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="IBinding.To{T}()"/>
@@ -1843,11 +1843,11 @@ namespace Pure.DI
         /// <summary>
         /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
         /// </summary>
-        /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
-        /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
-        /// <typeparam name="T3">The type 3 of dependency to be bound.</typeparam>
-        /// <typeparam name="T4">The type 4 of dependency to be bound.</typeparam>
-        /// <typeparam name="T5">The type 5 of dependency to be bound.</typeparam>
+        /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T3">Type 3 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T4">Type 4 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T5">Type 5 of a dependency to be bound.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="IBinding.To{T}()"/>
@@ -1861,12 +1861,12 @@ namespace Pure.DI
         /// <summary>
         /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
         /// </summary>
-        /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
-        /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
-        /// <typeparam name="T3">The type 3 of dependency to be bound.</typeparam>
-        /// <typeparam name="T4">The type 4 of dependency to be bound.</typeparam>
-        /// <typeparam name="T5">The type 5 of dependency to be bound.</typeparam>
-        /// <typeparam name="T6">The type 6 of dependency to be bound.</typeparam> 
+        /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T3">Type 3 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T4">Type 4 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T5">Type 5 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T6">Type 6 of a dependency to be bound.</typeparam> 
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="IBinding.To{T}()"/>
@@ -1880,13 +1880,13 @@ namespace Pure.DI
         /// <summary>
         /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
         /// </summary>
-        /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
-        /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
-        /// <typeparam name="T3">The type 3 of dependency to be bound.</typeparam>
-        /// <typeparam name="T4">The type 4 of dependency to be bound.</typeparam>
-        /// <typeparam name="T5">The type 5 of dependency to be bound.</typeparam>
-        /// <typeparam name="T6">The type 6 of dependency to be bound.</typeparam>
-        /// <typeparam name="T7">The type 7 of dependency to be bound.</typeparam>
+        /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T3">Type 3 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T4">Type 4 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T5">Type 5 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T6">Type 6 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T7">Type 7 of a dependency to be bound.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="IBinding.To{T}()"/>
@@ -1900,14 +1900,14 @@ namespace Pure.DI
         /// <summary>
         /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
         /// </summary>
-        /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
-        /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
-        /// <typeparam name="T3">The type 3 of dependency to be bound.</typeparam>
-        /// <typeparam name="T4">The type 4 of dependency to be bound.</typeparam>
-        /// <typeparam name="T5">The type 5 of dependency to be bound.</typeparam>
-        /// <typeparam name="T6">The type 6 of dependency to be bound.</typeparam>
-        /// <typeparam name="T7">The type 7 of dependency to be bound.</typeparam>
-        /// <typeparam name="T8">The type 8 of dependency to be bound.</typeparam>
+        /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T3">Type 3 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T4">Type 4 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T5">Type 5 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T6">Type 6 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T7">Type 7 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T8">Type 8 of a dependency to be bound.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="IBinding.To{T}()"/>
@@ -1953,7 +1953,7 @@ namespace Pure.DI
         /// </para>
         /// </param>
         /// <param name="kind">The optional argument specifying the kind for the root of the composition.</param>
-        /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding. If is is not empty, the first tag is used for the root.</param>
+        /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding. If it is is not empty, the first tag is used for the root.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="IBinding.To{T}()"/>
         /// <seealso cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
@@ -2354,7 +2354,7 @@ namespace Pure.DI
         /// </example>
         /// </summary>
         /// <param name="lifetimes"><see cref="Lifetime"/> of the instances to be accumulated. Instances with lifetime <see cref="Lifetime.Singleton"/>, <see cref="Lifetime.Scoped"/>, or <see cref="Lifetime.PerResolve"/> only accumulate in an accumulator that is NOT lazily created.</param>
-        /// <typeparam name="T">The type of instance. All instances that can be cast to this type will be aacumulated.</typeparam>
+        /// <typeparam name="T">The type of instance. All instances that can be cast to this type will be accumulated.</typeparam>
         /// <typeparam name="TAccumulator">The type of accumulator. It must have a public constructor without parameters and a <c>Add</c> method with a single argument that allows you to add an instance of type <typeparamref name="T"/>.</typeparam>
         /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="Pure.DI.Lifetime"/>
@@ -2444,8 +2444,8 @@ namespace Pure.DI
         /// <summary>
         /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
         /// </summary>
-        /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
-        /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
+        /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="To{T}()"/>
@@ -2459,9 +2459,9 @@ namespace Pure.DI
         /// <summary>
         /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
         /// </summary>
-        /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
-        /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
-        /// <typeparam name="T3">The type 3 of dependency to be bound.</typeparam>
+        /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T3">Type 3 of a dependency to be bound.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="To{T}()"/>
@@ -2475,11 +2475,11 @@ namespace Pure.DI
         /// <summary>
         /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
         /// </summary>
-        /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
-        /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
-        /// <typeparam name="T3">The type 3 of dependency to be bound.</typeparam>
-        /// <typeparam name="T4">The type 3 of dependency to be bound.</typeparam>
-        /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
+        /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T3">Type 3 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T4">Type 3 of a dependency to be bound.</typeparam>
+        /// <param name="tags">The optional argument that specifies tags for a particular type of a dependency binding.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
@@ -2492,12 +2492,12 @@ namespace Pure.DI
         /// <summary>
         /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
         /// </summary>
-        /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
-        /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
-        /// <typeparam name="T3">The type 3 of dependency to be bound.</typeparam>
-        /// <typeparam name="T4">The type 3 of dependency to be bound.</typeparam>
-        /// <typeparam name="T5">The type 5 of dependency to be bound.</typeparam>
-        /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
+        /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T3">Type 3 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T4">Type 3 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T5">Type 5 of a dependency to be bound.</typeparam>
+        /// <param name="tags">The optional argument that specifies tags for a particular type of a dependency binding.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
@@ -2510,13 +2510,13 @@ namespace Pure.DI
         /// <summary>
         /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
         /// </summary>
-        /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
-        /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
-        /// <typeparam name="T3">The type 3 of dependency to be bound.</typeparam>
-        /// <typeparam name="T4">The type 3 of dependency to be bound.</typeparam>
-        /// <typeparam name="T5">The type 5 of dependency to be bound.</typeparam>
-        /// <typeparam name="T6">The type 6 of dependency to be bound.</typeparam> 
-        /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
+        /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T3">Type 3 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T4">Type 3 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T5">Type 5 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T6">Type 6 of a dependency to be bound.</typeparam>
+        /// <param name="tags">The optional argument that specifies tags for a particular type of a dependency binding.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
@@ -2529,14 +2529,14 @@ namespace Pure.DI
         /// <summary>
         /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
         /// </summary>
-        /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
-        /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
-        /// <typeparam name="T3">The type 3 of dependency to be bound.</typeparam>
-        /// <typeparam name="T4">The type 3 of dependency to be bound.</typeparam>
-        /// <typeparam name="T5">The type 5 of dependency to be bound.</typeparam>
-        /// <typeparam name="T6">The type 6 of dependency to be bound.</typeparam>
-        /// <typeparam name="T7">The type 7 of dependency to be bound.</typeparam>
-        /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
+        /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T3">Type 3 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T4">Type 3 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T5">Type 5 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T6">Type 6 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T7">Type 7 of a dependency to be bound.</typeparam>
+        /// <param name="tags">The optional argument that specifies tags for a particular type of a dependency binding.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
@@ -2549,14 +2549,14 @@ namespace Pure.DI
         /// <summary>
         /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
         /// </summary>
-        /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
-        /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
-        /// <typeparam name="T3">The type 3 of dependency to be bound.</typeparam>
-        /// <typeparam name="T4">The type 3 of dependency to be bound.</typeparam>
-        /// <typeparam name="T5">The type 5 of dependency to be bound.</typeparam>
-        /// <typeparam name="T6">The type 6 of dependency to be bound.</typeparam>
-        /// <typeparam name="T7">The type 7 of dependency to be bound.</typeparam>
-        /// <typeparam name="T8">The type 8 of dependency to be bound.</typeparam>
+        /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T3">Type 3 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T4">Type 3 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T5">Type 5 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T6">Type 6 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T7">Type 7 of a dependency to be bound.</typeparam>
+        /// <typeparam name="T8">Type 8 of a dependency to be bound.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="To{T}()"/>

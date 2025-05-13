@@ -51,10 +51,15 @@ sealed class Attributes(
 
                     if (attributeMetadata.ArgumentPosition >= args.Length)
                     {
-                        throw new CompileErrorException(
-                            string.Format(Strings.Error_Template_InvalidAttributeArgumentPosition, attributeMetadata.ArgumentPosition, attributeMetadata.Source, args.Length),
-                            ImmutableArray.Create(locationProvider.GetLocation(attributeMetadata.Source)),
-                            LogId.ErrorInvalidMetadata);
+                        // ReSharper disable once SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
+                        return kind switch
+                        {
+                            AttributeKind.Ordinal when typeof(T).IsAssignableFrom(typeof(int)) => (T)(object)0,
+                            _ => throw new CompileErrorException(
+                                string.Format(Strings.Error_Template_InvalidAttributeArgumentPosition, attributeMetadata.ArgumentPosition, attributeMetadata.Source, args.Length),
+                                ImmutableArray.Create(locationProvider.GetLocation(attributeMetadata.Source)),
+                                LogId.ErrorInvalidMetadata)
+                        };
                     }
 
                     var typedConstant = args[attributeMetadata.ArgumentPosition];
@@ -97,10 +102,15 @@ sealed class Attributes(
                 var args = attributeSyntax.ArgumentList?.Arguments.ToList() ?? [];
                 if (attributeMetadata.ArgumentPosition >= args.Count)
                 {
-                    throw new CompileErrorException(
-                        string.Format(Strings.Error_Template_InvalidAttributeArgumentPosition, attributeMetadata.ArgumentPosition, attributeMetadata.Source, args.Count),
-                        ImmutableArray.Create(locationProvider.GetLocation(attributeMetadata.Source)),
-                        LogId.ErrorInvalidMetadata);
+                    // ReSharper disable once SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
+                    return kind switch
+                    {
+                        AttributeKind.Ordinal when typeof(T).IsAssignableFrom(typeof(int)) => (T)(object)0,
+                        _ => throw new CompileErrorException(
+                            string.Format(Strings.Error_Template_InvalidAttributeArgumentPosition, attributeMetadata.ArgumentPosition, attributeMetadata.Source, args.Count),
+                            ImmutableArray.Create(locationProvider.GetLocation(attributeMetadata.Source)),
+                            LogId.ErrorInvalidMetadata)
+                    };
                 }
 
                 var argSyntax = args[attributeMetadata.ArgumentPosition];
