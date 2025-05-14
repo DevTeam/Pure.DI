@@ -365,7 +365,7 @@ interface IDependency;
 
 <details><summary>GenericTypeArgumentAttribute</summary><blockquote>
 
-Represents a generic type argument attribute. It allows you to create custom generic type argument such as _TTS_, _TTDictionary`2_, etc. 
+Represents a generic type argument attribute. It allows you to create custom generic type argument such as _TTS_, _TTDictionary`2_, etc.
             
 ```c#
 
@@ -384,7 +384,7 @@ See also _GenericTypeArgument``1_.
 
 <details><summary>Hint</summary><blockquote>
 
-Hints for the code generator and can be used to fine tune code generation.
+Hints for the code generator and can be used to fine-tune code generation.
             
 ```c#
 
@@ -671,7 +671,7 @@ See also _Hint(Pure.DI.Hint,System.String)_.
 
 <details><summary>Field OnDependencyInjection</summary><blockquote>
 
- `On`  or  `Off` . Determines whether to use partial  `OnDependencyInjection`  method to control of dependency injection.  `Off`  by default.
+ `On`  or  `Off` . Determines whether to use partial  `OnDependencyInjection`  method to control of a dependency injection.  `Off`  by default.
             
 ```c#
 
@@ -1309,7 +1309,7 @@ See also _Hint(Pure.DI.Hint,System.String)_.
 
 <details><summary>Field ResolveMethodModifiers</summary><blockquote>
 
-Overrides modifiers of the method  `public T Resolve<T>()` . "public" by default.
+Overrides modifiers of the method  `public T Resolve<T>()` . "Public" by default.
             
 ```c#
 
@@ -1771,7 +1771,7 @@ DI.Setup("Composition")
             
 ```
 
-The type of a dependency to be bound. Common type markers such as _TT_, _TTList`1_ and others are also supported.
+The type of dependency to be bound. Common type markers such as _TT_, _TTList`1_ and others are also supported.
  - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
 
  - returns Reference to the setup continuation chain.
@@ -1841,7 +1841,7 @@ See also _As(Pure.DI.Lifetime)_.
 
 Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
             Type 1 of a dependency to be bound.Type 2 of a dependency to be bound.Type 3 of a dependency to be bound.Type 3 of a dependency to be bound.
- - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
+ - parameter _tags_ - The optional argument that specifies tags for a particular type of a dependency binding.
 
  - returns Reference to the setup continuation chain.
 
@@ -2265,7 +2265,7 @@ DI.Setup("Composition")
             
 ```
 
-The type of a dependency to be bound.
+The type of dependency to be bound.
  - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
 
  - returns Reference to the setup continuation chain.
@@ -2365,14 +2365,14 @@ DI.Setup("Composition")
             
 ```
 
-The type of a dependency to be bound.
+The type of dependency to be bound.
  - parameter _name_ - Specifies the name of the root of the composition. If the value is empty, a private root will be created, which can be used when calling  `Resolve`  methods.
             The name supports templating:
             TemplateDescription{type}Will be replaced by the short name of the root type without its namespaces.{TYPE}Will be replaced with the full name of the root type.{tag}Will be replaced with the first tag name.
 
  - parameter _kind_ - The optional argument specifying the kind for the root of the composition.
 
- - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding. If is is not empty, the first tag is used for the root.
+ - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding. If it is is not empty, the first tag is used for the root.
 
  - returns Reference to the setup continuation chain.
 
@@ -2783,7 +2783,7 @@ DI.Setup("Composition")
 
 
  - parameter _lifetimes_ - _Lifetime_ of the instances to be accumulated. Instances with lifetime _Singleton_, _Scoped_, or _PerResolve_ only accumulate in an accumulator that is NOT lazily created.
-The type of instance. All instances that can be cast to this type will be aacumulated.The type of accumulator. It must have a public constructor without parameters and a  `Add`  method with a single argument that allows you to add an instance of type .
+The type of instance. All instances that can be cast to this type will be accumulated.The type of accumulator. It must have a public constructor without parameters and a  `Add`  method with a single argument that allows you to add an instance of type .
  - returns Reference to the setup continuation chain.
 
 See also _Lifetime_.
@@ -3031,7 +3031,7 @@ DI.Setup("Composition")
 ```
 
 
-            This is the default lifetime, it can be omitted, for example:
+            This is the default lifetime, it can be omitted, for example,
             
 ```c#
 
@@ -3076,7 +3076,7 @@ DI.Setup("Composition")
 
 <details><summary>Field PerBlock</summary><blockquote>
 
-Does not guarantee that there will be a single instance of the dependency for each root of the composition, but is useful to reduce the number of instances of type.
+Does not guarantee that there will be a single instance of the dependency for each root of the composition, but is useful to reduce the number of instances created.
             
 ```c#
 
@@ -3109,7 +3109,7 @@ DI.Setup("Composition")
 
 <details><summary>Name</summary><blockquote>
 
-Represents well known names.
+Represents well-known names.
             
 </blockquote></details>
 
@@ -3349,7 +3349,7 @@ Specifies to use a  `override`  modifier for the root of the composition.
 
 <details><summary>Tag</summary><blockquote>
 
-Represents well known tags.
+Represents well-known tags.
             
 See also _Bind``1(System.Object[])_.
 
@@ -3375,7 +3375,7 @@ DI.Setup("Composition")
 
 <details><summary>Field Type</summary><blockquote>
 
-Tag of target implementation type.
+Tag of a target implementation type.
             
 ```c#
 
@@ -3404,7 +3404,7 @@ DI.Setup("Composition")
 ```
 
 
- - parameter _injectionSites_ - Set of labels for inection each, must be specified in a special format: <namespace>.<type>.<member>[:argument]. The argument is specified only for the constructor and methods. The wildcards '*' and '?' are supported. All names are case-sensitive. The global namespace prefix 'global::' must be omitted.
+ - parameter _injectionSites_ - Set of labels for injection each must be specified in a special format: <namespace>.<type>.<member>[:argument]. The argument is specified only for the constructor and methods. The wildcards '*' and '?' are supported. All names are case-sensitive. The global namespace prefix 'global::' must be omitted.
 
 </blockquote></details>
 
@@ -3431,7 +3431,7 @@ DI.Setup("Composition")
 
 <details><summary>Method OnMember``1(System.String)</summary><blockquote>
 
-This tag allows you to define which binding will be used for explicit injection for property or field of the type.
+This tag allows you to define which binding will be used for explicit injection for a property or field of the type.
             
 ```c#
 
@@ -3471,24 +3471,6 @@ DI.Setup("Composition")
 </blockquote></details>
 
 
-<details><summary>Field UniqueTag</summary><blockquote>
-
-Atomically generated smart tag with value "UniqueTag".
-            It's used for:
-            
-            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve__BindingBuilder_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve_
-</blockquote></details>
-
-
-<details><summary>Field GenericType</summary><blockquote>
-
-Atomically generated smart tag with value "GenericType".
-            It's used for:
-            
-            class _Generator__TypeResolver_ <-- _IIdGenerator_(GenericType) -- _IdGenerator_ as _PerResolve_
-</blockquote></details>
-
-
 <details><summary>Field Overrider</summary><blockquote>
 
 Atomically generated smart tag with value "Overrider".
@@ -3498,21 +3480,30 @@ Atomically generated smart tag with value "Overrider".
 </blockquote></details>
 
 
-<details><summary>Field Override</summary><blockquote>
+<details><summary>Field UniqueTag</summary><blockquote>
 
-Atomically generated smart tag with value "Override".
+Atomically generated smart tag with value "UniqueTag".
             It's used for:
             
-            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
+            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve__BindingBuilder_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
-<details><summary>Field Injection</summary><blockquote>
+<details><summary>Field Cleaner</summary><blockquote>
 
-Atomically generated smart tag with value "Injection".
+Atomically generated smart tag with value "Cleaner".
             It's used for:
             
-            class _Generator__BuildTools_ <-- _IIdGenerator_(Injection) -- _IdGenerator_ as _PerResolve_
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field GenericType</summary><blockquote>
+
+Atomically generated smart tag with value "GenericType".
+            It's used for:
+            
+            class _Generator__TypeResolver_ <-- _IIdGenerator_(GenericType) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
@@ -3534,12 +3525,21 @@ Atomically generated smart tag with value "UsingDeclarations".
 </blockquote></details>
 
 
-<details><summary>Field Cleaner</summary><blockquote>
+<details><summary>Field Override</summary><blockquote>
 
-Atomically generated smart tag with value "Cleaner".
+Atomically generated smart tag with value "Override".
             It's used for:
             
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
+            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
+<details><summary>Field Injection</summary><blockquote>
+
+Atomically generated smart tag with value "Injection".
+            It's used for:
+            
+            class _Generator__BuildTools_ <-- _IIdGenerator_(Injection) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
@@ -4286,7 +4286,7 @@ Represents the generic type arguments marker for _ISet>T>_.
 
 <details><summary>TypeAttribute</summary><blockquote>
 
-The injection type can be defined manually using the  `Type`  attribute.This attribute explicitly overrides an injected type, otherwise it would be determined automatically based on the type of the constructor/method, property, or field parameter.
+The injection type can be defined manually using the  `Type`  attribute. This attribute explicitly overrides an injected type, otherwise it would be determined automatically based on the type of the constructor/method, property, or field parameter.
              This attribute is part of the API, but you can use your own attribute at any time, and this allows you to define them in the assembly and namespace you want.
              
 ```c#
@@ -5304,7 +5304,7 @@ Contextual AI needs to understand the situation it’s in. This means knowing de
 | --------------- | ---- | ------ |
 | [AI_CONTEXT_SMALL.md](AI_CONTEXT_SMALL.md) | 28KB | 7K |
 | [AI_CONTEXT_MEDIUM.md](AI_CONTEXT_MEDIUM.md) | 122KB | 31K |
-| [AI_CONTEXT_LARGE.md](AI_CONTEXT_LARGE.md) | 375KB | 96K |
+| [AI_CONTEXT_LARGE.md](AI_CONTEXT_LARGE.md) | 374KB | 95K |
 ## How to contribute to Pure.DI
 
 Thank you for your interest in contributing to the Pure.DI project! First of all, if you are going to make a big change or feature, please open a problem first. That way, we can coordinate and understand if the change you're going to work on fits with current priorities and if we can commit to reviewing and merging it within a reasonable timeframe. We don't want you to waste a lot of your valuable time on something that may not align with what we want for Pure.DI.
@@ -5350,21 +5350,21 @@ The entire build logic is a regular [console .NET application](/build). You can 
 
 | Commands | Description |
 |----------|-------------|
-| ai, ai | Generate AI context |
-| bm, benchmarks, benchmarks | Run benchmarks |
-| c, check, check | Compatibility checks |
-| dp, deploy, deploy | Package deployment |
-| e, example, example | Create examples |
-| g, generator, generator | Build and test the source code generator |
-| i, install, install | Install templates |
-| l, libs, libs | Build and test libraries |
-| p, pack, pack | Create NuGet packages |
-| perf, performance, performance | Performance tests |
-| pb, publish, publish | Publish the balazor web sssembly example |
-| r, readme, readme | Generate README.md |
-| t, template, template | Create and deploy templates |
-| te, testexamples, testexamples | Test examples |
-| u, upgrade, upgrade | Upgrading the internal version of DI to the latest public version |
+| ai | Generate AI context |
+| bm, benchmarks | Run benchmarks |
+| c, check | Compatibility checks |
+| dp, deploy | Package deployment |
+| e, example | Create examples |
+| g, generator | Build and test the source code generator |
+| i, install | Install templates |
+| l, libs | Build and test libraries |
+| p, pack | Create NuGet packages |
+| perf, performance | Performance tests |
+| pb, publish | Publish the balazor web sssembly example |
+| r, readme | Generate README.md |
+| t, template | Create and deploy templates |
+| te, testexamples | Test examples |
+| u, upgrade | Upgrading the internal version of DI to the latest public version |
 
 For example, to build and test the source code generator: 
 
@@ -5396,16 +5396,16 @@ Thanks!
 <summary>Array</summary>
 
 <table>
-<thead><tr><th>Method              </th><th>Mean  </th><th>Error</th><th>StdDev</th><th>Median</th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Gen1</th><th>Allocated</th><th>Alloc Ratio</th>
+<thead><tr><th>Method              </th><th>Mean  </th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Gen1</th><th>Allocated</th><th>Alloc Ratio</th>
 </tr>
-</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>88.33 ns</td><td>1.075 ns</td><td>1.006 ns</td><td>88.58 ns</td><td>0.94</td><td>0.03</td><td>0.0377</td><td>-</td><td>632 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>91.94 ns</td><td>1.832 ns</td><td>2.445 ns</td><td>91.66 ns</td><td>0.98</td><td>0.04</td><td>0.0377</td><td>-</td><td>632 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>92.65 ns</td><td>2.244 ns</td><td>6.366 ns</td><td>89.18 ns</td><td>0.98</td><td>0.07</td><td>0.0377</td><td>-</td><td>632 B</td><td>1.00</td>
-</tr><tr><td>&#39;Hand Coded&#39;</td><td>94.24 ns</td><td>1.883 ns</td><td>2.578 ns</td><td>94.06 ns</td><td>1.00</td><td>0.04</td><td>0.0377</td><td>-</td><td>632 B</td><td>1.00</td>
-</tr><tr><td>DryIoc</td><td>99.10 ns</td><td>0.999 ns</td><td>0.834 ns</td><td>98.91 ns</td><td>1.05</td><td>0.03</td><td>0.0377</td><td>-</td><td>632 B</td><td>1.00</td>
-</tr><tr><td>LightInject</td><td>103.24 ns</td><td>2.119 ns</td><td>4.183 ns</td><td>102.65 ns</td><td>1.10</td><td>0.05</td><td>0.0377</td><td>-</td><td>632 B</td><td>1.00</td>
-</tr><tr><td>Unity</td><td>4,510.09 ns</td><td>74.628 ns</td><td>66.155 ns</td><td>4,488.31 ns</td><td>47.89</td><td>1.47</td><td>0.8621</td><td>0.0076</td><td>14520 B</td><td>22.97</td>
-</tr><tr><td>Autofac</td><td>15,134.66 ns</td><td>110.608 ns</td><td>86.355 ns</td><td>15,131.24 ns</td><td>160.72</td><td>4.45</td><td>1.7090</td><td>0.0610</td><td>28976 B</td><td>45.85</td>
+</tr><tr><td>&#39;Hand Coded&#39;</td><td>60.19 ns</td><td>0.204 ns</td><td>0.159 ns</td><td>1.00</td><td>0.00</td><td>0.0377</td><td>-</td><td>632 B</td><td>1.00</td>
+</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>61.03 ns</td><td>0.232 ns</td><td>0.217 ns</td><td>1.01</td><td>0.00</td><td>0.0377</td><td>-</td><td>632 B</td><td>1.00</td>
+</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>61.37 ns</td><td>0.118 ns</td><td>0.099 ns</td><td>1.02</td><td>0.00</td><td>0.0377</td><td>-</td><td>632 B</td><td>1.00</td>
+</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>61.95 ns</td><td>0.158 ns</td><td>0.132 ns</td><td>1.03</td><td>0.00</td><td>0.0377</td><td>-</td><td>632 B</td><td>1.00</td>
+</tr><tr><td>LightInject</td><td>65.33 ns</td><td>0.447 ns</td><td>0.396 ns</td><td>1.09</td><td>0.01</td><td>0.0377</td><td>-</td><td>632 B</td><td>1.00</td>
+</tr><tr><td>DryIoc</td><td>69.59 ns</td><td>0.400 ns</td><td>0.355 ns</td><td>1.16</td><td>0.01</td><td>0.0377</td><td>-</td><td>632 B</td><td>1.00</td>
+</tr><tr><td>Unity</td><td>3,760.00 ns</td><td>34.156 ns</td><td>31.950 ns</td><td>62.47</td><td>0.54</td><td>0.8659</td><td>0.0076</td><td>14520 B</td><td>22.97</td>
+</tr><tr><td>Autofac</td><td>13,159.83 ns</td><td>57.224 ns</td><td>53.527 ns</td><td>218.63</td><td>1.02</td><td>1.7242</td><td>0.0763</td><td>28976 B</td><td>45.85</td>
 </tr></tbody></table>
 
 [Array details](readme/ArrayDetails.md)
@@ -5416,17 +5416,17 @@ Thanks!
 <summary>Enum</summary>
 
 <table>
-<thead><tr><th>Method              </th><th>Mean  </th><th>Error</th><th>StdDev</th><th>Median</th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Gen1</th><th>Allocated</th><th>Alloc Ratio</th>
+<thead><tr><th>Method              </th><th>Mean  </th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Gen1</th><th>Allocated</th><th>Alloc Ratio</th>
 </tr>
-</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>64.36 ns</td><td>1.282 ns</td><td>2.919 ns</td><td>62.75 ns</td><td>1.00</td><td>0.05</td><td>0.0205</td><td>-</td><td>344 B</td><td>1.00</td>
-</tr><tr><td>&#39;Hand Coded&#39;</td><td>64.49 ns</td><td>0.791 ns</td><td>0.661 ns</td><td>64.47 ns</td><td>1.00</td><td>0.01</td><td>0.0205</td><td>-</td><td>344 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>65.26 ns</td><td>0.965 ns</td><td>0.903 ns</td><td>65.56 ns</td><td>1.01</td><td>0.02</td><td>0.0205</td><td>-</td><td>344 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>65.43 ns</td><td>1.004 ns</td><td>0.784 ns</td><td>65.23 ns</td><td>1.01</td><td>0.02</td><td>0.0205</td><td>-</td><td>344 B</td><td>1.00</td>
-</tr><tr><td>&#39;Microsoft DI&#39;</td><td>93.40 ns</td><td>1.322 ns</td><td>1.172 ns</td><td>92.96 ns</td><td>1.45</td><td>0.02</td><td>0.0281</td><td>-</td><td>472 B</td><td>1.37</td>
-</tr><tr><td>LightInject</td><td>147.58 ns</td><td>1.650 ns</td><td>1.544 ns</td><td>147.96 ns</td><td>2.29</td><td>0.03</td><td>0.0510</td><td>-</td><td>856 B</td><td>2.49</td>
-</tr><tr><td>DryIoc</td><td>147.61 ns</td><td>1.110 ns</td><td>0.984 ns</td><td>147.54 ns</td><td>2.29</td><td>0.03</td><td>0.0510</td><td>-</td><td>856 B</td><td>2.49</td>
-</tr><tr><td>Unity</td><td>3,736.48 ns</td><td>73.272 ns</td><td>68.539 ns</td><td>3,739.88 ns</td><td>57.94</td><td>1.18</td><td>0.8202</td><td>0.0076</td><td>13752 B</td><td>39.98</td>
-</tr><tr><td>Autofac</td><td>15,610.79 ns</td><td>288.580 ns</td><td>595.967 ns</td><td>15,436.50 ns</td><td>242.08</td><td>9.47</td><td>1.7395</td><td>0.0610</td><td>29104 B</td><td>84.60</td>
+</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>41.59 ns</td><td>0.881 ns</td><td>1.115 ns</td><td>0.84</td><td>0.02</td><td>0.0148</td><td>-</td><td>248 B</td><td>0.72</td>
+</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>41.72 ns</td><td>0.161 ns</td><td>0.143 ns</td><td>0.84</td><td>0.00</td><td>0.0148</td><td>-</td><td>248 B</td><td>0.72</td>
+</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>41.98 ns</td><td>0.395 ns</td><td>0.369 ns</td><td>0.84</td><td>0.01</td><td>0.0148</td><td>-</td><td>248 B</td><td>0.72</td>
+</tr><tr><td>&#39;Hand Coded&#39;</td><td>49.71 ns</td><td>0.320 ns</td><td>0.250 ns</td><td>1.00</td><td>0.01</td><td>0.0206</td><td>-</td><td>344 B</td><td>1.00</td>
+</tr><tr><td>&#39;Microsoft DI&#39;</td><td>67.35 ns</td><td>0.299 ns</td><td>0.250 ns</td><td>1.35</td><td>0.01</td><td>0.0281</td><td>-</td><td>472 B</td><td>1.37</td>
+</tr><tr><td>LightInject</td><td>102.67 ns</td><td>0.505 ns</td><td>0.472 ns</td><td>2.07</td><td>0.01</td><td>0.0511</td><td>-</td><td>856 B</td><td>2.49</td>
+</tr><tr><td>DryIoc</td><td>103.90 ns</td><td>0.789 ns</td><td>0.738 ns</td><td>2.09</td><td>0.02</td><td>0.0511</td><td>-</td><td>856 B</td><td>2.49</td>
+</tr><tr><td>Unity</td><td>2,956.96 ns</td><td>19.671 ns</td><td>17.438 ns</td><td>59.49</td><td>0.44</td><td>0.8202</td><td>0.0076</td><td>13752 B</td><td>39.98</td>
+</tr><tr><td>Autofac</td><td>12,693.68 ns</td><td>70.461 ns</td><td>62.462 ns</td><td>255.37</td><td>1.73</td><td>1.7395</td><td>0.0763</td><td>29104 B</td><td>84.60</td>
 </tr></tbody></table>
 
 [Enum details](readme/EnumDetails.md)
@@ -5439,14 +5439,14 @@ Thanks!
 <table>
 <thead><tr><th>Method              </th><th>Mean  </th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Gen1</th><th>Allocated</th><th>Alloc Ratio</th>
 </tr>
-</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>4.382 ns</td><td>0.0561 ns</td><td>0.0525 ns</td><td>0.84</td><td>0.01</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Hand Coded&#39;</td><td>5.193 ns</td><td>0.0649 ns</td><td>0.0542 ns</td><td>1.00</td><td>0.01</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>5.914 ns</td><td>0.0753 ns</td><td>0.0667 ns</td><td>1.14</td><td>0.02</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>6.375 ns</td><td>0.0465 ns</td><td>0.0388 ns</td><td>1.23</td><td>0.01</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>DryIoc</td><td>28.979 ns</td><td>0.3875 ns</td><td>0.3435 ns</td><td>5.58</td><td>0.08</td><td>0.0072</td><td>-</td><td>120 B</td><td>5.00</td>
-</tr><tr><td>LightInject</td><td>155.185 ns</td><td>2.9628 ns</td><td>2.7714 ns</td><td>29.89</td><td>0.60</td><td>0.0300</td><td>-</td><td>504 B</td><td>21.00</td>
-</tr><tr><td>Unity</td><td>1,760.400 ns</td><td>12.4774 ns</td><td>11.6714 ns</td><td>339.03</td><td>3.99</td><td>0.1507</td><td>-</td><td>2552 B</td><td>106.33</td>
-</tr><tr><td>Autofac</td><td>5,745.474 ns</td><td>36.1642 ns</td><td>30.1988 ns</td><td>1,106.51</td><td>12.28</td><td>0.8316</td><td>0.0076</td><td>14008 B</td><td>583.67</td>
+</tr><tr><td>&#39;Hand Coded&#39;</td><td>3.723 ns</td><td>0.0102 ns</td><td>0.0091 ns</td><td>1.00</td><td>0.00</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>4.046 ns</td><td>0.0177 ns</td><td>0.0157 ns</td><td>1.09</td><td>0.00</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>4.194 ns</td><td>0.0901 ns</td><td>0.0798 ns</td><td>1.13</td><td>0.02</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>4.583 ns</td><td>0.0363 ns</td><td>0.0322 ns</td><td>1.23</td><td>0.01</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>DryIoc</td><td>22.670 ns</td><td>0.4508 ns</td><td>0.3996 ns</td><td>6.09</td><td>0.10</td><td>0.0072</td><td>-</td><td>120 B</td><td>5.00</td>
+</tr><tr><td>LightInject</td><td>124.630 ns</td><td>0.1723 ns</td><td>0.1439 ns</td><td>33.47</td><td>0.09</td><td>0.0300</td><td>-</td><td>504 B</td><td>21.00</td>
+</tr><tr><td>Unity</td><td>1,563.968 ns</td><td>7.3841 ns</td><td>6.9071 ns</td><td>420.03</td><td>2.05</td><td>0.1507</td><td>-</td><td>2552 B</td><td>106.33</td>
+</tr><tr><td>Autofac</td><td>5,131.266 ns</td><td>78.2411 ns</td><td>69.3587 ns</td><td>1,378.08</td><td>18.29</td><td>0.8316</td><td>0.0076</td><td>14008 B</td><td>583.67</td>
 </tr></tbody></table>
 
 [Func details](readme/FuncDetails.md)
@@ -5457,20 +5457,20 @@ Thanks!
 <summary>Singleton</summary>
 
 <table>
-<thead><tr><th>Method              </th><th>Mean   </th><th>Error  </th><th>StdDev</th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Gen1</th><th>Allocated</th><th>Alloc Ratio</th>
+<thead><tr><th>Method              </th><th>Mean   </th><th>Error  </th><th>StdDev </th><th>Median </th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Gen1</th><th>Allocated</th><th>Alloc Ratio</th>
 </tr>
-</thead><tbody><tr><td>&#39;Hand Coded&#39;</td><td>3.016 ns</td><td>0.0721 ns</td><td>0.0602 ns</td><td>1.00</td><td>0.03</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>3.337 ns</td><td>0.0778 ns</td><td>0.0728 ns</td><td>1.11</td><td>0.03</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>3.517 ns</td><td>0.0602 ns</td><td>0.0533 ns</td><td>1.17</td><td>0.03</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>4.649 ns</td><td>0.1417 ns</td><td>0.3832 ns</td><td>1.54</td><td>0.13</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>DryIoc</td><td>11.388 ns</td><td>0.0389 ns</td><td>0.0304 ns</td><td>3.78</td><td>0.07</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Simple Injector&#39;</td><td>16.630 ns</td><td>0.0782 ns</td><td>0.0693 ns</td><td>5.52</td><td>0.11</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Microsoft DI&#39;</td><td>19.551 ns</td><td>0.0684 ns</td><td>0.0606 ns</td><td>6.49</td><td>0.12</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>LightInject</td><td>426.861 ns</td><td>1.0945 ns</td><td>0.9702 ns</td><td>141.59</td><td>2.70</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>Unity</td><td>2,645.530 ns</td><td>47.7345 ns</td><td>66.9171 ns</td><td>877.51</td><td>27.40</td><td>0.1869</td><td>-</td><td>3184 B</td><td>132.67</td>
-</tr><tr><td>Autofac</td><td>9,723.452 ns</td><td>60.9124 ns</td><td>53.9972 ns</td><td>3,225.24</td><td>63.41</td><td>1.4343</td><td>0.0458</td><td>24208 B</td><td>1,008.67</td>
-</tr><tr><td>&#39;Castle Windsor&#39;</td><td>16,991.331 ns</td><td>93.5701 ns</td><td>87.5255 ns</td><td>5,635.97</td><td>110.23</td><td>1.4038</td><td>-</td><td>23912 B</td><td>996.33</td>
-</tr><tr><td>Ninject</td><td>67,297.995 ns</td><td>1,045.7465 ns</td><td>927.0271 ns</td><td>22,322.54</td><td>516.33</td><td>4.2725</td><td>1.0986</td><td>73176 B</td><td>3,049.00</td>
+</thead><tbody><tr><td>&#39;Pure.DI composition root&#39;</td><td>3.050 ns</td><td>0.0297 ns</td><td>0.0263 ns</td><td>3.059 ns</td><td>0.94</td><td>0.01</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>&#39;Hand Coded&#39;</td><td>3.252 ns</td><td>0.0357 ns</td><td>0.0316 ns</td><td>3.234 ns</td><td>1.00</td><td>0.01</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>3.691 ns</td><td>0.0577 ns</td><td>0.0512 ns</td><td>3.691 ns</td><td>1.14</td><td>0.02</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>10.140 ns</td><td>1.4614 ns</td><td>4.3089 ns</td><td>12.120 ns</td><td>3.12</td><td>1.32</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>DryIoc</td><td>10.367 ns</td><td>0.0381 ns</td><td>0.0338 ns</td><td>10.366 ns</td><td>3.19</td><td>0.03</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>&#39;Simple Injector&#39;</td><td>15.277 ns</td><td>0.0236 ns</td><td>0.0197 ns</td><td>15.280 ns</td><td>4.70</td><td>0.04</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>&#39;Microsoft DI&#39;</td><td>18.243 ns</td><td>0.0303 ns</td><td>0.0253 ns</td><td>18.250 ns</td><td>5.61</td><td>0.05</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>LightInject</td><td>425.601 ns</td><td>0.4115 ns</td><td>0.3212 ns</td><td>425.646 ns</td><td>130.90</td><td>1.22</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>Unity</td><td>2,770.073 ns</td><td>20.0626 ns</td><td>17.7850 ns</td><td>2,768.413 ns</td><td>852.00</td><td>9.54</td><td>0.1869</td><td>-</td><td>3184 B</td><td>132.67</td>
+</tr><tr><td>Autofac</td><td>8,220.514 ns</td><td>25.4003 ns</td><td>21.2104 ns</td><td>8,219.382 ns</td><td>2,528.42</td><td>24.39</td><td>1.4343</td><td>0.0458</td><td>24208 B</td><td>1,008.67</td>
+</tr><tr><td>&#39;Castle Windsor&#39;</td><td>14,568.225 ns</td><td>58.6389 ns</td><td>51.9818 ns</td><td>14,567.683 ns</td><td>4,480.81</td><td>44.52</td><td>1.4191</td><td>-</td><td>23912 B</td><td>996.33</td>
+</tr><tr><td>Ninject</td><td>61,405.590 ns</td><td>1,218.2926 ns</td><td>2,515.9857 ns</td><td>61,441.296 ns</td><td>18,886.76</td><td>786.79</td><td>4.3335</td><td>1.0986</td><td>73176 B</td><td>3,049.00</td>
 </tr></tbody></table>
 
 [Singleton details](readme/SingletonDetails.md)
@@ -5483,18 +5483,18 @@ Thanks!
 <table>
 <thead><tr><th>Method              </th><th>Mean    </th><th>Error  </th><th>StdDev </th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Gen1</th><th>Allocated</th><th>Alloc Ratio</th>
 </tr>
-</thead><tbody><tr><td>&#39;Pure.DI composition root&#39;</td><td>3.491 ns</td><td>0.1203 ns</td><td>0.2764 ns</td><td>0.97</td><td>0.09</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Hand Coded&#39;</td><td>3.619 ns</td><td>0.1132 ns</td><td>0.1952 ns</td><td>1.00</td><td>0.07</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>4.417 ns</td><td>0.1377 ns</td><td>0.3429 ns</td><td>1.22</td><td>0.11</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>4.649 ns</td><td>0.1431 ns</td><td>0.1338 ns</td><td>1.29</td><td>0.08</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>LightInject</td><td>7.043 ns</td><td>0.0902 ns</td><td>0.0754 ns</td><td>1.95</td><td>0.10</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Microsoft DI&#39;</td><td>10.357 ns</td><td>0.1357 ns</td><td>0.1133 ns</td><td>2.87</td><td>0.15</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>DryIoc</td><td>10.673 ns</td><td>0.1197 ns</td><td>0.1119 ns</td><td>2.96</td><td>0.16</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Simple Injector&#39;</td><td>14.594 ns</td><td>0.1373 ns</td><td>0.1217 ns</td><td>4.04</td><td>0.21</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>Unity</td><td>4,320.577 ns</td><td>85.0619 ns</td><td>175.6675 ns</td><td>1,197.13</td><td>78.58</td><td>0.3052</td><td>-</td><td>5176 B</td><td>215.67</td>
-</tr><tr><td>Autofac</td><td>12,616.111 ns</td><td>227.4971 ns</td><td>201.6703 ns</td><td>3,495.62</td><td>189.02</td><td>1.9836</td><td>0.0916</td><td>33224 B</td><td>1,384.33</td>
-</tr><tr><td>&#39;Castle Windsor&#39;</td><td>27,766.858 ns</td><td>312.7020 ns</td><td>277.2021 ns</td><td>7,693.52</td><td>405.54</td><td>3.2349</td><td>0.0305</td><td>54360 B</td><td>2,265.00</td>
-</tr><tr><td>Ninject</td><td>148,286.554 ns</td><td>3,309.2559 ns</td><td>9,600.7521 ns</td><td>41,086.58</td><td>3,398.59</td><td>7.5684</td><td>1.4648</td><td>128736 B</td><td>5,364.00</td>
+</thead><tbody><tr><td>&#39;Pure.DI composition root&#39;</td><td>2.938 ns</td><td>0.0142 ns</td><td>0.0126 ns</td><td>0.90</td><td>0.01</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>&#39;Hand Coded&#39;</td><td>3.280 ns</td><td>0.0349 ns</td><td>0.0309 ns</td><td>1.00</td><td>0.01</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>4.056 ns</td><td>0.0610 ns</td><td>0.0541 ns</td><td>1.24</td><td>0.02</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>4.180 ns</td><td>0.0338 ns</td><td>0.0300 ns</td><td>1.27</td><td>0.01</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>LightInject</td><td>7.022 ns</td><td>0.1228 ns</td><td>0.1089 ns</td><td>2.14</td><td>0.04</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>&#39;Microsoft DI&#39;</td><td>10.428 ns</td><td>0.0883 ns</td><td>0.0737 ns</td><td>3.18</td><td>0.04</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>DryIoc</td><td>10.637 ns</td><td>0.1883 ns</td><td>0.1669 ns</td><td>3.24</td><td>0.06</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>&#39;Simple Injector&#39;</td><td>14.988 ns</td><td>0.3002 ns</td><td>0.2507 ns</td><td>4.57</td><td>0.08</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>Unity</td><td>3,903.645 ns</td><td>46.3907 ns</td><td>43.3939 ns</td><td>1,190.38</td><td>16.79</td><td>0.3052</td><td>-</td><td>5176 B</td><td>215.67</td>
+</tr><tr><td>Autofac</td><td>13,013.033 ns</td><td>174.2670 ns</td><td>145.5209 ns</td><td>3,968.19</td><td>55.99</td><td>1.9836</td><td>0.0916</td><td>33224 B</td><td>1,384.33</td>
+</tr><tr><td>&#39;Castle Windsor&#39;</td><td>30,515.675 ns</td><td>383.3424 ns</td><td>358.5787 ns</td><td>9,305.43</td><td>135.64</td><td>3.2349</td><td>0.0305</td><td>54360 B</td><td>2,265.00</td>
+</tr><tr><td>Ninject</td><td>142,693.002 ns</td><td>2,897.5871 ns</td><td>8,360.2018 ns</td><td>43,512.72</td><td>2,567.74</td><td>7.5684</td><td>1.4648</td><td>128736 B</td><td>5,364.00</td>
 </tr></tbody></table>
 
 [Transient details](readme/TransientDetails.md)
@@ -5505,11 +5505,11 @@ Thanks!
 <summary>Benchmarks environment</summary>
 
 <pre><code>
-BenchmarkDotNet v0.14.0, Windows 10 (10.0.19045.4894/22H2/2022Update)
+BenchmarkDotNet v0.14.0, Windows 10 (10.0.19045.5608/22H2/2022Update)
 AMD Ryzen 9 5900X, 1 CPU, 24 logical and 12 physical cores
-.NET SDK 9.0.100
-  [Host]     : .NET 9.0.0 (9.0.24.52809), X64 RyuJIT AVX2
-  DefaultJob : .NET 9.0.0 (9.0.24.52809), X64 RyuJIT AVX2
+.NET SDK 9.0.203
+  [Host]     : .NET 9.0.4 (9.0.425.16305), X64 RyuJIT AVX2
+  DefaultJob : .NET 9.0.4 (9.0.425.16305), X64 RyuJIT AVX2
 </code></pre>
 
 </details>

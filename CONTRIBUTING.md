@@ -43,21 +43,21 @@ The entire build logic is a regular [console .NET application](/build). You can 
 
 | Commands | Description |
 |----------|-------------|
-| ai, ai | Generate AI context |
-| bm, benchmarks, benchmarks | Run benchmarks |
-| c, check, check | Compatibility checks |
-| dp, deploy, deploy | Package deployment |
-| e, example, example | Create examples |
-| g, generator, generator | Build and test the source code generator |
-| i, install, install | Install templates |
-| l, libs, libs | Build and test libraries |
-| p, pack, pack | Create NuGet packages |
-| perf, performance, performance | Performance tests |
-| pb, publish, publish | Publish the balazor web sssembly example |
-| r, readme, readme | Generate README.md |
-| t, template, template | Create and deploy templates |
-| te, testexamples, testexamples | Test examples |
-| u, upgrade, upgrade | Upgrading the internal version of DI to the latest public version |
+| ai | Generate AI context |
+| bm, benchmarks | Run benchmarks |
+| c, check | Compatibility checks |
+| dp, deploy | Package deployment |
+| e, example | Create examples |
+| g, generator | Build and test the source code generator |
+| i, install | Install templates |
+| l, libs | Build and test libraries |
+| p, pack | Create NuGet packages |
+| perf, performance | Performance tests |
+| pb, publish | Publish the balazor web sssembly example |
+| r, readme | Generate README.md |
+| t, template | Create and deploy templates |
+| te, testexamples | Test examples |
+| u, upgrade | Upgrading the internal version of DI to the latest public version |
 
 For example, to build and test the source code generator: 
 

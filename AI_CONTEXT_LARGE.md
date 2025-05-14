@@ -8993,7 +8993,7 @@ interface IDependency;
 
 <details><summary>GenericTypeArgumentAttribute</summary><blockquote>
 
-Represents a generic type argument attribute. It allows you to create custom generic type argument such as _TTS_, _TTDictionary`2_, etc. 
+Represents a generic type argument attribute. It allows you to create custom generic type argument such as _TTS_, _TTDictionary`2_, etc.
             
 ```c#
 
@@ -9012,7 +9012,7 @@ See also _GenericTypeArgument``1_.
 
 <details><summary>Hint</summary><blockquote>
 
-Hints for the code generator and can be used to fine tune code generation.
+Hints for the code generator and can be used to fine-tune code generation.
             
 ```c#
 
@@ -9299,7 +9299,7 @@ See also _Hint(Pure.DI.Hint,System.String)_.
 
 <details><summary>Field OnDependencyInjection</summary><blockquote>
 
- `On`  or  `Off` . Determines whether to use partial  `OnDependencyInjection`  method to control of dependency injection.  `Off`  by default.
+ `On`  or  `Off` . Determines whether to use partial  `OnDependencyInjection`  method to control of a dependency injection.  `Off`  by default.
             
 ```c#
 
@@ -9937,7 +9937,7 @@ See also _Hint(Pure.DI.Hint,System.String)_.
 
 <details><summary>Field ResolveMethodModifiers</summary><blockquote>
 
-Overrides modifiers of the method  `public T Resolve<T>()` . "public" by default.
+Overrides modifiers of the method  `public T Resolve<T>()` . "Public" by default.
             
 ```c#
 
@@ -10422,7 +10422,7 @@ See also _As(Pure.DI.Lifetime)_.
 <details><summary>Method Bind``2(System.Object[])</summary><blockquote>
 
 Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
-            The type 1 of dependency to be bound.The type 2 of dependency to be bound.
+            Type 1 of a dependency to be bound.Type 2 of a dependency to be bound.
  - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
 
  - returns Reference to the setup continuation chain.
@@ -10445,7 +10445,7 @@ See also _As(Pure.DI.Lifetime)_.
 <details><summary>Method Bind``3(System.Object[])</summary><blockquote>
 
 Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
-            The type 1 of dependency to be bound.The type 2 of dependency to be bound.The type 3 of dependency to be bound.
+            Type 1 of a dependency to be bound.Type 2 of a dependency to be bound.Type 3 of a dependency to be bound.
  - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
 
  - returns Reference to the setup continuation chain.
@@ -10468,8 +10468,8 @@ See also _As(Pure.DI.Lifetime)_.
 <details><summary>Method Bind``4(System.Object[])</summary><blockquote>
 
 Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
-            The type 1 of dependency to be bound.The type 2 of dependency to be bound.The type 3 of dependency to be bound.The type 3 of dependency to be bound.
- - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
+            Type 1 of a dependency to be bound.Type 2 of a dependency to be bound.Type 3 of a dependency to be bound.Type 3 of a dependency to be bound.
+ - parameter _tags_ - The optional argument that specifies tags for a particular type of a dependency binding.
 
  - returns Reference to the setup continuation chain.
 
@@ -10916,7 +10916,7 @@ See also _As(Pure.DI.Lifetime)_.
 <details><summary>Method Bind``2(System.Object[])</summary><blockquote>
 
 Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
-            The type 1 of dependency to be bound.The type 2 of dependency to be bound.
+            Type 1 of a dependency to be bound.Type 2 of a dependency to be bound.
  - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
 
  - returns Reference to the setup continuation chain.
@@ -10939,7 +10939,7 @@ See also _As(Pure.DI.Lifetime)_.
 <details><summary>Method Bind``3(System.Object[])</summary><blockquote>
 
 Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
-            The type 1 of dependency to be bound.The type 2 of dependency to be bound.The type 3 of dependency to be bound.
+            Type 1 of a dependency to be bound.Type 2 of a dependency to be bound.Type 3 of a dependency to be bound.
  - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
 
  - returns Reference to the setup continuation chain.
@@ -10962,7 +10962,7 @@ See also _As(Pure.DI.Lifetime)_.
 <details><summary>Method Bind``4(System.Object[])</summary><blockquote>
 
 Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
-            The type 1 of dependency to be bound.The type 2 of dependency to be bound.The type 3 of dependency to be bound.The type 4 of dependency to be bound.
+            Type 1 of a dependency to be bound.Type 2 of a dependency to be bound.Type 3 of a dependency to be bound.Type 4 of a dependency to be bound.
  - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
 
  - returns Reference to the setup continuation chain.
@@ -11000,7 +11000,7 @@ The type of dependency to be bound.
 
  - parameter _kind_ - The optional argument specifying the kind for the root of the composition.
 
- - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding. If is is not empty, the first tag is used for the root.
+ - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding. If it is is not empty, the first tag is used for the root.
 
  - returns Reference to the setup continuation chain.
 
@@ -11411,7 +11411,7 @@ DI.Setup("Composition")
 
 
  - parameter _lifetimes_ - _Lifetime_ of the instances to be accumulated. Instances with lifetime _Singleton_, _Scoped_, or _PerResolve_ only accumulate in an accumulator that is NOT lazily created.
-The type of instance. All instances that can be cast to this type will be aacumulated.The type of accumulator. It must have a public constructor without parameters and a  `Add`  method with a single argument that allows you to add an instance of type .
+The type of instance. All instances that can be cast to this type will be accumulated.The type of accumulator. It must have a public constructor without parameters and a  `Add`  method with a single argument that allows you to add an instance of type .
  - returns Reference to the setup continuation chain.
 
 See also _Lifetime_.
@@ -11659,7 +11659,7 @@ DI.Setup("Composition")
 ```
 
 
-            This is the default lifetime, it can be omitted, for example:
+            This is the default lifetime, it can be omitted, for example,
             
 ```c#
 
@@ -11704,7 +11704,7 @@ DI.Setup("Composition")
 
 <details><summary>Field PerBlock</summary><blockquote>
 
-Does not guarantee that there will be a single instance of the dependency for each root of the composition, but is useful to reduce the number of instances of type.
+Does not guarantee that there will be a single instance of the dependency for each root of the composition, but is useful to reduce the number of instances created.
             
 ```c#
 
@@ -11737,7 +11737,7 @@ DI.Setup("Composition")
 
 <details><summary>Name</summary><blockquote>
 
-Represents well known names.
+Represents well-known names.
             
 </blockquote></details>
 
@@ -11977,7 +11977,7 @@ Specifies to use a  `override`  modifier for the root of the composition.
 
 <details><summary>Tag</summary><blockquote>
 
-Represents well known tags.
+Represents well-known tags.
             
 See also _Bind``1(System.Object[])_.
 
@@ -12003,7 +12003,7 @@ DI.Setup("Composition")
 
 <details><summary>Field Type</summary><blockquote>
 
-Tag of target implementation type.
+Tag of a target implementation type.
             
 ```c#
 
@@ -12032,7 +12032,7 @@ DI.Setup("Composition")
 ```
 
 
- - parameter _injectionSites_ - Set of labels for inection each, must be specified in a special format: <namespace>.<type>.<member>[:argument]. The argument is specified only for the constructor and methods. The wildcards '*' and '?' are supported. All names are case-sensitive. The global namespace prefix 'global::' must be omitted.
+ - parameter _injectionSites_ - Set of labels for injection each must be specified in a special format: <namespace>.<type>.<member>[:argument]. The argument is specified only for the constructor and methods. The wildcards '*' and '?' are supported. All names are case-sensitive. The global namespace prefix 'global::' must be omitted.
 
 </blockquote></details>
 
@@ -12059,7 +12059,7 @@ DI.Setup("Composition")
 
 <details><summary>Method OnMember``1(System.String)</summary><blockquote>
 
-This tag allows you to define which binding will be used for explicit injection for property or field of the type.
+This tag allows you to define which binding will be used for explicit injection for a property or field of the type.
             
 ```c#
 
@@ -12099,24 +12099,6 @@ DI.Setup("Composition")
 </blockquote></details>
 
 
-<details><summary>Field UniqueTag</summary><blockquote>
-
-Atomically generated smart tag with value "UniqueTag".
-            It's used for:
-            
-            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve__BindingBuilder_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve_
-</blockquote></details>
-
-
-<details><summary>Field GenericType</summary><blockquote>
-
-Atomically generated smart tag with value "GenericType".
-            It's used for:
-            
-            class _Generator__TypeResolver_ <-- _IIdGenerator_(GenericType) -- _IdGenerator_ as _PerResolve_
-</blockquote></details>
-
-
 <details><summary>Field Overrider</summary><blockquote>
 
 Atomically generated smart tag with value "Overrider".
@@ -12126,21 +12108,30 @@ Atomically generated smart tag with value "Overrider".
 </blockquote></details>
 
 
-<details><summary>Field Override</summary><blockquote>
+<details><summary>Field UniqueTag</summary><blockquote>
 
-Atomically generated smart tag with value "Override".
+Atomically generated smart tag with value "UniqueTag".
             It's used for:
             
-            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
+            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve__BindingBuilder_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
-<details><summary>Field Injection</summary><blockquote>
+<details><summary>Field Cleaner</summary><blockquote>
 
-Atomically generated smart tag with value "Injection".
+Atomically generated smart tag with value "Cleaner".
             It's used for:
             
-            class _Generator__BuildTools_ <-- _IIdGenerator_(Injection) -- _IdGenerator_ as _PerResolve_
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field GenericType</summary><blockquote>
+
+Atomically generated smart tag with value "GenericType".
+            It's used for:
+            
+            class _Generator__TypeResolver_ <-- _IIdGenerator_(GenericType) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
@@ -12162,12 +12153,21 @@ Atomically generated smart tag with value "UsingDeclarations".
 </blockquote></details>
 
 
-<details><summary>Field Cleaner</summary><blockquote>
+<details><summary>Field Override</summary><blockquote>
 
-Atomically generated smart tag with value "Cleaner".
+Atomically generated smart tag with value "Override".
             It's used for:
             
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
+            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
+<details><summary>Field Injection</summary><blockquote>
+
+Atomically generated smart tag with value "Injection".
+            It's used for:
+            
+            class _Generator__BuildTools_ <-- _IIdGenerator_(Injection) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
@@ -12914,7 +12914,7 @@ Represents the generic type arguments marker for _ISet>T>_.
 
 <details><summary>TypeAttribute</summary><blockquote>
 
-The injection type can be defined manually using the  `Type`  attribute.This attribute explicitly overrides an injected type, otherwise it would be determined automatically based on the type of the constructor/method, property, or field parameter.
+The injection type can be defined manually using the  `Type`  attribute. This attribute explicitly overrides an injected type, otherwise it would be determined automatically based on the type of the constructor/method, property, or field parameter.
              This attribute is part of the API, but you can use your own attribute at any time, and this allows you to define them in the assembly and namespace you want.
              
 ```c#

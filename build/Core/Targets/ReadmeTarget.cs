@@ -1,7 +1,6 @@
 // ReSharper disable InvertIf
 // ReSharper disable ConvertIfStatementToSwitchStatement
 // ReSharper disable ClassNeverInstantiated.Global
-
 // ReSharper disable InconsistentNaming
 namespace Build.Core.Targets;
 
@@ -121,7 +120,7 @@ class ReadmeTarget(
                 case "$(commands)":
                     foreach (var command in rootCommand.Subcommands.OrderBy(i => i.Name))
                     {
-                        await writer.WriteLineAsync($"| {string.Join(", ", new[] { command.Name }.Concat(command.Aliases).OrderBy(i => i.Length).ThenBy(i => i))} | {command.Description} |");
+                        await writer.WriteLineAsync($"| {string.Join(", ", command.Aliases.OrderBy(i => i.Length).ThenBy(i => i))} | {command.Description} |");
                     }
 
                     return true;
