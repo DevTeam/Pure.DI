@@ -48,7 +48,7 @@ public static class TestExtensions
 
         var globalOptions = new TestAnalyzerConfigOptions(new Dictionary<string, string>
         {
-            { GlobalProperties.SeverityProperty, DiagnosticSeverity.Info.ToString() },
+            { GlobalProperties.SeverityProperty, nameof(DiagnosticSeverity.Info) },
             { GlobalProperties.LogFileProperty, ".logs\\IntegrationTests.log" },
             { GlobalProperties.CultureProperty, options?.Culture ?? CultureInfo.CurrentUICulture.Name }
         });

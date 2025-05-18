@@ -23,7 +23,22 @@ static class LoggerExtensions
         logger.Log(new LogEntry(DiagnosticSeverity.Info, message, Sort(locations), id));
 
     private static ImmutableArray<Location> Sort(in ImmutableArray<Location> locations) =>
-        locations.IsDefaultOrEmpty || locations.Length == 1
-            ? locations
-            : locations.OrderBy(i => !i.IsInSource).ToImmutableArray();
+        locations.OrderBy(GetPriority).ToImmutableArray();
+
+    private static int GetPriority(Location location)
+    {
+        // ReSharper disable once InvertIf
+        if (location.IsInSource)
+        {
+            // ReSharper disable once ConvertIfStatementToReturnStatement
+            if (!location.SourceTree.FilePath.EndsWith(Names.CodeFileSuffix, StringComparison.InvariantCultureIgnoreCase))
+            {
+                return 0;
+            }
+
+            return 1;
+        }
+
+        return 2;
+    }
 }

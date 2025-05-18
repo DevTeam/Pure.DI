@@ -11,6 +11,7 @@ $r=Shouldly
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable ArrangeTypeModifiers
+// ReSharper disable RedundantArgumentDefaultValue
 
 namespace Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario;
 

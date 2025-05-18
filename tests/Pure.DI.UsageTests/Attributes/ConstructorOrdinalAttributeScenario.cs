@@ -13,6 +13,7 @@ $r=Shouldly
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedMember.Global
 // ReSharper disable ArrangeTypeModifiers
+// ReSharper disable RedundantArgumentDefaultValue
 
 namespace Pure.DI.UsageTests.Attributes.ConstructorOrdinalAttributeScenario;
 

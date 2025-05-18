@@ -77,7 +77,7 @@ sealed class CodeGenerator(
         foreach (var tagCode in tagClassBuildr.Build(tagContext))
         {
             using var rent = tagCode.Code.SaveToArray(Encoding.UTF8, out var buffer, out var size);
-            sources.AddSource($"{Names.GeneratorName}.Components.Api.{tagCode.ClassName}.g.cs", SourceText.From(buffer, size, Encoding.UTF8, SourceHashAlgorithm.Sha1, false, true));
+            sources.AddSource($"{Names.GeneratorName}.Components.Api.{tagCode.ClassName}{Names.CodeFileSuffix}", SourceText.From(buffer, size, Encoding.UTF8, SourceHashAlgorithm.Sha1, false, true));
         }
 
         return Unit.Shared;

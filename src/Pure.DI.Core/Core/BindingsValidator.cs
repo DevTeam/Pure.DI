@@ -24,7 +24,7 @@ sealed class BindingsValidator(
         return true;
     }
 
-    private IEnumerable<int> GetIds(MdBinding binding)
+    private static IEnumerable<int> GetIds(MdBinding binding)
     {
         if (!binding.OriginalIds.IsDefaultOrEmpty)
         {

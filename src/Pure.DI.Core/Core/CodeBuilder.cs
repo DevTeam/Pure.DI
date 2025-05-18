@@ -58,7 +58,7 @@ sealed class CodeBuilder(
 
         cancellationToken.ThrowIfCancellationRequested();
         using var rent = composition.Code.SaveToArray(Encoding.UTF8, out var buffer, out var size);
-        sources.AddSource($"{setup.Name.FullName}.g.cs", SourceText.From(buffer, size, Encoding.UTF8, SourceHashAlgorithm.Sha1, false, true));
+        sources.AddSource($"{setup.Name.FullName}{Names.CodeFileSuffix}", SourceText.From(buffer, size, Encoding.UTF8, SourceHashAlgorithm.Sha1, false, true));
 
         return composition;
     }

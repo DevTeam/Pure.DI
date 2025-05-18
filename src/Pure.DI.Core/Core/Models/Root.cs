@@ -28,8 +28,8 @@ record Root(
         unchecked
         {
             var hashCode = Node.GetHashCode();
-            hashCode = (hashCode * 397) ^ Injection.GetHashCode();
-            hashCode = (hashCode * 397) ^ Name.GetHashCode();
+            hashCode = hashCode * 397 ^ Injection.GetHashCode();
+            hashCode = hashCode * 397 ^ Name.GetHashCode();
             return hashCode;
         }
     }

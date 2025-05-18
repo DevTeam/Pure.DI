@@ -52,7 +52,7 @@ sealed class CyclicDependencyValidatorVisitor(
 
             var pathStr = string.Join(" <-- ", path.Select(i => i.Source.Type));
             var locations = (dependency.Injection.Locations.IsDefault ? ImmutableArray<Location>.Empty : dependency.Injection.Locations)
-                .AddRange(path.SelectMany(i => (i.Injection.Locations.IsDefault ? ImmutableArray<Location>.Empty : i.Injection.Locations)))
+                .AddRange(path.SelectMany(i => i.Injection.Locations.IsDefault ? ImmutableArray<Location>.Empty : i.Injection.Locations))
                 .Add(locationProvider.GetLocation(source.Binding.Source));
 
             logger.CompileError(string.Format(Strings.Error_Template_CyclicDependency, pathStr), locations, LogId.ErrorCyclicDependency);

@@ -5,6 +5,7 @@ using System.Text;
 
 class MarkdownParts
 {
+    [SuppressMessage("Performance", "CA1822:Mark members as static")]
     public Memory<string> GetParts(string? text)
     {
         var result = new List<string>();
@@ -40,5 +41,5 @@ class MarkdownParts
         return result.ToArray();
     }
 
-    public string Join(ReadOnlyMemory<string> parts) => string.Join('.', parts.ToArray());
+    [SuppressMessage("Performance", "CA1822:Mark members as static")] public string Join(ReadOnlyMemory<string> parts) => string.Join('.', parts.ToArray());
 }

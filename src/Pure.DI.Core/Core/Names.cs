@@ -8,6 +8,9 @@ static class Names
 {
     public const string GeneratorName = $"{nameof(Pure)}.{nameof(DI)}";
 
+    // Files
+    public const string CodeFileSuffix = ".g.cs";
+
     // Namespaces
     public const string GlobalNamespacePrefix = "global::";
     public const string ApiNamespace = $"{GlobalNamespacePrefix}{GeneratorName}.";

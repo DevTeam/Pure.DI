@@ -1,23 +1,26 @@
-﻿using var composition = new Composition();
+﻿using static Pure.DI.Tag;
+
+using var composition = new Composition(TimeSpan.FromMilliseconds(100));
 var root = composition.Root;
 
 root.Run();
 
-internal partial class Program(
+partial class Program(
+    IClockModel clock,
+    [Tag(Utc)] IClockModel utcClock,
     ITicks ticks,
-    IConsole console,
-    IClockModel clock)
+    IConsole console)
 {
     private void Run()
     {
         ticks.Tick += OnTick;
-        while (!console.IsKeyAvailable);
+        console.WaitForKey();
         ticks.Tick -= OnTick;
     }
 
     private void OnTick()
     {
         var now = clock.Now;
-        console.Write($"{now:d} {now:T}");
+        console.Write($"{now:d} {now:T}.{now:ff} (UTC: {utcClock.Now:g})");
     }
 }

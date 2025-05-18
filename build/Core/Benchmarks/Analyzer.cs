@@ -63,7 +63,6 @@ class Analyzer
         if (warningThreshold > double.Epsilon && ratio > warningThreshold)
         {
             Warning(CreateMessage(name, warningThreshold, ratio, benchmarkType, benchmarkMethod, "could"));
-            return true;
         }
 
         return true;

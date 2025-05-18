@@ -3,6 +3,7 @@ namespace Build.Core;
 
 class ReadmeTools
 {
+    [SuppressMessage("Performance", "CA1822:Mark members as static")]
     public IEnumerable<char> FormatTitle(string title)
     {
         var isFirst = true;
