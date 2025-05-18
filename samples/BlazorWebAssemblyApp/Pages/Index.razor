@@ -6,8 +6,10 @@
 
 <PageTitle>@App.Title</PageTitle>
 
-<p style="font-size:64px">@Clock.Date</p>
-<p style="font-size:128px">@Clock.Time</p>
+<div class="text-center">
+    <h1 style="font-size:64px">@Clock.Date</h1>
+    <h1 style="font-size:128px">@Clock.Time</h1>
+</div>
 
 @code {
     protected override void OnInitialized()
