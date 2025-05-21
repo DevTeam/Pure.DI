@@ -258,6 +258,8 @@ Class diagram:
 ```mermaid
 ---
  config:
+  maxTextSize: 2147483647
+  maxEdges: 2147483647
   class:
    hideEmptyMembersBox: true
 ---
@@ -280,6 +282,7 @@ classDiagram
 		+IService SessionRoot
 		}
 		class Dependency {
+				<<class>>
 			+Dependency()
 		}
 		class IDependency {
@@ -289,12 +292,15 @@ classDiagram
 			<<interface>>
 		}
 		class Program {
+				<<class>>
 			+Program(FuncᐸSessionᐳ sessionFactory)
 		}
 		class Service {
+				<<class>>
 			+Service(IDependency dependency)
 		}
 		class Session {
+				<<class>>
 			+Session(Composition composition)
 		}
 	}

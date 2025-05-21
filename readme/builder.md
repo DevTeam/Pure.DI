@@ -123,6 +123,8 @@ Class diagram:
 ```mermaid
 ---
  config:
+  maxTextSize: 2147483647
+  maxEdges: 2147483647
   class:
    hideEmptyMembersBox: true
 ---
@@ -137,6 +139,7 @@ classDiagram
 		+Service BuildUpService(Pure.DI.UsageTests.Basics.BuilderScenario.Service buildingInstance)
 		}
 		class Dependency {
+				<<class>>
 			+Dependency()
 		}
 		class IDependency {

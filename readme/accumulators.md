@@ -137,6 +137,8 @@ Class diagram:
 ```mermaid
 ---
  config:
+  maxTextSize: 2147483647
+  maxEdges: 2147483647
   class:
    hideEmptyMembersBox: true
 ---
@@ -152,6 +154,7 @@ classDiagram
 	ValueTupleᐸIServiceˏMyAccumulatorᐳ *--  MyAccumulator : MyAccumulator
 	namespace Pure.DI.UsageTests.Advanced.AccumulatorScenario {
 		class AbcDependency {
+				<<class>>
 			+AbcDependency()
 		}
 		class Composition {
@@ -165,11 +168,14 @@ classDiagram
 			<<interface>>
 		}
 		class MyAccumulator {
+				<<class>>
 		}
 		class Service {
+				<<class>>
 			+Service(IDependency dependency1, IDependency dependency2, IDependency dependency3)
 		}
 		class XyzDependency {
+				<<class>>
 			+XyzDependency()
 		}
 	}

@@ -176,6 +176,8 @@ Class diagram:
 ```mermaid
 ---
  config:
+  maxTextSize: 2147483647
+  maxEdges: 2147483647
   class:
    hideEmptyMembersBox: true
 ---
@@ -207,6 +209,7 @@ classDiagram
 		+TaskᐸIServiceᐸT2ˏBooleanᐳᐳ GetOtherServiceAsyncᐸT2ᐳ(System.Threading.CancellationToken cancellationToken)
 		}
 		class DependencyᐸT2ᐳ {
+				<<class>>
 			+Dependency()
 		}
 		class IDependencyᐸT2ᐳ {
@@ -219,8 +222,10 @@ classDiagram
 			<<interface>>
 		}
 		class OtherServiceᐸT2ᐳ {
+				<<class>>
 		}
 		class ServiceᐸT2ˏT3ᐳ {
+				<<class>>
 			+Service(IDependencyᐸT2ᐳ dependency)
 		}
 	}
@@ -245,15 +250,19 @@ classDiagram
 				<<enum>>
 		}
 		class TaskFactoryᐸIServiceᐸT2ˏBooleanᐳᐳ {
+				<<class>>
 		}
 		class TaskFactoryᐸIServiceᐸT2ˏT3ᐳᐳ {
+				<<class>>
 		}
 		class TaskScheduler {
 				<<abstract>>
 		}
 		class TaskᐸIServiceᐸT2ˏBooleanᐳᐳ {
+				<<class>>
 		}
 		class TaskᐸIServiceᐸT2ˏT3ᐳᐳ {
+				<<class>>
 		}
 	}
 ```

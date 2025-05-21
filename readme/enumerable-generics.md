@@ -131,6 +131,8 @@ Class diagram:
 ```mermaid
 ---
  config:
+  maxTextSize: 2147483647
+  maxEdges: 2147483647
   class:
    hideEmptyMembersBox: true
 ---
@@ -151,9 +153,11 @@ classDiagram
 	IEnumerableᐸIDependencyᐸInt32ᐳᐳ *--  XyzDependencyᐸInt32ᐳ : "Xyz"  IDependencyᐸInt32ᐳ
 	namespace Pure.DI.UsageTests.BCL.EnumerableGenericsScenario {
 		class AbcDependencyᐸInt32ᐳ {
+				<<class>>
 			+AbcDependency()
 		}
 		class AbcDependencyᐸStringᐳ {
+				<<class>>
 			+AbcDependency()
 		}
 		class Composition {
@@ -174,15 +178,19 @@ classDiagram
 			<<interface>>
 		}
 		class ServiceᐸInt32ᐳ {
+				<<class>>
 			+Service(IEnumerableᐸIDependencyᐸInt32ᐳᐳ dependencies)
 		}
 		class ServiceᐸStringᐳ {
+				<<class>>
 			+Service(IEnumerableᐸIDependencyᐸStringᐳᐳ dependencies)
 		}
 		class XyzDependencyᐸInt32ᐳ {
+				<<class>>
 			+XyzDependency()
 		}
 		class XyzDependencyᐸStringᐳ {
+				<<class>>
 			+XyzDependency()
 		}
 	}

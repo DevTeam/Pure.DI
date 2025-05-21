@@ -105,6 +105,8 @@ Class diagram:
 ```mermaid
 ---
  config:
+  maxTextSize: 2147483647
+  maxEdges: 2147483647
   class:
    hideEmptyMembersBox: true
 ---
@@ -115,6 +117,7 @@ classDiagram
 	Service *--  XyzDependency : XyzDependency
 	namespace Pure.DI.UsageTests.Attributes.TypeAttributeScenario {
 		class AbcDependency {
+				<<class>>
 			+AbcDependency()
 		}
 		class Composition {
@@ -125,9 +128,11 @@ classDiagram
 			<<interface>>
 		}
 		class Service {
+				<<class>>
 			+Service(IDependency dependency1, IDependency dependency2)
 		}
 		class XyzDependency {
+				<<class>>
 			+XyzDependency()
 		}
 	}

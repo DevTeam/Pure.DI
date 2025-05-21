@@ -198,6 +198,8 @@ Class diagram:
 ```mermaid
 ---
  config:
+  maxTextSize: 2147483647
+  maxEdges: 2147483647
   class:
    hideEmptyMembersBox: true
 ---
@@ -214,18 +216,21 @@ classDiagram
 	Dependency *--  Color : Color
 	namespace Pure.DI.UsageTests.Basics.OverridesScenario {
 		class Clock {
+			<<class>>
 		}
 		class Composition {
 		<<partial>>
 		+IService Root
 		}
 		class Dependency {
+				<<class>>
 			+Dependency(String name, IClock clock, Int32 id, Int32 subId, Color red)
 		}
 		class IService {
 			<<interface>>
 		}
 		class Service {
+				<<class>>
 			+Service(FuncᐸInt32ˏInt32ˏIDependencyᐳ dependencyFactory)
 		}
 	}
@@ -237,6 +242,7 @@ classDiagram
 			<<struct>>
 		}
 		class String {
+			<<class>>
 		}
 	}
 	namespace System.Drawing {

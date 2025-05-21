@@ -6,6 +6,8 @@ Creating an object graph of 27 transient objects, including 4 transient array ob
 ```mermaid
 ---
  config:
+  maxTextSize: 2147483647
+  maxEdges: 2147483647
   class:
    hideEmptyMembersBox: true
 ---
@@ -47,6 +49,7 @@ classDiagram
 	}
 	namespace Pure.DI.Benchmarks.Model {
 		class CompositionRoot {
+				<<class>>
 			+CompositionRoot(IService1 service1, IService2 service21, IService2 service22, IService2 service23, IService3 service3, IService4 service41, IService4 service42)
 		}
 		class IService1 {
@@ -62,24 +65,31 @@ classDiagram
 			<<interface>>
 		}
 		class Service1 {
+				<<class>>
 			+Service1(IService2 service2)
 		}
 		class Service2Array {
+				<<class>>
 			+Service2Array(ArrayᐸIService3ᐳ services)
 		}
 		class Service3 {
+				<<class>>
 			+Service3(IService4 service41, IService4 service42)
 		}
 		class Service3v2 {
+				<<class>>
 			+Service3v2(IService4 service41, IService4 service42)
 		}
 		class Service3v3 {
+				<<class>>
 			+Service3v3(IService4 service41, IService4 service42)
 		}
 		class Service3v4 {
+				<<class>>
 			+Service3v4(IService4 service41, IService4 service42)
 		}
 		class Service4 {
+				<<class>>
 			+Service4()
 		}
 	}

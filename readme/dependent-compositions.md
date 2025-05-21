@@ -144,6 +144,8 @@ Class diagram:
 ```mermaid
 ---
  config:
+  maxTextSize: 2147483647
+  maxEdges: 2147483647
   class:
    hideEmptyMembersBox: true
 ---
@@ -156,6 +158,7 @@ classDiagram
 	Program *--  Service : IService
 	namespace Pure.DI.UsageTests.Advanced.DependentCompositionsScenario {
 		class Dependency {
+				<<class>>
 			+Dependency()
 		}
 		class IDependency {
@@ -170,9 +173,11 @@ classDiagram
 		+IService Root
 		}
 		class Program {
+				<<class>>
 			+Program(IService service)
 		}
 		class Service {
+				<<class>>
 			+Service(IDependency dependency)
 		}
 	}

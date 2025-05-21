@@ -6,6 +6,8 @@ Creating an object graph of 7 transition objects plus 1 `Func<T>` with additiona
 ```mermaid
 ---
  config:
+  maxTextSize: 2147483647
+  maxEdges: 2147483647
   class:
    hideEmptyMembersBox: true
 ---
@@ -35,6 +37,7 @@ classDiagram
 	}
 	namespace Pure.DI.Benchmarks.Model {
 		class CompositionRoot {
+				<<class>>
 			+CompositionRoot(IService1 service1, IService2 service21, IService2 service22, IService2 service23, IService3 service3, IService4 service41, IService4 service42)
 		}
 		class IService1 {
@@ -50,15 +53,19 @@ classDiagram
 			<<interface>>
 		}
 		class Service1 {
+				<<class>>
 			+Service1(IService2 service2)
 		}
 		class Service2Func {
+				<<class>>
 			+Service2Func(FuncᐸIService3ᐳ service3Factory)
 		}
 		class Service3 {
+				<<class>>
 			+Service3(IService4 service41, IService4 service42)
 		}
 		class Service4 {
+				<<class>>
 			+Service4()
 		}
 	}

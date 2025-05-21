@@ -125,12 +125,12 @@ partial class Composition
       string overString2;
       Func<int, string, IDependency> perBlockFunc1;
       var localLockObject104 = new Object();
-      Func<int, string, IDependency> localFactory105 = new Func<int, string, IDependency>((int localArg118, string localArg224) =>
+      Func<int, string, IDependency> localFactory105 = new Func<int, string, IDependency>((int localArg18, string localArg213) =>
       {
         lock (localLockObject104)
         {
-          overInt320 = localArg118;
-          overString2 = localArg224;
+          overInt320 = localArg18;
+          overString2 = localArg213;
           if (_root._singletonClock51 is null)
           {
             using (_lock.EnterScope())
@@ -158,6 +158,8 @@ Class diagram:
 ```mermaid
 ---
  config:
+  maxTextSize: 2147483647
+  maxEdges: 2147483647
   class:
    hideEmptyMembersBox: true
 ---
@@ -172,12 +174,14 @@ classDiagram
 	FuncᐸInt32ˏStringˏIDependencyᐳ *--  Dependency : IDependency
 	namespace Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario {
 		class Clock {
+			<<class>>
 		}
 		class Composition {
 		<<partial>>
 		+IService Root
 		}
 		class Dependency {
+				<<class>>
 			+Dependency(String name, IClock clock, Int32 id)
 		}
 		class IDependency {
@@ -187,6 +191,7 @@ classDiagram
 			<<interface>>
 		}
 		class Service {
+				<<class>>
 			+Service(FuncᐸInt32ˏStringˏIDependencyᐳ dependencyFactory)
 		}
 	}
@@ -198,6 +203,7 @@ classDiagram
 			<<struct>>
 		}
 		class String {
+			<<class>>
 		}
 	}
 ```

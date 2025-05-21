@@ -266,6 +266,8 @@ Class diagram:
 ```mermaid
 ---
  config:
+  maxTextSize: 2147483647
+  maxEdges: 2147483647
   class:
    hideEmptyMembersBox: true
 ---
@@ -284,6 +286,7 @@ classDiagram
 	OwnᐸIDependencyᐳ *--  Own : Own
 	namespace Pure.DI.Abstractions {
 		class Own {
+				<<class>>
 		}
 		class OwnᐸIDependencyᐳ {
 				<<struct>>
@@ -295,6 +298,7 @@ classDiagram
 		+Service Root
 		}
 		class Dependency {
+				<<class>>
 			+Dependency()
 		}
 		class IDependency {
@@ -304,6 +308,7 @@ classDiagram
 			<<interface>>
 		}
 		class Service {
+				<<class>>
 			+Service(FuncᐸOwnᐸIDependencyᐳᐳ dependencyFactory, FuncᐸOwnᐸIDependencyᐳᐳ singleDependencyFactory)
 		}
 	}

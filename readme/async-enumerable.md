@@ -117,6 +117,8 @@ Class diagram:
 ```mermaid
 ---
  config:
+  maxTextSize: 2147483647
+  maxEdges: 2147483647
   class:
    hideEmptyMembersBox: true
 ---
@@ -130,6 +132,7 @@ classDiagram
 	IAsyncEnumerableᐸIDependencyᐳ *--  XyzDependency : 2  IDependency
 	namespace Pure.DI.UsageTests.BCL.AsyncEnumerableScenario {
 		class AbcDependency {
+				<<class>>
 			+AbcDependency()
 		}
 		class Composition {
@@ -143,9 +146,11 @@ classDiagram
 			<<interface>>
 		}
 		class Service {
+				<<class>>
 			+Service(IAsyncEnumerableᐸIDependencyᐳ dependencies)
 		}
 		class XyzDependency {
+				<<class>>
 			+XyzDependency()
 		}
 	}

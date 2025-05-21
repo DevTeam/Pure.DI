@@ -155,6 +155,8 @@ Class diagram:
 ```mermaid
 ---
  config:
+  maxTextSize: 2147483647
+  maxEdges: 2147483647
   class:
    hideEmptyMembersBox: true
 ---
@@ -170,6 +172,7 @@ classDiagram
 	Service o-- "Singleton" XyzDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.XyzDependency)  IDependency
 	namespace Pure.DI.UsageTests.Advanced.TagTypeScenario {
 		class AbcDependency {
+				<<class>>
 			+AbcDependency()
 		}
 		class Composition {
@@ -184,9 +187,11 @@ classDiagram
 			<<interface>>
 		}
 		class Service {
+				<<class>>
 			+Service(IDependency dependency1, IDependency dependency2, IDependency dependency3)
 		}
 		class XyzDependency {
+				<<class>>
 			+XyzDependency()
 		}
 	}

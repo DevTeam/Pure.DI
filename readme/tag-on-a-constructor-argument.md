@@ -115,6 +115,8 @@ Class diagram:
 ```mermaid
 ---
  config:
+  maxTextSize: 2147483647
+  maxEdges: 2147483647
   class:
    hideEmptyMembersBox: true
 ---
@@ -128,6 +130,7 @@ classDiagram
 	ConsumerᐸStringᐳ *--  XyzDependency : IDependency
 	namespace Pure.DI.UsageTests.Advanced.TagOnConstructorArgScenario {
 		class AbcDependency {
+				<<class>>
 			+AbcDependency()
 		}
 		class Composition {
@@ -135,6 +138,7 @@ classDiagram
 		+IService Root
 		}
 		class ConsumerᐸStringᐳ {
+				<<class>>
 			+Consumer(IDependency myDep)
 		}
 		class IDependency {
@@ -144,9 +148,11 @@ classDiagram
 			<<interface>>
 		}
 		class Service {
+				<<class>>
 			+Service(IDependency dependency1, ConsumerᐸStringᐳ consumer)
 		}
 		class XyzDependency {
+				<<class>>
 			+XyzDependency()
 		}
 	}

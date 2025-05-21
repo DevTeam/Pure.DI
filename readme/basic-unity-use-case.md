@@ -141,6 +141,8 @@ Class diagram:
 ```mermaid
 ---
  config:
+  maxTextSize: 2147483647
+  maxEdges: 2147483647
   class:
    hideEmptyMembersBox: true
 ---
@@ -150,9 +152,11 @@ classDiagram
 	Clock o-- "Singleton" ClockService : IClockService
 	namespace Pure.DI.UsageTests.Unity.UnityBasicScenario {
 		class Clock {
+				<<class>>
 			-IClockService ClockService
 		}
 		class ClockService {
+				<<class>>
 			+ClockService()
 		}
 		class Composition {

@@ -141,6 +141,8 @@ Class diagram:
 ```mermaid
 ---
  config:
+  maxTextSize: 2147483647
+  maxEdges: 2147483647
   class:
    hideEmptyMembersBox: true
 ---
@@ -155,6 +157,7 @@ classDiagram
 			<<interface>>
 		}
 		class Person {
+				<<class>>
 			+Person()
 			+Int32 Id
 			+String FirstName
@@ -173,6 +176,7 @@ classDiagram
 				<<struct>>
 		}
 		class String {
+				<<class>>
 		}
 	}
 ```

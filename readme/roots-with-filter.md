@@ -100,6 +100,8 @@ Class diagram:
 ```mermaid
 ---
  config:
+  maxTextSize: 2147483647
+  maxEdges: 2147483647
   class:
    hideEmptyMembersBox: true
 ---
@@ -113,12 +115,14 @@ classDiagram
 		+Service2 MyService2
 		}
 		class Dependency {
+				<<class>>
 			+Dependency()
 		}
 		class IDependency {
 			<<interface>>
 		}
 		class Service2 {
+				<<class>>
 			+Service2(IDependency dependency)
 		}
 	}

@@ -107,6 +107,8 @@ Class diagram:
 ```mermaid
 ---
  config:
+  maxTextSize: 2147483647
+  maxEdges: 2147483647
   class:
    hideEmptyMembersBox: true
 ---
@@ -120,6 +122,7 @@ classDiagram
 	IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : typeof(Pure.DI.UsageTests.Advanced.TagUniqueScenario.XyzDependency<Pure.DI.TT>)  IDependencyᐸStringᐳ
 	namespace Pure.DI.UsageTests.Advanced.TagUniqueScenario {
 		class AbcDependencyᐸStringᐳ {
+				<<class>>
 			+AbcDependency()
 		}
 		class Composition {
@@ -133,9 +136,11 @@ classDiagram
 			<<interface>>
 		}
 		class ServiceᐸStringᐳ {
+				<<class>>
 			+Service(IEnumerableᐸIDependencyᐸStringᐳᐳ dependencies)
 		}
 		class XyzDependencyᐸStringᐳ {
+				<<class>>
 			+XyzDependency()
 		}
 	}
