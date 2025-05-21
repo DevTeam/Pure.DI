@@ -9,7 +9,7 @@ sealed class ToStringMethodBuilder
 
     public CompositionCode Build(CompositionCode composition)
     {
-        if (composition.Diagram.IsEmpty)
+        if (composition.Diagram.IsEmpty || !composition.Source.Source.Hints.IsToStringEnabled)
         {
             return composition;
         }

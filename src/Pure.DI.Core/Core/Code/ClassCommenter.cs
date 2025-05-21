@@ -6,7 +6,8 @@ sealed class ClassCommenter(
     IFormatter formatter,
     IComments comments,
     IBuilder<IEnumerable<string>, Uri> mermaidUrlBuilder,
-    IBuilder<RootContext, IEnumerable<ResolverInfo>> resolversBuilder)
+    IBuilder<RootContext, IEnumerable<ResolverInfo>> resolversBuilder,
+    IInformation information)
     : ICommenter<Unit>
 {
     public void AddComments(CompositionCode composition, Unit unit)
@@ -27,12 +28,23 @@ sealed class ClassCommenter(
         code.AppendLine("/// <summary>");
         try
         {
+            if (!composition.Diagram.IsEmpty)
+            {
+                var diagramUrl = mermaidUrlBuilder.Build(composition.Diagram.Select(i => i.Text));
+                code.AppendLine("/// <para>");
+                code.AppendLine($"/// <a href=\"{diagramUrl}\">Class diagram</a>");
+                code.AppendLine("/// </para>");
+            }
+
             if (classComments.Count > 0)
             {
+                code.AppendLine("/// <para>");
                 foreach (var comment in comments.Format(classComments, true))
                 {
                     code.AppendLine(comment);
                 }
+
+                code.AppendLine("/// </para>");
             }
 
             var orderedRoots = composition.Roots
@@ -132,14 +144,9 @@ sealed class ClassCommenter(
                 code.AppendLine("/// </example>");
             }
 
-            code.AppendLine("/// <br/>");
-            if (!composition.Diagram.IsEmpty)
-            {
-                var diagramUrl = mermaidUrlBuilder.Build(composition.Diagram.Select(i => i.Text));
-                code.AppendLine($"/// <br/><a href=\"{diagramUrl}\">Class diagram</a><br/>");
-            }
-
-            code.AppendLine("/// <br/>This class was created by <a href=\"https://github.com/DevTeam/Pure.DI\">Pure.DI</a> source code generator.");
+            code.AppendLine("/// <para>");
+            code.AppendLine($"/// This class was created by <a href=\"https://github.com/DevTeam/Pure.DI\">{information.ShortDescription}</a> source code generator.");
+            code.AppendLine("/// </para>");
         }
         finally
         {

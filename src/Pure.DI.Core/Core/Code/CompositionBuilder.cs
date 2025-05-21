@@ -119,13 +119,8 @@ sealed class CompositionBuilder(
             isThreadSafe,
             ImmutableArray<Line>.Empty);
 
-        if (graph.Source.Hints.IsToStringEnabled)
-        {
-            var diagram = classDiagramBuilder.Build(composition);
-            composition = composition with { Diagram = diagram.Lines.ToImmutableArray() };
-        }
-
-        return composition;
+        var diagram = classDiagramBuilder.Build(composition);
+        return composition with { Diagram = diagram.Lines.ToImmutableArray() };
     }
 
     private static IEnumerable<Variable> GetRootArgs(IEnumerable<Variable> argVars) =>

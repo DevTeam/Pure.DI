@@ -25,6 +25,8 @@ sealed class ClassDiagramBuilder(
         var lines = new LinesBuilder();
         lines.AppendLine("---");
         lines.AppendLine(" config:");
+        lines.AppendLine($"  maxTextSize: {int.MaxValue}");
+        lines.AppendLine($"  maxEdges: {int.MaxValue}");
         lines.AppendLine("  class:");
         lines.AppendLine("   hideEmptyMembersBox: true");
         lines.AppendLine("---");
