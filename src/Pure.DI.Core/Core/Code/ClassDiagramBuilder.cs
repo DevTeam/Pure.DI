@@ -180,11 +180,12 @@ sealed class ClassDiagramBuilder(
                     }
 
                     lines.AppendLine($"class {cls.Name} {{");
-                    if (!string.IsNullOrWhiteSpace(cls.ActualKind))
+                    var actualKind = cls.ActualKind;
+                    if (!string.IsNullOrWhiteSpace(actualKind))
                     {
                         using (lines.Indent())
                         {
-                            lines.AppendLine($"<<{cls.ActualKind}>>");
+                            lines.AppendLine($"<<{actualKind}>>");
                         }
                     }
 
@@ -372,11 +373,12 @@ sealed class ClassDiagramBuilder(
             lines.AppendLine($"class {name} {{");
             using (lines.Indent())
             {
-                if (!string.IsNullOrWhiteSpace(cls.ActualKind))
+                var actualKind = cls.ActualKind;
+                if (!string.IsNullOrWhiteSpace(actualKind))
                 {
                     using (lines.Indent())
                     {
-                        lines.AppendLine($"<<{cls.ActualKind}>>");
+                        lines.AppendLine($"<<{actualKind}>>");
                     }
                 }
 
@@ -423,6 +425,16 @@ sealed class ClassDiagramBuilder(
                     return typeKind;
                 }
 
+                if (Type.IsUnmanagedType)
+                {
+                    typeKind = "unmanaged";
+                }
+
+                if (Type.IsAnonymousType)
+                {
+                    typeKind = "anonymous";
+                }
+
                 if (Type.IsRecord)
                 {
                     typeKind = "record";
@@ -449,7 +461,7 @@ sealed class ClassDiagramBuilder(
                     _ => typeKind
                 };
 
-                return typeKind;
+                return string.IsNullOrWhiteSpace(typeKind) ? Type.TypeKind.ToString().ToLower() : typeKind;
             }
         }
     }
