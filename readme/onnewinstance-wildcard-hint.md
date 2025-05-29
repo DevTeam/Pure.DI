@@ -97,15 +97,23 @@ The following partial class will be generated:
 partial class Composition
 {
   private readonly Composition _root;
+#if NET9_0_OR_GREATER
   private readonly Lock _lock;
+#else
+  private readonly Object _lock;
+#endif
 
-  private Dependency? _singletonDependency51;
+  private Dependency? _singletonDependency52;
 
   [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;
+#if NET9_0_OR_GREATER
     _lock = new Lock();
+#else
+    _lock = new Object();
+#endif
   }
 
   internal Composition(Composition parentScope)
@@ -119,22 +127,22 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonDependency51 is null)
+      if (_root._singletonDependency52 is null)
       {
-        using (_lock.EnterScope())
+        lock (_lock)
         {
-          if (_root._singletonDependency51 is null)
+          if (_root._singletonDependency52 is null)
           {
-            Dependency _singletonDependency51Temp;
-            _singletonDependency51Temp = new Dependency();
-            OnNewInstance<Dependency>(ref _singletonDependency51Temp, null, Lifetime.Singleton);
+            Dependency _singletonDependency52Temp;
+            _singletonDependency52Temp = new Dependency();
+            OnNewInstance<Dependency>(ref _singletonDependency52Temp, null, Lifetime.Singleton);
             Thread.MemoryBarrier();
-            _root._singletonDependency51 = _singletonDependency51Temp;
+            _root._singletonDependency52 = _singletonDependency52Temp;
           }
         }
       }
 
-      Service transientService0 = new Service(_root._singletonDependency51);
+      Service transientService0 = new Service(_root._singletonDependency52);
       OnNewInstance<Service>(ref transientService0, null, Lifetime.Transient);
       return transientService0;
     }

@@ -75,15 +75,23 @@ The following partial class will be generated:
 partial class Composition
 {
   private readonly Composition _root;
+#if NET9_0_OR_GREATER
   private readonly Lock _lock;
+#else
+  private readonly Object _lock;
+#endif
 
-  private XyzDependency? _singletonXyzDependency53;
+  private XyzDependency? _singletonXyzDependency54;
 
   [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;
+#if NET9_0_OR_GREATER
     _lock = new Lock();
+#else
+    _lock = new Object();
+#endif
   }
 
   internal Composition(Composition parentScope)
@@ -97,36 +105,36 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var accumulator56 = new MyAccumulator();
+      var accumulator57 = new MyAccumulator();
       AbcDependency transientAbcDependency3 = new AbcDependency();
-      using (_lock.EnterScope())
+      lock (_lock)
       {
-        accumulator56.Add(transientAbcDependency3);
+        accumulator57.Add(transientAbcDependency3);
       }
 
-      if (_root._singletonXyzDependency53 is null)
+      if (_root._singletonXyzDependency54 is null)
       {
-        using (_lock.EnterScope())
+        lock (_lock)
         {
-          if (_root._singletonXyzDependency53 is null)
+          if (_root._singletonXyzDependency54 is null)
           {
-            XyzDependency _singletonXyzDependency53Temp;
-            _singletonXyzDependency53Temp = new XyzDependency();
-            accumulator56.Add(_singletonXyzDependency53Temp);
+            XyzDependency _singletonXyzDependency54Temp;
+            _singletonXyzDependency54Temp = new XyzDependency();
+            accumulator57.Add(_singletonXyzDependency54Temp);
             Thread.MemoryBarrier();
-            _root._singletonXyzDependency53 = _singletonXyzDependency53Temp;
+            _root._singletonXyzDependency54 = _singletonXyzDependency54Temp;
           }
         }
       }
 
       AbcDependency perBlockAbcDependency4 = new AbcDependency();
-      Service transientService1 = new Service(transientAbcDependency3, _root._singletonXyzDependency53, perBlockAbcDependency4);
-      using (_lock.EnterScope())
+      Service transientService1 = new Service(transientAbcDependency3, _root._singletonXyzDependency54, perBlockAbcDependency4);
+      lock (_lock)
       {
-        accumulator56.Add(transientService1);
+        accumulator57.Add(transientService1);
       }
 
-      return (transientService1, accumulator56);
+      return (transientService1, accumulator57);
     }
   }
 }

@@ -98,13 +98,21 @@ The following partial class will be generated:
 partial class Composition
 {
   private readonly Composition _root;
+#if NET9_0_OR_GREATER
   private readonly Lock _lock;
+#else
+  private readonly Object _lock;
+#endif
 
   [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;
+#if NET9_0_OR_GREATER
     _lock = new Lock();
+#else
+    _lock = new Object();
+#endif
   }
 
   internal Composition(Composition parentScope)
@@ -118,43 +126,42 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var accumulator55 = new Owned();
+      var accumulator56 = new Owned();
       Func<Owned<IDependency>> perBlockFunc1 = new Func<Owned<IDependency>>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        var accumulator55 = new Owned();
+        var accumulator56 = new Owned();
         Owned transientOwned3;
-        Owned localOwned56 = accumulator55;
-        transientOwned3 = localOwned56;
-        using (_lock.EnterScope())
+        Owned localOwned61 = accumulator56;
+        transientOwned3 = localOwned61;
+        lock (_lock)
         {
-          accumulator55.Add(transientOwned3);
+          accumulator56.Add(transientOwned3);
         }
 
         Dependency transientDependency4 = new Dependency();
-        using (_lock.EnterScope())
+        lock (_lock)
         {
-          accumulator55.Add(transientDependency4);
+          accumulator56.Add(transientDependency4);
         }
 
-        Owned<IDependency> perBlockOwned2;
-        // Creates the owner of an instance
-        IOwned localOwned57 = transientOwned3;
-        IDependency localValue58 = transientDependency4;
-        perBlockOwned2 = new Owned<IDependency>(localValue58, localOwned57);
-        using (_lock.EnterScope())
+        Owned<IDependency> perBlockOwned2; // Creates the owner of an instance
+        IOwned localOwned62 = transientOwned3;
+        IDependency localValue63 = transientDependency4;
+        perBlockOwned2 = new Owned<IDependency>(localValue63, localOwned62);
+        lock (_lock)
         {
-          accumulator55.Add(perBlockOwned2);
+          accumulator56.Add(perBlockOwned2);
         }
 
-        Owned<IDependency> localValue55 = perBlockOwned2;
-        return localValue55;
+        Owned<IDependency> localValue60 = perBlockOwned2;
+        return localValue60;
       });
       Service transientService0 = new Service(perBlockFunc1);
-      using (_lock.EnterScope())
+      lock (_lock)
       {
-        accumulator55.Add(transientService0);
+        accumulator56.Add(transientService0);
       }
 
       return transientService0;

@@ -107,10 +107,10 @@ partial class Composition
     if (name is null) throw new ArgumentNullException(nameof(name));
     Guid transientGuid2 = Guid.NewGuid();
     Dependency transientDependency1;
-    var localDependency92 = new Dependency();
-    localDependency92.Name = name;
-    localDependency92.SetId(transientGuid2);
-    transientDependency1 = localDependency92;
+    var localDependency97 = new Dependency();
+    localDependency97.Name = name;
+    localDependency97.SetId(transientGuid2);
+    transientDependency1 = localDependency97;
     return new Service(transientDependency1);
   }
 }

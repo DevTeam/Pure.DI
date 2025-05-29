@@ -294,13 +294,13 @@ class ReadmeTarget(
                         var line = i.TrimStart();
                         return !(
                             line.StartsWith("///")
-                            || line.StartsWith("#if ")
                             || line.StartsWith("[global::System.Diagnostics.")
-                            || line.StartsWith("#endif")
+                            || line.EndsWith(" // Code coverage")
+                            || line.EndsWith(" // Pure method")
                             || line.StartsWith("#region")
                             || line.StartsWith("#endregion"));
                     })
-                    .Select(i => i.Length > 1 ? i[1..] : i)
+                    .Select(i => i.Length > 1 && char.IsWhiteSpace(i[0]) ? i[1..].TrimEnd() : i.TrimEnd())
                     .Select(i => i
                         .TrimEnd()
                         .Replace("\t", "  ")

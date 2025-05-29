@@ -75,16 +75,24 @@ The following partial class will be generated:
 partial class Composition
 {
   private readonly Composition _root;
+#if NET9_0_OR_GREATER
   private readonly Lock _lock;
+#else
+  private readonly Object _lock;
+#endif
 
   private IDependency? _singletonIDependency0;
-  private Facade? _singletonFacade51;
+  private Facade? _singletonFacade52;
 
   [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;
+#if NET9_0_OR_GREATER
     _lock = new Lock();
+#else
+    _lock = new Object();
+#endif
   }
 
   internal Composition(Composition parentScope)
@@ -100,17 +108,17 @@ partial class Composition
     {
       if (_root._singletonIDependency0 is null)
       {
-        using (_lock.EnterScope())
+        lock (_lock)
         {
           if (_root._singletonIDependency0 is null)
           {
-            if (_root._singletonFacade51 is null)
+            if (_root._singletonFacade52 is null)
             {
-              _root._singletonFacade51 = new Facade();
+              _root._singletonFacade52 = new Facade();
             }
 
-            Facade localInstance_1182D12785 = _root._singletonFacade51;
-            _root._singletonIDependency0 = localInstance_1182D12785.Dependency;
+            Facade localInstance_1182D12790 = _root._singletonFacade52;
+            _root._singletonIDependency0 = localInstance_1182D12790.Dependency;
           }
         }
       }

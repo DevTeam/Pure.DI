@@ -3,7 +3,6 @@
 enum SpecialType
 {
     IAsyncDisposable,
-    Lock,
     CompositionKind,
     Lifetime,
     Tag,

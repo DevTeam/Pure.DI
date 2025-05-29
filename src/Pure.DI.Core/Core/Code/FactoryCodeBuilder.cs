@@ -15,7 +15,8 @@ sealed class FactoryCodeBuilder(
     Func<IFactoryValidator> factoryValidatorFactory,
     Func<IInitializersWalker> initializersWalkerFactory,
     IOverridesRegistry overridesRegistry,
-    ILocationProvider locationProvider)
+    ILocationProvider locationProvider,
+    ILocks locks)
     : ICodeBuilder<DpFactory>
 {
     public const string DefaultInstanceValueName = "instance_1182D127";
@@ -163,6 +164,7 @@ sealed class FactoryCodeBuilder(
         var lambda = factoryRewriter.Rewrite(ctx, factoryExpression);
         factoryValidatorFactory().Initialize(factory).Visit(lambda);
         SyntaxNode syntaxNode = lambda.Block is not null ? lambda.Block : SyntaxFactory.ExpressionStatement((ExpressionSyntax)lambda.Body);
+        var hasOverrides = factory.HasOverrides;
         var lines = new List<TextLine>();
         if (!variable.IsDeclared && variable.HasCycledReference)
         {
@@ -170,11 +172,29 @@ sealed class FactoryCodeBuilder(
             variable.IsDeclared = true;
         }
 
+        var hasLock = !variable.IsLazy
+                      && (ctx.LockIsRequired ?? ctx.DependencyGraph.Source.Hints.IsThreadSafeEnabled && hasOverrides);
+
+        if (hasLock)
+        {
+            if (!variable.IsDeclared)
+            {
+                code.Append($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VariableName};");
+                variable.IsDeclared = true;
+            }
+
+            locks.AddLockStatements(ctx.DependencyGraph, code, false);
+            ctx.Code.AppendLine(LinesBuilderExtensions.BlockStart);
+            ctx.Code.IncIndent();
+            ctx = ctx with { LockIsRequired = false };
+        }
+
         if (syntaxNode is BlockSyntax curBlock)
         {
             if (!variable.IsDeclared)
             {
-                code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VariableName};");
+                code.Append($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VariableName};");
+                variable.IsDeclared = true;
             }
 
             foreach (var statement in curBlock.Statements)
@@ -191,7 +211,16 @@ sealed class FactoryCodeBuilder(
                 code.AppendLine(leadingTrivia);
             }
 
-            code.Append($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VariableName} = ");
+            if (!variable.IsDeclared)
+            {
+                code.Append($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VariableName} = ");
+                variable.IsDeclared = true;
+            }
+            else
+            {
+                code.Append($"{variable.VariableName} = ");
+            }
+
             var text = syntaxNode.WithoutTrivia().GetText();
             lines.AddRange(text.Lines);
         }
@@ -225,7 +254,6 @@ sealed class FactoryCodeBuilder(
             .Zip(factory.Initializers, (initialization, initializer) => (initialization, initializer))
             .GetEnumerator();
 
-        var hasOverrides = factory.HasOverrides;
         var initializationArgsEnum = initializationArgs.Select(i => i.Current).GetEnumerator();
         ctx = ctx with { LockIsRequired = lockIsRequired, Level = level, AvoidLocalFunction = hasOverrides };
         var injectionsCtx = ctx;
@@ -326,6 +354,14 @@ sealed class FactoryCodeBuilder(
         }
 
         ctx.Code.AppendLines(ctx.BuildTools.OnCreated(ctx, variable));
+
+        // ReSharper disable once InvertIf
+        if (hasLock)
+        {
+            ctx.Code.DecIndent();
+            ctx.Code.AppendLine(LinesBuilderExtensions.BlockFinish);
+            locks.AddUnlockStatements(ctx.DependencyGraph, ctx.Code, false);
+        }
     }
 
     private void BuildOverrides(BuildContext ctx, DpFactory factory, ImmutableArray<DpOverride> overrides, LinesBuilder code)

@@ -3031,7 +3031,6 @@ namespace Pure.DI
 
         /// <summary>
         /// Overrides the binding with the specified value. Cannot be used outside of the binding setting.
-        /// <example>
         /// <code>
         /// DI.Setup("Composition")
         ///     .Bind().To&lt;Func&lt;int, int, IDependency&gt;&gt;(ctx =&gt;
@@ -3050,12 +3049,36 @@ namespace Pure.DI
         ///             return dependency;
         ///         })
         /// </code>
-        /// </example>
+        /// Overrides uses a shared state to override values. And if this code is supposed to run in multiple threads at once, then you need to ensure their synchronization, for example:
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind().To&lt;Func&lt;int, int, IDependency&gt;&gt;(ctx =&gt;
+        ///         (dependencyId, subId) =>
+        ///         {
+        ///             // Get composition sync root object
+        ///             ctx.Inject(Tag.SyncRoot, out Lock lockObject);
+        ///             lock(lockObject)
+        ///             {
+        ///                 // Overrides with a lambda argument
+        ///                 ctx.Override(dependencyId);
+        ///                 // Overrides with tag using lambda argument
+        ///                 ctx.Override(subId, "sub");
+        ///                 // Overrides with some value
+        ///                 ctx.Override($"Dep {dependencyId} {subId}");
+        ///                 // Overrides with injected value
+        ///                 ctx.Inject(Tag.Red, out Color red);
+        ///                 ctx.Override(red);
+        ///                 ctx.Inject&lt;Dependency&gt;(out var dependency);
+        ///                 return dependency;
+        ///             }
+        ///         })
+        /// </code>
+        /// An alternative to synchronizing streams yourself is to use types like <see cref="Func{TArg1,TArg2,TResult}">this</see>. There, threads synchronization is performed automatically.
         /// </summary>
         /// <param name="value">The object that will be used to override a binding.</param>
         /// <typeparam name="T">Object type that will be used to override a binding.</typeparam>
         /// <param name="tags">Injection tags that will be used to override a binding. See also <see cref="IBinding.Tags"/></param>.
-        /// <seealso cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
+        /// <seealso cref="IBinding.To{T}(System.Func{TArg1,T})"/>
         void Override<T>(T value, params object[] tags);
     }
     

@@ -117,17 +117,25 @@ The following partial class will be generated:
 partial class Composition: IDisposable, IAsyncDisposable
 {
   private readonly Composition _root;
+#if NET9_0_OR_GREATER
   private readonly Lock _lock;
+#else
+  private readonly Object _lock;
+#endif
   private object[] _disposables;
   private int _disposeIndex;
 
-  private Dependency? _scopedDependency51;
+  private Dependency? _scopedDependency52;
 
   [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;
+#if NET9_0_OR_GREATER
     _lock = new Lock();
+#else
+    _lock = new Object();
+#endif
     _disposables = new object[1];
   }
 
@@ -143,19 +151,19 @@ partial class Composition: IDisposable, IAsyncDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_scopedDependency51 is null)
+      if (_scopedDependency52 is null)
       {
-        using (_lock.EnterScope())
+        lock (_lock)
         {
-          if (_scopedDependency51 is null)
+          if (_scopedDependency52 is null)
           {
-            _scopedDependency51 = new Dependency();
-            _disposables[_disposeIndex++] = _scopedDependency51;
+            _scopedDependency52 = new Dependency();
+            _disposables[_disposeIndex++] = _scopedDependency52;
           }
         }
       }
 
-      return new Service(_scopedDependency51);
+      return new Service(_scopedDependency52);
     }
   }
 
@@ -169,8 +177,8 @@ partial class Composition: IDisposable, IAsyncDisposable
       () =>
       {
         Composition transientComposition3 = this;
-        Session localValue148 = new Session(transientComposition3);
-        return localValue148;
+        Session localValue153 = new Session(transientComposition3);
+        return localValue153;
       });
       return new Program(perBlockFunc1);
     }
@@ -180,13 +188,13 @@ partial class Composition: IDisposable, IAsyncDisposable
   {
     int disposeIndex;
     object[] disposables;
-    using (_lock.EnterScope())
+    lock (_lock)
     {
       disposeIndex = _disposeIndex;
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _scopedDependency51 = null;
+      _scopedDependency52 = null;
       }
 
       while (disposeIndex-- > 0)
@@ -217,18 +225,12 @@ partial class Composition: IDisposable, IAsyncDisposable
     {
       int disposeIndex;
       object[] disposables;
-      _lock.Enter();
-      try
       {
         disposeIndex = _disposeIndex;
         _disposeIndex = 0;
         disposables = _disposables;
         _disposables = new object[1];
-        _scopedDependency51 = null;
-        }
-        finally
-        {
-          _lock.Exit();
+        _scopedDependency52 = null;
         }
 
         while (disposeIndex-- > 0)

@@ -4,8 +4,11 @@ using Core;
 
 public class OverrideTests
 {
-    [Fact]
-    public async Task ShouldSupportSimpleOverride()
+    [Theory]
+    [InlineData("")]
+    [InlineData(".Hint(Hint.ThreadSafe, \"On\")")]
+    [InlineData(".Hint(Hint.ThreadSafe, \"Off\")")]
+    public async Task ShouldSupportSimpleOverride(string hints)
     {
         // Given
 
@@ -62,6 +65,7 @@ public class OverrideTests
                                    private static void SetupComposition()
                                    {
                                        DI.Setup("Composition")
+                                           #hints#
                                            .Bind().To<Dependency>()
                                            .Bind<IService>().To(ctx => 
                                            {
@@ -85,7 +89,7 @@ public class OverrideTests
                                    }
                                }
                            }
-                           """.RunAsync();
+                           """.Replace("#hints#", hints).RunAsync();
 
         // Then
         result.Success.ShouldBeTrue(result);

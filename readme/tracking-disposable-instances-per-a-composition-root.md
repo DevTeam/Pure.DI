@@ -94,13 +94,21 @@ The following partial class will be generated:
 partial class Composition
 {
   private readonly Composition _root;
+#if NET9_0_OR_GREATER
   private readonly Lock _lock;
+#else
+  private readonly Object _lock;
+#endif
 
   [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;
+#if NET9_0_OR_GREATER
     _lock = new Lock();
+#else
+    _lock = new Object();
+#endif
   }
 
   internal Composition(Composition parentScope)
@@ -114,29 +122,28 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var accumulator54 = new Owned();
+      var accumulator55 = new Owned();
       Owned transientOwned1;
-      Owned localOwned59 = accumulator54;
-      transientOwned1 = localOwned59;
-      using (_lock.EnterScope())
+      Owned localOwned64 = accumulator55;
+      transientOwned1 = localOwned64;
+      lock (_lock)
       {
-        accumulator54.Add(transientOwned1);
+        accumulator55.Add(transientOwned1);
       }
 
       Dependency transientDependency3 = new Dependency();
-      using (_lock.EnterScope())
+      lock (_lock)
       {
-        accumulator54.Add(transientDependency3);
+        accumulator55.Add(transientDependency3);
       }
 
-      Owned<IService> perBlockOwned0;
-      // Creates the owner of an instance
-      IOwned localOwned60 = transientOwned1;
-      IService localValue61 = new Service(transientDependency3);
-      perBlockOwned0 = new Owned<IService>(localValue61, localOwned60);
-      using (_lock.EnterScope())
+      Owned<IService> perBlockOwned0; // Creates the owner of an instance
+      IOwned localOwned65 = transientOwned1;
+      IService localValue66 = new Service(transientDependency3);
+      perBlockOwned0 = new Owned<IService>(localValue66, localOwned65);
+      lock (_lock)
       {
-        accumulator54.Add(perBlockOwned0);
+        accumulator55.Add(perBlockOwned0);
       }
 
       return perBlockOwned0;

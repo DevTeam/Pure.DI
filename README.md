@@ -2975,12 +2975,43 @@ DI.Setup("Composition")
 ```
 
 
+            Overrides uses a shared state to override values. And if this code is supposed to run in multiple threads at once, then you need to ensure their synchronization, for example:
+            
+```c#
+
+DI.Setup("Composition")
+                .Bind().To<Func<int, int, IDependency>>(ctx =>
+                    (dependencyId, subId) =>
+                    {
+                        // Get composition sync root object
+                        ctx.Inject(Tag.SyncRoot, out Lock lockObject);
+                        lock(lockObject)
+                        {
+                            // Overrides with a lambda argument
+                            ctx.Override(dependencyId);
+                            // Overrides with tag using lambda argument
+                            ctx.Override(subId, "sub");
+                            // Overrides with some value
+                            ctx.Override($"Dep {dependencyId} {subId}");
+                            // Overrides with injected value
+                            ctx.Inject(Tag.Red, out Color red);
+                            ctx.Override(red);
+                            ctx.Inject<Dependency>(out var dependency);
+                            return dependency;
+                        }
+                    })
+            
+```
+
+
+            An alternative to synchronizing streams yourself is to use types like _Func`3_this. There, threads synchronization is performed automatically.
+            
  - parameter _value_ - The object that will be used to override a binding.
 Object type that will be used to override a binding.
  - parameter _tags_ - Injection tags that will be used to override a binding. See also _Tags(System.Object[])_
 .
             
-See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+See also _To<T>(System.Func<TArg1,T>)_.
 
 </blockquote></details>
 
@@ -3471,39 +3502,21 @@ DI.Setup("Composition")
 </blockquote></details>
 
 
+<details><summary>Field SyncRoot</summary><blockquote>
+
+Atomically generated smart tag with value "SyncRoot".
+            It's used for:
+            
+            class _Generator__Func`2_ <-- (SyncRoot) -- _Object_ as _Transient__Func`3_ <-- (SyncRoot) -- _Object_ as _Transient_
+</blockquote></details>
+
+
 <details><summary>Field Overrider</summary><blockquote>
 
 Atomically generated smart tag with value "Overrider".
             It's used for:
             
             class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Overrider) -- _GraphOverrider_ as _PerBlock_
-</blockquote></details>
-
-
-<details><summary>Field UniqueTag</summary><blockquote>
-
-Atomically generated smart tag with value "UniqueTag".
-            It's used for:
-            
-            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve__BindingBuilder_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve_
-</blockquote></details>
-
-
-<details><summary>Field GenericType</summary><blockquote>
-
-Atomically generated smart tag with value "GenericType".
-            It's used for:
-            
-            class _Generator__TypeResolver_ <-- _IIdGenerator_(GenericType) -- _IdGenerator_ as _PerResolve_
-</blockquote></details>
-
-
-<details><summary>Field Cleaner</summary><blockquote>
-
-Atomically generated smart tag with value "Cleaner".
-            It's used for:
-            
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
 </blockquote></details>
 
 
@@ -3516,6 +3529,24 @@ Atomically generated smart tag with value "CompositionClass".
 </blockquote></details>
 
 
+<details><summary>Field Cleaner</summary><blockquote>
+
+Atomically generated smart tag with value "Cleaner".
+            It's used for:
+            
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field UniqueTag</summary><blockquote>
+
+Atomically generated smart tag with value "UniqueTag".
+            It's used for:
+            
+            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve__BindingBuilder_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
 <details><summary>Field UsingDeclarations</summary><blockquote>
 
 Atomically generated smart tag with value "UsingDeclarations".
@@ -3525,12 +3556,12 @@ Atomically generated smart tag with value "UsingDeclarations".
 </blockquote></details>
 
 
-<details><summary>Field Injection</summary><blockquote>
+<details><summary>Field GenericType</summary><blockquote>
 
-Atomically generated smart tag with value "Injection".
+Atomically generated smart tag with value "GenericType".
             It's used for:
             
-            class _Generator__BuildTools_ <-- _IIdGenerator_(Injection) -- _IdGenerator_ as _PerResolve_
+            class _Generator__TypeResolver_ <-- _IIdGenerator_(GenericType) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
@@ -3540,6 +3571,15 @@ Atomically generated smart tag with value "Override".
             It's used for:
             
             class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
+<details><summary>Field Injection</summary><blockquote>
+
+Atomically generated smart tag with value "Injection".
+            It's used for:
+            
+            class _Generator__BuildTools_ <-- _IIdGenerator_(Injection) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
@@ -4476,6 +4516,7 @@ Creates an attribute instance.
 - [Global compositions](readme/global-compositions.md)
 - [Partial class](readme/partial-class.md)
 - [A few partial classes](readme/a-few-partial-classes.md)
+- [Thread-safe overrides](readme/thread-safe-overrides.md)
 - [Tracking disposable instances per a composition root](readme/tracking-disposable-instances-per-a-composition-root.md)
 - [Tracking disposable instances in delegates](readme/tracking-disposable-instances-in-delegates.md)
 - [Tracking disposable instances using pre-built classes](readme/tracking-disposable-instances-using-pre-built-classes.md)
@@ -5304,7 +5345,7 @@ Contextual AI needs to understand the situation it’s in. This means knowing de
 | --------------- | ---- | ------ |
 | [AI_CONTEXT_SMALL.md](AI_CONTEXT_SMALL.md) | 28KB | 7K |
 | [AI_CONTEXT_MEDIUM.md](AI_CONTEXT_MEDIUM.md) | 122KB | 31K |
-| [AI_CONTEXT_LARGE.md](AI_CONTEXT_LARGE.md) | 374KB | 95K |
+| [AI_CONTEXT_LARGE.md](AI_CONTEXT_LARGE.md) | 379KB | 97K |
 ## How to contribute to Pure.DI
 
 Thank you for your interest in contributing to the Pure.DI project! First of all, if you are going to make a big change or feature, please open a problem first. That way, we can coordinate and understand if the change you're going to work on fits with current priorities and if we can commit to reviewing and merging it within a reasonable timeframe. We don't want you to waste a lot of your valuable time on something that may not align with what we want for Pure.DI.

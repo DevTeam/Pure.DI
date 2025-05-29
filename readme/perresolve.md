@@ -77,16 +77,24 @@ The following partial class will be generated:
 partial class Composition
 {
   private readonly Composition _root;
+#if NET9_0_OR_GREATER
   private readonly Lock _lock;
+#else
+  private readonly Object _lock;
+#endif
 
-  private (IDependency dep3, IDependency dep4) _singletonValueTuple52;
-  private bool _singletonValueTuple52Created;
+  private (IDependency dep3, IDependency dep4) _singletonValueTuple53;
+  private bool _singletonValueTuple53Created;
 
   [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;
+#if NET9_0_OR_GREATER
     _lock = new Lock();
+#else
+    _lock = new Object();
+#endif
   }
 
   internal Composition(Composition parentScope)
@@ -100,37 +108,37 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var perResolveDependency51 = default(Dependency);
-      if (perResolveDependency51 is null)
+      var perResolveDependency52 = default(Dependency);
+      if (perResolveDependency52 is null)
       {
-        using (_lock.EnterScope())
+        lock (_lock)
         {
-          if (perResolveDependency51 is null)
+          if (perResolveDependency52 is null)
           {
-            perResolveDependency51 = new Dependency();
+            perResolveDependency52 = new Dependency();
           }
         }
       }
 
-      if (!_root._singletonValueTuple52Created)
+      if (!_root._singletonValueTuple53Created)
       {
-        using (_lock.EnterScope())
+        lock (_lock)
         {
-          if (!_root._singletonValueTuple52Created)
+          if (!_root._singletonValueTuple53Created)
           {
-            if (perResolveDependency51 is null)
+            if (perResolveDependency52 is null)
             {
-              perResolveDependency51 = new Dependency();
+              perResolveDependency52 = new Dependency();
             }
 
-            _root._singletonValueTuple52 = (perResolveDependency51, perResolveDependency51);
+            _root._singletonValueTuple53 = (perResolveDependency52, perResolveDependency52);
             Thread.MemoryBarrier();
-            _root._singletonValueTuple52Created = true;
+            _root._singletonValueTuple53Created = true;
           }
         }
       }
 
-      return new Service(perResolveDependency51, perResolveDependency51, _root._singletonValueTuple52);
+      return new Service(perResolveDependency52, perResolveDependency52, _root._singletonValueTuple53);
     }
   }
 }

@@ -79,25 +79,24 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     () =>
     {
-      IService localValue76 = new Service(new Dependency());
-      return localValue76;
+      IService localValue81 = new Service(new Dependency());
+      return localValue81;
     });
     TaskCreationOptions transientTaskCreationOptions3 = TaskCreationOptions.None;
     TaskContinuationOptions transientTaskContinuationOptions4 = TaskContinuationOptions.None;
     TaskScheduler transientTaskScheduler5 = TaskScheduler.Default;
     TaskFactory<IService> perBlockTaskFactory2;
-    CancellationToken localCancellationToken77 = cancellationToken;
-    TaskCreationOptions localTaskCreationOptions78 = transientTaskCreationOptions3;
-    TaskContinuationOptions localTaskContinuationOptions79 = transientTaskContinuationOptions4;
-    TaskScheduler localTaskScheduler80 = transientTaskScheduler5;
-    perBlockTaskFactory2 = new TaskFactory<IService>(localCancellationToken77, localTaskCreationOptions78, localTaskContinuationOptions79, localTaskScheduler80);
-    Task<IService> transientTask0;
-    // Injects an instance factory
-    Func<IService> localFactory81 = perBlockFunc1;
+    CancellationToken localCancellationToken82 = cancellationToken;
+    TaskCreationOptions localTaskCreationOptions83 = transientTaskCreationOptions3;
+    TaskContinuationOptions localTaskContinuationOptions84 = transientTaskContinuationOptions4;
+    TaskScheduler localTaskScheduler85 = transientTaskScheduler5;
+    perBlockTaskFactory2 = new TaskFactory<IService>(localCancellationToken82, localTaskCreationOptions83, localTaskContinuationOptions84, localTaskScheduler85);
+    Task<IService> transientTask0; // Injects an instance factory
+    Func<IService> localFactory86 = perBlockFunc1;
     // Injects a task factory creating and scheduling task objects
-    TaskFactory<IService> localTaskFactory82 = perBlockTaskFactory2;
+    TaskFactory<IService> localTaskFactory87 = perBlockTaskFactory2;
     // Creates and starts a task using the instance factory
-    transientTask0 = localTaskFactory82.StartNew(localFactory81);
+    transientTask0 = localTaskFactory87.StartNew(localFactory86);
     return transientTask0;
   }
 }

@@ -187,7 +187,7 @@ sealed class DisposeMethodBuilder(
         code.AppendLine("object[] disposables;");
         if (composition.IsThreadSafe)
         {
-            locks.AddLockStatements(composition.Source.Source, code, isAsync);
+            locks.AddLockStatements(composition.Source, code, isAsync);
             code.AppendLine(BlockStart);
             code.IncIndent();
         }
@@ -208,7 +208,7 @@ sealed class DisposeMethodBuilder(
         if (composition.IsThreadSafe)
         {
             code.AppendLine(BlockFinish);
-            locks.AddUnlockStatements(composition.Source.Source, code, isAsync);
+            locks.AddUnlockStatements(composition.Source, code, isAsync);
         }
     }
 }

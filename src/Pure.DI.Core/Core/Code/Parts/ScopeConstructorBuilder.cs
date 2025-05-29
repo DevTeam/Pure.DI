@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core.Code.Parts;
 
-sealed class ScopeConstructorBuilder : IClassPartBuilder
+sealed class ScopeConstructorBuilder(ILocks locks) : IClassPartBuilder
 {
     public ClassPart Part => ClassPart.ScopeConstructor;
 
@@ -33,7 +33,7 @@ sealed class ScopeConstructorBuilder : IClassPartBuilder
                 }
             }
 
-            if (composition.IsThreadSafe)
+            if (composition.IsThreadSafe || locks.HasLockField(composition.Source))
             {
                 code.AppendLine($"{Names.LockFieldName} = {Names.RootFieldName}.{Names.LockFieldName};");
             }

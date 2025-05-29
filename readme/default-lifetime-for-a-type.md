@@ -77,15 +77,23 @@ The following partial class will be generated:
 partial class Composition
 {
   private readonly Composition _root;
+#if NET9_0_OR_GREATER
   private readonly Lock _lock;
+#else
+  private readonly Object _lock;
+#endif
 
-  private Dependency? _singletonDependency51;
+  private Dependency? _singletonDependency52;
 
   [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;
+#if NET9_0_OR_GREATER
     _lock = new Lock();
+#else
+    _lock = new Object();
+#endif
   }
 
   internal Composition(Composition parentScope)
@@ -99,18 +107,18 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonDependency51 is null)
+      if (_root._singletonDependency52 is null)
       {
-        using (_lock.EnterScope())
+        lock (_lock)
         {
-          if (_root._singletonDependency51 is null)
+          if (_root._singletonDependency52 is null)
           {
-            _root._singletonDependency51 = new Dependency();
+            _root._singletonDependency52 = new Dependency();
           }
         }
       }
 
-      return new Service(_root._singletonDependency51, _root._singletonDependency51);
+      return new Service(_root._singletonDependency52, _root._singletonDependency52);
     }
   }
 }

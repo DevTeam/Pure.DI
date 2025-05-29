@@ -78,16 +78,27 @@ The following partial class will be generated:
 partial class Composition
 {
   private readonly Composition _root;
+#if NET9_0_OR_GREATER
+  private readonly Lock _lock;
+#else
+  private readonly Object _lock;
+#endif
 
   [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;
+#if NET9_0_OR_GREATER
+    _lock = new Lock();
+#else
+    _lock = new Object();
+#endif
   }
 
   internal Composition(Composition parentScope)
   {
     _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
+    _lock = _root._lock;
   }
 
   public IService<string> Root
@@ -95,20 +106,31 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
+      var perResolveFunc55 = default(Func<int, IDependency<string>>);
       int overInt320;
-      Func<int, IDependency<string>> perBlockFunc1;
-      var localLockObject142 = new Object();
-      Func<int, IDependency<string>> localFactory143 = new Func<int, IDependency<string>>((int localArg13) =>
+      if (perResolveFunc55 is null)
       {
-        lock (localLockObject142)
+        lock (_lock)
         {
-          overInt320 = localArg13;
-          IDependency<string> localValue144 = new Dependency<string>(overInt320);
-          return localValue144;
+          if (perResolveFunc55 is null)
+          {
+            Func<int, IDependency<string>> localFactory147 = new Func<int, IDependency<string>>((int localArg19) =>
+            {
+              Lock transientLock1 = _lock;
+              Lock localLockObject148 = transientLock1;
+              lock (localLockObject148)
+              {
+                overInt320 = localArg19;
+                IDependency<string> localValue149 = new Dependency<string>(overInt320);
+                return localValue149;
+              }
+            });
+            perResolveFunc55 = localFactory147;
+          }
         }
-      });
-      perBlockFunc1 = localFactory143;
-      return new Service<string>(perBlockFunc1);
+      }
+
+      return new Service<string>(perResolveFunc55);
     }
   }
 }
@@ -128,7 +150,8 @@ classDiagram
 	ServiceᐸStringᐳ --|> IServiceᐸStringᐳ
 	DependencyᐸStringᐳ --|> IDependencyᐸStringᐳ
 	Composition ..> ServiceᐸStringᐳ : IServiceᐸStringᐳ Root
-	ServiceᐸStringᐳ o-- "PerBlock" FuncᐸInt32ˏIDependencyᐸStringᐳᐳ : FuncᐸInt32ˏIDependencyᐸStringᐳᐳ
+	ServiceᐸStringᐳ o-- "PerResolve" FuncᐸInt32ˏIDependencyᐸStringᐳᐳ : FuncᐸInt32ˏIDependencyᐸStringᐳᐳ
+	FuncᐸInt32ˏIDependencyᐸStringᐳᐳ *--  Lock : "SyncRoot"  Lock
 	FuncᐸInt32ˏIDependencyᐸStringᐳᐳ *--  DependencyᐸStringᐳ : IDependencyᐸStringᐳ
 	DependencyᐸStringᐳ *--  Int32 : Int32
 	namespace Pure.DI.UsageTests.Generics.GenericInjectionsAsRequiredWithArgumentsScenario {
@@ -157,6 +180,11 @@ classDiagram
 		}
 		class Int32 {
 			<<struct>>
+		}
+	}
+	namespace System.Threading {
+		class Lock {
+			<<class>>
 		}
 	}
 ```

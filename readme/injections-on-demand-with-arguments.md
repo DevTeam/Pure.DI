@@ -90,16 +90,27 @@ The following partial class will be generated:
 partial class Composition
 {
   private readonly Composition _root;
+#if NET9_0_OR_GREATER
+  private readonly Lock _lock;
+#else
+  private readonly Object _lock;
+#endif
 
   [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;
+#if NET9_0_OR_GREATER
+    _lock = new Lock();
+#else
+    _lock = new Object();
+#endif
   }
 
   internal Composition(Composition parentScope)
   {
     _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
+    _lock = _root._lock;
   }
 
   public IService Root
@@ -107,20 +118,31 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
+      var perResolveFunc54 = default(Func<int, IDependency>);
       int overInt320;
-      Func<int, IDependency> perBlockFunc1;
-      var localLockObject97 = new Object();
-      Func<int, IDependency> localFactory98 = new Func<int, IDependency>((int localArg13) =>
+      if (perResolveFunc54 is null)
       {
-        lock (localLockObject97)
+        lock (_lock)
         {
-          overInt320 = localArg13;
-          IDependency localValue99 = new Dependency(overInt320);
-          return localValue99;
+          if (perResolveFunc54 is null)
+          {
+            Func<int, IDependency> localFactory102 = new Func<int, IDependency>((int localArg19) =>
+            {
+              Lock transientLock1 = _lock;
+              Lock localLockObject103 = transientLock1;
+              lock (localLockObject103)
+              {
+                overInt320 = localArg19;
+                IDependency localValue104 = new Dependency(overInt320);
+                return localValue104;
+              }
+            });
+            perResolveFunc54 = localFactory102;
+          }
         }
-      });
-      perBlockFunc1 = localFactory98;
-      return new Service(perBlockFunc1);
+      }
+
+      return new Service(perResolveFunc54);
     }
   }
 }
@@ -141,7 +163,8 @@ classDiagram
 	Service --|> IService
 	Composition ..> Service : IService Root
 	Dependency *--  Int32 : Int32
-	Service o-- "PerBlock" FuncᐸInt32ˏIDependencyᐳ : FuncᐸInt32ˏIDependencyᐳ
+	Service o-- "PerResolve" FuncᐸInt32ˏIDependencyᐳ : FuncᐸInt32ˏIDependencyᐳ
+	FuncᐸInt32ˏIDependencyᐳ *--  Lock : "SyncRoot"  Lock
 	FuncᐸInt32ˏIDependencyᐳ *--  Dependency : IDependency
 	namespace Pure.DI.UsageTests.Basics.InjectionOnDemandWithArgumentsScenario {
 		class Composition {
@@ -169,6 +192,11 @@ classDiagram
 		}
 		class Int32 {
 			<<struct>>
+		}
+	}
+	namespace System.Threading {
+		class Lock {
+			<<class>>
 		}
 	}
 ```

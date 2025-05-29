@@ -100,16 +100,24 @@ The following partial class will be generated:
 partial class Composition
 {
   private readonly Composition _root;
+#if NET9_0_OR_GREATER
   private readonly Lock _lock;
+#else
+  private readonly Object _lock;
+#endif
 
-  private DependencyStruct<int> _singletonDependencyStruct59;
-  private bool _singletonDependencyStruct59Created;
+  private DependencyStruct<int> _singletonDependencyStruct60;
+  private bool _singletonDependencyStruct60Created;
 
   [OrdinalAttribute(128)]
   public Composition()
   {
     _root = this;
+#if NET9_0_OR_GREATER
     _lock = new Lock();
+#else
+    _lock = new Object();
+#endif
   }
 
   internal Composition(Composition parentScope)
@@ -123,20 +131,20 @@ partial class Composition
     where T1: notnull
   {
     if (depArg is null) throw new ArgumentNullException(nameof(depArg));
-    if (!_root._singletonDependencyStruct59Created)
+    if (!_root._singletonDependencyStruct60Created)
     {
-      using (_lock.EnterScope())
+      lock (_lock)
       {
-        if (!_root._singletonDependencyStruct59Created)
+        if (!_root._singletonDependencyStruct60Created)
         {
-          _root._singletonDependencyStruct59 = new DependencyStruct<int>();
+          _root._singletonDependencyStruct60 = new DependencyStruct<int>();
           Thread.MemoryBarrier();
-          _root._singletonDependencyStruct59Created = true;
+          _root._singletonDependencyStruct60Created = true;
         }
       }
     }
 
-    return new Program<T1>(new Service<T1, int, List<T1>, Dictionary<T1, int>>(new Dependency<T1>(depArg), _root._singletonDependencyStruct59));
+    return new Program<T1>(new Service<T1, int, List<T1>, Dictionary<T1, int>>(new Dependency<T1>(depArg), _root._singletonDependencyStruct60));
   }
 }
 ```

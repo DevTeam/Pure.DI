@@ -1,48 +1,21 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
-sealed class Locks(ITypes types) : ILocks
+sealed class Locks(IOverridesRegistry overridesRegistry) : ILocks
 {
-    public string GetLockType(MdSetup setup) =>
-        IsSystemThreadingLockEnabled(setup)
-            ? Names.LockTypeName
-            : Names.ObjectTypeName;
+    public bool HasLockField(DependencyGraph dependencyGraph) =>
+        dependencyGraph.Roots.Any(root => overridesRegistry.GetOverrides(root).Any())
+        || dependencyGraph.Graph.Edges.Any(dependency => Tag.SyncRoot.Equals(dependency.Injection.Tag));
 
-    public void AddLockStatements(MdSetup setup, LinesBuilder lines, bool isAsync)
+    public void AddLockStatements(DependencyGraph dependencyGraph, LinesBuilder lines, bool isAsync)
     {
         if (!isAsync)
         {
-            lines.AppendLine(
-                IsSystemThreadingLockEnabled(setup)
-                    ? $"using ({Names.LockFieldName}.EnterScope())"
-                    : $"lock ({Names.LockFieldName})");
-        }
-        else
-        {
-            // ReSharper disable once InvertIf
-            if (IsSystemThreadingLockEnabled(setup))
-            {
-                lines.AppendLine($"{Names.LockFieldName}.Enter();");
-                lines.AppendLine("try");
-            }
+            lines.AppendLine($"lock ({Names.LockFieldName})");
         }
     }
 
-    public void AddUnlockStatements(MdSetup setup, LinesBuilder lines, bool isAsync)
+    public void AddUnlockStatements(DependencyGraph dependencyGraph, LinesBuilder lines, bool isAsync)
     {
-        if (!isAsync || !IsSystemThreadingLockEnabled(setup))
-        {
-            return;
-        }
-
-        lines.AppendLine("finally");
-        using (lines.CreateBlock())
-        {
-            lines.AppendLine($"{Names.LockFieldName}.Exit();");
-        }
     }
-
-    private bool IsSystemThreadingLockEnabled(MdSetup setup) =>
-        setup.Hints.IsSystemThreadingLockEnabled
-        && types.TryGet(SpecialType.Lock, setup.SemanticModel.Compilation) is not null;
 }

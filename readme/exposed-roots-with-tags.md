@@ -64,15 +64,23 @@ The following partial class will be generated:
 partial class Composition
 {
   private readonly Composition _root;
+#if NET9_0_OR_GREATER
   private readonly Lock _lock;
+#else
+  private readonly Object _lock;
+#endif
 
-  private OtherAssembly.CompositionWithTagsInOtherProject? _singletonCompositionWithTagsInOtherProject51;
+  private OtherAssembly.CompositionWithTagsInOtherProject? _singletonCompositionWithTagsInOtherProject52;
 
   [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;
+#if NET9_0_OR_GREATER
     _lock = new Lock();
+#else
+    _lock = new Object();
+#endif
   }
 
   internal Composition(Composition parentScope)
@@ -86,20 +94,20 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonCompositionWithTagsInOtherProject51 is null)
+      if (_root._singletonCompositionWithTagsInOtherProject52 is null)
       {
-        using (_lock.EnterScope())
+        lock (_lock)
         {
-          if (_root._singletonCompositionWithTagsInOtherProject51 is null)
+          if (_root._singletonCompositionWithTagsInOtherProject52 is null)
           {
-            _root._singletonCompositionWithTagsInOtherProject51 = new OtherAssembly.CompositionWithTagsInOtherProject();
+            _root._singletonCompositionWithTagsInOtherProject52 = new OtherAssembly.CompositionWithTagsInOtherProject();
           }
         }
       }
 
       OtherAssembly.IMyService transientIMyService1;
-      OtherAssembly.CompositionWithTagsInOtherProject localInstance_1182D12747 = _root._singletonCompositionWithTagsInOtherProject51;
-      transientIMyService1 = localInstance_1182D12747.MyService;
+      OtherAssembly.CompositionWithTagsInOtherProject localInstance_1182D12750 = _root._singletonCompositionWithTagsInOtherProject52;
+      transientIMyService1 = localInstance_1182D12750.MyService;
       return new Program(transientIMyService1);
     }
   }

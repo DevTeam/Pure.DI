@@ -78,15 +78,23 @@ The following partial class will be generated:
 partial class Composition
 {
   private readonly Composition _root;
+#if NET9_0_OR_GREATER
   private readonly Lock _lock;
+#else
+  private readonly Object _lock;
+#endif
 
-  private Facade? _singletonFacade51;
+  private Facade? _singletonFacade52;
 
   [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;
+#if NET9_0_OR_GREATER
     _lock = new Lock();
+#else
+    _lock = new Object();
+#endif
   }
 
   internal Composition(Composition parentScope)
@@ -100,20 +108,20 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonFacade51 is null)
+      if (_root._singletonFacade52 is null)
       {
-        using (_lock.EnterScope())
+        lock (_lock)
         {
-          if (_root._singletonFacade51 is null)
+          if (_root._singletonFacade52 is null)
           {
-            _root._singletonFacade51 = new Facade();
+            _root._singletonFacade52 = new Facade();
           }
         }
       }
 
       IDependency<int> transientIDependency1;
-      Facade localInstance_1182D12783 = _root._singletonFacade51;
-      transientIDependency1 = localInstance_1182D12783.GetDependency<int>();
+      Facade localInstance_1182D12788 = _root._singletonFacade52;
+      transientIDependency1 = localInstance_1182D12788.GetDependency<int>();
       return new Service(transientIDependency1);
     }
   }

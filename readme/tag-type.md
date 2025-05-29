@@ -91,15 +91,23 @@ The following partial class will be generated:
 partial class Composition
 {
   private readonly Composition _root;
+#if NET9_0_OR_GREATER
   private readonly Lock _lock;
+#else
+  private readonly Object _lock;
+#endif
 
-  private XyzDependency? _singletonXyzDependency52;
+  private XyzDependency? _singletonXyzDependency53;
 
   [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;
+#if NET9_0_OR_GREATER
     _lock = new Lock();
+#else
+    _lock = new Object();
+#endif
   }
 
   internal Composition(Composition parentScope)
@@ -113,18 +121,18 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonXyzDependency52 is null)
+      if (_root._singletonXyzDependency53 is null)
       {
-        using (_lock.EnterScope())
+        lock (_lock)
         {
-          if (_root._singletonXyzDependency52 is null)
+          if (_root._singletonXyzDependency53 is null)
           {
-            _root._singletonXyzDependency52 = new XyzDependency();
+            _root._singletonXyzDependency53 = new XyzDependency();
           }
         }
       }
 
-      return _root._singletonXyzDependency52;
+      return _root._singletonXyzDependency53;
     }
   }
 
@@ -133,18 +141,18 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonXyzDependency52 is null)
+      if (_root._singletonXyzDependency53 is null)
       {
-        using (_lock.EnterScope())
+        lock (_lock)
         {
-          if (_root._singletonXyzDependency52 is null)
+          if (_root._singletonXyzDependency53 is null)
           {
-            _root._singletonXyzDependency52 = new XyzDependency();
+            _root._singletonXyzDependency53 = new XyzDependency();
           }
         }
       }
 
-      return new Service(new AbcDependency(), _root._singletonXyzDependency52, new AbcDependency());
+      return new Service(new AbcDependency(), _root._singletonXyzDependency53, new AbcDependency());
     }
   }
 }

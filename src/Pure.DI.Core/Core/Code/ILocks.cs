@@ -2,9 +2,9 @@
 
 interface ILocks
 {
-    string GetLockType(MdSetup setup);
+    bool HasLockField(DependencyGraph dependencyGraph);
 
-    void AddLockStatements(MdSetup setup, LinesBuilder lines, bool isAsync);
+    void AddLockStatements(DependencyGraph dependencyGraph, LinesBuilder lines, bool isAsync);
 
-    void AddUnlockStatements(MdSetup setup, LinesBuilder lines, bool isAsync);
+    void AddUnlockStatements(DependencyGraph dependencyGraph, LinesBuilder lines, bool isAsync);
 }

@@ -69,15 +69,23 @@ The following partial class will be generated:
 partial class Composition
 {
   private readonly Composition _root;
+#if NET9_0_OR_GREATER
   private readonly Lock _lock;
+#else
+  private readonly Object _lock;
+#endif
 
-  private OtherAssembly.CompositionWithGenericRootsInOtherProject? _singletonCompositionWithGenericRootsInOtherProject51;
+  private OtherAssembly.CompositionWithGenericRootsInOtherProject? _singletonCompositionWithGenericRootsInOtherProject52;
 
   [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;
+#if NET9_0_OR_GREATER
     _lock = new Lock();
+#else
+    _lock = new Object();
+#endif
   }
 
   internal Composition(Composition parentScope)
@@ -91,20 +99,20 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonCompositionWithGenericRootsInOtherProject51 is null)
+      if (_root._singletonCompositionWithGenericRootsInOtherProject52 is null)
       {
-        using (_lock.EnterScope())
+        lock (_lock)
         {
-          if (_root._singletonCompositionWithGenericRootsInOtherProject51 is null)
+          if (_root._singletonCompositionWithGenericRootsInOtherProject52 is null)
           {
-            _root._singletonCompositionWithGenericRootsInOtherProject51 = new OtherAssembly.CompositionWithGenericRootsInOtherProject();
+            _root._singletonCompositionWithGenericRootsInOtherProject52 = new OtherAssembly.CompositionWithGenericRootsInOtherProject();
           }
         }
       }
 
       OtherAssembly.IMyGenericService<int> transientIMyGenericService1;
-      OtherAssembly.CompositionWithGenericRootsInOtherProject localInstance_1182D12741 = _root._singletonCompositionWithGenericRootsInOtherProject51;
-      transientIMyGenericService1 = localInstance_1182D12741.GetMyService<int>();
+      OtherAssembly.CompositionWithGenericRootsInOtherProject localInstance_1182D12744 = _root._singletonCompositionWithGenericRootsInOtherProject52;
+      transientIMyGenericService1 = localInstance_1182D12744.GetMyService<int>();
       return new Program(transientIMyGenericService1);
     }
   }

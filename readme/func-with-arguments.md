@@ -99,15 +99,23 @@ The following partial class will be generated:
 partial class Composition
 {
   private readonly Composition _root;
+#if NET9_0_OR_GREATER
   private readonly Lock _lock;
+#else
+  private readonly Object _lock;
+#endif
 
-  private Clock? _singletonClock51;
+  private Clock? _singletonClock52;
 
   [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;
+#if NET9_0_OR_GREATER
     _lock = new Lock();
+#else
+    _lock = new Object();
+#endif
   }
 
   internal Composition(Composition parentScope)
@@ -124,29 +132,30 @@ partial class Composition
       int overInt320;
       string overString2;
       Func<int, string, IDependency> perBlockFunc1;
-      var localLockObject104 = new Object();
-      Func<int, string, IDependency> localFactory105 = new Func<int, string, IDependency>((int localArg18, string localArg213) =>
+      Func<int, string, IDependency> localFactory109 = new Func<int, string, IDependency>((int localArg17, string localArg214) =>
       {
-        lock (localLockObject104)
+        Lock transientLock2 = _lock;
+        Lock localLockObject110 = transientLock2;
+        lock (localLockObject110)
         {
-          overInt320 = localArg18;
-          overString2 = localArg213;
-          if (_root._singletonClock51 is null)
+          overInt320 = localArg17;
+          overString2 = localArg214;
+          if (_root._singletonClock52 is null)
           {
-            using (_lock.EnterScope())
+            lock (_lock)
             {
-              if (_root._singletonClock51 is null)
+              if (_root._singletonClock52 is null)
               {
-                _root._singletonClock51 = new Clock();
+                _root._singletonClock52 = new Clock();
               }
             }
           }
 
-          IDependency localValue106 = new Dependency(overString2, _root._singletonClock51, overInt320);
-          return localValue106;
+          IDependency localValue111 = new Dependency(overString2, _root._singletonClock52, overInt320);
+          return localValue111;
         }
       });
-      perBlockFunc1 = localFactory105;
+      perBlockFunc1 = localFactory109;
       return new Service(perBlockFunc1);
     }
   }
@@ -171,6 +180,7 @@ classDiagram
 	Dependency *--  Int32 : Int32
 	Dependency *--  String : String
 	Service o-- "PerBlock" FuncᐸInt32ˏStringˏIDependencyᐳ : FuncᐸInt32ˏStringˏIDependencyᐳ
+	FuncᐸInt32ˏStringˏIDependencyᐳ *--  Lock : "SyncRoot"  Lock
 	FuncᐸInt32ˏStringˏIDependencyᐳ *--  Dependency : IDependency
 	namespace Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario {
 		class Clock {
@@ -203,6 +213,11 @@ classDiagram
 			<<struct>>
 		}
 		class String {
+			<<class>>
+		}
+	}
+	namespace System.Threading {
+		class Lock {
 			<<class>>
 		}
 	}

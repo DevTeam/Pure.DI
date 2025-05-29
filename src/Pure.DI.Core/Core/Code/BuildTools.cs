@@ -27,9 +27,9 @@ sealed class BuildTools(
 
     public void AddPureHeader(LinesBuilder code)
     {
-        code.AppendLine("#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET");
+        code.AppendLine(new Line(int.MinValue, "#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET // Pure method"));
         code.AppendLine($"[{Names.SystemNamespace}Diagnostics.Contracts.Pure]");
-        code.AppendLine("#endif");
+        code.AppendLine(new Line(int.MinValue, "#endif // Pure method"));
     }
 
     public string GetDeclaration(Variable variable, string separator = " ") =>
@@ -83,7 +83,7 @@ sealed class BuildTools(
 
         if (lockIsRequired && accLines.Count > 0)
         {
-            locks.AddLockStatements(ctx.DependencyGraph.Source, code, false);
+            locks.AddLockStatements(ctx.DependencyGraph, code, false);
             code.AppendLine(BlockStart);
             code.IncIndent();
         }
@@ -94,7 +94,7 @@ sealed class BuildTools(
         {
             code.DecIndent();
             code.AppendLine(BlockFinish);
-            locks.AddUnlockStatements(ctx.DependencyGraph.Source, code, false);
+            locks.AddUnlockStatements(ctx.DependencyGraph, code, false);
         }
 
         if (!ctx.DependencyGraph.Source.Hints.IsOnNewInstanceEnabled)

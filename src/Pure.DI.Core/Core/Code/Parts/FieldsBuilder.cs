@@ -21,10 +21,14 @@ sealed class FieldsBuilder(
         code.AppendLine($"private readonly {composition.Source.Source.Name.ClassName} {Names.RootFieldName};");
         membersCounter++;
 
-        if (composition.IsThreadSafe)
+        if (composition.IsThreadSafe || locks.HasLockField(composition.Source))
         {
             // _lock field
-            code.AppendLine($"private readonly {locks.GetLockType(composition.Source.Source)} {Names.LockFieldName};");
+            code.AppendLine(new Line(int.MinValue, "#if NET9_0_OR_GREATER"));
+            code.AppendLine($"private readonly {Names.LockTypeName} {Names.LockFieldName};");
+            code.AppendLine(new Line(int.MinValue, "#else"));
+            code.AppendLine($"private readonly {Names.ObjectTypeName} {Names.LockFieldName};");
+            code.AppendLine(new Line(int.MinValue, "#endif"));
             membersCounter++;
         }
 

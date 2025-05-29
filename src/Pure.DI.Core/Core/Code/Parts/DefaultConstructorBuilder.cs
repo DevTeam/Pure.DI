@@ -31,9 +31,13 @@ sealed class DefaultConstructorBuilder(
         using (code.CreateBlock())
         {
             code.AppendLine($"{Names.RootFieldName} = this;");
-            if (composition.IsThreadSafe)
+            if (composition.IsThreadSafe || locks.HasLockField(composition.Source))
             {
-                code.AppendLine($"{Names.LockFieldName} = new {locks.GetLockType(composition.Source.Source)}();");
+                code.AppendLine(new Line(int.MinValue, "#if NET9_0_OR_GREATER"));
+                code.AppendLine($"{Names.LockFieldName} = new {Names.LockTypeName}();");
+                code.AppendLine(new Line(int.MinValue, "#else"));
+                code.AppendLine($"{Names.LockFieldName} = new {Names.ObjectTypeName}();");
+                code.AppendLine(new Line(int.MinValue, "#endif"));
             }
 
             if (composition.TotalDisposablesCount > 0)

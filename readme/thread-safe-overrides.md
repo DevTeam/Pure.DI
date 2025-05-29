@@ -1,6 +1,4 @@
-#### Overrides
-
-This example demonstrates advanced dependency injection techniques using Pure.DI's override mechanism to customize dependency instantiation with runtime arguments and tagged parameters. The implementation creates multiple `IDependency` instances with values manipulated through explicit overrides.
+#### Thread-safe overrides
 
 
 ```c#
@@ -15,21 +13,27 @@ DI.Setup(nameof(Composition))
     .Bind().To<Func<int, int, IDependency>>(ctx =>
         (dependencyId, subId) =>
         {
-            // Overrides with a lambda argument
-            ctx.Override(dependencyId);
-
-            // Overrides with tag using lambda argument
-            ctx.Override(subId, "sub");
-
-            // Overrides with some value
-            ctx.Override($"Dep {dependencyId} {subId}");
-
-            // Overrides with injected value
             ctx.Inject(Tag.Red, out Color red);
-            ctx.Override(red);
 
-            ctx.Inject<Dependency>(out var dependency);
-            return dependency;
+            // Get composition sync root object
+            ctx.Inject(Tag.SyncRoot, out Lock lockObject);
+            lock (lockObject)
+            {
+                // Overrides with a lambda argument
+                ctx.Override(dependencyId);
+
+                // Overrides with tag using lambda argument
+                ctx.Override(subId, "sub");
+
+                // Overrides with some value
+                ctx.Override($"Dep {dependencyId} {subId}");
+
+                // Overrides with injected value
+                ctx.Override(red);
+
+                ctx.Inject<Dependency>(out var dependency);
+                return dependency;
+            }
         })
     .Bind().To<Service>()
 
@@ -38,17 +42,11 @@ DI.Setup(nameof(Composition))
 
 var composition = new Composition();
 var service = composition.Root;
-service.Dependencies.Length.ShouldBe(3);
-
-service.Dependencies[0].Id.ShouldBe(0);
-service.Dependencies[0].SubId.ShouldBe(99);
-service.Dependencies[0].Name.ShouldBe("Dep 0 99");
-
-service.Dependencies[1].Id.ShouldBe(1);
-service.Dependencies[1].Name.ShouldBe("Dep 1 99");
-
-service.Dependencies[2].Id.ShouldBe(2);
-service.Dependencies[2].Name.ShouldBe("Dep 2 99");
+service.Dependencies.Length.ShouldBe(100);
+for (var i = 0; i < 100; i++)
+{
+    service.Dependencies.Count(dep => dep.Id == i).ShouldBe(1);
+}
 
 interface IClock
 {
@@ -92,11 +90,9 @@ interface IService
 class Service(Func<int, int, IDependency> dependencyFactory): IService
 {
     public ImmutableArray<IDependency> Dependencies { get; } =
-    [
-        dependencyFactory(0, 99),
-        dependencyFactory(1, 99),
-        dependencyFactory(2, 99)
-    ];
+        [
+            ..Enumerable.Range(0, 100).AsParallel().Select(i => dependencyFactory(i, 99))
+        ];
 }
 ```
 
@@ -169,31 +165,37 @@ partial class Composition
       Drawing.Color overColor3;
       Func<int, int, IDependency> transientFunc1 =
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      (localDependencyId3, localSubId4) =>
+      (localDependencyId0, localSubId1) =>
       {
-        // Overrides with a lambda argument
-        // Overrides with tag using lambda argument
-        // Overrides with some value
-        // Overrides with injected value
-        overInt320 = localDependencyId3;
-        overInt321 = localSubId4;
-        overString2 = $"Dep {localDependencyId3} {localSubId4}";
         Drawing.Color transientColor2 = Color.Red;
-        Drawing.Color localRed5 = transientColor2;
-        overColor3 = localRed5;
-        if (_root._singletonClock53 is null)
+        Drawing.Color localRed2 = transientColor2;
+        // Get composition sync root object
+        Lock transientLock3 = _lock;
+        Lock localLockObject51 = transientLock3;
+        lock (localLockObject51)
         {
-          lock (_lock)
+          // Overrides with a lambda argument
+          // Overrides with tag using lambda argument
+          // Overrides with some value
+          // Overrides with injected value
+          overInt320 = localDependencyId0;
+          overInt321 = localSubId1;
+          overString2 = $"Dep {localDependencyId0} {localSubId1}";
+          overColor3 = localRed2;
+          if (_root._singletonClock53 is null)
           {
-            if (_root._singletonClock53 is null)
+            lock (_lock)
             {
-              _root._singletonClock53 = new Clock();
+              if (_root._singletonClock53 is null)
+              {
+                _root._singletonClock53 = new Clock();
+              }
             }
           }
-        }
 
-        Dependency localDependency105 = new Dependency(overString2, _root._singletonClock53, overInt320, overInt321, overColor3);
-        return localDependency105;
+          Dependency localDependency52 = new Dependency(overString2, _root._singletonClock53, overInt320, overInt321, overColor3);
+          return localDependency52;
+        }
       };
       return new Service(transientFunc1);
     }
@@ -214,6 +216,7 @@ Class diagram:
 classDiagram
 	Service --|> IService
 	Composition ..> Service : IService Root
+	FuncᐸInt32ˏInt32ˏIDependencyᐳ *--  Lock : "SyncRoot"  Lock
 	FuncᐸInt32ˏInt32ˏIDependencyᐳ *--  Color : "Red"  Color
 	FuncᐸInt32ˏInt32ˏIDependencyᐳ *--  Dependency : Dependency
 	Service *--  FuncᐸInt32ˏInt32ˏIDependencyᐳ : FuncᐸInt32ˏInt32ˏIDependencyᐳ
@@ -222,7 +225,7 @@ classDiagram
 	Dependency *--  Int32 : "sub"  Int32
 	Dependency *--  String : String
 	Dependency *--  Color : Color
-	namespace Pure.DI.UsageTests.Basics.OverridesScenario {
+	namespace Pure.DI.UsageTests.Advanced.ThreadsafeOverridesScenario {
 		class Clock {
 			<<class>>
 		}
@@ -256,6 +259,11 @@ classDiagram
 	namespace System.Drawing {
 		class Color {
 			<<struct>>
+		}
+	}
+	namespace System.Threading {
+		class Lock {
+			<<class>>
 		}
 	}
 ```

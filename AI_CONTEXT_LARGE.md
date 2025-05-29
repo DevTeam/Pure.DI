@@ -6484,6 +6484,108 @@ To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
 
 
+## Thread-safe overrides
+
+```c#
+using Shouldly;
+using Pure.DI;
+using System.Collections.Immutable;
+using System.Drawing;
+
+DI.Setup(nameof(Composition))
+    .Bind(Tag.Red).To(_ => Color.Red)
+    .Bind().As(Lifetime.Singleton).To<Clock>()
+    .Bind().To<Func<int, int, IDependency>>(ctx =>
+        (dependencyId, subId) =>
+        {
+            ctx.Inject(Tag.Red, out Color red);
+
+            // Get composition sync root object
+            ctx.Inject(Tag.SyncRoot, out Lock lockObject);
+            lock (lockObject)
+            {
+                // Overrides with a lambda argument
+                ctx.Override(dependencyId);
+
+                // Overrides with tag using lambda argument
+                ctx.Override(subId, "sub");
+
+                // Overrides with some value
+                ctx.Override($"Dep {dependencyId} {subId}");
+
+                // Overrides with injected value
+                ctx.Override(red);
+
+                ctx.Inject<Dependency>(out var dependency);
+                return dependency;
+            }
+        })
+    .Bind().To<Service>()
+
+    // Composition root
+    .Root<IService>("Root");
+
+var composition = new Composition();
+var service = composition.Root;
+service.Dependencies.Length.ShouldBe(100);
+for (var i = 0; i < 100; i++)
+{
+    service.Dependencies.Count(dep => dep.Id == i).ShouldBe(1);
+}
+
+interface IClock
+{
+    DateTimeOffset Now { get; }
+}
+
+class Clock : IClock
+{
+    public DateTimeOffset Now => DateTimeOffset.Now;
+}
+
+interface IDependency
+{
+    string Name { get; }
+
+    int Id { get; }
+
+    int SubId { get; }
+}
+
+class Dependency(
+    string name,
+    IClock clock,
+    int id,
+    [Tag("sub")] int subId,
+    Color red)
+    : IDependency
+{
+    public string Name => name;
+
+    public int Id => id;
+
+    public int SubId => subId;
+}
+
+interface IService
+{
+    ImmutableArray<IDependency> Dependencies { get; }
+}
+
+class Service(Func<int, int, IDependency> dependencyFactory): IService
+{
+    public ImmutableArray<IDependency> Dependencies { get; } =
+        [
+            ..Enumerable.Range(0, 100).AsParallel().Select(i => dependencyFactory(i, 99))
+        ];
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+
 ## Tracking disposable instances per a composition root
 
 ```c#
@@ -11603,12 +11705,43 @@ DI.Setup("Composition")
 ```
 
 
+            Overrides uses a shared state to override values. And if this code is supposed to run in multiple threads at once, then you need to ensure their synchronization, for example:
+            
+```c#
+
+DI.Setup("Composition")
+                .Bind().To<Func<int, int, IDependency>>(ctx =>
+                    (dependencyId, subId) =>
+                    {
+                        // Get composition sync root object
+                        ctx.Inject(Tag.SyncRoot, out Lock lockObject);
+                        lock(lockObject)
+                        {
+                            // Overrides with a lambda argument
+                            ctx.Override(dependencyId);
+                            // Overrides with tag using lambda argument
+                            ctx.Override(subId, "sub");
+                            // Overrides with some value
+                            ctx.Override($"Dep {dependencyId} {subId}");
+                            // Overrides with injected value
+                            ctx.Inject(Tag.Red, out Color red);
+                            ctx.Override(red);
+                            ctx.Inject<Dependency>(out var dependency);
+                            return dependency;
+                        }
+                    })
+            
+```
+
+
+            An alternative to synchronizing streams yourself is to use types like _Func`3_this. There, threads synchronization is performed automatically.
+            
  - parameter _value_ - The object that will be used to override a binding.
 Object type that will be used to override a binding.
  - parameter _tags_ - Injection tags that will be used to override a binding. See also _Tags(System.Object[])_
 .
             
-See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+See also _To<T>(System.Func<TArg1,T>)_.
 
 </blockquote></details>
 
@@ -12099,39 +12232,21 @@ DI.Setup("Composition")
 </blockquote></details>
 
 
+<details><summary>Field SyncRoot</summary><blockquote>
+
+Atomically generated smart tag with value "SyncRoot".
+            It's used for:
+            
+            class _Generator__Func`2_ <-- (SyncRoot) -- _Object_ as _Transient__Func`3_ <-- (SyncRoot) -- _Object_ as _Transient_
+</blockquote></details>
+
+
 <details><summary>Field Overrider</summary><blockquote>
 
 Atomically generated smart tag with value "Overrider".
             It's used for:
             
             class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Overrider) -- _GraphOverrider_ as _PerBlock_
-</blockquote></details>
-
-
-<details><summary>Field UniqueTag</summary><blockquote>
-
-Atomically generated smart tag with value "UniqueTag".
-            It's used for:
-            
-            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve__BindingBuilder_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve_
-</blockquote></details>
-
-
-<details><summary>Field GenericType</summary><blockquote>
-
-Atomically generated smart tag with value "GenericType".
-            It's used for:
-            
-            class _Generator__TypeResolver_ <-- _IIdGenerator_(GenericType) -- _IdGenerator_ as _PerResolve_
-</blockquote></details>
-
-
-<details><summary>Field Cleaner</summary><blockquote>
-
-Atomically generated smart tag with value "Cleaner".
-            It's used for:
-            
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
 </blockquote></details>
 
 
@@ -12144,6 +12259,24 @@ Atomically generated smart tag with value "CompositionClass".
 </blockquote></details>
 
 
+<details><summary>Field Cleaner</summary><blockquote>
+
+Atomically generated smart tag with value "Cleaner".
+            It's used for:
+            
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field UniqueTag</summary><blockquote>
+
+Atomically generated smart tag with value "UniqueTag".
+            It's used for:
+            
+            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve__BindingBuilder_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
 <details><summary>Field UsingDeclarations</summary><blockquote>
 
 Atomically generated smart tag with value "UsingDeclarations".
@@ -12153,12 +12286,12 @@ Atomically generated smart tag with value "UsingDeclarations".
 </blockquote></details>
 
 
-<details><summary>Field Injection</summary><blockquote>
+<details><summary>Field GenericType</summary><blockquote>
 
-Atomically generated smart tag with value "Injection".
+Atomically generated smart tag with value "GenericType".
             It's used for:
             
-            class _Generator__BuildTools_ <-- _IIdGenerator_(Injection) -- _IdGenerator_ as _PerResolve_
+            class _Generator__TypeResolver_ <-- _IIdGenerator_(GenericType) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
@@ -12168,6 +12301,15 @@ Atomically generated smart tag with value "Override".
             It's used for:
             
             class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
+<details><summary>Field Injection</summary><blockquote>
+
+Atomically generated smart tag with value "Injection".
+            It's used for:
+            
+            class _Generator__BuildTools_ <-- _IIdGenerator_(Injection) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 

@@ -95,15 +95,23 @@ The following partial class will be generated:
 partial class Composition
 {
   private readonly Composition _root;
+#if NET9_0_OR_GREATER
   private readonly Lock _lock;
+#else
+  private readonly Object _lock;
+#endif
 
-  private ClockService? _singletonClockService51;
+  private ClockService? _singletonClockService52;
 
   [OrdinalAttribute(128)]
   public Composition()
   {
     _root = this;
+#if NET9_0_OR_GREATER
     _lock = new Lock();
+#else
+    _lock = new Object();
+#endif
   }
 
   internal Composition(Composition parentScope)
@@ -116,21 +124,21 @@ partial class Composition
   public Clock BuildUp(Clock buildingInstance)
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    if (_root._singletonClockService51 is null)
+    if (_root._singletonClockService52 is null)
     {
-      using (_lock.EnterScope())
+      lock (_lock)
       {
-        if (_root._singletonClockService51 is null)
+        if (_root._singletonClockService52 is null)
         {
-          _root._singletonClockService51 = new ClockService();
+          _root._singletonClockService52 = new ClockService();
         }
       }
     }
 
     Clock transientClock0;
-    Clock localBuildingInstance155 = buildingInstance;
-    localBuildingInstance155.ClockService = _root._singletonClockService51;
-    transientClock0 = localBuildingInstance155;
+    Clock localBuildingInstance160 = buildingInstance;
+    localBuildingInstance160.ClockService = _root._singletonClockService52;
+    transientClock0 = localBuildingInstance160;
     return transientClock0;
   }
 }

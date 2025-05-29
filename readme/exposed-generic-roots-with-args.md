@@ -67,15 +67,23 @@ The following partial class will be generated:
 partial class Composition
 {
   private readonly Composition _root;
+#if NET9_0_OR_GREATER
   private readonly Lock _lock;
+#else
+  private readonly Object _lock;
+#endif
 
-  private OtherAssembly.CompositionWithGenericRootsAndArgsInOtherProject? _singletonCompositionWithGenericRootsAndArgsInOtherProject52;
+  private OtherAssembly.CompositionWithGenericRootsAndArgsInOtherProject? _singletonCompositionWithGenericRootsAndArgsInOtherProject53;
 
   [OrdinalAttribute(128)]
   public Composition()
   {
     _root = this;
+#if NET9_0_OR_GREATER
     _lock = new Lock();
+#else
+    _lock = new Object();
+#endif
   }
 
   internal Composition(Composition parentScope)
@@ -87,21 +95,21 @@ partial class Composition
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Program GetProgram(int id)
   {
-    if (_root._singletonCompositionWithGenericRootsAndArgsInOtherProject52 is null)
+    if (_root._singletonCompositionWithGenericRootsAndArgsInOtherProject53 is null)
     {
-      using (_lock.EnterScope())
+      lock (_lock)
       {
-        if (_root._singletonCompositionWithGenericRootsAndArgsInOtherProject52 is null)
+        if (_root._singletonCompositionWithGenericRootsAndArgsInOtherProject53 is null)
         {
-          _root._singletonCompositionWithGenericRootsAndArgsInOtherProject52 = new OtherAssembly.CompositionWithGenericRootsAndArgsInOtherProject();
+          _root._singletonCompositionWithGenericRootsAndArgsInOtherProject53 = new OtherAssembly.CompositionWithGenericRootsAndArgsInOtherProject();
         }
       }
     }
 
     OtherAssembly.IMyGenericService<int> transientIMyGenericService1;
-    int localId42 = id;
-    OtherAssembly.CompositionWithGenericRootsAndArgsInOtherProject localInstance_1182D12743 = _root._singletonCompositionWithGenericRootsAndArgsInOtherProject52;
-    transientIMyGenericService1 = localInstance_1182D12743.GetMyService<int>(localId42);
+    int localId45 = id;
+    OtherAssembly.CompositionWithGenericRootsAndArgsInOtherProject localInstance_1182D12746 = _root._singletonCompositionWithGenericRootsAndArgsInOtherProject53;
+    transientIMyGenericService1 = localInstance_1182D12746.GetMyService<int>(localId45);
     return new Program(transientIMyGenericService1);
   }
 }
