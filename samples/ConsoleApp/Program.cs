@@ -14,7 +14,10 @@ partial class Program(
     private void Run()
     {
         ticks.Tick += OnTick;
-        console.WaitForKey();
+        while (!console.KeyAvailable)
+        {
+            Thread.Sleep(100);
+        }
         ticks.Tick -= OnTick;
     }
 

@@ -6,8 +6,6 @@ public class ConsoleAdapter : IConsole
 
     public bool KeyAvailable => Console.KeyAvailable;
 
-    public void WaitForKey() => Console.ReadKey(true);
-
     public void Write(object? value)
     {
         Console.CursorVisible = false;
