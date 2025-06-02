@@ -83,6 +83,89 @@ public class TagsTests
         result.StdOut.ShouldBe(["True", "True"], result);
     }
 
+    [Theory]
+    [InlineData("string", "\"123\"")]
+    [InlineData("double", "123.2D")]
+    [InlineData("float", "123.2F")]
+    // [InlineData("123.2M")]
+    [InlineData("uint", "123U")]
+    [InlineData("long", "123L")]
+    [InlineData("ulong", "123UL")]
+    [InlineData("int", "123")]
+    [InlineData("MyEnum", "MyEnum.Val2")]
+    [InlineData("char", "'a'")]
+    public async Task ShouldSupportTagWhenConst(string tagType, string tag)
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               enum MyEnum { Val1, Val2 }
+                           
+                               internal interface IDependency { }
+                           
+                               internal class Dependency : IDependency { }
+                           
+                               internal interface IService
+                               {
+                                   public IDependency Dependency1 { get; }
+                                           
+                                   public IDependency Dependency2 { get; }
+                               }
+                           
+                               internal class Service : IService
+                               {
+                                   public const #tagType# TagVal2 = #tag#;
+                                   
+                                   public Service([Tag(TagVal2)] Func<IDependency> dependency1, [Tag(#tag#)] IDependency dependency2)
+                                   {
+                                       Dependency1 = dependency1();
+                                       Dependency2 = dependency2;
+                                   }
+                           
+                                   public IDependency Dependency1 { get; }
+                                           
+                                   public IDependency Dependency2 { get; }
+                               }
+                           
+                               static class Setup
+                               {
+                                   public const #tagType# TagVal = #tag#;
+                               
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Bind<IDependency>(TagVal).As(Lifetime.Singleton).To<Dependency>()
+                                           .Bind<IService>(#tag#).To<Service>()
+                                           .Root<IDependency>("Dependency", Service.TagVal2)
+                                           .Root<IService>("Root", TagVal);
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service1 = composition.Root;
+                                       var service2 = composition.Root;
+                                       Console.WriteLine(service1.Dependency1 == service1.Dependency2);        
+                                       Console.WriteLine(service2.Dependency1 == service1.Dependency1);
+                                   }
+                               }
+                           }
+                           """.Replace("#tagType#", tagType).Replace("#tag#", tag).RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True"], result);
+    }
+
     [Fact]
     public async Task ShouldSupportOnConstructorArg()
     {

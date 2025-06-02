@@ -129,6 +129,12 @@ sealed class Semantic(
             }
 
             case IdentifierNameSyntax identifierNameSyntax when typeof(T) == typeof(object):
+                var identifierOperation = semanticModel.GetOperation(node);
+                if (identifierOperation?.ConstantValue.Value is T identifierValue)
+                {
+                    return identifierValue;
+                }
+
                 return identifierNameSyntax.Identifier.Text switch
                 {
                     nameof(Tag.Type) when IsSpecialType(semanticModel, node, SpecialType.Tag) => (T)(object)Tag.Type,
