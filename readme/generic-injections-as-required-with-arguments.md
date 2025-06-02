@@ -114,13 +114,13 @@ partial class Composition
         {
           if (perResolveFunc55 is null)
           {
-            Func<int, IDependency<string>> localFactory147 = new Func<int, IDependency<string>>((int localArg19) =>
+            Func<int, IDependency<string>> localFactory147 = new Func<int, IDependency<string>>((int localArg16) =>
             {
               Lock transientLock1 = _lock;
               Lock localLockObject148 = transientLock1;
               lock (localLockObject148)
               {
-                overInt320 = localArg19;
+                overInt320 = localArg16;
                 IDependency<string> localValue149 = new Dependency<string>(overInt320);
                 return localValue149;
               }
