@@ -102,7 +102,7 @@ public class TagsTests
         var result = await """
                            using System;
                            using Pure.DI;
-
+                           
                            namespace Sample
                            {
                                enum MyEnum { Val1, Val2 }
@@ -160,6 +160,76 @@ public class TagsTests
                                }
                            }
                            """.Replace("#tagType#", tagType).Replace("#tag#", tag).RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportTagWhenConstAndTag()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+                           using static Pure.DI.Tag;
+
+                           namespace Sample
+                           {
+                               internal interface IDependency { }
+                           
+                               internal class Dependency : IDependency { }
+                           
+                               internal interface IService
+                               {
+                                   public IDependency Dependency1 { get; }
+                                           
+                                   public IDependency Dependency2 { get; }
+                               }
+                           
+                               internal class Service : IService
+                               {
+                                   public Service([Tag("Abc")] Func<IDependency> dependency1, [Tag(Abc)] IDependency dependency2)
+                                   {
+                                       Dependency1 = dependency1();
+                                       Dependency2 = dependency2;
+                                   }
+                           
+                                   public IDependency Dependency1 { get; }
+                                           
+                                   public IDependency Dependency2 { get; }
+                               }
+                           
+                               static class Setup
+                               {
+                                   public const string TagVal = "Abc";
+                               
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Bind<IDependency>(Abc).As(Lifetime.Singleton).To<Dependency>()
+                                           .Bind<IService>(TagVal).To<Service>()
+                                           .Root<IDependency>("Dependency", "Abc")
+                                           .Root<IService>("Root", Tag.Abc);
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service1 = composition.Root;
+                                       var service2 = composition.Root;
+                                       Console.WriteLine(service1.Dependency1 == service1.Dependency2);        
+                                       Console.WriteLine(service2.Dependency1 == service1.Dependency1);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
 
         // Then
         result.Success.ShouldBeTrue(result);

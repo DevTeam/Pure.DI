@@ -112,16 +112,9 @@ sealed class Semantic(
 
                             break;
 
+                        case nameof(Name):
                         case nameof(Tag) when typeof(T) == typeof(object):
-                            return valueStr switch
-                            {
-                                nameof(Tag.Type) when IsSpecialType(semanticModel, node, SpecialType.Tag) => (T)(object)Tag.Type,
-                                nameof(Tag.Unique) when smartTagKind == SmartTagKind.Tag && IsSpecialType(semanticModel, node, SpecialType.Tag) => (T)(object)Tag.Unique,
-                                _ => (T)smartTags.Register(SmartTagKind.Tag, valueStr)
-                            };
-
-                        case nameof(Name) when smartTagKind == SmartTagKind.Name && typeof(T) == typeof(object):
-                            return (T)smartTags.Register(SmartTagKind.Name, valueStr);
+                            return GetConstantValue<T>(semanticModel, node, smartTagKind, valueStr);
                     }
                 }
 
@@ -129,18 +122,7 @@ sealed class Semantic(
             }
 
             case IdentifierNameSyntax identifierNameSyntax when typeof(T) == typeof(object):
-                var identifierOperation = semanticModel.GetOperation(node);
-                if (identifierOperation?.ConstantValue.Value is T identifierValue)
-                {
-                    return identifierValue;
-                }
-
-                return identifierNameSyntax.Identifier.Text switch
-                {
-                    nameof(Tag.Type) when IsSpecialType(semanticModel, node, SpecialType.Tag) => (T)(object)Tag.Type,
-                    nameof(Tag.Unique) when IsSpecialType(semanticModel, node, SpecialType.Tag) => (T)(object)Tag.Unique,
-                    _ => (T)smartTags.Register(smartTagKind, identifierNameSyntax.Identifier.Text)
-                };
+                return GetConstantValue<T>(semanticModel, node, smartTagKind, identifierNameSyntax.Identifier.Text);
 
             case InvocationExpressionSyntax invocationExpressionSyntax:
             {
@@ -246,27 +228,51 @@ sealed class Semantic(
             }
         }
 
-        var optionalValue = semanticModel.GetConstantValue(node);
-        if (optionalValue.Value is not null)
+        // ReSharper disable once InvertIf
+        if (semanticModel.SyntaxTree == node.SyntaxTree)
         {
-            return (T)optionalValue.Value;
-        }
+            var optionalValue = semanticModel.GetConstantValue(node);
+            if (optionalValue.Value is not null)
+            {
+                return (T)optionalValue.Value;
+            }
 
-        var operation = semanticModel.GetOperation(node);
-        if (operation?.ConstantValue.Value is T value)
-        {
-            return value;
-        }
+            var operation = semanticModel.GetOperation(node);
+            if (operation?.ConstantValue.Value is T value)
+            {
+                return value;
+            }
 
-        if (typeof(T) == typeof(object) && operation is ITypeOfOperation { TypeOperand: T val })
-        {
-            return val;
+            if (typeof(T) == typeof(object) && operation is ITypeOfOperation { TypeOperand: T val })
+            {
+                return val;
+            }
         }
 
         throw new CompileErrorException(
             string.Format(Strings.Error_Template_MustBeApiCall, node, typeof(T)),
             ImmutableArray.Create(locationProvider.GetLocation(node)),
             LogId.ErrorInvalidMetadata);
+    }
+
+    private T? GetConstantValue<T>(SemanticModel semanticModel, SyntaxNode node, SmartTagKind smartTagKind, string text)
+    {
+        // ReSharper disable once InvertIf
+        if (semanticModel.SyntaxTree == node.SyntaxTree)
+        {
+            var identifierOperation = semanticModel.GetOperation(node);
+            if (identifierOperation is not IInvalidOperation && identifierOperation?.ConstantValue.Value is T identifierValue)
+            {
+                return identifierValue;
+            }
+        }
+
+        return text switch
+        {
+            nameof(Tag.Type) when IsSpecialType(semanticModel, node, SpecialType.Tag) => (T)(object)Tag.Type,
+            nameof(Tag.Unique) when IsSpecialType(semanticModel, node, SpecialType.Tag) => (T)(object)Tag.Unique,
+            _ => (T)smartTags.Register(smartTagKind, text)
+        };
     }
 
     public bool IsValidNamespace(INamespaceSymbol? namespaceSymbol) =>
