@@ -2815,4 +2815,170 @@ public class OverrideTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Sample.LoggerA", "Sample.LoggerA"], result);
     }
+
+    [Theory]
+    [InlineData(Lifetime.Singleton, "33")]
+    [InlineData(Lifetime.Scoped, "33")]
+    [InlineData(Lifetime.PerResolve, "33")]
+    [InlineData(Lifetime.PerBlock, "99")]
+    [InlineData(Lifetime.Transient, "99")]
+    internal async Task ShouldNotOverrideTopLevelDependencies(Lifetime lifetime, string secondId)
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency
+                               {
+                                   int Id { get; }
+                               }
+                               
+                               class Dependency : IDependency
+                               {
+                                   public Dependency(int id)
+                                   {
+                                       Id = id;
+                                   }
+                                   public int Id { get; }
+                               }
+                               
+                               interface IService
+                               {
+                                   IReadOnlyList<IDependency> Dependencies { get; }
+                               }
+                               
+                               class Service : IService
+                               {
+                                   public Service(Func<int, IDependency> dependencyFactoryWithArgs)
+                                   {
+                                       Dependencies = new List<IDependency>
+                                       {
+                                           dependencyFactoryWithArgs(33),
+                                           dependencyFactoryWithArgs(99)
+                                       }.AsReadOnly();
+                                   }
+                               
+                                   public IReadOnlyList<IDependency> Dependencies { get; }
+                               }
+                               
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                          .Bind().As(Lifetime.#lifetime#).To<int>(_ => 77)
+                                          .Bind().As(Lifetime.#lifetime#).To<Dependency>()
+                                          .Bind().To<Service>()
+                               
+                                          // Composition root
+                                          .Root<(IService Service, int Id)>("Root");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root = composition.Root;
+                                       var service = root.Service;
+                                       var dependencies = service.Dependencies;
+                                       Console.WriteLine(dependencies.Count);
+                                       Console.WriteLine(dependencies[0].Id);
+                                       Console.WriteLine(dependencies[1].Id);
+                                   }
+                               }
+                           }
+                           """.Replace("#lifetime#", lifetime.ToString()).RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["2", "33", secondId], result);
+    }
+
+    [Theory]
+    [InlineData(Lifetime.Singleton)]
+    [InlineData(Lifetime.Scoped)]
+    [InlineData(Lifetime.PerResolve)]
+    [InlineData(Lifetime.PerBlock)]
+    [InlineData(Lifetime.Transient)]
+    internal async Task ShouldNotOverrideUnresolvedTopLevelDependencies(Lifetime lifetime)
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency
+                               {
+                                   int Id { get; }
+                               }
+                               
+                               class Dependency : IDependency
+                               {
+                                   public Dependency(int id)
+                                   {
+                                       Id = id;
+                                   }
+                                   public int Id { get; }
+                               }
+                               
+                               interface IService
+                               {
+                                   IReadOnlyList<IDependency> Dependencies { get; }
+                               }
+                               
+                               class Service : IService
+                               {
+                                   public Service(Func<int, IDependency> dependencyFactoryWithArgs)
+                                   {
+                                       Dependencies = new List<IDependency>
+                                       {
+                                           dependencyFactoryWithArgs(33),
+                                           dependencyFactoryWithArgs(99)
+                                       }.AsReadOnly();
+                                   }
+                               
+                                   public IReadOnlyList<IDependency> Dependencies { get; }
+                               }
+                               
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                          .Bind().As(Lifetime.#lifetime#).To<Dependency>()
+                                          .Bind().To<Service>()
+                               
+                                          // Composition root
+                                          .Root<(IService Service, int Id)>("Root");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                   }
+                               }
+                           }
+                           """.Replace("#lifetime#", lifetime.ToString()).RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count.ShouldBe(1, result);
+        result.Errors.Count(i => i.Id == LogId.ErrorUnableToResolve).ShouldBe(1, result);
+    }
 }

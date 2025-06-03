@@ -1,5 +1,7 @@
 ﻿namespace Pure.DI.Core;
 
+using System.Collections.Concurrent;
+
 class GraphOverrider(
     INodesFactory nodesFactory,
     IBindingsFactory bindingsFactory,
@@ -14,10 +16,9 @@ class GraphOverrider(
     {
         var entries = new List<GraphEntry<DependencyNode, Dependency>>(graph.Entries.Count);
         var processed = new Dictionary<int, DependencyNode>(graph.Entries.Count);
-        var nodesMap = new Dictionary<Injection, DependencyNode>(graph.Entries.Count);
         foreach (var rootNode in from node in graph.Vertices where node.Root is not null select node)
         {
-            Override(processed, nodesMap, [], setup, graph, rootNode, rootNode, ref maxId, entries);
+            Override(processed, new Dictionary<Injection, DependencyNode>(), new Dictionary<int, DpOverride>(), setup, graph, rootNode, rootNode, ref maxId, entries);
             if (cancellationToken.IsCancellationRequested)
             {
                 return graph;
@@ -40,9 +41,9 @@ class GraphOverrider(
     }
 
     private DependencyNode Override(
-        Dictionary<int, DependencyNode> processed,
-        Dictionary<Injection, DependencyNode> nodesMap,
-        Dictionary<int, DpOverride> overridesMap,
+        IDictionary<int, DependencyNode> processed,
+        IReadOnlyDictionary<Injection, DependencyNode> nodes,
+        IReadOnlyDictionary<int, DpOverride> overrides,
         MdSetup setup,
         IGraph<DependencyNode, Dependency> graph,
         DependencyNode rootNode,
@@ -60,25 +61,27 @@ class GraphOverrider(
             return node;
         }
 
-        IEnumerable<ImmutableArray<DpOverride>> overrides;
+        var nodesMap = nodes.ToDictionary();
+        var overridesMap = overrides.ToDictionary();
+        IEnumerable<ImmutableArray<DpOverride>> overridesEnumerable;
         if (targetNode.Factory is {} factory)
         {
-            overridesMap = new Dictionary<int, DpOverride>(overridesMap);
+
             targetNode = targetNode with { Factory = factory with { OverridesMap = overridesMap } };
-            overrides = factory.Resolvers.Select(i => (i.Source.Position, i.Overrides))
+            overridesEnumerable = factory.Resolvers.Select(i => (i.Source.Position, i.Overrides))
                 .Concat(factory.Initializers.Select(i => (i.Source.Position, i.Overrides)))
                 .OrderBy(i => i.Position)
                 .Select(i => i.Overrides);
         }
         else
         {
-            overrides = [];
+            overridesEnumerable = [];
         }
 
         processed.Add(targetNode.Binding.Id, targetNode);
         var newDependencies = new List<Dependency>(dependencies.Count);
         var lastDependencyPosition = 0;
-        using var overridesEnumerator = overrides.GetEnumerator();
+        using var overridesEnumerator = overridesEnumerable.GetEnumerator();
         foreach (var dependency in dependencies)
         {
             if (cancellationToken.IsCancellationRequested)
