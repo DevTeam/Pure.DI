@@ -132,14 +132,14 @@ partial class Composition
       int overInt320;
       string overString2;
       Func<int, string, IDependency> perBlockFunc1;
-      Func<int, string, IDependency> localFactory109 = new Func<int, string, IDependency>((int localArg110, string localArg212) =>
+      Func<int, string, IDependency> localFactory109 = new Func<int, string, IDependency>((int localArg16, string localArg214) =>
       {
         Lock transientLock2 = _lock;
         Lock localLockObject110 = transientLock2;
         lock (localLockObject110)
         {
-          overInt320 = localArg110;
-          overString2 = localArg212;
+          overInt320 = localArg16;
+          overString2 = localArg214;
           if (_root._singletonClock52 is null)
           {
             lock (_lock)
