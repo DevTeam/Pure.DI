@@ -49,7 +49,7 @@ namespace Pure.DI
                     }))
                 .Bind<LockType>(Tag.SyncRoot).To<LockType>(/*A2768DE22DE3E430C9653990D516CC9B_LockField*/)
                 .Bind<global::System.Func<TT1, TT>>()
-                    .As(Lifetime.PerResolve)
+                    .As(Lifetime.PerBlock)
                     .To(ctx => {
                             var factory = new global::System.Func<TT1, TT>((TT1 arg1) => {
                                 ctx.Inject<LockType>(Tag.SyncRoot, out var lockObject);
