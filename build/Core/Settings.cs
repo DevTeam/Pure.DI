@@ -9,7 +9,7 @@ using NuGet.Versioning;
 [SuppressMessage("Performance", "CA1822:Mark members as static")]
 class Settings(Properties properties, Versions versions)
 {
-    public static readonly VersionRange VersionRange = VersionRange.Parse("2.1.*");
+    public static readonly VersionRange VersionRange = VersionRange.Parse("2.2.*");
 
     private readonly Lazy<NuGetVersion> _currentVersion = new(() => GetVersion(versions));
 

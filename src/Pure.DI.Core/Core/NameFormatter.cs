@@ -16,7 +16,7 @@ sealed class NameFormatter : INameFormatter
     );
 
     public string Format(string nameTemplate,
-        INamedTypeSymbol? type,
+        ITypeSymbol? type,
         object? tag)
     {
         if (SyntaxFacts.IsValidIdentifier(nameTemplate))

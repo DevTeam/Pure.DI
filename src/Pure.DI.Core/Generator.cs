@@ -58,19 +58,19 @@ public sealed partial class Generator
                 ctx.Inject<Logger>(out var logger);
                 return logger.WithTargetType(ctx.ConsumerTypes[0]);
             })
-            .Bind().To<VariablesMap>()
             .Bind().To(_ => Compiled | CultureInvariant | Singleline | IgnoreCase)
 
             // Walkers
             .Bind<IMetadataWalker>().To<MetadataWalker>()
-            .Bind<IVariablesWalker>().To<VariablesWalker>()
             .Bind<IInjectionsWalker>().To<InjectionsWalker>()
             .Bind<IFactoryApiWalker>().To<FactoryApiWalker>()
-            .Bind<IInitializersWalker>().To<InitializersWalker>()
             .Bind<IConstructorInjectionsCounterWalker>().To<ConstructorInjectionsCounterWalker>()
             .Bind<IDependencyGraphLocationsWalker>().To<DependencyGraphLocationsWalker>()
             .Bind<IFactoryValidator>().To<FactoryValidator>()
             .Bind<ILocalVariableRenamingRewriter>().To<LocalVariableRenamingRewriter>()
+            .Bind().To<VarsMap>()
+            .Bind().To<VariablesWalker>()
+            .Bind<IInitializersWalker>().To<InitializersWalker>()
 
         .DefaultLifetime(Singleton)
             .Bind().To<Cache<TT1, TT2>>()
@@ -145,18 +145,13 @@ public sealed partial class Generator
             .Bind().To<SetupsBuilder>()
             .Bind().To<CodeGenerator>()
             .Bind().To<FactoryTypeRewriter>()
-            .Bind().To<CompositionBuilder>()
             .Bind().To<TagClassBuilder>()
-            .Bind().To<VariablesBuilder>()
             .Bind().To<MermaidUrlBuilder>()
+            .Bind().To<CompositionBuilder>()
+            .Bind().To<RootBuilder>()
+            .Bind().To<VarDeclarationTools>()
 
             // Code builders
-            .Bind().To<StatementCodeBuilder>()
-            .Bind().To<BlockCodeBuilder>()
-            .Bind().To<VariableCodeBuilder>()
-            .Bind().To<ImplementationCodeBuilder>()
-            .Bind().To<FactoryCodeBuilder>()
-            .Bind().To<ConstructCodeBuilder>()
             .Bind(CompositionClass).To<CompositionClassBuilder>()
             .Bind(UsingDeclarations).To<UsingDeclarationsBuilder>()
             .Bind(Unique).To<DisposeMethodBuilder>()
@@ -180,6 +175,8 @@ public sealed partial class Generator
             .Bind(UniqueTag).To<IdGenerator>()
             .Bind(GenericType).To<IdGenerator>()
             .Bind(Injection).To<IdGenerator>()
+            .Bind(VarName).To<IdGenerator>()
+            .Bind(LocalFunctionName).To<IdGenerator>()
             .Bind(Tag.Override).To<IdGenerator>()
             .Bind().To<IdGenerator>()
             .Bind().To<Registry<TT>>()

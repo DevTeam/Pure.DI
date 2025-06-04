@@ -50,7 +50,7 @@ sealed class MetadataWalker(
 #if DEBUG
         visitors.ForEach(i => ProcessInvocation(i));
 #else
-        Parallel.ForEach(visitors, new ParallelOptions() { CancellationToken = cancellationToken }, i => ProcessInvocation(i));
+        Parallel.ForEach(visitors, new ParallelOptions { CancellationToken = cancellationToken }, i => ProcessInvocation(i));
 #endif
         foreach (var visitor in visitors)
         {

@@ -24,12 +24,12 @@ sealed class ScopeConstructorBuilder(ILocks locks) : IClassPartBuilder
         using (code.CreateBlock())
         {
             code.AppendLine($"{Names.RootFieldName} = ({Names.ParentScopeArgName} ?? throw new {Names.SystemNamespace}ArgumentNullException(nameof({Names.ParentScopeArgName}))).{Names.RootFieldName};");
-            var classArgs = composition.Args.GetArgsOfKind(ArgKind.Class).ToList();
+            var classArgs = composition.ClassArgs.GetArgsOfKind(ArgKind.Class).ToList();
             if (classArgs.Count > 0)
             {
-                foreach (var argsField in classArgs)
+                foreach (var fieldArg in classArgs)
                 {
-                    code.AppendLine($"{argsField.VariableDeclarationName} = {Names.RootFieldName}.{argsField.VariableDeclarationName};");
+                    code.AppendLine($"{fieldArg.Name} = {Names.RootFieldName}.{fieldArg.Name};");
                 }
             }
 

@@ -8,8 +8,11 @@ public class GraphTests
 
     [Theory]
     [InlineData(5, false)]
-    [InlineData(300, false)]
+#if ROSLYN4_3_OR_GREATER
     [InlineData(200, true)]
+#else
+    [InlineData(500, true)]
+#endif
     public async Task ShouldSupportLongSetup(int count, bool randomLifetime)
     {
         // Given

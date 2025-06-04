@@ -4,6 +4,6 @@ interface INameFormatter
 {
     string Format(
         string nameTemplate,
-        INamedTypeSymbol? type,
+        ITypeSymbol? type,
         object? tag);
 }

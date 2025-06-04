@@ -93,7 +93,7 @@ public class FactoryTests
     }
 
     [Theory]
-    [InlineData(nameof(Lifetime.Transient), "Service", "ServiceAbc")]
+    [InlineData(nameof(Lifetime.Transient), "Service", "ServiceAbc", "Service", "ServiceAbc")]
     [InlineData(nameof(Lifetime.Singleton), "Service", "ServiceAbc")]
     [InlineData(nameof(Lifetime.Scoped), "Service", "ServiceAbc")]
     [InlineData(nameof(Lifetime.PerBlock), "Service", "ServiceAbc")]
@@ -164,6 +164,7 @@ public class FactoryTests
                     private static void SetupComposition()
                     {
                         // OnDependencyInjection = On
+                        // FormatCode = On
                         DI.Setup("Composition")
                             .Bind<Dependency>().As(Lifetime.Singleton).To<Dependency>()
                             .Bind<IDependency>().As(Lifetime.#lifetime#).To(ctx =>
@@ -2188,7 +2189,7 @@ public class FactoryTests
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.GeneratedCode.Split(Environment.NewLine).Count(i => i.Contains(" = new global::Sample.Dependency2();")).ShouldBe(2, result);
+        result.GeneratedCode.Split(Environment.NewLine).Count(i => i.Contains(" = new global::Sample.Dependency2();")).ShouldBe(1, result);
     }
 
     [Theory]

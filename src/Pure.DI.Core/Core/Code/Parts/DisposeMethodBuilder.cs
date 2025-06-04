@@ -187,7 +187,7 @@ sealed class DisposeMethodBuilder(
         code.AppendLine("object[] disposables;");
         if (composition.IsThreadSafe)
         {
-            locks.AddLockStatements(composition.Source, code, isAsync);
+            locks.AddLockStatements(code, isAsync);
             code.AppendLine(BlockStart);
             code.IncIndent();
         }
@@ -200,15 +200,14 @@ sealed class DisposeMethodBuilder(
         {
             code.AppendLine(
                 singletonField.InstanceType.IsValueType
-                    ? $"{singletonField.VariableDeclarationName}Created = false;"
-                    : $"{singletonField.VariableDeclarationName} = null;");
+                    ? $"{singletonField.Name}Created = false;"
+                    : $"{singletonField.Name} = null;");
         }
 
         // ReSharper disable once InvertIf
         if (composition.IsThreadSafe)
         {
             code.AppendLine(BlockFinish);
-            locks.AddUnlockStatements(composition.Source, code, isAsync);
         }
     }
 }

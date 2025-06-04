@@ -6,11 +6,11 @@ interface IBuildTools
 
     void AddPureHeader(LinesBuilder code);
 
-    string GetDeclaration(Variable variable, string separator = " ");
-
-    string OnInjected(BuildContext ctx, Variable variable);
-
-    IEnumerable<Line> OnCreated(BuildContext ctx, Variable variable);
-
     void AddAggressiveInlining(LinesBuilder code);
+
+    string GetDeclaration(CodeContext ctx, VarDeclaration varDeclaration, string separator = " ");
+
+    IEnumerable<Line> OnCreated(CodeContext ctx, VarInjection varInjection);
+
+    string OnInjected(CodeContext ctx, VarInjection varInjection);
 }

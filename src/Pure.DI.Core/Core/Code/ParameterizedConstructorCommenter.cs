@@ -13,7 +13,7 @@ sealed class ParameterizedConstructorCommenter(IComments comments) : ICommenter<
         code.AppendLine("/// <summary>");
         code.AppendLine($"/// This parameterized constructor creates a new instance of <see cref=\"{composition.Source.Source.Name.ClassName}\"/> with arguments.");
         code.AppendLine("/// </summary>");
-        foreach (var arg in composition.Args.GetArgsOfKind(ArgKind.Class))
+        foreach (var arg in composition.ClassArgs.GetArgsOfKind(ArgKind.Class))
         {
             if (arg.Node.Arg?.Source is not {} mdArg)
             {

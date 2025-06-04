@@ -64,7 +64,6 @@ static class Names
     public const string OnNewRootMethodName = "OnNewRoot";
 
     // Local methods
-    public const string EnsureExistsMethodNamePrefix = "EnsureExistenceOf";
     public const string EnumerateMethodNamePrefix = "EnumerationOf";
 
     // Vars

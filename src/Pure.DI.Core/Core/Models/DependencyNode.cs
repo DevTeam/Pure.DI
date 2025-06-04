@@ -5,7 +5,6 @@ record DependencyNode(
     in MdBinding Binding,
     ITypeConstructor TypeConstructor,
     ITypeSymbol Type,
-    ICollection<Accumulator> Accumulators,
     in DpRoot? Root,
     in DpImplementation? Implementation,
     in DpFactory? Factory,
@@ -13,6 +12,7 @@ record DependencyNode(
     in DpConstruct? Construct,
     Lifetime Lifetime,
     CompileErrorException? Error)
+    : IDependencyNode
 {
     public DependencyNode(
         int Variation,
@@ -29,7 +29,6 @@ record DependencyNode(
             binding,
             typeConstructor,
             Root?.Source.RootType ?? binding.Type,
-            [],
             Root,
             Implementation,
             Factory,
@@ -53,4 +52,8 @@ record DependencyNode(
     public override string ToString() => string.Join(Environment.NewLine, ToStrings(0));
 
     public override int GetHashCode() => Binding.GetHashCode();
+
+    public int BindingId => Binding.Id;
+
+    public DependencyNode Node => this;
 }

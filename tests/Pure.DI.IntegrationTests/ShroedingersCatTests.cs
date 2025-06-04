@@ -1,15 +1,18 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
+using System.Diagnostics.CodeAnalysis;
+
 public class ShroedingersCatTests
 {
     [Theory]
-    [InlineData(NullableContextOptions.Disable, 1)]
-    [InlineData(NullableContextOptions.Annotations, 1)]
-    [InlineData(NullableContextOptions.Warnings, 1)]
-    [InlineData(NullableContextOptions.Enable, 1)]
-    [InlineData(NullableContextOptions.Enable, 1, "Hint(Hint.FormatCode, \"On\")")]
-    [InlineData(NullableContextOptions.Enable, 2, "Hint(Hint.ThreadSafe, \"Off\")")]
-    public async Task ShroedingersCatScenario(NullableContextOptions nullableContextOptions, int randomInstanceCount, params string[] additionalCalls)
+    [InlineData(NullableContextOptions.Disable)]
+    [InlineData(NullableContextOptions.Annotations)]
+    [InlineData(NullableContextOptions.Warnings)]
+    [InlineData(NullableContextOptions.Enable)]
+    [InlineData(NullableContextOptions.Enable, "Hint(Hint.FormatCode, \"On\")")]
+    [InlineData(NullableContextOptions.Enable, "Hint(Hint.ThreadSafe, \"Off\")")]
+    [SuppressMessage("Usage", "xUnit1026:Theory methods should use all of their parameters")]
+    public async Task ShroedingersCatScenario(NullableContextOptions nullableContextOptions, params string[] additionalCalls)
     {
         // Given
         var additionalCallsStr = string.Join(".", additionalCalls);
@@ -64,6 +67,7 @@ public class ShroedingersCatTests
                                {
                                    void Setup()
                                    {
+                                       // FormatCode = On
                                        DI.Setup(nameof(Composition))
                                            #additionalCalls#
                                            // Models a random subatomic event that may or may not occur
@@ -113,10 +117,6 @@ public class ShroedingersCatTests
         result.Success.ShouldBeTrue(result);
         (result.StdOut.Contains("[Dead cat]") || result.StdOut.Contains("[Alive cat]")).ShouldBeTrue(result);
         var lines = result.GeneratedCode.Split(Environment.NewLine);
-        lines.Count(i => i.Contains(" = new Random();")).ShouldBe(randomInstanceCount, result);
-        if (randomInstanceCount < 2)
-        {
-            lines.Count(i => i.Contains("EnsureExistenceOf_")).ShouldBe(3, result);
-        }
+        lines.Count(i => i.Contains(" = new Random();")).ShouldBe(1, result);
     }
 }

@@ -51,7 +51,7 @@ sealed class RootsBuilder(IBuilder<ContractsBuildContext, ISet<Injection>> contr
                         rootInjection,
                         name,
                         ImmutableArray<Line>.Empty,
-                        ImmutableArray<Variable>.Empty,
+                        ImmutableArray<VarDeclaration>.Empty,
                         kind)));
             }
         }

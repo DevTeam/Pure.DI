@@ -44,8 +44,8 @@ public class Scenario
         var composition = new Composition();
         var (service, accumulator) = composition.Root;
         accumulator.Count.ShouldBe(3);
-        accumulator[0].ShouldBeOfType<AbcDependency>();
-        accumulator[1].ShouldBeOfType<XyzDependency>();
+        accumulator[0].ShouldBeOfType<XyzDependency>();
+        accumulator[1].ShouldBeOfType<AbcDependency>();
         accumulator[2].ShouldBeOfType<Service>();
 // }
         composition.SaveClassDiagram();

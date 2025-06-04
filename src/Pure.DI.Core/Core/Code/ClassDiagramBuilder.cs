@@ -35,7 +35,7 @@ sealed class ClassDiagramBuilder(
         {
             var classes = new List<Class>();
             var hasResolveMethods = composition.Source.Source.Hints.IsResolveEnabled;
-            var rootProperties = composition.Roots.ToDictionary(i => i.Injection, i => i);
+            var rootProperties = composition.PublicRoots.ToDictionary(i => i.Injection, i => i);
             var compositionLines = new LinesBuilder();
             if (hasResolveMethods || rootProperties.Count > 0)
             {
@@ -43,7 +43,7 @@ sealed class ClassDiagramBuilder(
                 using (lines.Indent())
                 {
                     compositionLines.AppendLine("<<partial>>");
-                    foreach (var root in composition.Roots.OrderByDescending(i => i.IsPublic).ThenBy(i => i.Name))
+                    foreach (var root in composition.PublicRoots.OrderByDescending(i => i.IsPublic).ThenBy(i => i.Name))
                     {
                         compositionLines.AppendLine($"{Format(rootAccessModifierResolver.Resolve(root))}{FormatRoot(setup, root)}");
                     }
@@ -218,7 +218,7 @@ sealed class ClassDiagramBuilder(
         var rootArgsStr = "";
         if (root.IsMethod)
         {
-            rootArgsStr = $"({string.Join(", ", root.Args.Select(arg => $"{ResolveTypeName(setup, arg.InstanceType)} {arg.VariableDeclarationName}"))})";
+            rootArgsStr = $"({string.Join(", ", root.RootArgs.Select(arg => $"{ResolveTypeName(setup, arg.InstanceType)} {arg.Name}"))})";
         }
 
         var displayName = root.IsPublic ? root.DisplayName : "_";

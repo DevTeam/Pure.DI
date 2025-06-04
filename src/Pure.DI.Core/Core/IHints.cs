@@ -28,8 +28,6 @@ interface IHints : IReadOnlyDictionary<Hint, LinkedList<string>>
 
     bool IsResolveEnabled { get; }
 
-    bool IsSystemThreadingLockEnabled { get; }
-
     string ResolveMethodName { get; }
 
     string ResolveMethodModifiers { get; }
@@ -49,8 +47,6 @@ interface IHints : IReadOnlyDictionary<Hint, LinkedList<string>>
     string DisposeMethodModifiers { get; }
 
     string DisposeAsyncMethodModifiers { get; }
-
-    int LocalFunctionLines { get; }
 
     DiagnosticSeverity SeverityOfNotImplementedContract { get; }
 }

@@ -41,6 +41,7 @@ public class BuildersTests
                                {
                                    private static void SetupComposition()
                                    {
+                                       // FormatCode = On
                                        DI.Setup("Composition")
                                            .Bind(374).To(_ => "Abc")
                                            .Bind().To<Dependency>()

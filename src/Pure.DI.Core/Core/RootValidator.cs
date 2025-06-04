@@ -15,22 +15,21 @@ sealed class RootValidator(
             return true;
         }
 
-        var rootArgs = composition.Roots
+        var invalidRoots = composition.PublicRoots
             .Where(root => !root.Source.IsBuilder)
-            .Select(root => (root, args: root.Args.GetArgsOfKind(ArgKind.Root).ToList()))
-            .Where(i => i.args.Count > 0 && i.root.TypeDescription.TypeArgs.Count == 0)
-            .GroupBy(i => i.root.Node.Binding.Id)
-            .Select(i => i.First());
+            .Where(root => !root.RootArgs.IsDefaultOrEmpty && root.TypeDescription.TypeArgs.Count == 0)
+            .GroupBy(root => root.Node.Binding.Id)
+            .Select(root => root.First());
 
-        foreach (var (root, args) in rootArgs)
+        foreach (var invalidRoot in invalidRoots)
         {
             logger.CompileWarning(
-                string.Format(Strings.Warning_Template_RootCannotBeResolvedByResolveMethods, Format(root), string.Join(", ", args.Select(i => i.VariableName))),
-                ImmutableArray.Create(locationProvider.GetLocation(root.Source.Source)),
+                string.Format(Strings.Warning_Template_RootCannotBeResolvedByResolveMethods, Format(invalidRoot), string.Join(", ", invalidRoot.RootArgs.Select(i => i.Name))),
+                ImmutableArray.Create(locationProvider.GetLocation(invalidRoot.Source.Source)),
                 LogId.WarningRootArgInResolveMethod);
         }
 
-        var genericRoots = composition.Roots
+        var genericRoots = composition.PublicRoots
             .Where(root => !root.Source.IsBuilder)
             .Where(i => i.TypeDescription.TypeArgs.Count > 0)
             .GroupBy(i => i.Node.Binding.Id)
@@ -71,7 +70,7 @@ sealed class RootValidator(
         }
 
         sb.Append('(');
-        sb.Append(string.Join(", ", root.Args.Select(i => i.VariableDeclarationName)));
+        sb.Append(string.Join(", ", root.RootArgs.Select(i => i.Name)));
         sb.Append(')');
         return sb.ToString();
     }

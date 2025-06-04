@@ -6,7 +6,7 @@ using static LinesBuilderExtensions;
 
 sealed class StaticConstructorBuilder(
     ITypeResolver typeResolver,
-    IBuilder<RootContext, IEnumerable<ResolverInfo>> resolversBuilder)
+    IBuilder<RootsContext, IEnumerable<ResolverInfo>> resolversBuilder)
     : IClassPartBuilder
 {
     public ClassPart Part => ClassPart.StaticConstructor;
@@ -29,7 +29,7 @@ sealed class StaticConstructorBuilder(
             membersCounter++;
         }
 
-        var resolvers = resolversBuilder.Build(new RootContext(composition.Source.Source, composition.Roots)).ToList();
+        var resolvers = resolversBuilder.Build(new RootsContext(composition.Source.Source, composition.PublicRoots)).ToList();
         if (resolvers.Count == 0)
         {
             return composition;

@@ -37,9 +37,9 @@ public class Scenario
         var composition = new Composition("Abc");
         var service = composition.Root;
 
-        service.Name.ShouldBe("Abc_1");
-        service.Dependency1.Id.ShouldBe(2);
-        service.Dependency2.Id.ShouldBe(3);
+        service.Name.ShouldBe("Abc_3");
+        service.Dependency1.Id.ShouldBe(1);
+        service.Dependency2.Id.ShouldBe(2);
 // }
         service.ShouldBeOfType<Service>();
         composition.SaveClassDiagram();

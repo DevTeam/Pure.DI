@@ -46,7 +46,30 @@ sealed class CodeBuilder(
         }
 
         cancellationToken.ThrowIfCancellationRequested();
-        var composition = compositionBuilder.Build(dependencyGraph);
+        CompositionCode? composition = null;
+        Exception? error = null;
+        var thread = new Thread(() => {
+            try
+            {
+                composition = compositionBuilder.Build(dependencyGraph);
+            }
+            catch (Exception ex)
+            {
+                error = ex;
+            }
+        }, Const.StackSize) { IsBackground = true, Priority = ThreadPriority.Highest, Name = "Composition Builder" };
+        thread.Start();
+        thread.Join();
+
+        if (error is not null)
+        {
+            throw error;
+        }
+
+        if (composition is null)
+        {
+            throw HandledException.Shared;
+        }
 
         if (compositionValidators.Any(validator => !validator.Validate(composition)))
         {

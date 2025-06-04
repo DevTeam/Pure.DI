@@ -2,43 +2,18 @@
 
 class VariableNameProvider(IIdGenerator idGenerator) : IVariableNameProvider
 {
-    public string GetVariableName(DependencyNode node, int transientId)
-    {
-        switch (node)
+    public string GetVariableName(IDependencyNode node, int transientId) =>
+        node switch
         {
-            case { Construct.Source: { Kind: MdConstructKind.Override, State: DpOverride @override}}:
-            {
-                return GetOverrideVariableName(@override.Source);
-            }
-
-            case { Lifetime: Lifetime.Singleton }:
-            {
-                var binding = node.Binding;
-                return GetVariableName(Names.SingletonVariablePrefix, node.Type.Name, binding.Id);
-            }
-
-            case { Lifetime: Lifetime.Scoped }:
-            {
-                var binding = node.Binding;
-                return GetVariableName(Names.ScopedVariablePrefix, node.Type.Name, binding.Id);
-            }
-
-            case { Lifetime: Lifetime.PerResolve }:
-                return GetVariableName(Names.PerResolveVariablePrefix, node.Type.Name, transientId);
-
-            case { Arg: { Source.Kind: ArgKind.Class } arg }:
-                return $"{Names.ArgVariablePrefix}{ToTitleCase(arg.Source.ArgName)}{Names.Salt}";
-
-            case { Arg: { Source.Kind: ArgKind.Root } arg }:
-                return arg.Source.ArgName;
-
-            case { Lifetime: Lifetime.PerBlock }:
-                return GetVariableName(Names.PerBlockVariablePrefix, node.Type.Name, transientId);
-
-            default:
-                return GetVariableName(Names.TransientVariablePrefix, node.Type.Name, transientId);
-        }
-    }
+            { Construct.Source: { Kind: MdConstructKind.Override, State: DpOverride @override } } => GetOverrideVariableName(@override.Source),
+            { Lifetime: Lifetime.Singleton } => GetVariableName(Names.SingletonVariablePrefix, node.Node.Type.Name, node.BindingId),
+            { Lifetime: Lifetime.Scoped } => GetVariableName(Names.ScopedVariablePrefix, node.Node.Type.Name, node.BindingId),
+            { Lifetime: Lifetime.PerResolve } => GetVariableName(Names.PerResolveVariablePrefix, node.Node.Type.Name, transientId),
+            { Arg: { Source.Kind: ArgKind.Class } arg } => $"{Names.ArgVariablePrefix}{ToTitleCase(arg.Source.ArgName)}{Names.Salt}",
+            { Arg: { Source.Kind: ArgKind.Root } arg } => arg.Source.ArgName,
+            { Lifetime: Lifetime.PerBlock } => GetVariableName(Names.PerBlockVariablePrefix, node.Node.Type.Name, transientId),
+            _ => GetVariableName(Names.TransientVariablePrefix, node.Node.Type.Name, transientId)
+        };
 
     public string GetOverrideVariableName(MdOverride @override) =>
         GetVariableName(Names.OverriddenVariablePrefix, @override.ContractType.Name, @override.Id);

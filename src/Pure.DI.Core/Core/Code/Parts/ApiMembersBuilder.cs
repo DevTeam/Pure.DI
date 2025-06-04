@@ -3,7 +3,7 @@
 namespace Pure.DI.Core.Code.Parts;
 
 sealed class ApiMembersBuilder(
-    IBuilder<RootContext, IEnumerable<ResolverInfo>> resolversBuilder,
+    IBuilder<RootsContext, IEnumerable<ResolverInfo>> resolversBuilder,
     IBuildTools buildTools)
     : IClassPartBuilder
 {
@@ -68,7 +68,7 @@ sealed class ApiMembersBuilder(
             membersCounter++;
 
             apiCode.AppendLine();
-            var resolvers = resolversBuilder.Build(new RootContext(composition.Source.Source, composition.Roots)).ToList();
+            var resolvers = resolversBuilder.Build(new RootsContext(composition.Source.Source, composition.PublicRoots)).ToList();
             if (isCommentsEnabled)
             {
                 apiCode.AppendLine(CommentSummaryStart);

@@ -3,11 +3,11 @@
 namespace Pure.DI.Core.Code;
 
 sealed class ResolversBuilder(ITypeResolver typeResolver)
-    : IBuilder<RootContext, IEnumerable<ResolverInfo>>
+    : IBuilder<RootsContext, IEnumerable<ResolverInfo>>
 {
-    public IEnumerable<ResolverInfo> Build(RootContext ctx) =>
+    public IEnumerable<ResolverInfo> Build(RootsContext ctx) =>
         ctx.Roots
-            .Where(i => i.Args.IsEmpty)
+            .Where(i => i.RootArgs.IsEmpty)
             .Where(i => !i.Injection.Type.IsRefLikeType)
             .Where(i => !ReferenceEquals(i.Injection.Tag, MdTag.ContextTag))
             .Where(i => typeResolver.Resolve(ctx.Setup, i.Injection.Type).TypeArgs.Count == 0)

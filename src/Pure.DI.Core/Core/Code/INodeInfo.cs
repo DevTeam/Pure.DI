@@ -2,8 +2,6 @@
 
 interface INodeInfo
 {
-    bool IsDelegate(DependencyNode node);
-
     bool IsLazy(DependencyNode node);
 
     bool IsDisposableAny(DependencyNode node);

@@ -1,31 +1,28 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
-sealed class Injections : IInjections
+sealed class Injections(IBuildTools buildTools) : IInjections
 {
-    public void FieldInjection(string targetName, BuildContext ctx, DpField field, Variable fieldVariable) =>
-        ctx.Code.AppendLine($"{targetName}.{field.Field.Name} = {ctx.BuildTools.OnInjected(ctx, fieldVariable)};");
+    public void FieldInjection(string targetName, CodeContext ctx, DpField field, VarInjection fieldVarInjection) =>
+        ctx.Lines.AppendLine($"{targetName}.{field.Field.Name} = {buildTools.OnInjected(ctx, fieldVarInjection)};");
 
-    public void PropertyInjection(string targetName, BuildContext ctx, DpProperty property, Variable propertyVariable) =>
-        ctx.Code.AppendLine($"{targetName}.{property.Property.Name} = {ctx.BuildTools.OnInjected(ctx, propertyVariable)};");
+    public void PropertyInjection(string targetName, CodeContext ctx, DpProperty property, VarInjection propertyVarInjection) =>
+        ctx.Lines.AppendLine($"{targetName}.{property.Property.Name} = {buildTools.OnInjected(ctx, propertyVarInjection)};");
 
-    public void MethodInjection(string targetName, BuildContext ctx, DpMethod method, IReadOnlyList<Variable> methodArgs)
+    public void MethodInjection(string targetName, CodeContext ctx, DpMethod method, IReadOnlyList<VarInjection> methodVarInjections)
     {
         var args = new List<string>();
-        for (var index = 0; index < methodArgs.Count; index++)
+        for (var index = 0; index < methodVarInjections.Count; index++)
         {
-            var variable = methodArgs[index];
+            var varInjection = methodVarInjections[index];
             if (index < method.Parameters.Length)
             {
-                variable = variable with
-                {
-                    RefKind = method.Parameters[index].ParameterSymbol.RefKind
-                };
+                varInjection.Var.Declaration.RefKind = method.Parameters[index].ParameterSymbol.RefKind;
             }
 
-            args.Add(ctx.BuildTools.OnInjected(ctx, variable));
+            args.Add(buildTools.OnInjected(ctx, varInjection));
         }
 
-        ctx.Code.AppendLine($"{targetName}.{method.Method.Name}({string.Join(", ", args)});");
+        ctx.Lines.AppendLine($"{targetName}.{method.Method.Name}({string.Join(", ", args)});");
     }
 }

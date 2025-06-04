@@ -1458,14 +1458,8 @@ public class FuncTests
         result.StdOut.ShouldBe(["Xyz Sample.Context`1[System.Int32]"], result);
     }
 
-    [Theory]
-    [InlineData(1)]
-    [InlineData(3)]
-    [InlineData(5)]
-    [InlineData(12)]
-    [InlineData(20)]
-    [InlineData(1000)]
-    public async Task ShouldSupportBuildUpWhenStdFuncWithArg(int localFunctionLines)
+    [Fact]
+    public async Task ShouldSupportBuildUpWhenStdFuncWithArg()
     {
         // Given
 
@@ -1528,7 +1522,6 @@ public class FuncTests
                                    private static void SetupComposition()
                                    {
                                        DI.Setup("Composition")
-                                           .Hint(Hint.LocalFunctionLines, "#localFunctionLines#")
                                            .Bind().To<LoggerA>()
                                            .Bind().To<Dependency>()
                                            .Bind<IService>().To(ctx => 
@@ -1553,7 +1546,7 @@ public class FuncTests
                                    }
                                }
                            }
-                           """.Replace("#localFunctionLines#", localFunctionLines.ToString()).RunAsync();
+                           """.RunAsync();
 
         // Then
         result.Success.ShouldBeTrue(result);

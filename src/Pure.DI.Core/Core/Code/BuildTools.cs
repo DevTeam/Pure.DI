@@ -5,13 +5,12 @@
 namespace Pure.DI.Core.Code;
 
 using static LinesBuilderExtensions;
-using static Tag;
 
 sealed class BuildTools(
     IFilter filter,
     ITypeResolver typeResolver,
     IBaseSymbolsProvider baseSymbolsProvider,
-    [Tag(Injection)] IIdGenerator idGenerator,
+    [Tag(Tag.Injection)] IIdGenerator idGenerator,
     ILocks locks,
     ISymbolNames symbolNames,
     ICompilations compilations)
@@ -32,13 +31,83 @@ sealed class BuildTools(
         code.AppendLine(new Line(int.MinValue, "#endif // Pure method"));
     }
 
-    public string GetDeclaration(Variable variable, string separator = " ") =>
-        variable.IsDeclared ? "" : $"{typeResolver.Resolve(variable.Setup, variable.InstanceType)}{separator}";
-
-    public string OnInjected(BuildContext ctx, Variable variable)
+    public void AddAggressiveInlining(LinesBuilder code)
     {
-        var injection = OnInjectedInternal(ctx, variable);
-        var refKind = variable.RefKind switch
+        code.AppendLine($"[{Names.MethodImplAttributeName}(({Names.MethodImplOptionsName})256)]");
+    }
+
+    public string GetDeclaration(CodeContext ctx, VarDeclaration varDeclaration, string separator = " ")
+    {
+        return varDeclaration.IsDeclared ? "" : $"{typeResolver.Resolve(ctx.RootContext.Graph.Source, varDeclaration.InstanceType)}{separator}";
+    }
+
+    public IEnumerable<Line> OnCreated(CodeContext ctx, VarInjection varInjection)
+    {
+        if (varInjection.Var.AbstractNode.Arg is not null)
+        {
+            return [];
+        }
+
+        var baseTypes = new Lazy<ImmutableHashSet<ISymbol?>>(() =>
+            baseSymbolsProvider.GetBaseSymbols(varInjection.Var.InstanceType, (_, _) => true)
+                .ToImmutableHashSet(SymbolEqualityComparer.Default));
+
+        var accLines = ctx.Accumulators
+            .Where(acc => acc.Lifetime == varInjection.Var.AbstractNode.Lifetime)
+            .Where(acc => baseTypes.Value.Contains(acc.Type))
+            .GroupBy(acc => acc.VarInjection.Var.Name)
+            .Select(grouping => grouping.First())
+            .OrderBy(i => i.VarInjection.Var.Name)
+            .Select(i => new Line(0, $"{i.VarInjection.Var.Name}.Add({varInjection.Var.Name});"))
+            .ToList();
+
+        var code = new LinesBuilder();
+        if (ctx.IsLockRequired && accLines.Count > 0)
+        {
+            locks.AddLockStatements(code, false);
+            code.AppendLine(BlockStart);
+            code.IncIndent();
+        }
+
+        code.AppendLines(accLines);
+
+        if (ctx.IsLockRequired && accLines.Count > 0)
+        {
+            code.DecIndent();
+            code.AppendLine(BlockFinish);
+        }
+
+        if (!ctx.RootContext.Graph.Source.Hints.IsOnNewInstanceEnabled)
+        {
+            return code.Lines;
+        }
+
+        var tag = GetTag(ctx, varInjection);
+        string GetTypeName() => symbolNames.GetName(varInjection.Var.InstanceType);
+        string GetTagName() => tag.ValueToString();
+        string GetLifetimeName() => varInjection.Var.AbstractNode.Lifetime.ValueToString();
+        if (!filter.IsMeet(
+                ctx.RootContext.Graph.Source,
+                (Hint.OnNewInstanceImplementationTypeNameRegularExpression, Hint.OnNewInstanceImplementationTypeNameWildcard, GetTypeName),
+                (Hint.OnNewInstanceTagRegularExpression, Hint.OnNewInstanceTagWildcard, GetTagName),
+                (Hint.OnNewInstanceLifetimeRegularExpression, Hint.OnNewInstanceLifetimeWildcard, GetLifetimeName)))
+        {
+            return code.Lines;
+        }
+
+        var lines = new List<Line>
+        {
+            new(0, $"{Names.OnNewInstanceMethodName}<{typeResolver.Resolve(ctx.RootContext.Graph.Source, varInjection.Var.InstanceType)}>(ref {varInjection.Var.Name}, {tag.ValueToString()}, {varInjection.Var.AbstractNode.Lifetime.ValueToString()});")
+        };
+
+        lines.AddRange(code.Lines);
+        return lines;
+    }
+
+    public string OnInjected(CodeContext ctx, VarInjection varInjection)
+    {
+        var injection = OnInjectedInternal(ctx, varInjection);
+        var refKind = varInjection.Var.Declaration.RefKind switch
         {
             RefKind.Ref
 #if ROSLYN4_8_OR_GREATER
@@ -51,113 +120,44 @@ sealed class BuildTools(
 
         if (!string.IsNullOrEmpty(refKind))
         {
-            var localVarName = $"{variable.VariableDeclarationName}_{refKind}{idGenerator.Generate()}";
-            ctx.Code.AppendLine($"{variable.InstanceType} {localVarName} = {injection};");
+            var localVarName = $"{varInjection.Var.Name}_{refKind}{idGenerator.Generate()}";
+            ctx.Lines.AppendLine($"{varInjection.Var.InstanceType} {localVarName} = {injection};");
             injection = $"{refKind} {localVarName}";
         }
 
         return injection;
     }
 
-    public IEnumerable<Line> OnCreated(BuildContext ctx, Variable variable)
+    private string OnInjectedInternal(CodeContext ctx, VarInjection varInjection)
     {
-        if (variable.Node.Arg is not null)
+        var variableCode = varInjection.Var.CodeExpression;
+        if (variableCode == varInjection.Var.Name)
         {
-            return [];
-        }
-
-        var baseTypes = new Lazy<ImmutableHashSet<ISymbol?>>(() =>
-            baseSymbolsProvider.GetBaseSymbols(variable.InstanceType, (_, _) => true)
-                .ToImmutableHashSet(SymbolEqualityComparer.Default));
-
-        var code = new LinesBuilder();
-        var lockIsRequired = ctx.LockIsRequired ?? ctx.DependencyGraph.Source.Hints.IsThreadSafeEnabled;
-        var accLines = ctx.Accumulators
-            .Where(i => FilterAccumulator(i, variable.Node.Lifetime))
-            .Where(i => baseTypes.Value.Contains(i.Type))
-            .GroupBy(i => i.Name)
-            .Select(i => i.First())
-            .OrderBy(i => i.Name)
-            .Select(i => new Line(0, $"{i.Name}.Add({variable.VariableName});"))
-            .ToList();
-
-        if (lockIsRequired && accLines.Count > 0)
-        {
-            locks.AddLockStatements(ctx.DependencyGraph, code, false);
-            code.AppendLine(BlockStart);
-            code.IncIndent();
-        }
-
-        code.AppendLines(accLines);
-
-        if (lockIsRequired && accLines.Count > 0)
-        {
-            code.DecIndent();
-            code.AppendLine(BlockFinish);
-            locks.AddUnlockStatements(ctx.DependencyGraph, code, false);
-        }
-
-        if (!ctx.DependencyGraph.Source.Hints.IsOnNewInstanceEnabled)
-        {
-            return code.Lines;
-        }
-
-        var tag = GetTag(ctx, variable);
-        string GetTypeName() => symbolNames.GetName(variable.Node.Type);
-        string GetTagName() => tag.ValueToString();
-        string GetLifetimeName() => variable.Node.Lifetime.ValueToString();
-        if (!filter.IsMeet(
-                ctx.DependencyGraph.Source,
-                (Hint.OnNewInstanceImplementationTypeNameRegularExpression, Hint.OnNewInstanceImplementationTypeNameWildcard, GetTypeName),
-                (Hint.OnNewInstanceTagRegularExpression, Hint.OnNewInstanceTagWildcard, GetTagName),
-                (Hint.OnNewInstanceLifetimeRegularExpression, Hint.OnNewInstanceLifetimeWildcard, GetLifetimeName)))
-        {
-            return code.Lines;
-        }
-
-        var lines = new List<Line>
-        {
-            new(0, $"{Names.OnNewInstanceMethodName}<{typeResolver.Resolve(variable.Setup, variable.InstanceType)}>(ref {variable.VariableName}, {tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()});")
-        };
-
-        lines.AddRange(code.Lines);
-        return lines;
-    }
-
-    public void AddAggressiveInlining(LinesBuilder code)
-    {
-        code.AppendLine($"[{Names.MethodImplAttributeName}(({Names.MethodImplOptionsName})256)]");
-    }
-
-    private string OnInjectedInternal(BuildContext ctx, Variable variable)
-    {
-        var variableCode = variable.VariableCode;
-        if (variableCode == variable.VariableName)
-        {
+            var hasCycle = varInjection.Var.HasCycle ?? false;
             var skipNotNullCheck =
-                variable.InstanceType.IsReferenceType
-                && ctx.DependencyGraph.Source.SemanticModel.Compilation.Options.NullableContextOptions != NullableContextOptions.Disable
-                && (variable.HasCycle || variable.Node.Lifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve);
+                varInjection.Var.InstanceType.IsReferenceType
+                && ctx.RootContext.Graph.Source.SemanticModel.Compilation.Options.NullableContextOptions != NullableContextOptions.Disable
+                && (hasCycle || varInjection.Var.AbstractNode.Lifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve);
 
-            if (skipNotNullCheck && (variable.HasCycle || variable.Node.Lifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve))
+            if (skipNotNullCheck && (hasCycle || varInjection.Var.AbstractNode.Lifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve))
             {
                 variableCode = $"{variableCode}";
             }
         }
 
-        if (!ctx.DependencyGraph.Source.Hints.IsOnDependencyInjectionEnabled)
+        if (!ctx.RootContext.Graph.Source.Hints.IsOnDependencyInjectionEnabled)
         {
             return variableCode;
         }
 
-        var tag = GetTag(ctx, variable);
-        string GetTypeName() => typeResolver.Resolve(variable.Setup, variable.InstanceType).Name;
-        string GetContractName() => symbolNames.GetName(variable.ContractType);
+        var tag = GetTag(ctx, varInjection);
+        string GetTypeName() => typeResolver.Resolve(ctx.RootContext.Graph.Source, varInjection.Var.InstanceType).Name;
+        string GetContractName() => symbolNames.GetName(varInjection.ContractType);
         string GetTagName() => tag.ValueToString();
-        string GetLifetimeName() => variable.Node.Lifetime.ValueToString();
+        string GetLifetimeName() => varInjection.Var.AbstractNode.Lifetime.ValueToString();
         // ReSharper disable once ConvertIfStatementToReturnStatement
         if (!filter.IsMeet(
-                ctx.DependencyGraph.Source,
+                ctx.RootContext.Graph.Source,
                 (Hint.OnDependencyInjectionImplementationTypeNameRegularExpression, Hint.OnDependencyInjectionImplementationTypeNameWildcard, GetTypeName),
                 (Hint.OnDependencyInjectionContractTypeNameRegularExpression, Hint.OnDependencyInjectionContractTypeNameWildcard, GetContractName),
                 (Hint.OnDependencyInjectionTagRegularExpression, Hint.OnDependencyInjectionTagWildcard, GetTagName),
@@ -166,27 +166,12 @@ sealed class BuildTools(
             return variableCode;
         }
 
-        return $"{Names.OnDependencyInjectionMethodName}<{typeResolver.Resolve(variable.Setup, variable.ContractType)}>({variableCode}, {tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()})";
+        return $"{Names.OnDependencyInjectionMethodName}<{typeResolver.Resolve(ctx.RootContext.Graph.Source, varInjection.ContractType)}>({variableCode}, {tag.ValueToString()}, {varInjection.Var.AbstractNode.Lifetime.ValueToString()})";
     }
 
-    private static bool FilterAccumulator(Accumulator accumulator, Lifetime lifetime)
+    private static object? GetTag(CodeContext ctx, VarInjection varInjection)
     {
-        if (accumulator.Lifetime != lifetime)
-        {
-            return false;
-        }
-
-        if (accumulator.IsRoot)
-        {
-            return true;
-        }
-
-        return lifetime is not (Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve);
-    }
-
-    private static object? GetTag(BuildContext ctx, Variable variable)
-    {
-        var tag = variable.Injection.Tag;
+        var tag = varInjection.Injection.Tag;
         if (ReferenceEquals(tag, MdTag.ContextTag))
         {
             tag = ctx.ContextTag;

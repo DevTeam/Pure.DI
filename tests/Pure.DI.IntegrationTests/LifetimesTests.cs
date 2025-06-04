@@ -567,6 +567,7 @@ public class LifetimesTests
                                {
                                    private static void SetupComposition()
                                    {
+                                       // FormatCode=On
                                        DI.Setup("Composition")
                                           .Bind<Func<TT>>()
                                                .As(Lifetime.PerBlock)
@@ -853,8 +854,11 @@ public class LifetimesTests
         result.StdOut.ShouldBe(["True", "True"], result);
     }
 
-    [Fact]
-    public async Task ShouldSupportPerResolveWhenComplex()
+    [Theory]
+    [InlineData(Lifetime.Singleton)]
+    [InlineData(Lifetime.Scoped)]
+    [InlineData(Lifetime.PerResolve)]
+    internal async Task ShouldSupportComplex(Lifetime lifetime)
     {
         // Given
 
@@ -898,8 +902,9 @@ public class LifetimesTests
                                {
                                    private static void SetupComposition()
                                    {
+                                       // FormatCode = On
                                        DI.Setup(nameof(Composition))
-                                           .Bind().As(Lifetime.Singleton).To<Abc>()
+                                           .Bind().As(Lifetime.#lifetime#).To<Abc>()
                                            .Bind<IDependency>().As(Lifetime.PerResolve).To<Dependency>()
                                            .Bind<IService>().To<Service>()
                                            .Root<IService>("Service");
@@ -916,12 +921,198 @@ public class LifetimesTests
                                    }
                                }
                            }
-                           """.RunAsync();
+                           """.Replace("#lifetime#", lifetime.ToString()).RunAsync();
 
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["True"], result);
-        result.GeneratedCode.Split().Count(i => i.TrimStart().StartsWith("EnsureExistenceOf_perResolveDependencyM")).ShouldBe(2);
+        result.GeneratedCode.Split().Count(i => i.TrimStart().StartsWith("EnsureDependencyExists")).ShouldBe(2, result);
+    }
+
+    [Theory]
+    [InlineData(Lifetime.Singleton)]
+    [InlineData(Lifetime.Scoped)]
+    [InlineData(Lifetime.PerResolve)]
+    internal async Task ShouldSupportComplexWhenFactoryMultiplyResolve(Lifetime lifetime)
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Abc {}
+                               
+                               interface IDependency {}
+                           
+                               class Dependency: IDependency
+                               {
+                                   public Dependency(Abc abc) { }
+                               }
+                           
+                               interface IService
+                               {
+                                   IDependency Dep1 { get; }
+                           
+                                   IDependency Dep2 { get; }
+                               }
+                           
+                               class Service: IService 
+                               {
+                                   public Service(IDependency dep1, IDependency dep2)
+                                   {
+                                       Dep1 = dep1;
+                                       Dep2 = dep2;
+                                   }
+                           
+                                   public IDependency Dep1 { get; }
+                           
+                                   public IDependency Dep2 { get; }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       // FormatCode = On
+                                       DI.Setup(nameof(Composition))
+                                           .Bind().As(Lifetime.#lifetime#).To<Abc>()
+                                           .RootArg<bool>("flag")
+                                           .Bind<IDependency>().As(Lifetime.PerResolve).To<Dependency>()
+                                           .Bind<IService>().To(ctx => {
+                                                ctx.Inject(out bool flag);
+                                                if (flag)
+                                                {
+                                                    ctx.Inject(out IDependency dep11);
+                                                    ctx.Inject(out IDependency dep12);
+                                                    return new Service(dep11, dep12);
+                                                }
+                                                else
+                                                {
+                                                    ctx.Inject(out IDependency dep21);
+                                                    ctx.Inject(out IDependency dep22);
+                                                    return new Service(dep21, dep22);
+                                                }
+                                           })
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service(false);
+                                       Console.WriteLine(service.Dep1);
+                                       Console.WriteLine(service.Dep1 == service.Dep2);
+                                       var service2 = composition.Service(true);
+                                       Console.WriteLine(service2.Dep1);
+                                       Console.WriteLine(service2.Dep1 == service2.Dep2);
+                                   }
+                               }
+                           }
+                           """.Replace("#lifetime#", lifetime.ToString()).RunAsync();
+
+        // Then
+        result.Errors.Count.ShouldBe(0, result);
+        result.StdOut.ShouldBe(["Sample.Dependency", "True", "Sample.Dependency", "True"], result);
+        result.GeneratedCode.Split().Count(i => i.TrimStart().StartsWith("EnsureDependencyExists")).ShouldBe(5, result);
+    }
+
+    [Theory]
+    [InlineData(Lifetime.Singleton)]
+    [InlineData(Lifetime.Scoped)]
+    [InlineData(Lifetime.PerResolve)]
+    internal async Task ShouldSupportComplexWhenFactoryMultiplyInjection(Lifetime lifetime)
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Abc {}
+                               
+                               interface IDependency {}
+                           
+                               class Dependency: IDependency
+                               {
+                                   public Dependency(Abc abc) { }
+                               }
+                           
+                               interface IService
+                               {
+                                   IDependency Dep1 { get; }
+                           
+                                   IDependency Dep2 { get; }
+                               }
+                           
+                               class Service: IService 
+                               {
+                                   public Service(IDependency dep1, IDependency dep2)
+                                   {
+                                       Dep1 = dep1;
+                                       Dep2 = dep2;
+                                   }
+                           
+                                   public IDependency Dep1 { get; }
+                           
+                                   public IDependency Dep2 { get; }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       // FormatCode = On
+                                       DI.Setup(nameof(Composition))
+                                           .Bind().As(Lifetime.#lifetime#).To<Abc>()
+                                           .RootArg<bool>("flag")
+                                           .Bind<IDependency>().As(Lifetime.PerResolve).To<Dependency>()
+                                           .Bind<IService>().To(ctx => {
+                                                ctx.Inject(out bool flag);
+                                                if (flag)
+                                                {
+                                                    ctx.Inject(out Service service1);
+                                                    return service1;
+                                                }
+                                                else
+                                                {
+                                                    ctx.Inject(out Service service2);
+                                                    return service2;
+                                                }
+                                           })
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service(false);
+                                       Console.WriteLine(service.Dep1);
+                                       Console.WriteLine(service.Dep1 == service.Dep2);
+                                       var service2 = composition.Service(true);
+                                       Console.WriteLine(service2.Dep1);
+                                       Console.WriteLine(service2.Dep1 == service2.Dep2);
+                                   }
+                               }
+                           }
+                           """.Replace("#lifetime#", lifetime.ToString()).RunAsync();
+
+        // Then
+        result.Errors.Count.ShouldBe(0, result);
+        result.StdOut.ShouldBe(["Sample.Dependency", "True", "Sample.Dependency", "True"], result);
+        result.GeneratedCode.Split().Count(i => i.TrimStart().StartsWith("EnsureDependencyExists")).ShouldBe(5, result);
     }
 
     [Fact]

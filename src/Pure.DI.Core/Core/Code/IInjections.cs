@@ -2,9 +2,9 @@
 
 interface IInjections
 {
-    void FieldInjection(string targetName, BuildContext ctx, DpField field, Variable fieldVariable);
+    void FieldInjection(string targetName, CodeContext ctx, DpField field, VarInjection fieldVarInjection);
 
-    void PropertyInjection(string targetName, BuildContext ctx, DpProperty property, Variable propertyVariable);
+    void PropertyInjection(string targetName, CodeContext ctx, DpProperty property, VarInjection propertyVarInjection);
 
-    void MethodInjection(string targetName, BuildContext ctx, DpMethod method, IReadOnlyList<Variable> methodArgs);
+    void MethodInjection(string targetName, CodeContext ctx, DpMethod method, IReadOnlyList<VarInjection> methodVarInjections);
 }

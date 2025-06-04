@@ -1,7 +1,5 @@
 ﻿namespace Pure.DI.Core;
 
-using System.Collections.Concurrent;
-
 class GraphOverrider(
     INodesFactory nodesFactory,
     IBindingsFactory bindingsFactory,

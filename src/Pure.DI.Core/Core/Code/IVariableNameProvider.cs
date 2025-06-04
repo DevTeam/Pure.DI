@@ -2,7 +2,7 @@
 
 interface IVariableNameProvider
 {
-    string GetVariableName(DependencyNode node, int transientId);
+    string GetVariableName(IDependencyNode node, int transientId);
 
     string GetOverrideVariableName(MdOverride @override);
 

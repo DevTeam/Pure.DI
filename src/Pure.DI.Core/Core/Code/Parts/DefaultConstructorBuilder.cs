@@ -10,7 +10,7 @@ sealed class DefaultConstructorBuilder(
 
     public CompositionCode Build(CompositionCode composition)
     {
-        if (composition.Args.Length > 0)
+        if (composition.ClassArgs.Length > 0)
         {
             return composition;
         }

@@ -43,9 +43,6 @@ sealed class Hints : ConcurrentDictionary<Hint, LinkedList<string>>, IHints
     public bool IsResolveEnabled =>
         IsEnabled(Hint.Resolve, SettingState.On);
 
-    public bool IsSystemThreadingLockEnabled =>
-        IsEnabled(Hint.SystemThreadingLock, SettingState.On);
-
     public string ResolveMethodName =>
         GetValueOrDefault(Hint.ResolveMethodName, Names.ResolveMethodName);
 
@@ -79,26 +76,12 @@ sealed class Hints : ConcurrentDictionary<Hint, LinkedList<string>>, IHints
     public DiagnosticSeverity SeverityOfNotImplementedContract =>
         GetEnumHint(Hint.SeverityOfNotImplementedContract, DiagnosticSeverity.Error);
 
-    public int LocalFunctionLines
-    {
-        get
-        {
-            var val = GetIntHint(Hint.LocalFunctionLines, 12);
-            return val <= 0 ? 12 : val;
-        }
-    }
-
     private bool IsEnabled(Hint hint, SettingState defaultValue) =>
         GetEnumHint(hint, defaultValue) == SettingState.On;
 
     private T GetEnumHint<T>(Hint hint, T defaultValue)
         where T : struct, Enum =>
         GetValue(hint) is {} valueStr && Enum.TryParse<T>(valueStr, true, out var value)
-            ? value
-            : defaultValue;
-
-    private int GetIntHint(Hint hint, int defaultValue) =>
-        GetValue(hint) is {} valueStr && int.TryParse(valueStr, out var value)
             ? value
             : defaultValue;
 

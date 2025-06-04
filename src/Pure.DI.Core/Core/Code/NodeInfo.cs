@@ -6,9 +6,6 @@ using SpecialType=Microsoft.CodeAnalysis.SpecialType;
 
 sealed class NodeInfo(ITypes types) : INodeInfo
 {
-    public bool IsDelegate(DependencyNode node) =>
-        node.Type.TypeKind == TypeKind.Delegate;
-
     public bool IsLazy(DependencyNode node) =>
         IsDelegate(node) || IsEnumerable(node) || IsAsyncEnumerable(node);
 
@@ -32,4 +29,7 @@ sealed class NodeInfo(ITypes types) : INodeInfo
     private bool IsAsyncDisposable(Compilation compilation, ISymbol type) =>
         types.TryGet(Core.SpecialType.IAsyncDisposable, compilation) is {} asyncDisposableType
         && types.TypeEquals(type, asyncDisposableType);
+
+    private static bool IsDelegate(DependencyNode node) =>
+        node.Type.TypeKind == TypeKind.Delegate;
 }

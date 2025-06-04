@@ -1,10 +1,10 @@
-﻿namespace Pure.DI.Core;
+﻿namespace Pure.DI.Core.Code;
 
 interface IVariablesWalker
 {
-    IVariablesWalker Initialize(ICollection<Variable> variables);
+    IVariablesWalker Initialize(IReadOnlyCollection<VarInjection> varInjections);
 
-    IReadOnlyList<Variable> GetResult();
+    IReadOnlyList<VarInjection> GetResult();
 
     void VisitMethod(in Unit ctx, in DpMethod method, int? position);
 

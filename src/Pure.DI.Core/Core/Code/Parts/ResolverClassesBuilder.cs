@@ -4,7 +4,7 @@
 
 namespace Pure.DI.Core.Code.Parts;
 
-sealed class ResolverClassesBuilder(IBuilder<RootContext, IEnumerable<ResolverInfo>> resolversBuilder)
+sealed class ResolverClassesBuilder(IBuilder<RootsContext, IEnumerable<ResolverInfo>> resolversBuilder)
     : IClassPartBuilder
 {
     public ClassPart Part => ClassPart.ResolverClasses;
@@ -46,7 +46,7 @@ sealed class ResolverClassesBuilder(IBuilder<RootContext, IEnumerable<ResolverIn
 
         membersCount++;
 
-        foreach (var resolver in resolversBuilder.Build(new RootContext(composition.Source.Source, composition.Roots)))
+        foreach (var resolver in resolversBuilder.Build(new RootsContext(composition.Source.Source, composition.PublicRoots)))
         {
             var resolverClassName = resolver.ClassName;
             var baseTypeName = $"{Names.ResolverClassName}<{resolver.Type}>";
@@ -97,7 +97,7 @@ sealed class ResolverClassesBuilder(IBuilder<RootContext, IEnumerable<ResolverIn
             if (defaultRoot is not null)
             {
                 var isStatic = (defaultRoot.Kind & RootKinds.Static) == RootKinds.Static;
-                var isMethod = !defaultRoot.Args.IsEmpty || (defaultRoot.Kind & RootKinds.Method) == RootKinds.Method;
+                var isMethod = !defaultRoot.RootArgs.IsEmpty || (defaultRoot.Kind & RootKinds.Method) == RootKinds.Method;
                 code.AppendLine($"return {(isStatic ? composition.Source.Source.Name.ClassName : "composition")}.{defaultRoot.DisplayName}{(isMethod ? "()" : "")};");
             }
             else
@@ -170,7 +170,7 @@ sealed class ResolverClassesBuilder(IBuilder<RootContext, IEnumerable<ResolverIn
     private static string GetRoot(CompositionCode composition, Root root)
     {
         var target = (root.Kind & RootKinds.Static) == RootKinds.Static ? composition.Source.Source.Name.ClassName : "composition";
-        var isMethod = !root.Args.IsEmpty || (root.Kind & RootKinds.Method) == RootKinds.Method;
+        var isMethod = !root.RootArgs.IsEmpty || (root.Kind & RootKinds.Method) == RootKinds.Method;
         return $"{target}.{root.DisplayName}{(isMethod ? "()" : "")}";
     }
 }

@@ -51,14 +51,14 @@ sealed class FieldsBuilder(
             {
                 if (singletonField.InstanceType.IsValueType)
                 {
-                    code.AppendLine($"private {typeResolver.Resolve(composition.Source.Source, singletonField.InstanceType)} {singletonField.VariableDeclarationName};");
+                    code.AppendLine($"private {typeResolver.Resolve(composition.Source.Source, singletonField.InstanceType)} {singletonField.Name};");
                     membersCounter++;
 
-                    code.AppendLine($"private bool {singletonField.VariableDeclarationName}Created;");
+                    code.AppendLine($"private bool {singletonField.Name}Created;");
                 }
                 else
                 {
-                    code.AppendLine($"private {typeResolver.Resolve(composition.Source.Source, singletonField.InstanceType)}{nullable} {singletonField.VariableDeclarationName};");
+                    code.AppendLine($"private {typeResolver.Resolve(composition.Source.Source, singletonField.InstanceType)}{nullable} {singletonField.Name};");
                 }
 
                 membersCounter++;
