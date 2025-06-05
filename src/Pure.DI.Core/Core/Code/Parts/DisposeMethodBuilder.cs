@@ -196,12 +196,12 @@ sealed class DisposeMethodBuilder(
         code.AppendLine($"{Names.DisposeIndexFieldName} = 0;");
         code.AppendLine($"disposables = {Names.DisposablesFieldName};");
         code.AppendLine($"{Names.DisposablesFieldName} = new object[{composition.TotalDisposablesCount.ToString()}];");
-        foreach (var singletonField in composition.Singletons)
+        foreach (var singletonField in composition.Singletons2)
         {
             code.AppendLine(
                 singletonField.InstanceType.IsValueType
-                    ? $"{singletonField.VariableDeclarationName}Created = false;"
-                    : $"{singletonField.VariableDeclarationName} = null;");
+                    ? $"{singletonField.Name}Created = false;"
+                    : $"{singletonField.Name} = null;");
         }
 
         // ReSharper disable once InvertIf

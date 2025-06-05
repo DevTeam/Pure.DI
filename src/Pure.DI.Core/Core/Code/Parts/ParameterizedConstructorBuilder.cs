@@ -12,14 +12,14 @@ sealed class ParameterizedConstructorBuilder(
 
     public CompositionCode Build(CompositionCode composition)
     {
-        if (composition.Args.Length == 0)
+        if (composition.ClassArgs.Length == 0)
         {
             return composition;
         }
 
         var code = composition.Code;
         var membersCounter = composition.MembersCount;
-        if (composition.Args.Length == 0)
+        if (composition.ClassArgs.Length == 0)
         {
             return composition;
         }
@@ -27,7 +27,7 @@ sealed class ParameterizedConstructorBuilder(
         constructorCommenter.AddComments(composition, Unit.Shared);
 
         code.AppendLine($"[{Names.OrdinalAttributeName}(128)]");
-        var classArgs = composition.Args.GetArgsOfKind(ArgKind.Class).ToList();
+        var classArgs = composition.ClassArgs.GetArgsOfKind(ArgKind.Class).ToList();
         code.AppendLine($"public {composition.Source.Source.Name.ClassName}({string.Join(", ", classArgs.Select(arg => $"{typeResolver.Resolve(composition.Source.Source, arg.InstanceType)} {arg.Node.Arg?.Source.ArgName}"))})");
         using (code.CreateBlock())
         {
@@ -39,7 +39,7 @@ sealed class ParameterizedConstructorBuilder(
                     nullCheck = $" ?? throw new {Names.SystemNamespace}ArgumentNullException(nameof({arg.Node.Arg?.Source.ArgName}))";
                 }
 
-                code.AppendLine($"{arg.VariableDeclarationName} = {arg.Node.Arg?.Source.ArgName}{nullCheck};");
+                code.AppendLine($"{arg.Name} = {arg.Node.Arg?.Source.ArgName}{nullCheck};");
             }
 
             code.AppendLine($"{Names.RootFieldName} = this;");

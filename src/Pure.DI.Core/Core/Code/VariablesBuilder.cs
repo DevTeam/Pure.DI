@@ -64,7 +64,7 @@ sealed class VariablesBuilder(
 
                         var path = new Dictionary<int, Variable>();
                         ICollection<Accumulator>? accumulators = null;
-                        var isRoot = true;
+                        // var isRoot = true;
                         foreach (var pathItem in currentStatement.GetPath())
                         {
                             var pathVar = pathItem.Current;
@@ -79,26 +79,26 @@ sealed class VariablesBuilder(
                                 continue;
                             }
 
-                            accumulators = pathVar.Node.Accumulators;
-                            isRoot = false;
+                            // accumulators = pathVar.Node.Accumulators;
+                            // isRoot = false;
                         }
 
-                        accumulators ??= rootNode.Accumulators;
+                        /*accumulators ??= rootNode.Accumulators;
                         if (isAccumulator)
                         {
                             var name = GetAccumulatorName(variable);
                             foreach (var mdAccumulator in mdAccumulators)
                             {
-                                accumulators.Add(
+                                /*accumulators.Add(
                                     new Accumulator(
                                         isRoot,
                                         name,
                                         false,
                                         mdAccumulator.Type,
                                         mdAccumulator.Lifetime,
-                                        mdAccumulator.AccumulatorType));
+                                        mdAccumulator.AccumulatorType));#1#
                             }
-                        }
+                        }*/
 
                         foreach (var dependency in dependencies.Where(i => i.IsResolved))
                         {
@@ -121,7 +121,7 @@ sealed class VariablesBuilder(
                                 currentBlock,
                                 map,
                                 blockMap,
-                                dependency.Source with { Accumulators = accumulators },
+                                dependency.Source,
                                 dependency.Injection,
                                 ref transientId,
                                 cycleVariable);

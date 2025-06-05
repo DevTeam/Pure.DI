@@ -11,7 +11,10 @@ sealed class CodeBuilder(
     IEnumerable<IValidator<DependencyGraph>> dependencyGraphValidators,
     IEnumerable<IValidator<CompositionCode>> compositionValidators,
     IBuilder<DependencyGraph, DependencyGraph> rootsBuilder,
+ #pragma warning disable CS9113 // Parameter is unread.
     IBuilder<DependencyGraph, CompositionCode> compositionBuilder,
+ #pragma warning restore CS9113 // Parameter is unread.
+    [Tag(2)] IBuilder<DependencyGraph, CompositionCode> v2CompositionBuilder,
     [Tag(CompositionClass)] IBuilder<CompositionCode, CompositionCode> compositionClassBuilder,
     ISources sources,
     CancellationToken cancellationToken)
@@ -46,7 +49,30 @@ sealed class CodeBuilder(
         }
 
         cancellationToken.ThrowIfCancellationRequested();
-        var composition = compositionBuilder.Build(dependencyGraph);
+        CompositionCode? composition = null;
+        Exception? error = null;
+        var thread = new Thread(() => {
+            try
+            {
+                composition = v2CompositionBuilder.Build(dependencyGraph);
+            }
+            catch (Exception ex)
+            {
+                error = ex;
+            }
+        }, 1024 * 1024 * 10) { IsBackground = true, Priority = ThreadPriority.Highest, Name = "Composition Builder" };
+        thread.Start();
+        thread.Join();
+
+        if (error is not null)
+        {
+            throw error;
+        }
+
+        if (composition is null)
+        {
+            throw HandledException.Shared;
+        }
 
         if (compositionValidators.Any(validator => !validator.Validate(composition)))
         {

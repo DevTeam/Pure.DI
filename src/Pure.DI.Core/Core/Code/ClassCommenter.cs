@@ -20,7 +20,7 @@ sealed class ClassCommenter(
 
         var classComments = composition.Source.Source.Comments;
         var code = composition.Code;
-        if (classComments.Count <= 0 && composition.Roots.Length <= 0)
+        if (classComments.Count <= 0 && composition.PublicRoots.Length <= 0)
         {
             return;
         }
@@ -47,7 +47,7 @@ sealed class ClassCommenter(
                 code.AppendLine("/// </para>");
             }
 
-            var orderedRoots = composition.Roots
+            var orderedRoots = composition.PublicRoots
                 .OrderByDescending(root => root.IsPublic)
                 .ThenBy(root => root.DisplayName)
                 .ThenBy(root => root.Node.Binding.Id)
@@ -134,7 +134,7 @@ sealed class ClassCommenter(
                 code.AppendLine("/// <example>");
                 code.AppendLine($"/// This example shows how to get an instance of type {formatter.FormatRef(root.Node.Type)} using the composition root {formatter.FormatRef(composition.Source.Source, root)}:");
                 code.AppendLine("/// <code>");
-                code.AppendLine($"/// {(composition.TotalDisposablesCount == 0 ? "" : "using ")}var composition = new {composition.Source.Source.Name.ClassName}({string.Join(", ", composition.Args.Where(i => i.Node.Arg?.Source.Kind == ArgKind.Class).Select(arg => arg.VariableDeclarationName))});");
+                code.AppendLine($"/// {(composition.TotalDisposablesCount == 0 ? "" : "using ")}var composition = new {composition.Source.Source.Name.ClassName}({string.Join(", ", composition.ClassArgs.Where(i => i.Node.Arg?.Source.Kind == ArgKind.Class).Select(arg => arg.Name))});");
                 code.AppendLine($"/// var instance = composition.{formatter.Format(root)};");
                 code.AppendLine("/// </code>");
                 code.AppendLine("/// See also:");

@@ -14,7 +14,7 @@ sealed class ResolversFieldsBuilder(IBuilder<RootContext, IEnumerable<ResolverIn
             return composition;
         }
 
-        var resolvers = resolversBuilder.Build(new RootContext(composition.Source.Source, composition.Roots)).ToList();
+        var resolvers = resolversBuilder.Build(new RootContext(composition.Source.Source, composition.PublicRoots)).ToList();
         if (resolvers.Count == 0)
         {
             return composition;

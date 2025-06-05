@@ -94,7 +94,7 @@ public class AccumulatorTests
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["3", "Sample.AbcDependency", "Sample.XyzDependency", "Sample.Service"], result);
+        result.StdOut.ShouldBe(["3", "Sample.XyzDependency", "Sample.AbcDependency", "Sample.Service"], result);
     }
 
     [Fact]
@@ -420,7 +420,7 @@ public class AccumulatorTests
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["3", "Sample.AbcDependency", "Sample.XyzDependency", "Sample.Service"], result);
+        result.StdOut.ShouldBe(["3", "Sample.XyzDependency", "Sample.AbcDependency", "Sample.Service"], result);
     }
 
     [Fact]
@@ -722,7 +722,7 @@ public class AccumulatorTests
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["3", "Sample.AbcDependency", "Sample.XyzDependency", "Sample.Service"]);
+        result.StdOut.ShouldBe(["3", "Sample.XyzDependency", "Sample.AbcDependency", "Sample.Service"]);
     }
 #endif
 

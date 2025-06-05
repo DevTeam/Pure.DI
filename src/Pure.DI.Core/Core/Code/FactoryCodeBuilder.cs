@@ -257,7 +257,7 @@ sealed class FactoryCodeBuilder(
         var initializationArgsEnum = initializationArgs.Select(i => i.Current).GetEnumerator();
         ctx = ctx with { LockIsRequired = lockIsRequired, Level = level, AvoidLocalFunction = hasOverrides };
         var injectionsCtx = ctx;
-        if (variable.IsLazy && variable.Node.Accumulators.Count > 0)
+        /*if (variable.IsLazy && variable.Node.Accumulators.Count > 0)
         {
             injectionsCtx = injectionsCtx with
             {
@@ -266,7 +266,7 @@ sealed class FactoryCodeBuilder(
                     .Select(i => i with { IsDeclared = i.IsRoot && i.IsDeclared })
                     .ToImmutableArray()
             };
-        }
+        }*/
 
         var prefixes = new Stack<string>();
         foreach (var textLine in lines)

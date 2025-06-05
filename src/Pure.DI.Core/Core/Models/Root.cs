@@ -1,5 +1,7 @@
 namespace Pure.DI.Core.Models;
 
+using Code.v2;
+
 record Root(
     int Index,
     DependencyNode Node,
@@ -8,6 +10,7 @@ record Root(
     string Name,
     in ImmutableArray<Line> Lines,
     in ImmutableArray<Variable> Args,
+    in ImmutableArray<VarDeclaration> RootArgs,
     RootKinds Kind,
     TypeDescription TypeDescription = default,
     bool IsMethod = false)

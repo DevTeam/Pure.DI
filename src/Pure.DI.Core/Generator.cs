@@ -5,6 +5,7 @@ namespace Pure.DI;
 
 using System.Diagnostics;
 using Core.Code.Parts;
+using Core.Code.v2;
 using static System.Text.RegularExpressions.RegexOptions;
 using static Hint;
 using static Lifetime;
@@ -14,6 +15,7 @@ using static StringComparer;
 using static Tag;
 using static Unit;
 using Metadata = Core.Metadata;
+using VarsMap=Core.Code.VarsMap;
 
 // @formatter:off
 public sealed partial class Generator
@@ -58,7 +60,7 @@ public sealed partial class Generator
                 ctx.Inject<Logger>(out var logger);
                 return logger.WithTargetType(ctx.ConsumerTypes[0]);
             })
-            .Bind().To<VariablesMap>()
+            .Bind().To<VarsMap>()
             .Bind().To(_ => Compiled | CultureInvariant | Singleline | IgnoreCase)
 
             // Walkers
@@ -71,6 +73,11 @@ public sealed partial class Generator
             .Bind<IDependencyGraphLocationsWalker>().To<DependencyGraphLocationsWalker>()
             .Bind<IFactoryValidator>().To<FactoryValidator>()
             .Bind<ILocalVariableRenamingRewriter>().To<LocalVariableRenamingRewriter>()
+
+            // v2
+            .Bind<IVarsMap>().To<Core.Code.v2.VarsMap>()
+            .Bind().To<V2VariablesWalker>()
+            .Bind<IV2InitializersWalker>().To<V2InitializersWalker>()
 
         .DefaultLifetime(Singleton)
             .Bind().To<Cache<TT1, TT2>>()
@@ -150,6 +157,10 @@ public sealed partial class Generator
             .Bind().To<VariablesBuilder>()
             .Bind().To<MermaidUrlBuilder>()
 
+            // v2
+            .Bind(2).To<V2CompositionBuilder>()
+            .Bind().To<RootBuilder>()
+
             // Code builders
             .Bind().To<StatementCodeBuilder>()
             .Bind().To<BlockCodeBuilder>()
@@ -180,6 +191,7 @@ public sealed partial class Generator
             .Bind(UniqueTag).To<IdGenerator>()
             .Bind(GenericType).To<IdGenerator>()
             .Bind(Injection).To<IdGenerator>()
+            .Bind(VarName).To<IdGenerator>()
             .Bind(Tag.Override).To<IdGenerator>()
             .Bind().To<IdGenerator>()
             .Bind().To<Registry<TT>>()

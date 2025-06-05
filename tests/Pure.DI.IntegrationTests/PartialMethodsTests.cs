@@ -841,6 +841,7 @@ public class PartialMethodsTests
                                    private static void SetupComposition()
                                    {
                                        // OnDependencyInjection = On
+                                       // FormatCode = On
                                        DI.Setup("Composition")
                                            .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
                                            .Bind<IService>().To<Service>()
@@ -1261,6 +1262,6 @@ public class PartialMethodsTests
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["String created", "Int32 created", "Int32 created", "String created", "Dependency 99 created", "Service 'MyService' created"], result);
+        result.StdOut.ShouldBe(["Int32 created", "String created", "Dependency 99 created", "String created", "Int32 created", "Service 'MyService' created"], result);
     }
 }

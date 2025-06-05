@@ -2,6 +2,8 @@
 
 namespace Pure.DI.Core;
 
+using Code.v2;
+
 sealed class RootsBuilder(IBuilder<ContractsBuildContext, ISet<Injection>> contractsBuilder)
     : IBuilder<DependencyGraph, DependencyGraph>
 {
@@ -52,6 +54,7 @@ sealed class RootsBuilder(IBuilder<ContractsBuildContext, ISet<Injection>> contr
                         name,
                         ImmutableArray<Line>.Empty,
                         ImmutableArray<Variable>.Empty,
+                        ImmutableArray<VarDeclaration>.Empty,
                         kind)));
             }
         }

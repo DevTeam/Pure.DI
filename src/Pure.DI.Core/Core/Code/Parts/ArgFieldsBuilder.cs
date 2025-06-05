@@ -9,7 +9,7 @@ sealed class ArgFieldsBuilder(ITypeResolver typeResolver)
 
     public CompositionCode Build(CompositionCode composition)
     {
-        var classArgs = composition.Args.GetArgsOfKind(ArgKind.Class).ToList();
+        var classArgs = composition.ClassArgs.GetArgsOfKind(ArgKind.Class).ToList();
         if (classArgs.Count == 0)
         {
             return composition;
@@ -19,7 +19,7 @@ sealed class ArgFieldsBuilder(ITypeResolver typeResolver)
         var membersCounter = composition.MembersCount;
         foreach (var arg in classArgs)
         {
-            code.AppendLine($"private readonly {typeResolver.Resolve(composition.Source.Source, arg.InstanceType)} {arg.VariableDeclarationName};");
+            code.AppendLine($"private readonly {typeResolver.Resolve(composition.Source.Source, arg.InstanceType)} {arg.Name};");
             membersCounter++;
         }
 

@@ -44,21 +44,21 @@ sealed class FieldsBuilder(
         }
 
         // Singleton fields
-        if (composition.Singletons.Length > 0)
+        if (composition.Singletons2.Length > 0)
         {
             code.AppendLine();
-            foreach (var singletonField in composition.Singletons)
+            foreach (var singletonField in composition.Singletons2)
             {
                 if (singletonField.InstanceType.IsValueType)
                 {
-                    code.AppendLine($"private {typeResolver.Resolve(composition.Source.Source, singletonField.InstanceType)} {singletonField.VariableDeclarationName};");
+                    code.AppendLine($"private {typeResolver.Resolve(composition.Source.Source, singletonField.InstanceType)} {singletonField.Name};");
                     membersCounter++;
 
-                    code.AppendLine($"private bool {singletonField.VariableDeclarationName}Created;");
+                    code.AppendLine($"private bool {singletonField.Name}Created;");
                 }
                 else
                 {
-                    code.AppendLine($"private {typeResolver.Resolve(composition.Source.Source, singletonField.InstanceType)}{nullable} {singletonField.VariableDeclarationName};");
+                    code.AppendLine($"private {typeResolver.Resolve(composition.Source.Source, singletonField.InstanceType)}{nullable} {singletonField.Name};");
                 }
 
                 membersCounter++;

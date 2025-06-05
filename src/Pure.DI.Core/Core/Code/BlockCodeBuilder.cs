@@ -30,21 +30,21 @@ sealed class BlockCodeBuilder(
             var isThreadSafe = ctx.DependencyGraph.Source.Hints.IsThreadSafeEnabled;
             var lockIsRequired = ctx.LockIsRequired ?? isThreadSafe;
             var toCheckExistence = variable.Node.Lifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve;
-            var uniqueAccumulators = ctx.Accumulators
+            /*var uniqueAccumulators = ctx.Accumulators
                 .Where(accumulator => !accumulator.IsDeclared)
                 .GroupBy(i => i.Name)
-                .Select(i => i.First());
+                .Select(i => i.First());*/
 
-            foreach (var accumulator in uniqueAccumulators)
+            /*foreach (var accumulator in uniqueAccumulators)
             {
                 code.AppendLine($"var {accumulator.Name} = new {accumulator.AccumulatorType}();");
-            }
+            }*/
 
-            var accumulators = ctx.Accumulators.Select(accumulator => accumulator with { IsDeclared = true }).ToList();
+            /*var accumulators = ctx.Accumulators.Select(accumulator => accumulator with { IsDeclared = true }).ToList();
             if (accumulators.Count > 0)
             {
                 ctx = ctx with { Accumulators = accumulators.ToImmutableArray(), AvoidLocalFunction = false};
-            }
+            }*/
 
             if (toCheckExistence)
             {

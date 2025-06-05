@@ -17,7 +17,7 @@ sealed class RootMethodsBuilder(
 
     public CompositionCode Build(CompositionCode composition)
     {
-        if (composition.Roots.Length == 0)
+        if (composition.PublicRoots.Length == 0)
         {
             return composition;
         }
@@ -27,7 +27,7 @@ sealed class RootMethodsBuilder(
         var membersCounter = composition.MembersCount;
         code.AppendLine("#region Roots");
         var isFirst = true;
-        foreach (var root in composition.Roots.Where(i => generatePrivateRoots || i.IsPublic))
+        foreach (var root in composition.PublicRoots.Where(i => generatePrivateRoots || i.IsPublic))
         {
             if (isFirst)
             {
@@ -53,8 +53,8 @@ sealed class RootMethodsBuilder(
         var rootArgsStr = "";
         if (root.IsMethod)
         {
-            rootArgsStr = $"({string.Join(", ", root.Args.Select(arg => $"{typeResolver.Resolve(composition.Source.Source, arg.InstanceType)} {arg.VariableDeclarationName}"))})";
-            if (root.Args.Length == 0)
+            rootArgsStr = $"({string.Join(", ", root.RootArgs.Select(arg => $"{typeResolver.Resolve(composition.Source.Source, arg.InstanceType)} {arg.Name}"))})";
+            if (root.RootArgs.Length == 0)
             {
                 buildTools.AddPureHeader(code);
             }
@@ -193,9 +193,9 @@ sealed class RootMethodsBuilder(
             var indentToken = Disposables.Empty;
             if (root.IsMethod)
             {
-                foreach (var arg in root.Args.Where(i => i.InstanceType.IsReferenceType))
+                foreach (var arg in root.RootArgs.Where(i => i.InstanceType.IsReferenceType))
                 {
-                    code.AppendLine($"if ({buildTools.NullCheck(composition.Source.Source.SemanticModel.Compilation, arg.VariableName)}) throw new {Names.SystemNamespace}ArgumentNullException(nameof({arg.VariableName}));");
+                    code.AppendLine($"if ({buildTools.NullCheck(composition.Source.Source.SemanticModel.Compilation, arg.Name)}) throw new {Names.SystemNamespace}ArgumentNullException(nameof({arg.Name}));");
                 }
             }
             else

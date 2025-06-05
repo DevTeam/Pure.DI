@@ -1,5 +1,7 @@
 namespace Pure.DI.Core.Code;
 
+using v2;
+
 interface IBuildTools
 {
     string NullCheck(Compilation compilation, string variableName);
@@ -13,4 +15,10 @@ interface IBuildTools
     IEnumerable<Line> OnCreated(BuildContext ctx, Variable variable);
 
     void AddAggressiveInlining(LinesBuilder code);
+
+    string GetDeclaration(CodeContext ctx, Var var, string separator = " ");
+
+    IEnumerable<Line> OnCreated(CodeContext ctx, Var var);
+
+    string OnInjected(CodeContext ctx, Var var);
 }

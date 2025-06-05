@@ -68,7 +68,7 @@ sealed class ApiMembersBuilder(
             membersCounter++;
 
             apiCode.AppendLine();
-            var resolvers = resolversBuilder.Build(new RootContext(composition.Source.Source, composition.Roots)).ToList();
+            var resolvers = resolversBuilder.Build(new RootContext(composition.Source.Source, composition.PublicRoots)).ToList();
             if (isCommentsEnabled)
             {
                 apiCode.AppendLine(CommentSummaryStart);

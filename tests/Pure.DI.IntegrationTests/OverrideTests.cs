@@ -1216,6 +1216,7 @@ public class OverrideTests
                                {
                                    private static void SetupComposition()
                                    {
+                                       // FormatCode = On
                                        DI.Setup("Composition")
                                            .Bind().As(Lifetime.#lifetime#).To<Dependency>()
                                            .Bind<IService>("A").To(ctx => 

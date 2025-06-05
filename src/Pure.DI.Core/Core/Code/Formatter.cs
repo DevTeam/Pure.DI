@@ -42,7 +42,7 @@ sealed class Formatter(
         }
 
         sb.Append('(');
-        sb.Append(string.Join(", ", root.Args.Select(i => i.VariableDeclarationName)));
+        sb.Append(string.Join(", ", root.RootArgs.Select(i => i.Name)));
         sb.Append(')');
         return sb.ToString();
     }
@@ -65,7 +65,7 @@ sealed class Formatter(
         }
 
         sb.Append('(');
-        sb.Append(string.Join(", ", root.Args.Select(i => FormatTypeName(typeResolver.Resolve(setup, i.ContractType).Name))));
+        sb.Append(string.Join(", ", root.RootArgs.Select(i => FormatTypeName(typeResolver.Resolve(setup, i.InstanceType).Name))));
         sb.Append(')');
         return FormatRef(sb.ToString());
     }

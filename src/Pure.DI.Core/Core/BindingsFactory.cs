@@ -63,7 +63,7 @@ class BindingsFactory(
             targetNode.Binding.SemanticModel,
             ImmutableArray.Create(new MdContract(targetNode.Binding.SemanticModel, accumulator.Source, accumulator.AccumulatorType, ContractKind.Implicit, ImmutableArray<MdTag>.Empty)),
             ImmutableArray<MdTag>.Empty,
-            new MdLifetime(targetNode.Binding.SemanticModel, accumulator.Source, Lifetime.Transient),
+            new MdLifetime(targetNode.Binding.SemanticModel, accumulator.Source, Lifetime.PerBlock),
             null,
             null,
             null,

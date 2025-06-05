@@ -3,6 +3,8 @@
 
 namespace Pure.DI.Core.Code;
 
+using v2;
+
 sealed class CompositionBuilder(
     IBuildTools buildTools,
     INodeInfo nodeInfo,
@@ -11,7 +13,7 @@ sealed class CompositionBuilder(
     ICodeBuilder<Block> blockBuilder,
     ICodeBuilder<IStatement> statementBuilder,
     IBuilder<CompositionCode, LinesBuilder> classDiagramBuilder,
-    Func<IVariablesMap> variablesMapFactory,
+    Func<IVarsMap> variablesMapFactory,
     IVariableNameProvider variableNameProvider,
     IOverridesRegistry overridesRegistry,
     CancellationToken cancellationToken)
@@ -39,7 +41,7 @@ sealed class CompositionBuilder(
                 new LinesBuilder(),
                 root.Injection.Tag != MdTag.ContextTag ? root.Injection.Tag : null,
                 null,
-                root.Node.Accumulators.ToImmutableArray());
+                ImmutableArray<Accumulator>.Empty);
 
             foreach (var perResolveVar in map.GetPerResolves())
             {
@@ -81,7 +83,7 @@ sealed class CompositionBuilder(
 
             var typeDescription = typeResolver.Resolve(graph.Source, processedRoot.Injection.Type);
             var isMethod = (processedRoot.Kind & RootKinds.Method) == RootKinds.Method
-                           || processedRoot.Args.Length > 0
+                           || processedRoot.RootArgs.Length > 0
                            || typeDescription.TypeArgs.Count > 0;
 
             processedRoot = processedRoot with
@@ -91,7 +93,7 @@ sealed class CompositionBuilder(
             };
 
             roots.Add(processedRoot);
-            isThreadSafe |= isThreadSafeEnabled && root.Node.Accumulators.Count > 0;
+            // isThreadSafe |= isThreadSafeEnabled && root.Node.Accumulators.Count > 0;
             isThreadSafe |= isThreadSafeEnabled && map.IsThreadSafe;
             map.Reset();
         }
@@ -117,7 +119,9 @@ sealed class CompositionBuilder(
             asyncDisposables.Count,
             totalDisposables.Count(i => i.Node.Lifetime == Lifetime.Scoped),
             isThreadSafe,
-            ImmutableArray<Line>.Empty);
+            ImmutableArray<Line>.Empty,
+            ImmutableArray<VarDeclaration>.Empty,
+            ImmutableArray<VarDeclaration>.Empty);
 
         var diagram = classDiagramBuilder.Build(composition);
         return composition with { Diagram = diagram.Lines.ToImmutableArray() };
