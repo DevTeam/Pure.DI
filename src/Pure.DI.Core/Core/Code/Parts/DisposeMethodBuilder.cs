@@ -5,6 +5,7 @@ namespace Pure.DI.Core.Code.Parts;
 using static LinesBuilderExtensions;
 
 sealed class DisposeMethodBuilder(
+    ITypeResolver typeResolver,
     ILocks locks)
     : IClassPartBuilder
 {
@@ -198,10 +199,11 @@ sealed class DisposeMethodBuilder(
         code.AppendLine($"{Names.DisposablesFieldName} = new object[{composition.TotalDisposablesCount.ToString()}];");
         foreach (var singletonField in composition.Singletons)
         {
-            code.AppendLine(
-                singletonField.InstanceType.IsValueType
-                    ? $"{singletonField.Name}Created = false;"
-                    : $"{singletonField.Name} = null;");
+            code.AppendLine($"{singletonField.Name} = default({typeResolver.Resolve(composition.Source.Source, singletonField.InstanceType)});");
+            if (singletonField.InstanceType.IsValueType)
+            {
+                code.AppendLine($"{singletonField.Name}Created = false;");
+            }
         }
 
         // ReSharper disable once InvertIf
