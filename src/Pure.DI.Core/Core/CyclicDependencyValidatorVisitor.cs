@@ -1,10 +1,13 @@
 ﻿namespace Pure.DI.Core;
 
+using static Lifetime;
+
 sealed class CyclicDependencyValidatorVisitor(
     ILogger logger,
     INodeInfo nodeInfo,
-    ILocationProvider locationProvider)
-    : IGraphVisitor<HashSet<object>, ImmutableArray<Dependency>>
+    ILocationProvider locationProvider,
+    ITypeResolver typeResolver)
+    : IGraphVisitor<CyclicDependenciesValidatorContext, ImmutableArray<Dependency>>
 {
     public ImmutableArray<Dependency> Create(
         IGraph<DependencyNode, Dependency> graph,
@@ -21,7 +24,7 @@ sealed class CyclicDependencyValidatorVisitor(
             : parent.Add(dependency);
 
     public bool Visit(
-        HashSet<object> errors,
+        CyclicDependenciesValidatorContext ctx,
         IGraph<DependencyNode, Dependency> graph,
         in ImmutableArray<Dependency> path)
     {
@@ -35,7 +38,7 @@ sealed class CyclicDependencyValidatorVisitor(
         foreach (var dependency in path)
         {
             var source = dependency.Source;
-            if (nodeInfo.IsLazy(source))
+            if (source.Lifetime is Singleton or Scoped or PerResolve or PerBlock && nodeInfo.IsLazy(source))
             {
                 nodes.Clear();
             }
@@ -45,12 +48,12 @@ sealed class CyclicDependencyValidatorVisitor(
                 continue;
             }
 
-            if (!errors.Add(path))
+            if (!ctx.Errors.Add(path))
             {
                 continue;
             }
 
-            var pathStr = string.Join(" <-- ", path.Select(i => i.Source.Type));
+            var pathStr = string.Join(" <-- ", path.Select(i => typeResolver.Resolve(ctx.DependencyGraph.Source, i.Source.Type).Name.Replace("global::", "")));
             var locations = (dependency.Injection.Locations.IsDefault ? ImmutableArray<Location>.Empty : dependency.Injection.Locations)
                 .AddRange(path.SelectMany(i => i.Injection.Locations.IsDefault ? ImmutableArray<Location>.Empty : i.Injection.Locations))
                 .Add(locationProvider.GetLocation(source.Binding.Source));

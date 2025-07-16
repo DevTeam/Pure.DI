@@ -516,6 +516,71 @@ public class ErrorsAndWarningsTests
     }
 
     [Fact]
+    public async Task ShouldHandleCyclicDependenciesWhenFactory()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           namespace Sample
+                           {
+                               using System;
+                               using System.Collections.Generic;
+                               using Pure.DI;
+                               using Sample;
+                           
+                               public interface IStartupStep
+                               {
+                                   void Start();
+                               }
+                               
+                               public class StartupStep : IStartupStep
+                               {
+                                   public void Start()
+                                   {
+                                   }
+                               }
+                               
+                               public class StepsConsumer : IStartupStep
+                               {
+                                   private readonly IEnumerable<Func<IStartupStep>> _stepsFactory;
+                               
+                                   public StepsConsumer(IEnumerable<Func<IStartupStep>> stepsFactory)
+                                   {
+                                       _stepsFactory = stepsFactory;
+                                   }
+                               
+                                   public void Start()
+                                   {
+                                       foreach (var step in _stepsFactory)
+                                       {
+                                           step();
+                                       }
+                                   }
+                               }
+                           
+                               internal partial class Composition
+                               {
+                                   private void Setup() =>
+                                       DI.Setup("Composition")
+                                           .Bind().To<StartupStep>()
+                                           .Bind().To(ctx => {
+                                               ctx.Inject(out Func<IStartupStep> factory);
+                                               return factory;
+                                           })
+                                           .Root<StepsConsumer>("Consumer");
+                               }
+                           
+                               public class Program { public static void Main() { } }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count(i => i.Id == LogId.ErrorCyclicDependency && i.Locations.FirstOrDefault().GetSource() == "Func<IStartupStep> factory").ShouldBe(1, result);
+    }
+
+    [Fact]
     public async Task ShouldShowErrorWhenUnresolvedDependency()
     {
         // Given

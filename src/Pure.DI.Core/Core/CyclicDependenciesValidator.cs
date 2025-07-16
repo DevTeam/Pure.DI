@@ -3,8 +3,8 @@
 namespace Pure.DI.Core;
 
 sealed class CyclicDependenciesValidator(
-    IGraphWalker<HashSet<object>, ImmutableArray<Dependency>> graphWalker,
-    [Tag(typeof(CyclicDependencyValidatorVisitor))] IGraphVisitor<HashSet<object>, ImmutableArray<Dependency>> visitor,
+    IGraphWalker<CyclicDependenciesValidatorContext, ImmutableArray<Dependency>> graphWalker,
+    [Tag(typeof(CyclicDependencyValidatorVisitor))] IGraphVisitor<CyclicDependenciesValidatorContext, ImmutableArray<Dependency>> visitor,
     CancellationToken cancellationToken)
     : IValidator<DependencyGraph>
 {
@@ -12,10 +12,11 @@ sealed class CyclicDependenciesValidator(
     {
         var graph = dependencyGraph.Graph;
         var errors = new HashSet<object>();
+        var ctx = new CyclicDependenciesValidatorContext(dependencyGraph, errors);
         foreach (var root in dependencyGraph.Roots)
         {
             graphWalker.Walk(
-                errors,
+                ctx,
                 graph,
                 root.Node,
                 visitor,
