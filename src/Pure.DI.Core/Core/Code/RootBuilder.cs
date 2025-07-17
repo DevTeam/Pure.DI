@@ -680,6 +680,7 @@ class RootBuilder(
 
                             var isStackalloc =
                                 construct.Source.ElementType.IsValueType
+                                && spanDependencies.Count <= Const.MaxStackalloc
                                 && compilations.GetLanguageVersion(construct.Binding.SemanticModel.Compilation) >= LanguageVersion.CSharp7_3;
 
                             var createInstance = isStackalloc ? $"stackalloc {createArray}" : $"new {Names.SystemNamespace}Span<{typeResolver.Resolve(ctx.RootContext.Graph.Source, construct.Source.ElementType)}>(new {createArray})";
