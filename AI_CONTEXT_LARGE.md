@@ -5816,6 +5816,64 @@ To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
 
 
+## Tag Any
+
+```c#
+using Shouldly;
+using Pure.DI;
+
+DI.Setup(nameof(Composition))
+    .Bind<IDependency>(Tag.Any).To(ctx => new Dependency(ctx.Tag))
+    .Bind<IService>().To<Service>()
+
+    // Composition root
+    .Root<IService>("Root")
+
+    // Root by Tag.Any
+    .Root<IDependency>("OtherDependency", "Other");
+
+var composition = new Composition();
+var service = composition.Root;
+service.Dependency1.Key.ShouldBe("Abc");
+service.Dependency2.Key.ShouldBe(123);
+service.Dependency3.Key.ShouldBeNull();
+composition.OtherDependency.Key.ShouldBe("Other");
+
+interface IDependency
+{
+    object? Key { get; }
+}
+
+record Dependency(object? Key) : IDependency;
+
+interface IService
+{
+    IDependency Dependency1 { get; }
+
+    IDependency Dependency2 { get; }
+
+    IDependency Dependency3 { get; }
+}
+
+class Service(
+    [Tag("Abc")] IDependency dependencyAbc,
+    [Tag(123)] Func<IDependency> dependency123Factory,
+    IDependency dependency)
+    : IService
+{
+    public IDependency Dependency1 { get; } = dependencyAbc;
+
+    public IDependency Dependency2 { get; } = dependency123Factory();
+
+    public IDependency Dependency3 { get; } = dependency;
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+
 ## Tag Type
 
 `Tag.Type` in bindings replaces the expression `typeof(T)`, where `T` is the type of the implementation in a binding.
@@ -12114,6 +12172,23 @@ DI.Setup("Composition")
 </blockquote></details>
 
 
+<details><summary>Field Any</summary><blockquote>
+
+Any tag.
+            
+```c#
+
+DI.Setup("Composition")
+             DI.Setup(nameof(Composition))
+                 .Bind<IDependency>(Tag.Any).To(ctx => new Dependency(ctx.Tag))
+                 .Bind<IService>().To<Service>()
+            
+```
+
+
+</blockquote></details>
+
+
 <details><summary>Method On(System.String[])</summary><blockquote>
 
 This tag allows you to determine which binding will be used for explicit injection for a particular injection site.
@@ -12223,15 +12298,6 @@ Atomically generated smart tag with value "VarName".
 </blockquote></details>
 
 
-<details><summary>Field Injection</summary><blockquote>
-
-Atomically generated smart tag with value "Injection".
-            It's used for:
-            
-            class _Generator__BuildTools_ <-- _IIdGenerator_(Injection) -- _IdGenerator_ as _PerResolve_
-</blockquote></details>
-
-
 <details><summary>Field UsingDeclarations</summary><blockquote>
 
 Atomically generated smart tag with value "UsingDeclarations".
@@ -12241,12 +12307,12 @@ Atomically generated smart tag with value "UsingDeclarations".
 </blockquote></details>
 
 
-<details><summary>Field Override</summary><blockquote>
+<details><summary>Field Injection</summary><blockquote>
 
-Atomically generated smart tag with value "Override".
+Atomically generated smart tag with value "Injection".
             It's used for:
             
-            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
+            class _Generator__BuildTools_ <-- _IIdGenerator_(Injection) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
@@ -12259,6 +12325,15 @@ Atomically generated smart tag with value "LocalFunctionName".
 </blockquote></details>
 
 
+<details><summary>Field Override</summary><blockquote>
+
+Atomically generated smart tag with value "Override".
+            It's used for:
+            
+            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
 <details><summary>Field UniqueTag</summary><blockquote>
 
 Atomically generated smart tag with value "UniqueTag".
@@ -12268,12 +12343,12 @@ Atomically generated smart tag with value "UniqueTag".
 </blockquote></details>
 
 
-<details><summary>Field GenericType</summary><blockquote>
+<details><summary>Field Overrider</summary><blockquote>
 
-Atomically generated smart tag with value "GenericType".
+Atomically generated smart tag with value "Overrider".
             It's used for:
             
-            class _Generator__TypeResolver_ <-- _IIdGenerator_(GenericType) -- _IdGenerator_ as _PerResolve_
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Overrider) -- _GraphOverrider_ as _PerBlock_
 </blockquote></details>
 
 
@@ -12286,12 +12361,12 @@ Atomically generated smart tag with value "Cleaner".
 </blockquote></details>
 
 
-<details><summary>Field Overrider</summary><blockquote>
+<details><summary>Field GenericType</summary><blockquote>
 
-Atomically generated smart tag with value "Overrider".
+Atomically generated smart tag with value "GenericType".
             It's used for:
             
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Overrider) -- _GraphOverrider_ as _PerBlock_
+            class _Generator__TypeResolver_ <-- _IIdGenerator_(GenericType) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 

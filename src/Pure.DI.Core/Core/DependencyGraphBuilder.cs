@@ -448,7 +448,7 @@ sealed class DependencyGraphBuilder(
 
     private IProcessingNode CreateNewProcessingNode(object? contextTag, DependencyNode dependencyNode)
     {
-        var contracts = contractsBuilder.Build(new ContractsBuildContext(dependencyNode.Binding, contextTag));
+        var contracts = contractsBuilder.Build(new ContractsBuildContext(dependencyNode.Binding, contextTag, contextTag));
         return processingNodeFactory(dependencyNode, contracts);
     }
 

@@ -163,29 +163,29 @@ partial class Composition: IDisposable
       {
         Owned<IDependency> perBlockOwned4; // Creates the owner of an instance
         Owned transientOwned5;
-        Owned localOwned76 = perBlockOwned3;
-        transientOwned5 = localOwned76;
+        Owned localOwned77 = perBlockOwned3;
+        transientOwned5 = localOwned77;
         lock (_lock)
         {
           perBlockOwned3.Add(transientOwned5);
         }
 
-        IOwned localOwned74 = transientOwned5;
+        IOwned localOwned75 = transientOwned5;
         var transientDependency6 = new Dependency();
         lock (_lock)
         {
           perBlockOwned3.Add(transientDependency6);
         }
 
-        IDependency localValue75 = transientDependency6;
-        perBlockOwned4 = new Owned<IDependency>(localValue75, localOwned74);
+        IDependency localValue76 = transientDependency6;
+        perBlockOwned4 = new Owned<IDependency>(localValue76, localOwned75);
         lock (_lock)
         {
           perBlockOwned3.Add(perBlockOwned4);
         }
 
-        Owned<IDependency> localValue73 = perBlockOwned4;
-        return localValue73;
+        Owned<IDependency> localValue74 = perBlockOwned4;
+        return localValue74;
       });
       var perBlockOwned7 = new Owned();
       Func<Owned<IDependency>> perBlockFunc2 = new Func<Owned<IDependency>>(
@@ -194,14 +194,14 @@ partial class Composition: IDisposable
       {
         Owned<IDependency> perBlockOwned8; // Creates the owner of an instance
         Owned transientOwned9;
-        Owned localOwned80 = perBlockOwned7;
-        transientOwned9 = localOwned80;
+        Owned localOwned81 = perBlockOwned7;
+        transientOwned9 = localOwned81;
         lock (_lock)
         {
           perBlockOwned7.Add(transientOwned9);
         }
 
-        IOwned localOwned78 = transientOwned9;
+        IOwned localOwned79 = transientOwned9;
         if (_root._singletonDependency53 is null)
         {
           lock (_lock)
@@ -214,15 +214,15 @@ partial class Composition: IDisposable
           }
         }
 
-        IDependency localValue79 = _root._singletonDependency53;
-        perBlockOwned8 = new Owned<IDependency>(localValue79, localOwned78);
+        IDependency localValue80 = _root._singletonDependency53;
+        perBlockOwned8 = new Owned<IDependency>(localValue80, localOwned79);
         lock (_lock)
         {
           perBlockOwned7.Add(perBlockOwned8);
         }
 
-        Owned<IDependency> localValue77 = perBlockOwned8;
-        return localValue77;
+        Owned<IDependency> localValue78 = perBlockOwned8;
+        return localValue78;
       });
       return new Service(perBlockFunc1, perBlockFunc2);
     }

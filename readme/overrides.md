@@ -185,8 +185,8 @@ partial class Composition
             _root._singletonClock53 = new Clock();
           }
 
-          Dependency localDependency105 = new Dependency(overString2, _root._singletonClock53, overInt320, overInt321, overColor3);
-          return localDependency105;
+          Dependency localDependency106 = new Dependency(overString2, _root._singletonClock53, overInt320, overInt321, overColor3);
+          return localDependency106;
         };
       }
 

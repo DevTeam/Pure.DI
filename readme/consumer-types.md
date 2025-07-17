@@ -130,11 +130,11 @@ partial class Composition
     get
     {
       Serilog.ILogger transientILogger3;
-      Serilog.ILogger localLogger98 = _argLogger;
-      transientILogger3 = localLogger98.ForContext(new Type[2] { typeof(Dependency), typeof(Service) }[0]);
-      Serilog.ILogger transientILogger1;
       Serilog.ILogger localLogger99 = _argLogger;
-      transientILogger1 = localLogger99.ForContext(new Type[2] { typeof(Dependency), typeof(Service) }[0]);
+      transientILogger3 = localLogger99.ForContext(new Type[2] { typeof(Dependency), typeof(Service) }[0]);
+      Serilog.ILogger transientILogger1;
+      Serilog.ILogger localLogger100 = _argLogger;
+      transientILogger1 = localLogger100.ForContext(new Type[2] { typeof(Dependency), typeof(Service) }[0]);
       return new Service(transientILogger1, new Dependency(transientILogger3));
     }
   }

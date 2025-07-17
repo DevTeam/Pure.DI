@@ -28,5 +28,6 @@ readonly record struct Injection(
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool SpecialEqualTags(object? tag, object? otherTag) =>
         ReferenceEquals(tag, MdTag.ContextTag)
+        || ReferenceEquals(tag, MdTag.AnyTag)
         || tag is MdTagOnSites tagOn && tagOn.Equals(otherTag);
 }

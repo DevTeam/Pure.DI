@@ -175,22 +175,22 @@ partial class Composition: IDisposable
       () =>
       {
         Abstractions.Own<IDependency> perBlockOwn4; // Creates the owner of an instance
-        Abstractions.Own localOwn68 = perBlockOwn3;
+        Abstractions.Own localOwn69 = perBlockOwn3;
         var transientDependency5 = new Dependency();
         lock (_lock)
         {
           perBlockOwn3.Add(transientDependency5);
         }
 
-        IDependency localValue69 = transientDependency5;
-        perBlockOwn4 = new Abstractions.Own<IDependency>(localValue69, localOwn68);
+        IDependency localValue70 = transientDependency5;
+        perBlockOwn4 = new Abstractions.Own<IDependency>(localValue70, localOwn69);
         lock (_lock)
         {
           perBlockOwn3.Add(perBlockOwn4);
         }
 
-        Abstractions.Own<IDependency> localValue67 = perBlockOwn4;
-        return localValue67;
+        Abstractions.Own<IDependency> localValue68 = perBlockOwn4;
+        return localValue68;
       });
       var perBlockOwn6 = new Abstractions.Own();
       Func<Abstractions.Own<IDependency>> perBlockFunc2 = new Func<Abstractions.Own<IDependency>>(
@@ -198,7 +198,7 @@ partial class Composition: IDisposable
       () =>
       {
         Abstractions.Own<IDependency> perBlockOwn7; // Creates the owner of an instance
-        Abstractions.Own localOwn71 = perBlockOwn6;
+        Abstractions.Own localOwn72 = perBlockOwn6;
         if (_root._singletonDependency53 is null)
         {
           lock (_lock)
@@ -211,15 +211,15 @@ partial class Composition: IDisposable
           }
         }
 
-        IDependency localValue72 = _root._singletonDependency53;
-        perBlockOwn7 = new Abstractions.Own<IDependency>(localValue72, localOwn71);
+        IDependency localValue73 = _root._singletonDependency53;
+        perBlockOwn7 = new Abstractions.Own<IDependency>(localValue73, localOwn72);
         lock (_lock)
         {
           perBlockOwn6.Add(perBlockOwn7);
         }
 
-        Abstractions.Own<IDependency> localValue70 = perBlockOwn7;
-        return localValue70;
+        Abstractions.Own<IDependency> localValue71 = perBlockOwn7;
+        return localValue71;
       });
       return new Service(perBlockFunc1, perBlockFunc2);
     }

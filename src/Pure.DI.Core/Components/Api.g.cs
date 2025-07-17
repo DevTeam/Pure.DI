@@ -1398,7 +1398,7 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        public static readonly Tag Unique = Shared;
+        public static readonly Tag Unique = new Tag();
 
         /// <summary>
         /// Tag of a target implementation type.
@@ -1410,7 +1410,20 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        public static readonly Tag Type = Shared;
+        public static readonly Tag Type = new Tag();
+
+        /// <summary>
+        /// Any tag.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///  DI.Setup(nameof(Composition))
+        ///      .Bind&lt;IDependency&gt;(Tag.Any).To(ctx =&gt; new Dependency(ctx.Tag))
+        ///      .Bind&lt;IService&gt;().To&lt;Service&gt;()
+        /// </code>
+        /// </example>
+        /// </summary>
+        public static readonly Tag Any = new Tag();
         
         /// <summary>
         /// This tag allows you to determine which binding will be used for explicit injection for a particular injection site.

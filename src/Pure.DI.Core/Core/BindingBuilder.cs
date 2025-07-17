@@ -168,7 +168,6 @@ sealed class BindingBuilder(
 
         if (tag.Value is Tag tagVal)
         {
-            // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
             if (tagVal == Type)
             {
                 return MdTag.CreateTypeTag(tag, type);
@@ -177,6 +176,11 @@ sealed class BindingBuilder(
             if (tagVal == Unique)
             {
                 return MdTag.CreateUniqueTag(tag, id.Value);
+            }
+
+            if (tagVal == Any)
+            {
+                return MdTag.CreateAnyTag(tag);
             }
         }
 

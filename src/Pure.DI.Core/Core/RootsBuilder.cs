@@ -39,7 +39,7 @@ sealed class RootsBuilder(IBuilder<ContractsBuildContext, ISet<Injection>> contr
             }
 
             // ReSharper disable once LoopCanBeConvertedToQuery
-            foreach (var injection in contractsBuilder.Build(new ContractsBuildContext(node.Binding, MdTag.ContextTag)).Where(i => i == root.Injection).Take(1))
+            foreach (var injection in contractsBuilder.Build(new ContractsBuildContext(node.Binding, MdTag.ContextTag, root.Injection.Tag)).Where(i => i == root.Injection).Take(1))
             {
                 var rootInjection = ReferenceEquals(injection.Tag, MdTag.ContextTag) ? injection with { Tag = null } : injection;
                 rootsPairs.Add(new KeyValuePair<Injection, Root>(

@@ -1,8 +1,9 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
+using System.Globalization;
+
 public class TagsTests
 {
-
     [Theory]
     [InlineData("\"123\"")]
     [InlineData("123.2D")]
@@ -81,6 +82,95 @@ public class TagsTests
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["True", "True"], result);
+    }
+
+    [Theory]
+    [InlineData("\"123\"", "123")]
+    [InlineData("123.2D", "123.2")]
+    [InlineData("123.2F", "123.2")]
+    // [InlineData("123.2M", "123.2")]
+    [InlineData("123U", "123")]
+    [InlineData("123L", "123")]
+    [InlineData("123UL", "123")]
+    [InlineData("123", "123")]
+    [InlineData("MyEnum.Val2", "1")]
+    [InlineData("'a'", "a")]
+    [InlineData("typeof(MyEnum)", "Sample.MyEnum")]
+    public async Task ShouldSupportTagWhenAny(string tag, string tagOutput)
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               enum MyEnum { Val1, Val2 }
+                           
+                               internal interface IDependency
+                               {
+                               }
+                           
+                               internal class Dependency : IDependency
+                               {
+                                    public Dependency(string? tag)
+                                    {
+                                        Console.WriteLine(tag);
+                                    }
+                               }
+                           
+                               internal interface IService
+                               {
+                                   public IDependency Dependency1 { get; }
+                                           
+                                   public IDependency Dependency2 { get; }
+                               }
+                           
+                               internal class Service : IService
+                               {
+                                   public Service([Tag(#tag#)] Func<IDependency> dependency1, [Tag(#tag#)] IDependency dependency2)
+                                   {
+                                       Dependency1 = dependency1();
+                                       Dependency2 = dependency2;
+                                   }
+                           
+                                   public IDependency Dependency1 { get; }
+                                           
+                                   public IDependency Dependency2 { get; }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Bind<IDependency>(Tag.Any).As(Lifetime.Singleton).To(ctx => new Dependency(ctx.Tag!.ToString()))
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IDependency>("Dependency", "Other")
+                                           .Root<IService>("Root");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service1 = composition.Root;
+                                       var service2 = composition.Root;
+                                       Console.WriteLine(service1.Dependency1 == service1.Dependency2);        
+                                       Console.WriteLine(service2.Dependency1 == service1.Dependency1);
+                                       var dep = composition.Dependency;
+                                   }
+                               }
+                           }
+                           """.Replace("#tag#", tag).RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe([tagOutput.Any(char.IsLetter) ? tagOutput : tagOutput.Replace(".", CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator), "True", "True"], result);
     }
 
     [Theory]
@@ -479,6 +569,7 @@ public class TagsTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Sample.Service"], result);
     }
+
     [Fact]
     public async Task ShouldSupportTags()
     {

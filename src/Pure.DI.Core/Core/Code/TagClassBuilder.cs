@@ -23,6 +23,7 @@ sealed class TagClassBuilder(
                     "Shared",
                     nameof(Tag.Unique),
                     nameof(Tag.Type),
+                    nameof(Tag.Any),
                     nameof(Tag.On),
                     nameof(Tag.OnConstructorArg),
                     nameof(Tag.OnMember)

@@ -10,7 +10,8 @@ sealed class SmartTags : ISmartTags
     {
         if (SyntaxFacts.IsValidIdentifier(name)
             && name != nameof(Tag.Type)
-            && name != nameof(Tag.Unique))
+            && name != nameof(Tag.Unique)
+            && name != nameof(Tag.Any))
         {
             lock (_tags)
             {

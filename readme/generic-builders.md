@@ -116,9 +116,9 @@ partial class Composition
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
     Service2<T1, T5> transientService20;
-    Service2<T1, T5> localBuildingInstance148 = buildingInstance;
-    localBuildingInstance148.Dependency = new Dependency<T5>();
-    transientService20 = localBuildingInstance148;
+    Service2<T1, T5> localBuildingInstance149 = buildingInstance;
+    localBuildingInstance149.Dependency = new Dependency<T5>();
+    transientService20 = localBuildingInstance149;
     return transientService20;
   }
 
@@ -128,11 +128,11 @@ partial class Composition
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
     Service1<T1, T5> transientService13;
-    Service1<T1, T5> localBuildingInstance149 = buildingInstance;
+    Service1<T1, T5> localBuildingInstance150 = buildingInstance;
     T1 transientTT6 = (T1)(object)Guid.NewGuid();
-    localBuildingInstance149.Dependency = new Dependency<T5>();
-    localBuildingInstance149.SetId(transientTT6);
-    transientService13 = localBuildingInstance149;
+    localBuildingInstance150.Dependency = new Dependency<T5>();
+    localBuildingInstance150.SetId(transientTT6);
+    transientService13 = localBuildingInstance150;
     return transientService13;
   }
 }

@@ -32,7 +32,7 @@ sealed class VariationalDependencyGraphBuilder(
         var allOverriddenInjections = new HashSet<Injection>();
         foreach (var node in rawNodes)
         {
-            var contracts = contractsBuilder.Build(new ContractsBuildContext(node.Binding, MdTag.ContextTag));
+            var contracts = contractsBuilder.Build(new ContractsBuildContext(node.Binding, MdTag.ContextTag, MdTag.AnyTag));
             var isRoot = node.Root is not null;
             if (!isRoot)
             {
@@ -142,7 +142,7 @@ sealed class VariationalDependencyGraphBuilder(
                 IProcessingNode CreateProcessingNode(DependencyNode dependencyNode) =>
                     processingNodeFactory(
                         dependencyNode,
-                        contractsBuilder.Build(new ContractsBuildContext(dependencyNode.Binding, MdTag.ContextTag)));
+                        contractsBuilder.Build(new ContractsBuildContext(dependencyNode.Binding, MdTag.ContextTag, MdTag.AnyTag)));
             }
 
             return dependencyGraph;

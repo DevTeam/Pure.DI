@@ -170,8 +170,8 @@ partial class Composition
           Drawing.Color localRed2 = transientColor2;
           // Get composition sync root object
           Lock transientLock3 = _lock;
-          Lock localLockObject51 = transientLock3;
-          lock (localLockObject51)
+          Lock localLockObject52 = transientLock3;
+          lock (localLockObject52)
           {
             // Overrides with a lambda argument
             // Overrides with tag using lambda argument
@@ -186,8 +186,8 @@ partial class Composition
               _root._singletonClock53 = new Clock();
             }
 
-            Dependency localDependency52 = new Dependency(overString2, _root._singletonClock53, overInt320, overInt321, overColor3);
-            return localDependency52;
+            Dependency localDependency53 = new Dependency(overString2, _root._singletonClock53, overInt320, overInt321, overColor3);
+            return localDependency53;
           }
         };
       }

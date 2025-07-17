@@ -25,6 +25,12 @@ sealed class ContractsBuilder : IBuilder<ContractsBuildContext, ISet<Injection>>
             var contractTags = new HashSet<object?>(bindingTags);
             foreach (var tag in immutableArray)
             {
+                if (tag.Value == MdTag.AnyTag)
+                {
+                    contractTags.Add(context.InjectionTag);
+                    continue;
+                }
+
                 contractTags.Add(tag.Value);
             }
 

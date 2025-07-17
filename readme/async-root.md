@@ -91,23 +91,23 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     () =>
     {
-      IService localValue83 = new Service(new Dependency());
-      return localValue83;
+      IService localValue84 = new Service(new Dependency());
+      return localValue84;
     });
-    Func<IService> localFactory81 = perBlockFunc1;
+    Func<IService> localFactory82 = perBlockFunc1;
     // Injects a task factory creating and scheduling task objects
     TaskFactory<IService> perBlockTaskFactory2;
-    CancellationToken localCancellationToken84 = cancellationToken;
+    CancellationToken localCancellationToken85 = cancellationToken;
     TaskCreationOptions transientTaskCreationOptions6 = TaskCreationOptions.None;
-    TaskCreationOptions localTaskCreationOptions85 = transientTaskCreationOptions6;
+    TaskCreationOptions localTaskCreationOptions86 = transientTaskCreationOptions6;
     TaskContinuationOptions transientTaskContinuationOptions7 = TaskContinuationOptions.None;
-    TaskContinuationOptions localTaskContinuationOptions86 = transientTaskContinuationOptions7;
+    TaskContinuationOptions localTaskContinuationOptions87 = transientTaskContinuationOptions7;
     TaskScheduler transientTaskScheduler8 = TaskScheduler.Default;
-    TaskScheduler localTaskScheduler87 = transientTaskScheduler8;
-    perBlockTaskFactory2 = new TaskFactory<IService>(localCancellationToken84, localTaskCreationOptions85, localTaskContinuationOptions86, localTaskScheduler87);
-    TaskFactory<IService> localTaskFactory82 = perBlockTaskFactory2;
+    TaskScheduler localTaskScheduler88 = transientTaskScheduler8;
+    perBlockTaskFactory2 = new TaskFactory<IService>(localCancellationToken85, localTaskCreationOptions86, localTaskContinuationOptions87, localTaskScheduler88);
+    TaskFactory<IService> localTaskFactory83 = perBlockTaskFactory2;
     // Creates and starts a task using the instance factory
-    transientTask0 = localTaskFactory82.StartNew(localFactory81);
+    transientTask0 = localTaskFactory83.StartNew(localFactory82);
     return transientTask0;
   }
 }

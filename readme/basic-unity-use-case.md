@@ -125,7 +125,7 @@ partial class Composition
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
     Clock transientClock0;
-    Clock localBuildingInstance166 = buildingInstance;
+    Clock localBuildingInstance167 = buildingInstance;
     if (_root._singletonClockService52 is null)
     {
       lock (_lock)
@@ -137,8 +137,8 @@ partial class Composition
       }
     }
 
-    localBuildingInstance166.ClockService = _root._singletonClockService52;
-    transientClock0 = localBuildingInstance166;
+    localBuildingInstance167.ClockService = _root._singletonClockService52;
+    transientClock0 = localBuildingInstance167;
     return transientClock0;
   }
 }

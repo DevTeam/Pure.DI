@@ -91,7 +91,7 @@ sealed class ClassDiagramBuilder(
                     continue;
                 }
 
-                var contracts = injectionsBuilder.Build(new ContractsBuildContext(node.Binding, MdTag.ContextTag));
+                var contracts = injectionsBuilder.Build(new ContractsBuildContext(node.Binding, MdTag.ContextTag, null));
                 foreach (var contract in contracts)
                 {
                     if (types.TypeEquals(node.Type, contract.Type))

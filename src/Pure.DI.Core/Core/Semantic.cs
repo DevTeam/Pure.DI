@@ -271,6 +271,7 @@ sealed class Semantic(
         {
             nameof(Tag.Type) when IsSpecialType(semanticModel, node, SpecialType.Tag) => (T)(object)Tag.Type,
             nameof(Tag.Unique) when IsSpecialType(semanticModel, node, SpecialType.Tag) => (T)(object)Tag.Unique,
+            nameof(Tag.Any) when IsSpecialType(semanticModel, node, SpecialType.Tag) => (T)(object)Tag.Any,
             _ => (T)smartTags.Register(smartTagKind, text)
         };
     }
