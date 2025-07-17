@@ -7,5 +7,5 @@ record MdTagOnSites(
     SyntaxNode Source,
     ImmutableArray<MdInjectionSite> InjectionSites)
 {
-    public override string ToString() => $"TagOn(\"{string.Join(", ", InjectionSites.Select(i => $"{i}"))}\")";
+    public override string ToString() => $"\"TagOn(\"{string.Join(", ", InjectionSites.Select(i => $"{i}"))}\")\"";
 }

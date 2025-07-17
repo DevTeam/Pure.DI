@@ -5,5 +5,5 @@ namespace Pure.DI.Core.Models;
 record UniqueTag(int Id)
 {
     public override string ToString() =>
-        $"Unique tag {Id}";
+        $"\"Unique tag #{Id}\"";
 }

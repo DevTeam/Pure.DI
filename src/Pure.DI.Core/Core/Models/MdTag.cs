@@ -39,11 +39,11 @@ readonly record struct MdTag(
 
     private class ContextTagObject
     {
-        public override string ToString() => "ContextTag";
+        public override string ToString() => "\"ContextTag\"";
     }
 
     private class AnyTagObject
     {
-        public override string ToString() => "AnyTag";
+        public override string ToString() => $"{Names.ApiNamespace}{nameof(Tag)}.{nameof(Tag.Any)}";
     }
 }
