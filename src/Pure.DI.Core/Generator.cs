@@ -59,6 +59,8 @@ public sealed partial class Generator
                 return logger.WithTargetType(ctx.ConsumerTypes[0]);
             })
             .Bind().To(_ => Compiled | CultureInvariant | Singleline | IgnoreCase)
+            .Bind(VarName).To<IdGenerator>()
+            .Bind(LocalFunctionName).To<IdGenerator>()
 
             // Walkers
             .Bind<IMetadataWalker>().To<MetadataWalker>()
@@ -175,8 +177,6 @@ public sealed partial class Generator
             .Bind(UniqueTag).To<IdGenerator>()
             .Bind(GenericType).To<IdGenerator>()
             .Bind(Injection).To<IdGenerator>()
-            .Bind(VarName).To<IdGenerator>()
-            .Bind(LocalFunctionName).To<IdGenerator>()
             .Bind(Tag.Override).To<IdGenerator>()
             .Bind().To<IdGenerator>()
             .Bind().To<Registry<TT>>()
