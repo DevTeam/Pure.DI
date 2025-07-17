@@ -36,9 +36,9 @@ sealed class BuildTools(
         code.AppendLine($"[{Names.MethodImplAttributeName}(({Names.MethodImplOptionsName})256)]");
     }
 
-    public string GetDeclaration(CodeContext ctx, VarDeclaration varDeclaration, string separator = " ")
+    public string GetDeclaration(CodeContext ctx, VarDeclaration varDeclaration, string separator = " ", bool useVar = false)
     {
-        return varDeclaration.IsDeclared ? "" : $"{typeResolver.Resolve(ctx.RootContext.Graph.Source, varDeclaration.InstanceType)}{separator}";
+        return varDeclaration.IsDeclared ? "" : $"{(useVar ? "var" : typeResolver.Resolve(ctx.RootContext.Graph.Source, varDeclaration.InstanceType))}{separator}";
     }
 
     public IEnumerable<Line> OnCreated(CodeContext ctx, VarInjection varInjection)

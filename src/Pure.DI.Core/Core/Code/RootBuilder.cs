@@ -241,7 +241,7 @@ class RootBuilder(
                 || tempVariableInit
                 || hasOnCreatedStatements)
             {
-                lines.Append($"{buildTools.GetDeclaration(ctx, var.Declaration)}{tempVar.Name} = ");
+                lines.Append($"{buildTools.GetDeclaration(ctx, var.Declaration, useVar: true)}{tempVar.Name} = ");
                 lines.Append(instantiation);
                 lines.AppendLine(";");
             }
@@ -405,7 +405,7 @@ class RootBuilder(
 
                 if (!var.Declaration.IsDeclared && (var.HasCycle ?? false))
                 {
-                    lines.AppendLine($"var {var.Name} = default({buildTools.GetDeclaration(ctx, var.Declaration, "")});");
+                    lines.AppendLine($"var {var.Name} = default({typeResolver.Resolve(ctx.RootContext.Graph.Source, var.InstanceType)});");
                     var.Declaration.IsDeclared = true;
                 }
 
@@ -635,7 +635,7 @@ class RootBuilder(
                             }
 
                             lines.AppendLine();
-                            lines.AppendLine($"{buildTools.GetDeclaration(ctx, var.Declaration)}{var.Name} = {localMethodName}();");
+                            lines.AppendLine($"{buildTools.GetDeclaration(ctx, var.Declaration, useVar: true)}{var.Name} = {localMethodName}();");
                             lines.AppendLines(buildTools.OnCreated(ctx, varInjection));
                             break;
 
@@ -655,7 +655,7 @@ class RootBuilder(
                             var onCreated = buildTools.OnCreated(ctx, varInjection).ToList();
                             if (onCreated.Count > 0)
                             {
-                                lines.AppendLine($"{buildTools.GetDeclaration(ctx, var.Declaration)}{var.Name} = {instantiation};");
+                                lines.AppendLine($"{buildTools.GetDeclaration(ctx, var.Declaration, useVar: true)}{var.Name} = {instantiation};");
                                 lines.AppendLines(onCreated);
                             }
                             else
@@ -688,11 +688,11 @@ class RootBuilder(
                             break;
 
                         case MdConstructKind.Composition:
-                            lines.AppendLine($"{buildTools.GetDeclaration(ctx, var.Declaration)}{var.Name} = this;");
+                            lines.AppendLine($"{buildTools.GetDeclaration(ctx, var.Declaration, useVar: true)}{var.Name} = this;");
                             break;
 
                         case MdConstructKind.OnCannotResolve:
-                            lines.AppendLine($"{buildTools.GetDeclaration(ctx, var.Declaration)}{var.Name} = {Names.OnCannotResolve}<{varInjection.ContractType}>({varInjection.Injection.Tag.ValueToString()}, {var.AbstractNode.Lifetime.ValueToString()});");
+                            lines.AppendLine($"{buildTools.GetDeclaration(ctx, var.Declaration, useVar: true)}{var.Name} = {Names.OnCannotResolve}<{varInjection.ContractType}>({varInjection.Injection.Tag.ValueToString()}, {var.AbstractNode.Lifetime.ValueToString()});");
                             break;
 
                         case MdConstructKind.ExplicitDefaultValue:
@@ -962,7 +962,7 @@ class RootBuilder(
                 continue;
             }
 
-            ctx.Lines.AppendLine($"{buildTools.GetDeclaration(ctx, accVar.Declaration)}{accVar.Name} = new {accVar.InstanceType}();");
+            ctx.Lines.AppendLine($"{buildTools.GetDeclaration(ctx, accVar.Declaration, useVar: true)}{accVar.Name} = new {accVar.InstanceType}();");
             accVar.Declaration.IsDeclared = true;
             accVar.IsCreated = true;
         }

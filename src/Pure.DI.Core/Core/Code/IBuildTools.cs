@@ -8,7 +8,7 @@ interface IBuildTools
 
     void AddAggressiveInlining(LinesBuilder code);
 
-    string GetDeclaration(CodeContext ctx, VarDeclaration varDeclaration, string separator = " ");
+    string GetDeclaration(CodeContext ctx, VarDeclaration varDeclaration, string separator = " ", bool useVar = false);
 
     IEnumerable<Line> OnCreated(CodeContext ctx, VarInjection varInjection);
 
