@@ -133,45 +133,38 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var accumulator56 = new Owned();
+      var perBlockOwned2 = new Owned();
       Func<Owned<IDependency>> perBlockFunc1 = new Func<Owned<IDependency>>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        var accumulator56 = new Owned();
-        Owned transientOwned3;
-        Owned localOwned54 = accumulator56;
-        transientOwned3 = localOwned54;
+        Owned<IDependency> perBlockOwned3; // Creates the owner of an instance
+        Owned transientOwned4;
+        Owned localOwned56 = perBlockOwned2;
+        transientOwned4 = localOwned56;
         lock (_lock)
         {
-          accumulator56.Add(transientOwned3);
+          perBlockOwned2.Add(transientOwned4);
         }
 
-        Dependency transientDependency4 = new Dependency();
+        IOwned localOwned54 = transientOwned4;
+        var transientDependency5 = new Dependency();
         lock (_lock)
         {
-          accumulator56.Add(transientDependency4);
+          perBlockOwned2.Add(transientDependency5);
         }
 
-        Owned<IDependency> perBlockOwned2; // Creates the owner of an instance
-        IOwned localOwned55 = transientOwned3;
-        IDependency localValue56 = transientDependency4;
-        perBlockOwned2 = new Owned<IDependency>(localValue56, localOwned55);
+        IDependency localValue55 = transientDependency5;
+        perBlockOwned3 = new Owned<IDependency>(localValue55, localOwned54);
         lock (_lock)
         {
-          accumulator56.Add(perBlockOwned2);
+          perBlockOwned2.Add(perBlockOwned3);
         }
 
-        Owned<IDependency> localValue53 = perBlockOwned2;
+        Owned<IDependency> localValue53 = perBlockOwned3;
         return localValue53;
       });
-      Service transientService0 = new Service(perBlockFunc1);
-      lock (_lock)
-      {
-        accumulator56.Add(transientService0);
-      }
-
-      return transientService0;
+      return new Service(perBlockFunc1);
     }
   }
 }

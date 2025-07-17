@@ -80,14 +80,14 @@ partial class Composition
     {
       if (_root._singletonService53 is null)
       {
-        Func<IDependency> perBlockFunc0 = new Func<IDependency>(
+        Func<IDependency> perBlockFunc1 = new Func<IDependency>(
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         () =>
         {
-          IDependency localValue152 = new Dependency();
-          return localValue152;
+          IDependency localValue158 = new Dependency();
+          return localValue158;
         });
-        _root._singletonService53 = new Service(perBlockFunc0);
+        _root._singletonService53 = new Service(perBlockFunc1);
       }
 
       return _root._singletonService53;

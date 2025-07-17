@@ -142,7 +142,7 @@ partial class Composition
         }
       }
 
-      Service transientService0 = new Service(_root._singletonDependency52);
+      var transientService0 = new Service(_root._singletonDependency52);
       OnNewInstance<Service>(ref transientService0, null, Lifetime.Transient);
       return transientService0;
     }

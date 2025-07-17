@@ -102,6 +102,11 @@ The following partial class will be generated:
 partial class Composition
 {
   private readonly Composition _root;
+#if NET9_0_OR_GREATER
+  private readonly Lock _lock;
+#else
+  private readonly Object _lock;
+#endif
 
   private readonly Serilog.ILogger _argLogger;
 
@@ -110,12 +115,18 @@ partial class Composition
   {
     _argLogger = logger ?? throw new ArgumentNullException(nameof(logger));
     _root = this;
+#if NET9_0_OR_GREATER
+    _lock = new Lock();
+#else
+    _lock = new Object();
+#endif
   }
 
   internal Composition(Composition parentScope)
   {
     _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
     _argLogger = _root._argLogger;
+    _lock = _root._lock;
   }
 
   private Serilog.ILogger Log
@@ -123,10 +134,10 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Serilog.ILogger transientILogger0;
+      Serilog.ILogger transientILogger4;
       Serilog.ILogger localLogger43 = _argLogger;
-      transientILogger0 = localLogger43.ForContext(new Type[1] { typeof(Composition) }[0]);
-      return transientILogger0;
+      transientILogger4 = localLogger43.ForContext(new Type[2] { typeof(Serilog.ILogger), typeof(Service) }[0]);
+      return transientILogger4;
     }
   }
 
@@ -135,12 +146,12 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
+      var transientDependency2 = new Dependency();
+      OnNewInstance<Dependency>(ref transientDependency2, null, Lifetime.Transient);
       Serilog.ILogger transientILogger1;
       Serilog.ILogger localLogger42 = _argLogger;
-      transientILogger1 = localLogger42.ForContext(new Type[1] { typeof(Service) }[0]);
-      Dependency transientDependency2 = new Dependency();
-      OnNewInstance<Dependency>(ref transientDependency2, null, Lifetime.Transient);
-      Service transientService0 = new Service(transientILogger1, OnDependencyInjection<IDependency>(transientDependency2, null, Lifetime.Transient));
+      transientILogger1 = localLogger42.ForContext(new Type[2] { typeof(Serilog.ILogger), typeof(Service) }[0]);
+      var transientService0 = new Service(transientILogger1, OnDependencyInjection<IDependency>(transientDependency2, null, Lifetime.Transient));
       OnNewInstance<Service>(ref transientService0, null, Lifetime.Transient);
       return OnDependencyInjection<IService>(transientService0, null, Lifetime.Transient);
     }

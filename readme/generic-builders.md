@@ -87,16 +87,27 @@ The following partial class will be generated:
 partial class Composition
 {
   private readonly Composition _root;
+#if NET9_0_OR_GREATER
+  private readonly Lock _lock;
+#else
+  private readonly Object _lock;
+#endif
 
-  [OrdinalAttribute(128)]
+  [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;
+#if NET9_0_OR_GREATER
+    _lock = new Lock();
+#else
+    _lock = new Object();
+#endif
   }
 
   internal Composition(Composition parentScope)
   {
     _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
+    _lock = _root._lock;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -105,9 +116,9 @@ partial class Composition
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
     Service2<T1, T5> transientService20;
-    Service2<T1, T5> localBuildingInstance142 = buildingInstance;
-    localBuildingInstance142.Dependency = new Dependency<T5>();
-    transientService20 = localBuildingInstance142;
+    Service2<T1, T5> localBuildingInstance148 = buildingInstance;
+    localBuildingInstance148.Dependency = new Dependency<T5>();
+    transientService20 = localBuildingInstance148;
     return transientService20;
   }
 
@@ -116,13 +127,13 @@ partial class Composition
     where T1: struct
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    T1 transientTT2 = (T1)(object)Guid.NewGuid();
-    Service1<T1, T5> transientService10;
-    Service1<T1, T5> localBuildingInstance143 = buildingInstance;
-    localBuildingInstance143.Dependency = new Dependency<T5>();
-    localBuildingInstance143.SetId(transientTT2);
-    transientService10 = localBuildingInstance143;
-    return transientService10;
+    Service1<T1, T5> transientService13;
+    Service1<T1, T5> localBuildingInstance149 = buildingInstance;
+    T1 transientTT6 = (T1)(object)Guid.NewGuid();
+    localBuildingInstance149.Dependency = new Dependency<T5>();
+    localBuildingInstance149.SetId(transientTT6);
+    transientService13 = localBuildingInstance149;
+    return transientService13;
   }
 }
 ```

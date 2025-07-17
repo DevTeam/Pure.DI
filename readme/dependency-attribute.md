@@ -99,6 +99,11 @@ The following partial class will be generated:
 partial class PersonComposition
 {
   private readonly PersonComposition _root;
+#if NET9_0_OR_GREATER
+  private readonly Lock _lock;
+#else
+  private readonly Object _lock;
+#endif
 
   private readonly int _argPersonId;
   private readonly string _argPersonName;
@@ -111,6 +116,11 @@ partial class PersonComposition
     _argPersonName = personName ?? throw new ArgumentNullException(nameof(personName));
     _argPersonBirthday = personBirthday;
     _root = this;
+#if NET9_0_OR_GREATER
+    _lock = new Lock();
+#else
+    _lock = new Object();
+#endif
   }
 
   internal PersonComposition(PersonComposition parentScope)
@@ -119,6 +129,7 @@ partial class PersonComposition
     _argPersonId = _root._argPersonId;
     _argPersonName = _root._argPersonName;
     _argPersonBirthday = _root._argPersonBirthday;
+    _lock = _root._lock;
   }
 
   public IPerson Person
@@ -126,7 +137,7 @@ partial class PersonComposition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Person transientPerson0 = new Person();
+      var transientPerson0 = new Person();
       transientPerson0.Id = _argPersonId;
       transientPerson0.FirstName = _argPersonName;
       transientPerson0.Birthday = _argPersonBirthday;

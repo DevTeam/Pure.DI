@@ -132,15 +132,15 @@ partial class Composition
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        Composition transientComposition3 = this;
         IService transientIService2;
-        Composition localParentScope155 = transientComposition3;
+        var transientComposition3 = this;
+        Composition localParentScope161 = transientComposition3;
         // Creates a new scope from the parent scope
-        var localScope156 = new Composition(localParentScope155);
+        var localScope162 = new Composition(localParentScope161);
         // Provides the session root in a new scope
-        transientIService2 = localScope156.SessionRoot;
-        IService localValue154 = transientIService2;
-        return localValue154;
+        transientIService2 = localScope162.SessionRoot;
+        IService localValue160 = transientIService2;
+        return localValue160;
       });
       return new Program(perBlockFunc1);
     }

@@ -116,13 +116,17 @@ partial class Composition
         {
           if (_root._singletonService53 is null)
           {
-            if (_root._singletonDependency52 is null)
-            {
-              _root._singletonDependency52 = new Dependency();
-            }
-
+            EnsureDependencyExists0();
             _root._singletonService53 = new Service(_root._singletonDependency52, _root._singletonDependency52);
           }
+        }
+      }
+
+      void EnsureDependencyExists0()
+      {
+        if (_root._singletonDependency52 is null)
+        {
+          _root._singletonDependency52 = new Dependency();
         }
       }
 

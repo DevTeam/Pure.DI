@@ -109,7 +109,7 @@ partial class Composition
   private DependencyStruct<int> _singletonDependencyStruct60;
   private bool _singletonDependencyStruct60Created;
 
-  [OrdinalAttribute(128)]
+  [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;

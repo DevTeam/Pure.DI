@@ -105,7 +105,7 @@ partial class Composition
         await Task.CompletedTask;
       }
 
-      IAsyncEnumerable<IDependency> transientIAsyncEnumerable1 = EnumerationOf_transientIAsyncEnumerable1();
+      var transientIAsyncEnumerable1 = EnumerationOf_transientIAsyncEnumerable1();
       return new Service(transientIAsyncEnumerable1);
     }
   }

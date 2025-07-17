@@ -1917,7 +1917,7 @@ var composition = new Composition();
 var service1 = composition.Root;
 service1.Dep1.ShouldBe(service1.Dep2);
 service1.Dep3.ShouldBe(service1.Dep4);
-service1.Dep1.ShouldNotBe(service1.Dep3);
+service1.Dep1.ShouldBe(service1.Dep3);
 
 var service2 = composition.Root;
 service2.Dep1.ShouldNotBe(service1.Dep1);
@@ -6305,8 +6305,8 @@ DI.Setup(nameof(Composition))
 var composition = new Composition();
 var (service, accumulator) = composition.Root;
 accumulator.Count.ShouldBe(3);
-accumulator[0].ShouldBeOfType<AbcDependency>();
-accumulator[1].ShouldBeOfType<XyzDependency>();
+accumulator[0].ShouldBeOfType<XyzDependency>();
+accumulator[1].ShouldBeOfType<AbcDependency>();
 accumulator[2].ShouldBeOfType<Service>();
 
 interface IAccumulating;
@@ -6376,9 +6376,9 @@ using System.Diagnostics;
 var composition = new Composition("Abc");
 var service = composition.Root;
 
-service.Name.ShouldBe("Abc_1");
-service.Dependency1.Id.ShouldBe(2);
-service.Dependency2.Id.ShouldBe(3);
+service.Name.ShouldBe("Abc_3");
+service.Dependency1.Id.ShouldBe(1);
+service.Dependency2.Id.ShouldBe(2);
 
 interface IDependency
 {
@@ -7722,7 +7722,7 @@ The [project file](/samples/AvaloniaApp/AvaloniaApp.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.1.72">
+        <PackageReference Include="Pure.DI" Version="2.2.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -7788,11 +7788,11 @@ The [project file](/samples/BlazorServerApp/BlazorServerApp.csproj) looks like t
 <Project Sdk="Microsoft.NET.Sdk.Web">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.1.72">
+        <PackageReference Include="Pure.DI" Version="2.2.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.1.72" />
+        <PackageReference Include="Pure.DI.MS" Version="2.2.0" />
     </ItemGroup>
 
 </Project>
@@ -7858,11 +7858,11 @@ The [project file](/samples/BlazorWebAssemblyApp/BlazorWebAssemblyApp.csproj) lo
 <Project Sdk="Microsoft.NET.Sdk.Web">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.1.72">
+        <PackageReference Include="Pure.DI" Version="2.2.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.1.72" />
+        <PackageReference Include="Pure.DI.MS" Version="2.2.0" />
     </ItemGroup>
 
 </Project>
@@ -7887,7 +7887,7 @@ The [project file](/samples/ShroedingersCatNativeAOT/ShroedingersCatNativeAOT.cs
 <Project Sdk="Microsoft.NET.Sdk">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.1.72">
+        <PackageReference Include="Pure.DI" Version="2.2.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -7988,7 +7988,7 @@ The [project file](/samples/ShroedingersCat/ShroedingersCat.csproj) looks like t
 <Project Sdk="Microsoft.NET.Sdk">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.1.72">
+        <PackageReference Include="Pure.DI" Version="2.2.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -8074,7 +8074,7 @@ The [project file](/samples/ShroedingersCatTopLevelStatements/ShroedingersCatTop
 <Project Sdk="Microsoft.NET.Sdk">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.1.72">
+        <PackageReference Include="Pure.DI" Version="2.2.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -8142,11 +8142,11 @@ The [project file](/samples/GrpcService/GrpcService.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk.Web">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.1.72">
+        <PackageReference Include="Pure.DI" Version="2.2.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.1.72" />
+        <PackageReference Include="Pure.DI.MS" Version="2.2.0" />
     </ItemGroup>
 
 </Project>
@@ -8309,11 +8309,11 @@ The [project file](/samples/MAUIApp/MAUIApp.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.1.72">
+        <PackageReference Include="Pure.DI" Version="2.2.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.1.72" />
+        <PackageReference Include="Pure.DI.MS" Version="2.2.0" />
     </ItemGroup>
 
 </Project>
@@ -8403,11 +8403,11 @@ The [project file](/samples/WebAPI/WebAPI.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk.Web">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.1.72">
+        <PackageReference Include="Pure.DI" Version="2.2.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.1.72" />
+        <PackageReference Include="Pure.DI.MS" Version="2.2.0" />
     </ItemGroup>
 
 </Project>
@@ -8569,11 +8569,11 @@ The [project file](/samples/WebAPI/WebAPI.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk.Web">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.1.72">
+        <PackageReference Include="Pure.DI" Version="2.2.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.1.72" />
+        <PackageReference Include="Pure.DI.MS" Version="2.2.0" />
     </ItemGroup>
 
 </Project>
@@ -8640,11 +8640,11 @@ The [project file](/samples/WebApp/WebApp.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk.Web">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.1.72">
+        <PackageReference Include="Pure.DI" Version="2.2.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.1.72" />
+        <PackageReference Include="Pure.DI.MS" Version="2.2.0" />
     </ItemGroup>
 
 </Project>
@@ -8712,7 +8712,7 @@ The [project file](/samples/WinFormsAppNetCore/WinFormsAppNetCore.csproj) looks 
 <Project Sdk="Microsoft.NET.Sdk">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.1.72">
+        <PackageReference Include="Pure.DI" Version="2.2.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -8785,7 +8785,7 @@ The [project file](/samples/WinFormsApp/WinFormsApp.csproj) looks like this:
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.1.72">
+        <PackageReference Include="Pure.DI" Version="2.2.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -8913,7 +8913,7 @@ The [project file](/samples/WpfAppNetCore/WpfAppNetCore.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk">
    ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.1.72">
+        <PackageReference Include="Pure.DI" Version="2.2.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -10412,42 +10412,6 @@ DI.Setup("Composition")
 
 See also _Hint(Pure.DI.Hint,System.String)_.
 
-</blockquote></details>
-
-
-<details><summary>Field SystemThreadingLock</summary><blockquote>
-
- `On`  or  `Off` . Indicates whether _Lock_ should be used whenever possible instead of the classic approach of synchronizing object access using _Monitor_.  `On`  by default.
-            
-```c#
-
-// SystemThreadingLock = Off
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
-```
-
-
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
-            
-```c#
-
-DI.Setup("Composition")
-                .Hint(Hint.SystemThreadingLock, "Off")
-                .Bind<IDependency>().To<Dependency>();
-            
-```
-
-
-See also _Hint(Pure.DI.Hint,System.String)_.
-
-</blockquote></details>
-
-
-<details><summary>Field LocalFunctionLines</summary><blockquote>
-
-Undocumented feature, for now only for internal use.
-            
 </blockquote></details>
 
 
@@ -12241,30 +12205,30 @@ Atomically generated smart tag with value "SyncRoot".
 </blockquote></details>
 
 
-<details><summary>Field Overrider</summary><blockquote>
+<details><summary>Field CompositionClass</summary><blockquote>
 
-Atomically generated smart tag with value "Overrider".
+Atomically generated smart tag with value "CompositionClass".
             It's used for:
             
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Overrider) -- _GraphOverrider_ as _PerBlock_
+            class _Generator__CodeBuilder_ <-- _IBuilder`2_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
 </blockquote></details>
 
 
-<details><summary>Field UniqueTag</summary><blockquote>
+<details><summary>Field VarName</summary><blockquote>
 
-Atomically generated smart tag with value "UniqueTag".
+Atomically generated smart tag with value "VarName".
             It's used for:
             
-            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve__BindingBuilder_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve_
+            class _Generator__VarsMap_ <-- _IIdGenerator_(VarName) -- _IdGenerator_ as _Transient_
 </blockquote></details>
 
 
-<details><summary>Field GenericType</summary><blockquote>
+<details><summary>Field Injection</summary><blockquote>
 
-Atomically generated smart tag with value "GenericType".
+Atomically generated smart tag with value "Injection".
             It's used for:
             
-            class _Generator__TypeResolver_ <-- _IIdGenerator_(GenericType) -- _IdGenerator_ as _PerResolve_
+            class _Generator__BuildTools_ <-- _IIdGenerator_(Injection) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
@@ -12286,6 +12250,33 @@ Atomically generated smart tag with value "Override".
 </blockquote></details>
 
 
+<details><summary>Field LocalFunctionName</summary><blockquote>
+
+Atomically generated smart tag with value "LocalFunctionName".
+            It's used for:
+            
+            class _Generator__RootBuilder_ <-- _IIdGenerator_(LocalFunctionName) -- _IdGenerator_ as _Transient_
+</blockquote></details>
+
+
+<details><summary>Field UniqueTag</summary><blockquote>
+
+Atomically generated smart tag with value "UniqueTag".
+            It's used for:
+            
+            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve__BindingBuilder_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
+<details><summary>Field GenericType</summary><blockquote>
+
+Atomically generated smart tag with value "GenericType".
+            It's used for:
+            
+            class _Generator__TypeResolver_ <-- _IIdGenerator_(GenericType) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
 <details><summary>Field Cleaner</summary><blockquote>
 
 Atomically generated smart tag with value "Cleaner".
@@ -12295,21 +12286,12 @@ Atomically generated smart tag with value "Cleaner".
 </blockquote></details>
 
 
-<details><summary>Field CompositionClass</summary><blockquote>
+<details><summary>Field Overrider</summary><blockquote>
 
-Atomically generated smart tag with value "CompositionClass".
+Atomically generated smart tag with value "Overrider".
             It's used for:
             
-            class _Generator__CodeBuilder_ <-- _IBuilder`2_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
-</blockquote></details>
-
-
-<details><summary>Field Injection</summary><blockquote>
-
-Atomically generated smart tag with value "Injection".
-            It's used for:
-            
-            class _Generator__BuildTools_ <-- _IIdGenerator_(Injection) -- _IdGenerator_ as _PerResolve_
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Overrider) -- _GraphOverrider_ as _PerBlock_
 </blockquote></details>
 
 

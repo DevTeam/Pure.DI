@@ -142,7 +142,7 @@ partial class Composition: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _singletonDependency52 = null;
+      _singletonDependency52 = default(Dependency);
       }
 
       while (disposeIndex-- > 0)

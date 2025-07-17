@@ -64,6 +64,11 @@ The following partial class will be generated:
 partial class Composition
 {
   private readonly Composition _root;
+#if NET9_0_OR_GREATER
+  private readonly Lock _lock;
+#else
+  private readonly Object _lock;
+#endif
 
   private readonly OtherAssembly.CompositionInOtherProject _argBaseComposition;
 
@@ -72,12 +77,18 @@ partial class Composition
   {
     _argBaseComposition = baseComposition ?? throw new ArgumentNullException(nameof(baseComposition));
     _root = this;
+#if NET9_0_OR_GREATER
+    _lock = new Lock();
+#else
+    _lock = new Object();
+#endif
   }
 
   internal Composition(Composition parentScope)
   {
     _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
     _argBaseComposition = _root._argBaseComposition;
+    _lock = _root._lock;
   }
 
   public Program Program

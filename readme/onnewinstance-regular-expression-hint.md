@@ -141,7 +141,7 @@ partial class Composition
         }
       }
 
-      Service perBlockService0 = new Service(_root._singletonDependency52);
+      var perBlockService0 = new Service(_root._singletonDependency52);
       OnNewInstance<Service>(ref perBlockService0, null, Lifetime.PerBlock);
       return perBlockService0;
     }

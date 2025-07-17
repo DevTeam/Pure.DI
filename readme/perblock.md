@@ -20,7 +20,7 @@ var composition = new Composition();
 var service1 = composition.Root;
 service1.Dep1.ShouldBe(service1.Dep2);
 service1.Dep3.ShouldBe(service1.Dep4);
-service1.Dep1.ShouldNotBe(service1.Dep3);
+service1.Dep1.ShouldBe(service1.Dep3);
 
 var service2 = composition.Root;
 service2.Dep1.ShouldNotBe(service1.Dep1);
@@ -108,15 +108,14 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Dependency perBlockDependency1 = new Dependency();
+      var perBlockDependency1 = new Dependency();
       if (!_root._singletonValueTuple53Created)
       {
         lock (_lock)
         {
           if (!_root._singletonValueTuple53Created)
           {
-            Dependency perBlockDependency2 = new Dependency();
-            _root._singletonValueTuple53 = (perBlockDependency2, perBlockDependency2);
+            _root._singletonValueTuple53 = (perBlockDependency1, perBlockDependency1);
             Thread.MemoryBarrier();
             _root._singletonValueTuple53Created = true;
           }

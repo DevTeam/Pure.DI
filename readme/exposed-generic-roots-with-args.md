@@ -75,7 +75,7 @@ partial class Composition
 
   private OtherAssembly.CompositionWithGenericRootsAndArgsInOtherProject? _singletonCompositionWithGenericRootsAndArgsInOtherProject53;
 
-  [OrdinalAttribute(128)]
+  [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;
@@ -95,6 +95,8 @@ partial class Composition
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Program GetProgram(int id)
   {
+    OtherAssembly.IMyGenericService<int> transientIMyGenericService1;
+    int localId45 = id;
     if (_root._singletonCompositionWithGenericRootsAndArgsInOtherProject53 is null)
     {
       lock (_lock)
@@ -106,8 +108,6 @@ partial class Composition
       }
     }
 
-    OtherAssembly.IMyGenericService<int> transientIMyGenericService1;
-    int localId45 = id;
     OtherAssembly.CompositionWithGenericRootsAndArgsInOtherProject localInstance_1182D12746 = _root._singletonCompositionWithGenericRootsAndArgsInOtherProject53;
     transientIMyGenericService1 = localInstance_1182D12746.GetMyService<int>(localId45);
     return new Program(transientIMyGenericService1);

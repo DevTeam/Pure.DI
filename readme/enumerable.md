@@ -97,7 +97,7 @@ partial class Composition
         yield return new XyzDependency();
       }
 
-      IEnumerable<IDependency> perBlockIEnumerable1 = EnumerationOf_perBlockIEnumerable1();
+      var perBlockIEnumerable1 = EnumerationOf_perBlockIEnumerable1();
       return new Service(perBlockIEnumerable1);
     }
   }

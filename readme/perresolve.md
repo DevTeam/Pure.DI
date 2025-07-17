@@ -108,37 +108,30 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var perResolveDependency52 = default(Dependency);
-      if (perResolveDependency52 is null)
-      {
-        lock (_lock)
-        {
-          if (perResolveDependency52 is null)
-          {
-            perResolveDependency52 = new Dependency();
-          }
-        }
-      }
-
+      var perResolveDependency1 = default(Dependency);
       if (!_root._singletonValueTuple53Created)
       {
         lock (_lock)
         {
           if (!_root._singletonValueTuple53Created)
           {
-            if (perResolveDependency52 is null)
-            {
-              perResolveDependency52 = new Dependency();
-            }
-
-            _root._singletonValueTuple53 = (perResolveDependency52, perResolveDependency52);
+            EnsureDependencyExists0();
+            _root._singletonValueTuple53 = (perResolveDependency1, perResolveDependency1);
             Thread.MemoryBarrier();
             _root._singletonValueTuple53Created = true;
           }
         }
       }
 
-      return new Service(perResolveDependency52, perResolveDependency52, _root._singletonValueTuple53);
+      void EnsureDependencyExists0()
+      {
+        if (perResolveDependency1 is null)
+        {
+          perResolveDependency1 = new Dependency();
+        }
+      }
+
+      return new Service(perResolveDependency1, perResolveDependency1, _root._singletonValueTuple53);
     }
   }
 }

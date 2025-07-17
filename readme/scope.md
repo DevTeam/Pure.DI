@@ -174,9 +174,9 @@ partial class Composition: IDisposable
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        Composition transientComposition3 = this;
-        Session localValue157 = new Session(transientComposition3);
-        return localValue157;
+        var transientComposition3 = this;
+        Session localValue163 = new Session(transientComposition3);
+        return localValue163;
       });
       return new Program(perBlockFunc1);
     }
@@ -192,7 +192,7 @@ partial class Composition: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _scopedDependency52 = null;
+      _scopedDependency52 = default(Dependency);
       }
 
       while (disposeIndex-- > 0)

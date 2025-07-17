@@ -118,31 +118,24 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var perResolveFunc54 = default(Func<int, IDependency>);
-      int overInt320;
-      if (perResolveFunc54 is null)
+      Func<int, IDependency> perBlockFunc1;
+      lock (_lock)
       {
-        lock (_lock)
+        Func<int, IDependency> localFactory102 = new Func<int, IDependency>((int localArg112) =>
         {
-          if (perResolveFunc54 is null)
+          Lock transientLock2 = _lock;
+          Lock localLockObject103 = transientLock2;
+          lock (localLockObject103)
           {
-            Func<int, IDependency> localFactory102 = new Func<int, IDependency>((int localArg111) =>
-            {
-              Lock transientLock1 = _lock;
-              Lock localLockObject103 = transientLock1;
-              lock (localLockObject103)
-              {
-                overInt320 = localArg111;
-                IDependency localValue104 = new Dependency(overInt320);
-                return localValue104;
-              }
-            });
-            perResolveFunc54 = localFactory102;
+            int overInt320 = localArg112;
+            IDependency localValue104 = new Dependency(overInt320);
+            return localValue104;
           }
-        }
+        });
+        perBlockFunc1 = localFactory102;
       }
 
-      return new Service(perResolveFunc54);
+      return new Service(perBlockFunc1);
     }
   }
 }
@@ -163,7 +156,7 @@ classDiagram
 	Service --|> IService
 	Composition ..> Service : IService Root
 	Dependency *--  Int32 : Int32
-	Service o-- "PerResolve" FuncᐸInt32ˏIDependencyᐳ : FuncᐸInt32ˏIDependencyᐳ
+	Service o-- "PerBlock" FuncᐸInt32ˏIDependencyᐳ : FuncᐸInt32ˏIDependencyᐳ
 	FuncᐸInt32ˏIDependencyᐳ *--  Lock : "SyncRoot"  Lock
 	FuncᐸInt32ˏIDependencyᐳ *--  Dependency : IDependency
 	namespace Pure.DI.UsageTests.Basics.InjectionOnDemandWithArgumentsScenario {

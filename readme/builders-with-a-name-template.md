@@ -93,29 +93,40 @@ The following partial class will be generated:
 partial class Composition
 {
   private readonly Composition _root;
+#if NET9_0_OR_GREATER
+  private readonly Lock _lock;
+#else
+  private readonly Object _lock;
+#endif
 
-  [OrdinalAttribute(128)]
+  [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;
+#if NET9_0_OR_GREATER
+    _lock = new Lock();
+#else
+    _lock = new Object();
+#endif
   }
 
   internal Composition(Composition parentScope)
   {
     _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
+    _lock = _root._lock;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Service1 BuildUpService1(Service1 buildingInstance)
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    Guid transientGuid2 = Guid.NewGuid();
-    Service1 transientService10;
+    Service1 transientService13;
     Service1 localBuildingInstance95 = buildingInstance;
+    Guid transientGuid6 = Guid.NewGuid();
     localBuildingInstance95.Dependency = new Dependency();
-    localBuildingInstance95.SetId(transientGuid2);
-    transientService10 = localBuildingInstance95;
-    return transientService10;
+    localBuildingInstance95.SetId(transientGuid6);
+    transientService13 = localBuildingInstance95;
+    return transientService13;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]

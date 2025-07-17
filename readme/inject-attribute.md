@@ -79,6 +79,11 @@ The following partial class will be generated:
 partial class PersonComposition
 {
   private readonly PersonComposition _root;
+#if NET9_0_OR_GREATER
+  private readonly Lock _lock;
+#else
+  private readonly Object _lock;
+#endif
 
   private readonly int _argPersonId;
 
@@ -87,12 +92,18 @@ partial class PersonComposition
   {
     _argPersonId = personId;
     _root = this;
+#if NET9_0_OR_GREATER
+    _lock = new Lock();
+#else
+    _lock = new Object();
+#endif
   }
 
   internal PersonComposition(PersonComposition parentScope)
   {
     _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
     _argPersonId = _root._argPersonId;
+    _lock = _root._lock;
   }
 
   public IPerson Person
@@ -101,10 +112,10 @@ partial class PersonComposition
     get
     {
       string transientString1 = "Nik";
-      Uri transientUri2 = new Uri("https://github.com/DevTeam/Pure.DI");
-      Person transientPerson0 = new Person(transientString1);
+      Uri transientUri3 = new Uri("https://github.com/DevTeam/Pure.DI");
+      var transientPerson0 = new Person(transientString1);
       transientPerson0.Id = _argPersonId;
-      transientPerson0.Initialize(transientUri2);
+      transientPerson0.Initialize(transientUri3);
       return transientPerson0;
     }
   }

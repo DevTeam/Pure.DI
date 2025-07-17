@@ -100,6 +100,11 @@ The following partial class will be generated:
 partial class Composition
 {
   private readonly Composition _root;
+#if NET9_0_OR_GREATER
+  private readonly Lock _lock;
+#else
+  private readonly Object _lock;
+#endif
 
   private readonly int _argId;
   private readonly string _argServiceName;
@@ -112,6 +117,11 @@ partial class Composition
     _argServiceName = serviceName ?? throw new ArgumentNullException(nameof(serviceName));
     _argDependencyName = dependencyName ?? throw new ArgumentNullException(nameof(dependencyName));
     _root = this;
+#if NET9_0_OR_GREATER
+    _lock = new Lock();
+#else
+    _lock = new Object();
+#endif
   }
 
   internal Composition(Composition parentScope)
@@ -120,6 +130,7 @@ partial class Composition
     _argId = _root._argId;
     _argServiceName = _root._argServiceName;
     _argDependencyName = _root._argDependencyName;
+    _lock = _root._lock;
   }
 
   public IService MyService

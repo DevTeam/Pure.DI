@@ -106,31 +106,24 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var perResolveFunc55 = default(Func<int, IDependency<string>>);
-      int overInt320;
-      if (perResolveFunc55 is null)
+      Func<int, IDependency<string>> perBlockFunc1;
+      lock (_lock)
       {
-        lock (_lock)
+        Func<int, IDependency<string>> localFactory153 = new Func<int, IDependency<string>>((int localArg112) =>
         {
-          if (perResolveFunc55 is null)
+          Lock transientLock2 = _lock;
+          Lock localLockObject154 = transientLock2;
+          lock (localLockObject154)
           {
-            Func<int, IDependency<string>> localFactory147 = new Func<int, IDependency<string>>((int localArg111) =>
-            {
-              Lock transientLock1 = _lock;
-              Lock localLockObject148 = transientLock1;
-              lock (localLockObject148)
-              {
-                overInt320 = localArg111;
-                IDependency<string> localValue149 = new Dependency<string>(overInt320);
-                return localValue149;
-              }
-            });
-            perResolveFunc55 = localFactory147;
+            int overInt320 = localArg112;
+            IDependency<string> localValue155 = new Dependency<string>(overInt320);
+            return localValue155;
           }
-        }
+        });
+        perBlockFunc1 = localFactory153;
       }
 
-      return new Service<string>(perResolveFunc55);
+      return new Service<string>(perBlockFunc1);
     }
   }
 }
@@ -150,7 +143,7 @@ classDiagram
 	ServiceᐸStringᐳ --|> IServiceᐸStringᐳ
 	DependencyᐸStringᐳ --|> IDependencyᐸStringᐳ
 	Composition ..> ServiceᐸStringᐳ : IServiceᐸStringᐳ Root
-	ServiceᐸStringᐳ o-- "PerResolve" FuncᐸInt32ˏIDependencyᐸStringᐳᐳ : FuncᐸInt32ˏIDependencyᐸStringᐳᐳ
+	ServiceᐸStringᐳ o-- "PerBlock" FuncᐸInt32ˏIDependencyᐸStringᐳᐳ : FuncᐸInt32ˏIDependencyᐸStringᐳᐳ
 	FuncᐸInt32ˏIDependencyᐸStringᐳᐳ *--  Lock : "SyncRoot"  Lock
 	FuncᐸInt32ˏIDependencyᐸStringᐳᐳ *--  DependencyᐸStringᐳ : IDependencyᐸStringᐳ
 	DependencyᐸStringᐳ *--  Int32 : Int32

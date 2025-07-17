@@ -113,13 +113,17 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonDependency52 is null)
+      EnsureDependencyDependencyKeyExists1();
+      void EnsureDependencyDependencyKeyExists1()
       {
-        lock (_lock)
+        if (_root._singletonDependency52 is null)
         {
-          if (_root._singletonDependency52 is null)
+          lock (_lock)
           {
-            _root._singletonDependency52 = new Dependency();
+            if (_root._singletonDependency52 is null)
+            {
+              _root._singletonDependency52 = new Dependency();
+            }
           }
         }
       }
@@ -133,13 +137,17 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonDependency52 is null)
+      EnsureDependencyDependencyKeyExists0();
+      void EnsureDependencyDependencyKeyExists0()
       {
-        lock (_lock)
+        if (_root._singletonDependency52 is null)
         {
-          if (_root._singletonDependency52 is null)
+          lock (_lock)
           {
-            _root._singletonDependency52 = new Dependency();
+            if (_root._singletonDependency52 is null)
+            {
+              _root._singletonDependency52 = new Dependency();
+            }
           }
         }
       }

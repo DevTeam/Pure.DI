@@ -98,17 +98,16 @@ partial class Singleton
   {
     if (_scopedService150 is null)
     {
+      EnsureService4Exists0();
+      _scopedService150 = new Service1(new Service2(new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453)));
+    }
+
+    void EnsureService4Exists0()
+    {
       if (_scopedService453 is null)
       {
         _scopedService453 = new Service4();
       }
-
-      _scopedService150 = new Service1(new Service2(new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453)));
-    }
-
-    if (_scopedService453 is null)
-    {
-      _scopedService453 = new Service4();
     }
 
     return new CompositionRoot(_scopedService150, new Service2(new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453)), new Service2(new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453)), new Service2(new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453)), new Service3(_scopedService453, _scopedService453), _scopedService453, _scopedService453);

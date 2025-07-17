@@ -97,6 +97,11 @@ The following partial class will be generated:
 partial class Composition
 {
   private readonly Composition _root;
+#if NET9_0_OR_GREATER
+  private readonly Lock _lock;
+#else
+  private readonly Object _lock;
+#endif
 
   private readonly Serilog.ILogger _argLogger;
 
@@ -105,12 +110,18 @@ partial class Composition
   {
     _argLogger = logger ?? throw new ArgumentNullException(nameof(logger));
     _root = this;
+#if NET9_0_OR_GREATER
+    _lock = new Lock();
+#else
+    _lock = new Object();
+#endif
   }
 
   internal Composition(Composition parentScope)
   {
     _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
     _argLogger = _root._argLogger;
+    _lock = _root._lock;
   }
 
   public IService Root
@@ -118,12 +129,12 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Serilog.ILogger transientILogger1;
-      Serilog.ILogger localLogger98 = _argLogger;
-      transientILogger1 = localLogger98.ForContext(new Type[1] { typeof(Service) }[0]);
       Serilog.ILogger transientILogger3;
+      Serilog.ILogger localLogger98 = _argLogger;
+      transientILogger3 = localLogger98.ForContext(new Type[2] { typeof(Dependency), typeof(Service) }[0]);
+      Serilog.ILogger transientILogger1;
       Serilog.ILogger localLogger99 = _argLogger;
-      transientILogger3 = localLogger99.ForContext(new Type[1] { typeof(Dependency) }[0]);
+      transientILogger1 = localLogger99.ForContext(new Type[2] { typeof(Dependency), typeof(Service) }[0]);
       return new Service(transientILogger1, new Dependency(transientILogger3));
     }
   }

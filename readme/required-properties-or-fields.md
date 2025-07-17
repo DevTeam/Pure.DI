@@ -78,6 +78,11 @@ The following partial class will be generated:
 partial class Composition
 {
   private readonly Composition _root;
+#if NET9_0_OR_GREATER
+  private readonly Lock _lock;
+#else
+  private readonly Object _lock;
+#endif
 
   private readonly string _argName;
 
@@ -86,12 +91,18 @@ partial class Composition
   {
     _argName = name ?? throw new ArgumentNullException(nameof(name));
     _root = this;
+#if NET9_0_OR_GREATER
+    _lock = new Lock();
+#else
+    _lock = new Object();
+#endif
   }
 
   internal Composition(Composition parentScope)
   {
     _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
     _argName = _root._argName;
+    _lock = _root._lock;
   }
 
   public IService Root

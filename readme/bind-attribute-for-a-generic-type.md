@@ -108,6 +108,7 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
+      IDependency<int> transientIDependency1;
       if (_root._singletonFacade52 is null)
       {
         lock (_lock)
@@ -119,7 +120,6 @@ partial class Composition
         }
       }
 
-      IDependency<int> transientIDependency1;
       Facade localInstance_1182D12788 = _root._singletonFacade52;
       transientIDependency1 = localInstance_1182D12788.GetDependency<int>();
       return new Service(transientIDependency1);

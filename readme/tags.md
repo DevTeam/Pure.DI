@@ -129,13 +129,17 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonXyzDependency53 is null)
+      EnsureXyzDependencyXyzTagExists1();
+      void EnsureXyzDependencyXyzTagExists1()
       {
-        lock (_lock)
+        if (_root._singletonXyzDependency53 is null)
         {
-          if (_root._singletonXyzDependency53 is null)
+          lock (_lock)
           {
-            _root._singletonXyzDependency53 = new XyzDependency();
+            if (_root._singletonXyzDependency53 is null)
+            {
+              _root._singletonXyzDependency53 = new XyzDependency();
+            }
           }
         }
       }
@@ -149,13 +153,17 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonXyzDependency53 is null)
+      EnsureXyzDependencyXyzTagExists0();
+      void EnsureXyzDependencyXyzTagExists0()
       {
-        lock (_lock)
+        if (_root._singletonXyzDependency53 is null)
         {
-          if (_root._singletonXyzDependency53 is null)
+          lock (_lock)
           {
-            _root._singletonXyzDependency53 = new XyzDependency();
+            if (_root._singletonXyzDependency53 is null)
+            {
+              _root._singletonXyzDependency53 = new XyzDependency();
+            }
           }
         }
       }

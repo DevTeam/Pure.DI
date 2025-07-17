@@ -19,8 +19,8 @@ DI.Setup(nameof(Composition))
 var composition = new Composition();
 var (service, accumulator) = composition.Root;
 accumulator.Count.ShouldBe(3);
-accumulator[0].ShouldBeOfType<AbcDependency>();
-accumulator[1].ShouldBeOfType<XyzDependency>();
+accumulator[0].ShouldBeOfType<XyzDependency>();
+accumulator[1].ShouldBeOfType<AbcDependency>();
 accumulator[2].ShouldBeOfType<Service>();
 
 interface IAccumulating;
@@ -105,13 +105,8 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var accumulator57 = new MyAccumulator();
-      AbcDependency transientAbcDependency3 = new AbcDependency();
-      lock (_lock)
-      {
-        accumulator57.Add(transientAbcDependency3);
-      }
-
+      var perBlockMyAccumulator1 = new MyAccumulator();
+      var perBlockAbcDependency5 = new AbcDependency();
       if (_root._singletonXyzDependency54 is null)
       {
         lock (_lock)
@@ -120,21 +115,26 @@ partial class Composition
           {
             XyzDependency _singletonXyzDependency54Temp;
             _singletonXyzDependency54Temp = new XyzDependency();
-            accumulator57.Add(_singletonXyzDependency54Temp);
+            perBlockMyAccumulator1.Add(_singletonXyzDependency54Temp);
             Thread.MemoryBarrier();
             _root._singletonXyzDependency54 = _singletonXyzDependency54Temp;
           }
         }
       }
 
-      AbcDependency perBlockAbcDependency4 = new AbcDependency();
-      Service transientService1 = new Service(transientAbcDependency3, _root._singletonXyzDependency54, perBlockAbcDependency4);
+      var transientAbcDependency3 = new AbcDependency();
       lock (_lock)
       {
-        accumulator57.Add(transientService1);
+        perBlockMyAccumulator1.Add(transientAbcDependency3);
       }
 
-      return (transientService1, accumulator57);
+      var transientService2 = new Service(transientAbcDependency3, _root._singletonXyzDependency54, perBlockAbcDependency5);
+      lock (_lock)
+      {
+        perBlockMyAccumulator1.Add(transientService2);
+      }
+
+      return (transientService2, perBlockMyAccumulator1);
     }
   }
 }
@@ -159,7 +159,7 @@ classDiagram
 	Service *--  AbcDependency : typeof(Pure.DI.UsageTests.Advanced.AccumulatorScenario.AbcDependency)  IDependency
 	Service o-- "Singleton" XyzDependency : typeof(Pure.DI.UsageTests.Advanced.AccumulatorScenario.XyzDependency)  IDependency
 	ValueTupleᐸIServiceˏMyAccumulatorᐳ *--  Service : IService
-	ValueTupleᐸIServiceˏMyAccumulatorᐳ *--  MyAccumulator : MyAccumulator
+	ValueTupleᐸIServiceˏMyAccumulatorᐳ o-- "PerBlock" MyAccumulator : MyAccumulator
 	namespace Pure.DI.UsageTests.Advanced.AccumulatorScenario {
 		class AbcDependency {
 				<<class>>

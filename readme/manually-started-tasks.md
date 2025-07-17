@@ -100,32 +100,43 @@ The following partial class will be generated:
 partial class Composition
 {
   private readonly Composition _root;
+#if NET9_0_OR_GREATER
+  private readonly Lock _lock;
+#else
+  private readonly Object _lock;
+#endif
 
-  [OrdinalAttribute(128)]
+  [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;
+#if NET9_0_OR_GREATER
+    _lock = new Lock();
+#else
+    _lock = new Object();
+#endif
   }
 
   internal Composition(Composition parentScope)
   {
     _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
+    _lock = _root._lock;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public IService GetRoot(CancellationToken cancellationToken)
   {
+    Task<IDependency> transientTask1;
     Func<IDependency> perBlockFunc2 = new Func<IDependency>(
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     () =>
     {
-      IDependency localValue115 = new Dependency();
-      return localValue115;
+      IDependency localValue117 = new Dependency();
+      return localValue117;
     });
-    Task<IDependency> transientTask1;
-    Func<IDependency> localFactory116 = perBlockFunc2;
-    CancellationToken localCancellationToken117 = cancellationToken;
-    transientTask1 = new Task<IDependency>(localFactory116, localCancellationToken117);
+    Func<IDependency> localFactory115 = perBlockFunc2;
+    CancellationToken localCancellationToken116 = cancellationToken;
+    transientTask1 = new Task<IDependency>(localFactory115, localCancellationToken116);
     return new Service(transientTask1);
   }
 }

@@ -1685,42 +1685,6 @@ See also _Hint(Pure.DI.Hint,System.String)_.
 </blockquote></details>
 
 
-<details><summary>Field SystemThreadingLock</summary><blockquote>
-
- `On`  or  `Off` . Indicates whether _Lock_ should be used whenever possible instead of the classic approach of synchronizing object access using _Monitor_.  `On`  by default.
-            
-```c#
-
-// SystemThreadingLock = Off
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
-```
-
-
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
-            
-```c#
-
-DI.Setup("Composition")
-                .Hint(Hint.SystemThreadingLock, "Off")
-                .Bind<IDependency>().To<Dependency>();
-            
-```
-
-
-See also _Hint(Pure.DI.Hint,System.String)_.
-
-</blockquote></details>
-
-
-<details><summary>Field LocalFunctionLines</summary><blockquote>
-
-Undocumented feature, for now only for internal use.
-            
-</blockquote></details>
-
-
 </blockquote></details>
 
 
@@ -3511,30 +3475,30 @@ Atomically generated smart tag with value "SyncRoot".
 </blockquote></details>
 
 
-<details><summary>Field Overrider</summary><blockquote>
+<details><summary>Field CompositionClass</summary><blockquote>
 
-Atomically generated smart tag with value "Overrider".
+Atomically generated smart tag with value "CompositionClass".
             It's used for:
             
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Overrider) -- _GraphOverrider_ as _PerBlock_
+            class _Generator__CodeBuilder_ <-- _IBuilder`2_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
 </blockquote></details>
 
 
-<details><summary>Field UniqueTag</summary><blockquote>
+<details><summary>Field VarName</summary><blockquote>
 
-Atomically generated smart tag with value "UniqueTag".
+Atomically generated smart tag with value "VarName".
             It's used for:
             
-            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve__BindingBuilder_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve_
+            class _Generator__VarsMap_ <-- _IIdGenerator_(VarName) -- _IdGenerator_ as _Transient_
 </blockquote></details>
 
 
-<details><summary>Field GenericType</summary><blockquote>
+<details><summary>Field Injection</summary><blockquote>
 
-Atomically generated smart tag with value "GenericType".
+Atomically generated smart tag with value "Injection".
             It's used for:
             
-            class _Generator__TypeResolver_ <-- _IIdGenerator_(GenericType) -- _IdGenerator_ as _PerResolve_
+            class _Generator__BuildTools_ <-- _IIdGenerator_(Injection) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
@@ -3556,6 +3520,33 @@ Atomically generated smart tag with value "Override".
 </blockquote></details>
 
 
+<details><summary>Field LocalFunctionName</summary><blockquote>
+
+Atomically generated smart tag with value "LocalFunctionName".
+            It's used for:
+            
+            class _Generator__RootBuilder_ <-- _IIdGenerator_(LocalFunctionName) -- _IdGenerator_ as _Transient_
+</blockquote></details>
+
+
+<details><summary>Field UniqueTag</summary><blockquote>
+
+Atomically generated smart tag with value "UniqueTag".
+            It's used for:
+            
+            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve__BindingBuilder_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
+<details><summary>Field GenericType</summary><blockquote>
+
+Atomically generated smart tag with value "GenericType".
+            It's used for:
+            
+            class _Generator__TypeResolver_ <-- _IIdGenerator_(GenericType) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
 <details><summary>Field Cleaner</summary><blockquote>
 
 Atomically generated smart tag with value "Cleaner".
@@ -3565,21 +3556,12 @@ Atomically generated smart tag with value "Cleaner".
 </blockquote></details>
 
 
-<details><summary>Field CompositionClass</summary><blockquote>
+<details><summary>Field Overrider</summary><blockquote>
 
-Atomically generated smart tag with value "CompositionClass".
+Atomically generated smart tag with value "Overrider".
             It's used for:
             
-            class _Generator__CodeBuilder_ <-- _IBuilder`2_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
-</blockquote></details>
-
-
-<details><summary>Field Injection</summary><blockquote>
-
-Atomically generated smart tag with value "Injection".
-            It's used for:
-            
-            class _Generator__BuildTools_ <-- _IIdGenerator_(Injection) -- _IdGenerator_ as _PerResolve_
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Overrider) -- _GraphOverrider_ as _PerBlock_
 </blockquote></details>
 
 
@@ -5345,7 +5327,7 @@ Contextual AI needs to understand the situation it’s in. This means knowing de
 | --------------- | ---- | ------ |
 | [AI_CONTEXT_SMALL.md](AI_CONTEXT_SMALL.md) | 28KB | 7K |
 | [AI_CONTEXT_MEDIUM.md](AI_CONTEXT_MEDIUM.md) | 122KB | 31K |
-| [AI_CONTEXT_LARGE.md](AI_CONTEXT_LARGE.md) | 379KB | 97K |
+| [AI_CONTEXT_LARGE.md](AI_CONTEXT_LARGE.md) | 378KB | 96K |
 ## How to contribute to Pure.DI
 
 Thank you for your interest in contributing to the Pure.DI project! First of all, if you are going to make a big change or feature, please open a problem first. That way, we can coordinate and understand if the change you're going to work on fits with current priorities and if we can commit to reviewing and merging it within a reasonable timeframe. We don't want you to waste a lot of your valuable time on something that may not align with what we want for Pure.DI.

@@ -146,13 +146,17 @@ partial class Composition: IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonDependency52 is null)
+      EnsureDependencyExists1();
+      void EnsureDependencyExists1()
       {
-        lock (_lock)
+        if (_root._singletonDependency52 is null)
         {
-          if (_root._singletonDependency52 is null)
+          lock (_lock)
           {
-            _root._singletonDependency52 = new Dependency();
+            if (_root._singletonDependency52 is null)
+            {
+              _root._singletonDependency52 = new Dependency();
+            }
           }
         }
       }
@@ -172,14 +176,18 @@ partial class Composition: IDisposable
         {
           if (_scopedService53 is null)
           {
-            if (_root._singletonDependency52 is null)
-            {
-              _root._singletonDependency52 = new Dependency();
-            }
-
+            EnsureDependencyExists0();
             _scopedService53 = new Service(_root._singletonDependency52);
             _disposables[_disposeIndex++] = _scopedService53;
           }
+        }
+      }
+
+      void EnsureDependencyExists0()
+      {
+        if (_root._singletonDependency52 is null)
+        {
+          _root._singletonDependency52 = new Dependency();
         }
       }
 
@@ -257,8 +265,8 @@ partial class Composition: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _scopedService53 = null;
-      _singletonDependency52 = null;
+      _scopedService53 = default(Service);
+      _singletonDependency52 = default(Dependency);
       }
 
       while (disposeIndex-- > 0)

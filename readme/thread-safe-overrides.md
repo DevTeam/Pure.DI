@@ -159,44 +159,39 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      int overInt320;
-      int overInt321;
-      string overString2;
-      Drawing.Color overColor3;
-      Func<int, int, IDependency> transientFunc1 =
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      (localDependencyId0, localSubId1) =>
+      Func<int, int, IDependency> transientFunc1;
+      lock (_lock)
       {
-        Drawing.Color transientColor2 = Color.Red;
-        Drawing.Color localRed2 = transientColor2;
-        // Get composition sync root object
-        Lock transientLock3 = _lock;
-        Lock localLockObject51 = transientLock3;
-        lock (localLockObject51)
+        transientFunc1 =
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        (localDependencyId0, localSubId1) =>
         {
-          // Overrides with a lambda argument
-          // Overrides with tag using lambda argument
-          // Overrides with some value
-          // Overrides with injected value
-          overInt320 = localDependencyId0;
-          overInt321 = localSubId1;
-          overString2 = $"Dep {localDependencyId0} {localSubId1}";
-          overColor3 = localRed2;
-          if (_root._singletonClock53 is null)
+          Drawing.Color transientColor2 = Color.Red;
+          Drawing.Color localRed2 = transientColor2;
+          // Get composition sync root object
+          Lock transientLock3 = _lock;
+          Lock localLockObject51 = transientLock3;
+          lock (localLockObject51)
           {
-            lock (_lock)
+            // Overrides with a lambda argument
+            // Overrides with tag using lambda argument
+            // Overrides with some value
+            // Overrides with injected value
+            int overInt320 = localDependencyId0;
+            int overInt321 = localSubId1;
+            string overString2 = $"Dep {localDependencyId0} {localSubId1}";
+            Drawing.Color overColor3 = localRed2;
+            if (_root._singletonClock53 is null)
             {
-              if (_root._singletonClock53 is null)
-              {
-                _root._singletonClock53 = new Clock();
-              }
+              _root._singletonClock53 = new Clock();
             }
-          }
 
-          Dependency localDependency52 = new Dependency(overString2, _root._singletonClock53, overInt320, overInt321, overColor3);
-          return localDependency52;
-        }
-      };
+            Dependency localDependency52 = new Dependency(overString2, _root._singletonClock53, overInt320, overInt321, overColor3);
+            return localDependency52;
+          }
+        };
+      }
+
       return new Service(transientFunc1);
     }
   }

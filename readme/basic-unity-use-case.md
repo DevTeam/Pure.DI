@@ -103,7 +103,7 @@ partial class Composition
 
   private ClockService? _singletonClockService52;
 
-  [OrdinalAttribute(128)]
+  [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;
@@ -124,6 +124,8 @@ partial class Composition
   public Clock BuildUp(Clock buildingInstance)
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
+    Clock transientClock0;
+    Clock localBuildingInstance166 = buildingInstance;
     if (_root._singletonClockService52 is null)
     {
       lock (_lock)
@@ -135,10 +137,8 @@ partial class Composition
       }
     }
 
-    Clock transientClock0;
-    Clock localBuildingInstance160 = buildingInstance;
-    localBuildingInstance160.ClockService = _root._singletonClockService52;
-    transientClock0 = localBuildingInstance160;
+    localBuildingInstance166.ClockService = _root._singletonClockService52;
+    transientClock0 = localBuildingInstance166;
     return transientClock0;
   }
 }
