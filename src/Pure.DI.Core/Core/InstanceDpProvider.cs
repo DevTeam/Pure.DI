@@ -14,6 +14,7 @@ sealed class InstanceDpProvider(
         ITypeConstructor typeConstructor,
         INamedTypeSymbol implementationType)
     {
+        var actualImplementationType = typeConstructor.Construct(setup, implementationType);
         var setupAttributesBuilder = ImmutableArray.CreateBuilder<IMdAttribute>(
             setup.OrdinalAttributes.Length
             + setup.TagAttributes.Length
@@ -25,7 +26,7 @@ sealed class InstanceDpProvider(
         var methods = new List<DpMethod>();
         var fields = new List<DpField>();
         var properties = new List<DpProperty>();
-        foreach (var member in GetMembers(implementationType))
+        foreach (var member in GetMembers(actualImplementationType))
         {
             if (!semantic.IsAccessible(member))
             {
