@@ -2276,4 +2276,84 @@ public class FactoryTests
         // Then
         result.Success.ShouldBeTrue(result);
     }
+
+    [Fact]
+    public async Task ShouldSupportGenericBuildUpWhenCustomGenericMarker()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public class Node { };
+                           
+                               public class Dependency { };
+                               
+                               public class Scene : Node
+                               {
+                                   [Dependency]
+                                   public Dependency? Dependency { get; set; }
+                               }
+                               
+                               public class Main
+                               {
+                                   [Dependency]
+                                   public Accessor<Scene> Scene { get; set; }
+                               }
+                               
+                               public static class Loader
+                               {
+                                   public static T Load<T>() => Activator.CreateInstance<T>();
+                               }
+                               
+                               public struct Accessor<T>
+                                   where T : Node
+                               {
+                                   public Accessor(T value)
+                                   {
+                                       Value = value;
+                                   }
+                               
+                                   public T Value { get; }
+                               }
+                           
+                               public partial class Composition
+                               {
+                                   static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind().As(Lifetime.Singleton).To<Dependency>()
+                                           .GenericTypeArgument<TTNode>()
+                                           .Bind<Accessor<TTNode>>(Tag.Any)
+                                               .As(Lifetime.PerResolve)
+                                               .To(ctx =>
+                                               {
+                                                   var node = Loader.Load<TTNode>();
+                                                   ctx.BuildUp(node);
+                                                   return new Accessor<TTNode>(node);
+                                               })
+                                           .Root<Main>("Main");
+                               
+                                   class TTNode : Node { };
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var main = composition.Main;
+                                       Console.WriteLine(main.Scene.Value.Dependency?.ToString() ?? "null");
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Sample.Dependency"], result);
+    }
 }
