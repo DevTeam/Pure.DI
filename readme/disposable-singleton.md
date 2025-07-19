@@ -107,7 +107,7 @@ partial class Composition: IDisposable
   internal Composition(Composition parentScope)
   {
     _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = _root._lock;
+    _lock = parentScope._lock;
     _disposables = parentScope._disposables;
   }
 

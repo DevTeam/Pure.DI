@@ -101,7 +101,6 @@ The following partial class will be generated:
 ```c#
 partial class Composition
 {
-  private readonly Composition _root;
 #if NET9_0_OR_GREATER
   private readonly Lock _lock;
 #else
@@ -114,7 +113,6 @@ partial class Composition
   public Composition(Serilog.ILogger logger)
   {
     _argLogger = logger ?? throw new ArgumentNullException(nameof(logger));
-    _root = this;
 #if NET9_0_OR_GREATER
     _lock = new Lock();
 #else
@@ -124,9 +122,7 @@ partial class Composition
 
   internal Composition(Composition parentScope)
   {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _argLogger = _root._argLogger;
-    _lock = _root._lock;
+    _argLogger = parentScope._argLogger;
   }
 
   private Serilog.ILogger Log

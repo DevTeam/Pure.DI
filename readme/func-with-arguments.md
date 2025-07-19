@@ -121,7 +121,7 @@ partial class Composition
   internal Composition(Composition parentScope)
   {
     _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = _root._lock;
+    _lock = parentScope._lock;
   }
 
   public IService Root
@@ -132,14 +132,14 @@ partial class Composition
       Func<int, string, IDependency> blockFunc1;
       lock (_lock)
       {
-        Func<int, string, IDependency> localFactory110 = new Func<int, string, IDependency>((int localArg111, string localArg218) =>
+        Func<int, string, IDependency> localFactory110 = new Func<int, string, IDependency>((int localArg120, string localArg228) =>
         {
           Lock transLock2 = _lock;
           Lock localLockObject111 = transLock2;
           lock (localLockObject111)
           {
-            int overrInt320 = localArg111;
-            string overrString2 = localArg218;
+            int overrInt320 = localArg120;
+            string overrString2 = localArg228;
             if (_root._singleClock52 is null)
             {
               _root._singleClock52 = new Clock();

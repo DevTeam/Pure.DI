@@ -77,7 +77,6 @@ The following partial class will be generated:
 ```c#
 partial class Composition
 {
-  private readonly Composition _root;
 #if NET9_0_OR_GREATER
   private readonly Lock _lock;
 #else
@@ -87,7 +86,6 @@ partial class Composition
   [OrdinalAttribute(256)]
   public Composition()
   {
-    _root = this;
 #if NET9_0_OR_GREATER
     _lock = new Lock();
 #else
@@ -97,8 +95,7 @@ partial class Composition
 
   internal Composition(Composition parentScope)
   {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = _root._lock;
+    _lock = parentScope._lock;
   }
 
   public IService<string> Root
@@ -109,13 +106,13 @@ partial class Composition
       Func<int, IDependency<string>> blockFunc1;
       lock (_lock)
       {
-        Func<int, IDependency<string>> localFactory148 = new Func<int, IDependency<string>>((int localArg17) =>
+        Func<int, IDependency<string>> localFactory148 = new Func<int, IDependency<string>>((int localArg123) =>
         {
           Lock transLock2 = _lock;
           Lock localLockObject149 = transLock2;
           lock (localLockObject149)
           {
-            int overrInt320 = localArg17;
+            int overrInt320 = localArg123;
             IDependency<string> localValue150 = new Dependency<string>(overrInt320);
             return localValue150;
           }

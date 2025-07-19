@@ -3492,15 +3492,6 @@ Atomically generated smart tag with value "SyncRoot".
 </blockquote></details>
 
 
-<details><summary>Field CompositionClass</summary><blockquote>
-
-Atomically generated smart tag with value "CompositionClass".
-            It's used for:
-            
-            class _Generator__CodeBuilder_ <-- _IBuilder`2_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
-</blockquote></details>
-
-
 <details><summary>Field VarName</summary><blockquote>
 
 Atomically generated smart tag with value "VarName".
@@ -3510,21 +3501,21 @@ Atomically generated smart tag with value "VarName".
 </blockquote></details>
 
 
+<details><summary>Field CompositionClass</summary><blockquote>
+
+Atomically generated smart tag with value "CompositionClass".
+            It's used for:
+            
+            class _Generator__CodeBuilder_ <-- _IBuilder`2_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
+</blockquote></details>
+
+
 <details><summary>Field LocalFunctionName</summary><blockquote>
 
 Atomically generated smart tag with value "LocalFunctionName".
             It's used for:
             
             class _Generator__RootBuilder_ <-- _IIdGenerator_(LocalFunctionName) -- _IdGenerator_ as _Transient_
-</blockquote></details>
-
-
-<details><summary>Field Cleaner</summary><blockquote>
-
-Atomically generated smart tag with value "Cleaner".
-            It's used for:
-            
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
 </blockquote></details>
 
 
@@ -3546,12 +3537,12 @@ Atomically generated smart tag with value "Injection".
 </blockquote></details>
 
 
-<details><summary>Field UniqueTag</summary><blockquote>
+<details><summary>Field UsingDeclarations</summary><blockquote>
 
-Atomically generated smart tag with value "UniqueTag".
+Atomically generated smart tag with value "UsingDeclarations".
             It's used for:
             
-            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve__BindingBuilder_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve_
+            class _Generator__CompositionClassBuilder_ <-- _IBuilder`2_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
 </blockquote></details>
 
 
@@ -3564,12 +3555,21 @@ Atomically generated smart tag with value "Override".
 </blockquote></details>
 
 
-<details><summary>Field UsingDeclarations</summary><blockquote>
+<details><summary>Field UniqueTag</summary><blockquote>
 
-Atomically generated smart tag with value "UsingDeclarations".
+Atomically generated smart tag with value "UniqueTag".
             It's used for:
             
-            class _Generator__CompositionClassBuilder_ <-- _IBuilder`2_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
+            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve__BindingBuilder_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
+<details><summary>Field Cleaner</summary><blockquote>
+
+Atomically generated smart tag with value "Cleaner".
+            It's used for:
+            
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
 </blockquote></details>
 
 

@@ -84,17 +84,13 @@ The following partial class will be generated:
 ```c#
 partial class Composition
 {
-  private readonly Composition _root;
-
   [OrdinalAttribute(256)]
   public Composition()
   {
-    _root = this;
   }
 
   internal Composition(Composition parentScope)
   {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
   }
 
   public IService Root

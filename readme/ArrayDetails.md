@@ -102,17 +102,13 @@ The following partial class will be generated:
 ```c#
 partial class Array
 {
-  private readonly Array _root;
-
   [OrdinalAttribute(256)]
   public Array()
   {
-    _root = this;
   }
 
   internal Array(Array parentScope)
   {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]

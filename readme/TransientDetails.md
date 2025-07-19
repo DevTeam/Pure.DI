@@ -77,17 +77,13 @@ The following partial class will be generated:
 ```c#
 partial class Transient
 {
-  private readonly Transient _root;
-
   [OrdinalAttribute(256)]
   public Transient()
   {
-    _root = this;
   }
 
   internal Transient(Transient parentScope)
   {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]

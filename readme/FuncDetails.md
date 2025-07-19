@@ -83,17 +83,13 @@ The following partial class will be generated:
 ```c#
 partial class Func
 {
-  private readonly Func _root;
-
   [OrdinalAttribute(256)]
   public Func()
   {
-    _root = this;
   }
 
   internal Func(Func parentScope)
   {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]

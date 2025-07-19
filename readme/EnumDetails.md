@@ -104,17 +104,13 @@ The following partial class will be generated:
 ```c#
 partial class Enum
 {
-  private readonly Enum _root;
-
   [OrdinalAttribute(256)]
   public Enum()
   {
-    _root = this;
   }
 
   internal Enum(Enum parentScope)
   {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
