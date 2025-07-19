@@ -81,7 +81,7 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private IDependency? _singleIDependency0;
+  private IDependency? _singleIDependency;
   private Facade? _singleFacade52;
 
   [OrdinalAttribute(256)]
@@ -106,7 +106,7 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singleIDependency0 is null)
+      if (_root._singleIDependency is null)
       {
         lock (_lock)
         {
@@ -116,11 +116,11 @@ partial class Composition
           }
 
           Facade localInstance_1182D12791 = _root._singleFacade52;
-          _root._singleIDependency0 = localInstance_1182D12791.Dependency;
+          _root._singleIDependency = localInstance_1182D12791.Dependency;
         }
       }
 
-      return new Service(_root._singleIDependency0);
+      return new Service(_root._singleIDependency);
     }
   }
 }

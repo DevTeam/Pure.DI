@@ -98,13 +98,13 @@ partial class Singleton
   {
     if (_scopedService150 is null)
     {
-      EnsureService4Exists0();
+      EnsureService4Exists();
       _scopedService150 = new Service1(new Service2(new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453)));
     }
 
     return new CompositionRoot(_scopedService150, new Service2(new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453)), new Service2(new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453)), new Service2(new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453)), new Service3(_scopedService453, _scopedService453), _scopedService453, _scopedService453);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    void EnsureService4Exists0()
+    void EnsureService4Exists()
     {
       if (_scopedService453 is null)
       {

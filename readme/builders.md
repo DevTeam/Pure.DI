@@ -129,11 +129,11 @@ partial class Composition
   public Service2 BuildUp(Service2 buildingInstance)
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    Service2 transService20;
+    Service2 transService2;
     Service2 localBuildingInstance93 = buildingInstance;
     localBuildingInstance93.Dependency = new Dependency();
-    transService20 = localBuildingInstance93;
-    return transService20;
+    transService2 = localBuildingInstance93;
+    return transService2;
   }
 }
 ```

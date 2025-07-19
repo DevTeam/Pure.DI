@@ -163,10 +163,10 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      EnsureXyzDependencyXyzExists0();
+      EnsureXyzDependencyXyzExists();
       return new Service(new AbcDependency(), _root._singleXyzDependency53, new AbcDependency());
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      void EnsureXyzDependencyXyzExists0()
+      void EnsureXyzDependencyXyzExists()
       {
         if (_root._singleXyzDependency53 is null)
         {

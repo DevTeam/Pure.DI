@@ -103,10 +103,10 @@ partial class Composition
   public IService<T2, bool> GetOtherService<T2>()
     where T2: IDisposable
   {
-    OtherService<T2> transOtherService0;
+    OtherService<T2> transOtherService;
     IDependency<T2> localDependency146 = new Dependency<T2>();
-    transOtherService0 = new OtherService<T2>(localDependency146);
-    return transOtherService0;
+    transOtherService = new OtherService<T2>(localDependency146);
+    return transOtherService;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]

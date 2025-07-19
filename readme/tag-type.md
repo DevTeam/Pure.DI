@@ -121,10 +121,10 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      EnsureXyzDependencyPureDIUsageTestsAdvancedTagTypeScenarioXyzDependencyExists0();
+      EnsureXyzDependencyPureDIUsageTestsAdvancedTagTypeScenarioXyzDependencyExists();
       return _root._singleXyzDependency53;
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      void EnsureXyzDependencyPureDIUsageTestsAdvancedTagTypeScenarioXyzDependencyExists0()
+      void EnsureXyzDependencyPureDIUsageTestsAdvancedTagTypeScenarioXyzDependencyExists()
       {
         if (_root._singleXyzDependency53 is null)
         {

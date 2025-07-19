@@ -98,8 +98,8 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Dependency transDependency0 = new Dependency("Other");
-      return transDependency0;
+      Dependency transDependency = new Dependency("Other");
+      return transDependency;
     }
   }
 

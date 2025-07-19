@@ -138,9 +138,9 @@ partial class Composition
         }
       }
 
-      var blockService0 = new Service(_root._singleDependency52);
-      OnNewInstance<Service>(ref blockService0, null, Lifetime.PerBlock);
-      return blockService0;
+      var blockService = new Service(_root._singleDependency52);
+      OnNewInstance<Service>(ref blockService, null, Lifetime.PerBlock);
+      return blockService;
     }
   }
 

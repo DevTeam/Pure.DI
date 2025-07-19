@@ -86,9 +86,9 @@ partial class Composition
   public IService<T1> GetMyService<T1>(T1 someArg)
   {
     if (someArg is null) throw new ArgumentNullException(nameof(someArg));
-    var transService0 = new Service<T1>();
-    transService0.SetDependency(someArg);
-    return transService0;
+    var transService = new Service<T1>();
+    transService.SetDependency(someArg);
+    return transService;
   }
 }
 ```

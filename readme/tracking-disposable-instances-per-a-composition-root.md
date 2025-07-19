@@ -119,7 +119,7 @@ partial class Composition
     get
     {
       var blockOwned1 = new Owned();
-      Owned<IService> blockOwned0; // Creates the owner of an instance
+      Owned<IService> blockOwned; // Creates the owner of an instance
       Owned transOwned2;
       Owned localOwned67 = blockOwned1;
       transOwned2 = localOwned67;
@@ -136,13 +136,13 @@ partial class Composition
       }
 
       IService localValue66 = new Service(transDependency4);
-      blockOwned0 = new Owned<IService>(localValue66, localOwned65);
+      blockOwned = new Owned<IService>(localValue66, localOwned65);
       lock (_lock)
       {
-        blockOwned1.Add(blockOwned0);
+        blockOwned1.Add(blockOwned);
       }
 
-      return blockOwned0;
+      return blockOwned;
     }
   }
 }

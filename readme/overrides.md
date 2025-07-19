@@ -174,7 +174,7 @@ partial class Composition
           // Overrides with tag using lambda argument
           // Overrides with some value
           // Overrides with injected value
-          int overrInt320 = localDependencyId3;
+          int overrInt32 = localDependencyId3;
           int overrInt321 = localSubId4;
           string overrString2 = $"Dep {localDependencyId3} {localSubId4}";
           Drawing.Color transColor2 = Color.Red;
@@ -185,7 +185,7 @@ partial class Composition
             _root._singleClock53 = new Clock();
           }
 
-          Dependency localDependency106 = new Dependency(overrString2, _root._singleClock53, overrInt320, overrInt321, overrColor3);
+          Dependency localDependency106 = new Dependency(overrString2, _root._singleClock53, overrInt32, overrInt321, overrColor3);
           return localDependency106;
         };
       }

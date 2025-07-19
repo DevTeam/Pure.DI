@@ -114,13 +114,13 @@ partial class Composition
   public Service BuildUpService(Service buildingInstance)
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    Service transService0;
+    Service transService;
     Service localBuildingInstance92 = buildingInstance;
     Guid transGuid3 = Guid.NewGuid();
     localBuildingInstance92.Dependency = new Dependency();
     localBuildingInstance92.SetId(transGuid3);
-    transService0 = localBuildingInstance92;
-    return transService0;
+    transService = localBuildingInstance92;
+    return transService;
   }
 }
 ```

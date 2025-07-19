@@ -139,9 +139,9 @@ partial class Composition
         }
       }
 
-      var transService0 = new Service(_root._singleDependency52);
-      OnNewInstance<Service>(ref transService0, null, Lifetime.Transient);
-      return transService0;
+      var transService = new Service(_root._singleDependency52);
+      OnNewInstance<Service>(ref transService, null, Lifetime.Transient);
+      return transService;
     }
   }
 

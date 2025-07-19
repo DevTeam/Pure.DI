@@ -109,10 +109,10 @@ partial class PersonComposition
     {
       string transString1 = "Nik";
       Uri transUri3 = new Uri("https://github.com/DevTeam/Pure.DI");
-      var transPerson0 = new Person(transString1);
-      transPerson0.Initialize(transUri3);
-      transPerson0.Id = _argPersonId;
-      return transPerson0;
+      var transPerson = new Person(transString1);
+      transPerson.Initialize(transUri3);
+      transPerson.Id = _argPersonId;
+      return transPerson;
     }
   }
 }

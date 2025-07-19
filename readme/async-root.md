@@ -82,7 +82,7 @@ partial class Composition
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Task<IService> GetMyServiceAsync(CancellationToken cancellationToken)
   {
-    Task<IService> transTask0; // Injects an instance factory
+    Task<IService> transTask; // Injects an instance factory
     Func<IService> blockFunc1 = new Func<IService>(
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     () =>
@@ -103,8 +103,8 @@ partial class Composition
     blockTaskFactory2 = new TaskFactory<IService>(localCancellationToken85, localTaskCreationOptions86, localTaskContinuationOptions87, localTaskScheduler88);
     TaskFactory<IService> localTaskFactory83 = blockTaskFactory2;
     // Creates and starts a task using the instance factory
-    transTask0 = localTaskFactory83.StartNew(localFactory82);
-    return transTask0;
+    transTask = localTaskFactory83.StartNew(localFactory82);
+    return transTask;
   }
 }
 ```

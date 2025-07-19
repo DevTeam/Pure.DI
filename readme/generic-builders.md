@@ -111,11 +111,11 @@ partial class Composition
     where T1: struct
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    Service2<T1, T5> transService20;
+    Service2<T1, T5> transService2;
     Service2<T1, T5> localBuildingInstance143 = buildingInstance;
     localBuildingInstance143.Dependency = new Dependency<T5>();
-    transService20 = localBuildingInstance143;
-    return transService20;
+    transService2 = localBuildingInstance143;
+    return transService2;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]

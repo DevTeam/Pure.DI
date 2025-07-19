@@ -124,7 +124,7 @@ partial class Composition
   public Clock BuildUp(Clock buildingInstance)
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    Clock transClock0;
+    Clock transClock;
     Clock localBuildingInstance161 = buildingInstance;
     if (_root._singleClockService52 is null)
     {
@@ -135,8 +135,8 @@ partial class Composition
     }
 
     localBuildingInstance161.ClockService = _root._singleClockService52;
-    transClock0 = localBuildingInstance161;
-    return transClock0;
+    transClock = localBuildingInstance161;
+    return transClock;
   }
 }
 ```

@@ -116,7 +116,7 @@ partial class Composition
   public Task<IService<T2, bool>> GetOtherServiceAsync<T2>(CancellationToken cancellationToken)
     where T2: IDisposable
   {
-    Task<IService<T2, bool>> transTask0; // Injects an instance factory
+    Task<IService<T2, bool>> transTask; // Injects an instance factory
     Func<IService<T2, bool>> blockFunc1 = new Func<IService<T2, bool>>(
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     () =>
@@ -140,8 +140,8 @@ partial class Composition
     blockTaskFactory2 = new TaskFactory<IService<T2, bool>>(localCancellationToken131, localTaskCreationOptions132, localTaskContinuationOptions133, localTaskScheduler134);
     TaskFactory<IService<T2, bool>> localTaskFactory128 = blockTaskFactory2;
     // Creates and starts a task using the instance factory
-    transTask0 = localTaskFactory128.StartNew(localFactory127);
-    return transTask0;
+    transTask = localTaskFactory128.StartNew(localFactory127);
+    return transTask;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]

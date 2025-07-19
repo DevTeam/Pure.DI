@@ -133,11 +133,11 @@ partial class PersonComposition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var transPerson0 = new Person();
-      transPerson0.Id = _argPersonId;
-      transPerson0.FirstName = _argPersonName;
-      transPerson0.Birthday = _argPersonBirthday;
-      return transPerson0;
+      var transPerson = new Person();
+      transPerson.Id = _argPersonId;
+      transPerson.FirstName = _argPersonName;
+      transPerson.Birthday = _argPersonBirthday;
+      return transPerson;
     }
   }
 }

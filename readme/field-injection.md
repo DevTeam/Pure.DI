@@ -95,9 +95,9 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var transService0 = new Service();
-      transService0.DependencyVal = new Dependency();
-      return transService0;
+      var transService = new Service();
+      transService.DependencyVal = new Dependency();
+      return transService;
     }
   }
 }
