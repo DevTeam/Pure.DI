@@ -28,7 +28,13 @@ class CompositionBuilder(
             using var rootToken = varsMap.Root(lines);
             var ctx = new RootContext(graph, root, varsMap, lines);
             var rootVarInjection = rootBuilder.Build(ctx);
-            ctx.Lines.AppendLine($"return {rootVarInjection.Var.CodeExpression};");
+            lines.AppendLine($"return {rootVarInjection.Var.CodeExpression};");
+            foreach (var localFunction in varsMap.Vars.Select(i => i.LocalFunction).Where(i => i.Lines.Count > 0))
+            {
+                lines.AppendLine();
+                lines.AppendLines(localFunction.Lines);
+            }
+
             var args = varDeclarationTools.Sort(varsMap.Declarations.Where(i => i.Node.Arg is not null)).ToList();
             var processedRoot = root with
             {

@@ -102,6 +102,7 @@ partial class Singleton
       _scopedService150 = new Service1(new Service2(new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453)));
     }
 
+    return new CompositionRoot(_scopedService150, new Service2(new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453)), new Service2(new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453)), new Service2(new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453)), new Service3(_scopedService453, _scopedService453), _scopedService453, _scopedService453);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void EnsureService4Exists0()
     {
@@ -110,8 +111,6 @@ partial class Singleton
         _scopedService453 = new Service4();
       }
     }
-
-    return new CompositionRoot(_scopedService150, new Service2(new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453)), new Service2(new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453)), new Service2(new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453)), new Service3(_scopedService453, _scopedService453), _scopedService453, _scopedService453);
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]

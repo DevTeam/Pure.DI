@@ -119,6 +119,7 @@ partial class Composition
         }
       }
 
+      return _root._singleService53;
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureDependencyExists0()
       {
@@ -127,8 +128,6 @@ partial class Composition
           _root._singleDependency52 = new Dependency();
         }
       }
-
-      return _root._singleService53;
     }
   }
 }

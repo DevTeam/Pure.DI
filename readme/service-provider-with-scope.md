@@ -147,6 +147,7 @@ partial class Composition: IDisposable
     get
     {
       EnsureDependencyExists1();
+      return _root._singleDependency52;
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureDependencyExists1()
       {
@@ -158,8 +159,6 @@ partial class Composition: IDisposable
           }
         }
       }
-
-      return _root._singleDependency52;
     }
   }
 
@@ -178,6 +177,7 @@ partial class Composition: IDisposable
         }
       }
 
+      return _scopedService53;
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureDependencyExists0()
       {
@@ -186,8 +186,6 @@ partial class Composition: IDisposable
           _root._singleDependency52 = new Dependency();
         }
       }
-
-      return _scopedService53;
     }
   }
 

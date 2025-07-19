@@ -113,6 +113,7 @@ partial class Composition
     get
     {
       EnsureDependencyDependencyKeyExists1();
+      return _root._singleDependency52;
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureDependencyDependencyKeyExists1()
       {
@@ -124,8 +125,6 @@ partial class Composition
           }
         }
       }
-
-      return _root._singleDependency52;
     }
   }
 
@@ -135,6 +134,7 @@ partial class Composition
     get
     {
       EnsureDependencyDependencyKeyExists0();
+      return new Service(_root._singleDependency52);
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureDependencyDependencyKeyExists0()
       {
@@ -146,8 +146,6 @@ partial class Composition
           }
         }
       }
-
-      return new Service(_root._singleDependency52);
     }
   }
 

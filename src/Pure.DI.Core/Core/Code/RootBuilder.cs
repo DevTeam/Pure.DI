@@ -60,19 +60,11 @@ class RootBuilder(
             rootContext.Lines.AppendLine($"var {perResolve.Name} = default({typeResolver.Resolve(setup, perResolve.InstanceType)});");
             if (perResolve.InstanceType.IsValueType)
             {
-                rootContext.Lines.AppendLine($"var {perResolve.Name}Created = false;");
+                rootContext.Lines.AppendLine($"var {perResolve.Name}{Names.CreatedValueNameSuffix} = false;");
             }
         }
 
         rootContext.Lines.AppendLines(lines.Lines);
-        rootContext.Lines.AppendLine();
-
-        foreach (var localFunction in rootVarsMap.Vars.Select(i => i.LocalFunction).Where(i => i.Lines.Count > 0))
-        {
-            rootContext.Lines.AppendLines(localFunction.Lines);
-            rootContext.Lines.AppendLine();
-        }
-
         return rootVarInjection;
     }
 
@@ -134,7 +126,7 @@ class RootBuilder(
         }
 
 #if DEBUG
-        parentCtx.Lines.AppendLine($"// {var.Name}: IsDeclared={var.Declaration.IsDeclared}, IsCreated={var.IsCreated}, HasCycle={var.HasCycle}, IsLockRequired={parentCtx.IsLockRequired}, IsLazy={isLazy}, IsBlock={isBlock}, Accumulators={accumulators.Length}");
+        parentCtx.Lines.AppendLine($"// {var.Name}: {nameof(var.Declaration.IsDeclared)}={var.Declaration.IsDeclared}, {nameof(var.IsCreated)}={var.IsCreated}, {nameof(var.HasCycle)}={var.HasCycle}, {nameof(parentCtx.IsLockRequired)}={parentCtx.IsLockRequired}, {nameof(isLazy)}={isLazy}, {nameof(isBlock)}={isBlock}, {nameof(accumulators)}={accumulators.Length}");
 #endif
 
         if (isBlock)

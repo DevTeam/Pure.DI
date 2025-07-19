@@ -120,6 +120,7 @@ partial class Composition
         }
       }
 
+      return new Service(resolveDependency1, resolveDependency1, _root._singleValueTuple53);
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureDependencyExists0()
       {
@@ -128,8 +129,6 @@ partial class Composition
           resolveDependency1 = new Dependency();
         }
       }
-
-      return new Service(resolveDependency1, resolveDependency1, _root._singleValueTuple53);
     }
   }
 }

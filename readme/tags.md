@@ -130,6 +130,7 @@ partial class Composition
     get
     {
       EnsureXyzDependencyXyzTagExists1();
+      return _root._singleXyzDependency53;
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureXyzDependencyXyzTagExists1()
       {
@@ -141,8 +142,6 @@ partial class Composition
           }
         }
       }
-
-      return _root._singleXyzDependency53;
     }
   }
 
@@ -152,6 +151,7 @@ partial class Composition
     get
     {
       EnsureXyzDependencyXyzTagExists0();
+      return new Service(new AbcDependency(), _root._singleXyzDependency53, new AbcDependency());
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureXyzDependencyXyzTagExists0()
       {
@@ -163,8 +163,6 @@ partial class Composition
           }
         }
       }
-
-      return new Service(new AbcDependency(), _root._singleXyzDependency53, new AbcDependency());
     }
   }
 }
