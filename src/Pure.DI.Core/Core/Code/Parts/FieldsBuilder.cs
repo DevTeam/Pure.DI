@@ -17,9 +17,12 @@ sealed class FieldsBuilder(
         var compilation = composition.Compilation;
         var nullable = compilation.Options.NullableContextOptions == NullableContextOptions.Disable ? "" : "?";
 
-        // _parent filed
-        code.AppendLine($"private readonly {composition.Source.Source.Name.ClassName} {Names.RootFieldName};");
-        membersCounter++;
+        if (composition.Singletons.Length > 0)
+        {
+            // _parent filed
+            code.AppendLine($"private readonly {composition.Source.Source.Name.ClassName} {Names.RootFieldName};");
+            membersCounter++;
+        }
 
         if (composition.IsThreadSafe || locks.HasLockField(composition.Source))
         {

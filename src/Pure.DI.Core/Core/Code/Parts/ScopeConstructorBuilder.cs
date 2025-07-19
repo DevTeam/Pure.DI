@@ -23,19 +23,23 @@ sealed class ScopeConstructorBuilder(ILocks locks) : IClassPartBuilder
         code.AppendLine($"internal {composition.Source.Source.Name.ClassName}({composition.Source.Source.Name.ClassName} {Names.ParentScopeArgName})");
         using (code.CreateBlock())
         {
-            code.AppendLine($"{Names.RootFieldName} = ({Names.ParentScopeArgName} ?? throw new {Names.SystemNamespace}ArgumentNullException(nameof({Names.ParentScopeArgName}))).{Names.RootFieldName};");
+            if (composition.Singletons.Length > 0)
+            {
+                code.AppendLine($"{Names.RootFieldName} = ({Names.ParentScopeArgName} ?? throw new {Names.SystemNamespace}ArgumentNullException(nameof({Names.ParentScopeArgName}))).{Names.RootFieldName};");
+            }
+
             var classArgs = composition.ClassArgs.GetArgsOfKind(ArgKind.Class).ToList();
             if (classArgs.Count > 0)
             {
                 foreach (var fieldArg in classArgs)
                 {
-                    code.AppendLine($"{fieldArg.Name} = {Names.RootFieldName}.{fieldArg.Name};");
+                    code.AppendLine($"{fieldArg.Name} = {Names.ParentScopeArgName}.{fieldArg.Name};");
                 }
             }
 
-            if (composition.IsThreadSafe || locks.HasLockField(composition.Source))
+            if (composition.Singletons.Length > 0 && composition.IsThreadSafe || locks.HasLockField(composition.Source))
             {
-                code.AppendLine($"{Names.LockFieldName} = {Names.RootFieldName}.{Names.LockFieldName};");
+                code.AppendLine($"{Names.LockFieldName} = {Names.ParentScopeArgName}.{Names.LockFieldName};");
             }
 
             if (composition.DisposablesScopedCount > 0)

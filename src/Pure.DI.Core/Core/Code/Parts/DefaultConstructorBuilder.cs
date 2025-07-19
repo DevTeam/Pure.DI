@@ -30,7 +30,11 @@ sealed class DefaultConstructorBuilder(
         code.AppendLine($"public {composition.Source.Source.Name.ClassName}()");
         using (code.CreateBlock())
         {
-            code.AppendLine($"{Names.RootFieldName} = this;");
+            if (composition.Singletons.Length > 0)
+            {
+                code.AppendLine($"{Names.RootFieldName} = this;");
+            }
+
             if (composition.IsThreadSafe || locks.HasLockField(composition.Source))
             {
                 code.AppendLine(new Line(int.MinValue, "#if NET9_0_OR_GREATER"));

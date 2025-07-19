@@ -42,7 +42,11 @@ sealed class ParameterizedConstructorBuilder(
                 code.AppendLine($"{arg.Name} = {arg.Node.Arg?.Source.ArgName}{nullCheck};");
             }
 
-            code.AppendLine($"{Names.RootFieldName} = this;");
+            if (composition.Singletons.Length > 0)
+            {
+                code.AppendLine($"{Names.RootFieldName} = this;");
+            }
+
             if (composition.IsThreadSafe || locks.HasLockField(composition.Source))
             {
                 code.AppendLine(new Line(int.MinValue, "#if NET9_0_OR_GREATER"));
