@@ -102,6 +102,7 @@ partial class Singleton
       _scopedService150 = new Service1(new Service2(new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453), new Service3(_scopedService453, _scopedService453)));
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void EnsureService4Exists0()
     {
       if (_scopedService453 is null)

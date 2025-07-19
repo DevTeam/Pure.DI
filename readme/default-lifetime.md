@@ -119,6 +119,7 @@ partial class Composition
         }
       }
 
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureDependencyExists0()
       {
         if (_root._singleDependency52 is null)

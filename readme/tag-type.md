@@ -122,6 +122,7 @@ partial class Composition
     get
     {
       EnsureXyzDependencyPureDIUsageTestsAdvancedTagTypeScenarioXyzDependencyExists0();
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureXyzDependencyPureDIUsageTestsAdvancedTagTypeScenarioXyzDependencyExists0()
       {
         if (_root._singleXyzDependency53 is null)
@@ -143,6 +144,7 @@ partial class Composition
     get
     {
       EnsureXyzDependencyPureDIUsageTestsAdvancedTagTypeScenarioXyzDependencyExists1();
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureXyzDependencyPureDIUsageTestsAdvancedTagTypeScenarioXyzDependencyExists1()
       {
         if (_root._singleXyzDependency53 is null)

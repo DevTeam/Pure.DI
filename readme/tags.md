@@ -130,6 +130,7 @@ partial class Composition
     get
     {
       EnsureXyzDependencyXyzTagExists1();
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureXyzDependencyXyzTagExists1()
       {
         if (_root._singleXyzDependency53 is null)
@@ -151,6 +152,7 @@ partial class Composition
     get
     {
       EnsureXyzDependencyXyzTagExists0();
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureXyzDependencyXyzTagExists0()
       {
         if (_root._singleXyzDependency53 is null)

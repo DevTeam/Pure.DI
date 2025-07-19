@@ -114,6 +114,7 @@ partial class Composition
     get
     {
       EnsureDependencyDependencyKeyExists1();
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureDependencyDependencyKeyExists1()
       {
         if (_root._singleDependency52 is null)
@@ -135,6 +136,7 @@ partial class Composition
     get
     {
       EnsureDependencyDependencyKeyExists0();
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureDependencyDependencyKeyExists0()
       {
         if (_root._singleDependency52 is null)

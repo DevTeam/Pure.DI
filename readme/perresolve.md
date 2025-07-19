@@ -120,6 +120,7 @@ partial class Composition
         }
       }
 
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureDependencyExists0()
       {
         if (resolveDependency1 is null)
