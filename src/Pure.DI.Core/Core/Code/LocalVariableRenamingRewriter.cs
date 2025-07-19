@@ -4,7 +4,7 @@ namespace Pure.DI.Core.Code;
 
 sealed class LocalVariableRenamingRewriter(
     ITriviaTools triviaTools,
-    IVariableNameProvider variableNameProvider)
+    INameProvider nameProvider)
     : CSharpSyntaxRewriter, ILocalVariableRenamingRewriter
 {
     private Dictionary<string, string> Names { get; init; } = [];
@@ -24,7 +24,7 @@ sealed class LocalVariableRenamingRewriter(
 
     public ILocalVariableRenamingRewriter Clone()
     {
-        return new LocalVariableRenamingRewriter(triviaTools, variableNameProvider)
+        return new LocalVariableRenamingRewriter(triviaTools, nameProvider)
         {
             Names = new Dictionary<string, string>(Names)
         };
@@ -75,7 +75,7 @@ sealed class LocalVariableRenamingRewriter(
     {
         if (!Names.TryGetValue(baseName, out var newName))
         {
-            newName = variableNameProvider.GetLocalUniqueVariableName(baseName);
+            newName = nameProvider.GetLocalUniqueVariableName(baseName);
             Names.Add(baseName, newName);
         }
 

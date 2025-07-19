@@ -1,11 +1,11 @@
 ﻿namespace Pure.DI.Core.Code;
 
 record VarDeclaration(
-    IVariableNameProvider VariableNameProvider,
+    INameProvider NameProvider,
     int PerLifetimeId,
     IDependencyNode Node)
 {
-    private readonly Lazy<string> _name = new(() => VariableNameProvider.GetVariableName(Node, PerLifetimeId));
+    private readonly Lazy<string> _name = new(() => NameProvider.GetVariableName(Node, PerLifetimeId));
 
     public bool IsDeclared { get; set; } = IsDeclaredDefault(Node) ;
 

@@ -12,7 +12,7 @@ record Var(VarDeclaration Declaration)
 
     public string Name =>
         string.IsNullOrEmpty(NameOverride)
-            ? (AbstractNode.Lifetime == Lifetime.Singleton ? $"{Names.RootFieldName}." : "") + Declaration.VariableNameProvider.GetVariableName(AbstractNode, Declaration.PerLifetimeId)
+            ? (AbstractNode.Lifetime == Lifetime.Singleton ? $"{Names.RootFieldName}." : "") + Declaration.NameProvider.GetVariableName(AbstractNode, Declaration.PerLifetimeId)
             : NameOverride;
 
     public string CodeExpression

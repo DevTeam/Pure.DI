@@ -3,7 +3,7 @@ namespace Pure.DI.Core.Code;
 
 class VarsMap(
     [Tag(Tag.VarName)] IIdGenerator idGenerator,
-    IVariableNameProvider nameProvider)
+    INameProvider nameProvider)
     : IVarsMap
 {
     private readonly Dictionary<int, Var> _map = [];

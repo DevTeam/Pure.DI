@@ -1,10 +1,12 @@
 ﻿namespace Pure.DI.Core.Code;
 
-interface IVariableNameProvider
+interface INameProvider
 {
     string GetVariableName(IDependencyNode node, int transientId);
 
     string GetOverrideVariableName(MdOverride @override);
 
     string GetLocalUniqueVariableName(string baseName);
+
+    string GetUniqueName(string baseName);
 }

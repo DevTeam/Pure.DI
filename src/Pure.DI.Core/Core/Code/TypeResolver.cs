@@ -2,11 +2,9 @@
 
 namespace Pure.DI.Core.Code;
 
-using static Tag;
-
 sealed class TypeResolver(
     IMarker marker,
-    [Tag(GenericType)] IIdGenerator idGenerator,
+    INameProvider nameProvider,
     ISymbolNames symbolNames)
     : ITypeResolver
 {
@@ -24,8 +22,7 @@ sealed class TypeResolver(
                 {
                     if (!_names.TryGetValue(type, out var typeName))
                     {
-                        var id = idGenerator.Generate();
-                        typeName = id == 0 ? "T" : $"T{id}";
+                        typeName = nameProvider.GetUniqueName("T");
                         _names.Add(type, typeName);
                     }
 

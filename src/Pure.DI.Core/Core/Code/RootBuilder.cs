@@ -23,10 +23,9 @@ class RootBuilder(
     Func<IFactoryValidator> factoryValidatorFactory,
     Func<IInitializersWalker> initializersWalkerFactory,
     ILocationProvider locationProvider,
-    IVariableNameProvider variableNameProvider,
+    INameProvider nameProvider,
     IOverridesRegistry overridesRegistry,
     INameFormatter nameFormatter,
-    [Tag(Tag.LocalFunctionName)] IIdGenerator localFunctionNameIIdGenerator,
     CancellationToken cancellationToken)
     : IBuilder<RootContext, VarInjection>
 {
@@ -721,7 +720,7 @@ class RootBuilder(
                     buildTools.AddAggressiveInlining(localFunction);
                 }
 
-                var.LocalFunctionName = $"Ensure{baseName}Exists{localFunctionNameIIdGenerator.Generate()}{Names.Salt}";
+                var.LocalFunctionName = nameProvider.GetUniqueName($"Ensure{baseName}Exists{Names.Salt}");
                 localFunction.AppendLine($"void {var.LocalFunctionName}()");
                 localFunction.AppendLine(BlockStart);
                 localFunction.IncIndent();
@@ -964,7 +963,7 @@ class RootBuilder(
     {
         foreach (var @override in overrides.OrderBy(i => i.Source.Position).Select(i => factory.ResolveOverride(i)))
         {
-            var name = variableNameProvider.GetOverrideVariableName(@override.Source);
+            var name = nameProvider.GetOverrideVariableName(@override.Source);
             var isDeclared = !ctx.Overrides.Add(name);
             lines.AppendLine($"{(isDeclared ? "" : $"{typeResolver.Resolve(ctx.RootContext.Graph.Source, @override.Source.ContractType)} ")}{name} = {@override.Source.ValueExpression};");
             overridesRegistry.Register(ctx.RootContext.Root, @override);

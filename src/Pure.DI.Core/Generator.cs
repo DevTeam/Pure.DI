@@ -60,7 +60,6 @@ public sealed partial class Generator
             })
             .Bind().To(_ => Compiled | CultureInvariant | Singleline | IgnoreCase)
             .Bind(VarName).To<IdGenerator>()
-            .Bind(LocalFunctionName).To<IdGenerator>()
 
             // Walkers
             .Bind<IMetadataWalker>().To<MetadataWalker>()
@@ -175,8 +174,6 @@ public sealed partial class Generator
             .Bind().To<Types>()
             .Bind().To<Filter>()
             .Bind(UniqueTag).To<IdGenerator>()
-            .Bind(GenericType).To<IdGenerator>()
-            .Bind(Injection).To<IdGenerator>()
             .Bind(Tag.Override).To<IdGenerator>()
             .Bind().To<IdGenerator>()
             .Bind().To<Registry<TT>>()
@@ -184,7 +181,7 @@ public sealed partial class Generator
             .Bind().To<RootAccessModifierResolver>()
             .Bind().To<SmartTags>()
             .Bind().To<GenericTypeArguments>()
-            .Bind().To<VariableNameProvider>()
+            .Bind().To<NameProvider>()
             .Bind().To<OverrideIdProvider>()
             .Bind().To<OverridesRegistry>();
 }
