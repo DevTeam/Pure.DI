@@ -73,7 +73,7 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private OtherAssembly.CompositionInOtherProject? _singletonCompositionInOtherProject52;
+  private OtherAssembly.CompositionInOtherProject? _singleCompositionInOtherProject52;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -97,21 +97,18 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      OtherAssembly.IMyService transientIMyService1;
-      if (_root._singletonCompositionInOtherProject52 is null)
+      OtherAssembly.IMyService transIMyService1;
+      if (_root._singleCompositionInOtherProject52 is null)
       {
         lock (_lock)
         {
-          if (_root._singletonCompositionInOtherProject52 is null)
-          {
-            _root._singletonCompositionInOtherProject52 = new OtherAssembly.CompositionInOtherProject();
-          }
+          _root._singleCompositionInOtherProject52 = new OtherAssembly.CompositionInOtherProject();
         }
       }
 
-      OtherAssembly.CompositionInOtherProject localInstance_1182D12747 = _root._singletonCompositionInOtherProject52;
-      transientIMyService1 = localInstance_1182D12747.MyService;
-      return new Program(transientIMyService1);
+      OtherAssembly.CompositionInOtherProject localInstance_1182D12747 = _root._singleCompositionInOtherProject52;
+      transIMyService1 = localInstance_1182D12747.MyService;
+      return new Program(transIMyService1);
     }
   }
 }

@@ -88,11 +88,11 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      ValueTask<IDependency> transientValueTask1;
+      ValueTask<IDependency> transValueTask1;
       IDependency localValue126 = new Dependency();
       // Initializes a new instance of the ValueTask class using the supplied instance
-      transientValueTask1 = new ValueTask<IDependency>(localValue126);
-      return new Service(transientValueTask1);
+      transValueTask1 = new ValueTask<IDependency>(localValue126);
+      return new Service(transValueTask1);
     }
   }
 }

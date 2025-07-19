@@ -102,7 +102,7 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private Dependency? _singletonDependency52;
+  private Dependency? _singleDependency52;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -126,24 +126,21 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonDependency52 is null)
+      if (_root._singleDependency52 is null)
       {
         lock (_lock)
         {
-          if (_root._singletonDependency52 is null)
-          {
-            Dependency _singletonDependency52Temp;
-            _singletonDependency52Temp = new Dependency();
-            OnNewInstance<Dependency>(ref _singletonDependency52Temp, null, Lifetime.Singleton);
-            Thread.MemoryBarrier();
-            _root._singletonDependency52 = _singletonDependency52Temp;
-          }
+          Dependency _singleDependency52Temp;
+          _singleDependency52Temp = new Dependency();
+          OnNewInstance<Dependency>(ref _singleDependency52Temp, null, Lifetime.Singleton);
+          Thread.MemoryBarrier();
+          _root._singleDependency52 = _singleDependency52Temp;
         }
       }
 
-      var perBlockService0 = new Service(_root._singletonDependency52);
-      OnNewInstance<Service>(ref perBlockService0, null, Lifetime.PerBlock);
-      return perBlockService0;
+      var blockService0 = new Service(_root._singleDependency52);
+      OnNewInstance<Service>(ref blockService0, null, Lifetime.PerBlock);
+      return blockService0;
     }
   }
 

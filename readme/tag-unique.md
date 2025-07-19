@@ -89,14 +89,14 @@ partial class Composition
     get
     {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      IEnumerable<IDependency<string>> EnumerationOf_perBlockIEnumerable1()
+      IEnumerable<IDependency<string>> EnumerationOf_blockIEnumerable1()
       {
         yield return new AbcDependency<string>();
         yield return new XyzDependency<string>();
       }
 
-      var perBlockIEnumerable1 = EnumerationOf_perBlockIEnumerable1();
-      return new Service<string>(perBlockIEnumerable1);
+      var blockIEnumerable1 = EnumerationOf_blockIEnumerable1();
+      return new Service<string>(blockIEnumerable1);
     }
   }
 }
@@ -114,12 +114,12 @@ Class diagram:
 ---
 classDiagram
 	ServiceᐸStringᐳ --|> IServiceᐸStringᐳ
-	AbcDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : Unique tag 0 
-	XyzDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : Unique tag 1 
+	AbcDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : "Unique tag #0" 
+	XyzDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : "Unique tag #1" 
 	Composition ..> ServiceᐸStringᐳ : IServiceᐸStringᐳ Root
 	ServiceᐸStringᐳ o-- "PerBlock" IEnumerableᐸIDependencyᐸStringᐳᐳ : IEnumerableᐸIDependencyᐸStringᐳᐳ
-	IEnumerableᐸIDependencyᐸStringᐳᐳ *--  AbcDependencyᐸStringᐳ : Unique tag 0  IDependencyᐸStringᐳ
-	IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : Unique tag 1  IDependencyᐸStringᐳ
+	IEnumerableᐸIDependencyᐸStringᐳᐳ *--  AbcDependencyᐸStringᐳ : "Unique tag #0"  IDependencyᐸStringᐳ
+	IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : "Unique tag #1"  IDependencyᐸStringᐳ
 	namespace Pure.DI.UsageTests.Advanced.TagUniqueScenario {
 		class AbcDependencyᐸStringᐳ {
 				<<class>>

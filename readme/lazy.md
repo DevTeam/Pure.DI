@@ -81,18 +81,18 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Lazy<IDependency> transientLazy1; // Injects an instance factory
-      Func<IDependency> perBlockFunc2 = new Func<IDependency>(
+      Lazy<IDependency> transLazy1; // Injects an instance factory
+      Func<IDependency> blockFunc2 = new Func<IDependency>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
         IDependency localValue115 = new Dependency();
         return localValue115;
       });
-      Func<IDependency> localFactory114 = perBlockFunc2;
+      Func<IDependency> localFactory114 = blockFunc2;
       // Creates an instance that supports lazy initialization
-      transientLazy1 = new Lazy<IDependency>(localFactory114, true);
-      return new Service(transientLazy1);
+      transLazy1 = new Lazy<IDependency>(localFactory114, true);
+      return new Service(transLazy1);
     }
   }
 }

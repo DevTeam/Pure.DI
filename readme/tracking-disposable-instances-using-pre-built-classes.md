@@ -143,7 +143,7 @@ partial class Composition: IDisposable
   private object[] _disposables;
   private int _disposeIndex;
 
-  private Dependency? _singletonDependency53;
+  private Dependency? _singleDependency53;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -169,59 +169,56 @@ partial class Composition: IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var perBlockOwn3 = new Abstractions.Own();
-      Func<Abstractions.Own<IDependency>> perBlockFunc1 = new Func<Abstractions.Own<IDependency>>(
+      var blockOwn3 = new Abstractions.Own();
+      Func<Abstractions.Own<IDependency>> blockFunc1 = new Func<Abstractions.Own<IDependency>>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        Abstractions.Own<IDependency> perBlockOwn4; // Creates the owner of an instance
-        Abstractions.Own localOwn69 = perBlockOwn3;
-        var transientDependency5 = new Dependency();
+        Abstractions.Own<IDependency> blockOwn4; // Creates the owner of an instance
+        Abstractions.Own localOwn69 = blockOwn3;
+        var transDependency5 = new Dependency();
         lock (_lock)
         {
-          perBlockOwn3.Add(transientDependency5);
+          blockOwn3.Add(transDependency5);
         }
 
-        IDependency localValue70 = transientDependency5;
-        perBlockOwn4 = new Abstractions.Own<IDependency>(localValue70, localOwn69);
+        IDependency localValue70 = transDependency5;
+        blockOwn4 = new Abstractions.Own<IDependency>(localValue70, localOwn69);
         lock (_lock)
         {
-          perBlockOwn3.Add(perBlockOwn4);
+          blockOwn3.Add(blockOwn4);
         }
 
-        Abstractions.Own<IDependency> localValue68 = perBlockOwn4;
+        Abstractions.Own<IDependency> localValue68 = blockOwn4;
         return localValue68;
       });
-      var perBlockOwn6 = new Abstractions.Own();
-      Func<Abstractions.Own<IDependency>> perBlockFunc2 = new Func<Abstractions.Own<IDependency>>(
+      var blockOwn6 = new Abstractions.Own();
+      Func<Abstractions.Own<IDependency>> blockFunc2 = new Func<Abstractions.Own<IDependency>>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        Abstractions.Own<IDependency> perBlockOwn7; // Creates the owner of an instance
-        Abstractions.Own localOwn72 = perBlockOwn6;
-        if (_root._singletonDependency53 is null)
+        Abstractions.Own<IDependency> blockOwn7; // Creates the owner of an instance
+        Abstractions.Own localOwn72 = blockOwn6;
+        if (_root._singleDependency53 is null)
         {
           lock (_lock)
           {
-            if (_root._singletonDependency53 is null)
-            {
-              _root._singletonDependency53 = new Dependency();
-              _root._disposables[_root._disposeIndex++] = _root._singletonDependency53;
-            }
+            _root._singleDependency53 = new Dependency();
+            _root._disposables[_root._disposeIndex++] = _root._singleDependency53;
           }
         }
 
-        IDependency localValue73 = _root._singletonDependency53;
-        perBlockOwn7 = new Abstractions.Own<IDependency>(localValue73, localOwn72);
+        IDependency localValue73 = _root._singleDependency53;
+        blockOwn7 = new Abstractions.Own<IDependency>(localValue73, localOwn72);
         lock (_lock)
         {
-          perBlockOwn6.Add(perBlockOwn7);
+          blockOwn6.Add(blockOwn7);
         }
 
-        Abstractions.Own<IDependency> localValue71 = perBlockOwn7;
+        Abstractions.Own<IDependency> localValue71 = blockOwn7;
         return localValue71;
       });
-      return new Service(perBlockFunc1, perBlockFunc2);
+      return new Service(blockFunc1, blockFunc2);
     }
   }
 
@@ -235,7 +232,7 @@ partial class Composition: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _singletonDependency53 = default(Dependency);
+      _singleDependency53 = default(Dependency);
       }
 
       while (disposeIndex-- > 0)

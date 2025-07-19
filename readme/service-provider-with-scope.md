@@ -120,7 +120,7 @@ partial class Composition: IDisposable
   private int _disposeIndex;
 
   private Service? _scopedService53;
-  private Dependency? _singletonDependency52;
+  private Dependency? _singleDependency52;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -149,19 +149,16 @@ partial class Composition: IDisposable
       EnsureDependencyExists1();
       void EnsureDependencyExists1()
       {
-        if (_root._singletonDependency52 is null)
+        if (_root._singleDependency52 is null)
         {
           lock (_lock)
           {
-            if (_root._singletonDependency52 is null)
-            {
-              _root._singletonDependency52 = new Dependency();
-            }
+            _root._singleDependency52 = new Dependency();
           }
         }
       }
 
-      return _root._singletonDependency52;
+      return _root._singleDependency52;
     }
   }
 
@@ -174,20 +171,17 @@ partial class Composition: IDisposable
       {
         lock (_lock)
         {
-          if (_scopedService53 is null)
-          {
-            EnsureDependencyExists0();
-            _scopedService53 = new Service(_root._singletonDependency52);
-            _disposables[_disposeIndex++] = _scopedService53;
-          }
+          EnsureDependencyExists0();
+          _scopedService53 = new Service(_root._singleDependency52);
+          _disposables[_disposeIndex++] = _scopedService53;
         }
       }
 
       void EnsureDependencyExists0()
       {
-        if (_root._singletonDependency52 is null)
+        if (_root._singleDependency52 is null)
         {
-          _root._singletonDependency52 = new Dependency();
+          _root._singleDependency52 = new Dependency();
         }
       }
 
@@ -266,7 +260,7 @@ partial class Composition: IDisposable
       disposables = _disposables;
       _disposables = new object[1];
       _scopedService53 = default(Service);
-      _singletonDependency52 = default(Dependency);
+      _singleDependency52 = default(Dependency);
       }
 
       while (disposeIndex-- > 0)

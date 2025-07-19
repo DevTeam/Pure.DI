@@ -83,8 +83,8 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private (IDependency dep3, IDependency dep4) _singletonValueTuple53;
-  private bool _singletonValueTuple53Created;
+  private (IDependency dep3, IDependency dep4) _singleValueTuple53;
+  private bool _singleValueTuple53Created;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -108,30 +108,27 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var perResolveDependency1 = default(Dependency);
-      if (!_root._singletonValueTuple53Created)
+      var resolveDependency1 = default(Dependency);
+      if (!_root._singleValueTuple53Created)
       {
         lock (_lock)
         {
-          if (!_root._singletonValueTuple53Created)
-          {
-            EnsureDependencyExists0();
-            _root._singletonValueTuple53 = (perResolveDependency1, perResolveDependency1);
-            Thread.MemoryBarrier();
-            _root._singletonValueTuple53Created = true;
-          }
+          EnsureDependencyExists0();
+          _root._singleValueTuple53 = (resolveDependency1, resolveDependency1);
+          Thread.MemoryBarrier();
+          _root._singleValueTuple53Created = true;
         }
       }
 
       void EnsureDependencyExists0()
       {
-        if (perResolveDependency1 is null)
+        if (resolveDependency1 is null)
         {
-          perResolveDependency1 = new Dependency();
+          resolveDependency1 = new Dependency();
         }
       }
 
-      return new Service(perResolveDependency1, perResolveDependency1, _root._singletonValueTuple53);
+      return new Service(resolveDependency1, resolveDependency1, _root._singleValueTuple53);
     }
   }
 }

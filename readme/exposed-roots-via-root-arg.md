@@ -91,10 +91,10 @@ partial class Composition
   public Program GetProgram(OtherAssembly.CompositionInOtherProject baseComposition)
   {
     if (baseComposition is null) throw new ArgumentNullException(nameof(baseComposition));
-    OtherAssembly.IMyService transientIMyService1;
+    OtherAssembly.IMyService transIMyService1;
     OtherAssembly.CompositionInOtherProject localInstance_1182D12749 = baseComposition;
-    transientIMyService1 = localInstance_1182D12749.MyService;
-    return new Program(transientIMyService1);
+    transIMyService1 = localInstance_1182D12749.MyService;
+    return new Program(transIMyService1);
   }
 }
 ```

@@ -81,7 +81,7 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private XyzDependency? _singletonXyzDependency54;
+  private XyzDependency? _singleXyzDependency54;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -105,36 +105,33 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var perBlockMyAccumulator1 = new MyAccumulator();
-      var perBlockAbcDependency5 = new AbcDependency();
-      if (_root._singletonXyzDependency54 is null)
+      var blockMyAccumulator1 = new MyAccumulator();
+      var blockAbcDependency5 = new AbcDependency();
+      if (_root._singleXyzDependency54 is null)
       {
         lock (_lock)
         {
-          if (_root._singletonXyzDependency54 is null)
-          {
-            XyzDependency _singletonXyzDependency54Temp;
-            _singletonXyzDependency54Temp = new XyzDependency();
-            perBlockMyAccumulator1.Add(_singletonXyzDependency54Temp);
-            Thread.MemoryBarrier();
-            _root._singletonXyzDependency54 = _singletonXyzDependency54Temp;
-          }
+          XyzDependency _singleXyzDependency54Temp;
+          _singleXyzDependency54Temp = new XyzDependency();
+          blockMyAccumulator1.Add(_singleXyzDependency54Temp);
+          Thread.MemoryBarrier();
+          _root._singleXyzDependency54 = _singleXyzDependency54Temp;
         }
       }
 
-      var transientAbcDependency3 = new AbcDependency();
+      var transAbcDependency3 = new AbcDependency();
       lock (_lock)
       {
-        perBlockMyAccumulator1.Add(transientAbcDependency3);
+        blockMyAccumulator1.Add(transAbcDependency3);
       }
 
-      var transientService2 = new Service(transientAbcDependency3, _root._singletonXyzDependency54, perBlockAbcDependency5);
+      var transService2 = new Service(transAbcDependency3, _root._singleXyzDependency54, blockAbcDependency5);
       lock (_lock)
       {
-        perBlockMyAccumulator1.Add(transientService2);
+        blockMyAccumulator1.Add(transService2);
       }
 
-      return (transientService2, perBlockMyAccumulator1);
+      return (transService2, blockMyAccumulator1);
     }
   }
 }

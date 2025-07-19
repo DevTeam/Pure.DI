@@ -97,7 +97,7 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private XyzDependency? _singletonXyzDependency53;
+  private XyzDependency? _singleXyzDependency53;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -124,19 +124,16 @@ partial class Composition
       EnsureXyzDependencyPureDIUsageTestsAdvancedTagTypeScenarioXyzDependencyExists0();
       void EnsureXyzDependencyPureDIUsageTestsAdvancedTagTypeScenarioXyzDependencyExists0()
       {
-        if (_root._singletonXyzDependency53 is null)
+        if (_root._singleXyzDependency53 is null)
         {
           lock (_lock)
           {
-            if (_root._singletonXyzDependency53 is null)
-            {
-              _root._singletonXyzDependency53 = new XyzDependency();
-            }
+            _root._singleXyzDependency53 = new XyzDependency();
           }
         }
       }
 
-      return _root._singletonXyzDependency53;
+      return _root._singleXyzDependency53;
     }
   }
 
@@ -148,19 +145,16 @@ partial class Composition
       EnsureXyzDependencyPureDIUsageTestsAdvancedTagTypeScenarioXyzDependencyExists1();
       void EnsureXyzDependencyPureDIUsageTestsAdvancedTagTypeScenarioXyzDependencyExists1()
       {
-        if (_root._singletonXyzDependency53 is null)
+        if (_root._singleXyzDependency53 is null)
         {
           lock (_lock)
           {
-            if (_root._singletonXyzDependency53 is null)
-            {
-              _root._singletonXyzDependency53 = new XyzDependency();
-            }
+            _root._singleXyzDependency53 = new XyzDependency();
           }
         }
       }
 
-      return new Service(new AbcDependency(), _root._singletonXyzDependency53, new AbcDependency());
+      return new Service(new AbcDependency(), _root._singleXyzDependency53, new AbcDependency());
     }
   }
 }

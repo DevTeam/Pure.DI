@@ -86,10 +86,10 @@ partial class Composition
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public OtherService<T1> GetMyOtherService_T<T1>()
   {
-    OtherService<T1> transientOtherService0;
-    IDependency<T1> localDependency158 = new Dependency<T1>();
-    transientOtherService0 = new OtherService<T1>(localDependency158);
-    return transientOtherService0;
+    OtherService<T1> transOtherService0;
+    IDependency<T1> localDependency152 = new Dependency<T1>();
+    transOtherService0 = new OtherService<T1>(localDependency152);
+    return transOtherService0;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]

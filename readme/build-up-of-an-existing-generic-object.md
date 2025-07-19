@@ -118,13 +118,13 @@ partial class Composition
   public IService<Guid> GetMyService(string name)
   {
     if (name is null) throw new ArgumentNullException(nameof(name));
-    Dependency<Guid> transientDependency1;
-    Dependency<Guid> localDependency151 = new Dependency<Guid>();
-    Guid transientGuid3 = Guid.NewGuid();
-    localDependency151.Name = name;
-    localDependency151.SetId(transientGuid3);
-    transientDependency1 = localDependency151;
-    return new Service<Guid>(transientDependency1);
+    Dependency<Guid> transDependency1;
+    Dependency<Guid> localDependency145 = new Dependency<Guid>();
+    Guid transGuid3 = Guid.NewGuid();
+    localDependency145.Name = name;
+    localDependency145.SetId(transGuid3);
+    transDependency1 = localDependency145;
+    return new Service<Guid>(transDependency1);
   }
 }
 ```
@@ -155,7 +155,7 @@ classDiagram
 		class DependencyᐸGuidᐳ {
 				<<class>>
 			+String Name
-			+SetId(T3 id) : Void
+			+SetId(Guid id) : Void
 		}
 		class IDependencyᐸGuidᐳ {
 			<<interface>>

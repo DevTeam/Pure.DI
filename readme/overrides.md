@@ -139,7 +139,7 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private Clock? _singletonClock53;
+  private Clock? _singleClock53;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -163,10 +163,10 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<int, int, IDependency> transientFunc1;
+      Func<int, int, IDependency> transFunc1;
       lock (_lock)
       {
-        transientFunc1 =
+        transFunc1 =
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         (localDependencyId3, localSubId4) =>
         {
@@ -174,23 +174,23 @@ partial class Composition
           // Overrides with tag using lambda argument
           // Overrides with some value
           // Overrides with injected value
-          int overInt320 = localDependencyId3;
-          int overInt321 = localSubId4;
-          string overString2 = $"Dep {localDependencyId3} {localSubId4}";
-          Drawing.Color transientColor2 = Color.Red;
-          Drawing.Color localRed5 = transientColor2;
-          Drawing.Color overColor3 = localRed5;
-          if (_root._singletonClock53 is null)
+          int overrInt320 = localDependencyId3;
+          int overrInt321 = localSubId4;
+          string overrString2 = $"Dep {localDependencyId3} {localSubId4}";
+          Drawing.Color transColor2 = Color.Red;
+          Drawing.Color localRed5 = transColor2;
+          Drawing.Color overrColor3 = localRed5;
+          if (_root._singleClock53 is null)
           {
-            _root._singletonClock53 = new Clock();
+            _root._singleClock53 = new Clock();
           }
 
-          Dependency localDependency106 = new Dependency(overString2, _root._singletonClock53, overInt320, overInt321, overColor3);
+          Dependency localDependency106 = new Dependency(overrString2, _root._singleClock53, overrInt320, overrInt321, overrColor3);
           return localDependency106;
         };
       }
 
-      return new Service(transientFunc1);
+      return new Service(transFunc1);
     }
   }
 }

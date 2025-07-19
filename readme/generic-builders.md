@@ -115,11 +115,11 @@ partial class Composition
     where T1: struct
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    Service2<T1, T5> transientService20;
-    Service2<T1, T5> localBuildingInstance149 = buildingInstance;
-    localBuildingInstance149.Dependency = new Dependency<T5>();
-    transientService20 = localBuildingInstance149;
-    return transientService20;
+    Service2<T1, T5> transService20;
+    Service2<T1, T5> localBuildingInstance143 = buildingInstance;
+    localBuildingInstance143.Dependency = new Dependency<T5>();
+    transService20 = localBuildingInstance143;
+    return transService20;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -127,13 +127,13 @@ partial class Composition
     where T1: struct
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    Service1<T1, T5> transientService13;
-    Service1<T1, T5> localBuildingInstance150 = buildingInstance;
-    T1 transientTT6 = (T1)(object)Guid.NewGuid();
-    localBuildingInstance150.Dependency = new Dependency<T5>();
-    localBuildingInstance150.SetId(transientTT6);
-    transientService13 = localBuildingInstance150;
-    return transientService13;
+    Service1<T1, T5> transService13;
+    Service1<T1, T5> localBuildingInstance144 = buildingInstance;
+    T1 transTT6 = (T1)(object)Guid.NewGuid();
+    localBuildingInstance144.Dependency = new Dependency<T5>();
+    localBuildingInstance144.SetId(transTT6);
+    transService13 = localBuildingInstance144;
+    return transService13;
   }
 }
 ```

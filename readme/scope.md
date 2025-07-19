@@ -153,11 +153,8 @@ partial class Composition: IDisposable
       {
         lock (_lock)
         {
-          if (_scopedDependency52 is null)
-          {
-            _scopedDependency52 = new Dependency();
-            _disposables[_disposeIndex++] = _scopedDependency52;
-          }
+          _scopedDependency52 = new Dependency();
+          _disposables[_disposeIndex++] = _scopedDependency52;
         }
       }
 
@@ -170,15 +167,15 @@ partial class Composition: IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<Session> perBlockFunc1 = new Func<Session>(
+      Func<Session> blockFunc1 = new Func<Session>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        var transientComposition3 = this;
-        Session localValue164 = new Session(transientComposition3);
-        return localValue164;
+        var transComposition3 = this;
+        Session localValue158 = new Session(transComposition3);
+        return localValue158;
       });
-      return new Program(perBlockFunc1);
+      return new Program(blockFunc1);
     }
   }
 

@@ -96,14 +96,14 @@ partial class Composition
     get
     {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      IEnumerable<IDependency<string>> EnumerationOf_perBlockIEnumerable1()
+      IEnumerable<IDependency<string>> EnumerationOf_blockIEnumerable1()
       {
         yield return new AbcDependency<string>();
         yield return new XyzDependency<string>();
       }
 
-      var perBlockIEnumerable1 = EnumerationOf_perBlockIEnumerable1();
-      return new Service<string>(perBlockIEnumerable1);
+      var blockIEnumerable1 = EnumerationOf_blockIEnumerable1();
+      return new Service<string>(blockIEnumerable1);
     }
   }
 
@@ -113,14 +113,14 @@ partial class Composition
     get
     {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      IEnumerable<IDependency<int>> EnumerationOf_perBlockIEnumerable5()
+      IEnumerable<IDependency<int>> EnumerationOf_blockIEnumerable5()
       {
         yield return new AbcDependency<int>();
         yield return new XyzDependency<int>();
       }
 
-      var perBlockIEnumerable5 = EnumerationOf_perBlockIEnumerable5();
-      return new Service<int>(perBlockIEnumerable5);
+      var blockIEnumerable5 = EnumerationOf_blockIEnumerable5();
+      return new Service<int>(blockIEnumerable5);
     }
   }
 }

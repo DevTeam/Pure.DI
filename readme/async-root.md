@@ -86,29 +86,29 @@ partial class Composition
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Task<IService> GetMyServiceAsync(CancellationToken cancellationToken)
   {
-    Task<IService> transientTask0; // Injects an instance factory
-    Func<IService> perBlockFunc1 = new Func<IService>(
+    Task<IService> transTask0; // Injects an instance factory
+    Func<IService> blockFunc1 = new Func<IService>(
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     () =>
     {
       IService localValue84 = new Service(new Dependency());
       return localValue84;
     });
-    Func<IService> localFactory82 = perBlockFunc1;
+    Func<IService> localFactory82 = blockFunc1;
     // Injects a task factory creating and scheduling task objects
-    TaskFactory<IService> perBlockTaskFactory2;
+    TaskFactory<IService> blockTaskFactory2;
     CancellationToken localCancellationToken85 = cancellationToken;
-    TaskCreationOptions transientTaskCreationOptions6 = TaskCreationOptions.None;
-    TaskCreationOptions localTaskCreationOptions86 = transientTaskCreationOptions6;
-    TaskContinuationOptions transientTaskContinuationOptions7 = TaskContinuationOptions.None;
-    TaskContinuationOptions localTaskContinuationOptions87 = transientTaskContinuationOptions7;
-    TaskScheduler transientTaskScheduler8 = TaskScheduler.Default;
-    TaskScheduler localTaskScheduler88 = transientTaskScheduler8;
-    perBlockTaskFactory2 = new TaskFactory<IService>(localCancellationToken85, localTaskCreationOptions86, localTaskContinuationOptions87, localTaskScheduler88);
-    TaskFactory<IService> localTaskFactory83 = perBlockTaskFactory2;
+    TaskCreationOptions transTaskCreationOptions6 = TaskCreationOptions.None;
+    TaskCreationOptions localTaskCreationOptions86 = transTaskCreationOptions6;
+    TaskContinuationOptions transTaskContinuationOptions7 = TaskContinuationOptions.None;
+    TaskContinuationOptions localTaskContinuationOptions87 = transTaskContinuationOptions7;
+    TaskScheduler transTaskScheduler8 = TaskScheduler.Default;
+    TaskScheduler localTaskScheduler88 = transTaskScheduler8;
+    blockTaskFactory2 = new TaskFactory<IService>(localCancellationToken85, localTaskCreationOptions86, localTaskContinuationOptions87, localTaskScheduler88);
+    TaskFactory<IService> localTaskFactory83 = blockTaskFactory2;
     // Creates and starts a task using the instance factory
-    transientTask0 = localTaskFactory83.StartNew(localFactory82);
-    return transientTask0;
+    transTask0 = localTaskFactory83.StartNew(localFactory82);
+    return transTask0;
   }
 }
 ```

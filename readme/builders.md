@@ -120,24 +120,24 @@ partial class Composition
   public Service1 BuildUp(Service1 buildingInstance)
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    Service1 transientService13;
+    Service1 transService13;
     Service1 localBuildingInstance94 = buildingInstance;
-    Guid transientGuid6 = Guid.NewGuid();
+    Guid transGuid6 = Guid.NewGuid();
     localBuildingInstance94.Dependency = new Dependency();
-    localBuildingInstance94.SetId(transientGuid6);
-    transientService13 = localBuildingInstance94;
-    return transientService13;
+    localBuildingInstance94.SetId(transGuid6);
+    transService13 = localBuildingInstance94;
+    return transService13;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Service2 BuildUp(Service2 buildingInstance)
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    Service2 transientService20;
+    Service2 transService20;
     Service2 localBuildingInstance93 = buildingInstance;
     localBuildingInstance93.Dependency = new Dependency();
-    transientService20 = localBuildingInstance93;
-    return transientService20;
+    transService20 = localBuildingInstance93;
+    return transService20;
   }
 }
 ```

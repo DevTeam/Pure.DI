@@ -65,7 +65,7 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private Dependency? _singletonDependency52;
+  private Dependency? _singleDependency52;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -92,19 +92,16 @@ partial class Composition
       EnsureDependencyExists0();
       void EnsureDependencyExists0()
       {
-        if (_root._singletonDependency52 is null)
+        if (_root._singleDependency52 is null)
         {
           lock (_lock)
           {
-            if (_root._singletonDependency52 is null)
-            {
-              _root._singletonDependency52 = new Dependency();
-            }
+            _root._singleDependency52 = new Dependency();
           }
         }
       }
 
-      return new Service2(_root._singletonDependency52);
+      return new Service2(_root._singleDependency52);
     }
   }
 
@@ -116,19 +113,16 @@ partial class Composition
       EnsureDependencyExists1();
       void EnsureDependencyExists1()
       {
-        if (_root._singletonDependency52 is null)
+        if (_root._singleDependency52 is null)
         {
           lock (_lock)
           {
-            if (_root._singletonDependency52 is null)
-            {
-              _root._singletonDependency52 = new Dependency();
-            }
+            _root._singleDependency52 = new Dependency();
           }
         }
       }
 
-      return new Service1(_root._singletonDependency52);
+      return new Service1(_root._singleDependency52);
     }
   }
 }
