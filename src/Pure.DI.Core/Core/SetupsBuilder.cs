@@ -307,7 +307,7 @@ sealed class SetupsBuilder(
 
             if (!member.IsStatic)
             {
-                resolvers.Add(CreateResolver(typeConstructor, RootBuilder.DefaultInstanceValueName, contract.ContractType!, valueTag, ref position));
+                resolvers.Add(CreateResolver(typeConstructor, Names.DefaultInstanceValueName, contract.ContractType!, valueTag, ref position));
             }
 
             VisitContract(
@@ -334,7 +334,7 @@ sealed class SetupsBuilder(
                 VisitTag(new MdTag(tagPosition, null));
             }
 
-            var memberResolver = CreateResolver(typeConstructor, RootBuilder.DefaultInstanceValueName, contract.ContractType!, valueTag, ref position);
+            var memberResolver = CreateResolver(typeConstructor, Names.DefaultInstanceValueName, contract.ContractType!, valueTag, ref position);
             memberResolver = memberResolver with { Member = member };
             VisitFactory(
                 new MdFactory(

@@ -30,7 +30,6 @@ class RootBuilder(
     CancellationToken cancellationToken)
     : IBuilder<RootContext, VarInjection>
 {
-    public const string DefaultInstanceValueName = "instance_1182D127";
     public static readonly ParenthesizedLambdaExpressionSyntax DefaultBindAttrParenthesizedLambda = SyntaxFactory.ParenthesizedLambdaExpression();
     public static readonly ParameterSyntax DefaultCtxParameter = SyntaxFactory.Parameter(SyntaxFactory.Identifier("ctx_1182D127"));
     private static readonly string InjectionStatement = $"{Names.InjectionMarker};";
@@ -227,7 +226,7 @@ class RootBuilder(
             var tempVar = var;
             if (tempVariableInit)
             {
-                tempVar = var with { NameOverride = var.Declaration.Name + "Temp" };
+                tempVar = var with { NameOverride = $"{var.Declaration.Name}{Names.TempInstanceValueNameSuffix}" };
                 lines.AppendLine($"{typeResolver.Resolve(ctx.RootContext.Graph.Source, tempVar.InstanceType)} {tempVar.Name};");
                 if (onCreatedStatements.Count > 0)
                 {
@@ -306,7 +305,7 @@ class RootBuilder(
                         var type = memberResolver.ContractType;
                         ExpressionSyntax instance = member.IsStatic
                             ? SyntaxFactory.ParseTypeName(symbolNames.GetGlobalName(type))
-                            : SyntaxFactory.IdentifierName(DefaultInstanceValueName);
+                            : SyntaxFactory.IdentifierName(Names.DefaultInstanceValueName);
 
                         switch (member)
                         {
@@ -803,21 +802,18 @@ class RootBuilder(
         var lines = ctx.Lines;
         var compilation = var.AbstractNode.Binding.SemanticModel.Compilation;
         var checkExpression = var.InstanceType.IsValueType
-            ? $"!{var.Name}Created"
+            ? $"!{var.Name}{Names.CreatedValueNameSuffix}"
             : buildTools.NullCheck(compilation, var.Name);
-        if (isLockRequired)
-        {
-            lines.AppendLine($"if ({checkExpression})");
-            lines.AppendLine(BlockStart);
-            lines.IncIndent();
-            locks.AddLockStatements(lines, false);
-            lines.AppendLine(BlockStart);
-            lines.IncIndent();
-        }
 
         lines.AppendLine($"if ({checkExpression})");
         lines.AppendLine(BlockStart);
         lines.IncIndent();
+        if (isLockRequired)
+        {
+            locks.AddLockStatements(lines, false);
+            lines.AppendLine(BlockStart);
+            lines.IncIndent();
+        }
     }
 
     private void FinishSingleInstanceCheck(CodeContext ctx)
@@ -842,19 +838,17 @@ class RootBuilder(
                 lines.AppendLine($"{Names.SystemNamespace}Threading.Thread.MemoryBarrier();");
             }
 
-            lines.AppendLine($"{var.Name}Created = true;");
-        }
-
-        if (ctx.IsLockRequired)
-        {
-            lines.DecIndent();
-            lines.AppendLine(BlockFinish);
-            lines.DecIndent();
-            lines.AppendLine(BlockFinish);
+            lines.AppendLine($"{var.Name}{Names.CreatedValueNameSuffix} = true;");
         }
 
         lines.DecIndent();
         lines.AppendLine(BlockFinish);
+        if (ctx.IsLockRequired)
+        {
+            lines.DecIndent();
+            lines.AppendLine(BlockFinish);
+        }
+
         lines.AppendLine();
     }
 

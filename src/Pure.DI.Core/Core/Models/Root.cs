@@ -14,7 +14,7 @@ record Root(
 {
     public bool IsPublic => !string.IsNullOrWhiteSpace(Name);
 
-    public string DisplayName => this.GetPropertyName();
+    public string DisplayName => IsPublic ? Name : $"{Names.PrivateRootName}{Index}";
 
     public virtual bool Equals(Root? other)
     {

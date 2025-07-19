@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 
 static class Names
 {
+    public static readonly string Salt = $"M{DateTime.Now.Month:00}D{DateTime.Now.Day:00}di";
     public const string GeneratorName = $"{nameof(Pure)}.{nameof(DI)}";
 
     // Files
@@ -24,12 +25,17 @@ static class Names
     // Messages
     public const string CannotResolveMessage = "Cannot resolve composition root";
     public const string OfTypeMessage = "of type";
+
     public const string DefaultApiMethodModifiers = "public";
     public const string ParentScopeArgName = "parentScope";
     public const string ResolverPropertyName = "Value";
     public const string DefaultBuilderName = "BuildUp";
     public const string BuildingInstance = "buildingInstance";
     public const string ContextInstance = "ctx";
+    public const string DefaultInstanceValueName = "instance_1182D127";
+    public static readonly string PrivateRootName = $"Root{Salt}";
+    public const string TempInstanceValueNameSuffix = "Temp";
+    public const string CreatedValueNameSuffix = "Created";
 
     // Attributes
     public const string OrdinalAttributeName = $"{ApiNamespace}{nameof(OrdinalAttribute)}";
@@ -67,15 +73,14 @@ static class Names
     public const string EnumerateMethodNamePrefix = "EnumerationOf";
 
     // Vars
-    public const string TransientVariablePrefix = "transient";
-    public const string PerBlockVariablePrefix = "perBlock";
-    public const string PerResolveVariablePrefix = "perResolve";
-    public const string SingletonVariablePrefix = "_singleton";
+    public const string TransientVariablePrefix = "trans";
+    public const string PerBlockVariablePrefix = "block";
+    public const string PerResolveVariablePrefix = "resolve";
+    public const string SingletonVariablePrefix = "_single";
     public const string ScopedVariablePrefix = "_scoped";
     public const string ArgVariablePrefix = "_arg";
     public const string LocalVariablePrefix = "local";
-    public const string OverriddenVariablePrefix = "over";
-    public static readonly string Salt = $"M{DateTime.Now.Month:00}D{DateTime.Now.Day:00}di";
+    public const string OverriddenVariablePrefix = "overr";
     public static readonly string InjectionMarker = "injectMarker" + Salt;
     public static readonly string InitializationMarker = "initializeMarker" + Salt;
     public static readonly string OverrideMarker = "overrideMarker" + Salt;
@@ -92,7 +97,4 @@ static class Names
     public static readonly string RootFieldName = "_root" + Salt;
     public static readonly string CannotResolveFieldName = "CannotResolveMessage" + Salt;
     public static readonly string OfTypeFieldName = "OfTypeMessage" + Salt;
-
-    public static string GetPropertyName(this Root root) =>
-        root.IsPublic ? root.Name : $"Root{Salt}{root.Index}";
 }
