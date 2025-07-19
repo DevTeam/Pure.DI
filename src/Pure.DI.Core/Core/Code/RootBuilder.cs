@@ -723,8 +723,13 @@ class RootBuilder(
             if (useLocalFunction)
             {
                 var baseName = nameFormatter.Format("{type}{tag}", ctx.VarInjection.Var.InstanceType, ctx.VarInjection.Injection.Tag);
-                var.LocalFunctionName = $"Ensure{baseName}Exists{localFunctionNameIIdGenerator.Generate()}{Names.Salt}";
                 var localFunction = var.LocalFunction;
+                if (compilations.GetLanguageVersion(ctx.RootContext.Graph.Source.SemanticModel.Compilation) >= LanguageVersion.CSharp9)
+                {
+                    buildTools.AddAggressiveInlining(localFunction);
+                }
+
+                var.LocalFunctionName = $"Ensure{baseName}Exists{localFunctionNameIIdGenerator.Generate()}{Names.Salt}";
                 localFunction.AppendLine($"void {var.LocalFunctionName}()");
                 localFunction.AppendLine(BlockStart);
                 localFunction.IncIndent();
