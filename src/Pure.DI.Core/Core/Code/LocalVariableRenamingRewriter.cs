@@ -2,12 +2,14 @@
 
 namespace Pure.DI.Core.Code;
 
+using System.Collections.Concurrent;
+
 sealed class LocalVariableRenamingRewriter(
     ITriviaTools triviaTools,
     INameProvider nameProvider)
     : CSharpSyntaxRewriter, ILocalVariableRenamingRewriter
 {
-    private Dictionary<string, string> Names { get; init; } = [];
+    private ConcurrentDictionary<string, string> Names { get; init; } = [];
     private bool _formatCode;
     private bool _isOverride;
     private bool _forcibleRename;
@@ -22,13 +24,8 @@ sealed class LocalVariableRenamingRewriter(
         return Visit(lambda);
     }
 
-    public ILocalVariableRenamingRewriter Clone()
-    {
-        return new LocalVariableRenamingRewriter(triviaTools, nameProvider)
-        {
-            Names = new Dictionary<string, string>(Names)
-        };
-    }
+    public ILocalVariableRenamingRewriter Clone() =>
+        new LocalVariableRenamingRewriter(triviaTools, nameProvider) { Names = new ConcurrentDictionary<string, string>(Names) };
 
     public override SyntaxNode? VisitVariableDeclarator(VariableDeclaratorSyntax node) =>
         base.VisitVariableDeclarator(node.WithIdentifier(SyntaxFactory.Identifier(GetUniqueName(node.Identifier.Text))));
@@ -71,14 +68,5 @@ sealed class LocalVariableRenamingRewriter(
         return base.VisitToken(token);
     }
 
-    private string GetUniqueName(string baseName)
-    {
-        if (!Names.TryGetValue(baseName, out var newName))
-        {
-            newName = nameProvider.GetLocalUniqueVariableName(baseName);
-            Names.Add(baseName, newName);
-        }
-
-        return newName;
-    }
+    private string GetUniqueName(string baseName) => Names.GetOrAdd(baseName, nameProvider.GetLocalUniqueVariableName);
 }

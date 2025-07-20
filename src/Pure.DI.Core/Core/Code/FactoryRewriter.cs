@@ -6,14 +6,9 @@ namespace Pure.DI.Core.Code;
 sealed class FactoryRewriter(
     IArguments arguments,
     ICompilations compilations,
-    DpFactory factory,
-    VarInjection varInjection,
-    string finishLabel,
-    ICollection<FactoryRewriter.Injection> injections,
-    ICollection<FactoryRewriter.Initializer> initializers,
     ITriviaTools triviaTools,
     ISymbolNames symbolNames)
-    : CSharpSyntaxRewriter
+    : CSharpSyntaxRewriter, IFactoryRewriter
 {
     private static readonly AttributeListSyntax MethodImplAttribute = SyntaxFactory.AttributeList().AddAttributes(
         SyntaxFactory.Attribute(
@@ -29,8 +24,30 @@ sealed class FactoryRewriter(
     private CodeContext? _ctx;
     private int _nestedBlockCounter;
     private int _nestedLambdaCounter;
+ #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+    private DpFactory _factory;
+    private VarInjection _varInjection;
+    private string _finishLabel;
+    private ICollection<Injection> _injections;
+    private ICollection<Initializer> _initializers;
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
     public bool IsFinishMarkRequired { get; private set; }
+
+    public IFactoryRewriter Initialize(
+        DpFactory factory,
+        VarInjection varInjection,
+        string finishLabel,
+        ICollection<Injection> injections,
+        ICollection<Initializer> initializers)
+    {
+        _factory = factory;
+        _varInjection = varInjection;
+        _finishLabel = finishLabel;
+        _injections = injections;
+        _initializers = initializers;
+        return this;
+    }
 
     public LambdaExpressionSyntax Rewrite(CodeContext ctx, LambdaExpressionSyntax lambda)
     {
@@ -59,7 +76,7 @@ sealed class FactoryRewriter(
             var processedNode = base.VisitParenthesizedLambdaExpression(node);
             if (_nestedBlockCounter > 0
                 || processedNode is not ParenthesizedLambdaExpressionSyntax lambda
-                || compilations.GetLanguageVersion(factory.Source.SemanticModel.Compilation) < LanguageVersion.CSharp10)
+                || compilations.GetLanguageVersion(_factory.Source.SemanticModel.Compilation) < LanguageVersion.CSharp10)
             {
                 return processedNode;
             }
@@ -117,7 +134,7 @@ sealed class FactoryRewriter(
                     CreateAssignmentExpression(returnBody, node),
                     SyntaxFactory.GotoStatement(
                         SyntaxKind.GotoStatement,
-                        SyntaxFactory.IdentifierName(finishLabel).WithLeadingTrivia(SyntaxFactory.Space)).WithLeadingTrivia(SyntaxFactory.Space).WithTrailingTrivia(SyntaxFactory.Space)
+                        SyntaxFactory.IdentifierName(_finishLabel).WithLeadingTrivia(SyntaxFactory.Space)).WithLeadingTrivia(SyntaxFactory.Space).WithTrailingTrivia(SyntaxFactory.Space)
                 )
                 .WithLeadingTrivia(node.GetLeadingTrivia())
                 .WithTrailingTrivia(node.GetTrailingTrivia());
@@ -130,7 +147,7 @@ sealed class FactoryRewriter(
         triviaTools.PreserveTrivia(owner, SyntaxFactory.ExpressionStatement(
             SyntaxFactory.AssignmentExpression(
                 SyntaxKind.SimpleAssignmentExpression,
-                SyntaxFactory.IdentifierName(varInjection.Var.Name).WithLeadingTrivia(SyntaxFactory.Space).WithTrailingTrivia(SyntaxFactory.Space),
+                SyntaxFactory.IdentifierName(_varInjection.Var.Name).WithLeadingTrivia(SyntaxFactory.Space).WithTrailingTrivia(SyntaxFactory.Space),
                 (ExpressionSyntax)Visit(returnBody).WithLeadingTrivia(SyntaxFactory.Space))), _ctx!.RootContext.Graph.Source.Hints.IsFormatCodeEnabled);
 
     public override SyntaxNode VisitExpressionStatement(ExpressionStatementSyntax node)
@@ -141,7 +158,7 @@ sealed class FactoryRewriter(
                 ArgumentList.Arguments.Count: > 0,
                 Expression: MemberAccessExpressionSyntax { Expression: IdentifierNameSyntax ctx } memberAccessExpression
             } invocation
-            || ctx.Identifier.Text != factory.Source.Context.Identifier.Text)
+            || ctx.Identifier.Text != _factory.Source.Context.Identifier.Text)
         {
             return node;
         }
@@ -194,14 +211,14 @@ sealed class FactoryRewriter(
         switch (value)
         {
             case IdentifierNameSyntax identifierName:
-                injections.Add(new Injection(identifierName.Identifier.Text, false));
+                _injections.Add(new Injection(identifierName.Identifier.Text, false));
             {
                 expressionSyntax = triviaTools.PreserveTrivia(invocation, InjectionMarkerExpression, _ctx!.RootContext.Graph.Source.Hints.IsFormatCodeEnabled);
                 return true;
             }
 
             case DeclarationExpressionSyntax { Designation: SingleVariableDesignationSyntax singleVariableDesignationSyntax }:
-                injections.Add(new Injection(singleVariableDesignationSyntax.Identifier.Text, true));
+                _injections.Add(new Injection(singleVariableDesignationSyntax.Identifier.Text, true));
             {
                 expressionSyntax = triviaTools.PreserveTrivia(invocation, InjectionMarkerExpression, _ctx!.RootContext.Graph.Source.Hints.IsFormatCodeEnabled);
                 return true;
@@ -225,14 +242,14 @@ sealed class FactoryRewriter(
         switch (value)
         {
             case IdentifierNameSyntax identifierName:
-                initializers.Add(new Initializer(identifierName.Identifier.Text));
+                _initializers.Add(new Initializer(identifierName.Identifier.Text));
             {
                 expressionSyntax = triviaTools.PreserveTrivia(invocation, InitializationMarkerExpression, _ctx!.RootContext.Graph.Source.Hints.IsFormatCodeEnabled);
                 return true;
             }
 
             case DeclarationExpressionSyntax { Designation: SingleVariableDesignationSyntax singleVariableDesignationSyntax }:
-                initializers.Add(new Initializer(singleVariableDesignationSyntax.Identifier.Text));
+                _initializers.Add(new Initializer(singleVariableDesignationSyntax.Identifier.Text));
             {
                 expressionSyntax = triviaTools.PreserveTrivia(invocation, InitializationMarkerExpression, _ctx!.RootContext.Graph.Source.Hints.IsFormatCodeEnabled);
                 return true;
@@ -260,17 +277,17 @@ sealed class FactoryRewriter(
     {
         if (node.IsKind(SyntaxKind.SimpleMemberAccessExpression)
             && node is { Expression: IdentifierNameSyntax identifierName }
-            && identifierName.Identifier.Text == factory.Source.Context.Identifier.Text)
+            && identifierName.Identifier.Text == _factory.Source.Context.Identifier.Text)
         {
             switch (node.Name.Identifier.Text)
             {
                 case nameof(IContext.Tag):
-                    return Visit(SyntaxFactory.ParseExpression($" {varInjection.Injection.Tag.ValueToString()}"));
+                    return Visit(SyntaxFactory.ParseExpression($" {_varInjection.Injection.Tag.ValueToString()}"));
 
                 case nameof(IContext.ConsumerTypes):
                     List<string> consumers;
                     // ReSharper disable once ConvertIfStatementToConditionalTernaryExpression
-                    if (_ctx!.RootContext.Graph.Graph.TryGetOutEdges(varInjection.Var.AbstractNode.Node, out var outDeps))
+                    if (_ctx!.RootContext.Graph.Graph.TryGetOutEdges(_varInjection.Var.AbstractNode.Node, out var outDeps))
                     {
                         consumers = outDeps
                             .GroupBy(i => i.Target.Type, SymbolEqualityComparer.Default)

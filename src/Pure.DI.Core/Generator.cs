@@ -72,6 +72,7 @@ public sealed partial class Generator
             .Bind().To<VarsMap>()
             .Bind().To<VariablesWalker>()
             .Bind<IInitializersWalker>().To<InitializersWalker>()
+            .Bind<IFactoryRewriter>().To<FactoryRewriter>()
 
         .DefaultLifetime(Singleton)
             .Bind().To<Cache<TT1, TT2>>()

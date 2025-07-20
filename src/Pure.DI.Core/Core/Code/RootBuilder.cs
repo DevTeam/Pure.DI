@@ -17,11 +17,10 @@ class RootBuilder(
     IInjections inj,
     ITypeResolver typeResolver,
     ISymbolNames symbolNames,
-    IArguments arguments,
     ICompilations compilations,
-    ITriviaTools triviaTools,
     Func<IFactoryValidator> factoryValidatorFactory,
     Func<IInitializersWalker> initializersWalkerFactory,
+    Func<IFactoryRewriter> factoryRewriterFactory,
     ILocationProvider locationProvider,
     INameProvider nameProvider,
     IOverridesRegistry overridesRegistry,
@@ -383,7 +382,7 @@ class RootBuilder(
                 var factoryExpression = (LambdaExpressionSyntax)factory.Source.LocalVariableRenamingRewriter.Clone().Rewrite(setup.SemanticModel, setup.Hints.IsFormatCodeEnabled, false, originalLambda);
                 var injections = new List<FactoryRewriter.Injection>();
                 var inits = new List<FactoryRewriter.Initializer>();
-                var factoryRewriter = new FactoryRewriter(arguments, compilations, factory, varInjection, finishLabel, injections, inits, triviaTools, symbolNames);
+                var factoryRewriter = factoryRewriterFactory().Initialize(factory, varInjection, finishLabel, injections, inits);
                 var lambda = factoryRewriter.Rewrite(ctx, factoryExpression);
                 factoryValidatorFactory().Initialize(factory).Visit(lambda);
                 SyntaxNode syntaxNode = lambda.Block is not null ? lambda.Block : SyntaxFactory.ExpressionStatement((ExpressionSyntax)lambda.Body);
