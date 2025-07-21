@@ -1,17 +1,15 @@
 namespace Pure.DI.Core.Code;
 
-sealed class VariablesWalker(ILocationProvider locationProvider)
-    : DependenciesWalker<Unit>(locationProvider), IVariablesWalker
+sealed class VariablesWalker : DependenciesWalker<Unit>, IVariablesWalker
 {
     private readonly List<VarInjection> _result = [];
-    private Dictionary<Injection, LinkedList<VarInjection>> _varInjectionsMap = [];
+    private readonly Dictionary<Injection, LinkedList<VarInjection>> _varInjectionsMap;
 
-    public IVariablesWalker Initialize(IReadOnlyCollection<VarInjection> varInjections)
+    public VariablesWalker(ILocationProvider locationProvider, IReadOnlyCollection<VarInjection> varInjections) : base(locationProvider)
     {
         _varInjectionsMap = varInjections
             .GroupBy(varInjection => varInjection.Injection)
             .ToDictionary(i => i.Key, i => new LinkedList<VarInjection>(i));
-        return this;
     }
 
     public IReadOnlyList<VarInjection> GetResult()

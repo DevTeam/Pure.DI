@@ -13,14 +13,14 @@ class RootBuilder(
     INodeInfo nodeInfo,
     IBuildTools buildTools,
     ILocks locks,
-    Func<IVariablesWalker> varsWalkerFactory,
+    Func<IReadOnlyCollection<VarInjection>, IVariablesWalker> varsWalkerFactory,
     IInjections inj,
     ITypeResolver typeResolver,
     ISymbolNames symbolNames,
     ICompilations compilations,
-    Func<IFactoryValidator> factoryValidatorFactory,
-    Func<IInitializersWalker> initializersWalkerFactory,
-    Func<IFactoryRewriter> factoryRewriterFactory,
+    Func<DpFactory, IFactoryValidator> factoryValidatorFactory,
+    Func<InitializersWalkerContext, IInitializersWalker> initializersWalkerFactory,
+    Func<FactoryRewriterContext, IFactoryRewriter> factoryRewriterFactory,
     ILocationProvider locationProvider,
     INameProvider nameProvider,
     IOverridesRegistry overridesRegistry,
@@ -154,7 +154,7 @@ class RootBuilder(
                 varInjections.AddRange(vars);
             }
 
-            var varsWalker = varsWalkerFactory().Initialize(varInjections);
+            var varsWalker = varsWalkerFactory(varInjections);
             varsWalker.VisitConstructor(Unit.Shared, implementation.Constructor);
             var ctorArgs = varsWalker.GetResult();
 
@@ -382,9 +382,9 @@ class RootBuilder(
                 var factoryExpression = (LambdaExpressionSyntax)factory.Source.LocalVariableRenamingRewriter.Clone().Rewrite(setup.SemanticModel, setup.Hints.IsFormatCodeEnabled, false, originalLambda);
                 var injections = new List<FactoryRewriter.Injection>();
                 var inits = new List<FactoryRewriter.Initializer>();
-                var factoryRewriter = factoryRewriterFactory().Initialize(factory, varInjection, finishLabel, injections, inits);
+                var factoryRewriter = factoryRewriterFactory(new FactoryRewriterContext(factory, varInjection, finishLabel, injections, inits));
                 var lambda = factoryRewriter.Rewrite(ctx, factoryExpression);
-                factoryValidatorFactory().Initialize(factory).Visit(lambda);
+                factoryValidatorFactory(factory).Visit(lambda);
                 SyntaxNode syntaxNode = lambda.Block is not null ? lambda.Block : SyntaxFactory.ExpressionStatement((ExpressionSyntax)lambda.Body);
                 var hasOverrides = factory.HasOverrides;
                 if (hasOverrides)
@@ -543,11 +543,10 @@ class RootBuilder(
                             BuildOverrides(ctx, factory, initializer.Overrides, lines);
                         }
 
-                        var initializersWalker = initializersWalkerFactory().Ininitialize(
+                        var initializersWalker = initializersWalkerFactory(new InitializersWalkerContext(
                             i => BuildCode(ctx with { VarInjection = i }),
                             initialization.VariableName,
-                            initializationArgsEnum);
-
+                            initializationArgsEnum));
                         initializersWalker.VisitInitializer(ctx, initializer);
                         continue;
                     }

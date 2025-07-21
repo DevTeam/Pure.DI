@@ -2,8 +2,6 @@
 
 interface IVariablesWalker
 {
-    IVariablesWalker Initialize(IReadOnlyCollection<VarInjection> varInjections);
-
     IReadOnlyList<VarInjection> GetResult();
 
     void VisitMethod(in Unit ctx, in DpMethod method, int? position);
