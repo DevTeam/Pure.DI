@@ -917,4 +917,155 @@ public class AccumulatorTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Value is not created.", "Sample.ShroedingersCat", "(Sample.ShroedingersCat, Sample.Accumulator)", "CardboardBox created", "(Sample.Program, Sample.Accumulator)", "Value is not created.", "Sample.ShroedingersCat", "(Sample.ShroedingersCat, Sample.Accumulator)", "[State]", "Sample.Program", "(Sample.Program, Sample.Accumulator)", "Program created"], result);
     }
+
+    [Fact]
+    public async Task ShouldSupportAccumulatorWhenEnum()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using Pure.DI;
+                           using static Pure.DI.Hint;
+                           using static Pure.DI.Name;
+                           using static Pure.DI.Tag;
+
+                           namespace Sample
+                           {
+                               interface IBox<out T>
+                               {
+                                   T Content { get; }
+                               }
+                               
+                               interface ICat
+                               {
+                                   State State { get; }
+                               }
+                               
+                               enum State
+                               {
+                                   Alive,
+                                   Dead
+                               }
+                               
+                               interface IConsumer<in TContext>
+                                   where TContext : struct
+                               {
+                                   void Run(TContext ctx);
+                               }
+                               
+                               class CardboardBox<T> : IBox<T>
+                               {
+                                   public CardboardBox([Tag(typeof(ShroedingersCat))] T content)
+                                   {
+                                       Content = content;
+                                   }
+                               
+                                   public T Content { get; }
+                               
+                                   public override string ToString() => $"[{Content}]";
+                               }
+                               
+                               class BlackBox<T> : IBox<T>
+                               {
+                                   public BlackBox([Tag(typeof(BlackCat))] T content)
+                                   {
+                                       Content = content;
+                                   }
+                               
+                                   public T Content { get; }
+                               
+                                   public override string ToString() => $"<{Content}>";
+                               }
+                               
+                               class ShroedingersCat : ICat, IDisposable
+                               {
+                                   private readonly Lazy<State> _superposition;
+                               
+                                   public ShroedingersCat(Lazy<State> superposition)
+                                   {
+                                       _superposition = superposition;
+                                   }
+                               
+                                   public State State => _superposition.Value;
+                               
+                                   public override string ToString() => "Shroedingers cat";
+                               
+                                   public void Dispose() =>
+                                       Console.WriteLine($"{nameof(ShroedingersCat)} was disposed");
+                               }
+                               
+                               class BlackCat : ICat
+                               {
+                                   public State State => State.Alive;
+                               
+                                   public override string ToString() => "Black cat";
+                               }
+                               
+                               class Consumer<TContext> : IConsumer<TContext>
+                                   where TContext : struct
+                               {
+                                   private readonly IEnumerable<IBox<ICat>> _boxes;
+                                   private readonly CatsAccumulator _catsAccumulator;
+                               
+                                   public Consumer(IEnumerable<IBox<ICat>> boxes,
+                                       CatsAccumulator catsAccumulator)
+                                   {
+                                       _boxes = boxes;
+                                       _catsAccumulator = catsAccumulator;
+                                   }
+                               
+                                   public void Run(TContext ctx)
+                                   {
+                                       foreach (var box in _boxes)
+                                       {
+                                           Console.WriteLine($"{ctx} {box}");
+                                       }
+                               
+                                       Console.WriteLine("Cats:");
+                                       foreach (var cat in _catsAccumulator)
+                                       {
+                                           Console.WriteLine($"{cat}");
+                                       }
+                                   }
+                               }
+                               
+                               class CatsAccumulator : List<ICat>
+                               {
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Hint(Resolve, Off)
+                                           .Bind().To((Random random) => (State)random.Next(2))
+                                           .Bind(Tag.Type).To<ShroedingersCat>()
+                                           .Bind(Tag.Type).To<BlackCat>()
+                                           .Bind().To<CardboardBox<TT>>()
+                                           .Accumulate<ICat, CatsAccumulator>()
+                                           .Bind(Unique).To<BlackBox<TT>>()
+                                           .Bind().To<Consumer<TTS>>()
+                                           .Root<Owned<IConsumer<TTS>>>(nameof(Composition.GetConsumer));
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       using var consumer = new Composition().GetConsumer<int>();
+                                        consumer.Value.Run(77);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["77 [Shroedingers cat]", "77 <Black cat>", "Cats:", "Shroedingers cat", "Black cat", "ShroedingersCat was disposed"], result);
+    }
 }

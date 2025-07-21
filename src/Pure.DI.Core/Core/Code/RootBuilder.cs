@@ -118,7 +118,7 @@ class RootBuilder(
 
         if (isLazy)
         {
-            ctx = ctx with { Accumulators = CreateAccumulators(accumulators, varsMap).ToImmutableArray(), IsFactory = false };
+            ctx = ctx with { Accumulators = ctx.Accumulators.AddRange(CreateAccumulators(accumulators, varsMap)), IsFactory = false };
             ctx.Overrides.Clear();
             BuildAccumulators(ctx);
         }
