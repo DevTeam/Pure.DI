@@ -3,13 +3,13 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
         <RootNamespace>$(BasePackageId)</RootNamespace>
-        <DefineConstants>$(DefineConstants);PUREDI_API_SUPPRESSION;PUREDI_API_V2</DefineConstants>
+        <DefineConstants>$(DefineConstants);PUREDI_API_SUPPRESSION;PUREDI_API_V1</DefineConstants>
         <DocumentationFile>Pure.DI.xml</DocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="$(AnalyzerRoslynPackageVersion)" PrivateAssets="all"/>
-        <PackageReference Include="Pure.DI" Version="$(InternalVersion)">
+        <PackageReference Include="Pure.DI" Version="2.2.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
