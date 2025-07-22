@@ -8,7 +8,7 @@ interface IVarsMap
 
     bool IsThreadSafe { get; }
 
-    VarInjection GetVar(in Injection injection, IDependencyNode node);
+    VarInjection GetInjection(in Injection injection, IDependencyNode node);
 
     IDisposable Root(LinesBuilder lines);
 

@@ -37,7 +37,7 @@ class RootBuilder(
     public VarInjection Build(RootContext rootContext)
     {
         var rootVarsMap = rootContext.VarsMap;
-        var rootVarInjection = rootVarsMap.GetVar(rootContext.Root.Injection, rootContext.Root.Node);
+        var rootVarInjection = rootVarsMap.GetInjection(rootContext.Root.Injection, rootContext.Root.Node);
         var lines = new LinesBuilder();
         var ctx = new CodeContext(
             rootContext,
@@ -145,13 +145,13 @@ class RootBuilder(
         {
             if (ctx.RootContext.Graph.Graph.TryGetInEdges(var.AbstractNode.Node, out var implementationDependencies))
             {
-                var vars = implementationDependencies.Select(dependency => varsMap.GetVar(dependency.Injection, dependency.Source)).ToList();
-                foreach (var dependencyVar in SortVarsToBuild(vars))
+                var injections = implementationDependencies.Select(dependency => varsMap.GetInjection(dependency.Injection, dependency.Source)).ToList();
+                foreach (var dependencyVar in SortInjections(injections))
                 {
                     BuildCode(ctx with { VarInjection = dependencyVar });
                 }
 
-                varInjections.AddRange(vars);
+                varInjections.AddRange(injections);
             }
 
             var varsWalker = varsWalkerFactory(varInjections);
@@ -456,7 +456,7 @@ class RootBuilder(
                     // ReSharper disable once LoopCanBeConvertedToQuery
                     foreach (var dependency in dependencies)
                     {
-                        var dependencyVar = varsMap.GetVar(dependency.Injection, dependency.Source);
+                        var dependencyVar = varsMap.GetInjection(dependency.Injection, dependency.Source);
                         varInjections.Add(dependencyVar);
                     }
                 }
@@ -601,7 +601,7 @@ class RootBuilder(
                                 {
                                     foreach (var dependency in enumerableDependencies)
                                     {
-                                        var dependencyVar = varsMap.GetVar(dependency.Injection, dependency.Source);
+                                        var dependencyVar = varsMap.GetInjection(dependency.Injection, dependency.Source);
                                         varInjections.Add(dependencyVar);
                                         BuildCode(ctx with { VarInjection = dependencyVar });
                                         lines.AppendLine($"yield return {buildTools.OnInjected(ctx, dependencyVar)};");
@@ -630,13 +630,13 @@ class RootBuilder(
                         case MdConstructKind.Array:
                             if (ctx.RootContext.Graph.Graph.TryGetInEdges(var.AbstractNode.Node, out var arrayDependencies))
                             {
-                                var vars = arrayDependencies.Select(dependency => varsMap.GetVar(dependency.Injection, dependency.Source)).ToList();
-                                foreach (var dependencyVar in SortVarsToBuild(vars))
+                                var injections = arrayDependencies.Select(dependency => varsMap.GetInjection(dependency.Injection, dependency.Source)).ToList();
+                                foreach (var dependencyVar in SortInjections(injections))
                                 {
                                     BuildCode(ctx with { VarInjection = dependencyVar });
                                 }
 
-                                varInjections.AddRange(vars);
+                                varInjections.AddRange(injections);
                             }
 
                             var instantiation = $"new {typeResolver.Resolve(ctx.RootContext.Graph.Source, construct.Source.ElementType)}[{varInjections.Count.ToString()}] {{ {string.Join(", ", varInjections.Select(item => buildTools.OnInjected(ctx, item)))} }}";
@@ -655,13 +655,13 @@ class RootBuilder(
                         case MdConstructKind.Span:
                             if (ctx.RootContext.Graph.Graph.TryGetInEdges(var.AbstractNode.Node, out var spanDependencies))
                             {
-                                var vars = spanDependencies.Select(dependency => varsMap.GetVar(dependency.Injection, dependency.Source)).ToList();
-                                foreach (var dependencyVar in SortVarsToBuild(vars))
+                                var injections = spanDependencies.Select(dependency => varsMap.GetInjection(dependency.Injection, dependency.Source)).ToList();
+                                foreach (var dependencyVar in SortInjections(injections))
                                 {
                                     BuildCode(ctx with { VarInjection = dependencyVar });
                                 }
 
-                                varInjections.AddRange(vars);
+                                varInjections.AddRange(injections);
                             }
 
                             var createArray = $"{typeResolver.Resolve(ctx.RootContext.Graph.Source, construct.Source.ElementType)}[{varInjections.Count.ToString()}] {{ {string.Join(", ", varInjections.Select(item => buildTools.OnInjected(ctx, item)))} }}";
@@ -738,14 +738,19 @@ class RootBuilder(
         var.Declaration.IsDeclared = true;
     }
 
-    private static IEnumerable<VarInjection> SortVarsToBuild(List<VarInjection> vars) => vars.OrderBy(GetVarPriority);
+    private static IEnumerable<VarInjection> SortInjections(List<VarInjection> injections) => injections.OrderBy(GetInjectionPriority);
 
-    private static int GetVarPriority(VarInjection varInjection)
+    private static int GetInjectionPriority(VarInjection varInjection)
     {
         var node = varInjection.Var.AbstractNode;
         if (node.Arg is not null)
         {
             return 1;
+        }
+
+        if (varInjection.Var.HasCycle == true)
+        {
+            return 2;
         }
 
         if (node.Node.Implementation is not null)
@@ -939,7 +944,7 @@ class RootBuilder(
     }
 
     private static IEnumerable<Accumulator> CreateAccumulators(IEnumerable<(MdAccumulator accumulator, Dependency dependency)>  accumulators, IVarsMap varsMap) =>
-        accumulators.Select(i => new Accumulator(varsMap.GetVar(i.dependency.Injection, i.dependency.Source), i.accumulator.Type, i.accumulator.Lifetime));
+        accumulators.Select(i => new Accumulator(varsMap.GetInjection(i.dependency.Injection, i.dependency.Source), i.accumulator.Type, i.accumulator.Lifetime));
 
     private void BuildAccumulators(CodeContext ctx)
     {
