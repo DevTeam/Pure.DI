@@ -41,17 +41,17 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
-    <Analyzer Include="C:\Projects\DevTeam\dotNext-2025\UnityApp\Assets\Packages\Pure.DI.2.1.68\analyzers\dotnet\roslyn4.3\cs\es\Pure.DI.Core.resources.dll" />
-    <Analyzer Include="C:\Projects\DevTeam\dotNext-2025\UnityApp\Assets\Packages\Pure.DI.2.1.68\analyzers\dotnet\roslyn4.3\cs\ja\Pure.DI.Core.resources.dll" />
-    <Analyzer Include="C:\Projects\DevTeam\dotNext-2025\UnityApp\Assets\Packages\Pure.DI.2.1.68\analyzers\dotnet\roslyn4.3\cs\pt\Pure.DI.Core.resources.dll" />
-    <Analyzer Include="C:\Projects\DevTeam\dotNext-2025\UnityApp\Assets\Packages\Pure.DI.2.1.68\analyzers\dotnet\roslyn4.3\cs\de\Pure.DI.Core.resources.dll" />
-    <Analyzer Include="C:\Projects\DevTeam\dotNext-2025\UnityApp\Assets\Packages\Pure.DI.2.1.68\analyzers\dotnet\roslyn4.3\cs\ar\Pure.DI.Core.resources.dll" />
-    <Analyzer Include="C:\Projects\DevTeam\dotNext-2025\UnityApp\Assets\Packages\Pure.DI.2.1.68\analyzers\dotnet\roslyn4.3\cs\fr\Pure.DI.Core.resources.dll" />
-    <Analyzer Include="C:\Projects\DevTeam\dotNext-2025\UnityApp\Assets\Packages\Pure.DI.2.1.68\analyzers\dotnet\roslyn4.3\cs\ru\Pure.DI.Core.resources.dll" />
-    <Analyzer Include="C:\Projects\DevTeam\dotNext-2025\UnityApp\Assets\Packages\Pure.DI.2.1.68\analyzers\dotnet\roslyn4.3\cs\Pure.DI.Core.dll" />
-    <Analyzer Include="C:\Projects\DevTeam\dotNext-2025\UnityApp\Assets\Packages\Pure.DI.2.1.68\analyzers\dotnet\roslyn4.3\cs\zh\Pure.DI.Core.resources.dll" />
-    <Analyzer Include="C:\Projects\DevTeam\dotNext-2025\UnityApp\Assets\Packages\Pure.DI.2.1.68\analyzers\dotnet\roslyn4.3\cs\hi\Pure.DI.Core.resources.dll" />
-    <Analyzer Include="C:\Projects\DevTeam\dotNext-2025\UnityApp\Assets\Packages\Pure.DI.2.1.68\analyzers\dotnet\roslyn4.3\cs\Pure.DI.dll" />
+    <Analyzer Include="C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Assets\Packages\Pure.DI.2.2.1\analyzers\dotnet\roslyn4.3\cs\ja\Pure.DI.Core.resources.dll" />
+    <Analyzer Include="C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Assets\Packages\Pure.DI.2.2.1\analyzers\dotnet\roslyn4.3\cs\de\Pure.DI.Core.resources.dll" />
+    <Analyzer Include="C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Assets\Packages\Pure.DI.2.2.1\analyzers\dotnet\roslyn4.3\cs\es\Pure.DI.Core.resources.dll" />
+    <Analyzer Include="C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Assets\Packages\Pure.DI.2.2.1\analyzers\dotnet\roslyn4.3\cs\ar\Pure.DI.Core.resources.dll" />
+    <Analyzer Include="C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Assets\Packages\Pure.DI.2.2.1\analyzers\dotnet\roslyn4.3\cs\ru\Pure.DI.Core.resources.dll" />
+    <Analyzer Include="C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Assets\Packages\Pure.DI.2.2.1\analyzers\dotnet\roslyn4.3\cs\zh\Pure.DI.Core.resources.dll" />
+    <Analyzer Include="C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Assets\Packages\Pure.DI.2.2.1\analyzers\dotnet\roslyn4.3\cs\hi\Pure.DI.Core.resources.dll" />
+    <Analyzer Include="C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Assets\Packages\Pure.DI.2.2.1\analyzers\dotnet\roslyn4.3\cs\pt\Pure.DI.Core.resources.dll" />
+    <Analyzer Include="C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Assets\Packages\Pure.DI.2.2.1\analyzers\dotnet\roslyn4.3\cs\Pure.DI.dll" />
+    <Analyzer Include="C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Assets\Packages\Pure.DI.2.2.1\analyzers\dotnet\roslyn4.3\cs\fr\Pure.DI.Core.resources.dll" />
+    <Analyzer Include="C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Assets\Packages\Pure.DI.2.2.1\analyzers\dotnet\roslyn4.3\cs\Pure.DI.Core.dll" />
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.0.35f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.SourceGenerators.dll" />
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.0.35f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.Properties.SourceGenerator.dll" />
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.0.35f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll" />
@@ -62,8 +62,8 @@
     <Compile Include="Assets\TutorialInfo\Scripts\Readme.cs" />
     <Compile Include="Assets\Scripts\ClockModel.cs" />
     <Compile Include="Assets\Scripts\Composition.cs" />
-    <None Include="Assets\Packages\Pure.DI.2.1.68\analyzers\dotnet\roslyn4.8\cs\Pure.DI.deps.json" />
-    <None Include="Assets\Packages\Pure.DI.2.1.68\analyzers\dotnet\roslyn4.3\cs\Pure.DI.deps.json" />
+    <None Include="Assets\Packages\Pure.DI.2.2.1\analyzers\dotnet\roslyn4.3\cs\Pure.DI.deps.json" />
+    <None Include="Assets\Packages\Pure.DI.2.2.1\analyzers\dotnet\roslyn4.8\cs\Pure.DI.deps.json" />
     <Reference Include="UnityEngine">
       <HintPath>C:\Program Files\Unity\Hub\Editor\6000.0.35f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
     </Reference>
@@ -413,16 +413,16 @@
       <HintPath>C:\Program Files\Unity\Hub\Editor\6000.0.35f1\Editor\Data\Managed\UnityEngine\UnityEditor.XRModule.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Collections.LowLevel.ILSupport">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\PackageCache\com.unity.collections@56bff8827a7e\Unity.Collections.LowLevel.ILSupport\Unity.Collections.LowLevel.ILSupport.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\PackageCache\com.unity.collections@56bff8827a7e\Unity.Collections.LowLevel.ILSupport\Unity.Collections.LowLevel.ILSupport.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\PackageCache\com.unity.ext.nunit@60ef35ffd3cd\net40\unity-custom\nunit.framework.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\PackageCache\com.unity.ext.nunit@60ef35ffd3cd\net40\unity-custom\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VisualScripting.Antlr3.Runtime">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\PackageCache\com.unity.visualscripting@1b53f46e931b\Runtime\VisualScripting.Flow\Dependencies\NCalc\Unity.VisualScripting.Antlr3.Runtime.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\PackageCache\com.unity.visualscripting@1b53f46e931b\Runtime\VisualScripting.Flow\Dependencies\NCalc\Unity.VisualScripting.Antlr3.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cecil">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\PackageCache\com.unity.nuget.mono-cecil@d6f9955a5d5f\Mono.Cecil.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\PackageCache\com.unity.nuget.mono-cecil@d6f9955a5d5f\Mono.Cecil.dll</HintPath>
     </Reference>
     <Reference Include="netstandard">
       <HintPath>C:\Program Files\Unity\Hub\Editor\6000.0.35f1\Editor\Data\NetStandard\ref\2.1.0\netstandard.dll</HintPath>
@@ -791,154 +791,154 @@
       <HintPath>C:\Program Files\Unity\Hub\Editor\6000.0.35f1\Editor\Data\NetStandard\compat\2.1.0\shims\netfx\System.Xml.Serialization.dll</HintPath>
     </Reference>
     <Reference Include="Unity.InputSystem.ForUI">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.InputSystem.ForUI.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.InputSystem.ForUI.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.UI">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\UnityEditor.UI.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\UnityEditor.UI.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Searcher.Editor">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.Searcher.Editor.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.Searcher.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Rider.Editor">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.Rider.Editor.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.Rider.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.AI.Navigation">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.AI.Navigation.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.AI.Navigation.dll</HintPath>
     </Reference>
     <Reference Include="Unity.RenderPipeline.Universal.ShaderLibrary">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.RenderPipeline.Universal.ShaderLibrary.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.RenderPipeline.Universal.ShaderLibrary.dll</HintPath>
     </Reference>
     <Reference Include="Unity.RenderPipelines.Universal.Shaders">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.RenderPipelines.Universal.Shaders.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.RenderPipelines.Universal.Shaders.dll</HintPath>
     </Reference>
     <Reference Include="Unity.RenderPipelines.Core.Runtime.Shared">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.RenderPipelines.Core.Runtime.Shared.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.RenderPipelines.Core.Runtime.Shared.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Timeline.Editor">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.Timeline.Editor.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.Timeline.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.ShaderGraph.Editor">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.ShaderGraph.Editor.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.ShaderGraph.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Timeline">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.Timeline.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.Timeline.dll</HintPath>
     </Reference>
     <Reference Include="Unity.RenderPipelines.Core.Editor.Shared">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.RenderPipelines.Core.Editor.Shared.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.RenderPipelines.Core.Editor.Shared.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\UnityEngine.UI.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\UnityEngine.UI.dll</HintPath>
     </Reference>
     <Reference Include="Unity.RenderPipelines.Core.ShaderLibrary">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.RenderPipelines.Core.ShaderLibrary.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.RenderPipelines.Core.ShaderLibrary.dll</HintPath>
     </Reference>
     <Reference Include="Unity.PlasticSCM.Editor">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.PlasticSCM.Editor.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.PlasticSCM.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Multiplayer.Center.Editor">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.Multiplayer.Center.Editor.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.Multiplayer.Center.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Mathematics.Editor">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.Mathematics.Editor.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.Mathematics.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.RenderPipelines.GPUDriven.Runtime">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.RenderPipelines.GPUDriven.Runtime.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.RenderPipelines.GPUDriven.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Collections">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.Collections.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.Collections.dll</HintPath>
     </Reference>
     <Reference Include="PPv2URPConverters">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\PPv2URPConverters.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\PPv2URPConverters.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Rendering.LightTransport.Editor">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.Rendering.LightTransport.Editor.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.Rendering.LightTransport.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VisualScripting.Core">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.VisualScripting.Core.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.VisualScripting.Core.dll</HintPath>
     </Reference>
     <Reference Include="Unity.RenderPipelines.Universal.Config.Runtime">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.RenderPipelines.Universal.Config.Runtime.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.RenderPipelines.Universal.Config.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="Unity.RenderPipelines.Universal.Editor">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.RenderPipelines.Universal.Editor.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.RenderPipelines.Universal.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Collections.Editor">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.Collections.Editor.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.Collections.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VisualScripting.Shared.Editor">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.VisualScripting.Shared.Editor.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.VisualScripting.Shared.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VisualScripting.Core.Editor">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.VisualScripting.Core.Editor.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.VisualScripting.Core.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Multiplayer.Center.Common">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.Multiplayer.Center.Common.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.Multiplayer.Center.Common.dll</HintPath>
     </Reference>
     <Reference Include="Unity.AI.Navigation.Updater">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.AI.Navigation.Updater.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.AI.Navigation.Updater.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VisualScripting.Flow.Editor">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.VisualScripting.Flow.Editor.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.VisualScripting.Flow.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.TextMeshPro.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="NuGetForUnity">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\NuGetForUnity.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\NuGetForUnity.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VisualScripting.SettingsProvider.Editor">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.VisualScripting.SettingsProvider.Editor.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.VisualScripting.SettingsProvider.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VisualScripting.State.Editor">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.VisualScripting.State.Editor.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.VisualScripting.State.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.AI.Navigation.Editor">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.AI.Navigation.Editor.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.AI.Navigation.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Mathematics">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.Mathematics.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.Mathematics.dll</HintPath>
     </Reference>
     <Reference Include="Unity.RenderPipelines.Core.Editor">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.RenderPipelines.Core.Editor.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.RenderPipelines.Core.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.RenderPipelines.Universal.Runtime">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.RenderPipelines.Universal.Runtime.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.RenderPipelines.Universal.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VisualScripting.State">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.VisualScripting.State.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.VisualScripting.State.dll</HintPath>
     </Reference>
     <Reference Include="Unity.AI.Navigation.Editor.ConversionSystem">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.AI.Navigation.Editor.ConversionSystem.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.AI.Navigation.Editor.ConversionSystem.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro.Editor">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.TextMeshPro.Editor.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.TextMeshPro.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Burst.Editor">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.Burst.Editor.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.Burst.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Burst">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.Burst.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.Burst.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VisualStudio.Editor">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.VisualStudio.Editor.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.VisualStudio.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.RenderPipelines.Core.Runtime">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.RenderPipelines.Core.Runtime.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.RenderPipelines.Core.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VisualScripting.Flow">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.VisualScripting.Flow.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.VisualScripting.Flow.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Rendering.LightTransport.Runtime">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.Rendering.LightTransport.Runtime.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.Rendering.LightTransport.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="Unity.InputSystem">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.InputSystem.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.InputSystem.dll</HintPath>
     </Reference>
     <Reference Include="Unity.RenderPipelines.Universal.2D.Runtime">
-      <HintPath>C:\Projects\DevTeam\dotNext-2025\UnityApp\Library\ScriptAssemblies\Unity.RenderPipelines.Universal.2D.Runtime.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.RenderPipelines.Universal.2D.Runtime.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
