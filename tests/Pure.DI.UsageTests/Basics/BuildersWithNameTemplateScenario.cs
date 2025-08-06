@@ -47,6 +47,13 @@ public class Scenario
         var service2 = composition.BuildUpService2(new Service2());
         service2.Id.ShouldBe(Guid.Empty);
         service2.Dependency.ShouldBeOfType<Dependency>();
+
+        // Uses a common method to build an instance
+        IService abstractService = new Service1();
+        abstractService = composition.BuildUpIService(abstractService);
+        abstractService.ShouldBeOfType<Service1>();
+        abstractService.Id.ShouldNotBe(Guid.Empty);
+        abstractService.Dependency.ShouldBeOfType<Dependency>();
 // }
         composition.SaveClassDiagram();
     }

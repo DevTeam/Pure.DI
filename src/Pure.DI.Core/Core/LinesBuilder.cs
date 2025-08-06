@@ -110,6 +110,12 @@ sealed class LinesBuilder : IEnumerable<string>
         return Disposables.Create(() => ArrayPool<byte>.Shared.Return(rent));
     }
 
+    public override string ToString()
+    {
+        using var rent = SaveToArray(Encoding.UTF8, out var buffer, out var size);
+        return Encoding.UTF8.GetString(buffer, 0, size);
+    }
+
     private void FlushLines()
     {
         if (_sb.Length > 0)

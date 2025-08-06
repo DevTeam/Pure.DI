@@ -25,6 +25,7 @@ static class Names
     // Messages
     public const string CannotResolveMessage = "Cannot resolve composition root";
     public const string OfTypeMessage = "of type";
+    public const string CannotBuildMessage = "Unable to build an instance of type" + OfTypeMessage;
 
     public const string DefaultApiMethodModifiers = "public";
     public const string ParentScopeArgName = "parentScope";
@@ -49,7 +50,8 @@ static class Names
     public const string IContextTypeName = $"{ApiNamespace}{nameof(IContext)}";
     public const string IConfigurationTypeName = $"{ApiNamespace}{nameof(IConfiguration)}";
     public const string ObjectTypeName = $"{SystemNamespace}Object";
-    public const string ExceptionTypeName = $"{SystemNamespace}Exception";
+    public const string ExceptionTypeName = $"{SystemNamespace}{nameof(Exception)}";
+    public const string ArgumentExceptionTypeName = $"{SystemNamespace}{nameof(ArgumentException)}";
     public const string ValueTaskTypeName = $"{SystemNamespace}Threading.Tasks.ValueTask";
     public const string LockTypeName = $"{SystemNamespace}Threading.Lock";
     public const string SpanTypeName = $"{SystemNamespace}Span<>";

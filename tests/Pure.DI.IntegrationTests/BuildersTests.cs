@@ -211,6 +211,7 @@ public class BuildersTests
                                        var composition = new Composition();
                                        var service = composition.BuildUp(new Service());
                                        var service2 = composition.BuildUp(new Service2());
+                                       var service3 = composition.BuildUp((IService)new Service());
                                    }
                                }
                            }
@@ -218,7 +219,7 @@ public class BuildersTests
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["Initialize 1 Abc", "Initialize 2 Abc"], result);
+        result.StdOut.ShouldBe(["Initialize 1 Abc", "Initialize 2 Abc", "Initialize 1 Abc"], result);
     }
 
     [Fact]
@@ -360,6 +361,7 @@ public class BuildersTests
                                        var composition = new Composition();
                                        var service = composition.BuildUpService<int>(new Service<int>());
                                        var service2 = composition.BuildUpService<int>(new Service2<int>());
+                                       var service3 = composition.BuildUpService<int>((IService<int>)new Service2<int>());
                                    }
                                }
                            }
@@ -367,7 +369,153 @@ public class BuildersTests
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["Initialize 1 Abc", "Initialize 2 Abc"], result);
+        result.StdOut.ShouldBe(["Initialize 1 Abc", "Initialize 2 Abc", "Initialize 2 Abc"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportBuildersWhenGenericAndSeveralTypeParams()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency<T> { }
+                               
+                               class Dependency<T> : IDependency<T> { }
+                               
+                               interface IService<out T, T2>
+                               {
+                                   T Id { get; }
+                                   
+                                   IDependency<T2>? Dependency { get; }
+                               }
+                               
+                               class Service1<T, T2>: IService<T, T2>
+                                   where T: struct
+                               {
+                                   public T Id { get; private set; }
+                                   
+                                   [Ordinal(0)]
+                                   public IDependency<T2>? Dependency { get; set; }
+                               
+                                   [Ordinal(1)]
+                                   public void SetId([Tag(Tag.Id)] T id) => Id = id;
+                               }
+                               
+                               class Service2<T, T2>: IService<T, T2>
+                                   where T: struct
+                               {
+                                   public T Id { get; }
+                               
+                                   [Ordinal(0)]
+                                   public IDependency<T2>? Dependency { get; set; }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind(Tag.Id).To<TT>(_ => (TT)(object)Guid.NewGuid())
+                                           .Bind().To<Dependency<TT>>()
+                                           // Generic service builder
+                                           .Builders<IService<TT, TT2>>("BuildUpGeneric");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                        var composition = new Composition();
+                                        var service1 = composition.BuildUpGeneric(new Service1<Guid, string>());
+                                        var service2 = composition.BuildUpGeneric(new Service2<Guid, int>());
+                                        var service3 = composition.BuildUpGeneric((IService<Guid, int>)new Service2<Guid, int>());
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportBuildersWhenGenericAndSeveralTypeParamsAndIncompatibleConstraints()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+                           #pragma warning disable CS8618
+
+                           namespace Sample
+                           {
+                               interface IDependency<T> { }
+                               
+                               class Dependency<T> : IDependency<T> { }
+                               
+                               interface IService<out T, T2>
+                               {
+                                   T Id { get; }
+                                   
+                                   IDependency<T2>? Dependency { get; }
+                               }
+                               
+                               class Service1<T, T2>: IService<T, T2>
+                                   where T: struct
+                               {
+                                   public T Id { get; private set; }
+                                   
+                                   [Ordinal(0)]
+                                   public IDependency<T2>? Dependency { get; set; }
+                               
+                                   [Ordinal(1)]
+                                   public void SetId([Tag(Tag.Id)] T id) => Id = id;
+                               }
+                               
+                               class Service2<T, T2>: IService<T, T2>
+                                   where T: class
+                               {
+                                   public T Id { get; }
+                               
+                                   [Ordinal(0)]
+                                   public IDependency<T2>? Dependency { get; set; }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind(Tag.Id).To<TT>(_ => (TT)(object)Guid.NewGuid())
+                                           .Bind().To<Dependency<TT>>()
+                                           // Generic service builder
+                                           .Builders<IService<TT, TT2>>("BuildUpGeneric");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                        var composition = new Composition();
+                                        var service1 = composition.BuildUpGeneric(new Service1<Guid, string>());
+                                        var service2 = composition.BuildUpGeneric(new Service2<string, int>());
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
     }
 
     [Fact]

@@ -13,6 +13,11 @@ sealed class RootMethodsBuilder(
     CancellationToken cancellationToken)
     : IClassPartBuilder
 {
+    private const string ClassConstraint = "class";
+    private const string UnmanagedConstraint = "unmanaged";
+    private const string NotnullConstraint = "notnull";
+    private const string StructConstraint = "struct";
+    private const string NewConstraint = "new()";
     public ClassPart Part => ClassPart.RootMethods;
 
     public CompositionCode Build(CompositionCode composition)
@@ -48,6 +53,12 @@ sealed class RootMethodsBuilder(
 
     private void BuildRoot(CompositionCode composition, Root root)
     {
+        var constraints = new LinesBuilder();
+        if (!TryFillConstraints(composition, root, constraints))
+        {
+            return;
+        }
+
         rootCommenter.AddComments(composition, root);
         var code = composition.Code;
         var rootArgsStr = "";
@@ -58,6 +69,11 @@ sealed class RootMethodsBuilder(
             {
                 buildTools.AddPureHeader(code);
             }
+        }
+
+        if (!root.Source.BuilderRoots.IsDefaultOrEmpty)
+        {
+            code.AppendLine("#pragma warning disable CS0162");
         }
 
         var name = new StringBuilder();
@@ -141,51 +157,9 @@ sealed class RootMethodsBuilder(
 
         code.AppendLine(name.ToString());
 
-        if (typeArgs.Count > 0)
+        using (code.Indent())
         {
-            using (code.Indent())
-            {
-                foreach (var typeArg in typeArgs)
-                {
-                    if (typeArg.TypeParam is not {} typeParam)
-                    {
-                        continue;
-                    }
-
-                    var constrains = typeParam.ConstraintTypes.Select(i => typeResolver.Resolve(composition.Source.Source, i).Name).ToList();
-                    if (typeParam.HasReferenceTypeConstraint)
-                    {
-                        constrains.Add("class");
-                    }
-
-                    if (typeParam.HasUnmanagedTypeConstraint)
-                    {
-                        constrains.Add("unmanaged");
-                    }
-
-                    if (typeParam.HasNotNullConstraint)
-                    {
-                        constrains.Add("notnull");
-                    }
-
-                    if (typeParam.HasValueTypeConstraint)
-                    {
-                        constrains.Add("struct");
-                    }
-
-                    if (typeParam.HasConstructorConstraint)
-                    {
-                        constrains.Add("new()");
-                    }
-
-                    if (constrains.Count == 0)
-                    {
-                        continue;
-                    }
-
-                    code.AppendLine($"where {typeArg.Name}: {string.Join(", ", constrains)}");
-                }
-            }
+            code.AppendLines(constraints.Lines);
         }
 
         using (code.CreateBlock())
@@ -231,6 +205,95 @@ sealed class RootMethodsBuilder(
             {
                 code.AppendLine(BlockFinish);
             }
+        }
+
+        if (!root.Source.BuilderRoots.IsDefaultOrEmpty)
+        {
+            code.AppendLine("#pragma warning restore CS0162");
+        }
+    }
+
+    private bool TryFillConstraints(CompositionCode composition, Root root, LinesBuilder constrainsLines)
+    {
+        var typeArgs = root.TypeDescription.TypeArgs;
+        if (typeArgs.Count == 0)
+        {
+            return true;
+        }
+
+        foreach (var typeArg in typeArgs)
+        {
+            if (typeArg.TypeParam is not {} curTypeParam)
+            {
+                continue;
+            }
+
+            var typeParameters = ImmutableArray<ITypeParameterSymbol>.Empty;
+            if (!root.Source.BuilderRoots.IsDefaultOrEmpty)
+            {
+                var relatedRoots =
+                    from publicRoot in composition.PublicRoots
+                    join relatedRoot in root.Source.BuilderRoots on publicRoot.Source equals relatedRoot
+                    select publicRoot;
+
+                typeParameters = relatedRoots.SelectMany(i => i.TypeDescription.TypeArgs).Where(i => i.Name == typeArg.Name && i.TypeParam != null).Select(i => i.TypeParam!).ToImmutableArray();
+            }
+
+            var constrains = new List<string>();
+            constrains.AddRange(curTypeParam.ConstraintTypes.Select(i => typeResolver.Resolve(composition.Source.Source, i).Name));
+            foreach (var typeParameter in typeParameters)
+            {
+                constrains.AddRange(typeParameter.ConstraintTypes.Select(i => typeResolver.Resolve(composition.Source.Source, i).Name));
+            }
+
+            FillConstraints(curTypeParam, constrains);
+            foreach (var typeParameter in typeParameters)
+            {
+                FillConstraints(typeParameter, constrains);
+            }
+
+            if (constrains.Count == 0)
+            {
+                continue;
+            }
+
+            constrains = constrains.Distinct().ToList();
+            if (constrains.Contains(ClassConstraint) && constrains.Contains(StructConstraint))
+            {
+                return false;
+            }
+
+            constrainsLines.AppendLine($"where {typeArg.Name}: {string.Join(", ", constrains)}");
+        }
+
+        return true;
+    }
+
+    private static void FillConstraints(ITypeParameterSymbol typeParam, List<string> constrains)
+    {
+        if (typeParam.HasReferenceTypeConstraint)
+        {
+            constrains.Add(ClassConstraint);
+        }
+
+        if (typeParam.HasUnmanagedTypeConstraint)
+        {
+            constrains.Add(UnmanagedConstraint);
+        }
+
+        if (typeParam.HasNotNullConstraint)
+        {
+            constrains.Add(NotnullConstraint);
+        }
+
+        if (typeParam.HasValueTypeConstraint)
+        {
+            constrains.Add(StructConstraint);
+        }
+
+        if (typeParam.HasConstructorConstraint)
+        {
+            constrains.Add(NewConstraint);
         }
     }
 }

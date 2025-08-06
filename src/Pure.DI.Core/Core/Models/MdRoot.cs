@@ -8,7 +8,8 @@ readonly record struct MdRoot(
     MdTag? Tag,
     RootKinds Kind,
     IReadOnlyCollection<string> Comments,
-    bool IsBuilder)
+    bool IsBuilder,
+    ImmutableArray<MdRoot> BuilderRoots = default)
 {
     public override string ToString() => $"Root<{RootType}>(\"{Name}\", {Tag.ToString()})";
 }

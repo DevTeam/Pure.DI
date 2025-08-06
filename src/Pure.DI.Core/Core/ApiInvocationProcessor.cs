@@ -15,6 +15,7 @@ sealed class ApiInvocationProcessor(
     IOverrideIdProvider overrideIdProvider,
     IBaseSymbolsProvider baseSymbolsProvider,
     INameFormatter nameFormatter,
+    INameProvider nameProvider,
     ITypes types,
     IWildcardMatcher wildcardMatcher,
     Func<IFactoryApiWalker> factoryApiWalkerFactory,
@@ -352,23 +353,13 @@ sealed class ApiInvocationProcessor(
                         var buildersName = buildersArgs[0] is {} buildersNameArg ? semantic.GetConstantValue<object>(semanticModel, buildersNameArg.Expression, SmartTagKind.Name)?.ToString() ?? Names.DefaultBuilderName : Names.DefaultBuilderName;
                         var buildersKind = buildersArgs[1] is {} buildersKindArg ? semantic.GetConstantValue<RootKinds>(semanticModel, buildersKindArg.Expression) : RootKinds.Default;
                         var buildersWildcardFilter = (buildersArgs[2] is {} buildersFilterArg ? semantic.GetConstantValue<string>(semanticModel, buildersFilterArg.Expression) : "*") ?? "*";
-                        var hasBuildersType = false;
-                        foreach (var buildersType in GetRelatedTypes(invocation, semanticModel, invocation, buildersRootType, buildersWildcardFilter))
-                        {
-                            var buildersItemName = GetName((SyntaxNode?)buildersArgs[0] ?? invocation, buildersName, buildersType) ?? Names.DefaultBuilderName;
-                            VisitBuilder(
-                                invocation,
-                                metadataVisitor,
-                                semanticModel,
-                                buildersType,
-                                buildersItemName,
-                                buildersKind,
-                                invocationComments);
+                        var builderRoots = (
+                            from buildersType in GetRelatedTypes(invocation, semanticModel, invocation, buildersRootType, buildersWildcardFilter)
+                            let buildersItemName = GetName((SyntaxNode?)buildersArgs[0] ?? invocation, buildersName, buildersType) ?? Names.DefaultBuilderName
+                            select VisitBuilder(invocation, metadataVisitor, semanticModel, buildersType, buildersItemName, buildersKind, invocationComments))
+                            .ToList();
 
-                            hasBuildersType = true;
-                        }
-
-                        if (!hasBuildersType)
+                        if (builderRoots.Count == 0)
                         {
                             throw new CompileErrorException(
                                 string.Format(Strings.Error_Template_NoTypeForWildcard, symbolNames.GetName(buildersRootType), buildersWildcardFilter),
@@ -376,6 +367,56 @@ sealed class ApiInvocationProcessor(
                                 LogId.ErrorInvalidMetadata);
                         }
 
+                        // Composite builder
+                        var builderArgId = idGenerator.Generate();
+                        var builderArgTag = new MdTag(0, builderArgId + "BuilderArg" + Names.Salt);
+                        var builderTag = new MdTag(0, builderArgId + "Builder" + Names.Salt);
+
+                        // Building instance arg
+                        metadataVisitor.VisitContract(new MdContract(semanticModel, invocation, buildersRootType, ContractKind.Explicit, ImmutableArray.Create(builderArgTag)));
+                        metadataVisitor.VisitArg(new MdArg(semanticModel, invocation, buildersRootType, Names.BuildingInstance, ArgKind.Root, true, ["Instance for the build-up."]));
+
+                        // Factory
+                        var factory = new LinesBuilder();
+                        factory.AppendLine($"({Names.IContextTypeName} {Names.ContextInstance}) =>");
+                        factory.AppendLine(BlockStart);
+                        using (factory.Indent())
+                        {
+                            factory.AppendLine($"{Names.ContextInstance}.{nameof(IContext.Inject)}({builderArgTag.Value.ValueToString()}, out {symbolNames.GetName(buildersRootType)} {Names.BuildingInstance});");
+                            factory.AppendLine($"switch ({Names.BuildingInstance})");
+                            factory.AppendLine(BlockStart);
+                            using (factory.Indent())
+                            {
+                                foreach (var builderRoot in builderRoots)
+                                {
+                                    var instanceName = nameProvider.GetUniqueName($"{nameFormatter.Format("{type}", builderRoot.RootType, builderRoot.Tag?.Value)}");
+                                    factory.AppendLine($"case {builderRoot.RootType} {instanceName}:");
+                                    using (factory.Indent())
+                                    {
+                                        factory.AppendLine($"return {builderRoot.Name}({instanceName});");
+                                    }
+                                }
+
+                                factory.AppendLine("default:");
+                                using (factory.Indent())
+                                {
+                                    factory.AppendLine($"throw new {Names.ArgumentExceptionTypeName}($\"{Names.CannotBuildMessage} {{{Names.BuildingInstance}.GetType()}}.\", \"{Names.BuildingInstance}\");");
+                                }
+                            }
+
+                            factory.AppendLine(BlockFinish);
+                            factory.AppendLine($"return {Names.BuildingInstance};");
+                        }
+
+                        factory.AppendLine(BlockFinish);
+                        var builderLambdaExpression = (LambdaExpressionSyntax)SyntaxFactory.ParseExpression(factory.ToString());
+
+                        metadataVisitor.VisitContract(new MdContract(semanticModel, invocation, buildersRootType, ContractKind.Explicit, ImmutableArray.Create(builderTag)));
+                        VisitFactory(invocation, metadataVisitor, semanticModel, buildersRootType, builderLambdaExpression);
+
+                        var builderRootName = GetName((SyntaxNode?)buildersArgs[0] ?? invocation, buildersName, buildersRootType) ?? Names.DefaultBuilderName;
+                        var root = new MdRoot(invocation, semanticModel, buildersRootType, builderRootName, builderTag, buildersKind, invocationComments, true, builderRoots.ToImmutableArray());
+                        metadataVisitor.VisitRoot(root);
                         break;
 
                     case nameof(IConfiguration.Builder):
@@ -520,11 +561,6 @@ sealed class ApiInvocationProcessor(
         INamedTypeSymbol baseType,
         string wildcardFilter)
     {
-        if (baseType.IsGenericType)
-        {
-            baseType = baseType.ConstructUnboundGenericType();
-        }
-
         return semanticModel
             .LookupNamespacesAndTypes(invocation.Span.Start)
             .OfType<INamedTypeSymbol>()
@@ -532,37 +568,44 @@ sealed class ApiInvocationProcessor(
             .Where(type =>
                 baseSymbolsProvider.GetBaseSymbols(type, (t, _) => t is INamedTypeSymbol)
                     .OfType<INamedTypeSymbol>()
-                    .Select(typeSymbol => typeSymbol.IsGenericType ? typeSymbol.ConstructUnboundGenericType() : typeSymbol)
-                    .Any(typeSymbol => types.TypeEquals(baseType, typeSymbol)))
-            .Where(type => !types.TypeEquals(baseType, type))
+                    .Any(typeSymbol => types.TypeEquals(baseType.ConstructedFrom, typeSymbol.ConstructedFrom)))
+            .Where(type => !types.TypeEquals(baseType.ConstructedFrom, type.ConstructedFrom))
             .Where(type => wildcardMatcher.Match(wildcardFilter.AsSpan(), symbolNames.GetName(type).AsSpan()))
-            .Select(typeSymbol => {
-                if (!typeSymbol.IsGenericType)
-                {
-                    return typeSymbol;
-                }
-
-                var typeArgsCount = typeSymbol.TypeArguments.Length;
-                var markers = new List<ITypeSymbol>();
-                for (var index = 0; index < typeArgsCount; index++)
-                {
-                    var marker = types.GetMarker(index, semanticModel.Compilation);
-                    if (marker is null)
-                    {
-                        throw new CompileErrorException(
-                            Strings.Error_TooManyTypeParameters,
-                            ImmutableArray.Create(locationProvider.GetLocation(source)),
-                            LogId.ErrorInvalidMetadata);
-                    }
-
-                    markers.Add(marker);
-                }
-
-                return typeSymbol.Construct(markers.ToArray());
-            });
+            .Select(typeSymbol => CreateBuilderType(source, semanticModel, baseType, typeSymbol));
     }
 
-    private void VisitBuilder(
+    private INamedTypeSymbol CreateBuilderType(SyntaxNode source, SemanticModel semanticModel, INamedTypeSymbol baseType, INamedTypeSymbol typeSymbol)
+    {
+        if (!typeSymbol.IsGenericType || !baseType.IsGenericType)
+        {
+            return typeSymbol;
+        }
+
+        var typesMap = baseType.TypeParameters.Zip(baseType.TypeArguments, (key, value) => (key: key.Name, value))
+            .GroupBy(i => i.key)
+            .Select(i => i.First())
+            .ToDictionary(i => i.key, i => i.value);
+
+        var markers = new List<ITypeSymbol>();
+        foreach (var typeParameter in typeSymbol.TypeParameters)
+        {
+            if (typesMap.TryGetValue(typeParameter.Name, out var marker))
+            {
+                markers.Add(marker);
+            }
+            else
+            {
+                throw new CompileErrorException(
+                    Strings.Error_TooManyTypeParameters,
+                    ImmutableArray.Create(locationProvider.GetLocation(source)),
+                    LogId.ErrorInvalidMetadata);
+            }
+        }
+
+        return typeSymbol.Construct(markers.ToArray());
+    }
+
+    private MdRoot VisitBuilder(
         InvocationExpressionSyntax source,
         IMetadataVisitor metadataVisitor,
         SemanticModel semanticModel,
@@ -580,12 +623,16 @@ sealed class ApiInvocationProcessor(
         metadataVisitor.VisitArg(new MdArg(semanticModel, source, builderType, Names.BuildingInstance, ArgKind.Root, true, ["Instance for the build-up."]));
 
         // Factory
-        var factory = new StringBuilder();
+        var factory = new LinesBuilder();
         factory.AppendLine($"({Names.IContextTypeName} {Names.ContextInstance}) =>");
         factory.AppendLine(BlockStart);
-        factory.AppendLine($"{Names.ContextInstance}.{nameof(IContext.Inject)}({builderArgTag.Value.ValueToString()}, out {symbolNames.GetName(builderType)} {Names.BuildingInstance});");
-        factory.AppendLine($"{Names.ContextInstance}.{nameof(IContext.BuildUp)}({Names.BuildingInstance});");
-        factory.AppendLine($"return {Names.BuildingInstance};");
+        using (factory.Indent())
+        {
+            factory.AppendLine($"{Names.ContextInstance}.{nameof(IContext.Inject)}({builderArgTag.Value.ValueToString()}, out {symbolNames.GetName(builderType)} {Names.BuildingInstance});");
+            factory.AppendLine($"{Names.ContextInstance}.{nameof(IContext.BuildUp)}({Names.BuildingInstance});");
+            factory.AppendLine($"return {Names.BuildingInstance};");
+        }
+
         factory.AppendLine(BlockFinish);
         var builderLambdaExpression = (LambdaExpressionSyntax)SyntaxFactory.ParseExpression(factory.ToString());
 
@@ -593,7 +640,9 @@ sealed class ApiInvocationProcessor(
         VisitFactory(source, metadataVisitor, semanticModel, builderType, builderLambdaExpression);
 
         // Root
-        metadataVisitor.VisitRoot(new MdRoot(source, semanticModel, builderType, builderName, builderTag, kind, invocationComments, true));
+        var root = new MdRoot(source, semanticModel, builderType, builderName, builderTag, kind, invocationComments, true);
+        metadataVisitor.VisitRoot(root);
+        return root;
     }
 
     private void VisitSimpleFactory(
