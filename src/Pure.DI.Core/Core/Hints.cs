@@ -76,6 +76,9 @@ sealed class Hints : ConcurrentDictionary<Hint, LinkedList<string>>, IHints
     public DiagnosticSeverity SeverityOfNotImplementedContract =>
         GetEnumHint(Hint.SeverityOfNotImplementedContract, DiagnosticSeverity.Error);
 
+    public bool SkipDefaultConstructor =>
+        IsEnabled(Hint.SkipDefaultConstructor, SettingState.Off);
+
     private bool IsEnabled(Hint hint, SettingState defaultValue) =>
         GetEnumHint(hint, defaultValue) == SettingState.On;
 

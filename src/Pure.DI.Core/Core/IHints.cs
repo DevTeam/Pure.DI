@@ -49,4 +49,6 @@ interface IHints : IReadOnlyDictionary<Hint, LinkedList<string>>
     string DisposeAsyncMethodModifiers { get; }
 
     DiagnosticSeverity SeverityOfNotImplementedContract { get; }
+
+    bool SkipDefaultConstructor { get; }
 }

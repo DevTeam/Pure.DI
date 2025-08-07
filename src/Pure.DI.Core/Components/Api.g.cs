@@ -999,7 +999,107 @@ namespace Pure.DI
         /// </example>
         /// </summary>
         /// <seealso cref="IConfiguration.Hint"/>
-        Comments
+        Comments,
+
+        /// <summary>
+        /// <c>On</c> or <c>Off</c>. Determines whether to skip using the default constructor to create an instance. <c>Off</c> by default.
+        /// <example>
+        /// <code>
+        /// // SkipDefaultConstructor = On
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// <br/>
+        /// or using the API call <see cref="IConfiguration.Hint"/>:
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Hint(Hint.UseDefaultConstructor, "Off")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <seealso cref="IConfiguration.Hint"/>
+        SkipDefaultConstructor,
+
+        /// <summary>
+        /// The regular expression to filter whether to skip using the default constructor to create an instance by the instance type name. ".+" by default.
+        /// <example>
+        /// <code>
+        /// // SkipDefaultConstructorImplementationTypeNameRegularExpression = Dependency
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// <br/>
+        /// or using the API call <see cref="IConfiguration.Hint"/>:
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Hint(Hint.SkipDefaultConstructorImplementationTypeNameRegularExpression, "Dependency")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <seealso cref="IConfiguration.Hint"/>
+        SkipDefaultConstructorImplementationTypeNameRegularExpression,
+
+        /// <summary>
+        /// The wildcard to filter whether to skip using the default constructor to create an instance by the instance type name. "*" by default.
+        /// <example>
+        /// <code>
+        /// // SkipDefaultConstructorImplementationTypeNameWildcard = *Dependency
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// <br/>
+        /// or using the API call <see cref="IConfiguration.Hint"/>:
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Hint(Hint.SkipDefaultConstructorImplementationTypeNameWildcard, "*Dependency")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <seealso cref="IConfiguration.Hint"/>
+        SkipDefaultConstructorImplementationTypeNameWildcard,
+
+        /// <summary>
+        /// The regular expression to filter whether to skip using the default constructor to create an instance by the lifetime. ".+" by default.
+        /// <example>
+        /// <code>
+        /// // SkipDefaultConstructorLifetimeRegularExpression = Singleton
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// <br/>
+        /// or using the API call <see cref="IConfiguration.Hint"/>:
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Hint(Hint.SkipDefaultConstructorLifetimeRegularExpression, "Singleton")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <seealso cref="IConfiguration.Hint"/>
+        SkipDefaultConstructorLifetimeRegularExpression,
+
+        /// <summary>
+        /// The wildcard to filter whether to skip using the default constructor to create an instance by the lifetime. ".+" by default.
+        /// <example>
+        /// <code>
+        /// // SkipDefaultConstructorLifetimeWildcard = *Singleton
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// <br/>
+        /// or using the API call <see cref="IConfiguration.Hint"/>:
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Hint(Hint.SkipDefaultConstructorLifetimeWildcard, "*Singleton")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <seealso cref="IConfiguration.Hint"/>
+        SkipDefaultConstructorLifetimeWildcard,
     }
 
     /// <summary>

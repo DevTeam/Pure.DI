@@ -10,7 +10,9 @@ sealed class ImplementationDependencyNodeBuilder(
     IAttributes attributes,
     IInstanceDpProvider instanceDpProvider,
     Func<IConstructorInjectionsCounterWalker> constructorInjectionsCounterWalkerFactory,
-    ILocationProvider locationProvider)
+    ILocationProvider locationProvider,
+    IFilter filter,
+    ITypeResolver typeResolver)
     : IBuilder<DependencyNodeBuildContext, IEnumerable<DependencyNode>>
 {
     public IEnumerable<DependencyNode> Build(DependencyNodeBuildContext ctx)
@@ -49,6 +51,19 @@ sealed class ImplementationDependencyNodeBuilder(
                 if (constructor.DeclaredAccessibility is not (Accessibility.Internal or Accessibility.Public))
                 {
                     continue;
+                }
+
+                if (constructor.Parameters.IsDefaultOrEmpty && setup.Hints.SkipDefaultConstructor)
+                {
+                    string GetTypeName() => typeResolver.Resolve(ctx.Setup, implementationType).Name;
+                    string GetLifetimeName() => binding.Lifetime.ValueToString();
+                    if (filter.IsMeet(
+                            ctx.Setup,
+                            (Hint.SkipDefaultConstructorImplementationTypeNameRegularExpression, Hint.SkipDefaultConstructorImplementationTypeNameWildcard, GetTypeName),
+                            (Hint.SkipDefaultConstructorLifetimeRegularExpression, Hint.SkipDefaultConstructorLifetimeWildcard, GetLifetimeName)))
+                    {
+                        continue;
+                    }
                 }
 
                 constructors.Add(
