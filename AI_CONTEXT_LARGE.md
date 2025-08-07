@@ -10494,6 +10494,151 @@ See also _Hint(Pure.DI.Hint,System.String)_.
 </blockquote></details>
 
 
+<details><summary>Field SkipDefaultConstructor</summary><blockquote>
+
+ `On`  or  `Off` . Determines whether to skip using the default constructor to create an instance.  `Off`  by default.
+            
+```c#
+
+// SkipDefaultConstructor = On
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.UseDefaultConstructor, "Off")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field SkipDefaultConstructorImplementationTypeNameRegularExpression</summary><blockquote>
+
+The regular expression to filter whether to skip using the default constructor to create an instance by the instance type name. ".+" by default.
+            
+```c#
+
+// SkipDefaultConstructorImplementationTypeNameRegularExpression = Dependency
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.SkipDefaultConstructorImplementationTypeNameRegularExpression, "Dependency")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field SkipDefaultConstructorImplementationTypeNameWildcard</summary><blockquote>
+
+The wildcard to filter whether to skip using the default constructor to create an instance by the instance type name. "*" by default.
+            
+```c#
+
+// SkipDefaultConstructorImplementationTypeNameWildcard = *Dependency
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.SkipDefaultConstructorImplementationTypeNameWildcard, "*Dependency")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field SkipDefaultConstructorLifetimeRegularExpression</summary><blockquote>
+
+The regular expression to filter whether to skip using the default constructor to create an instance by the lifetime. ".+" by default.
+            
+```c#
+
+// SkipDefaultConstructorLifetimeRegularExpression = Singleton
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.SkipDefaultConstructorLifetimeRegularExpression, "Singleton")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field SkipDefaultConstructorLifetimeWildcard</summary><blockquote>
+
+The wildcard to filter whether to skip using the default constructor to create an instance by the lifetime. ".+" by default.
+            
+```c#
+
+// SkipDefaultConstructorLifetimeWildcard = *Singleton
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.SkipDefaultConstructorLifetimeWildcard, "*Singleton")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
 </blockquote></details>
 
 
@@ -12301,30 +12446,12 @@ Atomically generated smart tag with value "SyncRoot".
 </blockquote></details>
 
 
-<details><summary>Field VarName</summary><blockquote>
-
-Atomically generated smart tag with value "VarName".
-            It's used for:
-            
-            class _Generator__VarsMap_ <-- _IIdGenerator_(VarName) -- _IdGenerator_ as _Transient_
-</blockquote></details>
-
-
 <details><summary>Field CompositionClass</summary><blockquote>
 
 Atomically generated smart tag with value "CompositionClass".
             It's used for:
             
             class _Generator__CodeBuilder_ <-- _IBuilder`2_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
-</blockquote></details>
-
-
-<details><summary>Field Overrider</summary><blockquote>
-
-Atomically generated smart tag with value "Overrider".
-            It's used for:
-            
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Overrider) -- _GraphOverrider_ as _PerBlock_
 </blockquote></details>
 
 
@@ -12337,6 +12464,15 @@ Atomically generated smart tag with value "UsingDeclarations".
 </blockquote></details>
 
 
+<details><summary>Field VarName</summary><blockquote>
+
+Atomically generated smart tag with value "VarName".
+            It's used for:
+            
+            class _Generator__VarsMap_ <-- _IIdGenerator_(VarName) -- _IdGenerator_ as _Transient_
+</blockquote></details>
+
+
 <details><summary>Field UniqueTag</summary><blockquote>
 
 Atomically generated smart tag with value "UniqueTag".
@@ -12346,21 +12482,30 @@ Atomically generated smart tag with value "UniqueTag".
 </blockquote></details>
 
 
-<details><summary>Field Cleaner</summary><blockquote>
-
-Atomically generated smart tag with value "Cleaner".
-            It's used for:
-            
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
-</blockquote></details>
-
-
 <details><summary>Field Override</summary><blockquote>
 
 Atomically generated smart tag with value "Override".
             It's used for:
             
             class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
+<details><summary>Field Overrider</summary><blockquote>
+
+Atomically generated smart tag with value "Overrider".
+            It's used for:
+            
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Overrider) -- _GraphOverrider_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field Cleaner</summary><blockquote>
+
+Atomically generated smart tag with value "Cleaner".
+            It's used for:
+            
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
 </blockquote></details>
 
 
