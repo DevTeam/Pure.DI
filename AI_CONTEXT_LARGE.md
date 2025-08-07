@@ -1068,6 +1068,13 @@ var service2 = composition.BuildUp(new Service2());
 service2.Id.ShouldBe(Guid.Empty);
 service2.Dependency.ShouldBeOfType<Dependency>();
 
+// Uses a common method to build an instance
+IService abstractService = new Service1();
+abstractService = composition.BuildUp(abstractService);
+abstractService.ShouldBeOfType<Service1>();
+abstractService.Id.ShouldNotBe(Guid.Empty);
+abstractService.Dependency.ShouldBeOfType<Dependency>();
+
 interface IDependency;
 
 class Dependency : IDependency;
@@ -1133,6 +1140,13 @@ service1.Dependency.ShouldBeOfType<Dependency>();
 var service2 = composition.BuildUpService2(new Service2());
 service2.Id.ShouldBe(Guid.Empty);
 service2.Dependency.ShouldBeOfType<Dependency>();
+
+// Uses a common method to build an instance
+IService abstractService = new Service1();
+abstractService = composition.BuildUpIService(abstractService);
+abstractService.ShouldBeOfType<Service1>();
+abstractService.Id.ShouldNotBe(Guid.Empty);
+abstractService.Dependency.ShouldBeOfType<Dependency>();
 
 interface IDependency;
 
@@ -4084,6 +4098,13 @@ service1.Dependency.ShouldBeOfType<Dependency<string>>();
 var service2 = composition.BuildUpGeneric(new Service2<Guid, int>());
 service2.Id.ShouldBe(Guid.Empty);
 service2.Dependency.ShouldBeOfType<Dependency<int>>();
+
+// Uses a common method to build an instance
+IService<Guid, Uri> abstractService = new Service1<Guid, Uri>();
+abstractService = composition.BuildUpGeneric(abstractService);
+abstractService.ShouldBeOfType<Service1<Guid, Uri>>();
+abstractService.Id.ShouldNotBe(Guid.Empty);
+abstractService.Dependency.ShouldBeOfType<Dependency<Uri>>();
 
 interface IDependency<T>;
 
@@ -12280,24 +12301,6 @@ Atomically generated smart tag with value "SyncRoot".
 </blockquote></details>
 
 
-<details><summary>Field CompositionClass</summary><blockquote>
-
-Atomically generated smart tag with value "CompositionClass".
-            It's used for:
-            
-            class _Generator__CodeBuilder_ <-- _IBuilder`2_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
-</blockquote></details>
-
-
-<details><summary>Field UsingDeclarations</summary><blockquote>
-
-Atomically generated smart tag with value "UsingDeclarations".
-            It's used for:
-            
-            class _Generator__CompositionClassBuilder_ <-- _IBuilder`2_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
-</blockquote></details>
-
-
 <details><summary>Field VarName</summary><blockquote>
 
 Atomically generated smart tag with value "VarName".
@@ -12307,12 +12310,12 @@ Atomically generated smart tag with value "VarName".
 </blockquote></details>
 
 
-<details><summary>Field Cleaner</summary><blockquote>
+<details><summary>Field CompositionClass</summary><blockquote>
 
-Atomically generated smart tag with value "Cleaner".
+Atomically generated smart tag with value "CompositionClass".
             It's used for:
             
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
+            class _Generator__CodeBuilder_ <-- _IBuilder`2_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
 </blockquote></details>
 
 
@@ -12325,12 +12328,30 @@ Atomically generated smart tag with value "Overrider".
 </blockquote></details>
 
 
+<details><summary>Field UsingDeclarations</summary><blockquote>
+
+Atomically generated smart tag with value "UsingDeclarations".
+            It's used for:
+            
+            class _Generator__CompositionClassBuilder_ <-- _IBuilder`2_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
+</blockquote></details>
+
+
 <details><summary>Field UniqueTag</summary><blockquote>
 
 Atomically generated smart tag with value "UniqueTag".
             It's used for:
             
             class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve__BindingBuilder_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
+<details><summary>Field Cleaner</summary><blockquote>
+
+Atomically generated smart tag with value "Cleaner".
+            It's used for:
+            
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
 </blockquote></details>
 
 

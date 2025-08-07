@@ -174,8 +174,8 @@ partial class Composition: IDisposable, IAsyncDisposable
       () =>
       {
         var transComposition3 = this;
-        Session localValue154 = new Session(transComposition3);
-        return localValue154;
+        Session localValue163 = new Session(transComposition3);
+        return localValue163;
       });
       return new Program(blockFunc1);
     }

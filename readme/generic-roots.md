@@ -83,8 +83,8 @@ partial class Composition
   public OtherService<T1> GetMyOtherService_T<T1>()
   {
     OtherService<T1> transOtherService;
-    IDependency<T1> localDependency152 = new Dependency<T1>();
-    transOtherService = new OtherService<T1>(localDependency152);
+    IDependency<T1> localDependency161 = new Dependency<T1>();
+    transOtherService = new OtherService<T1>(localDependency161);
     return transOtherService;
   }
 

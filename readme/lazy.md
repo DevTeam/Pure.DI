@@ -82,12 +82,12 @@ partial class Composition
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        IDependency localValue115 = new Dependency();
-        return localValue115;
+        IDependency localValue121 = new Dependency();
+        return localValue121;
       });
-      Func<IDependency> localFactory114 = blockFunc2;
+      Func<IDependency> localFactory120 = blockFunc2;
       // Creates an instance that supports lazy initialization
-      transLazy1 = new Lazy<IDependency>(localFactory114, true);
+      transLazy1 = new Lazy<IDependency>(localFactory120, true);
       return new Service(transLazy1);
     }
   }

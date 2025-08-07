@@ -24,6 +24,13 @@ var service2 = composition.BuildUp(new Service2());
 service2.Id.ShouldBe(Guid.Empty);
 service2.Dependency.ShouldBeOfType<Dependency>();
 
+// Uses a common method to build an instance
+IService abstractService = new Service1();
+abstractService = composition.BuildUp(abstractService);
+abstractService.ShouldBeOfType<Service1>();
+abstractService.Id.ShouldNotBe(Guid.Empty);
+abstractService.Dependency.ShouldBeOfType<Dependency>();
+
 interface IDependency;
 
 class Dependency : IDependency;
@@ -116,25 +123,57 @@ partial class Composition
   public Service1 BuildUp(Service1 buildingInstance)
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    Service1 transService13;
-    Service1 localBuildingInstance94 = buildingInstance;
-    Guid transGuid6 = Guid.NewGuid();
-    localBuildingInstance94.Dependency = new Dependency();
-    localBuildingInstance94.SetId(transGuid6);
-    transService13 = localBuildingInstance94;
-    return transService13;
+    Service1 transService15;
+    Service1 localBuildingInstance97 = buildingInstance;
+    Guid transGuid8 = Guid.NewGuid();
+    localBuildingInstance97.Dependency = new Dependency();
+    localBuildingInstance97.SetId(transGuid8);
+    transService15 = localBuildingInstance97;
+    return transService15;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Service2 BuildUp(Service2 buildingInstance)
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    Service2 transService2;
-    Service2 localBuildingInstance93 = buildingInstance;
-    localBuildingInstance93.Dependency = new Dependency();
-    transService2 = localBuildingInstance93;
-    return transService2;
+    Service2 transService22;
+    Service2 localBuildingInstance96 = buildingInstance;
+    localBuildingInstance96.Dependency = new Dependency();
+    transService22 = localBuildingInstance96;
+    return transService22;
   }
+
+  #pragma warning disable CS0162
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public IService BuildUp(IService buildingInstance)
+  {
+    if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
+    IService transIService;
+    IService localBuildingInstance93 = buildingInstance;
+    switch (localBuildingInstance93)
+    {
+      case Service1 localService194:
+      {
+        transIService = BuildUp(localService194);
+        goto transIServiceFinish;
+      }
+
+      case Service2 localService295:
+      {
+        transIService = BuildUp(localService295);
+        goto transIServiceFinish;
+      }
+
+      default:
+        throw new ArgumentException($"Unable to build an instance of typeof type {localBuildingInstance93.GetType()}.", "buildingInstance");
+    }
+
+    transIService = localBuildingInstance93;
+    transIServiceFinish:
+      ;
+    return transIService;
+  }
+  #pragma warning restore CS0162
 }
 ```
 
@@ -150,6 +189,7 @@ Class diagram:
 ---
 classDiagram
 	Dependency --|> IDependency
+	Composition ..> IService : IService BuildUp(Pure.DI.UsageTests.Basics.BuildersScenario.IService buildingInstance)
 	Composition ..> Service2 : Service2 BuildUp(Pure.DI.UsageTests.Basics.BuildersScenario.Service2 buildingInstance)
 	Composition ..> Service1 : Service1 BuildUp(Pure.DI.UsageTests.Basics.BuildersScenario.Service1 buildingInstance)
 	Service1 *--  Guid : Guid
@@ -160,6 +200,7 @@ classDiagram
 		<<partial>>
 		+Service1 BuildUp(Pure.DI.UsageTests.Basics.BuildersScenario.Service1 buildingInstance)
 		+Service2 BuildUp(Pure.DI.UsageTests.Basics.BuildersScenario.Service2 buildingInstance)
+		+IService BuildUp(Pure.DI.UsageTests.Basics.BuildersScenario.IService buildingInstance)
 		}
 		class Dependency {
 				<<class>>
@@ -167,6 +208,9 @@ classDiagram
 		}
 		class IDependency {
 			<<interface>>
+		}
+		class IService {
+				<<interface>>
 		}
 		class Service1 {
 				<<record>>

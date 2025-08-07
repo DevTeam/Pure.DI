@@ -1068,6 +1068,13 @@ var service2 = composition.BuildUp(new Service2());
 service2.Id.ShouldBe(Guid.Empty);
 service2.Dependency.ShouldBeOfType<Dependency>();
 
+// Uses a common method to build an instance
+IService abstractService = new Service1();
+abstractService = composition.BuildUp(abstractService);
+abstractService.ShouldBeOfType<Service1>();
+abstractService.Id.ShouldNotBe(Guid.Empty);
+abstractService.Dependency.ShouldBeOfType<Dependency>();
+
 interface IDependency;
 
 class Dependency : IDependency;
@@ -1133,6 +1140,13 @@ service1.Dependency.ShouldBeOfType<Dependency>();
 var service2 = composition.BuildUpService2(new Service2());
 service2.Id.ShouldBe(Guid.Empty);
 service2.Dependency.ShouldBeOfType<Dependency>();
+
+// Uses a common method to build an instance
+IService abstractService = new Service1();
+abstractService = composition.BuildUpIService(abstractService);
+abstractService.ShouldBeOfType<Service1>();
+abstractService.Id.ShouldNotBe(Guid.Empty);
+abstractService.Dependency.ShouldBeOfType<Dependency>();
 
 interface IDependency;
 
@@ -3270,6 +3284,13 @@ service1.Dependency.ShouldBeOfType<Dependency<string>>();
 var service2 = composition.BuildUpGeneric(new Service2<Guid, int>());
 service2.Id.ShouldBe(Guid.Empty);
 service2.Dependency.ShouldBeOfType<Dependency<int>>();
+
+// Uses a common method to build an instance
+IService<Guid, Uri> abstractService = new Service1<Guid, Uri>();
+abstractService = composition.BuildUpGeneric(abstractService);
+abstractService.ShouldBeOfType<Service1<Guid, Uri>>();
+abstractService.Id.ShouldNotBe(Guid.Empty);
+abstractService.Dependency.ShouldBeOfType<Dependency<Uri>>();
 
 interface IDependency<T>;
 

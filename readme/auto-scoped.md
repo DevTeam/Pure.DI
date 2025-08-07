@@ -134,13 +134,13 @@ partial class Composition
       {
         IService transIService2;
         var transComposition3 = this;
-        Composition localParentScope156 = transComposition3;
+        Composition localParentScope165 = transComposition3;
         // Creates a new scope from the parent scope
-        var localScope157 = new Composition(localParentScope156);
+        var localScope166 = new Composition(localParentScope165);
         // Provides the session root in a new scope
-        transIService2 = localScope157.SessionRoot;
-        IService localValue155 = transIService2;
-        return localValue155;
+        transIService2 = localScope166.SessionRoot;
+        IService localValue164 = transIService2;
+        return localValue164;
       });
       return new Program(blockFunc1);
     }

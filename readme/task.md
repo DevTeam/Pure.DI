@@ -119,23 +119,23 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     () =>
     {
-      IDependency localValue121 = new Dependency();
-      return localValue121;
+      IDependency localValue127 = new Dependency();
+      return localValue127;
     });
-    Func<IDependency> localFactory119 = blockFunc2;
+    Func<IDependency> localFactory125 = blockFunc2;
     // Injects a task factory creating and scheduling task objects
     TaskFactory<IDependency> blockTaskFactory3;
-    CancellationToken localCancellationToken122 = cancellationToken;
+    CancellationToken localCancellationToken128 = cancellationToken;
     TaskCreationOptions transTaskCreationOptions6 = TaskCreationOptions.None;
-    TaskCreationOptions localTaskCreationOptions123 = transTaskCreationOptions6;
+    TaskCreationOptions localTaskCreationOptions129 = transTaskCreationOptions6;
     TaskContinuationOptions transTaskContinuationOptions7 = TaskContinuationOptions.None;
-    TaskContinuationOptions localTaskContinuationOptions124 = transTaskContinuationOptions7;
+    TaskContinuationOptions localTaskContinuationOptions130 = transTaskContinuationOptions7;
     TaskScheduler transTaskScheduler8 = TaskScheduler.Current;
-    TaskScheduler localTaskScheduler125 = transTaskScheduler8;
-    blockTaskFactory3 = new TaskFactory<IDependency>(localCancellationToken122, localTaskCreationOptions123, localTaskContinuationOptions124, localTaskScheduler125);
-    TaskFactory<IDependency> localTaskFactory120 = blockTaskFactory3;
+    TaskScheduler localTaskScheduler131 = transTaskScheduler8;
+    blockTaskFactory3 = new TaskFactory<IDependency>(localCancellationToken128, localTaskCreationOptions129, localTaskContinuationOptions130, localTaskScheduler131);
+    TaskFactory<IDependency> localTaskFactory126 = blockTaskFactory3;
     // Creates and starts a task using the instance factory
-    transTask1 = localTaskFactory120.StartNew(localFactory119);
+    transTask1 = localTaskFactory126.StartNew(localFactory125);
     return new Service(transTask1);
   }
 }
