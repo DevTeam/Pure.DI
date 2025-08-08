@@ -343,12 +343,16 @@ DI.Setup("Composition")
 | [FormatCode](#formatcode-hint)                                                                                                     | _On_ or _Off_                              |            | _Off_     |
 | [SeverityOfNotImplementedContract](#severityofnotimplementedcontract-hint)                                                         | _Error_ or _Warning_ or _Info_ or _Hidden_ |            | _Error_   |
 | [Comments](#comments-hint)                                                                                                         | _On_ or _Off_                              |            | _On_      |
-| SkipDefaultConstructor                                                                                                             | _On_ or _Off_                              | 9.0        | _Off_     | 
+| SkipDefaultConstructor                                                                                                             | _On_ or _Off_                              |            | _Off_     | 
 | SkipDefaultConstructorImplementationTypeNameRegularExpression                                                                      | Regular expression                         |            | .+        |
 | SkipDefaultConstructorImplementationTypeNameWildcard                                                                               | Wildcard                                   |            | *         |
 | SkipDefaultConstructorLifetimeRegularExpression                                                                                    | Regular expression                         |            | .+        |
 | SkipDefaultConstructorLifetimeWildcard                                                                                             | Wildcard                                   |            | *         |
-
+| DisableAutoBinding                                                                                                                 | _On_ or _Off_                              |            | _Off_     | 
+| DisableAutoBindingImplementationTypeNameRegularExpression                                                                          | Regular expression                         |            | .+        |
+| DisableAutoBindingImplementationTypeNameWildcard                                                                                   | Wildcard                                   |            | *         |
+| DisableAutoBindingLifetimeRegularExpression                                                                                        | Regular expression                         |            | .+        |
+| DisableAutoBindingLifetimeWildcard                                                                                                 | Wildcard                                   |            | *         |
 
 The list of hints will be gradually expanded to meet the needs and desires for fine-tuning code generation. Please feel free to add your ideas.
 

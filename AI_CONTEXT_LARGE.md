@@ -28,7 +28,7 @@ To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
 
 > [!WARNING]
-> But this approach cannot be recommended if you follow the dependency inversion principle and want your types to depend only on abstractions.
+> But this approach cannot be recommended if you follow the dependency inversion principle and want your types to depend only on abstractions. Or you want to precisely control the lifetime of a dependency.
 
 It is better to inject abstract dependencies, for example, in the form of interfaces. Use bindings to map abstract types to their implementations as in almost all [other examples](injections-of-abstractions.md).
 
@@ -10639,6 +10639,151 @@ See also _Hint(Pure.DI.Hint,System.String)_.
 </blockquote></details>
 
 
+<details><summary>Field DisableAutoBinding</summary><blockquote>
+
+ `On`  or  `Off` . Determines whether dependency injection should NOT be performed if a binding for that dependency has not been explicitly defined.  `Off`  by default.
+            
+```c#
+
+// DisableAutoBinding = On
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.DisableAutoBinding, "Off")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field DisableAutoBindingImplementationTypeNameRegularExpression</summary><blockquote>
+
+The regular expression by the instance type name to filter whether a dependency injection should NOT be performed if a binding for that dependency has not been explicitly defined. ".+" by default.
+            
+```c#
+
+// DisableAutoBindingImplementationTypeNameRegularExpression = Dependency
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.DisableAutoBindingImplementationTypeNameRegularExpression, "Dependency")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field DisableAutoBindingImplementationTypeNameWildcard</summary><blockquote>
+
+The wildcard by the instance type name to filter whether a dependency injection should NOT be performed if a binding for that dependency has not been explicitly defined. "*" by default.
+            
+```c#
+
+// DisableAutoBindingImplementationTypeNameWildcard = *Dependency
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.DisableAutoBindingImplementationTypeNameWildcard, "*Dependency")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field DisableAutoBindingLifetimeRegularExpression</summary><blockquote>
+
+The regular expression by the lifetime to filter whether a dependency injection should NOT be performed if a binding for that dependency has not been explicitly defined. ".+" by default.
+            
+```c#
+
+// DisableAutoBindingLifetimeRegularExpression = Singleton
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.DisableAutoBindingLifetimeRegularExpression, "Singleton")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field DisableAutoBindingLifetimeWildcard</summary><blockquote>
+
+The wildcard by the lifetime to filter whether a dependency injection should NOT be performed if a binding for that dependency has not been explicitly defined. ".+" by default.
+            
+```c#
+
+// DisableAutoBindingLifetimeWildcard = *Singleton
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.DisableAutoBindingLifetimeWildcard, "*Singleton")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
 </blockquote></details>
 
 
@@ -12455,21 +12600,39 @@ Atomically generated smart tag with value "CompositionClass".
 </blockquote></details>
 
 
-<details><summary>Field UsingDeclarations</summary><blockquote>
-
-Atomically generated smart tag with value "UsingDeclarations".
-            It's used for:
-            
-            class _Generator__CompositionClassBuilder_ <-- _IBuilder`2_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
-</blockquote></details>
-
-
 <details><summary>Field VarName</summary><blockquote>
 
 Atomically generated smart tag with value "VarName".
             It's used for:
             
             class _Generator__VarsMap_ <-- _IIdGenerator_(VarName) -- _IdGenerator_ as _Transient_
+</blockquote></details>
+
+
+<details><summary>Field Cleaner</summary><blockquote>
+
+Atomically generated smart tag with value "Cleaner".
+            It's used for:
+            
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field Overrider</summary><blockquote>
+
+Atomically generated smart tag with value "Overrider".
+            It's used for:
+            
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Overrider) -- _GraphOverrider_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field UsingDeclarations</summary><blockquote>
+
+Atomically generated smart tag with value "UsingDeclarations".
+            It's used for:
+            
+            class _Generator__CompositionClassBuilder_ <-- _IBuilder`2_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
 </blockquote></details>
 
 
@@ -12488,24 +12651,6 @@ Atomically generated smart tag with value "Override".
             It's used for:
             
             class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
-</blockquote></details>
-
-
-<details><summary>Field Overrider</summary><blockquote>
-
-Atomically generated smart tag with value "Overrider".
-            It's used for:
-            
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Overrider) -- _GraphOverrider_ as _PerBlock_
-</blockquote></details>
-
-
-<details><summary>Field Cleaner</summary><blockquote>
-
-Atomically generated smart tag with value "Cleaner".
-            It's used for:
-            
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
 </blockquote></details>
 
 

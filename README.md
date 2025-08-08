@@ -1830,6 +1830,151 @@ See also _Hint(Pure.DI.Hint,System.String)_.
 </blockquote></details>
 
 
+<details><summary>Field DisableAutoBinding</summary><blockquote>
+
+ `On`  or  `Off` . Determines whether dependency injection should NOT be performed if a binding for that dependency has not been explicitly defined.  `Off`  by default.
+            
+```c#
+
+// DisableAutoBinding = On
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.DisableAutoBinding, "Off")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field DisableAutoBindingImplementationTypeNameRegularExpression</summary><blockquote>
+
+The regular expression by the instance type name to filter whether a dependency injection should NOT be performed if a binding for that dependency has not been explicitly defined. ".+" by default.
+            
+```c#
+
+// DisableAutoBindingImplementationTypeNameRegularExpression = Dependency
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.DisableAutoBindingImplementationTypeNameRegularExpression, "Dependency")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field DisableAutoBindingImplementationTypeNameWildcard</summary><blockquote>
+
+The wildcard by the instance type name to filter whether a dependency injection should NOT be performed if a binding for that dependency has not been explicitly defined. "*" by default.
+            
+```c#
+
+// DisableAutoBindingImplementationTypeNameWildcard = *Dependency
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.DisableAutoBindingImplementationTypeNameWildcard, "*Dependency")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field DisableAutoBindingLifetimeRegularExpression</summary><blockquote>
+
+The regular expression by the lifetime to filter whether a dependency injection should NOT be performed if a binding for that dependency has not been explicitly defined. ".+" by default.
+            
+```c#
+
+// DisableAutoBindingLifetimeRegularExpression = Singleton
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.DisableAutoBindingLifetimeRegularExpression, "Singleton")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
+<details><summary>Field DisableAutoBindingLifetimeWildcard</summary><blockquote>
+
+The wildcard by the lifetime to filter whether a dependency injection should NOT be performed if a binding for that dependency has not been explicitly defined. ".+" by default.
+            
+```c#
+
+// DisableAutoBindingLifetimeWildcard = *Singleton
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+            or using the API call _Hint(Pure.DI.Hint,System.String)_:
+            
+```c#
+
+DI.Setup("Composition")
+                .Hint(Hint.DisableAutoBindingLifetimeWildcard, "*Singleton")
+                .Bind<IDependency>().To<Dependency>();
+            
+```
+
+
+See also _Hint(Pure.DI.Hint,System.String)_.
+
+</blockquote></details>
+
+
 </blockquote></details>
 
 
@@ -3646,21 +3791,39 @@ Atomically generated smart tag with value "CompositionClass".
 </blockquote></details>
 
 
-<details><summary>Field UsingDeclarations</summary><blockquote>
-
-Atomically generated smart tag with value "UsingDeclarations".
-            It's used for:
-            
-            class _Generator__CompositionClassBuilder_ <-- _IBuilder`2_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
-</blockquote></details>
-
-
 <details><summary>Field VarName</summary><blockquote>
 
 Atomically generated smart tag with value "VarName".
             It's used for:
             
             class _Generator__VarsMap_ <-- _IIdGenerator_(VarName) -- _IdGenerator_ as _Transient_
+</blockquote></details>
+
+
+<details><summary>Field Cleaner</summary><blockquote>
+
+Atomically generated smart tag with value "Cleaner".
+            It's used for:
+            
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field Overrider</summary><blockquote>
+
+Atomically generated smart tag with value "Overrider".
+            It's used for:
+            
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Overrider) -- _GraphOverrider_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field UsingDeclarations</summary><blockquote>
+
+Atomically generated smart tag with value "UsingDeclarations".
+            It's used for:
+            
+            class _Generator__CompositionClassBuilder_ <-- _IBuilder`2_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
 </blockquote></details>
 
 
@@ -3679,24 +3842,6 @@ Atomically generated smart tag with value "Override".
             It's used for:
             
             class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
-</blockquote></details>
-
-
-<details><summary>Field Overrider</summary><blockquote>
-
-Atomically generated smart tag with value "Overrider".
-            It's used for:
-            
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Overrider) -- _GraphOverrider_ as _PerBlock_
-</blockquote></details>
-
-
-<details><summary>Field Cleaner</summary><blockquote>
-
-Atomically generated smart tag with value "Cleaner".
-            It's used for:
-            
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
 </blockquote></details>
 
 
@@ -4996,12 +5141,16 @@ DI.Setup("Composition")
 | [FormatCode](#formatcode-hint)                                                                                                     | _On_ or _Off_                              |            | _Off_     |
 | [SeverityOfNotImplementedContract](#severityofnotimplementedcontract-hint)                                                         | _Error_ or _Warning_ or _Info_ or _Hidden_ |            | _Error_   |
 | [Comments](#comments-hint)                                                                                                         | _On_ or _Off_                              |            | _On_      |
-| SkipDefaultConstructor                                                                                                             | _On_ or _Off_                              | 9.0        | _Off_     | 
+| SkipDefaultConstructor                                                                                                             | _On_ or _Off_                              |            | _Off_     | 
 | SkipDefaultConstructorImplementationTypeNameRegularExpression                                                                      | Regular expression                         |            | .+        |
 | SkipDefaultConstructorImplementationTypeNameWildcard                                                                               | Wildcard                                   |            | *         |
 | SkipDefaultConstructorLifetimeRegularExpression                                                                                    | Regular expression                         |            | .+        |
 | SkipDefaultConstructorLifetimeWildcard                                                                                             | Wildcard                                   |            | *         |
-
+| DisableAutoBinding                                                                                                                 | _On_ or _Off_                              |            | _Off_     | 
+| DisableAutoBindingImplementationTypeNameRegularExpression                                                                          | Regular expression                         |            | .+        |
+| DisableAutoBindingImplementationTypeNameWildcard                                                                                   | Wildcard                                   |            | *         |
+| DisableAutoBindingLifetimeRegularExpression                                                                                        | Regular expression                         |            | .+        |
+| DisableAutoBindingLifetimeWildcard                                                                                                 | Wildcard                                   |            | *         |
 
 The list of hints will be gradually expanded to meet the needs and desires for fine-tuning code generation. Please feel free to add your ideas.
 
@@ -5468,7 +5617,7 @@ Contextual AI needs to understand the situation it’s in. This means knowing de
 | --------------- | ---- | ------ |
 | [AI_CONTEXT_SMALL.md](AI_CONTEXT_SMALL.md) | 28KB | 7K |
 | [AI_CONTEXT_MEDIUM.md](AI_CONTEXT_MEDIUM.md) | 123KB | 31K |
-| [AI_CONTEXT_LARGE.md](AI_CONTEXT_LARGE.md) | 384KB | 98K |
+| [AI_CONTEXT_LARGE.md](AI_CONTEXT_LARGE.md) | 388KB | 99K |
 ## How to contribute to Pure.DI
 
 Thank you for your interest in contributing to the Pure.DI project! First of all, if you are going to make a big change or feature, please open a problem first. That way, we can coordinate and understand if the change you're going to work on fits with current priorities and if we can commit to reviewing and merging it within a reasonable timeframe. We don't want you to waste a lot of your valuable time on something that may not align with what we want for Pure.DI.
