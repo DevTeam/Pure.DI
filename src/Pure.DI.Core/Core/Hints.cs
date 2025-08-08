@@ -79,6 +79,9 @@ sealed class Hints : ConcurrentDictionary<Hint, LinkedList<string>>, IHints
     public bool SkipDefaultConstructor =>
         IsEnabled(Hint.SkipDefaultConstructor, SettingState.Off);
 
+    public bool DisableAutoBinding =>
+        IsEnabled(Hint.DisableAutoBinding, SettingState.Off);
+
     private bool IsEnabled(Hint hint, SettingState defaultValue) =>
         GetEnumHint(hint, defaultValue) == SettingState.On;
 

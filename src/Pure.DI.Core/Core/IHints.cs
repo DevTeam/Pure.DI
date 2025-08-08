@@ -51,4 +51,6 @@ interface IHints : IReadOnlyDictionary<Hint, LinkedList<string>>
     DiagnosticSeverity SeverityOfNotImplementedContract { get; }
 
     bool SkipDefaultConstructor { get; }
+
+    bool DisableAutoBinding { get; }
 }

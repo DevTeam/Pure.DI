@@ -261,4 +261,136 @@ public class HintsTests
         result.Success.ShouldBeFalse(result);
         result.Errors.Count(i => i.Id == LogId.ErrorUnableToResolve && i.Locations.FirstOrDefault().GetSource() == "content").ShouldBe(1, result);
     }
+
+    [Fact]
+    public async Task ShouldNotAutoBindWhenDisableAutoBindingIsOn()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IBox<out T> { T Content { get; } }
+                           
+                               class CardboardBox<T> : IBox<T>
+                               {
+                                   public CardboardBox(T content) => Content = content;
+                           
+                                   public T Content { get; }
+                           
+                                   public override string ToString() => $"[{Content}]";
+                               }
+                           
+                               class ShroedingersCat
+                               {
+                                   public ShroedingersCat() { }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Hint(Hint.DisableAutoBinding, "On")
+                                           .Bind<IBox<TT>>().To<CardboardBox<TT>>() 
+                                           .Bind<Program>().To<Program>()
+                                           .Root<Program>("Root");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   IBox<ShroedingersCat> _box;
+                           
+                                   internal Program(IBox<ShroedingersCat> box) => _box = box;
+                           
+                                   private void Run() => Console.WriteLine(_box);
+                           
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       composition.Root.Run();
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count(i => i.Id == LogId.ErrorUnableToResolve && i.Locations.FirstOrDefault().GetSource() == "content").ShouldBe(1, result);
+    }
+
+    [Theory]
+    [InlineData("*", true)]
+    [InlineData("ShroedingersCat", false)]
+    [InlineData("*ShroedingersCat", true)]
+    [InlineData("CardboardBox", false)]
+    public async Task ShouldNotAutoBindWhenDisableAutoBindingIsOnAndWildcardWasApplied(string wildcard, bool hasError)
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IBox<out T> { T Content { get; } }
+                           
+                               class CardboardBox<T> : IBox<T>
+                               {
+                                   public CardboardBox(T content) => Content = content;
+                           
+                                   public T Content { get; }
+                           
+                                   public override string ToString() => $"[{Content}]";
+                               }
+                           
+                               class ShroedingersCat
+                               {
+                                   public ShroedingersCat() { }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Hint(Hint.DisableAutoBinding, "On")
+                                           .Hint(Hint.DisableAutoBindingImplementationTypeNameWildcard, "#wildcard#")
+                                           .Bind<IBox<TT>>().To<CardboardBox<TT>>() 
+                                           .Bind<Program>().To<Program>()
+                                           .Root<Program>("Root");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   IBox<ShroedingersCat> _box;
+                           
+                                   internal Program(IBox<ShroedingersCat> box) => _box = box;
+                           
+                                   private void Run() => Console.WriteLine(_box);
+                           
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       composition.Root.Run();
+                                   }
+                               }
+                           }
+                           """.Replace("#wildcard#", wildcard).RunAsync();
+
+        // Then
+        result.Success.ShouldBe(!hasError, result);
+        if (hasError)
+        {
+            result.Errors.Count(i => i.Id == LogId.ErrorUnableToResolve && i.Locations.FirstOrDefault().GetSource() == "content").ShouldBe(1, result);
+        }
+    }
 }

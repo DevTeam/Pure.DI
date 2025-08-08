@@ -1100,6 +1100,106 @@ namespace Pure.DI
         /// </summary>
         /// <seealso cref="IConfiguration.Hint"/>
         SkipDefaultConstructorLifetimeWildcard,
+
+        /// <summary>
+        /// <c>On</c> or <c>Off</c>. Determines whether dependency injection should NOT be performed if a binding for that dependency has not been explicitly defined. <c>Off</c> by default.
+        /// <example>
+        /// <code>
+        /// // DisableAutoBinding = On
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// <br/>
+        /// or using the API call <see cref="IConfiguration.Hint"/>:
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Hint(Hint.DisableAutoBinding, "Off")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <seealso cref="IConfiguration.Hint"/>
+        DisableAutoBinding,
+
+        /// <summary>
+        /// The regular expression by the instance type name to filter whether a dependency injection should NOT be performed if a binding for that dependency has not been explicitly defined. ".+" by default.
+        /// <example>
+        /// <code>
+        /// // DisableAutoBindingImplementationTypeNameRegularExpression = Dependency
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// <br/>
+        /// or using the API call <see cref="IConfiguration.Hint"/>:
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Hint(Hint.DisableAutoBindingImplementationTypeNameRegularExpression, "Dependency")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <seealso cref="IConfiguration.Hint"/>
+        DisableAutoBindingImplementationTypeNameRegularExpression,
+
+        /// <summary>
+        /// The wildcard by the instance type name to filter whether a dependency injection should NOT be performed if a binding for that dependency has not been explicitly defined. "*" by default.
+        /// <example>
+        /// <code>
+        /// // DisableAutoBindingImplementationTypeNameWildcard = *Dependency
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// <br/>
+        /// or using the API call <see cref="IConfiguration.Hint"/>:
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Hint(Hint.DisableAutoBindingImplementationTypeNameWildcard, "*Dependency")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <seealso cref="IConfiguration.Hint"/>
+        DisableAutoBindingImplementationTypeNameWildcard,
+
+        /// <summary>
+        /// The regular expression by the lifetime to filter whether a dependency injection should NOT be performed if a binding for that dependency has not been explicitly defined. ".+" by default.
+        /// <example>
+        /// <code>
+        /// // DisableAutoBindingLifetimeRegularExpression = Singleton
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// <br/>
+        /// or using the API call <see cref="IConfiguration.Hint"/>:
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Hint(Hint.DisableAutoBindingLifetimeRegularExpression, "Singleton")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <seealso cref="IConfiguration.Hint"/>
+        DisableAutoBindingLifetimeRegularExpression,
+
+        /// <summary>
+        /// The wildcard by the lifetime to filter whether a dependency injection should NOT be performed if a binding for that dependency has not been explicitly defined. ".+" by default.
+        /// <example>
+        /// <code>
+        /// // DisableAutoBindingLifetimeWildcard = *Singleton
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// <br/>
+        /// or using the API call <see cref="IConfiguration.Hint"/>:
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Hint(Hint.DisableAutoBindingLifetimeWildcard, "*Singleton")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <seealso cref="IConfiguration.Hint"/>
+        DisableAutoBindingLifetimeWildcard,
     }
 
     /// <summary>

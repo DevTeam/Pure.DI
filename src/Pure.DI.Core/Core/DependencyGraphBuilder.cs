@@ -24,6 +24,7 @@ sealed class DependencyGraphBuilder(
     [Tag(Overrider)] IGraphRewriter graphOverrider,
     [Tag(Cleaner)] IGraphRewriter graphCleaner,
     ILocationProvider locationProvider,
+    ITypeResolver typeResolver,
     CancellationToken cancellationToken)
     : IDependencyGraphBuilder
 {
@@ -314,7 +315,24 @@ sealed class DependencyGraphBuilder(
                 if (injection.Type is { IsAbstract: false, SpecialType: Microsoft.CodeAnalysis.SpecialType.None })
                 {
                     var autoBinding = bindingsFactory.CreateAutoBinding(setup, targetNode, injection, typeConstructor, ++maxId);
-                    return nodesFactory.CreateNodes(setup, typeConstructor, autoBinding).ToList();
+                    var disableAutoBinding = false;
+                    if (setup.Hints.DisableAutoBinding)
+                    {
+                        string GetTypeName() => typeResolver.Resolve(setup, autoBinding.Type).Name;
+                        string GetLifetimeName() => targetNode.Lifetime.ValueToString();
+                        if (filter.IsMeet(
+                                setup,
+                                (Hint.DisableAutoBindingImplementationTypeNameRegularExpression, Hint.DisableAutoBindingImplementationTypeNameWildcard, GetTypeName),
+                                (Hint.DisableAutoBindingLifetimeRegularExpression, Hint.DisableAutoBindingLifetimeWildcard, GetLifetimeName)))
+                        {
+                            disableAutoBinding = true;
+                        }
+                    }
+
+                    if (!disableAutoBinding)
+                    {
+                        return nodesFactory.CreateNodes(setup, typeConstructor, autoBinding).ToList();
+                    }
                 }
 
                 // OnCannotResolve
