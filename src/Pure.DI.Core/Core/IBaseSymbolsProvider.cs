@@ -2,7 +2,7 @@
 
 interface IBaseSymbolsProvider
 {
-    IEnumerable<ITypeSymbol> GetBaseSymbols(
+    IEnumerable<TypeInfo> GetBaseSymbols(
         ITypeSymbol symbol,
         Func<ITypeSymbol, int, bool> predicate,
         int maxDeepness = int.MaxValue);

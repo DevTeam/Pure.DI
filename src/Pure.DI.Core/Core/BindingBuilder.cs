@@ -99,7 +99,8 @@ sealed class BindingBuilder(
                                         && i.SpecialType == Microsoft.CodeAnalysis.SpecialType.None
                                         => true,
                                     _ => false
-                                }, 1);
+                                }, 1)
+                                .Select(i => i.Type);
                         }
 
                         var contracts = new HashSet<ITypeSymbol>(baseSymbols, SymbolEqualityComparer.Default)

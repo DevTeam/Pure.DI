@@ -64,9 +64,9 @@ public class Scenario
 }
 
 // {
-interface IDependency;
+interface IDependency { }
 
-class Dependency : IDependency;
+class Dependency : IDependency { }
 
 interface IService
 {
@@ -75,10 +75,10 @@ interface IService
     IDependency? Dependency { get; }
 }
 
-record Service1: IService
+class Service1: IService
 {
     public Guid Id { get; private set; } = Guid.Empty;
-    
+
     // The Dependency attribute specifies to perform an injection
     [Dependency]
     public IDependency? Dependency { get; set; }
@@ -87,11 +87,17 @@ record Service1: IService
     public void SetId(Guid id) => Id = id;
 }
 
-record Service2 : IService
+class Service11: Service1 { }
+class Service12: Service1 { }
+
+class Service2 : IService
 {
     public Guid Id => Guid.Empty;
 
     [Dependency]
     public IDependency? Dependency { get; set; }
 }
+
+class Service21: Service2 { }
+class Service22: Service2 { }
 // }

@@ -50,6 +50,7 @@ sealed class BuildTools(
 
         var baseTypes = new Lazy<ImmutableHashSet<ISymbol?>>(() =>
             baseSymbolsProvider.GetBaseSymbols(varInjection.Var.InstanceType, (_, _) => true)
+                .Select(i => i.Type)
                 .ToImmutableHashSet(SymbolEqualityComparer.Default));
 
         var accLines = ctx.Accumulators

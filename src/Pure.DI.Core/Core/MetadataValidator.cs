@@ -169,7 +169,7 @@ sealed class MetadataValidator(
         var severityOfNotImplementedContract = setup.Hints.SeverityOfNotImplementedContract;
         if (severityOfNotImplementedContract > DiagnosticSeverity.Hidden)
         {
-            var supportedContracts = new HashSet<ITypeSymbol>(baseSymbolsProvider.GetBaseSymbols(implementationType, (_, _) => true), SymbolEqualityComparer.Default)
+            var supportedContracts = new HashSet<ITypeSymbol>(baseSymbolsProvider.GetBaseSymbols(implementationType, (_, _) => true).Select(i => i.Type), SymbolEqualityComparer.Default)
             {
                 implementationType
             };

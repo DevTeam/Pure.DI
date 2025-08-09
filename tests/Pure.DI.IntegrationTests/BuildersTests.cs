@@ -867,4 +867,95 @@ public class BuildersTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Initialize 1 Abc", "Initialize 2 Abc"], result);
     }
+
+    [Fact]
+    public async Task ShouldSupportCommonBuilderWhenTypesHierarchy()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency { }
+                           
+                               class Dependency : IDependency { }
+                               
+                               interface IService
+                               {
+                                   Guid Id { get; }
+                                   
+                                   IDependency? Dependency { get; }
+                               }
+                               
+                               class Service1: IService
+                               {
+                                   public Guid Id { get; private set; } = Guid.Empty;
+                               
+                                   // The Dependency attribute specifies to perform an injection
+                                   [Dependency]
+                                   public IDependency? Dependency { get; set; }
+                               
+                                   [Dependency]
+                                   public void SetId(Guid id) => Id = id;
+                                   
+                                   [Ordinal(1)]
+                                   internal void Initialize()
+                                   {
+                                       Console.WriteLine($"Initialize 1");
+                                   }
+                               }
+                               
+                               class Service11: Service1 { }
+                               class Service12: Service1 { }
+                               class Service121: Service12 { }
+                               
+                               class Service2 : IService
+                               {
+                                   public Guid Id => Guid.Empty;
+                               
+                                   [Dependency]
+                                   public IDependency? Dependency { get; set; }
+                                   
+                                   [Ordinal(1)]
+                                   internal void Initialize()
+                                   {
+                                       Console.WriteLine($"Initialize 2");
+                                   }
+                               }
+                               
+                               class Service21: Service2 { }
+                               class Service22: Service2 { }
+                               class Service212: Service21 { }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind().To(_ => Guid.NewGuid())
+                                           .Bind().To<Dependency>()
+                                           .Builders<IService>("BuildUp");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service1 = composition.BuildUp((IService)new Service1());
+                                       var service2 = composition.BuildUp((IService)new Service22());
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Initialize 1", "Initialize 2"], result);
+    }
 }
