@@ -561,20 +561,22 @@ sealed class ApiInvocationProcessor(
         INamedTypeSymbol baseType,
         string wildcardFilter)
     {
-        return semanticModel
-            .LookupNamespacesAndTypes(invocation.Span.Start)
-            .OfType<INamedTypeSymbol>()
-            .Where(type => !type.IsAbstract)
-            .Where(type =>
-                baseSymbolsProvider.GetBaseSymbols(type, (t, _) => t is INamedTypeSymbol)
-                    .OfType<INamedTypeSymbol>()
-                    .Any(typeSymbol => types.TypeEquals(baseType.ConstructedFrom, typeSymbol.ConstructedFrom)))
-            .Where(type => !types.TypeEquals(baseType.ConstructedFrom, type.ConstructedFrom))
-            .Where(type => wildcardMatcher.Match(wildcardFilter.AsSpan(), symbolNames.GetName(type).AsSpan()))
-            .Select(typeSymbol => CreateBuilderType(source, semanticModel, baseType, typeSymbol));
+        return
+            from type in semanticModel.LookupNamespacesAndTypes(invocation.Span.Start)
+            where !type.IsAbstract
+            let namedTypeSymbol = type as INamedTypeSymbol
+            where namedTypeSymbol != null
+            where !types.TypeEquals(baseType.ConstructedFrom, namedTypeSymbol.ConstructedFrom)
+            let typeInfo = baseSymbolsProvider
+                .GetBaseSymbols(namedTypeSymbol, (t, _) => t is INamedTypeSymbol)
+                .FirstOrDefault(info => types.TypeEquals(baseType.ConstructedFrom, ((INamedTypeSymbol)info.Type).ConstructedFrom))
+            where typeInfo != null
+            where wildcardMatcher.Match(wildcardFilter.AsSpan(), symbolNames.GetName(namedTypeSymbol).AsSpan())
+            orderby typeInfo.Deepness descending
+            select CreateBuilderType(source, baseType, namedTypeSymbol);
     }
 
-    private INamedTypeSymbol CreateBuilderType(SyntaxNode source, SemanticModel semanticModel, INamedTypeSymbol baseType, INamedTypeSymbol typeSymbol)
+    private INamedTypeSymbol CreateBuilderType(SyntaxNode source, INamedTypeSymbol baseType, INamedTypeSymbol typeSymbol)
     {
         if (!typeSymbol.IsGenericType || !baseType.IsGenericType)
         {

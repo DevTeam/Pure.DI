@@ -4,7 +4,6 @@ namespace Pure.DI.Core;
 
 sealed class Types(
     ICache<SpecialTypeKey, INamedTypeSymbol?> specialTypes,
-    ICache<MarkerTypeKey, INamedTypeSymbol?> markerTypes,
     ICache<NameKey, string> names)
     : ITypes, ISymbolNames
 {
@@ -27,11 +26,6 @@ sealed class Types(
         specialTypes.Get(
             new SpecialTypeKey(specialType, compilation),
             i => i.Compilation.GetTypeByMetadataName(TypeShortNames[specialType]));
-
-    public INamedTypeSymbol? GetMarker(int index, Compilation compilation) =>
-        index >= 16
-            ? null
-            : markerTypes.Get(new MarkerTypeKey(index, compilation), i => i.Compilation.GetTypeByMetadataName($"{Names.MarkerTypeName}{(i.Index > 0 ? i.Index.ToString() : "")}"));
 
     public bool TypeEquals(ISymbol? type1, ISymbol? type2)
     {

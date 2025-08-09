@@ -4,13 +4,13 @@ namespace Pure.DI.Core;
 
 sealed class BaseSymbolsProvider : IBaseSymbolsProvider
 {
-    public IEnumerable<ITypeSymbol> GetBaseSymbols(
+    public IEnumerable<TypeInfo> GetBaseSymbols(
         ITypeSymbol symbol,
         Func<ITypeSymbol, int, bool> predicate,
         int maxDeepness = int.MaxValue) =>
         GetBaseSymbols(symbol, predicate, maxDeepness, 0);
 
-    private static IEnumerable<ITypeSymbol> GetBaseSymbols(
+    private static IEnumerable<TypeInfo> GetBaseSymbols(
         ITypeSymbol symbol,
         Func<ITypeSymbol, int, bool> predicate,
         int maxDeepness,
@@ -30,7 +30,7 @@ sealed class BaseSymbolsProvider : IBaseSymbolsProvider
         {
             if (predicate(symbol, deepness))
             {
-                yield return symbol;
+                yield return new TypeInfo(symbol, deepness);
             }
 
             deepness++;
@@ -48,4 +48,5 @@ sealed class BaseSymbolsProvider : IBaseSymbolsProvider
             break;
         }
     }
+
 }

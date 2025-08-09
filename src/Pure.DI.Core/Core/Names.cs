@@ -43,7 +43,6 @@ static class Names
     public const string BindAttributeName = $"{ApiNamespace}{nameof(BindAttribute)}";
 
     // Types
-    public const string MarkerTypeName = $"{GeneratorName}.TT";
     public const string IDisposableTypeName = $"{SystemNamespace}{nameof(IDisposable)}";
     public const string IAsyncDisposableTypeName = $"{SystemNamespace}IAsyncDisposable";
     public const string IResolverTypeName = $"{ApiNamespace}{nameof(IResolver<object, object>)}";
