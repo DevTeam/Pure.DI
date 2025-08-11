@@ -314,7 +314,8 @@ class ReadmeTarget(
                         .Replace("Pure.DI.", "")
                         .Replace("Benchmarks.Model.", "")
                         .Replace(salt, "")
-                        .Replace("(MethodImplOptions)256", "MethodImplOptions.AggressiveInlining")));
+                        .Replace("(MethodImplOptions)256", "MethodImplOptions.AggressiveInlining")
+                        .Replace("(MethodImplOptions)8", "MethodImplOptions.NoInlining")));
 
             await writer.WriteLineAsync(generatedCode);
             await writer.WriteLineAsync("```");

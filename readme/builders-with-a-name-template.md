@@ -144,7 +144,7 @@ partial class Composition
   }
 
   #pragma warning disable CS0162
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  [MethodImpl(MethodImplOptions.NoInlining)]
   public IService BuildUpIService(IService buildingInstance)
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));

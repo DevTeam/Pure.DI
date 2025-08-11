@@ -208,14 +208,14 @@ sealed class ApiMembersBuilder(
         }
     }
 
-    private static void CreateObjectConflictsResolverMethod(
+    private void CreateObjectConflictsResolverMethod(
         string methodArgs,
         string resolveMethodName,
         string resolveMethodArgs,
         bool byTag,
         LinesBuilder code)
     {
-        code.AppendLine($"[{Names.MethodImplAttributeName}({Names.MethodImplNoInlining})]");
+        buildTools.AddNoInlining(code);
         code.AppendLine($"private object Resolve{Names.Salt}({methodArgs}, int index)");
         using (code.CreateBlock())
         {

@@ -171,6 +171,7 @@ public sealed partial class Generator
 
         .DefaultLifetime(PerResolve)
             .Bind().To<TypeResolver>()
+            .Bind().To<RootSignatureProvider>()
             .Bind().To<LogObserver>()
             .Bind().To<Types>()
             .Bind().To<Filter>()

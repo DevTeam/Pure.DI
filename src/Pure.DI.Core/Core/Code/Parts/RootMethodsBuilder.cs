@@ -6,18 +6,12 @@ using static LinesBuilderExtensions;
 
 sealed class RootMethodsBuilder(
     IBuildTools buildTools,
-    ITypeResolver typeResolver,
+    IRootSignatureProvider rootSignatureProvider,
     [Tag(typeof(RootMethodsCommenter))] ICommenter<Root> rootCommenter,
     IMarker marker,
-    IRootAccessModifierResolver rootAccessModifierResolver,
     CancellationToken cancellationToken)
     : IClassPartBuilder
 {
-    private const string ClassConstraint = "class";
-    private const string UnmanagedConstraint = "unmanaged";
-    private const string NotnullConstraint = "notnull";
-    private const string StructConstraint = "struct";
-    private const string NewConstraint = "new()";
     public ClassPart Part => ClassPart.RootMethods;
 
     public CompositionCode Build(CompositionCode composition)
@@ -53,77 +47,18 @@ sealed class RootMethodsBuilder(
 
     private void BuildRoot(CompositionCode composition, Root root)
     {
-        var constraints = new LinesBuilder();
-        if (!TryFillConstraints(composition, root, constraints))
+        var constraints = rootSignatureProvider.TryGetConstraints(composition, root);
+        if (constraints is null)
         {
             return;
         }
 
         rootCommenter.AddComments(composition, root);
         var code = composition.Code;
-        var rootArgsStr = "";
-        if (root.IsMethod)
+        if (root is { IsMethod: true, Source.IsBuilder: false })
         {
-            rootArgsStr = $"({string.Join(", ", root.RootArgs.Select(arg => $"{typeResolver.Resolve(composition.Source.Source, arg.InstanceType)} {arg.Name}"))})";
-            if (root.RootArgs.Length == 0)
-            {
-                buildTools.AddPureHeader(code);
-            }
+            buildTools.AddPureHeader(code);
         }
-
-        if (!root.Source.BuilderRoots.IsDefaultOrEmpty)
-        {
-            code.AppendLine("#pragma warning disable CS0162");
-        }
-
-        var name = new StringBuilder();
-        var accessModifier = rootAccessModifierResolver.Resolve(root) switch
-        {
-            Accessibility.Private => "private",
-            Accessibility.ProtectedAndInternal => "protected",
-            Accessibility.Protected => "protected",
-            Accessibility.Internal => "internal",
-            Accessibility.ProtectedOrInternal => "internal",
-            Accessibility.Public => "public",
-            _ => ""
-        };
-
-        name.Append(accessModifier);
-        if ((root.Kind & RootKinds.Static) == RootKinds.Static)
-        {
-            name.Append(" static");
-        }
-
-        if ((root.Kind & RootKinds.Partial) == RootKinds.Partial)
-        {
-            name.Append(" partial");
-        }
-
-        if ((root.Kind & RootKinds.Virtual) == RootKinds.Virtual)
-        {
-            name.Append(" virtual");
-        }
-
-        if ((root.Kind & RootKinds.Override) == RootKinds.Override)
-        {
-            name.Append(" override");
-        }
-
-        name.Append(' ');
-        name.Append(root.TypeDescription.Name);
-
-        name.Append(' ');
-        name.Append(root.DisplayName);
-
-        var typeArgs = root.TypeDescription.TypeArgs;
-        if (typeArgs.Count > 0)
-        {
-            name.Append('<');
-            name.Append(string.Join(", ", typeArgs));
-            name.Append('>');
-        }
-
-        name.Append(rootArgsStr);
 
         if ((root.Kind & RootKinds.Exposed) == RootKinds.Exposed)
         {
@@ -152,14 +87,28 @@ sealed class RootMethodsBuilder(
 
         if (root.IsMethod)
         {
-            buildTools.AddAggressiveInlining(code);
+            if (!root.Source.BuilderRoots.IsDefaultOrEmpty)
+            {
+                // Common builder
+                code.AppendLine("#pragma warning disable CS0162");
+                buildTools.AddNoInlining(code);
+            }
+            else
+            {
+                buildTools.AddAggressiveInlining(code);
+            }
         }
 
-        code.AppendLine(name.ToString());
-
-        using (code.Indent())
+        code.AppendLine(rootSignatureProvider.GetRootSignature(composition, root));
+        if (!constraints.IsEmpty)
         {
-            code.AppendLines(constraints.Lines);
+            using (code.Indent())
+            {
+                foreach (var constraint in constraints)
+                {
+                    code.AppendLine($"where {constraint.Key.Name}: {string.Join(", ", constraint.Value)}");
+                }
+            }
         }
 
         using (code.CreateBlock())
@@ -207,93 +156,9 @@ sealed class RootMethodsBuilder(
             }
         }
 
-        if (!root.Source.BuilderRoots.IsDefaultOrEmpty)
+        if (root is { IsMethod: true, Source.BuilderRoots.IsDefaultOrEmpty: false })
         {
             code.AppendLine("#pragma warning restore CS0162");
-        }
-    }
-
-    private bool TryFillConstraints(CompositionCode composition, Root root, LinesBuilder constrainsLines)
-    {
-        var typeArgs = root.TypeDescription.TypeArgs;
-        if (typeArgs.Count == 0)
-        {
-            return true;
-        }
-
-        foreach (var typeArg in typeArgs)
-        {
-            if (typeArg.TypeParam is not {} curTypeParam)
-            {
-                continue;
-            }
-
-            var typeParameters = ImmutableArray<ITypeParameterSymbol>.Empty;
-            if (!root.Source.BuilderRoots.IsDefaultOrEmpty)
-            {
-                var relatedRoots =
-                    from publicRoot in composition.PublicRoots
-                    join relatedRoot in root.Source.BuilderRoots on publicRoot.Source equals relatedRoot
-                    select publicRoot;
-
-                typeParameters = relatedRoots.SelectMany(i => i.TypeDescription.TypeArgs).Where(i => i.Name == typeArg.Name && i.TypeParam != null).Select(i => i.TypeParam!).ToImmutableArray();
-            }
-
-            var constrains = new List<string>();
-            constrains.AddRange(curTypeParam.ConstraintTypes.Select(i => typeResolver.Resolve(composition.Source.Source, i).Name));
-            foreach (var typeParameter in typeParameters)
-            {
-                constrains.AddRange(typeParameter.ConstraintTypes.Select(i => typeResolver.Resolve(composition.Source.Source, i).Name));
-            }
-
-            FillConstraints(curTypeParam, constrains);
-            foreach (var typeParameter in typeParameters)
-            {
-                FillConstraints(typeParameter, constrains);
-            }
-
-            if (constrains.Count == 0)
-            {
-                continue;
-            }
-
-            constrains = constrains.Distinct().ToList();
-            if (constrains.Contains(ClassConstraint) && constrains.Contains(StructConstraint))
-            {
-                return false;
-            }
-
-            constrainsLines.AppendLine($"where {typeArg.Name}: {string.Join(", ", constrains)}");
-        }
-
-        return true;
-    }
-
-    private static void FillConstraints(ITypeParameterSymbol typeParam, List<string> constrains)
-    {
-        if (typeParam.HasReferenceTypeConstraint)
-        {
-            constrains.Add(ClassConstraint);
-        }
-
-        if (typeParam.HasUnmanagedTypeConstraint)
-        {
-            constrains.Add(UnmanagedConstraint);
-        }
-
-        if (typeParam.HasNotNullConstraint)
-        {
-            constrains.Add(NotnullConstraint);
-        }
-
-        if (typeParam.HasValueTypeConstraint)
-        {
-            constrains.Add(StructConstraint);
-        }
-
-        if (typeParam.HasConstructorConstraint)
-        {
-            constrains.Add(NewConstraint);
         }
     }
 }

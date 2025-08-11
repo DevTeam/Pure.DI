@@ -31,15 +31,14 @@ sealed class BuildTools(
         code.AppendLine(new Line(int.MinValue, "#endif // Pure method"));
     }
 
-    public void AddAggressiveInlining(LinesBuilder code)
-    {
+    public void AddAggressiveInlining(LinesBuilder code) =>
         code.AppendLine($"[{Names.MethodImplAttributeName}(({Names.MethodImplOptionsName})256)]");
-    }
 
-    public string GetDeclaration(CodeContext ctx, VarDeclaration varDeclaration, string separator = " ", bool useVar = false)
-    {
-        return varDeclaration.IsDeclared ? "" : $"{(useVar ? "var" : typeResolver.Resolve(ctx.RootContext.Graph.Source, varDeclaration.InstanceType))}{separator}";
-    }
+    public void AddNoInlining(LinesBuilder code) =>
+        code.AppendLine($"[{Names.MethodImplAttributeName}(({Names.MethodImplOptionsName})8)]");
+
+    public string GetDeclaration(CodeContext ctx, VarDeclaration varDeclaration, string separator = " ", bool useVar = false) =>
+        varDeclaration.IsDeclared ? "" : $"{(useVar ? "var" : typeResolver.Resolve(ctx.RootContext.Graph.Source, varDeclaration.InstanceType))}{separator}";
 
     public IEnumerable<Line> OnCreated(CodeContext ctx, VarInjection varInjection)
     {

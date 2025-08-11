@@ -114,7 +114,7 @@ partial class Composition
   }
 
   #pragma warning disable CS0162
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  [MethodImpl(MethodImplOptions.NoInlining)]
   public IService<T1, T4> BuildUpGeneric<T1, T4>(IService<T1, T4> buildingInstance)
     where T1: struct
   {

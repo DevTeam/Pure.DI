@@ -20,7 +20,6 @@ static class Names
     // Attributes
     public const string MethodImplAttributeName = $"{SystemNamespace}Runtime.CompilerServices.MethodImpl";
     public const string MethodImplOptionsName = $"{SystemNamespace}Runtime.CompilerServices.{nameof(MethodImplOptions)}";
-    public const string MethodImplNoInlining = $"{MethodImplOptionsName}.{nameof(MethodImplOptions.NoInlining)}";
 
     // Messages
     public const string CannotResolveMessage = "Cannot resolve composition root";
