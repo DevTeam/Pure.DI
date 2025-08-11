@@ -2,7 +2,10 @@
 
 namespace Pure.DI;
 
+using System.Diagnostics.CodeAnalysis;
+
 [Generator(LanguageNames.CSharp)]
+[SuppressMessage("MicrosoftCodeAnalysisCorrectness", "RS1036:Specify analyzer banned API enforcement setting")]
 public class SourceGenerator : IIncrementalGenerator
 {
     private static readonly Generator Generator = new();
