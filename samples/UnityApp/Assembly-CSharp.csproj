@@ -419,7 +419,7 @@
       <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\PackageCache\com.unity.ext.nunit@60ef35ffd3cd\net40\unity-custom\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VisualScripting.Antlr3.Runtime">
-      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\PackageCache\com.unity.visualscripting@1b53f46e931b\Runtime\VisualScripting.Flow\Dependencies\NCalc\Unity.VisualScripting.Antlr3.Runtime.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\PackageCache\com.unity.visualscripting@b4d700247d4b\Runtime\VisualScripting.Flow\Dependencies\NCalc\Unity.VisualScripting.Antlr3.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cecil">
       <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\PackageCache\com.unity.nuget.mono-cecil@d6f9955a5d5f\Mono.Cecil.dll</HintPath>
@@ -885,9 +885,6 @@
     </Reference>
     <Reference Include="Unity.TextMeshPro">
       <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.TextMeshPro.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGetForUnity">
-      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\NuGetForUnity.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VisualScripting.SettingsProvider.Editor">
       <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.VisualScripting.SettingsProvider.Editor.dll</HintPath>

@@ -419,7 +419,7 @@
       <HintPath>C:\Program Files\Unity\Hub\Editor\6000.0.35f1\Editor\Data\PlaybackEngines\WindowsStandaloneSupport\UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VisualScripting.YamlDotNet">
-      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\PackageCache\com.unity.visualscripting@1b53f46e931b\Editor\VisualScripting.Core\Dependencies\YamlDotNet\Unity.VisualScripting.YamlDotNet.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\PackageCache\com.unity.visualscripting@b4d700247d4b\Editor\VisualScripting.Core\Dependencies\YamlDotNet\Unity.VisualScripting.YamlDotNet.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Collections.LowLevel.ILSupport">
       <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\PackageCache\com.unity.collections@56bff8827a7e\Unity.Collections.LowLevel.ILSupport\Unity.Collections.LowLevel.ILSupport.dll</HintPath>
@@ -440,16 +440,16 @@
       <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\PackageCache\com.unity.collab-proxy@001b54a8988a\Lib\Editor\log4netPlastic.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VisualScripting.IonicZip">
-      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\PackageCache\com.unity.visualscripting@1b53f46e931b\Editor\VisualScripting.Core\Dependencies\DotNetZip\Unity.VisualScripting.IonicZip.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\PackageCache\com.unity.visualscripting@b4d700247d4b\Editor\VisualScripting.Core\Dependencies\DotNetZip\Unity.VisualScripting.IonicZip.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VisualScripting.Antlr3.Runtime">
-      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\PackageCache\com.unity.visualscripting@1b53f46e931b\Runtime\VisualScripting.Flow\Dependencies\NCalc\Unity.VisualScripting.Antlr3.Runtime.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\PackageCache\com.unity.visualscripting@b4d700247d4b\Runtime\VisualScripting.Flow\Dependencies\NCalc\Unity.VisualScripting.Antlr3.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="NuGetForUnity.PluginAPI">
-      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\PackageCache\com.github-glitchenzo.nugetforunity@5df14d0d181f\Editor\PluginAPI\NuGetForUnity.PluginAPI.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\PackageCache\com.github-glitchenzo.nugetforunity@b8a65750503c\Editor\PluginAPI\NuGetForUnity.PluginAPI.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VisualScripting.TextureAssets">
-      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\PackageCache\com.unity.visualscripting@1b53f46e931b\Editor\VisualScripting.Core\EditorAssetResources\Unity.VisualScripting.TextureAssets.dll</HintPath>
+      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\PackageCache\com.unity.visualscripting@b4d700247d4b\Editor\VisualScripting.Core\EditorAssetResources\Unity.VisualScripting.TextureAssets.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cecil">
       <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\PackageCache\com.unity.nuget.mono-cecil@d6f9955a5d5f\Mono.Cecil.dll</HintPath>
@@ -930,9 +930,6 @@
     </Reference>
     <Reference Include="Unity.TextMeshPro">
       <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.TextMeshPro.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGetForUnity">
-      <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\NuGetForUnity.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VisualScripting.SettingsProvider.Editor">
       <HintPath>C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Library\ScriptAssemblies\Unity.VisualScripting.SettingsProvider.Editor.dll</HintPath>
