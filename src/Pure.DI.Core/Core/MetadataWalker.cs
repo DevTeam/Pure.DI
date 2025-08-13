@@ -9,6 +9,8 @@
 
 namespace Pure.DI.Core;
 
+using System.Collections.Concurrent;
+
 sealed class MetadataWalker(
     IApiInvocationProcessor invocationProcessor,
     IMetadata metadata,
@@ -47,11 +49,17 @@ sealed class MetadataWalker(
         }
 
         visitors.Reverse();
+        var errors = new ConcurrentBag<Exception>();
 #if DEBUG
-        visitors.ForEach(i => ProcessInvocation(i));
+        visitors.ForEach(i => ProcessInvocation(i, errors));
 #else
-        Parallel.ForEach(visitors, new ParallelOptions { CancellationToken = cancellationToken }, i => ProcessInvocation(i));
+        Parallel.ForEach(visitors, new ParallelOptions { CancellationToken = cancellationToken }, i => ProcessInvocation(i, errors));
 #endif
+        if (!errors.IsEmpty)
+        {
+            throw errors.First();
+        }
+
         foreach (var visitor in visitors)
         {
             visitor.Apply();
@@ -90,8 +98,22 @@ sealed class MetadataWalker(
         metadataVisitor.VisitFinish();
     }
 
-    private void ProcessInvocation(in InvocationVisitor visitor) =>
-        invocationProcessor.ProcessInvocation(visitor, visitor.SemanticModel, visitor.Invocation, _namespace);
+    private void ProcessInvocation(in InvocationVisitor visitor, ConcurrentBag<Exception> errors)
+    {
+        if (!errors.IsEmpty)
+        {
+            return;
+        }
+
+        try
+        {
+            invocationProcessor.ProcessInvocation(visitor, visitor.SemanticModel, visitor.Invocation, _namespace);
+        }
+        catch (Exception exception)
+        {
+            errors.Add(exception);
+        }
+    }
 
     // ReSharper disable once CognitiveComplexity
     public override void VisitInvocationExpression(InvocationExpressionSyntax invocation)

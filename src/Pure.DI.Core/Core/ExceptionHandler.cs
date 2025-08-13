@@ -68,7 +68,7 @@ sealed class ExceptionHandler(ILogger logger)
                 DiagnosticSeverity.Hidden,
 #endif
                 Strings.Info_CodeGenerationAborted,
-                default,
+                ImmutableArray<Location>.Empty,
                 LogId.InfoGenerationInterrupted,
                 handledException));
 
@@ -77,7 +77,7 @@ sealed class ExceptionHandler(ILogger logger)
             new LogEntry(
                 DiagnosticSeverity.Error,
                 Strings.Error_UnhandledError,
-                default,
+                ImmutableArray<Location>.Empty,
                 LogId.ErrorUnhandled,
                 exception));
 }

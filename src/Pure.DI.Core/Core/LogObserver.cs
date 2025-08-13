@@ -30,9 +30,9 @@ sealed class LogObserver(
     {
         lock (_diagnostics)
         {
-            foreach (var diagnosticInfo in _diagnostics.Where(diagnosticInfo => !diagnosticInfo.Locations.IsDefaultOrEmpty))
+            foreach (var diagnosticInfo in _diagnostics)
             {
-                diagnostic.ReportDiagnostic(Diagnostic.Create(diagnosticInfo.Descriptor, diagnosticInfo.Locations[0], diagnosticInfo.Locations.Skip(1)));
+                diagnostic.ReportDiagnostic(Diagnostic.Create(diagnosticInfo.Descriptor, diagnosticInfo.Locations.FirstOrDefault(), diagnosticInfo.Locations.Skip(1)));
             }
 
             _diagnostics.Clear();
