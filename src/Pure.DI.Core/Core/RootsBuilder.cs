@@ -16,22 +16,10 @@ sealed class RootsBuilder(IBuilder<ContractsBuildContext, ISet<Injection>> contr
                 continue;
             }
 
-            string name;
-            RootKinds kind;
-            MdRoot source;
-            if (node.Root is {} root)
+            if (node.Root is {} root
+                && dependencyGraph.Graph.TryGetInEdges(node, out var rootDependencies) && rootDependencies.Count == 1)
             {
-                if (dependencyGraph.Graph.TryGetInEdges(node, out var rootDependencies) && rootDependencies.Count == 1)
-                {
-                    node = rootDependencies.Single().Source;
-                    source = root.Source;
-                    name = root.Source.Name;
-                    kind = root.Source.Kind;
-                }
-                else
-                {
-                    continue;
-                }
+                node = rootDependencies.Single().Source;
             }
             else
             {
@@ -47,12 +35,12 @@ sealed class RootsBuilder(IBuilder<ContractsBuildContext, ISet<Injection>> contr
                     new Root(
                         0,
                         node,
-                        source,
+                        root.Source,
                         rootInjection,
-                        name,
+                        root.Source.Name,
                         ImmutableArray<Line>.Empty,
                         ImmutableArray<VarDeclaration>.Empty,
-                        kind)));
+                        root.Source.Kind)));
             }
         }
 
