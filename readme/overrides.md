@@ -163,33 +163,31 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<int, int, IDependency> transFunc1;
-      lock (_lock)
+      Func<int, int, IDependency> transFunc1 =
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      (localDependencyId3, localSubId4) =>
       {
-        transFunc1 =
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        (localDependencyId3, localSubId4) =>
+        // Overrides with a lambda argument
+        // Overrides with tag using lambda argument
+        // Overrides with some value
+        // Overrides with injected value
+        int overrInt32 = localDependencyId3;
+        int overrInt321 = localSubId4;
+        string overrString2 = $"Dep {localDependencyId3} {localSubId4}";
+        Drawing.Color transColor2 = Color.Red;
+        Drawing.Color localRed5 = transColor2;
+        Drawing.Color overrColor3 = localRed5;
+        if (_root._singleClock53 is null)
         {
-          // Overrides with a lambda argument
-          // Overrides with tag using lambda argument
-          // Overrides with some value
-          // Overrides with injected value
-          int overrInt32 = localDependencyId3;
-          int overrInt321 = localSubId4;
-          string overrString2 = $"Dep {localDependencyId3} {localSubId4}";
-          Drawing.Color transColor2 = Color.Red;
-          Drawing.Color localRed5 = transColor2;
-          Drawing.Color overrColor3 = localRed5;
-          if (_root._singleClock53 is null)
+          lock (_lock)
           {
             _root._singleClock53 = new Clock();
           }
+        }
 
-          Dependency localDependency112 = new Dependency(overrString2, _root._singleClock53, overrInt32, overrInt321, overrColor3);
-          return localDependency112;
-        };
-      }
-
+        Dependency localDependency112 = new Dependency(overrString2, _root._singleClock53, overrInt32, overrInt321, overrColor3);
+        return localDependency112;
+      };
       return new Service(transFunc1);
     }
   }

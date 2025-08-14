@@ -400,7 +400,7 @@ class RootBuilder(
 
                 var textLines = new List<TextLine>();
                 var hasOverridesLock = false;
-                if (hasOverrides && ctx.IsLockRequired)
+                if (hasOverrides && ctx.IsLockRequired && !isLazy)
                 {
                     if (!var.Declaration.IsDeclared)
                     {

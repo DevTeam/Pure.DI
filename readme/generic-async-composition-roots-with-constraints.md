@@ -146,8 +146,8 @@ partial class Composition
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Task<IService<T2, T3>> GetMyRootAsync<T2, T3>(CancellationToken cancellationToken)
-    where T2: IDisposable
     where T3: struct
+    where T2: IDisposable
   {
     Task<IService<T2, T3>> transTask9; // Injects an instance factory
     Func<IService<T2, T3>> blockFunc10 = new Func<IService<T2, T3>>(
