@@ -119,23 +119,23 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     () =>
     {
-      IDependency localValue127 = new Dependency();
-      return localValue127;
+      IDependency localValue23 = new Dependency();
+      return localValue23;
     });
-    Func<IDependency> localFactory125 = blockFunc2;
+    Func<IDependency> localFactory5 = blockFunc2;
     // Injects a task factory creating and scheduling task objects
     TaskFactory<IDependency> blockTaskFactory3;
-    CancellationToken localCancellationToken128 = cancellationToken;
+    CancellationToken localCancellationToken2 = cancellationToken;
     TaskCreationOptions transTaskCreationOptions6 = TaskCreationOptions.None;
-    TaskCreationOptions localTaskCreationOptions129 = transTaskCreationOptions6;
+    TaskCreationOptions localTaskCreationOptions1 = transTaskCreationOptions6;
     TaskContinuationOptions transTaskContinuationOptions7 = TaskContinuationOptions.None;
-    TaskContinuationOptions localTaskContinuationOptions130 = transTaskContinuationOptions7;
+    TaskContinuationOptions localTaskContinuationOptions1 = transTaskContinuationOptions7;
     TaskScheduler transTaskScheduler8 = TaskScheduler.Current;
-    TaskScheduler localTaskScheduler131 = transTaskScheduler8;
-    blockTaskFactory3 = new TaskFactory<IDependency>(localCancellationToken128, localTaskCreationOptions129, localTaskContinuationOptions130, localTaskScheduler131);
-    TaskFactory<IDependency> localTaskFactory126 = blockTaskFactory3;
+    TaskScheduler localTaskScheduler1 = transTaskScheduler8;
+    blockTaskFactory3 = new TaskFactory<IDependency>(localCancellationToken2, localTaskCreationOptions1, localTaskContinuationOptions1, localTaskScheduler1);
+    TaskFactory<IDependency> localTaskFactory1 = blockTaskFactory3;
     // Creates and starts a task using the instance factory
-    transTask1 = localTaskFactory126.StartNew(localFactory125);
+    transTask1 = localTaskFactory1.StartNew(localFactory5);
     return new Service(transTask1);
   }
 }

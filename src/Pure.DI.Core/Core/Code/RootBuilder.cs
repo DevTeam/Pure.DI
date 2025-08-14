@@ -12,6 +12,7 @@ using static LinesBuilderExtensions;
 class RootBuilder(
     INodeInfo nodeInfo,
     IBuildTools buildTools,
+    IAccumulators accumulators,
     ILocks locks,
     Func<IReadOnlyCollection<VarInjection>, IVariablesWalker> varsWalkerFactory,
     IInjections inj,
@@ -45,10 +46,10 @@ class RootBuilder(
             rootContext.VarsMap,
             rootContext.IsThreadSafeEnabled,
             lines,
-            CreateAccumulators(GetAccumulators(rootContext.Graph.Graph, rootContext.Root.Node), rootVarsMap).ToImmutableArray(),
+            accumulators.CreateAccumulators(accumulators.GetAccumulators(rootContext.Graph.Graph, rootContext.Root.Node), rootVarsMap).ToImmutableArray(),
             []);
 
-        BuildAccumulators(ctx);
+        accumulators.BuildAccumulators(ctx);
         BuildCode(ctx);
         rootVarInjection.Var.CodeExpression = buildTools.OnInjected(ctx, rootVarInjection);
 
@@ -94,9 +95,9 @@ class RootBuilder(
         var varsMap = ctx.VarsMap;
         var setup = ctx.RootContext.Graph.Source;
         var isBlock = IsBlock(var.AbstractNode);
-        var isLazy = IsLazy(var.AbstractNode);
+        var isLazy = nodeInfo.IsLazy(var.AbstractNode.Node);
         var.HasCycle ??= IsCycle(ctx.RootContext.Graph.Graph, var.Declaration.Node.Node, ImmutableHashSet<DependencyNode>.Empty);
-        var accumulators = isLazy ? GetAccumulators(ctx.RootContext.Graph.Graph, var.AbstractNode).ToImmutableArray() : ImmutableArray<(MdAccumulator, Dependency)>.Empty;
+        var acc = isLazy ? accumulators.GetAccumulators(ctx.RootContext.Graph.Graph, var.AbstractNode).ToImmutableArray() : ImmutableArray<(MdAccumulator, Dependency)>.Empty;
         var useLocalFunction = isBlock
                                && !ctx.HasOverrides
                                && ctx.Accumulators.Length == 0
@@ -118,13 +119,13 @@ class RootBuilder(
 
         if (isLazy)
         {
-            ctx = ctx with { Accumulators = ctx.Accumulators.AddRange(CreateAccumulators(accumulators, varsMap)), IsFactory = false };
+            ctx = ctx with { Accumulators = ctx.Accumulators.AddRange(accumulators.CreateAccumulators(acc, varsMap)), IsFactory = false };
             ctx.Overrides.Clear();
-            BuildAccumulators(ctx);
+            accumulators.BuildAccumulators(ctx);
         }
 
 #if DEBUG
-        parentCtx.Lines.AppendLine($"// {var.Name}: {nameof(var.Declaration.IsDeclared)}={var.Declaration.IsDeclared}, {nameof(var.IsCreated)}={var.IsCreated}, {nameof(var.HasCycle)}={var.HasCycle}, {nameof(parentCtx.IsLockRequired)}={parentCtx.IsLockRequired}, {nameof(isLazy)}={isLazy}, {nameof(isBlock)}={isBlock}, {nameof(accumulators)}={accumulators.Length}");
+        parentCtx.Lines.AppendLine($"// {var.Name}: {nameof(var.Declaration.IsDeclared)}={var.Declaration.IsDeclared}, {nameof(var.IsCreated)}={var.IsCreated}, {nameof(var.HasCycle)}={var.HasCycle}, {nameof(parentCtx.IsLockRequired)}={parentCtx.IsLockRequired}, {nameof(isLazy)}={isLazy}, {nameof(isBlock)}={isBlock}, {nameof(acc)}={acc.Length}");
 #endif
 
         if (isBlock)
@@ -175,7 +176,7 @@ class RootBuilder(
             }
 
             var visits = new List<(Action<CodeContext, string> Run, int? Ordinal)>();
-            foreach (var field in implementation.Fields.Where(i => i.Field.IsRequired != true))
+            foreach (var field in implementation.Fields.Where(i => !i.Field.IsRequired))
             {
                 varsWalker.VisitField(Unit.Shared, field, null);
                 var dependencyVar = varsWalker.GetResult().Single();
@@ -792,8 +793,6 @@ class RootBuilder(
 
     private static bool IsBlock(IDependencyNode node) => node.Lifetime is Singleton or Scoped or PerResolve;
 
-    private bool IsLazy(IDependencyNode node) => nodeInfo.IsLazy(node.Node);
-
     private void StartSingleInstanceCheck(CodeContext ctx)
     {
         var isLockRequired = ctx.IsLockRequired;
@@ -880,7 +879,10 @@ class RootBuilder(
         return code.ToString();
     }
 
-    private static bool IsCycle(IGraph<DependencyNode, Dependency> graph, DependencyNode node, ImmutableHashSet<DependencyNode> processed)
+    private static bool IsCycle(
+        IGraph<DependencyNode, Dependency> graph,
+        DependencyNode node,
+        ImmutableHashSet<DependencyNode> processed)
     {
         if (processed.Contains(node))
         {
@@ -901,65 +903,6 @@ class RootBuilder(
         }
 
         return false;
-    }
-
-    private IEnumerable<(MdAccumulator, Dependency)> GetAccumulators(
-        IGraph<DependencyNode, Dependency> graph,
-        IDependencyNode targetNode)
-    {
-        var processed = new HashSet<IDependencyNode>();
-        var nodes = new Stack<IDependencyNode>();
-        nodes.Push(targetNode);
-        while (nodes.TryPop(out var node))
-        {
-            if (!processed.Add(node))
-            {
-                continue;
-            }
-
-            if (graph.TryGetInEdges(node.Node, out var dependencies))
-            {
-                foreach (var dependency in dependencies)
-                {
-                    var source = dependency.Source;
-                    if (IsLazy(source))
-                    {
-                        continue;
-                    }
-
-                    if (source.Construct is {} construct && construct.Source.Kind == MdConstructKind.Accumulator && construct.Source.State is IEnumerable<MdAccumulator> mdAccumulators)
-                    {
-                        foreach (var acc in mdAccumulators)
-                        {
-                            yield return (acc, dependency);
-                        }
-
-                        continue;
-                    }
-
-                    nodes.Push(source);
-                }
-            }
-        }
-    }
-
-    private static IEnumerable<Accumulator> CreateAccumulators(IEnumerable<(MdAccumulator accumulator, Dependency dependency)>  accumulators, IVarsMap varsMap) =>
-        accumulators.Select(i => new Accumulator(varsMap.GetInjection(i.dependency.Injection, i.dependency.Source), i.accumulator.Type, i.accumulator.Lifetime));
-
-    private void BuildAccumulators(CodeContext ctx)
-    {
-        foreach (var accumulator in ctx.Accumulators)
-        {
-            var accVar = accumulator.VarInjection.Var;
-            if (accVar.Declaration.IsDeclared)
-            {
-                continue;
-            }
-
-            ctx.Lines.AppendLine($"{buildTools.GetDeclaration(ctx, accVar.Declaration, useVar: true)}{accVar.Name} = new {accVar.InstanceType}();");
-            accVar.Declaration.IsDeclared = true;
-            accVar.IsCreated = true;
-        }
     }
 
     private void BuildOverrides(CodeContext ctx, DpFactory factory, ImmutableArray<DpOverride> overrides, LinesBuilder lines)

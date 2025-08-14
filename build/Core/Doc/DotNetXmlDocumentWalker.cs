@@ -21,8 +21,8 @@ class DotNetXmlDocumentWalker<T>(MarkdownParts markdownParts) : IDocumentWalker<
                 where parts.Length > 1
                 let typeFullNameParts = kind == 'T' ? parts : parts[..^1]
                 let namespaceName = markdownParts.Join(typeFullNameParts[..^1])
-                let typeName = markdownParts.Join(typeFullNameParts[^1..]) ?? ""
-                let memberName = markdownParts.Join(parts[^1..]) ?? ""
+                let typeName = markdownParts.Join(typeFullNameParts[^1..])
+                let memberName = markdownParts.Join(parts[^1..])
                 select (name: new DocumentPart(namespaceName, typeName, memberName), kind, element))
             .OrderBy(i => i.name.NamespaceName).ThenBy(i => i.name.TypeName);
 

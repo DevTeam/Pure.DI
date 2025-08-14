@@ -161,23 +161,23 @@ partial class Composition
     {
       Func<int, int, IDependency> transFunc1 =
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      (localDependencyId, localSubId1) =>
+      (localDependencyId, localSubId) =>
       {
         Drawing.Color transColor2 = Color.Red;
-        Drawing.Color localRed2 = transColor2;
+        Drawing.Color localRed = transColor2;
         // Get composition sync root object
         Lock transLock3 = _lock;
-        Lock localLockObject52 = transLock3;
-        lock (localLockObject52)
+        Lock localLockObject = transLock3;
+        lock (localLockObject)
         {
           // Overrides with a lambda argument
           // Overrides with tag using lambda argument
           // Overrides with some value
           // Overrides with injected value
           int overrInt32 = localDependencyId;
-          int overrInt321 = localSubId1;
-          string overrString2 = $"Dep {localDependencyId} {localSubId1}";
-          Drawing.Color overrColor3 = localRed2;
+          int overrInt321 = localSubId;
+          string overrString2 = $"Dep {localDependencyId} {localSubId}";
+          Drawing.Color overrColor3 = localRed;
           if (_root._singleClock53 is null)
           {
             lock (_lock)
@@ -186,8 +186,8 @@ partial class Composition
             }
           }
 
-          Dependency localDependency53 = new Dependency(overrString2, _root._singleClock53, overrInt32, overrInt321, overrColor3);
-          return localDependency53;
+          Dependency localDependency = new Dependency(overrString2, _root._singleClock53, overrInt32, overrInt321, overrColor3);
+          return localDependency;
         }
       };
       return new Service(transFunc1);

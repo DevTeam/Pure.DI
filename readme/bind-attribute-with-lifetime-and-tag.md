@@ -115,8 +115,8 @@ partial class Composition
             _root._singleFacade52 = new Facade();
           }
 
-          Facade localInstance_1182D12791 = _root._singleFacade52;
-          _root._singleIDependency = localInstance_1182D12791.Dependency;
+          Facade localInstance_1182D1278 = _root._singleFacade52;
+          _root._singleIDependency = localInstance_1182D1278.Dependency;
         }
       }
 

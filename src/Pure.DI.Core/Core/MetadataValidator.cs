@@ -93,12 +93,7 @@ sealed class MetadataValidator(
             }
         }
 
-        if (!isValid)
-        {
-            throw HandledException.Shared;
-        }
-
-        return true;
+        return isValid ? true : throw HandledException.Shared;
     }
 
     private static bool IsValidIdentifier(string identifier) =>

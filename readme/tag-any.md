@@ -115,8 +115,8 @@ partial class Composition
       () =>
       {
         Dependency transDependency5 = new Dependency(123);
-        IDependency localValue51 = transDependency5;
-        return localValue51;
+        IDependency localValue = transDependency5;
+        return localValue;
       });
       return new Service(transDependency2, blockFunc3, transDependency4);
     }

@@ -88,8 +88,8 @@ partial class Composition
   {
     if (baseComposition is null) throw new ArgumentNullException(nameof(baseComposition));
     OtherAssembly.IMyService transIMyService1;
-    OtherAssembly.CompositionInOtherProject localInstance_1182D12749 = baseComposition;
-    transIMyService1 = localInstance_1182D12749.MyService;
+    OtherAssembly.CompositionInOtherProject localInstance_1182D1274 = baseComposition;
+    transIMyService1 = localInstance_1182D1274.MyService;
     return new Program(transIMyService1);
   }
 }

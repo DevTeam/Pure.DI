@@ -163,29 +163,29 @@ partial class Composition: IDisposable
       {
         Owned<IDependency> blockOwned4; // Creates the owner of an instance
         Owned transOwned5;
-        Owned localOwned77 = blockOwned3;
-        transOwned5 = localOwned77;
+        Owned localOwned9 = blockOwned3;
+        transOwned5 = localOwned9;
         lock (_lock)
         {
           blockOwned3.Add(transOwned5);
         }
 
-        IOwned localOwned75 = transOwned5;
+        IOwned localOwned8 = transOwned5;
         var transDependency6 = new Dependency();
         lock (_lock)
         {
           blockOwned3.Add(transDependency6);
         }
 
-        IDependency localValue76 = transDependency6;
-        blockOwned4 = new Owned<IDependency>(localValue76, localOwned75);
+        IDependency localValue12 = transDependency6;
+        blockOwned4 = new Owned<IDependency>(localValue12, localOwned8);
         lock (_lock)
         {
           blockOwned3.Add(blockOwned4);
         }
 
-        Owned<IDependency> localValue74 = blockOwned4;
-        return localValue74;
+        Owned<IDependency> localValue11 = blockOwned4;
+        return localValue11;
       });
       var blockOwned7 = new Owned();
       Func<Owned<IDependency>> blockFunc2 = new Func<Owned<IDependency>>(
@@ -194,14 +194,14 @@ partial class Composition: IDisposable
       {
         Owned<IDependency> blockOwned8; // Creates the owner of an instance
         Owned transOwned9;
-        Owned localOwned81 = blockOwned7;
-        transOwned9 = localOwned81;
+        Owned localOwned11 = blockOwned7;
+        transOwned9 = localOwned11;
         lock (_lock)
         {
           blockOwned7.Add(transOwned9);
         }
 
-        IOwned localOwned79 = transOwned9;
+        IOwned localOwned10 = transOwned9;
         if (_root._singleDependency53 is null)
         {
           lock (_lock)
@@ -211,15 +211,15 @@ partial class Composition: IDisposable
           }
         }
 
-        IDependency localValue80 = _root._singleDependency53;
-        blockOwned8 = new Owned<IDependency>(localValue80, localOwned79);
+        IDependency localValue14 = _root._singleDependency53;
+        blockOwned8 = new Owned<IDependency>(localValue14, localOwned10);
         lock (_lock)
         {
           blockOwned7.Add(blockOwned8);
         }
 
-        Owned<IDependency> localValue78 = blockOwned8;
-        return localValue78;
+        Owned<IDependency> localValue13 = blockOwned8;
+        return localValue13;
       });
       return new Service(blockFunc1, blockFunc2);
     }

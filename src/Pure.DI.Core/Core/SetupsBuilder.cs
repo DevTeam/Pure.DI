@@ -203,9 +203,12 @@ sealed class SetupsBuilder(
 
         var membersToBind = (
             from member in type.GetMembers()
-            where member.DeclaredAccessibility >= Accessibility.Internal && member.CanBeReferencedByName && member is IFieldSymbol or IPropertySymbol or IMethodSymbol
+            where member.DeclaredAccessibility >= Accessibility.Internal
+                  && member.CanBeReferencedByName
+                  && member is IFieldSymbol or IPropertySymbol or IMethodSymbol
             from attribute in member.GetAttributes()
-            where attribute.AttributeClass is not null && symbolNames.GetGlobalName(attribute.AttributeClass) == Names.BindAttributeName
+            where attribute.AttributeClass is {} attributeClass
+                  && symbolNames.GetGlobalName(attributeClass) == Names.BindAttributeName
             select (attribute, member))
             .ToList();
 

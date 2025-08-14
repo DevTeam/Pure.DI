@@ -165,18 +165,18 @@ partial class Composition
     {
       Func<int, int, IDependency> transFunc1 =
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      (localDependencyId3, localSubId4) =>
+      (localDependencyId1, localSubId1) =>
       {
         // Overrides with a lambda argument
         // Overrides with tag using lambda argument
         // Overrides with some value
         // Overrides with injected value
-        int overrInt32 = localDependencyId3;
-        int overrInt321 = localSubId4;
-        string overrString2 = $"Dep {localDependencyId3} {localSubId4}";
+        int overrInt32 = localDependencyId1;
+        int overrInt321 = localSubId1;
+        string overrString2 = $"Dep {localDependencyId1} {localSubId1}";
         Drawing.Color transColor2 = Color.Red;
-        Drawing.Color localRed5 = transColor2;
-        Drawing.Color overrColor3 = localRed5;
+        Drawing.Color localRed1 = transColor2;
+        Drawing.Color overrColor3 = localRed1;
         if (_root._singleClock53 is null)
         {
           lock (_lock)
@@ -185,8 +185,8 @@ partial class Composition
           }
         }
 
-        Dependency localDependency112 = new Dependency(overrString2, _root._singleClock53, overrInt32, overrInt321, overrColor3);
-        return localDependency112;
+        Dependency localDependency3 = new Dependency(overrString2, _root._singleClock53, overrInt32, overrInt321, overrColor3);
+        return localDependency3;
       };
       return new Service(transFunc1);
     }

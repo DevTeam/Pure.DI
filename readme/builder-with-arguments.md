@@ -116,10 +116,10 @@ partial class Composition
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
     Service transService;
-    Service localBuildingInstance103 = buildingInstance;
-    localBuildingInstance103.Dependency = new Dependency();
-    localBuildingInstance103.SetId(serviceId);
-    transService = localBuildingInstance103;
+    Service localBuildingInstance7 = buildingInstance;
+    localBuildingInstance7.Dependency = new Dependency();
+    localBuildingInstance7.SetId(serviceId);
+    transService = localBuildingInstance7;
     return transService;
   }
 }

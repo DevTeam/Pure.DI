@@ -129,29 +129,29 @@ partial class Composition
       {
         Owned<IDependency> blockOwned3; // Creates the owner of an instance
         Owned transOwned4;
-        Owned localOwned64 = blockOwned2;
-        transOwned4 = localOwned64;
+        Owned localOwned5 = blockOwned2;
+        transOwned4 = localOwned5;
         lock (_lock)
         {
           blockOwned2.Add(transOwned4);
         }
 
-        IOwned localOwned62 = transOwned4;
+        IOwned localOwned4 = transOwned4;
         var transDependency5 = new Dependency();
         lock (_lock)
         {
           blockOwned2.Add(transDependency5);
         }
 
-        IDependency localValue63 = transDependency5;
-        blockOwned3 = new Owned<IDependency>(localValue63, localOwned62);
+        IDependency localValue5 = transDependency5;
+        blockOwned3 = new Owned<IDependency>(localValue5, localOwned4);
         lock (_lock)
         {
           blockOwned2.Add(blockOwned3);
         }
 
-        Owned<IDependency> localValue61 = blockOwned3;
-        return localValue61;
+        Owned<IDependency> localValue4 = blockOwned3;
+        return localValue4;
       });
       return new Service(blockFunc1);
     }

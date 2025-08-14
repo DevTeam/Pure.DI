@@ -108,8 +108,8 @@ partial class Composition
         }
       }
 
-      OtherAssembly.CompositionWithGenericRootsInOtherProject localInstance_1182D12744 = _root._singleCompositionWithGenericRootsInOtherProject52;
-      transIMyGenericService1 = localInstance_1182D12744.GetMyService<int>();
+      OtherAssembly.CompositionWithGenericRootsInOtherProject localInstance_1182D127 = _root._singleCompositionWithGenericRootsInOtherProject52;
+      transIMyGenericService1 = localInstance_1182D127.GetMyService<int>();
       return new Program(transIMyGenericService1);
     }
   }

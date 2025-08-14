@@ -120,26 +120,26 @@ partial class Composition
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
     IService<T1, T4> transIService;
-    IService<T1, T4> localBuildingInstance149 = buildingInstance;
-    switch (localBuildingInstance149)
+    IService<T1, T4> localBuildingInstance9 = buildingInstance;
+    switch (localBuildingInstance9)
     {
-      case Service1<T1, T4> localService1_TT_TT2150:
+      case Service1<T1, T4> localService1_TT_TT2:
       {
-        transIService = BuildUpGeneric(localService1_TT_TT2150);
+        transIService = BuildUpGeneric(localService1_TT_TT2);
         goto transIServiceFinish;
       }
 
-      case Service2<T1, T4> localService2_TT_TT2151:
+      case Service2<T1, T4> localService2_TT_TT2:
       {
-        transIService = BuildUpGeneric(localService2_TT_TT2151);
+        transIService = BuildUpGeneric(localService2_TT_TT2);
         goto transIServiceFinish;
       }
 
       default:
-        throw new ArgumentException($"Unable to build an instance of typeof type {localBuildingInstance149.GetType()}.", "buildingInstance");
+        throw new ArgumentException($"Unable to build an instance of typeof type {localBuildingInstance9.GetType()}.", "buildingInstance");
     }
 
-    transIService = localBuildingInstance149;
+    transIService = localBuildingInstance9;
     transIServiceFinish:
       ;
     return transIService;
@@ -152,9 +152,9 @@ partial class Composition
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
     Service2<T1, T4> transService22;
-    Service2<T1, T4> localBuildingInstance152 = buildingInstance;
-    localBuildingInstance152.Dependency = new Dependency<T4>();
-    transService22 = localBuildingInstance152;
+    Service2<T1, T4> localBuildingInstance10 = buildingInstance;
+    localBuildingInstance10.Dependency = new Dependency<T4>();
+    transService22 = localBuildingInstance10;
     return transService22;
   }
 
@@ -164,11 +164,11 @@ partial class Composition
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
     Service1<T1, T4> transService15;
-    Service1<T1, T4> localBuildingInstance153 = buildingInstance;
+    Service1<T1, T4> localBuildingInstance11 = buildingInstance;
     T1 transTT8 = (T1)(object)Guid.NewGuid();
-    localBuildingInstance153.Dependency = new Dependency<T4>();
-    localBuildingInstance153.SetId(transTT8);
-    transService15 = localBuildingInstance153;
+    localBuildingInstance11.Dependency = new Dependency<T4>();
+    localBuildingInstance11.SetId(transTT8);
+    transService15 = localBuildingInstance11;
     return transService15;
   }
 }

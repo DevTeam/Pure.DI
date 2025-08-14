@@ -124,11 +124,11 @@ partial class Composition
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
     Service1 transService15;
-    Service1 localBuildingInstance97 = buildingInstance;
+    Service1 localBuildingInstance3 = buildingInstance;
     Guid transGuid8 = Guid.NewGuid();
-    localBuildingInstance97.Dependency = new Dependency();
-    localBuildingInstance97.SetId(transGuid8);
-    transService15 = localBuildingInstance97;
+    localBuildingInstance3.Dependency = new Dependency();
+    localBuildingInstance3.SetId(transGuid8);
+    transService15 = localBuildingInstance3;
     return transService15;
   }
 
@@ -137,9 +137,9 @@ partial class Composition
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
     Service2 transService22;
-    Service2 localBuildingInstance96 = buildingInstance;
-    localBuildingInstance96.Dependency = new Dependency();
-    transService22 = localBuildingInstance96;
+    Service2 localBuildingInstance2 = buildingInstance;
+    localBuildingInstance2.Dependency = new Dependency();
+    transService22 = localBuildingInstance2;
     return transService22;
   }
 
@@ -149,26 +149,26 @@ partial class Composition
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
     IService transIService;
-    IService localBuildingInstance93 = buildingInstance;
-    switch (localBuildingInstance93)
+    IService localBuildingInstance1 = buildingInstance;
+    switch (localBuildingInstance1)
     {
-      case Service1 localService194:
+      case Service1 localService1:
       {
-        transIService = BuildUp(localService194);
+        transIService = BuildUp(localService1);
         goto transIServiceFinish;
       }
 
-      case Service2 localService295:
+      case Service2 localService2:
       {
-        transIService = BuildUp(localService295);
+        transIService = BuildUp(localService2);
         goto transIServiceFinish;
       }
 
       default:
-        throw new ArgumentException($"Unable to build an instance of typeof type {localBuildingInstance93.GetType()}.", "buildingInstance");
+        throw new ArgumentException($"Unable to build an instance of typeof type {localBuildingInstance1.GetType()}.", "buildingInstance");
     }
 
-    transIService = localBuildingInstance93;
+    transIService = localBuildingInstance1;
     transIServiceFinish:
       ;
     return transIService;

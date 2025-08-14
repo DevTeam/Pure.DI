@@ -106,8 +106,8 @@ partial class Composition
         }
       }
 
-      OtherAssembly.CompositionInOtherProject localInstance_1182D12747 = _root._singleCompositionInOtherProject52;
-      transIMyService1 = localInstance_1182D12747.MyService;
+      OtherAssembly.CompositionInOtherProject localInstance_1182D1272 = _root._singleCompositionInOtherProject52;
+      transIMyService1 = localInstance_1182D1272.MyService;
       return new Program(transIMyService1);
     }
   }

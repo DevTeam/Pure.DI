@@ -1,8 +1,10 @@
 // ReSharper disable MemberCanBeProtected.Global
 
+// ReSharper disable VirtualMemberNeverOverridden.Global
+// ReSharper disable UnusedParameter.Global
 namespace Pure.DI.Core;
 
-class MetadataWalkerBase : IMetadataVisitor
+abstract class MetadataWalkerBase : IMetadataVisitor
 {
     public virtual void VisitSetup(in MdSetup setup)
     {

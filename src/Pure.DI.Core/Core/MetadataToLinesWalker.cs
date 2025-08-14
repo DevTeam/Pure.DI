@@ -41,7 +41,7 @@ sealed class MetadataToLinesWalker(int indent)
 
     public override void VisitDependsOn(in MdDependsOn dependsOn) => _lb.Append(dependsOn.ToString());
 
-    public override void VisitRoot(in MdRoot root) => _lb.AppendLine($".{root.ToString()}");
+    public override void VisitRoot(in MdRoot root) => _lb.AppendLine($".{root}");
 
     public override void VisitTypeAttribute(in MdTypeAttribute typeAttribute) => _lb.AppendLine(typeAttribute.ToString());
 

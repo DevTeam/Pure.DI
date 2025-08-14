@@ -96,7 +96,7 @@ partial class Composition
   public Program GetProgram(int id)
   {
     OtherAssembly.IMyGenericService<int> transIMyGenericService1;
-    int localId45 = id;
+    int localId = id;
     if (_root._singleCompositionWithGenericRootsAndArgsInOtherProject53 is null)
     {
       lock (_lock)
@@ -105,8 +105,8 @@ partial class Composition
       }
     }
 
-    OtherAssembly.CompositionWithGenericRootsAndArgsInOtherProject localInstance_1182D12746 = _root._singleCompositionWithGenericRootsAndArgsInOtherProject53;
-    transIMyGenericService1 = localInstance_1182D12746.GetMyService<int>(localId45);
+    OtherAssembly.CompositionWithGenericRootsAndArgsInOtherProject localInstance_1182D1271 = _root._singleCompositionWithGenericRootsAndArgsInOtherProject53;
+    transIMyGenericService1 = localInstance_1182D1271.GetMyService<int>(localId);
     return new Program(transIMyGenericService1);
   }
 }

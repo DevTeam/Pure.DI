@@ -131,8 +131,8 @@ partial class Composition
     get
     {
       Serilog.ILogger transILogger4;
-      Serilog.ILogger localLogger43 = _argLogger;
-      transILogger4 = localLogger43.ForContext(new Type[2] { typeof(Serilog.ILogger), typeof(Service) }[0]);
+      Serilog.ILogger localLogger1 = _argLogger;
+      transILogger4 = localLogger1.ForContext(new Type[2] { typeof(Serilog.ILogger), typeof(Service) }[0]);
       return transILogger4;
     }
   }
@@ -145,8 +145,8 @@ partial class Composition
       var transDependency2 = new Dependency();
       OnNewInstance<Dependency>(ref transDependency2, null, Lifetime.Transient);
       Serilog.ILogger transILogger1;
-      Serilog.ILogger localLogger42 = _argLogger;
-      transILogger1 = localLogger42.ForContext(new Type[2] { typeof(Serilog.ILogger), typeof(Service) }[0]);
+      Serilog.ILogger localLogger = _argLogger;
+      transILogger1 = localLogger.ForContext(new Type[2] { typeof(Serilog.ILogger), typeof(Service) }[0]);
       var transService = new Service(transILogger1, OnDependencyInjection<IDependency>(transDependency2, null, Lifetime.Transient));
       OnNewInstance<Service>(ref transService, null, Lifetime.Transient);
       return OnDependencyInjection<IService>(transService, null, Lifetime.Transient);

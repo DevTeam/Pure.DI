@@ -93,8 +93,8 @@ partial class Composition
     get
     {
       OtherAssembly.IMyService transIMyService1;
-      OtherAssembly.CompositionInOtherProject localInstance_1182D12748 = _argBaseComposition;
-      transIMyService1 = localInstance_1182D12748.MyService;
+      OtherAssembly.CompositionInOtherProject localInstance_1182D1273 = _argBaseComposition;
+      transIMyService1 = localInstance_1182D1273.MyService;
       return new Program(transIMyService1);
     }
   }

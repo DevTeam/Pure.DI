@@ -175,22 +175,22 @@ partial class Composition: IDisposable
       () =>
       {
         Abstractions.Own<IDependency> blockOwn4; // Creates the owner of an instance
-        Abstractions.Own localOwn69 = blockOwn3;
+        Abstractions.Own localOwn = blockOwn3;
         var transDependency5 = new Dependency();
         lock (_lock)
         {
           blockOwn3.Add(transDependency5);
         }
 
-        IDependency localValue70 = transDependency5;
-        blockOwn4 = new Abstractions.Own<IDependency>(localValue70, localOwn69);
+        IDependency localValue8 = transDependency5;
+        blockOwn4 = new Abstractions.Own<IDependency>(localValue8, localOwn);
         lock (_lock)
         {
           blockOwn3.Add(blockOwn4);
         }
 
-        Abstractions.Own<IDependency> localValue68 = blockOwn4;
-        return localValue68;
+        Abstractions.Own<IDependency> localValue7 = blockOwn4;
+        return localValue7;
       });
       var blockOwn6 = new Abstractions.Own();
       Func<Abstractions.Own<IDependency>> blockFunc2 = new Func<Abstractions.Own<IDependency>>(
@@ -198,7 +198,7 @@ partial class Composition: IDisposable
       () =>
       {
         Abstractions.Own<IDependency> blockOwn7; // Creates the owner of an instance
-        Abstractions.Own localOwn72 = blockOwn6;
+        Abstractions.Own localOwn1 = blockOwn6;
         if (_root._singleDependency53 is null)
         {
           lock (_lock)
@@ -208,15 +208,15 @@ partial class Composition: IDisposable
           }
         }
 
-        IDependency localValue73 = _root._singleDependency53;
-        blockOwn7 = new Abstractions.Own<IDependency>(localValue73, localOwn72);
+        IDependency localValue10 = _root._singleDependency53;
+        blockOwn7 = new Abstractions.Own<IDependency>(localValue10, localOwn1);
         lock (_lock)
         {
           blockOwn6.Add(blockOwn7);
         }
 
-        Abstractions.Own<IDependency> localValue71 = blockOwn7;
-        return localValue71;
+        Abstractions.Own<IDependency> localValue9 = blockOwn7;
+        return localValue9;
       });
       return new Service(blockFunc1, blockFunc2);
     }

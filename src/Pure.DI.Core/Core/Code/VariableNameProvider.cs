@@ -2,7 +2,7 @@
 
 using System.Collections.Concurrent;
 
-class NameProvider(IIdGenerator idGenerator) : INameProvider
+class NameProvider: INameProvider
 {
     private readonly ConcurrentDictionary<string, int> _names = new();
 
@@ -23,7 +23,7 @@ class NameProvider(IIdGenerator idGenerator) : INameProvider
         GetVariableName(Names.OverriddenVariablePrefix, @override.ContractType.Name, @override.Id);
 
     public string GetLocalUniqueVariableName(string baseName) =>
-        GetVariableName(Names.LocalVariablePrefix, baseName, idGenerator.Generate());
+        GetUniqueName($"{Names.LocalVariablePrefix}{ToTitleCase(baseName)}{Names.Salt}");
 
     public string GetUniqueName(string baseName)
     {

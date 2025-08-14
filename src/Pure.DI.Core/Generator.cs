@@ -177,7 +177,6 @@ public sealed partial class Generator
             .Bind().To<Filter>()
             .Bind(UniqueTag).To<IdGenerator>()
             .Bind(Tag.Override).To<IdGenerator>()
-            .Bind().To<IdGenerator>()
             .Bind().To<Registry<TT>>()
             .Bind().To<Locks>()
             .Bind().To<RootAccessModifierResolver>()
@@ -185,6 +184,7 @@ public sealed partial class Generator
             .Bind().To<GenericTypeArguments>()
             .Bind().To<NameProvider>()
             .Bind().To<OverrideIdProvider>()
-            .Bind().To<OverridesRegistry>();
+            .Bind().To<OverridesRegistry>()
+            .Bind().To<Accumulators>();
 }
 // @formatter:on

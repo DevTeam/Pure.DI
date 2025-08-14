@@ -102,9 +102,9 @@ partial class Composition
     get
     {
       IDependency transIDependency1; // Some logic for creating an instance:
-      Dependency localDependency107 = new Dependency();
-      localDependency107.Initialize();
-      transIDependency1 = localDependency107;
+      Dependency localDependency2 = new Dependency();
+      localDependency2.Initialize();
+      transIDependency1 = localDependency2;
       return new Service(transIDependency1);
     }
   }

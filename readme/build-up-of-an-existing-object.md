@@ -113,11 +113,11 @@ partial class Composition
   {
     if (name is null) throw new ArgumentNullException(nameof(name));
     Dependency transDependency1;
-    var localDependency104 = new Dependency();
+    var localDependency1 = new Dependency();
     Guid transGuid3 = Guid.NewGuid();
-    localDependency104.Name = name;
-    localDependency104.SetId(transGuid3);
-    transDependency1 = localDependency104;
+    localDependency1.Name = name;
+    localDependency1.SetId(transGuid3);
+    transDependency1 = localDependency1;
     return new Service(transDependency1);
   }
 }

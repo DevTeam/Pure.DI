@@ -122,25 +122,25 @@ partial class Composition
     () =>
     {
       OtherService<T2> transOtherService3;
-      IDependency<T2> localDependency136 = new Dependency<T2>();
-      transOtherService3 = new OtherService<T2>(localDependency136);
-      IService<T2, bool> localValue135 = transOtherService3;
-      return localValue135;
+      IDependency<T2> localDependency5 = new Dependency<T2>();
+      transOtherService3 = new OtherService<T2>(localDependency5);
+      IService<T2, bool> localValue25 = transOtherService3;
+      return localValue25;
     });
-    Func<IService<T2, bool>> localFactory133 = blockFunc1;
+    Func<IService<T2, bool>> localFactory6 = blockFunc1;
     // Injects a task factory creating and scheduling task objects
     TaskFactory<IService<T2, bool>> blockTaskFactory2;
-    CancellationToken localCancellationToken137 = cancellationToken;
+    CancellationToken localCancellationToken3 = cancellationToken;
     TaskCreationOptions transTaskCreationOptions6 = TaskCreationOptions.None;
-    TaskCreationOptions localTaskCreationOptions138 = transTaskCreationOptions6;
+    TaskCreationOptions localTaskCreationOptions2 = transTaskCreationOptions6;
     TaskContinuationOptions transTaskContinuationOptions7 = TaskContinuationOptions.None;
-    TaskContinuationOptions localTaskContinuationOptions139 = transTaskContinuationOptions7;
+    TaskContinuationOptions localTaskContinuationOptions2 = transTaskContinuationOptions7;
     TaskScheduler transTaskScheduler8 = TaskScheduler.Default;
-    TaskScheduler localTaskScheduler140 = transTaskScheduler8;
-    blockTaskFactory2 = new TaskFactory<IService<T2, bool>>(localCancellationToken137, localTaskCreationOptions138, localTaskContinuationOptions139, localTaskScheduler140);
-    TaskFactory<IService<T2, bool>> localTaskFactory134 = blockTaskFactory2;
+    TaskScheduler localTaskScheduler2 = transTaskScheduler8;
+    blockTaskFactory2 = new TaskFactory<IService<T2, bool>>(localCancellationToken3, localTaskCreationOptions2, localTaskContinuationOptions2, localTaskScheduler2);
+    TaskFactory<IService<T2, bool>> localTaskFactory2 = blockTaskFactory2;
     // Creates and starts a task using the instance factory
-    transTask = localTaskFactory134.StartNew(localFactory133);
+    transTask = localTaskFactory2.StartNew(localFactory6);
     return transTask;
   }
 
@@ -154,23 +154,23 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     () =>
     {
-      IService<T2, T3> localValue143 = new Service<T2, T3>(new Dependency<T2>());
-      return localValue143;
+      IService<T2, T3> localValue26 = new Service<T2, T3>(new Dependency<T2>());
+      return localValue26;
     });
-    Func<IService<T2, T3>> localFactory141 = blockFunc10;
+    Func<IService<T2, T3>> localFactory7 = blockFunc10;
     // Injects a task factory creating and scheduling task objects
     TaskFactory<IService<T2, T3>> blockTaskFactory11;
-    CancellationToken localCancellationToken144 = cancellationToken;
+    CancellationToken localCancellationToken4 = cancellationToken;
     TaskCreationOptions transTaskCreationOptions15 = TaskCreationOptions.None;
-    TaskCreationOptions localTaskCreationOptions145 = transTaskCreationOptions15;
+    TaskCreationOptions localTaskCreationOptions3 = transTaskCreationOptions15;
     TaskContinuationOptions transTaskContinuationOptions16 = TaskContinuationOptions.None;
-    TaskContinuationOptions localTaskContinuationOptions146 = transTaskContinuationOptions16;
+    TaskContinuationOptions localTaskContinuationOptions3 = transTaskContinuationOptions16;
     TaskScheduler transTaskScheduler17 = TaskScheduler.Default;
-    TaskScheduler localTaskScheduler147 = transTaskScheduler17;
-    blockTaskFactory11 = new TaskFactory<IService<T2, T3>>(localCancellationToken144, localTaskCreationOptions145, localTaskContinuationOptions146, localTaskScheduler147);
-    TaskFactory<IService<T2, T3>> localTaskFactory142 = blockTaskFactory11;
+    TaskScheduler localTaskScheduler3 = transTaskScheduler17;
+    blockTaskFactory11 = new TaskFactory<IService<T2, T3>>(localCancellationToken4, localTaskCreationOptions3, localTaskContinuationOptions3, localTaskScheduler3);
+    TaskFactory<IService<T2, T3>> localTaskFactory3 = blockTaskFactory11;
     // Creates and starts a task using the instance factory
-    transTask9 = localTaskFactory142.StartNew(localFactory141);
+    transTask9 = localTaskFactory3.StartNew(localFactory7);
     return transTask9;
   }
 }

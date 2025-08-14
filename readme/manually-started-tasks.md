@@ -127,12 +127,12 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     () =>
     {
-      IDependency localValue124 = new Dependency();
-      return localValue124;
+      IDependency localValue22 = new Dependency();
+      return localValue22;
     });
-    Func<IDependency> localFactory122 = blockFunc2;
-    CancellationToken localCancellationToken123 = cancellationToken;
-    transTask1 = new Task<IDependency>(localFactory122, localCancellationToken123);
+    Func<IDependency> localFactory4 = blockFunc2;
+    CancellationToken localCancellationToken1 = cancellationToken;
+    transTask1 = new Task<IDependency>(localFactory4, localCancellationToken1);
     return new Service(transTask1);
   }
 }
