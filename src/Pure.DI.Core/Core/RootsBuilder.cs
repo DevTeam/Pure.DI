@@ -2,7 +2,8 @@
 
 namespace Pure.DI.Core;
 
-sealed class RootsBuilder(IBuilder<ContractsBuildContext, ISet<Injection>> contractsBuilder)
+sealed class RootsBuilder(
+    IBuilder<ContractsBuildContext, ISet<Injection>> contractsBuilder)
     : IBuilder<DependencyGraph, DependencyGraph>
 {
     public DependencyGraph Build(DependencyGraph dependencyGraph)
@@ -57,8 +58,5 @@ sealed class RootsBuilder(IBuilder<ContractsBuildContext, ISet<Injection>> contr
         group.byInjection
                 .OrderByDescending(j => j.Value.IsPublic)
                 .Select(j => j.Value)
-                .First() with
-            {
-                Index = group.index + 1
-            };
+                .First() with { Index = group.index + 1 };
 }

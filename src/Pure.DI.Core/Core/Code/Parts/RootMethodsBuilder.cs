@@ -104,7 +104,7 @@ sealed class RootMethodsBuilder(
         {
             using (code.Indent())
             {
-                foreach (var constraint in constraints)
+                foreach (var constraint in constraints.OrderBy(i => i.Key.Name))
                 {
                     code.AppendLine($"where {constraint.Key.Name}: {string.Join(", ", constraint.Value)}");
                 }

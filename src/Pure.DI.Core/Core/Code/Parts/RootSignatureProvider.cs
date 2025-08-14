@@ -85,10 +85,10 @@ class RootSignatureProvider(
             }
 
             var constraints = new List<string>();
-            constraints.AddRange(curTypeParam.ConstraintTypes.Select(i => typeResolver.Resolve(composition.Source.Source, i).Name));
+            constraints.AddRange(curTypeParam.ConstraintTypes.Select(i => typeResolver.Resolve(composition.Source.Source, i).Name).OrderBy(i => i));
             foreach (var typeParameter in typeParameters)
             {
-                constraints.AddRange(typeParameter.ConstraintTypes.Select(i => typeResolver.Resolve(composition.Source.Source, i).Name));
+                constraints.AddRange(typeParameter.ConstraintTypes.Select(i => typeResolver.Resolve(composition.Source.Source, i).Name).OrderBy(i => i));
             }
 
             FillConstraints(curTypeParam, constraints);

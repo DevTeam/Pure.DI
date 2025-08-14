@@ -116,13 +116,13 @@ partial class Composition
     get
     {
       Func<int, IDependency> blockFunc1;
-      Func<int, IDependency> localFactory109 = new Func<int, IDependency>((int localArg19) =>
+      Func<int, IDependency> localFactory109 = new Func<int, IDependency>((int localArg18) =>
       {
         Lock transLock2 = _lock;
         Lock localLockObject110 = transLock2;
         lock (localLockObject110)
         {
-          int overrInt32 = localArg19;
+          int overrInt32 = localArg18;
           IDependency localValue111 = new Dependency(overrInt32);
           return localValue111;
         }
