@@ -2982,4 +2982,103 @@ public class OverrideTests
         result.Errors.Count.ShouldBe(1, result);
         result.Errors.Count(i => i.Id == LogId.ErrorUnableToResolve).ShouldBe(1, result);
     }
+
+    [Fact]
+    public async Task ShouldOverrideByMember()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Linq;
+                           using System.Collections.Generic;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public interface IRepository
+                               {
+                               }
+                               
+                               internal class ServiceRepository : IRepository
+                               {
+                               }
+                               
+                               internal class GlobalRepository : IRepository
+                               {
+                               }
+                               
+                               public interface IService
+                               {
+                                   IRepository Repository { get; }
+                               }
+                               
+                               internal class MyService : IService
+                               {
+                                   public MyService(IRepository repository)
+                                   {
+                                       Repository = repository;
+                                   }
+                               
+                                   public IRepository Repository { get; }
+                               }
+                               
+                               public partial class HostComposition
+                               {
+                                   // public partial IRepository Repository { get; }
+                                   private void Setup()
+                                   {
+                                       DI.Setup(nameof(HostComposition))
+                                           .Bind<IRepository>().As(Lifetime.Singleton).To<GlobalRepository>()
+                                           .Root<IRepository>("Repository")
+                                           .Bind(1).To<IService>(ctx =>
+                                           {
+                                               ctx.Inject(out HostComposition hostComposition);
+                               
+                                               var serviceComposition = new ServiceComposition(hostComposition);
+                                               return serviceComposition.CreateService();
+                                           })
+                                           .Bind<IEnumerable<IService>>().To(ctx =>
+                                           {
+                                               ctx.Inject<IService>(1, out var s1);
+                                               return new[] { s1 };
+                                           })
+                                           .Root<IEnumerable<IService>>("Services");
+                                   }
+                               }
+                               
+                               public partial class ServiceComposition
+                               {
+                                   private void Setup()
+                                   {
+                                       DI.Setup(nameof(ServiceComposition))
+                                           .Arg<HostComposition>("hostComposition")
+                                           .Bind<IService>().As(Lifetime.Scoped).To<MyService>(ctx =>
+                                           {
+                                               ctx.Inject(out HostComposition hostComposition);
+                                               ctx.Override<IRepository>(hostComposition.Repository);
+                                               ctx.Inject(out MyService myService);
+                                               return myService;
+                                           })
+                                           .Root<Func<IService>>("CreateService");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var hostComposition = new HostComposition();
+                                       var service1 = hostComposition.Services.First();
+                                       Console.WriteLine(service1.Repository);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Sample.GlobalRepository"], result);
+    }
 }

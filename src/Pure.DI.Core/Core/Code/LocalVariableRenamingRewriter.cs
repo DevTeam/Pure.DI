@@ -52,8 +52,15 @@ sealed class LocalVariableRenamingRewriter(
         }
     }
 
-    public override SyntaxNode? VisitIdentifierName(IdentifierNameSyntax node) =>
-        base.VisitIdentifierName(_forcibleRename ? SyntaxFactory.IdentifierName(GetUniqueName(node.Identifier.Text)) : node);
+    public override SyntaxNode? VisitIdentifierName(IdentifierNameSyntax node)
+    {
+        if (node.Parent is MemberAccessExpressionSyntax memberAccessExpression && memberAccessExpression.Expression != node)
+        {
+            return node;
+        }
+
+        return base.VisitIdentifierName(_forcibleRename ? SyntaxFactory.IdentifierName(GetUniqueName(node.Identifier.Text)) : node);
+    }
 
     public override SyntaxToken VisitToken(SyntaxToken token)
     {
