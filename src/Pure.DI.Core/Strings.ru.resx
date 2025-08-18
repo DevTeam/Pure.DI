@@ -163,4 +163,7 @@
     <data name="Error_UnhandledError" xml:space="preserve">
         <value>Произошла необработанная ошибка.</value>
     </data>
+    <data name="Error_TypeCannotBeInferred" xml:space="preserve">
+        <value>Невозможно определить тип. Попробуйте указать его явно.</value>
+    </data>
 </root>

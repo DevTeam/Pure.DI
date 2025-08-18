@@ -163,4 +163,7 @@
     <data name="Error_UnhandledError" xml:space="preserve">
         <value>Ocorreu um erro não tratado.</value>
     </data>
+    <data name="Error_TypeCannotBeInferred" xml:space="preserve">
+        <value>Não foi possível determinar o tipo. Especifique-o explicitamente.</value>
+    </data>
 </root>

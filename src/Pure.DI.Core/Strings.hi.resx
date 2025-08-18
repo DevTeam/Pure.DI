@@ -163,4 +163,7 @@
     <data name="Error_UnhandledError" xml:space="preserve">
         <value>एक अनियंत्रित त्रुटि हुई है।</value>
     </data>
+    <data name="Error_TypeCannotBeInferred" xml:space="preserve">
+        <value>प्रकार निर्धारित नहीं किया जा सका। इसे स्पष्ट रूप से निर्दिष्ट करें।</value>
+    </data>
 </root>

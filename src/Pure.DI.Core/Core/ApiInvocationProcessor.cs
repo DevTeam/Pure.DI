@@ -891,17 +891,19 @@ sealed class ApiInvocationProcessor(
         }
 
         var args = arguments.GetArgs(invocation.ArgumentList, "value", "tags");
-        if (args[0] is not {} valueArg)
+        if (args[0] is not {} atgSyntax)
         {
             return default;
         }
 
-        var argType = GetArg(semanticModel, GetDefaultType(semanticModel, invocation, 0), valueArg, invocation);
-        if (argType is null)
+        var argType = GetDefaultType(semanticModel, invocation, 0) ?? GetArgSymbol(semanticModel, atgSyntax);
+        if (argType is null or IErrorTypeSymbol)
         {
-            return default;
+            throw new CompileErrorException(
+                Strings.Error_TypeCannotBeInferred,
+                ImmutableArray.Create(locationProvider.GetLocation(atgSyntax)),
+                LogId.ErrorTypeCannotBeInferred);
         }
-
         var tagArguments = invocation.ArgumentList.Arguments.Skip(1).ToList();
         var hasCtx = tagArguments.Aggregate(false, (current, tag) => current | HasContextTag(tag.Expression, contextParameter));
         var tags = BuildTags(semanticModel, tagArguments)
@@ -913,15 +915,15 @@ sealed class ApiInvocationProcessor(
         hasContextTag = hasCtx;
         ExpressionSyntax valueExpression;
         // ReSharper disable once ConvertSwitchStatementToSwitchExpression
-        switch (semanticModel.GetOperation(valueArg.Expression))
+        switch (semanticModel.GetOperation(atgSyntax.Expression))
         {
             case IMemberReferenceOperation:
             case IInvocationOperation:
-                valueExpression = valueArg.Expression;
+                valueExpression = atgSyntax.Expression;
                 break;
 
             default:
-                valueExpression = (ExpressionSyntax)localVariableRenamingRewriter.Rewrite(semanticModel, false, true, valueArg.Expression);
+                valueExpression = (ExpressionSyntax)localVariableRenamingRewriter.Rewrite(semanticModel, false, true, atgSyntax.Expression);
                 break;
         }
 
@@ -949,12 +951,7 @@ sealed class ApiInvocationProcessor(
             return default;
         }
 
-        var targetType = GetArgSymbol(semanticModel, targetArg, resultType);
-        if (targetType is null)
-        {
-            return default;
-        }
-
+        var targetType = GetArgSymbol(semanticModel, targetArg) ?? resultType;
         var overrides = new List<MdOverride>();
         // ReSharper disable once LoopCanBeConvertedToQuery
         foreach (var @override in meta.Overrides)
@@ -1003,12 +1000,21 @@ sealed class ApiInvocationProcessor(
         switch (invArguments)
         {
             case [{ RefOrOutKeyword.IsMissing: false } targetValue]:
-                var argSymbol = GetArgSymbol(semanticModel, invArguments[0], GetDefaultType(semanticModel, invocation, 1)) ?? resultType;
+                var argSyntax = invArguments[0];
+                var argType = GetDefaultType(semanticModel, invocation, 0) ?? GetArgSymbol(semanticModel, argSyntax);
+                if (argType is null or IErrorTypeSymbol)
+                {
+                    throw new CompileErrorException(
+                        Strings.Error_TypeCannotBeInferred,
+                        ImmutableArray.Create(locationProvider.GetLocation(argSyntax)),
+                        LogId.ErrorTypeCannotBeInferred);
+                }
+
                 return new MdResolver(
                     semanticModel,
                     invocation,
                     meta.Position,
-                    argSymbol,
+                    argType,
                     null,
                     targetValue.Expression,
                     overrides.ToImmutableArray());
@@ -1020,16 +1026,24 @@ sealed class ApiInvocationProcessor(
                 hasContextTag |= hasCtx;
                 var tagValue = hasCtx ? MdTag.ContextTag : tag is null ? null : semantic.GetConstantValue<object>(semanticModel, tag, SmartTagKind.Tag);
                 var resolverTag = new MdTag(0, tagValue);
-                if (args[1] is {} valueArg)
+                if (args[1] is {} argSyntax2)
                 {
-                    var argType = GetArg(semanticModel, GetDefaultType(semanticModel, invocation, 1), valueArg, invocation) ?? resultType;
+                    var argType2 = GetDefaultType(semanticModel, invocation, 1) ?? GetArgSymbol(semanticModel, argSyntax2) ?? resultType;
+                    if (argType2 is null or IErrorTypeSymbol)
+                    {
+                        throw new CompileErrorException(
+                            Strings.Error_TypeCannotBeInferred,
+                            ImmutableArray.Create(locationProvider.GetLocation(argSyntax2)),
+                            LogId.ErrorTypeCannotBeInferred);
+                    }
+
                     return new MdResolver(
                         semanticModel,
                         invocation,
                         meta.Position,
-                        argType,
+                        argType2,
                         resolverTag,
-                        valueArg.Expression,
+                        argSyntax2.Expression,
                         overrides.ToImmutableArray());
                 }
 
@@ -1056,23 +1070,6 @@ sealed class ApiInvocationProcessor(
         return defaultType;
     }
 
-    private static ITypeSymbol? GetArg(
-        SemanticModel semanticModel,
-        ITypeSymbol? resultType,
-        ArgumentSyntax valueArg,
-        InvocationExpressionSyntax invocation)
-    {
-        var argType = GetArgSymbol(semanticModel, valueArg, resultType);
-        if (argType is null
-            && invocation.SyntaxTree == semanticModel.SyntaxTree && semanticModel.GetOperation(invocation) is {} invocationOperation
-            && invocationOperation.ChildOperations.OfType<IDeclarationExpressionOperation>().FirstOrDefault() is { Type: {} declarationType })
-        {
-            argType = declarationType;
-        }
-
-        return argType;
-    }
-
     private static bool HasContextTag(ExpressionSyntax? tag, ParameterSyntax contextParameter) =>
         tag is MemberAccessExpressionSyntax memberAccessExpression
         && memberAccessExpression.IsKind(SyntaxKind.SimpleMemberAccessExpression)
@@ -1080,37 +1077,30 @@ sealed class ApiInvocationProcessor(
         && memberAccessExpression.Expression is IdentifierNameSyntax identifierName
         && identifierName.Identifier.Text == contextParameter.Identifier.Text;
 
-    private static ITypeSymbol? GetArgSymbol(SemanticModel semanticModel, ArgumentSyntax argumentSyntax, ITypeSymbol? defaultType)
+    private static ITypeSymbol? GetArgSymbol(SemanticModel semanticModel, ArgumentSyntax argumentSyntax)
     {
-        ITypeSymbol? argType = null;
         if (argumentSyntax.SyntaxTree != semanticModel.SyntaxTree)
         {
-            ExpressionSyntax? typeSyntax = null;
-            switch (argumentSyntax.Expression)
+            var typeSyntax = argumentSyntax.Expression switch
             {
-                case DeclarationExpressionSyntax declarationExpressionSyntax:
-                    typeSyntax = declarationExpressionSyntax.Type;
-                    break;
+                DeclarationExpressionSyntax declarationExpressionSyntax => declarationExpressionSyntax.Type,
+                _ => null
+            };
 
-                default:
-                    argType = defaultType;
-                    break;
-            }
-
-            if (typeSyntax is not null)
-            {
-                argType = semanticModel.Compilation.GetTypeByMetadataName(typeSyntax.ToString()) ?? defaultType;
-            }
+            return typeSyntax is not null ? semanticModel.Compilation.GetTypeByMetadataName(typeSyntax.ToString()) : null;
         }
 
-        if (argType is null
-            && argumentSyntax.SyntaxTree == semanticModel.SyntaxTree
-            && semanticModel.GetOperation(argumentSyntax) is IArgumentOperation { Value.Type: {} valueType })
+        if (semanticModel.GetOperation(argumentSyntax) is IArgumentOperation { Value.Type: {} valueType })
         {
-            argType = valueType;
+            return valueType;
         }
 
-        return argType ?? defaultType;
+        if (semanticModel.GetOperation(argumentSyntax.Expression) is { Type: {} declarationType })
+        {
+            return declarationType;
+        }
+
+        return null;
     }
 
     private void CheckNotAsync(LambdaExpressionSyntax lambdaExpression)

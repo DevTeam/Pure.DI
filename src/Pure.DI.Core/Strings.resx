@@ -165,4 +165,7 @@
     <data name="Error_UnhandledError" xml:space="preserve">
         <value>An unhandled error has occurred.</value>
     </data>
+    <data name="Error_TypeCannotBeInferred" xml:space="preserve">
+        <value>Cannot determine type. Try specifying it explicitly.</value>
+    </data>
 </root>

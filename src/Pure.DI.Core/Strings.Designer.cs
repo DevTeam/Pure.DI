@@ -438,6 +438,15 @@ namespace Pure.DI {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot determine type. Try specifying it explicitly..
+        /// </summary>
+        internal static string Error_TypeCannotBeInferred {
+            get {
+                return ResourceManager.GetString("Error_TypeCannotBeInferred", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to An unhandled error has occurred..
         /// </summary>
         internal static string Error_UnhandledError {

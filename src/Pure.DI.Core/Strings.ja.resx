@@ -163,4 +163,7 @@
     <data name="Error_UnhandledError" xml:space="preserve">
         <value>未処理のエラーが発生しました。</value>
     </data>
+    <data name="Error_TypeCannotBeInferred" xml:space="preserve">
+        <value>型を特定できません。明示的に指定してください。</value>
+    </data>
 </root>

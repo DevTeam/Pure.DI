@@ -8,6 +8,7 @@ static class LogId
     public const string ErrorCyclicDependency = "DIE003";
     public const string ErrorNotSupportedLanguageVersion = "DIE004";
     public const string ErrorLifetimeDefect = "DIW005";
+    public const string ErrorTypeCannotBeInferred = "DIW006";
     public const string ErrorUnhandled = "DIE999";
 
     public const string WarningOverriddenBinding = "DIW000";
