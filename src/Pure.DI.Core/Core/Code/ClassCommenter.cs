@@ -115,9 +115,9 @@ sealed class ClassCommenter(
                     }
 
                     term.Append("&lt;");
-                    term.Append(comments.Escape(root.TypeDescription.Name));
+                    term.Append(comments.Escape(root.TypeDescription.Name.Replace(Names.GlobalNamespacePrefix, "")));
                     term.Append("&gt;(");
-                    term.Append(root.Injection.Tag != null ? root.Injection.Tag.ValueToString() : "");
+                    term.Append(root.Injection.Tag != null ? comments.Escape(root.Injection.Tag.ValueToString()) : "");
                     term.Append(")</c>");
                     return [term.ToString()];
                 }

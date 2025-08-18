@@ -32,7 +32,7 @@ sealed class ParameterizedConstructorCommenter(IComments comments) : ICommenter<
             }
             else
             {
-                code.AppendLine($"/// <param name=\"{mdArg.ArgName}\">The composition argument of type <see cref=\"{mdArg.Type}\"/>.</param>");
+                code.AppendLine($"/// <param name=\"{mdArg.ArgName}\">The composition argument of type <see cref=\"T:{mdArg.Type}\"/>.</param>");
             }
         }
     }

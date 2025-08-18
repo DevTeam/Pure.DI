@@ -53,7 +53,7 @@ sealed class CyclicDependencyValidatorVisitor(
                 continue;
             }
 
-            var pathStr = string.Join(" <-- ", path.Select(i => typeResolver.Resolve(ctx.DependencyGraph.Source, i.Source.Type).Name.Replace("global::", "")));
+            var pathStr = string.Join(" <-- ", path.Select(i => typeResolver.Resolve(ctx.DependencyGraph.Source, i.Source.Type).Name.Replace(Names.GlobalNamespacePrefix, "")));
             var locations = (dependency.Injection.Locations.IsDefault ? ImmutableArray<Location>.Empty : dependency.Injection.Locations)
                 .AddRange(path.SelectMany(i => i.Injection.Locations.IsDefault ? ImmutableArray<Location>.Empty : i.Injection.Locations))
                 .Add(locationProvider.GetLocation(source.Binding.Source));

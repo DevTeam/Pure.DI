@@ -80,9 +80,9 @@ sealed class Formatter(
     {
 #if ROSLYN4_8_OR_GREATER
         var originalDefinitionTypeName = type.OriginalDefinition.ToDisplayString(NullableFlowState.None, RefFormat);
-        return FormatRef(FormatTypeName(originalDefinitionTypeName));
+        return FormatRef($"T:{FormatTypeName(originalDefinitionTypeName)}");
 #else
-        return comments.Escape(type.OriginalDefinition.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.MinimallyQualifiedFormat));
+        return "T:" + comments.Escape(type.OriginalDefinition.ToDisplayString(NullableFlowState.None, SymbolDisplayFormat.MinimallyQualifiedFormat));
 #endif
     }
 
