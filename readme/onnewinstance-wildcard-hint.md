@@ -128,16 +128,15 @@ partial class Composition
     get
     {
       if (_root._singleDependency52 is null)
-      {
         lock (_lock)
-        {
-          Dependency _singleDependency52Temp;
-          _singleDependency52Temp = new Dependency();
-          OnNewInstance<Dependency>(ref _singleDependency52Temp, null, Lifetime.Singleton);
-          Thread.MemoryBarrier();
-          _root._singleDependency52 = _singleDependency52Temp;
-        }
-      }
+          if (_root._singleDependency52 is null)
+          {
+            Dependency _singleDependency52Temp;
+            _singleDependency52Temp = new Dependency();
+            OnNewInstance<Dependency>(ref _singleDependency52Temp, null, Lifetime.Singleton);
+            Thread.MemoryBarrier();
+            _root._singleDependency52 = _singleDependency52Temp;
+          }
 
       var transService = new Service(_root._singleDependency52);
       OnNewInstance<Service>(ref transService, null, Lifetime.Transient);

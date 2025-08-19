@@ -110,8 +110,8 @@ partial class Composition
         Lock localLockObject3 = transLock2;
         lock (localLockObject3)
         {
-          int overrInt321 = localArg14;
-          IDependency<string> localValue28 = new Dependency<string>(overrInt321);
+          int overrInt32 = localArg14;
+          IDependency<string> localValue28 = new Dependency<string>(overrInt32);
           return localValue28;
         }
       });

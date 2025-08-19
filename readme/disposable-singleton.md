@@ -117,13 +117,12 @@ partial class Composition: IDisposable
     get
     {
       if (_root._singleDependency52 is null)
-      {
         lock (_lock)
-        {
-          _root._singleDependency52 = new Dependency();
-          _root._disposables[_root._disposeIndex++] = _root._singleDependency52;
-        }
-      }
+          if (_root._singleDependency52 is null)
+          {
+            _root._singleDependency52 = new Dependency();
+            _root._disposables[_root._disposeIndex++] = _root._singleDependency52;
+          }
 
       return new Service(_root._singleDependency52);
     }

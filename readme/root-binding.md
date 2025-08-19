@@ -90,12 +90,11 @@ partial class Composition
     get
     {
       if (_root._singleDependency52 is null)
-      {
         lock (_lock)
-        {
-          _root._singleDependency52 = new Dependency();
-        }
-      }
+          if (_root._singleDependency52 is null)
+          {
+            _root._singleDependency52 = new Dependency();
+          }
 
       return new Service(_root._singleDependency52);
     }

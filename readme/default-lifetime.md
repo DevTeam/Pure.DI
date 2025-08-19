@@ -111,13 +111,12 @@ partial class Composition
     get
     {
       if (_root._singleService53 is null)
-      {
         lock (_lock)
-        {
-          EnsureDependencyExists7();
-          _root._singleService53 = new Service(_root._singleDependency52, _root._singleDependency52);
-        }
-      }
+          if (_root._singleService53 is null)
+          {
+            EnsureDependencyExists7();
+            _root._singleService53 = new Service(_root._singleDependency52, _root._singleDependency52);
+          }
 
       return _root._singleService53;
       [MethodImpl(MethodImplOptions.AggressiveInlining)]

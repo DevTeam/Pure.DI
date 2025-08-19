@@ -121,12 +121,11 @@ partial class Composition
       void EnsureDependencyExists3()
       {
         if (_root._singleDependency52 is null)
-        {
           lock (_lock)
-          {
-            _root._singleDependency52 = new Dependency();
-          }
-        }
+            if (_root._singleDependency52 is null)
+            {
+              _root._singleDependency52 = new Dependency();
+            }
       }
     }
   }
@@ -142,12 +141,11 @@ partial class Composition
       void EnsureDependencyExists2()
       {
         if (_root._singleDependency52 is null)
-        {
           lock (_lock)
-          {
-            _root._singleDependency52 = new Dependency();
-          }
-        }
+            if (_root._singleDependency52 is null)
+            {
+              _root._singleDependency52 = new Dependency();
+            }
       }
     }
   }

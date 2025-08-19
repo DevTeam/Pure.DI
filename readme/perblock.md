@@ -110,14 +110,13 @@ partial class Composition
     {
       var blockDependency1 = new Dependency();
       if (!_root._singleValueTuple53Created)
-      {
         lock (_lock)
-        {
-          _root._singleValueTuple53 = (blockDependency1, blockDependency1);
-          Thread.MemoryBarrier();
-          _root._singleValueTuple53Created = true;
-        }
-      }
+          if (!_root._singleValueTuple53Created)
+          {
+            _root._singleValueTuple53 = (blockDependency1, blockDependency1);
+            Thread.MemoryBarrier();
+            _root._singleValueTuple53Created = true;
+          }
 
       return new Service(blockDependency1, blockDependency1, _root._singleValueTuple53);
     }

@@ -96,12 +96,11 @@ partial class Composition
     {
       OtherAssembly.IMyService transIMyService1;
       if (_root._singleCompositionWithTagsInOtherProject52 is null)
-      {
         lock (_lock)
-        {
-          _root._singleCompositionWithTagsInOtherProject52 = new OtherAssembly.CompositionWithTagsInOtherProject();
-        }
-      }
+          if (_root._singleCompositionWithTagsInOtherProject52 is null)
+          {
+            _root._singleCompositionWithTagsInOtherProject52 = new OtherAssembly.CompositionWithTagsInOtherProject();
+          }
 
       OtherAssembly.CompositionWithTagsInOtherProject localInstance_1182D1275 = _root._singleCompositionWithTagsInOtherProject52;
       transIMyService1 = localInstance_1182D1275.MyService;

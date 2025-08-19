@@ -152,12 +152,11 @@ partial class Composition
     get
     {
       if (_scopedDependency52 is null)
-      {
         lock (_lock)
-        {
-          _scopedDependency52 = new Dependency();
-        }
-      }
+          if (_scopedDependency52 is null)
+          {
+            _scopedDependency52 = new Dependency();
+          }
 
       return new Service(_scopedDependency52);
     }

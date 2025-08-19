@@ -132,14 +132,13 @@ partial class Composition
   {
     if (depArg is null) throw new ArgumentNullException(nameof(depArg));
     if (!_root._singleDependencyStruct60Created)
-    {
       lock (_lock)
-      {
-        _root._singleDependencyStruct60 = new DependencyStruct<int>();
-        Thread.MemoryBarrier();
-        _root._singleDependencyStruct60Created = true;
-      }
-    }
+        if (!_root._singleDependencyStruct60Created)
+        {
+          _root._singleDependencyStruct60 = new DependencyStruct<int>();
+          Thread.MemoryBarrier();
+          _root._singleDependencyStruct60Created = true;
+        }
 
     return new Program<T1>(new Service<T1, int, List<T1>, Dictionary<T1, int>>(new Dependency<T1>(depArg), _root._singleDependencyStruct60));
   }

@@ -110,15 +110,14 @@ partial class Composition
     {
       var resolveDependency1 = default(Dependency);
       if (!_root._singleValueTuple53Created)
-      {
         lock (_lock)
-        {
-          EnsureDependencyExists8();
-          _root._singleValueTuple53 = (resolveDependency1, resolveDependency1);
-          Thread.MemoryBarrier();
-          _root._singleValueTuple53Created = true;
-        }
-      }
+          if (!_root._singleValueTuple53Created)
+          {
+            EnsureDependencyExists8();
+            _root._singleValueTuple53 = (resolveDependency1, resolveDependency1);
+            Thread.MemoryBarrier();
+            _root._singleValueTuple53Created = true;
+          }
 
       return new Service(resolveDependency1, resolveDependency1, _root._singleValueTuple53);
       [MethodImpl(MethodImplOptions.AggressiveInlining)]

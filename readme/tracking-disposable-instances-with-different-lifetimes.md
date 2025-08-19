@@ -203,13 +203,12 @@ partial class Composition: IDisposable
 
         IOwned localOwned10 = transOwned9;
         if (_root._singleDependency53 is null)
-        {
           lock (_lock)
-          {
-            _root._singleDependency53 = new Dependency();
-            _root._disposables[_root._disposeIndex++] = _root._singleDependency53;
-          }
-        }
+            if (_root._singleDependency53 is null)
+            {
+              _root._singleDependency53 = new Dependency();
+              _root._disposables[_root._disposeIndex++] = _root._singleDependency53;
+            }
 
         IDependency localValue14 = _root._singleDependency53;
         blockOwned8 = new Owned<IDependency>(localValue14, localOwned10);

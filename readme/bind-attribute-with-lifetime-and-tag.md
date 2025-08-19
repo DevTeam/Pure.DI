@@ -107,18 +107,17 @@ partial class Composition
     get
     {
       if (_root._singleIDependency is null)
-      {
         lock (_lock)
-        {
-          if (_root._singleFacade52 is null)
+          if (_root._singleIDependency is null)
           {
-            _root._singleFacade52 = new Facade();
-          }
+            if (_root._singleFacade52 is null)
+            {
+              _root._singleFacade52 = new Facade();
+            }
 
-          Facade localInstance_1182D1278 = _root._singleFacade52;
-          _root._singleIDependency = localInstance_1182D1278.Dependency;
-        }
-      }
+            Facade localInstance_1182D1278 = _root._singleFacade52;
+            _root._singleIDependency = localInstance_1182D1278.Dependency;
+          }
 
       return new Service(_root._singleIDependency);
     }

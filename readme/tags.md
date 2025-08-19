@@ -135,12 +135,11 @@ partial class Composition
       void EnsureXyzDependencyXyzTagExists1()
       {
         if (_root._singleXyzDependency53 is null)
-        {
           lock (_lock)
-          {
-            _root._singleXyzDependency53 = new XyzDependency();
-          }
-        }
+            if (_root._singleXyzDependency53 is null)
+            {
+              _root._singleXyzDependency53 = new XyzDependency();
+            }
       }
     }
   }
@@ -156,12 +155,11 @@ partial class Composition
       void EnsureXyzDependencyXyzTagExists()
       {
         if (_root._singleXyzDependency53 is null)
-        {
           lock (_lock)
-          {
-            _root._singleXyzDependency53 = new XyzDependency();
-          }
-        }
+            if (_root._singleXyzDependency53 is null)
+            {
+              _root._singleXyzDependency53 = new XyzDependency();
+            }
       }
     }
   }

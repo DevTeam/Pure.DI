@@ -108,16 +108,15 @@ partial class Composition
       var blockMyAccumulator1 = new MyAccumulator();
       var blockAbcDependency5 = new AbcDependency();
       if (_root._singleXyzDependency54 is null)
-      {
         lock (_lock)
-        {
-          XyzDependency _singleXyzDependency54Temp;
-          _singleXyzDependency54Temp = new XyzDependency();
-          blockMyAccumulator1.Add(_singleXyzDependency54Temp);
-          Thread.MemoryBarrier();
-          _root._singleXyzDependency54 = _singleXyzDependency54Temp;
-        }
-      }
+          if (_root._singleXyzDependency54 is null)
+          {
+            XyzDependency _singleXyzDependency54Temp;
+            _singleXyzDependency54Temp = new XyzDependency();
+            blockMyAccumulator1.Add(_singleXyzDependency54Temp);
+            Thread.MemoryBarrier();
+            _root._singleXyzDependency54 = _singleXyzDependency54Temp;
+          }
 
       var transAbcDependency3 = new AbcDependency();
       lock (_lock)

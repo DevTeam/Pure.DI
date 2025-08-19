@@ -152,13 +152,12 @@ partial class Composition: IDisposable, IAsyncDisposable
     get
     {
       if (_scopedDependency52 is null)
-      {
         lock (_lock)
-        {
-          _scopedDependency52 = new Dependency();
-          _disposables[_disposeIndex++] = _scopedDependency52;
-        }
-      }
+          if (_scopedDependency52 is null)
+          {
+            _scopedDependency52 = new Dependency();
+            _disposables[_disposeIndex++] = _scopedDependency52;
+          }
 
       return new Service(_scopedDependency52);
     }

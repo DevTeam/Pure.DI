@@ -127,12 +127,11 @@ partial class Composition
     Clock transClock;
     Clock localBuildingInstance15 = buildingInstance;
     if (_root._singleClockService52 is null)
-    {
       lock (_lock)
-      {
-        _root._singleClockService52 = new ClockService();
-      }
-    }
+        if (_root._singleClockService52 is null)
+        {
+          _root._singleClockService52 = new ClockService();
+        }
 
     localBuildingInstance15.ClockService = _root._singleClockService52;
     transClock = localBuildingInstance15;

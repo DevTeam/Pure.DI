@@ -200,13 +200,12 @@ partial class Composition: IDisposable
         Abstractions.Own<IDependency> blockOwn7; // Creates the owner of an instance
         Abstractions.Own localOwn1 = blockOwn6;
         if (_root._singleDependency53 is null)
-        {
           lock (_lock)
-          {
-            _root._singleDependency53 = new Dependency();
-            _root._disposables[_root._disposeIndex++] = _root._singleDependency53;
-          }
-        }
+            if (_root._singleDependency53 is null)
+            {
+              _root._singleDependency53 = new Dependency();
+              _root._disposables[_root._disposeIndex++] = _root._singleDependency53;
+            }
 
         IDependency localValue10 = _root._singleDependency53;
         blockOwn7 = new Abstractions.Own<IDependency>(localValue10, localOwn1);

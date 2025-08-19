@@ -804,14 +804,16 @@ class RootBuilder(
             : buildTools.NullCheck(compilation, var.Name);
 
         lines.AppendLine($"if ({checkExpression})");
-        lines.AppendLine(BlockStart);
-        lines.IncIndent();
         if (isLockRequired)
         {
-            locks.AddLockStatements(lines, false);
-            lines.AppendLine(BlockStart);
             lines.IncIndent();
+            locks.AddLockStatements(lines, false);
+            lines.IncIndent();
+            lines.AppendLine($"if ({checkExpression})");
         }
+
+        lines.AppendLine(BlockStart);
+        lines.IncIndent();
     }
 
     private void FinishSingleInstanceCheck(CodeContext ctx)
@@ -840,13 +842,13 @@ class RootBuilder(
         }
 
         lines.DecIndent();
-        lines.AppendLine(BlockFinish);
         if (ctx.IsLockRequired)
         {
             lines.DecIndent();
-            lines.AppendLine(BlockFinish);
+            lines.DecIndent();
         }
 
+        lines.AppendLine(BlockFinish);
         lines.AppendLine();
     }
 

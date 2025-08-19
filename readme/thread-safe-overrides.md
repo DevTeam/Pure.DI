@@ -174,19 +174,18 @@ partial class Composition
           // Overrides with tag using lambda argument
           // Overrides with some value
           // Overrides with injected value
-          int overrInt321 = localDependencyId;
-          int overrInt322 = localSubId;
-          string overrString3 = $"Dep {localDependencyId} {localSubId}";
-          Drawing.Color overrColor4 = localRed;
+          int overrInt32 = localDependencyId;
+          int overrInt321 = localSubId;
+          string overrString2 = $"Dep {localDependencyId} {localSubId}";
+          Drawing.Color overrColor3 = localRed;
           if (_root._singleClock53 is null)
-          {
             lock (_lock)
-            {
-              _root._singleClock53 = new Clock();
-            }
-          }
+              if (_root._singleClock53 is null)
+              {
+                _root._singleClock53 = new Clock();
+              }
 
-          Dependency localDependency = new Dependency(overrString3, _root._singleClock53, overrInt321, overrInt322, overrColor4);
+          Dependency localDependency = new Dependency(overrString2, _root._singleClock53, overrInt32, overrInt321, overrColor3);
           return localDependency;
         }
       };

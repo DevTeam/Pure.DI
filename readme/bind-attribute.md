@@ -111,12 +111,11 @@ partial class Composition
     {
       IDependency transIDependency1;
       if (_root._singleFacade52 is null)
-      {
         lock (_lock)
-        {
-          _root._singleFacade52 = new Facade();
-        }
-      }
+          if (_root._singleFacade52 is null)
+          {
+            _root._singleFacade52 = new Facade();
+          }
 
       Facade localInstance_1182D1277 = _root._singleFacade52;
       transIDependency1 = localInstance_1182D1277.Dependency;

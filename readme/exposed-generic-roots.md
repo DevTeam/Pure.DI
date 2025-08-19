@@ -101,12 +101,11 @@ partial class Composition
     {
       OtherAssembly.IMyGenericService<int> transIMyGenericService1;
       if (_root._singleCompositionWithGenericRootsInOtherProject52 is null)
-      {
         lock (_lock)
-        {
-          _root._singleCompositionWithGenericRootsInOtherProject52 = new OtherAssembly.CompositionWithGenericRootsInOtherProject();
-        }
-      }
+          if (_root._singleCompositionWithGenericRootsInOtherProject52 is null)
+          {
+            _root._singleCompositionWithGenericRootsInOtherProject52 = new OtherAssembly.CompositionWithGenericRootsInOtherProject();
+          }
 
       OtherAssembly.CompositionWithGenericRootsInOtherProject localInstance_1182D127 = _root._singleCompositionWithGenericRootsInOtherProject52;
       transIMyGenericService1 = localInstance_1182D127.GetMyService<int>();
