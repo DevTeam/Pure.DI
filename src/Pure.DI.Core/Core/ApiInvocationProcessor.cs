@@ -15,7 +15,7 @@ sealed class ApiInvocationProcessor(
     IOverrideIdProvider overrideIdProvider,
     IBaseSymbolsProvider baseSymbolsProvider,
     INameFormatter nameFormatter,
-    INameProvider nameProvider,
+    IUniqueNameProvider uniqueNameProvider,
     ITypes types,
     IWildcardMatcher wildcardMatcher,
     Func<IFactoryApiWalker> factoryApiWalkerFactory,
@@ -389,7 +389,7 @@ sealed class ApiInvocationProcessor(
                             {
                                 foreach (var builderRoot in builderRoots)
                                 {
-                                    var instanceName = nameProvider.GetUniqueName($"{nameFormatter.Format("{type}", builderRoot.RootType, builderRoot.Tag?.Value)}");
+                                    var instanceName = uniqueNameProvider.GetUniqueName($"{nameFormatter.Format("{type}", builderRoot.RootType, builderRoot.Tag?.Value)}");
                                     factory.AppendLine($"case {builderRoot.RootType} {instanceName}:");
                                     using (factory.Indent())
                                     {

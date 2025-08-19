@@ -142,10 +142,10 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      EnsureXyzDependencyXyzExists1();
+      EnsureXyzDependencyXyzExists();
       return _root._singleXyzDependency53;
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      void EnsureXyzDependencyXyzExists1()
+      void EnsureXyzDependencyXyzExists()
       {
         if (_root._singleXyzDependency53 is null)
           lock (_lock)

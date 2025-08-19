@@ -4,7 +4,7 @@ namespace Pure.DI.Core.Code;
 class CompositionBuilder(
     ITypeResolver typeResolver,
     Func<IVarsMap> varsMapFactory,
-    IBuilder<RootContext, VarInjection> rootBuilder,
+    Func<IBuilder<RootContext, VarInjection>> rootBuilder,
     INodeInfo nodeInfo,
     IVarDeclarationTools varDeclarationTools,
     IBuilder<CompositionCode, LinesBuilder> classDiagramBuilder,
@@ -27,7 +27,7 @@ class CompositionBuilder(
             var lines = new LinesBuilder();
             using var rootToken = varsMap.Root(lines);
             var ctx = new RootContext(graph, root, varsMap, lines);
-            var rootVarInjection = rootBuilder.Build(ctx);
+            var rootVarInjection = rootBuilder().Build(ctx);
             lines.AppendLine($"return {rootVarInjection.Var.CodeExpression};");
             foreach (var localFunction in varsMap.Vars.Select(i => i.LocalFunction).Where(i => i.Lines.Count > 0))
             {

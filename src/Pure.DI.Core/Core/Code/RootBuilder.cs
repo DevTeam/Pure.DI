@@ -23,6 +23,7 @@ class RootBuilder(
     Func<InitializersWalkerContext, IInitializersWalker> initializersWalkerFactory,
     Func<FactoryRewriterContext, IFactoryRewriter> factoryRewriterFactory,
     ILocationProvider locationProvider,
+    IUniqueNameProvider uniqueNameProvider,
     INameProvider nameProvider,
     IOverridesRegistry overridesRegistry,
     INameFormatter nameFormatter,
@@ -719,7 +720,7 @@ class RootBuilder(
                     buildTools.AddAggressiveInlining(localFunction);
                 }
 
-                var.LocalFunctionName = nameProvider.GetUniqueName($"Ensure{baseName}Exists{Names.Salt}");
+                var.LocalFunctionName = uniqueNameProvider.GetUniqueName($"Ensure{baseName}Exists{Names.Salt}");
                 localFunction.AppendLine($"void {var.LocalFunctionName}()");
                 localFunction.AppendLine(BlockStart);
                 localFunction.IncIndent();

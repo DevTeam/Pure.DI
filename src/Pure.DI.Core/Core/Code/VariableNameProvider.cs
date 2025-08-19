@@ -1,11 +1,7 @@
 ﻿namespace Pure.DI.Core.Code;
 
-using System.Collections.Concurrent;
-
-class NameProvider: INameProvider
+class NameProvider(IUniqueNameProvider uniqueNameProvider): INameProvider
 {
-    private readonly ConcurrentDictionary<string, int> _names = new();
-
     public string GetVariableName(IDependencyNode node, int transientId) =>
         node switch
         {
@@ -23,13 +19,7 @@ class NameProvider: INameProvider
         GetVariableName(Names.OverriddenVariablePrefix, @override.ContractType.Name, @override.Id);
 
     public string GetLocalUniqueVariableName(string baseName) =>
-        GetUniqueName($"{Names.LocalVariablePrefix}{ToTitleCase(baseName)}{Names.Salt}");
-
-    public string GetUniqueName(string baseName)
-    {
-        var id = _names.AddOrUpdate(baseName, 0, (_, id) => id + 1);
-        return id == 0 ? baseName : $"{baseName}{id}";
-    }
+        uniqueNameProvider.GetUniqueName($"{Names.LocalVariablePrefix}{ToTitleCase(baseName)}{Names.Salt}");
 
     private static string GetVariableName(string prefix, string baseName, int id) =>
         $"{prefix}{ToTitleCase(baseName)}{Names.Salt}{(id != 0 ? id.ToString() : "")}";

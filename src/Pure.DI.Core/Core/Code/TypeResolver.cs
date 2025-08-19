@@ -4,7 +4,7 @@ namespace Pure.DI.Core.Code;
 
 sealed class TypeResolver(
     IMarker marker,
-    INameProvider nameProvider,
+    IUniqueNameProvider uniqueNameProvider,
     ISymbolNames symbolNames)
     : ITypeResolver
 {
@@ -22,7 +22,7 @@ sealed class TypeResolver(
                 {
                     if (!_names.TryGetValue(type, out var typeName))
                     {
-                        typeName = nameProvider.GetUniqueName("T");
+                        typeName = uniqueNameProvider.GetUniqueName("T");
                         _names.Add(type, typeName);
                     }
 

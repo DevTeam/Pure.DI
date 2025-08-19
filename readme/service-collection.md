@@ -113,10 +113,10 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      EnsureDependencyDependencyKeyExists3();
+      EnsureDependencyDependencyKeyExists();
       return _root._singleDependency52;
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      void EnsureDependencyDependencyKeyExists3()
+      void EnsureDependencyDependencyKeyExists()
       {
         if (_root._singleDependency52 is null)
           lock (_lock)
@@ -133,10 +133,10 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      EnsureDependencyDependencyKeyExists2();
+      EnsureDependencyDependencyKeyExists();
       return new Service(_root._singleDependency52);
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      void EnsureDependencyDependencyKeyExists2()
+      void EnsureDependencyDependencyKeyExists()
       {
         if (_root._singleDependency52 is null)
           lock (_lock)

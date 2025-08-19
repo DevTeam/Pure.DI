@@ -114,13 +114,13 @@ partial class Composition
         lock (_lock)
           if (_root._singleService53 is null)
           {
-            EnsureDependencyExists7();
+            EnsureDependencyExists();
             _root._singleService53 = new Service(_root._singleDependency52, _root._singleDependency52);
           }
 
       return _root._singleService53;
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      void EnsureDependencyExists7()
+      void EnsureDependencyExists()
       {
         if (_root._singleDependency52 is null)
         {

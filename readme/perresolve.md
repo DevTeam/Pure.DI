@@ -113,7 +113,7 @@ partial class Composition
         lock (_lock)
           if (!_root._singleValueTuple53Created)
           {
-            EnsureDependencyExists8();
+            EnsureDependencyExists();
             _root._singleValueTuple53 = (resolveDependency1, resolveDependency1);
             Thread.MemoryBarrier();
             _root._singleValueTuple53Created = true;
@@ -121,7 +121,7 @@ partial class Composition
 
       return new Service(resolveDependency1, resolveDependency1, _root._singleValueTuple53);
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      void EnsureDependencyExists8()
+      void EnsureDependencyExists()
       {
         if (resolveDependency1 is null)
         {

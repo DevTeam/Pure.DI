@@ -112,10 +112,10 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      EnsureDependencyDependencyKeyExists1();
+      EnsureDependencyDependencyKeyExists();
       return _root._singleDependency52;
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      void EnsureDependencyDependencyKeyExists1()
+      void EnsureDependencyDependencyKeyExists()
       {
         if (_root._singleDependency52 is null)
           lock (_lock)

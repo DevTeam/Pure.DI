@@ -10,7 +10,7 @@ sealed class BuildTools(
     IFilter filter,
     ITypeResolver typeResolver,
     IBaseSymbolsProvider baseSymbolsProvider,
-    INameProvider nameProvider,
+    IUniqueNameProvider uniqueNameProvider,
     ILocks locks,
     ISymbolNames symbolNames,
     ICompilations compilations)
@@ -120,7 +120,7 @@ sealed class BuildTools(
 
         if (!string.IsNullOrEmpty(refKind))
         {
-            var localVarName = nameProvider.GetUniqueName($"{varInjection.Var.Name}_{refKind}");
+            var localVarName = uniqueNameProvider.GetUniqueName($"{varInjection.Var.Name}_{refKind}");
             ctx.Lines.AppendLine($"{varInjection.Var.InstanceType} {localVarName} = {injection};");
             injection = $"{refKind} {localVarName}";
         }

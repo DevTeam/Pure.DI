@@ -271,7 +271,7 @@ class ReadmeTarget(
 
     private static async Task AddExample(string logsDirectory, string exampleSearchPattern, TextWriter writer)
     {
-        var salt = $"M{DateTime.Now.Month:00}D{DateTime.Now.Day:00}di";
+        var salt = $"{DateTime.Now.DayOfYear}d";
         foreach (var generatedCodeFile in Directory.GetFiles(Path.Combine(logsDirectory, "Pure.DI", "Pure.DI.SourceGenerator"), exampleSearchPattern).OrderBy(i => i))
         {
             var ns = string.Join('.', Path.GetFileName(generatedCodeFile).Split('.').Reverse().Skip(3).Reverse()) + ".";

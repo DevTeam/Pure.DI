@@ -146,10 +146,10 @@ partial class Composition: IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      EnsureDependencyExists5();
+      EnsureDependencyExists();
       return _root._singleDependency52;
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      void EnsureDependencyExists5()
+      void EnsureDependencyExists()
       {
         if (_root._singleDependency52 is null)
           lock (_lock)
@@ -170,14 +170,14 @@ partial class Composition: IDisposable
         lock (_lock)
           if (_scopedService53 is null)
           {
-            EnsureDependencyExists4();
+            EnsureDependencyExists();
             _scopedService53 = new Service(_root._singleDependency52);
             _disposables[_disposeIndex++] = _scopedService53;
           }
 
       return _scopedService53;
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      void EnsureDependencyExists4()
+      void EnsureDependencyExists()
       {
         if (_root._singleDependency52 is null)
         {

@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 
 static class Names
 {
-    public static readonly string Salt = $"M{DateTime.Now.Month:00}D{DateTime.Now.Day:00}di";
+    public static readonly string Salt = $"{DateTime.Now.DayOfYear}d";
     public const string GeneratorName = $"{nameof(Pure)}.{nameof(DI)}";
 
     // Files

@@ -60,6 +60,7 @@ public sealed partial class Generator
             })
             .Bind().To(_ => Compiled | CultureInvariant | Singleline | IgnoreCase)
             .Bind(VarName).To<IdGenerator>()
+            .Bind().To<UniqueNameProvider>()
 
             // Walkers
             .Bind<IMetadataWalker>().To<MetadataWalker>()

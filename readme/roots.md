@@ -109,10 +109,10 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      EnsureDependencyExists1();
+      EnsureDependencyExists();
       return new Service1(_root._singleDependency52);
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      void EnsureDependencyExists1()
+      void EnsureDependencyExists()
       {
         if (_root._singleDependency52 is null)
           lock (_lock)

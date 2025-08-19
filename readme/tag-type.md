@@ -141,10 +141,10 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      EnsureXyzDependencyPureDIUsageTestsAdvancedTagTypeScenarioXyzDependencyExists1();
+      EnsureXyzDependencyPureDIUsageTestsAdvancedTagTypeScenarioXyzDependencyExists();
       return new Service(new AbcDependency(), _root._singleXyzDependency53, new AbcDependency());
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      void EnsureXyzDependencyPureDIUsageTestsAdvancedTagTypeScenarioXyzDependencyExists1()
+      void EnsureXyzDependencyPureDIUsageTestsAdvancedTagTypeScenarioXyzDependencyExists()
       {
         if (_root._singleXyzDependency53 is null)
           lock (_lock)
