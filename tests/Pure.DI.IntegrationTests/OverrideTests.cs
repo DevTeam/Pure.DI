@@ -2999,14 +2999,17 @@ public class OverrideTests
                            {
                                public interface IRepository
                                {
+                                    int Id { get; }
                                }
                                
                                internal class ServiceRepository : IRepository
                                {
+                                    public int Id { get; } = 10;
                                }
                                
                                internal class GlobalRepository : IRepository
                                {
+                                    public int Id { get; } = 20;
                                }
                                
                                public interface IService
@@ -3016,9 +3019,10 @@ public class OverrideTests
                                
                                internal class MyService : IService
                                {
-                                   public MyService(IRepository repository)
+                                   public MyService(int id, IRepository repository)
                                    {
                                        Repository = repository;
+                                       Console.WriteLine(id);
                                    }
                                
                                    public IRepository Repository { get; }
@@ -3058,6 +3062,7 @@ public class OverrideTests
                                            {
                                                ctx.Inject(out HostComposition hostComposition);
                                                ctx.Override<IRepository>(hostComposition.Repository);
+                                               ctx.Override<int>(hostComposition.Repository.Id);
                                                ctx.Inject(out MyService myService);
                                                return myService;
                                            })
@@ -3079,6 +3084,6 @@ public class OverrideTests
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["Sample.GlobalRepository"], result);
+        result.StdOut.ShouldBe(["20", "Sample.GlobalRepository"], result);
     }
 }
