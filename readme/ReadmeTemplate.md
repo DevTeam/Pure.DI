@@ -67,7 +67,7 @@ The above code specifies the generation of a partial class named *__Composition_
 ```c#
 partial class Composition
 {
-    private Lock _lock = new Lock();
+    private readonly Lock _lock = new Lock();
     private Random? _random;
     
     public Program Root
@@ -77,7 +77,7 @@ partial class Composition
       {
         var stateFunc = new Func<State>(() => {
               if (_random is null)
-                using (_lock.EnterScope())
+                lock (_lock)
                   if (_random is null)
                     _random = new Random();
 
@@ -93,10 +93,91 @@ partial class Composition
     }
 
     public T Resolve<T>() { ... }
+    public T Resolve<T>(object? tag) { ... }
 
     public object Resolve(Type type) { ... }
+    public object Resolve(Type type, object? tag)) { ... }
 }
 ```
+
+<details>
+<summary>Class diagram</summary>
+
+```mermaid
+classDiagram
+    ShroedingersCat --|> ICat
+    CardboardBoxᐸICatᐳ --|> IBoxᐸICatᐳ
+    CardboardBoxᐸICatᐳ --|> IEquatableᐸCardboardBoxᐸICatᐳᐳ
+    Composition ..> Program : Program Root
+    State o-- "Singleton" Random : Random
+    ShroedingersCat *--  LazyᐸStateᐳ : LazyᐸStateᐳ
+    Program *--  CardboardBoxᐸICatᐳ : IBoxᐸICatᐳ
+    CardboardBoxᐸICatᐳ *--  ShroedingersCat : ICat
+    LazyᐸStateᐳ o-- "PerBlock" FuncᐸStateᐳ : FuncᐸStateᐳ
+    FuncᐸStateᐳ *--  State : State
+    
+namespace Sample {
+    class CardboardBoxᐸICatᐳ {
+        <<record>>
+        +CardboardBox(ICat Content)
+    }
+    
+    class Composition {
+        <<partial>>
+        +Program Root
+        + T ResolveᐸTᐳ()
+        + T ResolveᐸTᐳ(object? tag)
+        + object Resolve(Type type)
+        + object Resolve(Type type, object? tag)
+    }
+    
+    class IBoxᐸICatᐳ {
+        <<interface>>
+    }
+    
+    class ICat {
+        <<interface>>
+    }
+    
+    class Program {
+        <<class>>
+        +Program(IBoxᐸICatᐳ box)
+    }
+    
+    class ShroedingersCat {
+    <<class>>
+        +ShroedingersCat(LazyᐸStateᐳ superposition)
+    }
+    
+    class State {
+        <<enum>>
+    }
+}
+    
+namespace System {
+    class FuncᐸStateᐳ {
+        <<delegate>>
+    }
+    
+    class IEquatableᐸCardboardBoxᐸICatᐳᐳ {
+        <<interface>>
+    }
+    
+    class LazyᐸStateᐳ {
+        <<class>>
+    }
+    
+    class Random {
+        <<class>>
+        +Random()
+    }
+}
+```
+
+You can see the class diagram at any time by following the link in the comment of the generated class:
+![](readme/class_digram_link.png)
+
+</details>
 
 Obviously, this code does not depend on other libraries, does not use type reflection or any other tricks that can negatively affect performance and memory consumption. It looks like an efficient code written by hand. At any given time, you can study it and understand how it works.
 

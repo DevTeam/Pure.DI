@@ -122,7 +122,7 @@ The above code specifies the generation of a partial class named *__Composition_
 ```c#
 partial class Composition
 {
-    private Lock _lock = new Lock();
+    private readonly Lock _lock = new Lock();
     private Random? _random;
     
     public Program Root
@@ -132,7 +132,7 @@ partial class Composition
       {
         var stateFunc = new Func<State>(() => {
               if (_random is null)
-                using (_lock.EnterScope())
+                lock (_lock)
                   if (_random is null)
                     _random = new Random();
 
@@ -148,10 +148,91 @@ partial class Composition
     }
 
     public T Resolve<T>() { ... }
+    public T Resolve<T>(object? tag) { ... }
 
     public object Resolve(Type type) { ... }
+    public object Resolve(Type type, object? tag)) { ... }
 }
 ```
+
+<details>
+<summary>Class diagram</summary>
+
+```mermaid
+classDiagram
+    ShroedingersCat --|> ICat
+    CardboardBoxᐸICatᐳ --|> IBoxᐸICatᐳ
+    CardboardBoxᐸICatᐳ --|> IEquatableᐸCardboardBoxᐸICatᐳᐳ
+    Composition ..> Program : Program Root
+    State o-- "Singleton" Random : Random
+    ShroedingersCat *--  LazyᐸStateᐳ : LazyᐸStateᐳ
+    Program *--  CardboardBoxᐸICatᐳ : IBoxᐸICatᐳ
+    CardboardBoxᐸICatᐳ *--  ShroedingersCat : ICat
+    LazyᐸStateᐳ o-- "PerBlock" FuncᐸStateᐳ : FuncᐸStateᐳ
+    FuncᐸStateᐳ *--  State : State
+    
+namespace Sample {
+    class CardboardBoxᐸICatᐳ {
+        <<record>>
+        +CardboardBox(ICat Content)
+    }
+    
+    class Composition {
+        <<partial>>
+        +Program Root
+        + T ResolveᐸTᐳ()
+        + T ResolveᐸTᐳ(object? tag)
+        + object Resolve(Type type)
+        + object Resolve(Type type, object? tag)
+    }
+    
+    class IBoxᐸICatᐳ {
+        <<interface>>
+    }
+    
+    class ICat {
+        <<interface>>
+    }
+    
+    class Program {
+        <<class>>
+        +Program(IBoxᐸICatᐳ box)
+    }
+    
+    class ShroedingersCat {
+    <<class>>
+        +ShroedingersCat(LazyᐸStateᐳ superposition)
+    }
+    
+    class State {
+        <<enum>>
+    }
+}
+    
+namespace System {
+    class FuncᐸStateᐳ {
+        <<delegate>>
+    }
+    
+    class IEquatableᐸCardboardBoxᐸICatᐳᐳ {
+        <<interface>>
+    }
+    
+    class LazyᐸStateᐳ {
+        <<class>>
+    }
+    
+    class Random {
+        <<class>>
+        +Random()
+    }
+}
+```
+
+You can see the class diagram at any time by following the link in the comment of the generated class:
+![](readme/class_digram_link.png)
+
+</details>
 
 Obviously, this code does not depend on other libraries, does not use type reflection or any other tricks that can negatively affect performance and memory consumption. It looks like an efficient code written by hand. At any given time, you can study it and understand how it works.
 
@@ -3791,24 +3872,6 @@ Atomically generated smart tag with value "Cleaner".
 </blockquote></details>
 
 
-<details><summary>Field CompositionClass</summary><blockquote>
-
-Atomically generated smart tag with value "CompositionClass".
-            It's used for:
-            
-            class _Generator__CodeBuilder_ <-- _IBuilder{TData, T}_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
-</blockquote></details>
-
-
-<details><summary>Field UniqueTag</summary><blockquote>
-
-Atomically generated smart tag with value "UniqueTag".
-            It's used for:
-            
-            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve__BindingBuilder_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve_
-</blockquote></details>
-
-
 <details><summary>Field UsingDeclarations</summary><blockquote>
 
 Atomically generated smart tag with value "UsingDeclarations".
@@ -3818,12 +3881,21 @@ Atomically generated smart tag with value "UsingDeclarations".
 </blockquote></details>
 
 
-<details><summary>Field Override</summary><blockquote>
+<details><summary>Field CompositionClass</summary><blockquote>
 
-Atomically generated smart tag with value "Override".
+Atomically generated smart tag with value "CompositionClass".
             It's used for:
             
-            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
+            class _Generator__CodeBuilder_ <-- _IBuilder{TData, T}_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field Overrider</summary><blockquote>
+
+Atomically generated smart tag with value "Overrider".
+            It's used for:
+            
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Overrider) -- _GraphOverrider_ as _PerBlock_
 </blockquote></details>
 
 
@@ -3836,12 +3908,21 @@ Atomically generated smart tag with value "VarName".
 </blockquote></details>
 
 
-<details><summary>Field Overrider</summary><blockquote>
+<details><summary>Field Override</summary><blockquote>
 
-Atomically generated smart tag with value "Overrider".
+Atomically generated smart tag with value "Override".
             It's used for:
             
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Overrider) -- _GraphOverrider_ as _PerBlock_
+            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
+<details><summary>Field UniqueTag</summary><blockquote>
+
+Atomically generated smart tag with value "UniqueTag".
+            It's used for:
+            
+            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve__BindingBuilder_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
