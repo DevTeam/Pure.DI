@@ -1095,6 +1095,7 @@ sealed class ApiInvocationProcessor(
             return valueType;
         }
 
+        // ReSharper disable once ConvertIfStatementToReturnStatement
         if (semanticModel.GetOperation(argumentSyntax.Expression) is { Type: {} declarationType })
         {
             return declarationType;
