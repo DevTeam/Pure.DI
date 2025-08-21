@@ -114,7 +114,8 @@ partial class Composition
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public IService GetRoot(CancellationToken cancellationToken)
   {
-    Task<IDependency> transTask1; // Injects an instance factory
+    Task<IDependency> transTask1;
+    // Injects an instance factory
     Func<IDependency> blockFunc2 = new Func<IDependency>(
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     () =>

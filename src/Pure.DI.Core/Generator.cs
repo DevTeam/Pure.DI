@@ -104,7 +104,6 @@ public sealed partial class Generator
             .Bind(Type).To<LifetimesValidatorVisitor>()
             .Bind(Type).To<CyclicDependencyValidatorVisitor>()
             .Bind().To<LifetimeAnalyzer>()
-            .Bind().To<TriviaTools>()
             .Bind().To<InstanceDpProvider>()
             .Bind().To<Injections>()
             .Bind().To<NameFormatter>()

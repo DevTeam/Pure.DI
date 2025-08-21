@@ -6,7 +6,6 @@ namespace Pure.DI.Core.Code;
 sealed class FactoryRewriter(
     IArguments arguments,
     ICompilations compilations,
-    ITriviaTools triviaTools,
     ISymbolNames symbolNames,
     FactoryRewriterContext ctx)
     : CSharpSyntaxRewriter, IFactoryRewriter
@@ -81,7 +80,9 @@ sealed class FactoryRewriter(
                     var curStatement = statement;
                     if (curStatement is ReturnStatementSyntax { Expression: {} returnBody })
                     {
-                        curStatement = CreateAssignmentExpression(returnBody, statement);
+                        curStatement = CreateAssignmentExpression(returnBody)
+                            .WithLeadingTrivia(statement.GetLeadingTrivia())
+                            .WithTrailingTrivia(statement.GetTrailingTrivia());
                     }
                     else
                     {
@@ -109,25 +110,29 @@ sealed class FactoryRewriter(
         if (_nestedLambdaCounter == 1 && node.Expression is {} returnBody)
         {
             IsFinishMarkRequired = true;
+            var prefix = GetPrefix(node);
             return SyntaxFactory.Block(
-                    CreateAssignmentExpression(returnBody, node),
+                    CreateAssignmentExpression(returnBody)
+                        .WithLeadingTrivia(new SyntaxTriviaList().Add(SyntaxFactory.LineFeed).Add(prefix).Add(SyntaxFactory.Tab)),
                     SyntaxFactory.GotoStatement(
                         SyntaxKind.GotoStatement,
-                        SyntaxFactory.IdentifierName(ctx.FinishLabel).WithLeadingTrivia(SyntaxFactory.Space)).WithLeadingTrivia(SyntaxFactory.Space).WithTrailingTrivia(SyntaxFactory.Space)
+                        SyntaxFactory.IdentifierName(ctx.FinishLabel).WithLeadingTrivia(SyntaxFactory.Space))
+                        .WithLeadingTrivia(new SyntaxTriviaList().Add(SyntaxFactory.LineFeed).Add(prefix).Add(SyntaxFactory.Tab))
+                        .WithTrailingTrivia(new SyntaxTriviaList().Add(SyntaxFactory.LineFeed).Add(prefix))
                 )
-                .WithLeadingTrivia(node.GetLeadingTrivia())
-                .WithTrailingTrivia(node.GetTrailingTrivia());
+                .WithLeadingTrivia(prefix)
+                .WithTrailingTrivia(SyntaxFactory.LineFeed);
         }
 
         return base.VisitReturnStatement(node);
     }
 
-    private ExpressionStatementSyntax CreateAssignmentExpression(SyntaxNode returnBody, StatementSyntax owner) =>
-        triviaTools.PreserveTrivia(owner, SyntaxFactory.ExpressionStatement(
+    private ExpressionStatementSyntax CreateAssignmentExpression(SyntaxNode returnBody) =>
+        SyntaxFactory.ExpressionStatement(
             SyntaxFactory.AssignmentExpression(
                 SyntaxKind.SimpleAssignmentExpression,
                 SyntaxFactory.IdentifierName(ctx.VarInjection.Var.Name).WithLeadingTrivia(SyntaxFactory.Space).WithTrailingTrivia(SyntaxFactory.Space),
-                (ExpressionSyntax)Visit(returnBody).WithLeadingTrivia(SyntaxFactory.Space))), _ctx!.RootContext.Graph.Source.Hints.IsFormatCodeEnabled);
+                (ExpressionSyntax)Visit(returnBody).WithLeadingTrivia(SyntaxFactory.Space)));
 
     public override SyntaxNode VisitExpressionStatement(ExpressionStatementSyntax node)
     {
@@ -166,14 +171,34 @@ sealed class FactoryRewriter(
         SyntaxNode newNode;
         if (node.Parent is null or BlockSyntax)
         {
-            newNode = SyntaxFactory.ExpressionStatement(expressionSyntax).WithLeadingTrivia(SyntaxFactory.LineFeed).WithTrailingTrivia(SyntaxFactory.LineFeed);
+            newNode = SyntaxFactory.ExpressionStatement(expressionSyntax)
+                .WithLeadingTrivia(node.GetLeadingTrivia())
+                .WithTrailingTrivia(node.GetTrailingTrivia());
         }
         else
         {
-            newNode = SyntaxFactory.Block().AddStatements(SyntaxFactory.ExpressionStatement(expressionSyntax).WithLeadingTrivia(SyntaxFactory.LineFeed).WithTrailingTrivia(SyntaxFactory.LineFeed));
+            var prefix = node.Ancestors().Any() ? node.Ancestors().First().GetLeadingTrivia() : new SyntaxTriviaList().Add(SyntaxFactory.LineFeed);
+            newNode = SyntaxFactory.Block().AddStatements(
+                    SyntaxFactory.ExpressionStatement(expressionSyntax)
+                        .WithLeadingTrivia(new SyntaxTriviaList().Add(SyntaxFactory.LineFeed).AddRange(node.GetLeadingTrivia()))
+                        .WithTrailingTrivia(new SyntaxTriviaList().Add(SyntaxFactory.LineFeed).AddRange(prefix)))
+                .WithLeadingTrivia(prefix)
+                .WithTrailingTrivia(node.GetTrailingTrivia());
         }
 
-        return triviaTools.PreserveTrivia(node, newNode, _ctx!.RootContext.Graph.Source.Hints.IsFormatCodeEnabled);
+        return newNode;
+    }
+
+    private static SyntaxTrivia GetPrefix(SyntaxNode node)
+    {
+        var prefixes = node.GetLeadingTrivia()
+            .Reverse()
+            .Where(i => i.IsKind(SyntaxKind.WhitespaceTrivia))
+            .Take(1)
+            .ToList();
+
+        var prefix = prefixes.Count > 0 ? prefixes.First() : SyntaxFactory.Tab;
+        return prefix;
     }
 
     private bool TryInject(
@@ -192,14 +217,14 @@ sealed class FactoryRewriter(
             case IdentifierNameSyntax identifierName:
                 ctx.Injections.Add(new Injection(identifierName.Identifier.Text, false));
             {
-                expressionSyntax = triviaTools.PreserveTrivia(invocation, InjectionMarkerExpression, _ctx!.RootContext.Graph.Source.Hints.IsFormatCodeEnabled);
+                expressionSyntax = InjectionMarkerExpression.WithLeadingTrivia(invocation.GetLeadingTrivia()).WithTrailingTrivia(invocation.GetTrailingTrivia());
                 return true;
             }
 
             case DeclarationExpressionSyntax { Designation: SingleVariableDesignationSyntax singleVariableDesignationSyntax }:
                 ctx.Injections.Add(new Injection(singleVariableDesignationSyntax.Identifier.Text, true));
             {
-                expressionSyntax = triviaTools.PreserveTrivia(invocation, InjectionMarkerExpression, _ctx!.RootContext.Graph.Source.Hints.IsFormatCodeEnabled);
+                expressionSyntax = InjectionMarkerExpression.WithLeadingTrivia(invocation.GetLeadingTrivia()).WithTrailingTrivia(invocation.GetTrailingTrivia());
                 return true;
             }
         }
@@ -223,14 +248,14 @@ sealed class FactoryRewriter(
             case IdentifierNameSyntax identifierName:
                 ctx.Initializers.Add(new Initializer(identifierName.Identifier.Text));
             {
-                expressionSyntax = triviaTools.PreserveTrivia(invocation, InitializationMarkerExpression, _ctx!.RootContext.Graph.Source.Hints.IsFormatCodeEnabled);
+                expressionSyntax = InitializationMarkerExpression.WithLeadingTrivia(invocation.GetLeadingTrivia()).WithTrailingTrivia(invocation.GetTrailingTrivia());
                 return true;
             }
 
             case DeclarationExpressionSyntax { Designation: SingleVariableDesignationSyntax singleVariableDesignationSyntax }:
                 ctx.Initializers.Add(new Initializer(singleVariableDesignationSyntax.Identifier.Text));
             {
-                expressionSyntax = triviaTools.PreserveTrivia(invocation, InitializationMarkerExpression, _ctx!.RootContext.Graph.Source.Hints.IsFormatCodeEnabled);
+                expressionSyntax = InitializationMarkerExpression.WithLeadingTrivia(invocation.GetLeadingTrivia()).WithTrailingTrivia(invocation.GetTrailingTrivia());
                 return true;
             }
         }
@@ -239,7 +264,7 @@ sealed class FactoryRewriter(
         return false;
     }
 
-    private bool TryOverride(InvocationExpressionSyntax invocation, out ExpressionSyntax? expressionSyntax)
+    private static bool TryOverride(InvocationExpressionSyntax invocation, out ExpressionSyntax? expressionSyntax)
     {
         var value = invocation.ArgumentList.Arguments.Count > 0 ? invocation.ArgumentList.Arguments[0].Expression : null;
         if (value == null)
@@ -248,7 +273,7 @@ sealed class FactoryRewriter(
             return false;
         }
 
-        expressionSyntax = triviaTools.PreserveTrivia(invocation, OverrideMarkerExpression, _ctx!.RootContext.Graph.Source.Hints.IsFormatCodeEnabled);
+        expressionSyntax = OverrideMarkerExpression.WithLeadingTrivia(invocation.GetLeadingTrivia()).WithTrailingTrivia(invocation.GetTrailingTrivia());
         return true;
     }
 

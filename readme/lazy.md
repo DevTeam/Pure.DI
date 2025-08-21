@@ -77,7 +77,8 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Lazy<IDependency> transLazy1; // Injects an instance factory
+      Lazy<IDependency> transLazy1;
+      // Injects an instance factory
       Func<IDependency> blockFunc2 = new Func<IDependency>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>

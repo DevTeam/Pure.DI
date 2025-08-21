@@ -1551,17 +1551,22 @@ public class FactoryTests
                                               IDependency dependency1;
                                               var rnd = new Random(1).Next(3);
                                               if (rnd == 0)
-                                                   ctx.Inject(22, out dependency1);
+                                                  ctx.Inject(22, out dependency1);
                                               else
-                                              {
-                                                  if (rnd == 1)
+                                                  if (rnd == 2)
                                                   {
-                                                       ctx.Inject(out dependency1);
-                                                       return new Service(dependency1);
+                                                      ctx.Inject(22, out dependency1);
                                                   }
-                                                  
-                                                  ctx.Inject(out dependency1);
-                                              }
+                                                  else
+                                                  {
+                                                      if (rnd == 1)
+                                                      {
+                                                           ctx.Inject(out dependency1);
+                                                           return new Service(dependency1);
+                                                      }
+                                                      
+                                                      ctx.Inject(out dependency1);
+                                                  }
                                               
                                               return new Service(dependency1);
                                           })

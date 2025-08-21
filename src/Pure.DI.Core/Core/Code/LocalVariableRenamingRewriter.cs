@@ -5,27 +5,24 @@ namespace Pure.DI.Core.Code;
 using System.Collections.Concurrent;
 
 sealed class LocalVariableRenamingRewriter(
-    ITriviaTools triviaTools,
     INameProvider nameProvider)
     : CSharpSyntaxRewriter, ILocalVariableRenamingRewriter
 {
     private ConcurrentDictionary<string, string> Names { get; init; } = [];
-    private bool _formatCode;
     private bool _isOverride;
     private bool _forcibleRename;
     private SemanticModel? _semanticModel;
 
-    public SyntaxNode Rewrite(SemanticModel semanticModel, bool formatCode, bool isOverride, SyntaxNode lambda)
+    public SyntaxNode Rewrite(SemanticModel semanticModel, bool isOverride, SyntaxNode lambda)
     {
         _semanticModel = semanticModel;
-        _formatCode = formatCode;
         _isOverride = isOverride;
         _forcibleRename = _isOverride;
         return Visit(lambda);
     }
 
     public ILocalVariableRenamingRewriter Clone() =>
-        new LocalVariableRenamingRewriter(triviaTools, nameProvider) { Names = new ConcurrentDictionary<string, string>(Names) };
+        new LocalVariableRenamingRewriter(nameProvider) { Names = new ConcurrentDictionary<string, string>(Names) };
 
     public override SyntaxNode? VisitVariableDeclarator(VariableDeclaratorSyntax node) =>
         base.VisitVariableDeclarator(node.WithIdentifier(SyntaxFactory.Identifier(GetUniqueName(node.Identifier.Text))));
@@ -69,7 +66,7 @@ sealed class LocalVariableRenamingRewriter(
             && token.Parent is {} parent
             && (_semanticModel?.SyntaxTree != parent.SyntaxTree || _semanticModel.GetSymbolInfo(parent).Symbol is ILocalSymbol))
         {
-            token = triviaTools.PreserveTrivia(token, SyntaxFactory.Identifier(newName), _formatCode);
+            token = SyntaxFactory.Identifier(newName).WithLeadingTrivia(token.LeadingTrivia).WithTrailingTrivia(token.TrailingTrivia);
         }
 
         return base.VisitToken(token);

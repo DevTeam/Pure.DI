@@ -381,7 +381,7 @@ class RootBuilder(
 
                 // Rewrites syntax tree
                 var finishLabel = $"{var.Declaration.Name}Finish";
-                var factoryExpression = (LambdaExpressionSyntax)factory.Source.LocalVariableRenamingRewriter.Clone().Rewrite(setup.SemanticModel, setup.Hints.IsFormatCodeEnabled, false, originalLambda);
+                var factoryExpression = (LambdaExpressionSyntax)factory.Source.LocalVariableRenamingRewriter.Clone().Rewrite(setup.SemanticModel, false, originalLambda);
                 var injections = new List<FactoryRewriter.Injection>();
                 var inits = new List<FactoryRewriter.Initializer>();
                 var factoryRewriter = factoryRewriterFactory(new FactoryRewriterContext(factory, varInjection, finishLabel, injections, inits));
@@ -417,11 +417,12 @@ class RootBuilder(
                     hasOverridesLock = true;
                 }
 
+                var fixFirstLinePrefix = false;
                 if (syntaxNode is BlockSyntax curBlock)
                 {
                     if (!var.Declaration.IsDeclared)
                     {
-                        lines.Append($"{buildTools.GetDeclaration(ctx, var.Declaration)}{var.Name};");
+                        lines.AppendLine($"{buildTools.GetDeclaration(ctx, var.Declaration)}{var.Name};");
                         var.Declaration.IsDeclared = true;
                     }
 
@@ -433,10 +434,14 @@ class RootBuilder(
                 }
                 else
                 {
-                    var leadingTrivia = syntaxNode.GetLeadingTrivia().ToFullString().Trim();
+                    var leadingTrivia = syntaxNode.GetLeadingTrivia().ToFullString().TrimStart();
                     if (!string.IsNullOrEmpty(leadingTrivia))
                     {
-                        lines.AppendLine(leadingTrivia);
+                        lines.Append(leadingTrivia);
+                    }
+                    else
+                    {
+                        fixFirstLinePrefix = true;
                     }
 
                     if (!var.Declaration.IsDeclared)
@@ -493,38 +498,59 @@ class RootBuilder(
                     .GetEnumerator();
 
                 var initializationArgsEnum = initializationArgs.GetEnumerator();
-                var prefixes = new Stack<string>();
+                var linePrefixes = new List<(string line, int prefixLength)>();
                 foreach (var textLine in textLines)
                 {
                     var line = textLine.ToString();
-                    var prefix = new string(line.TakeWhile(char.IsWhiteSpace).ToArray());
-                    if (prefix.Length > 0)
+                    var length = line.TakeWhile(char.IsWhiteSpace).Count();
+                    var prefixLength = 0;
+                    for (var i = 0; i < length; i++)
                     {
-                        if (prefixes.Count == 0 || prefix.Length > prefixes.Peek().Length)
+                        switch (line[i])
                         {
-                            prefixes.Push(prefix);
-                        }
-                        else
-                        {
-                            if (prefixes.Count > 0 && prefix.Length < prefixes.Peek().Length)
-                            {
-                                prefixes.Pop();
-                            }
+                            case '\t':
+                                prefixLength += 4;
+                                break;
+
+                            default:
+                                prefixLength++;
+                                break;
                         }
                     }
 
-                    if (prefix.Length > 0 && prefixes.Count > 0 && line.StartsWith(prefix))
+                    line = line[length..];
+                    if (string.IsNullOrWhiteSpace(line))
                     {
-                        line = Formatting.IndentPrefix(new Indent(prefixes.Count - 1)) + line[prefix.Length..];
+                        continue;
                     }
 
-                    if (line.Contains(InjectionStatement) && resolvers.MoveNext())
+                    linePrefixes.Add((line, prefixLength >> 1));
+                }
+
+                if (fixFirstLinePrefix && linePrefixes.Count > 1)
+                {
+                    linePrefixes[0] = linePrefixes[0] with { prefixLength = linePrefixes[1].prefixLength };
+                }
+
+                var indents = linePrefixes
+                    .GroupBy(i => i.prefixLength)
+                    .OrderBy(i => i.Key)
+                    .Select((i, index) => (prefix: i.Key, indent: index))
+                    .ToDictionary(i => i.prefix, i => i.indent);
+
+                foreach (var (line, prefixLength) in linePrefixes)
+                {
+                    if (!indents.TryGetValue(prefixLength, out var indent))
                     {
-                        // When an injection marker
-                        var (injection, argument, resolver) = resolvers.Current;
-                        var indent = prefixes.Count;
-                        using (lines.Indent(indent))
+                        indent = 0;
+                    }
+
+                    using (lines.Indent(indent))
+                    {
+                        if (line.Contains(InjectionStatement) && resolvers.MoveNext())
                         {
+                            // When an injection marker
+                            var (injection, argument, resolver) = resolvers.Current;
                             if (hasOverrides)
                             {
                                 BuildOverrides(ctx, factory, resolver.Overrides, lines);
@@ -532,39 +558,33 @@ class RootBuilder(
 
                             BuildCode(ctx with { VarInjection = argument });
                             lines.AppendLine($"{(injection.DeclarationRequired ? $"{typeResolver.Resolve(setup, argument.Injection.Type)} " : "")}{injection.VariableName} = {buildTools.OnInjected(ctx, argument)};");
+
+                            continue;
                         }
 
-                        continue;
-                    }
-
-                    if (line.Contains(InitializationStatement) && initializers.MoveNext())
-                    {
-                        var (initialization, initializer) = initializers.Current;
-                        if (hasOverrides)
+                        if (line.Contains(InitializationStatement) && initializers.MoveNext())
                         {
-                            BuildOverrides(ctx, factory, initializer.Overrides, lines);
+                            var (initialization, initializer) = initializers.Current;
+                            if (hasOverrides)
+                            {
+                                BuildOverrides(ctx, factory, initializer.Overrides, lines);
+                            }
+
+                            var initializersWalker = initializersWalkerFactory(new InitializersWalkerContext(
+                                i => BuildCode(ctx with { VarInjection = i }),
+                                initialization.VariableName,
+                                initializationArgsEnum));
+                            initializersWalker.VisitInitializer(ctx, initializer);
+                            continue;
                         }
 
-                        var initializersWalker = initializersWalkerFactory(new InitializersWalkerContext(
-                            i => BuildCode(ctx with { VarInjection = i }),
-                            initialization.VariableName,
-                            initializationArgsEnum));
-                        initializersWalker.VisitInitializer(ctx, initializer);
-                        continue;
-                    }
+                        if (line.Contains(OverrideStatement))
+                        {
+                            continue;
+                        }
 
-                    if (line.Contains(OverrideStatement))
-                    {
-                        continue;
+                        lines.AppendLine(line);
                     }
-
-                    // When a code
-                    var len = 0;
-                    for (; len < line.Length && line[len] == ' '; len++)
-                    {
-                    }
-
-                    lines.AppendLine(line);
                 }
 
                 if (factoryRewriter.IsFinishMarkRequired)
@@ -843,13 +863,13 @@ class RootBuilder(
         }
 
         lines.DecIndent();
+        lines.AppendLine(BlockFinish);
         if (ctx.IsLockRequired)
         {
             lines.DecIndent();
             lines.DecIndent();
         }
 
-        lines.AppendLine(BlockFinish);
         lines.AppendLine();
     }
 

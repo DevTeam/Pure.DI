@@ -123,7 +123,8 @@ partial class Composition
     get
     {
       var blockOwned1 = new Owned();
-      Owned<IService> blockOwned; // Creates the owner of an instance
+      Owned<IService> blockOwned;
+      // Creates the owner of an instance
       Owned transOwned2;
       Owned localOwned3 = blockOwned1;
       transOwned2 = localOwned3;
