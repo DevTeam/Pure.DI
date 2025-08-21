@@ -70,17 +70,9 @@ sealed class LinesBuilder : IEnumerable<string>
         return Disposables.Create(() => DecIndent(size));
     }
 
-    public void IncIndent(int size = 1)
-    {
-        FlushLines();
-        _indent = new Indent(_indent.Value + size);
-    }
+    public void IncIndent(int size = 1) => _indent = new Indent(_indent.Value + size);
 
-    public void DecIndent(int size = 1)
-    {
-        FlushLines();
-        _indent = new Indent(_indent.Value - size);
-    }
+    public void DecIndent(int size = 1) => _indent = new Indent(_indent.Value - size);
 
     public IDisposable SaveToArray(Encoding encoding, out byte[] buffer, out int size)
     {

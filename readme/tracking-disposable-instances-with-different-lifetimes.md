@@ -161,7 +161,8 @@ partial class Composition: IDisposable
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        Owned<IDependency> blockOwned4; // Creates the owner of an instance
+        Owned<IDependency> blockOwned4;
+        // Creates the owner of an instance
         Owned transOwned5;
         Owned localOwned9 = blockOwned3;
         transOwned5 = localOwned9;
@@ -192,7 +193,8 @@ partial class Composition: IDisposable
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        Owned<IDependency> blockOwned8; // Creates the owner of an instance
+        Owned<IDependency> blockOwned8;
+        // Creates the owner of an instance
         Owned transOwned9;
         Owned localOwned11 = blockOwned7;
         transOwned9 = localOwned11;

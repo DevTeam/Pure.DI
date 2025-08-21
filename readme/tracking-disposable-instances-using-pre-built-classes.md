@@ -174,7 +174,8 @@ partial class Composition: IDisposable
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        Abstractions.Own<IDependency> blockOwn4; // Creates the owner of an instance
+        Abstractions.Own<IDependency> blockOwn4;
+        // Creates the owner of an instance
         Abstractions.Own localOwn = blockOwn3;
         var transDependency5 = new Dependency();
         lock (_lock)
@@ -197,7 +198,8 @@ partial class Composition: IDisposable
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        Abstractions.Own<IDependency> blockOwn7; // Creates the owner of an instance
+        Abstractions.Own<IDependency> blockOwn7;
+        // Creates the owner of an instance
         Abstractions.Own localOwn1 = blockOwn6;
         if (_root._singleDependency53 is null)
           lock (_lock)

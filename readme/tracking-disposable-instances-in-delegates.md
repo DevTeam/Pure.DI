@@ -127,7 +127,8 @@ partial class Composition
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        Owned<IDependency> blockOwned3; // Creates the owner of an instance
+        Owned<IDependency> blockOwned3;
+        // Creates the owner of an instance
         Owned transOwned4;
         Owned localOwned5 = blockOwned2;
         transOwned4 = localOwned5;

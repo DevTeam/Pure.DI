@@ -923,7 +923,7 @@ sealed class ApiInvocationProcessor(
                 break;
 
             default:
-                valueExpression = (ExpressionSyntax)localVariableRenamingRewriter.Rewrite(semanticModel, false, true, atgSyntax.Expression);
+                valueExpression = (ExpressionSyntax)localVariableRenamingRewriter.Rewrite(semanticModel, true, atgSyntax.Expression);
                 break;
         }
 

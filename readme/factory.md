@@ -101,7 +101,8 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      IDependency transIDependency1; // Some logic for creating an instance:
+      IDependency transIDependency1;
+      // Some logic for creating an instance:
       Dependency localDependency2 = new Dependency();
       localDependency2.Initialize();
       transIDependency1 = localDependency2;

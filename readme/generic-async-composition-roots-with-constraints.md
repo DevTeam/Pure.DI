@@ -116,7 +116,8 @@ partial class Composition
   public Task<IService<T2, bool>> GetOtherServiceAsync<T2>(CancellationToken cancellationToken)
     where T2: IDisposable
   {
-    Task<IService<T2, bool>> transTask; // Injects an instance factory
+    Task<IService<T2, bool>> transTask;
+    // Injects an instance factory
     Func<IService<T2, bool>> blockFunc1 = new Func<IService<T2, bool>>(
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     () =>
@@ -149,7 +150,8 @@ partial class Composition
     where T2: IDisposable
     where T3: struct
   {
-    Task<IService<T2, T3>> transTask9; // Injects an instance factory
+    Task<IService<T2, T3>> transTask9;
+    // Injects an instance factory
     Func<IService<T2, T3>> blockFunc10 = new Func<IService<T2, T3>>(
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     () =>

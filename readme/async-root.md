@@ -82,7 +82,8 @@ partial class Composition
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Task<IService> GetMyServiceAsync(CancellationToken cancellationToken)
   {
-    Task<IService> transTask; // Injects an instance factory
+    Task<IService> transTask;
+    // Injects an instance factory
     Func<IService> blockFunc1 = new Func<IService>(
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     () =>
