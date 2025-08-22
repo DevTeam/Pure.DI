@@ -1,10 +1,10 @@
 {
   "mainAssemblyName": "BlazorWebAssemblyApp",
   "resources": {
-    "hash": "sha256-9u0vlZ1HAhuS+PTTqnAxjVfsFZOjc98l0jUYY8SL8Ec=",
+    "hash": "sha256-nd91t9WgEufK4Vq9mDxMWWjvxM4axa2iHU7jBqRl018=",
     "fingerprinting": {
-      "BlazorWebAssemblyApp.ulzplp7zkp.wasm": "BlazorWebAssemblyApp.wasm",
-      "Clock.s70yalo1zd.wasm": "Clock.wasm",
+      "BlazorWebAssemblyApp.c5k8nx1vqh.wasm": "BlazorWebAssemblyApp.wasm",
+      "Clock.q2ggm8gvj4.wasm": "Clock.wasm",
       "Microsoft.AspNetCore.Components.zuk603fxfy.wasm": "Microsoft.AspNetCore.Components.wasm",
       "Microsoft.AspNetCore.Components.Web.36541auugm.wasm": "Microsoft.AspNetCore.Components.Web.wasm",
       "Microsoft.AspNetCore.Components.WebAssembly.5pu4hjcm7n.wasm": "Microsoft.AspNetCore.Components.WebAssembly.wasm",
@@ -66,8 +66,8 @@
       "System.Runtime.InteropServices.JavaScript.q2qvulo9k9.wasm": "sha256-wqfILadLLKdooVusvPcbEZBkeJ+9Yu23S7S8YQQEyLY="
     },
     "assembly": {
-      "BlazorWebAssemblyApp.ulzplp7zkp.wasm": "sha256-fhbFXUUycNvlusNymqX5kIH4VtuitbBPTeVzl2x2ee0=",
-      "Clock.s70yalo1zd.wasm": "sha256-aEzJTjBtcZO6IOnx0cYZA4SH0Grbf2O9VzSQyT/RYZs=",
+      "BlazorWebAssemblyApp.c5k8nx1vqh.wasm": "sha256-AIMJpqiHe6Va8O/XYyvx1iK8r4XOBP6gMDDfpmTmH20=",
+      "Clock.q2ggm8gvj4.wasm": "sha256-npTNy8AxSDzZOaBar3nzyBpvQB67stEO/ZLuV+P8yQ0=",
       "Microsoft.AspNetCore.Components.zuk603fxfy.wasm": "sha256-G8vDFtQsOK5TkiUJpNE+HGaiEN7TEzeRlRBsPhmGaoI=",
       "Microsoft.AspNetCore.Components.Web.36541auugm.wasm": "sha256-K1wuA8fdZe4sBCbhr5dltHaHlvzUG+8sAf8GYqwGfts=",
       "Microsoft.AspNetCore.Components.WebAssembly.5pu4hjcm7n.wasm": "sha256-aZGSu154XSJlcLSq4jnfprtY311ZHxXDc9P9ySRuNyM=",
