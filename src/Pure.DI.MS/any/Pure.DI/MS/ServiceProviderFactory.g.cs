@@ -54,11 +54,13 @@ namespace Pure.DI.MS
         /// An instance of <see cref="ServiceCollectionFactory{TComposition}"/>.
         /// </summary>
         private static readonly ServiceCollectionFactory<TComposition> ServiceCollectionFactory = new global::Pure.DI.MS.ServiceCollectionFactory<TComposition>();
+
+        private readonly global::System.Object _lock = new global::System.Object();
     
         /// <summary>
         /// <see cref="System.IServiceProvider"/> instance for resolving external dependencies.
         /// </summary>
-        private volatile Func<Type, object, object?>? _serviceProvider;
+        private Func<Type, object, object?>? _serviceProvider;
     
         /// <summary>
         /// DI setup hints.
@@ -75,7 +77,8 @@ namespace Pure.DI.MS
                 // since ServiceProvider will be used to retrieve them.
                 .Hint(global::Pure.DI.Hint.OnCannotResolveContractTypeNameWildcard, "Microsoft.Extensions.*")
                 .Hint(global::Pure.DI.Hint.OnCannotResolveContractTypeNameWildcard, "Microsoft.AspNetCore.*")
-                .Hint(global::Pure.DI.Hint.OnCannotResolveContractTypeNameWildcard, "Microsoft.Maui.*");
+                .Hint(global::Pure.DI.Hint.OnCannotResolveContractTypeNameWildcard, "Microsoft.Maui.*")
+                .Hint(global::Pure.DI.Hint.OnCannotResolveContractTypeNameWildcard, "Microsoft.EntityFrameworkCore.*");
 
         /// <summary>
         /// Creates a service collection <see cref="Microsoft.Extensions.DependencyInjection.ServiceCollection"/> based on the registered composition.
@@ -102,15 +105,24 @@ namespace Pure.DI.MS
         /// <inheritdoc />
         public IServiceProvider CreateServiceProvider(IServiceCollection services)
         {
-            var serviceProvider = services.BuildServiceProvider();
-            _serviceProvider ??= 
-                KeyedServiceProviderType?.IsAssignableFrom(serviceProvider.GetType()) == true
-                    ? Expression.Lambda<Func<Type, object, object>>(
-                        Expression.Call(Expression.Constant(serviceProvider), GetKeyedServiceMethod, TypeParameter, TagParameter),
-                        TypeParameter,
-                        TagParameter).Compile()
-                    : new Func<Type, object, object>((type, tag) => serviceProvider.GetService(type));
-            return serviceProvider;
+            lock (_lock)
+            {
+                if (_serviceProvider is not null)
+                {
+                    throw new InvalidOperationException("The service provider has already been created.");
+                }
+
+                var serviceProvider = services.BuildServiceProvider();
+                _serviceProvider =
+                    KeyedServiceProviderType?.IsAssignableFrom(serviceProvider.GetType()) == true
+                        ? Expression.Lambda<Func<Type, object, object>>(
+                            Expression.Call(Expression.Constant(serviceProvider), GetKeyedServiceMethod, TypeParameter, TagParameter),
+                            TypeParameter,
+                            TagParameter).Compile()
+                        : new Func<Type, object, object>((type, tag) => serviceProvider.GetService(type));
+
+                return serviceProvider;
+            }
         }
 
         /// <summary>
@@ -123,8 +135,14 @@ namespace Pure.DI.MS
         [global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         internal T OnCannotResolve<T>(object? tag, Lifetime lifetime)
         {
-            return (T)(_serviceProvider ?? throw new InvalidOperationException("Not ready yet."))(typeof(T), tag)
-                   ?? throw new InvalidOperationException($"No composition root or service is registered for type {typeof(T)}{(tag == null ? "" : $"({tag})")}.");
+            Func<Type, object, object?>? serviceProvider;
+            lock (_lock)
+            {
+                serviceProvider = _serviceProvider ?? throw new InvalidOperationException("The service provider has not yet been created.");
+            }
+
+            return (T)(serviceProvider(typeof(T), tag)
+                   ?? throw new InvalidOperationException($"No composition root or service is registered for type {typeof(T)}{(tag == null ? "" : $"({tag})")}."));
         }
 
         /// <summary>
