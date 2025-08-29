@@ -16,8 +16,6 @@ namespace WebApp;
 partial class Composition: ServiceProviderFactory<Composition>
 {
     private void Setup() => DI.Setup()
-        .DependsOn(Base)
-
         .Roots<ControllerBase>()
 
         .Bind().As(Singleton).To<ClockViewModel>()
@@ -52,11 +50,11 @@ The [project file](/samples/WebApp/WebApp.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk.Web">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.5">
+        <PackageReference Include="Pure.DI" Version="2.2.6">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.2.5" />
+        <PackageReference Include="Pure.DI.MS" Version="2.2.6" />
     </ItemGroup>
 
 </Project>
