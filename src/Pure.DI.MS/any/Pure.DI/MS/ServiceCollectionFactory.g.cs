@@ -81,6 +81,7 @@ namespace Pure.DI.MS
         [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
         internal void AddResolver<TContract>(IResolver<TComposition, TContract> resolver, object tag = default)
         {
+            if (resolver == null) throw new ArgumentNullException(nameof(resolver));
             _resolvers.Add(new InstanceResolver(typeof(TContract), (IResolver<TComposition, object>)resolver, tag));
         }
 
@@ -95,6 +96,7 @@ namespace Pure.DI.MS
         [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
         public IServiceCollection CreateServiceCollection(TComposition composition)
         {
+            if (composition == null) throw new ArgumentNullException(nameof(composition));
             return new ServiceCollection().Add(CreateDescriptors(composition));
         }
 

@@ -30,7 +30,7 @@ partial class Composition : ServiceProviderFactory<Composition>
 }
 ```
 
-The composition class inherits from the `ServiceProviderFactory<T>` class, where T is the composition class itself. It depends on the `Base` setup.
+The composition class inherits from the `ServiceProviderFactory<T>` class, where T is the composition class itself.
 
 The web application entry point is in the [Program.cs](/samples/MinimalWebAPI/Program.cs) file:
 

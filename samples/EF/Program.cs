@@ -2,12 +2,13 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-var services = new ServiceCollection()
-    .AddEntityFrameworkInMemoryDatabase()
-    .AddDbContext<PersonsDbContext>(options => options.UseInMemoryDatabase("Database of persons"));
-
-var composition = new Composition();
-composition.CreateServiceProvider(services);
+var composition = new Composition
+{
+    ServiceProvider = new ServiceCollection()
+        .AddEntityFrameworkInMemoryDatabase()
+        .AddDbContext<PersonsDbContext>(options => options.UseInMemoryDatabase("Database of persons"))
+        .BuildServiceProvider()
+};
 
 var root = composition.Root;
 await root.RunAsync();

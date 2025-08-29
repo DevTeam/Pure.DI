@@ -1,8 +1,8 @@
-﻿namespace EF;
-
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using Pure.DI;
 using Pure.DI.MS;
+
+namespace EF;
 
 partial class Composition: ServiceProviderFactory<Composition>
 {

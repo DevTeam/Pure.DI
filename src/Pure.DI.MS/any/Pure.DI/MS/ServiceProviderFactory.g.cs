@@ -54,18 +54,58 @@ namespace Pure.DI.MS
         /// </summary>
         private static readonly ServiceCollectionFactory<TComposition> ServiceCollectionFactory = new global::Pure.DI.MS.ServiceCollectionFactory<TComposition>();
 
+        /// <summary>
+        /// Instance for thread synchronization.
+        /// </summary>
         private readonly global::System.Object _lock = new global::System.Object();
     
         /// <summary>
         /// <see cref="System.IServiceProvider"/> instance for resolving external dependencies.
         /// </summary>
-        private Func<Type, object, object?>? _serviceProvider;
-    
+        private Func<Type, object, object?>? _instanceResolver;
+
+        /// <summary>
+        ///  Defines a mechanism for retrieving a service object.
+        /// </summary>
+        private IServiceProvider _serviceProvider;
+
+        /// <summary>
+        /// Allows getting or setting a service provider.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">Throws an exception if the service provider is not yet defined when attempting to get it.</exception>
+        public IServiceProvider ServiceProvider
+        {
+            get
+            {
+                return _serviceProvider ?? throw new InvalidOperationException("The service provider has not yet been defined.");
+            }
+            set
+            {
+                _serviceProvider = value;
+                var instanceResolver = CreateInstanceResolver(value);
+                lock (_lock)
+                {
+                    _instanceResolver = instanceResolver;
+                }
+            }
+        }
+
+        private static Func<Type, object, object> CreateInstanceResolver(IServiceProvider serviceProvider)
+        {
+            return KeyedServiceProviderType?.IsAssignableFrom(serviceProvider.GetType()) == true
+                ? Expression.Lambda<Func<Type, object, object>>(
+                    Expression.Call(Expression.Constant(serviceProvider), GetKeyedServiceMethod, TypeParameter, TagParameter),
+                    TypeParameter,
+                    TagParameter).Compile()
+                : new Func<Type, object, object>((type, tag) => serviceProvider.GetService(type));
+        }
+
         /// <summary>
         /// DI setup hints.
         /// </summary>
         [global::System.Diagnostics.Conditional("A2768DE22DE3E430C9653990D516CC9B")]
-        private static void HintsSetup() =>
+        private static void HintsSetup()
+        {
             global::Pure.DI.DI.Setup("Pure.DI.MS.ServiceProviderFactory", global::Pure.DI.CompositionKind.Internal)
                 .Hint(global::Pure.DI.Hint.OnCannotResolve, "On")
                 .Hint(global::Pure.DI.Hint.OnCannotResolvePartial, "Off")
@@ -78,6 +118,7 @@ namespace Pure.DI.MS
                 .Hint(global::Pure.DI.Hint.OnCannotResolveContractTypeNameWildcard, "Microsoft.AspNetCore.*")
                 .Hint(global::Pure.DI.Hint.OnCannotResolveContractTypeNameWildcard, "Microsoft.Maui.*")
                 .Hint(global::Pure.DI.Hint.OnCannotResolveContractTypeNameWildcard, "Microsoft.EntityFrameworkCore.*");
+        }
 
         /// <summary>
         /// Creates a service collection <see cref="Microsoft.Extensions.DependencyInjection.ServiceCollection"/> based on the registered composition.
@@ -90,6 +131,7 @@ namespace Pure.DI.MS
         [global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         protected static IServiceCollection CreateServiceCollection(TComposition composition)
         {
+            if (composition == null) throw new ArgumentNullException(nameof(composition));
             return ServiceCollectionFactory.CreateServiceCollection(composition);
         }
 
@@ -97,6 +139,7 @@ namespace Pure.DI.MS
         [global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         public IServiceCollection CreateBuilder(IServiceCollection services)
         {
+            if (services == null) throw new ArgumentNullException(nameof(services));
             // Registers composition roots as services in the service collection.
             return services.Add(CreateServiceCollection((TComposition)this));
         }
@@ -104,23 +147,15 @@ namespace Pure.DI.MS
         /// <inheritdoc />
         public IServiceProvider CreateServiceProvider(IServiceCollection services)
         {
+            if (services == null) throw new ArgumentNullException(nameof(services));
             lock (_lock)
             {
-                if (_serviceProvider is not null)
+                if (_instanceResolver is not null)
                 {
-                    throw new InvalidOperationException("The service provider has already been created.");
+                    throw new InvalidOperationException("Services have already been defined.");
                 }
 
-                var serviceProvider = services.BuildServiceProvider();
-                _serviceProvider =
-                    KeyedServiceProviderType?.IsAssignableFrom(serviceProvider.GetType()) == true
-                        ? Expression.Lambda<Func<Type, object, object>>(
-                            Expression.Call(Expression.Constant(serviceProvider), GetKeyedServiceMethod, TypeParameter, TagParameter),
-                            TypeParameter,
-                            TagParameter).Compile()
-                        : new Func<Type, object, object>((type, tag) => serviceProvider.GetService(type));
-
-                return serviceProvider;
+                return ServiceProvider = services.BuildServiceProvider();
             }
         }
 
@@ -137,7 +172,7 @@ namespace Pure.DI.MS
             Func<Type, object, object?>? serviceProvider;
             lock (_lock)
             {
-                serviceProvider = _serviceProvider ?? throw new InvalidOperationException("The service provider has not yet been created.");
+                serviceProvider = _instanceResolver ?? throw new InvalidOperationException("Services have not yet been defined.");
             }
 
             return (T)(serviceProvider(typeof(T), tag)
@@ -158,6 +193,7 @@ namespace Pure.DI.MS
             IResolver<TComposition, TContract> resolver,
             string name, object tag, Lifetime lifetime)
         {
+            if (resolver == null) throw new ArgumentNullException(nameof(resolver));
             ServiceCollectionFactory.AddResolver(resolver, tag);
         }
     }
