@@ -16,8 +16,6 @@ namespace WebAPI;
 partial class Composition: ServiceProviderFactory<Composition>
 {
     private void Setup() => DI.Setup()
-        .DependsOn(Base)
-
         .Roots<ControllerBase>()
 
         .Bind().As(Singleton).To<ClockViewModel>()

@@ -11,8 +11,6 @@ partial class Composition: ServiceProviderFactory<Composition>
     // These roots must be registered using `Root<>(...)` or `Roots<>()` calls.
     [Conditional("DI")]
     private void Setup() => DI.Setup()
-        .DependsOn(Base)
-
         .Roots<ControllerBase>()
 
         .Bind().As(Singleton).To<ClockViewModel>()

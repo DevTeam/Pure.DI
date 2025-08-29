@@ -8,8 +8,6 @@ partial class Composition: ServiceProviderFactory<Composition>
 {
     [Conditional("DI")]
     private void Setup() => DI.Setup()
-        .DependsOn(Base)
-
         .Root<IAppViewModel>(nameof(App))
         .Root<IClockViewModel>(nameof(Clock))
 

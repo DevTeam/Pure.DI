@@ -15,8 +15,6 @@ namespace Pure.DI.MS
     /// partial class Composition : ServiceProviderFactory&lt;Composition&gt;
     /// {
     ///     void Setup() =&gt; DI.Setup()
-    ///         // Use the DI setup from the base class
-    ///         .DependsOn(Base)
     ///         .Bind().As(Singleton).To&lt;WeatherForecastService&gt;()
     ///         // Registers controllers as roots
     ///         .Roots&lt;ControllerBase&gt;();
@@ -48,6 +46,7 @@ namespace Pure.DI.MS
         /// </code>
         /// </example>
         /// </summary>
+        [Obsolete("Since Pure.DI 2.2.7 using the Base value is not necessary in the DependsOn invocation, thus you can skip this invocation.")]
         protected const string Base = "Pure.DI.MS.ServiceProviderFactory";
     
         /// <summary>
@@ -67,7 +66,7 @@ namespace Pure.DI.MS
         /// </summary>
         [global::System.Diagnostics.Conditional("A2768DE22DE3E430C9653990D516CC9B")]
         private static void HintsSetup() =>
-            global::Pure.DI.DI.Setup(Base, global::Pure.DI.CompositionKind.Internal)
+            global::Pure.DI.DI.Setup("Pure.DI.MS.ServiceProviderFactory", global::Pure.DI.CompositionKind.Internal)
                 .Hint(global::Pure.DI.Hint.OnCannotResolve, "On")
                 .Hint(global::Pure.DI.Hint.OnCannotResolvePartial, "Off")
                 .Hint(global::Pure.DI.Hint.OnNewRoot, "On")

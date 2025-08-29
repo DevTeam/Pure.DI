@@ -10,8 +10,6 @@ partial class Composition : ServiceProviderFactory<Composition>
     // Only composition roots (regular or anonymous) can be resolved through the `IServiceProvider` interface.
     // These roots must be registered using `Root<>(...)` or `RootBind<>()` calls.
     private void Setup() => DI.Setup()
-        .DependsOn(Base)
-
         .Root<ClockService>()
 
         .Bind().As(Singleton).To<ClockViewModel>()

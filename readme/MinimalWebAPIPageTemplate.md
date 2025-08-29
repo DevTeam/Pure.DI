@@ -16,8 +16,6 @@ namespace MinimalWebAPI;
 partial class Composition : ServiceProviderFactory<Composition>
 {
     private void Setup() => DI.Setup()
-        .DependsOn(Base)
-
         // Owned is used here to dispose of all disposable instances associated with the root.
         .Root<Owned<Program>>(nameof(Root))
         .Root<IClockViewModel>()

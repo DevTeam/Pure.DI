@@ -16,8 +16,6 @@ namespace BlazorServerApp;
 partial class Composition: ServiceProviderFactory<Composition>
 {
     private void Setup() => DI.Setup()
-        .DependsOn(Base)
-
         .Root<IAppViewModel>()
         .Root<IClockViewModel>()
 

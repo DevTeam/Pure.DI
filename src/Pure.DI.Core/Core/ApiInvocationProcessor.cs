@@ -147,9 +147,10 @@ sealed class ApiInvocationProcessor(
                         var setupArgs = arguments.GetArgs(invocation.ArgumentList, "compositionTypeName", "kind");
                         var setupCompositionTypeName = setupArgs[0] is {} compositionTypeNameArg ? semantic.GetRequiredConstantValue<string>(semanticModel, compositionTypeNameArg.Expression) : "";
                         var setupKind = setupArgs[1] is {} setupKindArg ? semantic.GetRequiredConstantValue<CompositionKind>(semanticModel, setupKindArg.Expression) : CompositionKind.Public;
+                        var baseType = invocation.Ancestors().OfType<BaseTypeDeclarationSyntax>().FirstOrDefault();
                         if (setupKind != CompositionKind.Global
                             && string.IsNullOrWhiteSpace(setupCompositionTypeName)
-                            && invocation.Ancestors().OfType<BaseTypeDeclarationSyntax>().FirstOrDefault() is {} baseType)
+                            && baseType is not null)
                         {
                             setupCompositionTypeName = baseType.Identifier.Text;
                         }
@@ -178,6 +179,19 @@ sealed class ApiInvocationProcessor(
                                 ImmutableArray<MdAccumulator>.Empty,
                                 [],
                                 comments.FilterHints(invocationComments).ToList()));
+
+                        if (baseType?.BaseList is { Types.Count: > 0 }
+                            && semanticModel.GetDeclaredSymbol(baseType) is { BaseType: {} derivedTyeSymbol })
+                        {
+                            var compositionName = new CompositionName(derivedTyeSymbol.Name, derivedTyeSymbol.ContainingNamespace.ToString(), baseType);
+                            metadataVisitor.VisitDependsOn(
+                                new MdDependsOn(
+                                    semanticModel,
+                                    invocation,
+                                    ImmutableArray.Create(compositionName),
+                                    false));
+                        }
+
                         break;
 
                     case nameof(IConfiguration.DefaultLifetime):
@@ -191,7 +205,12 @@ sealed class ApiInvocationProcessor(
                     case nameof(IConfiguration.DependsOn):
                         if (BuildConstantArgs<string>(semanticModel, invocation.ArgumentList.Arguments) is [..] compositionTypeNames)
                         {
-                            metadataVisitor.VisitDependsOn(new MdDependsOn(semanticModel, invocation, compositionTypeNames.Select(i => CreateCompositionName(i, @namespace, invocation.ArgumentList)).ToImmutableArray()));
+                            metadataVisitor.VisitDependsOn(
+                                new MdDependsOn(
+                                    semanticModel,
+                                    invocation,
+                                    compositionTypeNames.Select(i => CreateCompositionName(i, @namespace, invocation.ArgumentList)).ToImmutableArray(),
+                                    true));
                         }
 
                         break;

@@ -10,8 +10,6 @@ partial class Composition: ServiceProviderFactory<Composition>
     // Only composition roots (regular or anonymous) can be resolved through the `IServiceProvider` interface.
     // These roots must be registered using `Root<>(...)` or `Builder<>()` calls.
     private static void Setup() => DI.Setup()
-        .DependsOn(Base)
-
         // Roots
         .Root<Composition>()
 

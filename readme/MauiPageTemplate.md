@@ -16,8 +16,6 @@ namespace MAUIApp;
 partial class Composition: ServiceProviderFactory<Composition>
 {
     private void Setup() => DI.Setup()
-        .DependsOn(Base)
-
         .Root<IAppViewModel>(nameof(App))
         .Root<IClockViewModel>(nameof(Clock))
 

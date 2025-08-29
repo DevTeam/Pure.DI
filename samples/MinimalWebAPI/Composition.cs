@@ -11,8 +11,6 @@ partial class Composition : ServiceProviderFactory<Composition>
     // These roots must be registered using `Root<>(...)` or `RootBind<>()` calls.
     [Conditional("DI")]
     private void Setup() => DI.Setup()
-        .DependsOn(Base)
-
         // Owned is used here to dispose of all disposable instances associated with the root.
         .Root<Owned<Program>>(nameof(Root))
         .Root<IClockViewModel>()

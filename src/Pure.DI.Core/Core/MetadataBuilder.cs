@@ -87,10 +87,20 @@ sealed class MetadataBuilder(
 
                 if (!map.TryGetValue(compositionTypeName, out var dependsOnSetup))
                 {
+                    if (!dependsOn.Explicit)
+                    {
+                        continue;
+                    }
+
                     throw new CompileErrorException(
                         string.Format(Strings.Error_Template_CannotFindSetup, compositionTypeName),
                         ImmutableArray.Create(locationProvider.GetLocation(dependsOn.Source)),
                         LogId.ErrorCannotFindSetup);
+                }
+
+                if (!dependsOn.Explicit && dependsOnSetup.Kind != CompositionKind.Internal)
+                {
+                    continue;
                 }
 
                 yield return dependsOnSetup;
