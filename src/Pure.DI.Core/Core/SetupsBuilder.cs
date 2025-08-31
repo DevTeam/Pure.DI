@@ -359,7 +359,7 @@ sealed class SetupsBuilder(
             MdResolver CreateResolver(ITypeConstructor constructor, string name, ITypeSymbol injectedType, object? tag, ref int curPosition)
             {
                 var typeSyntax = SyntaxFactory.ParseTypeName(symbolNames.GetGlobalName(injectedType));
-                if (semantic.IsValidNamespace(injectedType.ContainingNamespace))
+                if (!injectedType.ContainingNamespace.IsGlobalNamespace && semantic.IsValidNamespace(injectedType.ContainingNamespace))
                 {
                     namespaces.Add(injectedType.ContainingNamespace.ToString());
                 }

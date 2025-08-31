@@ -9,8 +9,8 @@ $d=Inheritance of compositions
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable RedundantAssignment
 // ReSharper disable ArrangeTypeModifiers
-
 // ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable UnusedMember.Local
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Advanced.InheritanceOfCompositionsScenario;
 

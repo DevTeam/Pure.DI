@@ -183,7 +183,10 @@ sealed class ApiInvocationProcessor(
                         if (baseType?.BaseList is { Types.Count: > 0 }
                             && semanticModel.GetDeclaredSymbol(baseType) is { BaseType: {} derivedTyeSymbol })
                         {
-                            var compositionName = new CompositionName(derivedTyeSymbol.Name, derivedTyeSymbol.ContainingNamespace.ToString(), baseType);
+                            var compositionName = new CompositionName(
+                                derivedTyeSymbol.Name,
+                                derivedTyeSymbol.ContainingNamespace.IsGlobalNamespace ? "" : derivedTyeSymbol.ContainingNamespace.ToString(),
+                                baseType);
                             metadataVisitor.VisitDependsOn(
                                 new MdDependsOn(
                                     semanticModel,

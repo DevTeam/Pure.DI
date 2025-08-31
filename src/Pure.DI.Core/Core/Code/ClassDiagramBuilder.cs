@@ -332,9 +332,7 @@ sealed class ClassDiagramBuilder(
     }
 
     private static string ResolveNamespaceName(INamespaceSymbol? namespaceSymbol) =>
-        namespaceSymbol == null || namespaceSymbol.IsGlobalNamespace
-            ? ""
-            : namespaceSymbol.ToDisplayString();
+        namespaceSymbol == null || namespaceSymbol.IsGlobalNamespace ? "" : namespaceSymbol.ToDisplayString();
 
     private static string Format(Accessibility accessibility) =>
         accessibility switch
