@@ -6362,6 +6362,48 @@ To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
 
 
+## Inheritance of compositions
+
+```c#
+using Pure.DI;
+using static Pure.DI.CompositionKind;
+
+var composition = new Composition();
+var service = composition.Root;
+
+class BaseComposition
+{
+    private void Setup() =>
+        DI.Setup(kind: Internal)
+            .Bind<IDependency>().To<Dependency>();
+}
+
+partial class Composition: BaseComposition
+{
+    private void Setup() =>
+        DI.Setup()
+            .Bind<IService>().To<Service>()
+            .Root<Program>(nameof(Root));
+}
+
+interface IDependency;
+
+class Dependency : IDependency;
+
+interface IService;
+
+class Service(IDependency dependency) : IService;
+
+partial class Program(IService service)
+{
+    public IService Service { get; } = service;
+}
+```
+
+To run the above code, the following NuGet package must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+
+
 ## Accumulators
 
 Accumulators allow you to accumulate instances of certain types and lifetimes.
@@ -12688,21 +12730,12 @@ Atomically generated smart tag with value "CompositionClass".
 </blockquote></details>
 
 
-<details><summary>Field Override</summary><blockquote>
+<details><summary>Field VarName</summary><blockquote>
 
-Atomically generated smart tag with value "Override".
+Atomically generated smart tag with value "VarName".
             It's used for:
             
-            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
-</blockquote></details>
-
-
-<details><summary>Field Overrider</summary><blockquote>
-
-Atomically generated smart tag with value "Overrider".
-            It's used for:
-            
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Overrider) -- _GraphOverrider_ as _PerBlock_
+            class _Generator__VarsMap_ <-- _IIdGenerator_(VarName) -- _IdGenerator_ as _Transient_
 </blockquote></details>
 
 
@@ -12715,21 +12748,30 @@ Atomically generated smart tag with value "Cleaner".
 </blockquote></details>
 
 
-<details><summary>Field VarName</summary><blockquote>
-
-Atomically generated smart tag with value "VarName".
-            It's used for:
-            
-            class _Generator__VarsMap_ <-- _IIdGenerator_(VarName) -- _IdGenerator_ as _Transient_
-</blockquote></details>
-
-
 <details><summary>Field UsingDeclarations</summary><blockquote>
 
 Atomically generated smart tag with value "UsingDeclarations".
             It's used for:
             
             class _Generator__CompositionClassBuilder_ <-- _IBuilder{TData, T}_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field Overrider</summary><blockquote>
+
+Atomically generated smart tag with value "Overrider".
+            It's used for:
+            
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Overrider) -- _GraphOverrider_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field Override</summary><blockquote>
+
+Atomically generated smart tag with value "Override".
+            It's used for:
+            
+            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 

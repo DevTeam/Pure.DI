@@ -1126,6 +1126,52 @@ public class SetupTests
         result.StdOut.ShouldBe(["1"], result);
     }
 
+    [Fact]
+    public async Task ShouldSupportDependsOnBaseClassWhenDefaultName()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class SetupBase
+                               {
+                                   private static void SetupBaseComposition1()
+                                   {
+                                       DI.Setup(kind: CompositionKind.Internal)
+                                           .Bind<int>().To(_ => 1);
+                                   }
+                               }
+
+                               partial class Setup: SetupBase
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Root<int>("Root");
+                                   }
+                               }  
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Root);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["1"], result);
+    }
+
 #if ROSLYN4_8_OR_GREATER
     [Fact]
     public async Task ShouldSupportMultipleBaseCompositions()

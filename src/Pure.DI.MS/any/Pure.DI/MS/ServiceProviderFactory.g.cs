@@ -106,7 +106,7 @@ namespace Pure.DI.MS
         [global::System.Diagnostics.Conditional("A2768DE22DE3E430C9653990D516CC9B")]
         private static void HintsSetup()
         {
-            global::Pure.DI.DI.Setup("Pure.DI.MS.ServiceProviderFactory", global::Pure.DI.CompositionKind.Internal)
+            global::Pure.DI.DI.Setup(kind: global::Pure.DI.CompositionKind.Internal)
                 .Hint(global::Pure.DI.Hint.OnCannotResolve, "On")
                 .Hint(global::Pure.DI.Hint.OnCannotResolvePartial, "Off")
                 .Hint(global::Pure.DI.Hint.OnNewRoot, "On")
