@@ -49,11 +49,11 @@ The [project file](/samples/BlazorWebAssemblyApp/BlazorWebAssemblyApp.csproj) lo
 <Project Sdk="Microsoft.NET.Sdk.Web">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.6">
+        <PackageReference Include="Pure.DI" Version="2.2.7">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.2.6" />
+        <PackageReference Include="Pure.DI.MS" Version="2.2.7" />
     </ItemGroup>
 
 </Project>
