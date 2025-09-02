@@ -89,26 +89,27 @@ class RootBuilder(
         if (!string.IsNullOrEmpty(var.LocalFunctionName))
         {
             parentCtx.Lines.AppendLine($"{var.LocalFunctionName}();");
+            var.Declaration.IsDeclared = true;
             return;
         }
 
         var lines = new LinesBuilder();
-        var ctx = parentCtx with
+        var varCtx = parentCtx with
         {
             Lines = lines,
             ContextTag = ReferenceEquals(varInjection.Injection.Tag, MdTag.ContextTag) ? parentCtx.ContextTag : varInjection.Injection.Tag
         };
 
-        var varsMap = ctx.VarsMap;
-        var setup = ctx.RootContext.Graph.Source;
+        var varsMap = varCtx.VarsMap;
+        var setup = varCtx.RootContext.Graph.Source;
         var isBlock = IsBlock(var.AbstractNode);
         var isLazy = nodeInfo.IsLazy(var.AbstractNode.Node);
-        var.HasCycle ??= IsCycle(ctx.RootContext.Graph.Graph, var.Declaration.Node.Node, ImmutableHashSet<DependencyNode>.Empty);
-        var acc = isLazy ? accumulators.GetAccumulators(ctx.RootContext.Graph.Graph, var.AbstractNode).ToImmutableArray() : ImmutableArray<(MdAccumulator, Dependency)>.Empty;
+        var.HasCycle ??= IsCycle(varCtx.RootContext.Graph.Graph, var.Declaration.Node.Node, ImmutableHashSet<DependencyNode>.Empty);
+        var acc = isLazy ? accumulators.GetAccumulators(varCtx.RootContext.Graph.Graph, var.AbstractNode).ToImmutableArray() : ImmutableArray<(MdAccumulator, Dependency)>.Empty;
         var useLocalFunction = isBlock
-                               && !ctx.HasOverrides
-                               && ctx.Accumulators.Length == 0
-                               && ctx.RootContext.Graph.Graph.TryGetOutEdges(var.Declaration.Node.Node, out var targets) && targets.Count > 1;
+                               && !varCtx.HasOverrides
+                               && varCtx.Accumulators.Length == 0
+                               && varCtx.RootContext.Graph.Graph.TryGetOutEdges(var.Declaration.Node.Node, out var targets) && targets.Count > 1;
 
         var mapToken =
             useLocalFunction
@@ -121,28 +122,25 @@ class RootBuilder(
 
         if (useLocalFunction || isLazy)
         {
-            ctx = ctx with { IsLockRequired = ctx.RootContext.IsThreadSafeEnabled };
+            varCtx = varCtx with { IsLockRequired = varCtx.RootContext.IsThreadSafeEnabled };
         }
 
+#if DEBUG
+        varCtx.Lines.AppendLine($"// {var.Name}: {nameof(var.Declaration.IsDeclared)}={var.Declaration.IsDeclared}, {nameof(var.IsCreated)}={var.IsCreated}, {nameof(var.HasCycle)}={var.HasCycle}, {nameof(varCtx.IsLockRequired)}={varCtx.IsLockRequired}, {nameof(isLazy)}={isLazy}, {nameof(isBlock)}={isBlock}, {nameof(acc)}={acc.Length}");
+#endif
+
+        if (isBlock)
+        {
+            StartSingleInstanceCheck(varCtx with { Lines = lines });
+            varCtx = varCtx with { IsLockRequired = false };
+        }
+
+        var ctx = varCtx;
         if (isLazy)
         {
             ctx = ctx with { Accumulators = ctx.Accumulators.AddRange(accumulators.CreateAccumulators(acc, varsMap)), IsFactory = false };
             ctx.Overrides.Clear();
             accumulators.BuildAccumulators(ctx);
-        }
-
-#if DEBUG
-        parentCtx.Lines.AppendLine($"// {var.Name}: {nameof(var.Declaration.IsDeclared)}={var.Declaration.IsDeclared}, {nameof(var.IsCreated)}={var.IsCreated}, {nameof(var.HasCycle)}={var.HasCycle}, {nameof(parentCtx.IsLockRequired)}={parentCtx.IsLockRequired}, {nameof(isLazy)}={isLazy}, {nameof(isBlock)}={isBlock}, {nameof(acc)}={acc.Length}");
-#endif
-
-        if (isBlock)
-        {
-            StartSingleInstanceCheck(parentCtx with { Lines = lines });
-        }
-
-        if (isBlock)
-        {
-            ctx = ctx with { IsLockRequired = false };
         }
 
         var varInjections = new List<VarInjection>();
@@ -576,10 +574,12 @@ class RootBuilder(
                                 BuildOverrides(ctx, factory, initializer.Overrides, lines);
                             }
 
-                            var initializersWalker = initializersWalkerFactory(new InitializersWalkerContext(
-                                i => BuildCode(ctx with { VarInjection = i }),
-                                initialization.VariableName,
-                                initializationArgsEnum));
+                            var initCtx = ctx;
+                            var initializersWalker = initializersWalkerFactory(
+                                new InitializersWalkerContext(
+                                    i => BuildCode(initCtx with { VarInjection = i }),
+                                    initialization.VariableName,
+                                    initializationArgsEnum));
                             initializersWalker.VisitInitializer(ctx, initializer);
                             continue;
                         }
@@ -730,35 +730,28 @@ class RootBuilder(
 
         if (isBlock)
         {
-            FinishSingleInstanceCheck(ctx with { IsLockRequired = parentCtx.IsLockRequired });
+            FinishSingleInstanceCheck(varCtx with { IsLockRequired = parentCtx.IsLockRequired });
         }
 
         mapToken.Dispose();
 
-        if (string.IsNullOrEmpty(var.LocalFunctionName))
+        if (useLocalFunction)
         {
-            if (useLocalFunction)
+            var baseName = nameFormatter.Format("{type}{tag}", varCtx.VarInjection.Var.InstanceType, varCtx.VarInjection.Injection.Tag);
+            var localFunction = var.LocalFunction;
+            if (compilations.GetLanguageVersion(varCtx.RootContext.Graph.Source.SemanticModel.Compilation) >= LanguageVersion.CSharp9)
             {
-                var baseName = nameFormatter.Format("{type}{tag}", ctx.VarInjection.Var.InstanceType, ctx.VarInjection.Injection.Tag);
-                var localFunction = var.LocalFunction;
-                if (compilations.GetLanguageVersion(ctx.RootContext.Graph.Source.SemanticModel.Compilation) >= LanguageVersion.CSharp9)
-                {
-                    buildTools.AddAggressiveInlining(localFunction);
-                }
-
-                var.LocalFunctionName = uniqueNameProvider.GetUniqueName($"Ensure{baseName}Exists{Names.Salt}");
-                localFunction.AppendLine($"void {var.LocalFunctionName}()");
-                localFunction.AppendLine(BlockStart);
-                localFunction.IncIndent();
-                localFunction.AppendLines(lines.Lines);
-                localFunction.DecIndent();
-                localFunction.AppendLine(BlockFinish);
-                lines = new LinesBuilder();
-                lines.AppendLine($"{var.LocalFunctionName}();");
+                buildTools.AddAggressiveInlining(localFunction);
             }
-        }
-        else
-        {
+
+            var.LocalFunctionName = uniqueNameProvider.GetUniqueName($"Ensure{baseName}Exists{Names.Salt}");
+            localFunction.AppendLine($"void {var.LocalFunctionName}()");
+            localFunction.AppendLine(BlockStart);
+            localFunction.IncIndent();
+            localFunction.AppendLines(lines.Lines);
+            localFunction.DecIndent();
+            localFunction.AppendLine(BlockFinish);
+            lines = new LinesBuilder();
             lines.AppendLine($"{var.LocalFunctionName}();");
         }
 
