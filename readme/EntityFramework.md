@@ -85,11 +85,11 @@ The [project file](/samples/EF/EF.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk.Web">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.7">
+        <PackageReference Include="Pure.DI" Version="2.2.8">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.2.7" />
+        <PackageReference Include="Pure.DI.MS" Version="2.2.8" />
     </ItemGroup>
 
 </Project>

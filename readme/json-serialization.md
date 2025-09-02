@@ -73,10 +73,11 @@ partial class Composition
         DI.Setup(nameof(Composition))
             .Root<ISettingsService>(nameof(Settings))
             .Bind().To<SettingsService>()
+            .DefaultLifetime(Singleton)
             .Bind().To(_ => new JsonSerializerOptions { WriteIndented = true })
             .Bind(JSON).To<JsonSerializerOptions, Func<string, TT?>>(options => json => JsonSerializer.Deserialize<TT>(json, options))
             .Bind(JSON).To<JsonSerializerOptions, Func<TT, string>>(options => value => JsonSerializer.Serialize(value, options))
-            .Bind().As(Singleton).To<Storage>();
+            .Bind().To<Storage>();
 }
 ```
 
@@ -119,7 +120,10 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
+  private Func<string, Settings>? _singleFunc57;
+  private Func<Settings, string>? _singleFunc58;
   private Storage? _singleStorage56;
+  private Text.Json.JsonSerializerOptions? _singleJsonSerializerOptions53;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -150,21 +154,36 @@ partial class Composition
             _root._singleStorage56 = new Storage();
           }
 
-      Func<string, Settings> transFunc1;
-      Text.Json.JsonSerializerOptions transJsonSerializerOptions4 = new JsonSerializerOptions
+      if (_root._singleFunc57 is null)
+        lock (_lock)
+          if (_root._singleFunc57 is null)
+          {
+            EnsureJsonSerializerOptionsExists();
+            Text.Json.JsonSerializerOptions localOptions = _root._singleJsonSerializerOptions53;
+            _root._singleFunc57 = json => JsonSerializer.Deserialize<Settings>(json, localOptions);
+          }
+
+      if (_root._singleFunc58 is null)
+        lock (_lock)
+          if (_root._singleFunc58 is null)
+          {
+            EnsureJsonSerializerOptionsExists();
+            Text.Json.JsonSerializerOptions localOptions1 = _root._singleJsonSerializerOptions53;
+            _root._singleFunc58 = value => JsonSerializer.Serialize(value, localOptions1);
+          }
+
+      return new SettingsService(_root._singleFunc57, _root._singleFunc58, _root._singleStorage56);
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      void EnsureJsonSerializerOptionsExists()
       {
-        WriteIndented = true
-      };
-      Text.Json.JsonSerializerOptions localOptions = transJsonSerializerOptions4;
-      transFunc1 = json => JsonSerializer.Deserialize<Settings>(json, localOptions);
-      Func<Settings, string> transFunc2;
-      Text.Json.JsonSerializerOptions transJsonSerializerOptions5 = new JsonSerializerOptions
-      {
-        WriteIndented = true
-      };
-      Text.Json.JsonSerializerOptions localOptions1 = transJsonSerializerOptions5;
-      transFunc2 = value => JsonSerializer.Serialize(value, localOptions1);
-      return new SettingsService(transFunc1, transFunc2, _root._singleStorage56);
+        if (_root._singleJsonSerializerOptions53 is null)
+        {
+          _root._singleJsonSerializerOptions53 = new JsonSerializerOptions
+          {
+            WriteIndented = true
+          };
+        }
+      }
     }
   }
 }
@@ -185,10 +204,10 @@ classDiagram
 	Storage --|> IStorage
 	Composition ..> SettingsService : ISettingsService Settings
 	SettingsService o-- "Singleton" Storage : IStorage
-	SettingsService *--  FuncᐸStringˏSettingsᐳ : "JSON"  FuncᐸStringˏSettingsᐳ
-	SettingsService *--  FuncᐸSettingsˏStringᐳ : "JSON"  FuncᐸSettingsˏStringᐳ
-	FuncᐸStringˏSettingsᐳ *--  JsonSerializerOptions : JsonSerializerOptions
-	FuncᐸSettingsˏStringᐳ *--  JsonSerializerOptions : JsonSerializerOptions
+	SettingsService o-- "Singleton" FuncᐸStringˏSettingsᐳ : "JSON"  FuncᐸStringˏSettingsᐳ
+	SettingsService o-- "Singleton" FuncᐸSettingsˏStringᐳ : "JSON"  FuncᐸSettingsˏStringᐳ
+	FuncᐸStringˏSettingsᐳ o-- "Singleton" JsonSerializerOptions : JsonSerializerOptions
+	FuncᐸSettingsˏStringᐳ o-- "Singleton" JsonSerializerOptions : JsonSerializerOptions
 	namespace Pure.DI.UsageTests.UseCases.JsonSerializationScenario {
 		class Composition {
 		<<partial>>
