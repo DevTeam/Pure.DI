@@ -1,7 +1,7 @@
 ﻿/*
 $v=true
-$p=300
-$d=DI tracing via serilog
+$p=0
+$d=Serilog
 $r=Serilog.Core;Serilog.Events
 */
 
@@ -18,7 +18,7 @@ $r=Serilog.Core;Serilog.Events
 // ReSharper disable UnusedMember.Global
 #pragma warning disable CS9113 // Parameter is unread.
 #pragma warning disable CA1859
-namespace Pure.DI.UsageTests.Advanced.DITracingViaSerilogScenario;
+namespace Pure.DI.UsageTests.UseCases.SerilogScenario;
 
 #pragma warning disable CA2263
 using System.Runtime.CompilerServices;

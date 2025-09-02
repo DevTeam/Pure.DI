@@ -7430,7 +7430,93 @@ To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
 
 
-## DI tracing via serilog
+## Json serialization
+
+```c#
+using Shouldly;
+using Pure.DI;
+using System.Text.Json;
+using static Pure.DI.Lifetime;
+using static Pure.DI.Tag;
+
+var composition = new Composition();
+var settings = composition.Settings;
+settings.Size.ShouldBe(10);
+
+settings.Size = 99;
+settings.Size.ShouldBe(99);
+
+settings.Size = 33;
+settings.Size.ShouldBe(33);
+
+record Settings(int Size)
+{
+    public static readonly Settings Default = new(10);
+}
+
+interface IStorage
+{
+    void Save(string data);
+
+    string? Load();
+}
+
+class Storage : IStorage
+{
+    private string? _data;
+
+    public void Save(string data) => _data = data;
+
+    public string? Load() => _data;
+}
+
+interface ISettingsService
+{
+    int Size { get; set; }
+}
+
+class SettingsService(
+    [Tag(JSON)] Func<string, Settings?> deserialize,
+    [Tag(JSON)] Func<Settings, string> serialize,
+    IStorage storage)
+    : ISettingsService
+{
+    public int Size
+    {
+        // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
+        get => GetSettings().Size;
+        set => SaveSettings(GetSettings() with { Size = value });
+    }
+
+    private Settings GetSettings() =>
+        storage.Load() is {} data && deserialize(data) is {} settings
+            ? settings
+            : Settings.Default;
+
+    private void SaveSettings(Settings settings) =>
+        storage.Save(serialize(settings));
+}
+
+partial class Composition
+{
+    private void Setup() =>
+
+        DI.Setup(nameof(Composition))
+            .Root<ISettingsService>(nameof(Settings))
+            .Bind().To<SettingsService>()
+            .Bind().To(_ => new JsonSerializerOptions { WriteIndented = true })
+            .Bind(JSON).To<JsonSerializerOptions, Func<string, TT?>>(options => json => JsonSerializer.Deserialize<TT>(json, options))
+            .Bind(JSON).To<JsonSerializerOptions, Func<TT, string>>(options => value => JsonSerializer.Serialize(value, options))
+            .Bind().As(Singleton).To<Storage>();
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+
+## Serilog
 
 ```c#
 using Serilog.Core;
@@ -12730,12 +12816,30 @@ Atomically generated smart tag with value "CompositionClass".
 </blockquote></details>
 
 
+<details><summary>Field VarName</summary><blockquote>
+
+Atomically generated smart tag with value "VarName".
+            It's used for:
+            
+            class _Generator__VarsMap_ <-- _IIdGenerator_(VarName) -- _IdGenerator_ as _Transient_
+</blockquote></details>
+
+
 <details><summary>Field Override</summary><blockquote>
 
 Atomically generated smart tag with value "Override".
             It's used for:
             
             class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
+<details><summary>Field UsingDeclarations</summary><blockquote>
+
+Atomically generated smart tag with value "UsingDeclarations".
+            It's used for:
+            
+            class _Generator__CompositionClassBuilder_ <-- _IBuilder{TData, T}_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
 </blockquote></details>
 
 
@@ -12748,30 +12852,12 @@ Atomically generated smart tag with value "Overrider".
 </blockquote></details>
 
 
-<details><summary>Field VarName</summary><blockquote>
-
-Atomically generated smart tag with value "VarName".
-            It's used for:
-            
-            class _Generator__VarsMap_ <-- _IIdGenerator_(VarName) -- _IdGenerator_ as _Transient_
-</blockquote></details>
-
-
 <details><summary>Field Cleaner</summary><blockquote>
 
 Atomically generated smart tag with value "Cleaner".
             It's used for:
             
             class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
-</blockquote></details>
-
-
-<details><summary>Field UsingDeclarations</summary><blockquote>
-
-Atomically generated smart tag with value "UsingDeclarations".
-            It's used for:
-            
-            class _Generator__CompositionClassBuilder_ <-- _IBuilder{TData, T}_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
 </blockquote></details>
 
 

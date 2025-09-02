@@ -29,6 +29,7 @@ class CreateExamplesTarget(
         "Interception",
         "Hints",
         "Advanced",
+        "UseCases",
         "Unity"
     ];
 
