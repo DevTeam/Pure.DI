@@ -86,6 +86,12 @@ class RootBuilder(
             return;
         }
 
+        if (!string.IsNullOrEmpty(var.LocalFunctionName))
+        {
+            parentCtx.Lines.AppendLine($"{var.LocalFunctionName}();");
+            return;
+        }
+
         var lines = new LinesBuilder();
         var ctx = parentCtx with
         {
