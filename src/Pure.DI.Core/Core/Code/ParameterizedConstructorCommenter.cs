@@ -1,6 +1,8 @@
 ﻿namespace Pure.DI.Core.Code;
 
-sealed class ParameterizedConstructorCommenter(IComments comments) : ICommenter<Unit>
+sealed class ParameterizedConstructorCommenter(
+    IComments comments,
+    IFormatter formatter) : ICommenter<Unit>
 {
     public void AddComments(CompositionCode composition, Unit unit)
     {
@@ -32,7 +34,7 @@ sealed class ParameterizedConstructorCommenter(IComments comments) : ICommenter<
             }
             else
             {
-                code.AppendLine($"/// <param name=\"{mdArg.ArgName}\">The composition argument of type <see cref=\"T:{mdArg.Type}\"/>.</param>");
+                code.AppendLine($"/// <param name=\"{mdArg.ArgName}\">The composition argument of type {formatter.FormatRef(mdArg.Type)}.</param>");
             }
         }
     }
