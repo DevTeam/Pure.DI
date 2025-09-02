@@ -7430,7 +7430,153 @@ To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
 
 
-## Json serialization
+## AutoMapper
+
+```c#
+using Shouldly;
+using AutoMapper;
+using Microsoft.Extensions.DependencyInjection;
+using Pure.DI.Abstractions;
+using Pure.DI;
+using Pure.DI.Abstractions;
+using AutoMapper;
+using Microsoft.Extensions.Logging;
+using static Pure.DI.Lifetime;
+using static Pure.DI.Tag;
+
+var logMessage = new List<string>();
+var composition = new Composition(logMessage);
+var root = composition.Root;
+
+root.Run();
+logMessage.ShouldContain("John Smith");
+
+class Person
+{
+    public string? FirstName { get; set; }
+
+    public string? LastName { get; set; }
+
+    public DateTime? BirthDate { get; set; }
+
+    [Inject]
+    public IPersonFormatter? Formatter { get; set; }
+}
+
+class Student
+{
+    public string? FirstName { get; set; }
+
+    public string? LastName { get; set; }
+
+    public DateTime? BirthDate { get; set; }
+
+    public DateTime? AdmissionDate { get; set; }
+}
+
+interface IPersonFormatter
+{
+    string Format(Person person);
+}
+
+class PersonFormatter : IPersonFormatter
+{
+    public string Format(Person person) => $"{person.FirstName} {person.LastName}";
+}
+
+interface IStudentService
+{
+    string AsPersonText(Student student);
+}
+
+class StudentService(Func<Student, Person> map) : IStudentService
+{
+    public string AsPersonText(Student student)
+    {
+        var person = map(student);
+        return person.Formatter?.Format(person) ?? "";
+    }
+}
+
+partial class Program(ILogger logger, IStudentService studentService)
+{
+    public void Run()
+    {
+        var nik = new Student { FirstName = "John", LastName = "Smith" };
+        var personText = studentService.AsPersonText(nik);
+        logger.LogInformation(personText);
+    }
+}
+
+class LoggerFactory(ICollection<string> logMessages)
+    : ILoggerFactory, ILogger
+{
+    public void AddProvider(ILoggerProvider provider)
+    {
+    }
+
+    public ILogger CreateLogger(string categoryName) => this;
+
+    public void Dispose() { }
+
+    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+    {
+        var message = formatter(state, exception);
+        logMessages.Add(message);
+    }
+
+    public bool IsEnabled(LogLevel logLevel) => true;
+
+    public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
+}
+
+partial class Composition
+{
+    private void Setup() =>
+
+        DI.Setup(nameof(Composition))
+            .Root<Program>(nameof(Root))
+            .Arg<ICollection<string>>("logMessage")
+            // Example dependency for Program
+            .Bind().To<StudentService>()
+
+            .DefaultLifetime(Singleton)
+                // Example dependency for Person
+                .Bind().To<PersonFormatter>()
+                // LoggerFactory for AutoMapper
+                .Bind().To<LoggerFactory>()
+                // Provides a mapper
+                .Bind<IMapper>().To<LoggerFactory, Mapper>(loggerFactory => {
+                    // Create the mapping configuration
+                    var configuration = new MapperConfiguration(cfg => {
+                            cfg.CreateMap<Student, Person>();
+                        },
+                        loggerFactory);
+                    configuration.CompileMappings();
+                    // Create the mapper
+                    return new Mapper(configuration);
+                })
+                // Maps TT1 -> TT2
+                .Bind().To<Func<TT1, TT2>>(ctx => source => {
+                    ctx.Inject(out IMapper mapper);
+                    // source -> target
+                    var target = mapper.Map<TT1, TT2>(source);
+                    // Building-up a mapped value with dependencies
+                    ctx.BuildUp(target);
+                    return target;
+                });
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [AutoMapper](https://www.nuget.org/packages/AutoMapper)
+ - [Microsoft.Extensions.DependencyInjection](https://www.nuget.org/packages/Microsoft.Extensions.DependencyInjection)
+ - [Pure.DI.Abstractions](https://www.nuget.org/packages/Pure.DI.Abstractions)
+
+
+## JSON serialization
 
 ```c#
 using Shouldly;
@@ -12817,21 +12963,21 @@ Atomically generated smart tag with value "CompositionClass".
 </blockquote></details>
 
 
-<details><summary>Field Override</summary><blockquote>
-
-Atomically generated smart tag with value "Override".
-            It's used for:
-            
-            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
-</blockquote></details>
-
-
 <details><summary>Field UsingDeclarations</summary><blockquote>
 
 Atomically generated smart tag with value "UsingDeclarations".
             It's used for:
             
             class _Generator__CompositionClassBuilder_ <-- _IBuilder{TData, T}_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field Override</summary><blockquote>
+
+Atomically generated smart tag with value "Override".
+            It's used for:
+            
+            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
@@ -12853,21 +12999,21 @@ Atomically generated smart tag with value "Overrider".
 </blockquote></details>
 
 
-<details><summary>Field UniqueTag</summary><blockquote>
-
-Atomically generated smart tag with value "UniqueTag".
-            It's used for:
-            
-            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve__BindingBuilder_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve_
-</blockquote></details>
-
-
 <details><summary>Field Cleaner</summary><blockquote>
 
 Atomically generated smart tag with value "Cleaner".
             It's used for:
             
             class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field UniqueTag</summary><blockquote>
+
+Atomically generated smart tag with value "UniqueTag".
+            It's used for:
+            
+            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve__BindingBuilder_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 

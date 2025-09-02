@@ -1,7 +1,7 @@
 ﻿/*
 $v=true
 $p=0
-$d=Json serialization
+$d=JSON serialization
 $r=Shouldly
 */
 

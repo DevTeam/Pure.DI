@@ -12,9 +12,10 @@
         <Compile Include="$(SolutionDir)/src\Pure.DI.Abstractions\any\Pure.DI\Abstractions\*.g.cs"/>
         <Compile Include="$(SolutionDir)/src\Pure.DI.MS\any\Pure.DI\MS\*.cs" Link=""/>
         <PackageReference Include="Castle.Core" Version="5.1.1"/>
-        <PackageReference Include="Serilog" Version="4.2.0"/>
-        <PackageReference Include="Shouldly" Version="4.2.1"/>
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0"/>
+        <PackageReference Include="Serilog" Version="4.3.0"/>
+        <PackageReference Include="Shouldly" Version="4.3.0"/>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.8"/>
+        <PackageReference Include="AutoMapper" Version="15.0.1" />
     </ItemGroup>
 
 </Project>
