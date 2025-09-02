@@ -180,9 +180,11 @@ partial class Composition: IDisposable
       void EnsureDependencyExists()
       {
         if (_root._singleDependency52 is null)
-        {
-          _root._singleDependency52 = new Dependency();
-        }
+          lock (_lock)
+            if (_root._singleDependency52 is null)
+            {
+              _root._singleDependency52 = new Dependency();
+            }
       }
     }
   }

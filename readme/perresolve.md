@@ -124,9 +124,11 @@ partial class Composition
       void EnsureDependencyExists()
       {
         if (resolveDependency1 is null)
-        {
-          resolveDependency1 = new Dependency();
-        }
+          lock (_lock)
+            if (resolveDependency1 is null)
+            {
+              resolveDependency1 = new Dependency();
+            }
       }
     }
   }

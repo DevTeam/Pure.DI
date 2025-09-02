@@ -177,12 +177,14 @@ partial class Composition
       void EnsureJsonSerializerOptionsExists()
       {
         if (_root._singleJsonSerializerOptions53 is null)
-        {
-          _root._singleJsonSerializerOptions53 = new JsonSerializerOptions
-          {
-            WriteIndented = true
-          };
-        }
+          lock (_lock)
+            if (_root._singleJsonSerializerOptions53 is null)
+            {
+              _root._singleJsonSerializerOptions53 = new JsonSerializerOptions
+              {
+                WriteIndented = true
+              };
+            }
       }
     }
   }
