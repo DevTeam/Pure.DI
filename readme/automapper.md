@@ -13,12 +13,12 @@ using Microsoft.Extensions.Logging;
 using static Pure.DI.Lifetime;
 using static Pure.DI.Tag;
 
-var logMessage = new List<string>();
-var composition = new Composition(logMessage);
+var logMessages = new List<string>();
+using var composition = new Composition(logMessages);
 var root = composition.Root;
 
 root.Run();
-logMessage.ShouldContain("John Smith");
+logMessages.ShouldContain("John Smith");
 
 class Person
 {
@@ -77,28 +77,6 @@ partial class Program(ILogger logger, IStudentService studentService)
     }
 }
 
-class LoggerFactory(ICollection<string> logMessages)
-    : ILoggerFactory, ILogger
-{
-    public void AddProvider(ILoggerProvider provider)
-    {
-    }
-
-    public ILogger CreateLogger(string categoryName) => this;
-
-    public void Dispose() { }
-
-    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
-    {
-        var message = formatter(state, exception);
-        logMessages.Add(message);
-    }
-
-    public bool IsEnabled(LogLevel logLevel) => true;
-
-    public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
-}
-
 partial class Composition
 {
     private void Setup() =>
@@ -112,8 +90,9 @@ partial class Composition
             .DefaultLifetime(Singleton)
                 // Example dependency for Person
                 .Bind().To<PersonFormatter>()
-                // LoggerFactory for AutoMapper
+                // Logger for AutoMapper
                 .Bind().To<LoggerFactory>()
+                .Bind().To((LoggerFactory loggerFactory) => loggerFactory.CreateLogger("info"))
                 // Provides a mapper
                 .Bind<IMapper>().To<LoggerFactory, Mapper>(loggerFactory => {
                     // Create the mapping configuration
@@ -134,6 +113,26 @@ partial class Composition
                     ctx.BuildUp(target);
                     return target;
                 });
+}
+
+class LoggerFactory(ICollection<string> logMessages)
+    : ILoggerFactory
+{
+    public void AddProvider(ILoggerProvider provider) {}
+
+    public ILogger CreateLogger(string categoryName) => new Logger(logMessages);
+
+    public void Dispose() { }
+
+    private class Logger(ICollection<string> logMessages): ILogger
+    {
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter) =>
+            logMessages.Add(formatter(state, exception));
+
+        public bool IsEnabled(LogLevel logLevel) => true;
+
+        public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
+    }
 }
 ```
 
@@ -184,10 +183,11 @@ partial class Composition: IDisposable
   private object[] _disposables;
   private int _disposeIndex;
 
-  private LoggerFactory? _singleLoggerFactory55;
-  private Func<Student, Person>? _singleFunc59;
-  private AutoMapper.Mapper? _singleMapper56;
+  private Microsoft.Extensions.Logging.ILogger? _singleILogger56;
+  private Func<Student, Person>? _singleFunc60;
+  private AutoMapper.Mapper? _singleMapper57;
   private PersonFormatter? _singlePersonFormatter54;
+  private LoggerFactory? _singleLoggerFactory55;
 
   private readonly ICollection<string> _argLogMessage;
 
@@ -217,14 +217,13 @@ partial class Composition: IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      EnsureLoggerFactoryExists();
-      if (_root._singleFunc59 is null)
+      if (_root._singleFunc60 is null)
         lock (_lock)
-          if (_root._singleFunc59 is null)
+          if (_root._singleFunc60 is null)
           {
-            _root._singleFunc59 = source =>
+            _root._singleFunc60 = source =>
             {
-              if (_root._singleMapper56 is null)
+              if (_root._singleMapper57 is null)
               {
                 EnsureLoggerFactoryExists();
                 LoggerFactory localLoggerFactory = _root._singleLoggerFactory55;
@@ -235,10 +234,10 @@ partial class Composition: IDisposable
                 }, localLoggerFactory);
                 localConfiguration.CompileMappings();
                 // Create the mapper
-                _root._singleMapper56 = new Mapper(localConfiguration);
+                _root._singleMapper57 = new Mapper(localConfiguration);
               }
 
-              AutoMapper.IMapper localMapper = _root._singleMapper56;
+              AutoMapper.IMapper localMapper = _root._singleMapper57;
               // source -> target
               Person localTarget = localMapper.Map<Student, Person>(source);
               // Building-up a mapped value with dependencies
@@ -252,7 +251,16 @@ partial class Composition: IDisposable
             };
           }
 
-      return new Program(_root._singleLoggerFactory55, new StudentService(_root._singleFunc59));
+      if (_root._singleILogger56 is null)
+        lock (_lock)
+          if (_root._singleILogger56 is null)
+          {
+            EnsureLoggerFactoryExists();
+            LoggerFactory localLoggerFactory1 = _root._singleLoggerFactory55;
+            _root._singleILogger56 = localLoggerFactory1.CreateLogger("info");
+          }
+
+      return new Program(_root._singleILogger56, new StudentService(_root._singleFunc60));
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureLoggerFactoryExists()
       {
@@ -277,10 +285,11 @@ partial class Composition: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _singleLoggerFactory55 = null;
-      _singleFunc59 = null;
-      _singleMapper56 = null;
+      _singleILogger56 = null;
+      _singleFunc60 = null;
+      _singleMapper57 = null;
       _singlePersonFormatter54 = null;
+      _singleLoggerFactory55 = null;
     }
 
     while (disposeIndex-- > 0)
@@ -320,14 +329,14 @@ classDiagram
 	StudentService --|> IStudentService
 	PersonFormatter --|> IPersonFormatter
 	LoggerFactory --|> ILoggerFactory
-	LoggerFactory --|> ILogger
 	Mapper --|> IMapper
 	Composition ..> Program : Program Root
 	StudentService o-- "Singleton" FuncᐸStudentˏPersonᐳ : FuncᐸStudentˏPersonᐳ
 	LoggerFactory o-- ICollectionᐸStringᐳ : Argument "logMessage"
+	ILogger o-- "Singleton" LoggerFactory : LoggerFactory
 	Mapper o-- "Singleton" LoggerFactory : LoggerFactory
 	Program *--  StudentService : IStudentService
-	Program o-- "Singleton" LoggerFactory : ILogger
+	Program o-- "Singleton" ILogger : ILogger
 	FuncᐸStudentˏPersonᐳ o-- "Singleton" PersonFormatter : IPersonFormatter
 	FuncᐸStudentˏPersonᐳ o-- "Singleton" Mapper : IMapper
 	namespace AutoMapper {
@@ -340,7 +349,7 @@ classDiagram
 	}
 	namespace Microsoft.Extensions.Logging {
 		class ILogger {
-			<<interface>>
+				<<interface>>
 		}
 		class ILoggerFactory {
 			<<interface>>

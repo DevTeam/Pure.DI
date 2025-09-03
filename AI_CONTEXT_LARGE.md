@@ -7444,12 +7444,12 @@ using Microsoft.Extensions.Logging;
 using static Pure.DI.Lifetime;
 using static Pure.DI.Tag;
 
-var logMessage = new List<string>();
-var composition = new Composition(logMessage);
+var logMessages = new List<string>();
+using var composition = new Composition(logMessages);
 var root = composition.Root;
 
 root.Run();
-logMessage.ShouldContain("John Smith");
+logMessages.ShouldContain("John Smith");
 
 class Person
 {
@@ -7508,28 +7508,6 @@ partial class Program(ILogger logger, IStudentService studentService)
     }
 }
 
-class LoggerFactory(ICollection<string> logMessages)
-    : ILoggerFactory, ILogger
-{
-    public void AddProvider(ILoggerProvider provider)
-    {
-    }
-
-    public ILogger CreateLogger(string categoryName) => this;
-
-    public void Dispose() { }
-
-    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
-    {
-        var message = formatter(state, exception);
-        logMessages.Add(message);
-    }
-
-    public bool IsEnabled(LogLevel logLevel) => true;
-
-    public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
-}
-
 partial class Composition
 {
     private void Setup() =>
@@ -7543,8 +7521,9 @@ partial class Composition
             .DefaultLifetime(Singleton)
                 // Example dependency for Person
                 .Bind().To<PersonFormatter>()
-                // LoggerFactory for AutoMapper
+                // Logger for AutoMapper
                 .Bind().To<LoggerFactory>()
+                .Bind().To((LoggerFactory loggerFactory) => loggerFactory.CreateLogger("info"))
                 // Provides a mapper
                 .Bind<IMapper>().To<LoggerFactory, Mapper>(loggerFactory => {
                     // Create the mapping configuration
@@ -7565,6 +7544,26 @@ partial class Composition
                     ctx.BuildUp(target);
                     return target;
                 });
+}
+
+class LoggerFactory(ICollection<string> logMessages)
+    : ILoggerFactory
+{
+    public void AddProvider(ILoggerProvider provider) {}
+
+    public ILogger CreateLogger(string categoryName) => new Logger(logMessages);
+
+    public void Dispose() { }
+
+    private class Logger(ICollection<string> logMessages): ILogger
+    {
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter) =>
+            logMessages.Add(formatter(state, exception));
+
+        public bool IsEnabled(LogLevel logLevel) => true;
+
+        public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
+    }
 }
 ```
 
@@ -12954,24 +12953,6 @@ Atomically generated smart tag with value "SyncRoot".
 </blockquote></details>
 
 
-<details><summary>Field CompositionClass</summary><blockquote>
-
-Atomically generated smart tag with value "CompositionClass".
-            It's used for:
-            
-            class _Generator__CodeBuilder_ <-- _IBuilder{TData, T}_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
-</blockquote></details>
-
-
-<details><summary>Field UsingDeclarations</summary><blockquote>
-
-Atomically generated smart tag with value "UsingDeclarations".
-            It's used for:
-            
-            class _Generator__CompositionClassBuilder_ <-- _IBuilder{TData, T}_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
-</blockquote></details>
-
-
 <details><summary>Field Override</summary><blockquote>
 
 Atomically generated smart tag with value "Override".
@@ -12981,12 +12962,30 @@ Atomically generated smart tag with value "Override".
 </blockquote></details>
 
 
-<details><summary>Field VarName</summary><blockquote>
+<details><summary>Field CompositionClass</summary><blockquote>
 
-Atomically generated smart tag with value "VarName".
+Atomically generated smart tag with value "CompositionClass".
             It's used for:
             
-            class _Generator__VarsMap_ <-- _IIdGenerator_(VarName) -- _IdGenerator_ as _Transient_
+            class _Generator__CodeBuilder_ <-- _IBuilder{TData, T}_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field Overrider</summary><blockquote>
+
+Atomically generated smart tag with value "Overrider".
+            It's used for:
+            
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Overrider) -- _GraphOverrider_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field UsingDeclarations</summary><blockquote>
+
+Atomically generated smart tag with value "UsingDeclarations".
+            It's used for:
+            
+            class _Generator__CompositionClassBuilder_ <-- _IBuilder{TData, T}_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
 </blockquote></details>
 
 
@@ -13008,12 +13007,12 @@ Atomically generated smart tag with value "UniqueTag".
 </blockquote></details>
 
 
-<details><summary>Field Overrider</summary><blockquote>
+<details><summary>Field VarName</summary><blockquote>
 
-Atomically generated smart tag with value "Overrider".
+Atomically generated smart tag with value "VarName".
             It's used for:
             
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Overrider) -- _GraphOverrider_ as _PerBlock_
+            class _Generator__VarsMap_ <-- _IIdGenerator_(VarName) -- _IdGenerator_ as _Transient_
 </blockquote></details>
 
 
