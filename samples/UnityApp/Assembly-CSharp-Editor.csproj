@@ -41,17 +41,17 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
-    <Analyzer Include="C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Assets\Packages\Pure.DI.2.2.8\analyzers\dotnet\roslyn4.3\cs\fr\Pure.DI.Core.resources.dll" />
-    <Analyzer Include="C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Assets\Packages\Pure.DI.2.2.8\analyzers\dotnet\roslyn4.3\cs\ar\Pure.DI.Core.resources.dll" />
-    <Analyzer Include="C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Assets\Packages\Pure.DI.2.2.8\analyzers\dotnet\roslyn4.3\cs\de\Pure.DI.Core.resources.dll" />
-    <Analyzer Include="C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Assets\Packages\Pure.DI.2.2.8\analyzers\dotnet\roslyn4.3\cs\hi\Pure.DI.Core.resources.dll" />
-    <Analyzer Include="C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Assets\Packages\Pure.DI.2.2.8\analyzers\dotnet\roslyn4.3\cs\ru\Pure.DI.Core.resources.dll" />
-    <Analyzer Include="C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Assets\Packages\Pure.DI.2.2.8\analyzers\dotnet\roslyn4.3\cs\Pure.DI.dll" />
-    <Analyzer Include="C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Assets\Packages\Pure.DI.2.2.8\analyzers\dotnet\roslyn4.3\cs\es\Pure.DI.Core.resources.dll" />
-    <Analyzer Include="C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Assets\Packages\Pure.DI.2.2.8\analyzers\dotnet\roslyn4.3\cs\Pure.DI.Core.dll" />
-    <Analyzer Include="C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Assets\Packages\Pure.DI.2.2.8\analyzers\dotnet\roslyn4.3\cs\pt\Pure.DI.Core.resources.dll" />
-    <Analyzer Include="C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Assets\Packages\Pure.DI.2.2.8\analyzers\dotnet\roslyn4.3\cs\ja\Pure.DI.Core.resources.dll" />
-    <Analyzer Include="C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Assets\Packages\Pure.DI.2.2.8\analyzers\dotnet\roslyn4.3\cs\zh\Pure.DI.Core.resources.dll" />
+    <Analyzer Include="C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Assets\Packages\Pure.DI.2.2.9\analyzers\dotnet\roslyn4.3\cs\hi\Pure.DI.Core.resources.dll" />
+    <Analyzer Include="C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Assets\Packages\Pure.DI.2.2.9\analyzers\dotnet\roslyn4.3\cs\de\Pure.DI.Core.resources.dll" />
+    <Analyzer Include="C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Assets\Packages\Pure.DI.2.2.9\analyzers\dotnet\roslyn4.3\cs\fr\Pure.DI.Core.resources.dll" />
+    <Analyzer Include="C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Assets\Packages\Pure.DI.2.2.9\analyzers\dotnet\roslyn4.3\cs\ar\Pure.DI.Core.resources.dll" />
+    <Analyzer Include="C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Assets\Packages\Pure.DI.2.2.9\analyzers\dotnet\roslyn4.3\cs\es\Pure.DI.Core.resources.dll" />
+    <Analyzer Include="C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Assets\Packages\Pure.DI.2.2.9\analyzers\dotnet\roslyn4.3\cs\pt\Pure.DI.Core.resources.dll" />
+    <Analyzer Include="C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Assets\Packages\Pure.DI.2.2.9\analyzers\dotnet\roslyn4.3\cs\zh\Pure.DI.Core.resources.dll" />
+    <Analyzer Include="C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Assets\Packages\Pure.DI.2.2.9\analyzers\dotnet\roslyn4.3\cs\Pure.DI.dll" />
+    <Analyzer Include="C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Assets\Packages\Pure.DI.2.2.9\analyzers\dotnet\roslyn4.3\cs\Pure.DI.Core.dll" />
+    <Analyzer Include="C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Assets\Packages\Pure.DI.2.2.9\analyzers\dotnet\roslyn4.3\cs\ja\Pure.DI.Core.resources.dll" />
+    <Analyzer Include="C:\Projects\DevTeam\Pure.DI\samples\UnityApp\Assets\Packages\Pure.DI.2.2.9\analyzers\dotnet\roslyn4.3\cs\ru\Pure.DI.Core.resources.dll" />
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.0.35f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.SourceGenerators.dll" />
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.0.35f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.Properties.SourceGenerator.dll" />
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.0.35f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll" />
