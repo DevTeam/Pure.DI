@@ -57,7 +57,7 @@ sealed class FieldsBuilder(
                     code.AppendLine($"private {typeResolver.Resolve(composition.Source.Source, singletonField.InstanceType)} {singletonField.Name};");
                     membersCounter++;
 
-                    code.AppendLine($"private bool {singletonField.Name}Created;");
+                    code.AppendLine($"private bool {singletonField.Name}{Names.CreatedValueNameSuffix};");
                 }
                 else
                 {

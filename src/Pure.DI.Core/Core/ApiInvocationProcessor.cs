@@ -401,13 +401,11 @@ sealed class ApiInvocationProcessor(
                         // Factory
                         var factory = new LinesBuilder();
                         factory.AppendLine($"({Names.IContextTypeName} {Names.ContextInstance}) =>");
-                        factory.AppendLine(BlockStart);
-                        using (factory.Indent())
+                        using (factory.CreateBlock())
                         {
                             factory.AppendLine($"{Names.ContextInstance}.{nameof(IContext.Inject)}({builderArgTag.Value.ValueToString()}, out {symbolNames.GetName(buildersRootType)} {Names.BuildingInstance});");
                             factory.AppendLine($"switch ({Names.BuildingInstance})");
-                            factory.AppendLine(BlockStart);
-                            using (factory.Indent())
+                            using (factory.CreateBlock())
                             {
                                 foreach (var builderRoot in builderRoots)
                                 {
@@ -426,11 +424,9 @@ sealed class ApiInvocationProcessor(
                                 }
                             }
 
-                            factory.AppendLine(BlockFinish);
                             factory.AppendLine($"return {Names.BuildingInstance};");
                         }
 
-                        factory.AppendLine(BlockFinish);
                         var builderLambdaExpression = (LambdaExpressionSyntax)SyntaxFactory.ParseExpression(factory.ToString());
 
                         metadataVisitor.VisitContract(new MdContract(semanticModel, invocation, buildersRootType, ContractKind.Explicit, ImmutableArray.Create(builderTag)));
@@ -649,15 +645,13 @@ sealed class ApiInvocationProcessor(
         // Factory
         var factory = new LinesBuilder();
         factory.AppendLine($"({Names.IContextTypeName} {Names.ContextInstance}) =>");
-        factory.AppendLine(BlockStart);
-        using (factory.Indent())
+        using (factory.CreateBlock())
         {
             factory.AppendLine($"{Names.ContextInstance}.{nameof(IContext.Inject)}({builderArgTag.Value.ValueToString()}, out {symbolNames.GetName(builderType)} {Names.BuildingInstance});");
             factory.AppendLine($"{Names.ContextInstance}.{nameof(IContext.BuildUp)}({Names.BuildingInstance});");
             factory.AppendLine($"return {Names.BuildingInstance};");
         }
 
-        factory.AppendLine(BlockFinish);
         var builderLambdaExpression = (LambdaExpressionSyntax)SyntaxFactory.ParseExpression(factory.ToString());
 
         metadataVisitor.VisitContract(new MdContract(semanticModel, source, builderType, ContractKind.Explicit, ImmutableArray.Create(builderTag)));

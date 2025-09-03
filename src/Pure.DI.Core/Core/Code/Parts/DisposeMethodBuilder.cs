@@ -199,16 +199,21 @@ sealed class DisposeMethodBuilder(
         code.AppendLine($"{Names.DisposablesFieldName} = new object[{composition.TotalDisposablesCount.ToString()}];");
         foreach (var singletonField in composition.Singletons)
         {
-            code.AppendLine($"{singletonField.Name} = default({typeResolver.Resolve(composition.Source.Source, singletonField.InstanceType)});");
             if (singletonField.InstanceType.IsValueType)
             {
-                code.AppendLine($"{singletonField.Name}Created = false;");
+                code.AppendLine($"{singletonField.Name} = default({typeResolver.Resolve(composition.Source.Source, singletonField.InstanceType)});");
+                code.AppendLine($"{singletonField.Name}{Names.CreatedValueNameSuffix} = false;");
+            }
+            else
+            {
+                code.AppendLine($"{singletonField.Name} = null;");
             }
         }
 
         // ReSharper disable once InvertIf
         if (composition.IsThreadSafe)
         {
+            code.DecIndent();
             code.AppendLine(BlockFinish);
         }
     }

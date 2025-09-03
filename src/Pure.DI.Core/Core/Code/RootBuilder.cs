@@ -746,11 +746,11 @@ class RootBuilder(
 
             var.LocalFunctionName = uniqueNameProvider.GetUniqueName($"Ensure{baseName}Exists{Names.Salt}");
             localFunction.AppendLine($"void {var.LocalFunctionName}()");
-            localFunction.AppendLine(BlockStart);
-            localFunction.IncIndent();
-            localFunction.AppendLines(lines.Lines);
-            localFunction.DecIndent();
-            localFunction.AppendLine(BlockFinish);
+            using (localFunction.CreateBlock())
+            {
+                localFunction.AppendLines(lines.Lines);
+            }
+
             lines = new LinesBuilder();
             lines.AppendLine($"{var.LocalFunctionName}();");
         }
