@@ -190,64 +190,64 @@ partial class Composition: IDisposable, IAsyncDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _scopedDependency52 = default(Dependency);
-      }
-
-      while (disposeIndex-- > 0)
-      {
-        switch (disposables[disposeIndex])
-        {
-          case IAsyncDisposable asyncDisposableInstance:
-            try
-            {
-              var valueTask = asyncDisposableInstance.DisposeAsync();
-              if (!valueTask.IsCompleted)
-              {
-                valueTask.AsTask().Wait();
-              }
-            }
-            catch (Exception exception)
-            {
-              OnDisposeAsyncException(asyncDisposableInstance, exception);
-            }
-            break;
-        }
-      }
+      _scopedDependency52 = null;
     }
 
-    partial void OnDisposeException<T>(T disposableInstance, Exception exception) where T : IDisposable;
-
-    public async ValueTask DisposeAsync()
+    while (disposeIndex-- > 0)
     {
-      int disposeIndex;
-      object[] disposables;
+      switch (disposables[disposeIndex])
       {
-        disposeIndex = _disposeIndex;
-        _disposeIndex = 0;
-        disposables = _disposables;
-        _disposables = new object[1];
-        _scopedDependency52 = default(Dependency);
-        }
-
-        while (disposeIndex-- > 0)
-        {
-          switch (disposables[disposeIndex])
+        case IAsyncDisposable asyncDisposableInstance:
+          try
           {
-            case IAsyncDisposable asyncDisposableInstance:
-              try
-              {
-                await asyncDisposableInstance.DisposeAsync();
-              }
-              catch (Exception exception)
-              {
-                OnDisposeAsyncException(asyncDisposableInstance, exception);
-              }
-              break;
+            var valueTask = asyncDisposableInstance.DisposeAsync();
+            if (!valueTask.IsCompleted)
+            {
+              valueTask.AsTask().Wait();
+            }
           }
-        }
+          catch (Exception exception)
+          {
+            OnDisposeAsyncException(asyncDisposableInstance, exception);
+          }
+          break;
       }
+    }
+  }
 
-      partial void OnDisposeAsyncException<T>(T asyncDisposableInstance, Exception exception) where T : IAsyncDisposable;
+  partial void OnDisposeException<T>(T disposableInstance, Exception exception) where T : IDisposable;
+
+  public async ValueTask DisposeAsync()
+  {
+    int disposeIndex;
+    object[] disposables;
+    {
+      disposeIndex = _disposeIndex;
+      _disposeIndex = 0;
+      disposables = _disposables;
+      _disposables = new object[1];
+      _scopedDependency52 = null;
+    }
+
+    while (disposeIndex-- > 0)
+    {
+      switch (disposables[disposeIndex])
+      {
+        case IAsyncDisposable asyncDisposableInstance:
+          try
+          {
+            await asyncDisposableInstance.DisposeAsync();
+          }
+          catch (Exception exception)
+          {
+            OnDisposeAsyncException(asyncDisposableInstance, exception);
+          }
+          break;
+      }
+    }
+  }
+
+  partial void OnDisposeAsyncException<T>(T asyncDisposableInstance, Exception exception) where T : IAsyncDisposable;
 }
 ```
 

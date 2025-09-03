@@ -233,28 +233,28 @@ partial class Composition: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _singleDependency53 = default(Dependency);
-      }
-
-      while (disposeIndex-- > 0)
-      {
-        switch (disposables[disposeIndex])
-        {
-          case IDisposable disposableInstance:
-            try
-            {
-              disposableInstance.Dispose();
-            }
-            catch (Exception exception)
-            {
-              OnDisposeException(disposableInstance, exception);
-            }
-            break;
-        }
-      }
+      _singleDependency53 = null;
     }
 
-    partial void OnDisposeException<T>(T disposableInstance, Exception exception) where T : IDisposable;
+    while (disposeIndex-- > 0)
+    {
+      switch (disposables[disposeIndex])
+      {
+        case IDisposable disposableInstance:
+          try
+          {
+            disposableInstance.Dispose();
+          }
+          catch (Exception exception)
+          {
+            OnDisposeException(disposableInstance, exception);
+          }
+          break;
+      }
+    }
+  }
+
+  partial void OnDisposeException<T>(T disposableInstance, Exception exception) where T : IDisposable;
 }
 ```
 
