@@ -1,8 +1,10 @@
 ﻿namespace Pure.DI.Core.Code;
 
-interface INodeInfo
+interface INodeTools
 {
     bool IsLazy(DependencyNode node);
+
+    bool IsBlock(IDependencyNode node);
 
     bool IsDisposableAny(DependencyNode node);
 

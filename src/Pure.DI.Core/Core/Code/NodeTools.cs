@@ -2,12 +2,16 @@
 
 namespace Pure.DI.Core.Code;
 
+using static Lifetime;
 using SpecialType=Microsoft.CodeAnalysis.SpecialType;
 
-sealed class NodeInfo(ITypes types) : INodeInfo
+sealed class NodeTools(ITypes types) : INodeTools
 {
     public bool IsLazy(DependencyNode node) =>
         IsDelegate(node) || IsEnumerable(node) || IsAsyncEnumerable(node);
+
+    public bool IsBlock(IDependencyNode node) =>
+        node.Lifetime is Singleton or Scoped or PerResolve;
 
     public bool IsDisposableAny(DependencyNode node) =>
         node.Type.AllInterfaces.Any(i =>

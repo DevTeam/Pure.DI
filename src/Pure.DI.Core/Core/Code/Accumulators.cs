@@ -1,7 +1,7 @@
 ﻿namespace Pure.DI.Core.Code;
 
 class Accumulators(
-    INodeInfo nodeInfo,
+    INodeTools nodeTools,
     IBuildTools buildTools)
     : IAccumulators
 {
@@ -27,7 +27,7 @@ class Accumulators(
             foreach (var dependency in dependencies)
             {
                 var source = dependency.Source;
-                if (nodeInfo.IsLazy(source.Node))
+                if (nodeTools.IsLazy(source.Node))
                 {
                     continue;
                 }

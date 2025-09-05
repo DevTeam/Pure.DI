@@ -5,7 +5,7 @@ class CompositionBuilder(
     ITypeResolver typeResolver,
     Func<IVarsMap> varsMapFactory,
     Func<IBuilder<RootContext, VarInjection>> rootBuilder,
-    INodeInfo nodeInfo,
+    INodeTools nodeTools,
     IVarDeclarationTools varDeclarationTools,
     IBuilder<CompositionCode, LinesBuilder> classDiagramBuilder,
     CancellationToken cancellationToken)
@@ -65,9 +65,9 @@ class CompositionBuilder(
             .ThenBy(root => root.DisplayName)
             .ToImmutableArray();
 
-        var totalDisposables = singletons.Where(i => nodeInfo.IsDisposableAny(i.Node.Node)).ToList();
-        var disposables = singletons.Where(i => nodeInfo.IsDisposable(i.Node.Node)).ToList();
-        var asyncDisposables = singletons.Where(i => nodeInfo.IsAsyncDisposable(i.Node.Node)).ToList();
+        var totalDisposables = singletons.Where(i => nodeTools.IsDisposableAny(i.Node.Node)).ToList();
+        var disposables = singletons.Where(i => nodeTools.IsDisposable(i.Node.Node)).ToList();
+        var asyncDisposables = singletons.Where(i => nodeTools.IsAsyncDisposable(i.Node.Node)).ToList();
         var composition = new CompositionCode(
             graph,
             new LinesBuilder(),

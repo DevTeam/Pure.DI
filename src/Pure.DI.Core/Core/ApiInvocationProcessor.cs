@@ -4,7 +4,6 @@
 namespace Pure.DI.Core;
 
 using Microsoft.CodeAnalysis.Operations;
-using static LinesBuilderExtensions;
 
 sealed class ApiInvocationProcessor(
     IComments comments,

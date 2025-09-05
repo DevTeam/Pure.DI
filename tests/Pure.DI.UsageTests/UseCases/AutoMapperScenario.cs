@@ -18,7 +18,10 @@ $r=Shouldly;AutoMapper;Microsoft.Extensions.DependencyInjection;Pure.DI.Abstract
 // ReSharper disable WithExpressionModifiesAllMembers
 // ReSharper disable TemplateIsNotCompileTimeConstantProblem
 // ReSharper disable PartialTypeWithSinglePart
-#pragma warning disable CS9113 // Parameter is unread.
+// ReSharper disable PropertyCanBeMadeInitOnly.Global
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+#pragma warning disable CA2254
+#pragma warning disable CS9113
 #pragma warning disable CA1859
 namespace Pure.DI.UsageTests.UseCases.AutoMapperScenario;
 

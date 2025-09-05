@@ -11,6 +11,7 @@ $d=Inheritance of compositions
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable UnusedMember.Local
+// ReSharper disable UnusedMember.Global
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Advanced.InheritanceOfCompositionsScenario;
 
@@ -42,7 +43,7 @@ public class Scenario
 // {
 class BaseComposition
 {
-    private void Setup() =>
+    private static void Setup() =>
         DI.Setup(kind: Internal)
             .Bind<IDependency>().To<Dependency>();
 }

@@ -4,7 +4,7 @@ using static Lifetime;
 
 sealed class CyclicDependencyValidatorVisitor(
     ILogger logger,
-    INodeInfo nodeInfo,
+    INodeTools nodeTools,
     ILocationProvider locationProvider,
     ITypeResolver typeResolver)
     : IGraphVisitor<CyclicDependenciesValidatorContext, ImmutableArray<Dependency>>
@@ -38,7 +38,7 @@ sealed class CyclicDependencyValidatorVisitor(
         foreach (var dependency in path)
         {
             var source = dependency.Source;
-            if (source.Lifetime is Singleton or Scoped or PerResolve or PerBlock && nodeInfo.IsLazy(source))
+            if (source.Lifetime is Singleton or Scoped or PerResolve or PerBlock && nodeTools.IsLazy(source))
             {
                 nodes.Clear();
             }

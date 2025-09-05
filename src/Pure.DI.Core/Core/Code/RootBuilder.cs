@@ -10,7 +10,7 @@ using static Lifetime;
 using static LinesBuilderExtensions;
 
 class RootBuilder(
-    INodeInfo nodeInfo,
+    INodeTools nodeTools,
     IBuildTools buildTools,
     IAccumulators accumulators,
     ILocks locks,
@@ -27,6 +27,7 @@ class RootBuilder(
     INameProvider nameProvider,
     IOverridesRegistry overridesRegistry,
     INameFormatter nameFormatter,
+    ILocalFunctions localFunctions,
     CancellationToken cancellationToken)
     : IBuilder<RootContext, VarInjection>
 {
@@ -102,17 +103,13 @@ class RootBuilder(
 
         var varsMap = varCtx.VarsMap;
         var setup = varCtx.RootContext.Graph.Source;
-        var isBlock = IsBlock(var.AbstractNode);
-        var isLazy = nodeInfo.IsLazy(var.AbstractNode.Node);
+        var isBlock = nodeTools.IsBlock(var.AbstractNode);
+        var isLazy = nodeTools.IsLazy(var.AbstractNode.Node);
         var.HasCycle ??= IsCycle(varCtx.RootContext.Graph.Graph, var.Declaration.Node.Node, ImmutableHashSet<DependencyNode>.Empty);
         var acc = isLazy ? accumulators.GetAccumulators(varCtx.RootContext.Graph.Graph, var.AbstractNode).ToImmutableArray() : ImmutableArray<(MdAccumulator, Dependency)>.Empty;
-        var useLocalFunction = isBlock
-                               && !varCtx.HasOverrides
-                               && varCtx.Accumulators.Length == 0
-                               && varCtx.RootContext.Graph.Graph.TryGetOutEdges(var.Declaration.Node.Node, out var targets) && targets.Count > 1;
-
+        var isLocalFunction = localFunctions.UseFor(varCtx);
         var mapToken =
-            useLocalFunction
+            isLocalFunction
                 ? varsMap.LocalFunction(var, lines)
                 : isLazy
                     ? varsMap.Lazy(var, lines)
@@ -120,7 +117,7 @@ class RootBuilder(
                         ? varsMap.Block(var, lines)
                         : Disposables.Empty;
 
-        if (useLocalFunction || isLazy)
+        if (isLocalFunction || isLazy)
         {
             varCtx = varCtx with { IsLockRequired = varCtx.RootContext.IsThreadSafeEnabled };
         }
@@ -299,7 +296,7 @@ class RootBuilder(
                     {
                         ExpressionSyntax? value = null;
                         var type = memberResolver.ContractType;
-                        ExpressionSyntax instance = member.IsStatic
+                        var instance = member.IsStatic
                             ? SyntaxFactory.ParseTypeName(symbolNames.GetGlobalName(type))
                             : SyntaxFactory.IdentifierName(Names.DefaultInstanceValueName);
 
@@ -735,7 +732,7 @@ class RootBuilder(
 
         mapToken.Dispose();
 
-        if (useLocalFunction)
+        if (isLocalFunction)
         {
             var baseName = nameFormatter.Format("{type}{tag}", varCtx.VarInjection.Var.InstanceType, varCtx.VarInjection.Injection.Tag);
             var localFunction = var.LocalFunction;
@@ -811,8 +808,6 @@ class RootBuilder(
         return int.MaxValue;
     }
 
-    private static bool IsBlock(IDependencyNode node) => node.Lifetime is Singleton or Scoped or PerResolve;
-
     private void StartSingleInstanceCheck(CodeContext ctx)
     {
         var isLockRequired = ctx.IsLockRequired;
@@ -840,7 +835,7 @@ class RootBuilder(
     {
         var var = ctx.VarInjection.Var;
         var lines = ctx.Lines;
-        if (var.AbstractNode.Lifetime is Singleton or Scoped && nodeInfo.IsDisposableAny(var.AbstractNode.Node))
+        if (var.AbstractNode.Lifetime is Singleton or Scoped && nodeTools.IsDisposableAny(var.AbstractNode.Node))
         {
             var parent = "";
             if (var.AbstractNode.Lifetime == Singleton)
