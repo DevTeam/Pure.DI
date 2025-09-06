@@ -4,49 +4,57 @@
 namespace Pure.DI.Core;
 
 using System.Buffers;
+using System.Runtime.CompilerServices;
 
-sealed class LinesBuilder : IEnumerable<string>
+sealed class Lines: IEnumerable<Line>
 {
     private readonly List<Line> _lines = [];
     private readonly StringBuilder _sb = new();
     private Indent _indent;
 
-    public LinesBuilder(Indent indent) => _indent = new Indent(indent.Value - 1);
+    public Lines(Indent indent) => _indent = new Indent(indent.Value - 1);
 
-    public LinesBuilder() => _indent = new Indent(0);
+    public Lines() => _indent = new Indent(0);
 
-    public int Count => _sb.Length > 0 ? 1 : 0 + _lines.Count;
+    public int Count =>
+        _sb.Length > 0
+            ? 1 + _lines.Count
+            : _lines.Count;
 
-    public IReadOnlyCollection<Line> Lines
-    {
-        get
-        {
-            FlushLines();
-            return _lines;
-        }
-    }
-
-    public IEnumerator<string> GetEnumerator()
+    public IEnumerator<Line> GetEnumerator()
     {
         FlushLines();
-        return _lines.Select(i => $"{GetIndent(i.Indent)}{i.Text}").GetEnumerator();
+        return _lines.GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Append(string text) => _sb.Append(text);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void AppendLine(in Line line)
     {
         FlushLines();
-        _lines.Add(line with { Indent = line.Indent + _indent.Value });
+        _lines.Add(CreateLine(line));
     }
 
     public void AppendLines(IEnumerable<Line> lines)
     {
+        FlushLines();
         foreach (var line in lines)
         {
-            AppendLine(line);
+            _lines.Add(CreateLine(line));
+        }
+    }
+
+    public void AppendLines(Lines lines)
+    {
+        lines.FlushLines();
+        FlushLines();
+        foreach (var line in lines._lines)
+        {
+            _lines.Add(CreateLine(line));
         }
     }
 
@@ -55,13 +63,11 @@ sealed class LinesBuilder : IEnumerable<string>
         if (_sb.Length > 0)
         {
             _sb.Append(line);
-            _lines.Add(new Line(_indent.Value, _sb.ToString()));
+            line = _sb.ToString();
             _sb.Clear();
         }
-        else
-        {
-            _lines.Add(new Line(_indent.Value, line));
-        }
+
+        _lines.Add(new Line(_indent.Value, line));
     }
 
     public IDisposable Indent(int size = 1)
@@ -70,8 +76,10 @@ sealed class LinesBuilder : IEnumerable<string>
         return Disposables.Create(() => DecIndent(size));
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void IncIndent(int size = 1) => _indent = new Indent(_indent.Value + size);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DecIndent(int size = 1) => _indent = new Indent(_indent.Value - size);
 
     public IDisposable SaveToArray(Encoding encoding, out byte[] buffer, out int size)
@@ -108,6 +116,7 @@ sealed class LinesBuilder : IEnumerable<string>
         return Encoding.UTF8.GetString(buffer, 0, size);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void FlushLines()
     {
         if (_sb.Length > 0)
@@ -116,6 +125,10 @@ sealed class LinesBuilder : IEnumerable<string>
         }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static string GetIndent(int indent) =>
         new Indent(indent).ToString();
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private Line CreateLine(Line line) => line with { Indent = line.Indent + _indent.Value };
 }

@@ -166,7 +166,13 @@ class DependenciesWalker<TContext>(
 
     public virtual void VisitResolver(in TContext ctx, DpResolver resolver)
     {
-        VisitInjection(ctx, resolver.Injection, false, null, ImmutableArray.Create(locationProvider.GetLocation(resolver.Source.Source)), resolver.Source.Position);
+        VisitInjection(
+            ctx,
+            resolver.Injection,
+            false,
+            null,
+            ImmutableArray.Create(locationProvider.GetLocation(resolver.Source.Source)),
+            resolver.Source.Position);
     }
 
     public virtual void VisitInitializer(in TContext ctx, DpInitializer initializer)

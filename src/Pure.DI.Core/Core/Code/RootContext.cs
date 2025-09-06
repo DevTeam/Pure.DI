@@ -4,7 +4,7 @@ record RootContext(
     DependencyGraph Graph,
     Root Root,
     IVarsMap VarsMap,
-    LinesBuilder Lines)
+    Lines Lines)
 {
     public bool IsThreadSafeEnabled => Graph.Source.Hints.IsThreadSafeEnabled;
 }

@@ -6,17 +6,11 @@ namespace Pure.DI.Core;
 
 using System.IO.Compression;
 
-sealed class MermaidUrlBuilder : IBuilder<IEnumerable<string>, Uri>
+sealed class MermaidUrlBuilder : IBuilder<string, Uri>
 {
-    public Uri Build(IEnumerable<string> lines)
+    public Uri Build(string diagram)
     {
-        var code = new StringBuilder();
-        foreach (var line in lines)
-        {
-            code.AppendLine(line);
-        }
-
-        var encoded = JsonEncode(code.Replace("\\", "").ToString());
+        var encoded = JsonEncode(diagram.Replace("\\", ""));
         var json = $"{{\"code\":\"{encoded}\",\"mermaid\":\"{{\\\"theme\\\":\\\"dark\\\"}}\"}}";
         var jsonBytes = Encoding.UTF8.GetBytes(json);
         var compressedBytes = Compress(jsonBytes);

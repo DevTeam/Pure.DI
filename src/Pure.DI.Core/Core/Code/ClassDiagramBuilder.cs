@@ -4,7 +4,7 @@
 
 namespace Pure.DI.Core.Code;
 
-using static LinesBuilderExtensions;
+using static LinesExtensions;
 
 sealed class ClassDiagramBuilder(
     IBuilder<ContractsBuildContext, ISet<Injection>> injectionsBuilder,
@@ -14,15 +14,15 @@ sealed class ClassDiagramBuilder(
     ITypes types,
     ILocationProvider locationProvider,
     CancellationToken cancellationToken)
-    : IBuilder<CompositionCode, LinesBuilder>
+    : IBuilder<CompositionCode, Lines>
 {
     private static readonly FormatOptions DefaultFormatOptions = new();
 
-    public LinesBuilder Build(CompositionCode composition)
+    public Lines Build(CompositionCode composition)
     {
         var setup = composition.Source.Source;
         var nullable = composition.Compilation.Options.NullableContextOptions == NullableContextOptions.Disable ? "" : "?";
-        var lines = new LinesBuilder();
+        var lines = new Lines();
         lines.AppendLine("---");
         lines.AppendLine(" config:");
         lines.AppendLine($"  maxTextSize: {int.MaxValue}");
@@ -36,7 +36,7 @@ sealed class ClassDiagramBuilder(
             var classes = new List<Class>();
             var hasResolveMethods = composition.Source.Source.Hints.IsResolveEnabled;
             var rootProperties = composition.PublicRoots.ToDictionary(i => i.Injection, i => i);
-            var compositionLines = new LinesBuilder();
+            var compositionLines = new Lines();
             if (hasResolveMethods || rootProperties.Count > 0)
             {
                 compositionLines.AppendLine($"class {composition.Source.Source.Name.ClassName} {BlockStart}");
@@ -71,13 +71,13 @@ sealed class ClassDiagramBuilder(
 
             if (composition.TotalDisposablesCount > 0)
             {
-                classes.Add(new Class(nameof(System), "IDisposable", "abstract", null, new LinesBuilder()));
+                classes.Add(new Class(nameof(System), "IDisposable", "abstract", null, new Lines()));
                 lines.AppendLine($"{composition.Source.Source.Name.ClassName} --|> IDisposable");
             }
 
             if (composition.AsyncDisposableCount > 0)
             {
-                classes.Add(new Class(nameof(System), "IAsyncDisposable", "abstract", null, new LinesBuilder()));
+                classes.Add(new Class(nameof(System), "IAsyncDisposable", "abstract", null, new Lines()));
                 lines.AppendLine($"{composition.Source.Source.Name.ClassName} --|> IAsyncDisposable");
             }
 
@@ -105,7 +105,7 @@ sealed class ClassDiagramBuilder(
                 }
 
                 var classDiagramWalker = new ClassDiagramWalker(setup, marker, this, classes, DefaultFormatOptions, locationProvider);
-                classDiagramWalker.VisitDependencyNode(new LinesBuilder(), node);
+                classDiagramWalker.VisitDependencyNode(new Lines(), node);
             }
 
             // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
@@ -114,7 +114,7 @@ sealed class ClassDiagramBuilder(
             {
                 if (!marker.IsMarker(setup, type))
                 {
-                    classes.Add(new Class(ResolveNamespaceName(type.ContainingNamespace), FormatType(setup, type, DefaultFormatOptions), "", type, new LinesBuilder()));
+                    classes.Add(new Class(ResolveNamespaceName(type.ContainingNamespace), FormatType(setup, type, DefaultFormatOptions), "", type, new Lines()));
                 }
             }
 
@@ -124,7 +124,7 @@ sealed class ClassDiagramBuilder(
                 var sourceType = FormatType(setup, dependency.Source.Type, DefaultFormatOptions);
                 if (!marker.IsMarker(setup, dependency.Source.Type))
                 {
-                    classes.Add(new Class(ResolveNamespaceName(dependency.Source.Type.ContainingNamespace), sourceType, "", dependency.Source.Type, new LinesBuilder()));
+                    classes.Add(new Class(ResolveNamespaceName(dependency.Source.Type.ContainingNamespace), sourceType, "", dependency.Source.Type, new Lines()));
                 }
 
                 if (dependency.Target.Root is not null && rootProperties.TryGetValue(dependency.Injection, out var root))
@@ -136,7 +136,7 @@ sealed class ClassDiagramBuilder(
                     var targetType = FormatType(setup, dependency.Target.Type, DefaultFormatOptions);
                     if (!marker.IsMarker(setup, dependency.Target.Type))
                     {
-                        classes.Add(new Class(ResolveNamespaceName(dependency.Target.Type.ContainingNamespace), targetType, "", dependency.Target.Type, new LinesBuilder()));
+                        classes.Add(new Class(ResolveNamespaceName(dependency.Target.Type.ContainingNamespace), targetType, "", dependency.Target.Type, new Lines()));
                     }
 
                     if (dependency.Source.Arg is {} arg)
@@ -177,7 +177,7 @@ sealed class ClassDiagramBuilder(
                     var classLines = cls.Lines;
                     if (classLines.Count > 0)
                     {
-                        lines.AppendLines(cls.Lines.Lines);
+                        lines.AppendLines(cls.Lines);
                         continue;
                     }
 
@@ -358,11 +358,11 @@ sealed class ClassDiagramBuilder(
         IList<Class> classes,
         FormatOptions options,
         ILocationProvider locationProvider)
-        : DependenciesWalker<LinesBuilder>(locationProvider)
+        : DependenciesWalker<Lines>(locationProvider)
     {
-        public override void VisitDependencyNode(in LinesBuilder ctx, DependencyNode node)
+        public override void VisitDependencyNode(in Lines ctx, DependencyNode node)
         {
-            var lines = new LinesBuilder();
+            var lines = new Lines();
             var name = builder.FormatType(setup, node.Type, options);
             var cls = new Class(ResolveNamespaceName(node.Type.ContainingNamespace), name, "", node.Type, lines);
             if (!marker.IsMarker(setup, node.Type))
@@ -388,32 +388,32 @@ sealed class ClassDiagramBuilder(
             lines.AppendLine(BlockFinish);
         }
 
-        public override void VisitConstructor(in LinesBuilder ctx, in DpMethod constructor)
+        public override void VisitConstructor(in Lines ctx, in DpMethod constructor)
         {
             ctx.AppendLine(builder.FormatMethod(setup, constructor.Method, options));
             base.VisitConstructor(ctx, in constructor);
         }
 
-        public override void VisitMethod(in LinesBuilder ctx, in DpMethod method, int? position)
+        public override void VisitMethod(in Lines ctx, in DpMethod method, int? position)
         {
             ctx.AppendLine(builder.FormatMethod(setup, method.Method, options));
             base.VisitMethod(ctx, in method, position);
         }
 
-        public override void VisitProperty(in LinesBuilder ctx, in DpProperty property, int? position)
+        public override void VisitProperty(in Lines ctx, in DpProperty property, int? position)
         {
             ctx.AppendLine(builder.FormatProperty(setup, property.Property, options));
             base.VisitProperty(ctx, in property, position);
         }
 
-        public override void VisitField(in LinesBuilder ctx, in DpField field, int? position)
+        public override void VisitField(in Lines ctx, in DpField field, int? position)
         {
             ctx.AppendLine(builder.FormatField(setup, field.Field, options));
             base.VisitField(ctx, in field, position);
         }
     }
 
-    private record Class(string Namespace, string Name, string Kind, ITypeSymbol? Type, LinesBuilder Lines)
+    private record Class(string Namespace, string Name, string Kind, ITypeSymbol? Type, Lines Lines)
     {
         public string ActualKind
         {

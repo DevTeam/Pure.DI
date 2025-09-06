@@ -9,7 +9,7 @@ sealed class ToStringMethodBuilder
 
     public CompositionCode Build(CompositionCode composition)
     {
-        if (composition.Diagram.IsEmpty || !composition.Source.Source.Hints.IsToStringEnabled)
+        if (composition.Diagram.Count == 0 || !composition.Source.Source.Hints.IsToStringEnabled)
         {
             return composition;
         }
@@ -31,11 +31,11 @@ sealed class ToStringMethodBuilder
             code.AppendLine("return");
             using (code.Indent())
             {
-                var lines = composition.Diagram;
-                for (var i = 0; i < lines.Length; i++)
+                var lines = composition.Diagram.ToList();
+                for (var i = 0; i < lines.Count; i++)
                 {
                     var line = lines[i];
-                    code.AppendLine(line with { Text = $"\"{line}{(i == lines.Length - 1 ? "\";" : "\\n\" +")}" });
+                    code.AppendLine(line with { Text = $"\"{line}{(i == lines.Count - 1 ? "\";" : "\\n\" +")}" });
                 }
             }
         }

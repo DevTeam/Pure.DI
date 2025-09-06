@@ -33,7 +33,11 @@ sealed class ConstructDependencyNodeBuilder(ILocationProvider locationProvider)
                         contract.ContractType.Locations));
             }
 
-            yield return new DependencyNode(0, binding, ctx.TypeConstructor, Construct: new DpConstruct(construct, binding, injections.ToImmutableArray(), locationProvider));
+            yield return new DependencyNode(
+                0,
+                binding,
+                ctx.TypeConstructor,
+                Construct: new DpConstruct(construct, binding, injections.ToImmutableArray(),locationProvider));
         }
     }
 }

@@ -3,7 +3,7 @@
 namespace Pure.DI.Core.Code;
 
 using Parts;
-using static LinesBuilderExtensions;
+using static LinesExtensions;
 using static Tag;
 
 sealed class CompositionClassBuilder(

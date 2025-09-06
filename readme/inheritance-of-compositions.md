@@ -10,7 +10,7 @@ var service = composition.Root;
 
 class BaseComposition
 {
-    private void Setup() =>
+    private static void Setup() =>
         DI.Setup(kind: Internal)
             .Bind<IDependency>().To<Dependency>();
 }
