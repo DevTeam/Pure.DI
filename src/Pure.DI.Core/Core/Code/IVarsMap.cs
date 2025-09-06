@@ -10,11 +10,11 @@ interface IVarsMap
 
     VarInjection GetInjection(in Injection injection, IDependencyNode node);
 
-    IDisposable Root(LinesBuilder lines);
+    IDisposable Root(Lines lines);
 
-    IDisposable LocalFunction(Var var, LinesBuilder lines);
+    IDisposable LocalFunction(Var var, Lines lines);
 
-    IDisposable Lazy(Var var, LinesBuilder lines);
+    IDisposable Lazy(Var var, Lines lines);
 
-    IDisposable Block(Var var, LinesBuilder lines);
+    IDisposable Block(Var var, Lines lines);
 }

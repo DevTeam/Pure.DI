@@ -45,7 +45,7 @@ class VarsMap(
         return varInjection;
     }
 
-    public IDisposable Root(LinesBuilder lines)
+    public IDisposable Root(Lines lines)
     {
         return Disposables.Create(() => {
             _map
@@ -62,7 +62,7 @@ class VarsMap(
             {
                 var.Declaration.ResetToDefaults();
                 var.ResetToDefaults();
-                var.LocalFunction = new LinesBuilder();
+                var.LocalFunction = new Lines();
                 var.LocalFunctionName = "";
                 var.CodeExpression = "";
                 var.HasCycle = null;
@@ -70,7 +70,7 @@ class VarsMap(
         });
     }
 
-    public IDisposable LocalFunction(Var var, LinesBuilder lines)
+    public IDisposable LocalFunction(Var var, Lines lines)
     {
         var state = CreateState(var);
         // Remove per block vars
@@ -99,7 +99,7 @@ class VarsMap(
         });
     }
 
-    public IDisposable Lazy(Var var, LinesBuilder lines)
+    public IDisposable Lazy(Var var, Lines lines)
     {
         var state = CreateState(var);
         return Disposables.Create(() => {
@@ -108,7 +108,7 @@ class VarsMap(
         });
     }
 
-    public IDisposable Block(Var var, LinesBuilder lines)
+    public IDisposable Block(Var var, Lines lines)
     {
         var state = CreateState(var);
         return Disposables.Create(() => {
@@ -124,7 +124,7 @@ class VarsMap(
             .Where(i => i.Key != var.Declaration.Node.BindingId)
             .ToDictionary(i => i.Key, i => new VarState(i.Value));
 
-    private void RemoveNewPerBlockVars(Var var, IReadOnlyDictionary<int, VarState> state, LinesBuilder lines, string reason)
+    private void RemoveNewPerBlockVars(Var var, IReadOnlyDictionary<int, VarState> state, Lines lines, string reason)
     {
 #if DEBUG
         lines.AppendLine($"// remove new per block vars ({reason} {var.Declaration.Name})");
@@ -153,7 +153,7 @@ class VarsMap(
         }
     }
 
-    private void RestoreState(Var var, IReadOnlyDictionary<int, VarState> state, LinesBuilder lines, string reason)
+    private void RestoreState(Var var, IReadOnlyDictionary<int, VarState> state, Lines lines, string reason)
     {
 #if DEBUG
         lines.AppendLine($"// restore state ({reason} {var.Declaration.Name})");

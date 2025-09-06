@@ -4,7 +4,7 @@
 // ReSharper disable MoveLocalFunctionAfterJumpStatement
 namespace Pure.DI.Core.Code;
 
-using static LinesBuilderExtensions;
+using static LinesExtensions;
 
 sealed class BuildTools(
     IFilter filter,
@@ -24,27 +24,27 @@ sealed class BuildTools(
             : $"{Names.ObjectTypeName}.ReferenceEquals({variableName}, null)";
     }
 
-    public void AddPureHeader(LinesBuilder code)
+    public void AddPureHeader(Lines code)
     {
         code.AppendLine(new Line(int.MinValue, "#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET // Pure method"));
         code.AppendLine($"[{Names.SystemNamespace}Diagnostics.Contracts.Pure]");
         code.AppendLine(new Line(int.MinValue, "#endif // Pure method"));
     }
 
-    public void AddAggressiveInlining(LinesBuilder code) =>
+    public void AddAggressiveInlining(Lines code) =>
         code.AppendLine($"[{Names.MethodImplAttributeName}(({Names.MethodImplOptionsName})256)]");
 
-    public void AddNoInlining(LinesBuilder code) =>
+    public void AddNoInlining(Lines code) =>
         code.AppendLine($"[{Names.MethodImplAttributeName}(({Names.MethodImplOptionsName})8)]");
 
     public string GetDeclaration(CodeContext ctx, VarDeclaration varDeclaration, string separator = " ", bool useVar = false) =>
         varDeclaration.IsDeclared ? "" : $"{(useVar ? "var" : typeResolver.Resolve(ctx.RootContext.Graph.Source, varDeclaration.InstanceType))}{separator}";
 
-    public IEnumerable<Line> OnCreated(CodeContext ctx, VarInjection varInjection)
+    public Lines OnCreated(CodeContext ctx, VarInjection varInjection)
     {
         if (varInjection.Var.AbstractNode.Arg is not null)
         {
-            return [];
+            return new Lines();
         }
 
         var baseTypes = new Lazy<ImmutableHashSet<ISymbol?>>(() =>
@@ -61,7 +61,7 @@ sealed class BuildTools(
             .Select(i => new Line(0, $"{i.VarInjection.Var.Name}.Add({varInjection.Var.Name});"))
             .ToList();
 
-        var code = new LinesBuilder();
+        var code = new Lines();
         if (ctx.IsLockRequired && accLines.Count > 0)
         {
             locks.AddLockStatements(code, false);
@@ -79,7 +79,7 @@ sealed class BuildTools(
 
         if (!ctx.RootContext.Graph.Source.Hints.IsOnNewInstanceEnabled)
         {
-            return code.Lines;
+            return code;
         }
 
         var tag = GetTag(ctx, varInjection);
@@ -92,15 +92,12 @@ sealed class BuildTools(
                 (Hint.OnNewInstanceTagRegularExpression, Hint.OnNewInstanceTagWildcard, GetTagName),
                 (Hint.OnNewInstanceLifetimeRegularExpression, Hint.OnNewInstanceLifetimeWildcard, GetLifetimeName)))
         {
-            return code.Lines;
+            return code;
         }
 
-        var lines = new List<Line>
-        {
-            new(0, $"{Names.OnNewInstanceMethodName}<{typeResolver.Resolve(ctx.RootContext.Graph.Source, varInjection.Var.InstanceType)}>(ref {varInjection.Var.Name}, {tag.ValueToString()}, {varInjection.Var.AbstractNode.Lifetime.ValueToString()});")
-        };
-
-        lines.AddRange(code.Lines);
+        var lines = new Lines();
+        lines.AppendLine($"{Names.OnNewInstanceMethodName}<{typeResolver.Resolve(ctx.RootContext.Graph.Source, varInjection.Var.InstanceType)}>(ref {varInjection.Var.Name}, {tag.ValueToString()}, {varInjection.Var.AbstractNode.Lifetime.ValueToString()});");
+        lines.AppendLines(code);
         return lines;
     }
 

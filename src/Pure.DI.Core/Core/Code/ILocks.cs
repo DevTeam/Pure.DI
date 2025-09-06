@@ -4,5 +4,5 @@ interface ILocks
 {
     bool HasLockField(DependencyGraph dependencyGraph);
 
-    void AddLockStatements(LinesBuilder lines, bool isAsync);
+    void AddLockStatements(Lines lines, bool isAsync);
 }

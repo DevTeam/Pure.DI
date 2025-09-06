@@ -39,7 +39,7 @@ sealed class RootsBuilder(
                         root.Source,
                         rootInjection,
                         root.Source.Name,
-                        ImmutableArray<Line>.Empty,
+                        new Lines(),
                         ImmutableArray<VarDeclaration>.Empty,
                         root.Source.Kind)));
             }

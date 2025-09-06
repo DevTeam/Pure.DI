@@ -3,12 +3,12 @@ namespace Pure.DI.Core;
 sealed class DependenciesToLinesWalker(int indent, ILocationProvider locationProvider)
     : DependenciesWalker<Unit>(locationProvider), IEnumerable<string>
 {
-    private readonly LinesBuilder _lb = new(indent);
+    private readonly Lines _lb = new(indent);
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     // ReSharper disable once NotDisposedResourceIsReturned
-    public IEnumerator<string> GetEnumerator() => _lb.GetEnumerator();
+    public IEnumerator<string> GetEnumerator() => _lb.Select(i => i.ToString()).GetEnumerator();
 
     public override void VisitRoot(in Unit ctx, in DpRoot root)
     {
@@ -80,5 +80,8 @@ sealed class DependenciesToLinesWalker(int indent, ILocationProvider locationPro
         _lb.Append(")");
     }
 
-    public override void VisitParameter(in Unit ctx, in DpParameter parameter, int? position) => _lb.Append(parameter.ToString());
+    public override void VisitParameter(
+        in Unit ctx,
+        in DpParameter parameter,
+        int? position) => _lb.Append(parameter.ToString());
 }

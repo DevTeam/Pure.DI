@@ -398,7 +398,7 @@ sealed class ApiInvocationProcessor(
                         metadataVisitor.VisitArg(new MdArg(semanticModel, invocation, buildersRootType, Names.BuildingInstance, ArgKind.Root, true, ["Instance for the build-up."]));
 
                         // Factory
-                        var factory = new LinesBuilder();
+                        var factory = new Lines();
                         factory.AppendLine($"({Names.IContextTypeName} {Names.ContextInstance}) =>");
                         using (factory.CreateBlock())
                         {
@@ -642,7 +642,7 @@ sealed class ApiInvocationProcessor(
         metadataVisitor.VisitArg(new MdArg(semanticModel, source, builderType, Names.BuildingInstance, ArgKind.Root, true, ["Instance for the build-up."]));
 
         // Factory
-        var factory = new LinesBuilder();
+        var factory = new Lines();
         factory.AppendLine($"({Names.IContextTypeName} {Names.ContextInstance}) =>");
         using (factory.CreateBlock())
         {

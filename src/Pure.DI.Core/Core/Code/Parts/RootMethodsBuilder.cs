@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core.Code.Parts;
 
-using static LinesBuilderExtensions;
+using static LinesExtensions;
 
 sealed class RootMethodsBuilder(
     IBuildTools buildTools,

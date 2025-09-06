@@ -6,7 +6,7 @@ record Root(
     MdRoot Source,
     in Injection Injection,
     string Name,
-    in ImmutableArray<Line> Lines,
+    Lines Lines,
     in ImmutableArray<VarDeclaration> RootArgs,
     RootKinds Kind,
     TypeDescription TypeDescription = default,

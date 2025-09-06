@@ -5,7 +5,7 @@ record CodeContext(
     VarInjection VarInjection,
     IVarsMap VarsMap,
     bool IsLockRequired,
-    LinesBuilder Lines,
+    Lines Lines,
     ImmutableArray<Accumulator> Accumulators,
     HashSet<string> Overrides,
     bool HasOverrides = false,

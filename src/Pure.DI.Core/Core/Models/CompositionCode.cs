@@ -2,14 +2,14 @@ namespace Pure.DI.Core.Models;
 
 record CompositionCode(
     DependencyGraph Source,
-    LinesBuilder Code,
+    Lines Code,
     in ImmutableArray<Root> PublicRoots,
     int TotalDisposablesCount,
     int DisposablesCount,
     int AsyncDisposableCount,
     int DisposablesScopedCount,
     bool IsThreadSafe,
-    in ImmutableArray<Line> Diagram,
+    Lines Diagram,
     in ImmutableArray<VarDeclaration> Singletons,
     in ImmutableArray<VarDeclaration> ClassArgs,
     int MembersCount = 0)

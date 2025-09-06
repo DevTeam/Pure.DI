@@ -5,7 +5,7 @@ namespace Pure.DI.Core.Code;
 sealed class ClassCommenter(
     IFormatter formatter,
     IComments comments,
-    IBuilder<IEnumerable<string>, Uri> mermaidUrlBuilder,
+    IBuilder<string, Uri> mermaidUrlBuilder,
     IBuilder<RootsContext, IEnumerable<ResolverInfo>> resolversBuilder,
     IInformation information)
     : ICommenter<Unit>
@@ -28,9 +28,9 @@ sealed class ClassCommenter(
         code.AppendLine("/// <summary>");
         try
         {
-            if (!composition.Diagram.IsEmpty)
+            if (composition.Diagram.Count > 0)
             {
-                var diagramUrl = mermaidUrlBuilder.Build(composition.Diagram.Select(i => i.Text));
+                var diagramUrl = mermaidUrlBuilder.Build(composition.Diagram.ToString());
                 code.AppendLine("/// <para>");
                 code.AppendLine($"/// <a href=\"{diagramUrl}\">Class diagram</a>");
                 code.AppendLine("/// </para>");

@@ -2,7 +2,7 @@
 
 namespace Pure.DI.Core.Code.Parts;
 
-using static LinesBuilderExtensions;
+using static LinesExtensions;
 
 sealed class DisposeMethodBuilder(
     ITypeResolver typeResolver,
@@ -128,7 +128,7 @@ sealed class DisposeMethodBuilder(
         return composition with { MembersCount = membersCounter };
     }
 
-    private static void AddDisposeAsyncPart(LinesBuilder code, bool makeAsyncCall)
+    private static void AddDisposeAsyncPart(Lines code, bool makeAsyncCall)
     {
         code.AppendLine($"case {Names.IAsyncDisposableTypeName} asyncDisposableInstance:");
         using (code.Indent())
@@ -161,7 +161,7 @@ sealed class DisposeMethodBuilder(
         }
     }
 
-    private static void AddDisposePart(LinesBuilder code)
+    private static void AddDisposePart(Lines code)
     {
         code.AppendLine($"case {Names.IDisposableTypeName} disposableInstance:");
         using (code.Indent())
@@ -182,7 +182,7 @@ sealed class DisposeMethodBuilder(
         }
     }
 
-    private void AddSyncPart(CompositionCode composition, LinesBuilder code, bool isAsync)
+    private void AddSyncPart(CompositionCode composition, Lines code, bool isAsync)
     {
         code.AppendLine("int disposeIndex;");
         code.AppendLine("object[] disposables;");

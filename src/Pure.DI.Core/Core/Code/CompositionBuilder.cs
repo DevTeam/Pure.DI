@@ -7,7 +7,7 @@ class CompositionBuilder(
     Func<IBuilder<RootContext, VarInjection>> rootBuilder,
     INodeTools nodeTools,
     IVarDeclarationTools varDeclarationTools,
-    IBuilder<CompositionCode, LinesBuilder> classDiagramBuilder,
+    IBuilder<CompositionCode, Lines> classDiagramBuilder,
     CancellationToken cancellationToken)
     : IBuilder<DependencyGraph, CompositionCode>
 {
@@ -24,21 +24,21 @@ class CompositionBuilder(
                 break;
             }
 
-            var lines = new LinesBuilder();
+            var lines = new Lines();
             using var rootToken = varsMap.Root(lines);
             var ctx = new RootContext(graph, root, varsMap, lines);
             var rootVarInjection = rootBuilder().Build(ctx);
             lines.AppendLine($"return {rootVarInjection.Var.CodeExpression};");
-            foreach (var localFunction in varsMap.Vars.Select(i => i.LocalFunction).Where(i => i.Lines.Count > 0))
+            foreach (var localFunction in varsMap.Vars.Select(i => i.LocalFunction).Where(i => i.Count > 0))
             {
                 lines.AppendLine();
-                lines.AppendLines(localFunction.Lines);
+                lines.AppendLines(localFunction);
             }
 
             var args = varDeclarationTools.Sort(varsMap.Declarations.Where(i => i.Node.Arg is not null)).ToList();
             var processedRoot = root with
             {
-                Lines = ctx.Lines.Lines.ToImmutableArray(),
+                Lines = ctx.Lines,
                 TypeDescription = typeResolver.Resolve(graph.Source, root.Injection.Type),
                 RootArgs = args.GetArgsOfKind(ArgKind.Root).ToImmutableArray()
             };
@@ -70,18 +70,18 @@ class CompositionBuilder(
         var asyncDisposables = singletons.Where(i => nodeTools.IsAsyncDisposable(i.Node.Node)).ToList();
         var composition = new CompositionCode(
             graph,
-            new LinesBuilder(),
+            new Lines(),
             publicRoots,
             totalDisposables.Count,
             disposables.Count,
             asyncDisposables.Count,
             totalDisposables.Count(i => i.Node.Lifetime == Lifetime.Scoped),
             graph.Source.Hints.IsThreadSafeEnabled && varsMap.IsThreadSafe,
-            ImmutableArray<Line>.Empty,
+            new Lines(),
             singletons,
             varDeclarationTools.Sort(classArgs).Distinct().ToImmutableArray());
 
         var diagram = classDiagramBuilder.Build(composition);
-        return composition with { Diagram = diagram.Lines.ToImmutableArray() };
+        return composition with { Diagram = diagram };
     }
 }

@@ -88,7 +88,7 @@ sealed class ResolverClassesBuilder(IBuilder<RootsContext, IEnumerable<ResolverI
         return composition with { MembersCount = membersCount };
     }
 
-    private static void ImplementInterface(CompositionCode composition, ResolverInfo resolver, LinesBuilder code)
+    private static void ImplementInterface(CompositionCode composition, ResolverInfo resolver, Lines code)
     {
         var defaultRoot = resolver.Roots.SingleOrDefault(i => i.Injection.Tag is null);
         code.AppendLine($"public override {resolver.Type} {Names.ResolveMethodName}({composition.Source.Source.Name.ClassName} composition)");

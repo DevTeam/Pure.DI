@@ -7,7 +7,7 @@ sealed class Locks(IOverridesRegistry overridesRegistry) : ILocks
         dependencyGraph.Roots.Any(root => overridesRegistry.GetOverrides(root).Any())
         || dependencyGraph.Graph.Edges.Any(dependency => Tag.SyncRoot.Equals(dependency.Injection.Tag));
 
-    public void AddLockStatements(LinesBuilder lines, bool isAsync)
+    public void AddLockStatements(Lines lines, bool isAsync)
     {
         if (!isAsync)
         {

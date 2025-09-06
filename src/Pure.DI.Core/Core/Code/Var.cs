@@ -23,7 +23,7 @@ record Var(VarDeclaration Declaration)
 
     public string LocalFunctionName { get; set; } = "";
 
-    public LinesBuilder LocalFunction { get; set; } = new();
+    public Lines LocalFunction { get; set; } = new();
 
     public bool? HasCycle { get; set; }
 

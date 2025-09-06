@@ -23,7 +23,7 @@ sealed class ApiMembersBuilder(
         var membersCounter = composition.MembersCount;
         var hints = composition.Source.Source.Hints;
         var isCommentsEnabled = hints.IsCommentsEnabled;
-        var apiCode = new LinesBuilder();
+        var apiCode = new Lines();
         var nullable = composition.Compilation.Options.NullableContextOptions == NullableContextOptions.Disable ? "" : "?";
         if (hints.IsResolveEnabled)
         {
@@ -163,13 +163,13 @@ sealed class ApiMembersBuilder(
         if (apiCode.Count > 0)
         {
             code.AppendLine("#region API");
-            code.AppendLines(apiCode.Lines);
+            code.AppendLines(apiCode);
             code.AppendLine("#endregion");
         }
 
         return composition with { MembersCount = membersCounter };
     }
-    private static void FinishComments(LinesBuilder apiCode)
+    private static void FinishComments(Lines apiCode)
     {
         apiCode.AppendLine("/// <returns>An instance of a composition root.</returns>");
         apiCode.AppendLine($"/// <exception cref=\"{Names.SystemNamespace}InvalidOperationException\">Will be thrown if the corresponding composition root was not specified. To specify a composition root use API method such as <see cref=\"{Names.IConfigurationTypeName}.Root{{T}}\"/>.</exception>");
@@ -187,7 +187,7 @@ sealed class ApiMembersBuilder(
         string resolveMethodName,
         string resolveMethodArgs,
         bool byTag,
-        LinesBuilder code)
+        Lines code)
     {
         buildTools.AddPureHeader(code);
         buildTools.AddAggressiveInlining(code);
@@ -213,7 +213,7 @@ sealed class ApiMembersBuilder(
         string resolveMethodName,
         string resolveMethodArgs,
         bool byTag,
-        LinesBuilder code)
+        Lines code)
     {
         buildTools.AddNoInlining(code);
         code.AppendLine($"private object Resolve{Names.Salt}({methodArgs}, int index)");

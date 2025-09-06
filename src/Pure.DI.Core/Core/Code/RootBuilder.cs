@@ -7,7 +7,7 @@
 namespace Pure.DI.Core.Code;
 
 using static Lifetime;
-using static LinesBuilderExtensions;
+using static LinesExtensions;
 
 class RootBuilder(
     INodeTools nodeTools,
@@ -41,7 +41,7 @@ class RootBuilder(
     {
         var rootVarsMap = rootContext.VarsMap;
         var rootVarInjection = rootVarsMap.GetInjection(rootContext.Root.Injection, rootContext.Root.Node);
-        var lines = new LinesBuilder();
+        var lines = new Lines();
         var ctx = new CodeContext(
             rootContext,
             rootVarInjection,
@@ -65,7 +65,7 @@ class RootBuilder(
             }
         }
 
-        rootContext.Lines.AppendLines(lines.Lines);
+        rootContext.Lines.AppendLines(lines);
         return rootVarInjection;
     }
 
@@ -94,7 +94,7 @@ class RootBuilder(
             return;
         }
 
-        var lines = new LinesBuilder();
+        var lines = new Lines();
         var varCtx = parentCtx with
         {
             Lines = lines,
@@ -208,8 +208,8 @@ class RootBuilder(
                 void VisitMethodAction(CodeContext context, string name) => inj.MethodInjection(name, context, method, methodVars);
             }
 
-            var onCreatedStatements = buildTools.OnCreated(ctx, varInjection).ToList();
-            var hasOnCreatedStatements = buildTools.OnCreated(ctx, varInjection).Any();
+            var onCreatedStatements = buildTools.OnCreated(ctx, varInjection);
+            var hasOnCreatedStatements = buildTools.OnCreated(ctx, varInjection).Count > 0;
             var hasAlternativeInjections = visits.Count > 0;
             var tempVariableInit =
                 ctx.RootContext.IsThreadSafeEnabled
@@ -223,7 +223,7 @@ class RootBuilder(
                 lines.AppendLine($"{typeResolver.Resolve(ctx.RootContext.Graph.Source, tempVar.InstanceType)} {tempVar.Name};");
                 if (onCreatedStatements.Count > 0)
                 {
-                    onCreatedStatements = buildTools.OnCreated(ctx, varInjection with { Var = tempVar }).ToList();
+                    onCreatedStatements = buildTools.OnCreated(ctx, varInjection with { Var = tempVar });
                 }
             }
 
@@ -665,7 +665,7 @@ class RootBuilder(
                             }
 
                             var instantiation = $"new {typeResolver.Resolve(ctx.RootContext.Graph.Source, construct.Source.ElementType)}[{varInjections.Count.ToString()}] {{ {string.Join(", ", varInjections.Select(item => buildTools.OnInjected(ctx, item)))} }}";
-                            var onCreated = buildTools.OnCreated(ctx, varInjection).ToList();
+                            var onCreated = buildTools.OnCreated(ctx, varInjection);
                             if (onCreated.Count > 0)
                             {
                                 lines.AppendLine($"{buildTools.GetDeclaration(ctx, var.Declaration, useVar: true)}{var.Name} = {instantiation};");
@@ -745,14 +745,14 @@ class RootBuilder(
             localFunction.AppendLine($"void {var.LocalFunctionName}()");
             using (localFunction.CreateBlock())
             {
-                localFunction.AppendLines(lines.Lines);
+                localFunction.AppendLines(lines);
             }
 
-            lines = new LinesBuilder();
+            lines = new Lines();
             lines.AppendLine($"{var.LocalFunctionName}();");
         }
 
-        parentCtx.Lines.AppendLines(lines.Lines);
+        parentCtx.Lines.AppendLines(lines);
         var.Declaration.IsDeclared = true;
     }
 
@@ -922,7 +922,7 @@ class RootBuilder(
         return false;
     }
 
-    private void BuildOverrides(CodeContext ctx, DpFactory factory, ImmutableArray<DpOverride> overrides, LinesBuilder lines)
+    private void BuildOverrides(CodeContext ctx, DpFactory factory, ImmutableArray<DpOverride> overrides, Lines lines)
     {
         foreach (var @override in overrides.OrderBy(i => i.Source.Position).Select(i => factory.ResolveOverride(i)))
         {
