@@ -194,7 +194,7 @@ sealed class ApiMembersBuilder(
         code.AppendLine($"{methodModifiers} object {methodName}({methodArgs})");
         using (code.CreateBlock())
         {
-            var divisor = Buckets<object, object>.GetDivisor((uint)resolvers.Count);
+            var divisor = Buckets<object>.GetDivisor((uint)resolvers.Count);
             if (resolvers.Count > 0)
             {
                 code.AppendLine($"var index = (int)({Names.BucketSizeFieldName} * ((uint){Names.SystemNamespace}Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % {divisor}));");

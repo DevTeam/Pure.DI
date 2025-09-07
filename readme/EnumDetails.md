@@ -189,19 +189,19 @@ partial class Enum
     throw new InvalidOperationException($"{CannotResolveMessage} \"{tag}\" {OfTypeMessage} {type}.");
   }
 
-  private readonly static int _bucketSize;
-  private readonly static Pair<Type, IResolver<Enum, object>>[] _buckets;
+  private readonly static uint _bucketSize;
+  private readonly static Pair<IResolver<Enum, object>>[] _buckets;
 
   static Enum()
   {
     var valResolver_0000 = new Resolver_0000();
     Resolver<CompositionRoot>.Value = valResolver_0000;
-    _buckets = Buckets<Type, IResolver<Enum, object>>.Create(
+    _buckets = Buckets<IResolver<Enum, object>>.Create(
       1,
       out _bucketSize,
-      new Pair<Type, IResolver<Enum, object>>[1]
+      new Pair<IResolver<Enum, object>>[1]
       {
-         new Pair<Type, IResolver<Enum, object>>(typeof(CompositionRoot), valResolver_0000)
+         new Pair<IResolver<Enum, object>>(typeof(CompositionRoot), valResolver_0000)
       });
   }
 

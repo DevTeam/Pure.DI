@@ -177,19 +177,19 @@ partial class Array
     throw new InvalidOperationException($"{CannotResolveMessage} \"{tag}\" {OfTypeMessage} {type}.");
   }
 
-  private readonly static int _bucketSize;
-  private readonly static Pair<Type, IResolver<Array, object>>[] _buckets;
+  private readonly static uint _bucketSize;
+  private readonly static Pair<IResolver<Array, object>>[] _buckets;
 
   static Array()
   {
     var valResolver_0000 = new Resolver_0000();
     Resolver<CompositionRoot>.Value = valResolver_0000;
-    _buckets = Buckets<Type, IResolver<Array, object>>.Create(
+    _buckets = Buckets<IResolver<Array, object>>.Create(
       1,
       out _bucketSize,
-      new Pair<Type, IResolver<Array, object>>[1]
+      new Pair<IResolver<Array, object>>[1]
       {
-         new Pair<Type, IResolver<Array, object>>(typeof(CompositionRoot), valResolver_0000)
+         new Pair<IResolver<Array, object>>(typeof(CompositionRoot), valResolver_0000)
       });
   }
 

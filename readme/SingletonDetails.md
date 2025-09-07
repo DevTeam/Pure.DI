@@ -173,19 +173,19 @@ partial class Singleton
     throw new InvalidOperationException($"{CannotResolveMessage} \"{tag}\" {OfTypeMessage} {type}.");
   }
 
-  private readonly static int _bucketSize;
-  private readonly static Pair<Type, IResolver<Singleton, object>>[] _buckets;
+  private readonly static uint _bucketSize;
+  private readonly static Pair<IResolver<Singleton, object>>[] _buckets;
 
   static Singleton()
   {
     var valResolver_0000 = new Resolver_0000();
     Resolver<CompositionRoot>.Value = valResolver_0000;
-    _buckets = Buckets<Type, IResolver<Singleton, object>>.Create(
+    _buckets = Buckets<IResolver<Singleton, object>>.Create(
       1,
       out _bucketSize,
-      new Pair<Type, IResolver<Singleton, object>>[1]
+      new Pair<IResolver<Singleton, object>>[1]
       {
-         new Pair<Type, IResolver<Singleton, object>>(typeof(CompositionRoot), valResolver_0000)
+         new Pair<IResolver<Singleton, object>>(typeof(CompositionRoot), valResolver_0000)
       });
   }
 

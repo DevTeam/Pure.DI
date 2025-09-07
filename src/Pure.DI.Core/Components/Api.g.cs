@@ -803,7 +803,7 @@ namespace Pure.DI
         /// <summary>
         /// Overrides name of the method <c>public T Resolve&lt;T&gt;(object? tag)</c>. "Resolve" by default.
         /// <example>
-        /// For example:
+        /// For example
         /// <code>
         /// // ResolveByTagMethodName = GetService
         /// DI.Setup("Composition")
@@ -1217,7 +1217,7 @@ namespace Pure.DI
 #if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 #endif
-    internal sealed class GenericTypeArgumentAttribute : global::System.Attribute { }
+    internal sealed class GenericTypeArgumentAttribute: global::System.Attribute { }
     
     /// <summary>
     /// Represents an ordinal attribute.
@@ -1225,7 +1225,7 @@ namespace Pure.DI
     /// <example>
     /// For constructors, it defines the sequence of attempts to use a particular constructor to create an object:
     /// <code>
-    /// class Service : IService
+    /// class Service: IService
     /// {
     ///     private readonly string _name;
     /// 
@@ -1242,7 +1242,7 @@ namespace Pure.DI
     /// <br/>
     /// For fields, properties and methods, it specifies to perform dependency injection and defines the sequence:
     /// <code>
-    /// class Person : IPerson
+    /// class Person: IPerson
     /// {
     ///     private readonly string _name = "";
     /// 
@@ -1277,7 +1277,7 @@ namespace Pure.DI
 #if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 #endif
-    internal class OrdinalAttribute : global::System.Attribute
+    internal class OrdinalAttribute: global::System.Attribute
     {
         /// <summary>
         /// Creates an attribute instance.
@@ -1295,13 +1295,13 @@ namespace Pure.DI
     /// interface IDependency { }
     /// 
     ///
-    /// class AbcDependency : IDependency { }
+    /// class AbcDependency: IDependency { }
     /// 
     ///
-    /// class XyzDependency : IDependency { }
+    /// class XyzDependency: IDependency { }
     /// 
     ///
-    /// class Dependency : IDependency { }
+    /// class Dependency: IDependency { }
     /// 
     ///
     /// interface IService
@@ -1313,7 +1313,7 @@ namespace Pure.DI
     /// }
     ///
     /// 
-    /// class Service : IService
+    /// class Service: IService
     /// {
     ///     public Service(
     ///         [Tag("Abc")] IDependency dependency1,
@@ -1344,7 +1344,7 @@ namespace Pure.DI
 #if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 #endif
-    internal class TagAttribute : global::System.Attribute
+    internal class TagAttribute: global::System.Attribute
     {
         /// <summary>
         /// Creates an attribute instance.
@@ -1361,10 +1361,10 @@ namespace Pure.DI
     /// interface IDependency { }
     /// 
     ///
-    /// class AbcDependency : IDependency { }
+    /// class AbcDependency: IDependency { }
     ///
     ///
-    /// class XyzDependency : IDependency { }
+    /// class XyzDependency: IDependency { }
     ///
     ///
     /// interface IService
@@ -1375,7 +1375,7 @@ namespace Pure.DI
     /// }
     ///
     ///
-    /// class Service : IService
+    /// class Service: IService
     /// {
     ///     public Service(
     ///         [Type(typeof(AbcDependency))] IDependency dependency1,
@@ -1405,7 +1405,7 @@ namespace Pure.DI
 #if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 #endif
-    internal class TypeAttribute : global::System.Attribute
+    internal class TypeAttribute: global::System.Attribute
     {
         /// <summary>
         /// Creates an attribute instance.
@@ -1425,7 +1425,7 @@ namespace Pure.DI
 #if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 #endif
-    internal class DependencyAttribute : global::System.Attribute
+    internal class DependencyAttribute: global::System.Attribute
     {
         /// <summary>
         /// Creates an attribute instance.
@@ -1466,7 +1466,7 @@ namespace Pure.DI
 #if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 #endif
-    internal class BindAttribute : global::System.Attribute
+    internal class BindAttribute: global::System.Attribute
     {
         /// <summary>
         /// Creates an attribute instance.
@@ -1836,7 +1836,7 @@ namespace Pure.DI
         /// <typeparam name="T">The actual type of instance being disposed of.</typeparam>
         /// <seealso cref="IDisposable"/>
         partial void OnDisposeException<T>(T disposableInstance, global::System.Exception exception)
-            where T : global::System.IDisposable;
+            where T: global::System.IDisposable;
         
 #if NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER        
         /// <summary>
@@ -1846,7 +1846,7 @@ namespace Pure.DI
         /// <param name="exception">Exception occurring during disposal.</param>
         /// <typeparam name="T">The actual type of instance being disposed of.</typeparam>
         partial void OnDisposeAsyncException<T>(T asyncDisposableInstance, global::System.Exception exception)
-            where T : global::System.IAsyncDisposable;
+            where T: global::System.IAsyncDisposable;
 #endif
     }
     
@@ -1981,7 +1981,7 @@ namespace Pure.DI
         IBinding Bind<T>(params object[] tags);
         
         /// <summary>
-        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
+        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for details.
         /// </summary>
         /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
         /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
@@ -1996,7 +1996,7 @@ namespace Pure.DI
         IBinding Bind<T1, T2>(params object[] tags);
         
         /// <summary>
-        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
+        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for details.
         /// </summary>
         /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
         /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
@@ -2012,7 +2012,7 @@ namespace Pure.DI
         IBinding Bind<T1, T2, T3>(params object[] tags);
         
         /// <summary>
-        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
+        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for details.
         /// </summary>
         /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
         /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
@@ -2029,7 +2029,7 @@ namespace Pure.DI
         IBinding Bind<T1, T2, T3, T4>(params object[] tags);
         
         /// <summary>
-        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
+        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for details.
         /// </summary>
         /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
         /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
@@ -2047,7 +2047,7 @@ namespace Pure.DI
         IBinding Bind<T1, T2, T3, T4, T5>(params object[] tags);
         
         /// <summary>
-        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
+        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for details.
         /// </summary>
         /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
         /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
@@ -2066,7 +2066,7 @@ namespace Pure.DI
         IBinding Bind<T1, T2, T3, T4, T5, T6>(params object[] tags);
         
         /// <summary>
-        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
+        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for details.
         /// </summary>
         /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
         /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
@@ -2086,7 +2086,7 @@ namespace Pure.DI
         IBinding Bind<T1, T2, T3, T4, T5, T6, T7>(params object[] tags);
         
         /// <summary>
-        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
+        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for details.
         /// </summary>
         /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
         /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
@@ -2170,7 +2170,7 @@ namespace Pure.DI
         /// <example>
         /// <code>
         /// [AttributeUsage(AttributeTargets.Interface | AttributeTargets.Class | AttributeTargets.Struct)]
-        /// class MyGenericTypeArgumentAttribute : Attribute;
+        /// class MyGenericTypeArgumentAttribute: Attribute;
         ///  
         /// [MyGenericTypeArgument]
         /// interface TTMy; 
@@ -2184,7 +2184,7 @@ namespace Pure.DI
         /// <typeparam name="T">The attribute type.</typeparam>
         /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="GenericTypeArgumentAttribute"/>
-        IConfiguration GenericTypeArgumentAttribute<T>() where T : global::System.Attribute;
+        IConfiguration GenericTypeArgumentAttribute<T>() where T: global::System.Attribute;
 
         /// <summary>
         /// Specifies a custom attribute that overrides the injection type.
@@ -2199,7 +2199,7 @@ namespace Pure.DI
         /// <typeparam name="T">The attribute type.</typeparam>
         /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="Pure.DI.TypeAttribute"/>
-        IConfiguration TypeAttribute<T>(int typeArgumentPosition = 0) where T : global::System.Attribute;
+        IConfiguration TypeAttribute<T>(int typeArgumentPosition = 0) where T: global::System.Attribute;
 
         /// <summary>
         /// Specifies a tag attribute that overrides the injected tag.
@@ -2214,7 +2214,7 @@ namespace Pure.DI
         /// <typeparam name="T">The attribute type.</typeparam>
         /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="Pure.DI.TagAttribute"/>
-        IConfiguration TagAttribute<T>(int tagArgumentPosition = 0) where T : global::System.Attribute;
+        IConfiguration TagAttribute<T>(int tagArgumentPosition = 0) where T: global::System.Attribute;
 
         /// <summary>
         /// Specifies a custom attribute that overrides the injection ordinal.
@@ -2229,7 +2229,7 @@ namespace Pure.DI
         /// <typeparam name="T">The attribute type.</typeparam>
         /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="Pure.DI.OrdinalAttribute"/>
-        IConfiguration OrdinalAttribute<T>(int ordinalArgumentPosition = 0) where T : global::System.Attribute;
+        IConfiguration OrdinalAttribute<T>(int ordinalArgumentPosition = 0) where T: global::System.Attribute;
 
         /// <summary>
         /// Overrides the default <see cref="Lifetime"/> for all bindings further down the chain. If not specified, the <see cref="Lifetime.Transient"/> lifetime is used.
@@ -2630,7 +2630,7 @@ namespace Pure.DI
         IBinding Bind<T>(params object[] tags);
         
         /// <summary>
-        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
+        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for details.
         /// </summary>
         /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
         /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
@@ -2645,7 +2645,7 @@ namespace Pure.DI
         IBinding Bind<T1, T2>(params object[] tags);
         
         /// <summary>
-        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
+        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for details.
         /// </summary>
         /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
         /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
@@ -2661,7 +2661,7 @@ namespace Pure.DI
         IBinding Bind<T1, T2, T3>(params object[] tags);
         
         /// <summary>
-        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
+        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for details.
         /// </summary>
         /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
         /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
@@ -2678,7 +2678,7 @@ namespace Pure.DI
         IBinding Bind<T1, T2, T3, T4>(params object[] tags);
         
         /// <summary>
-        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
+        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for details.
         /// </summary>
         /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
         /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
@@ -2696,7 +2696,7 @@ namespace Pure.DI
         IBinding Bind<T1, T2, T3, T4, T5>(params object[] tags);
         
         /// <summary>
-        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
+        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for details.
         /// </summary>
         /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
         /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
@@ -2715,7 +2715,7 @@ namespace Pure.DI
         IBinding Bind<T1, T2, T3, T4, T5, T6>(params object[] tags);
         
         /// <summary>
-        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
+        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for details.
         /// </summary>
         /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
         /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
@@ -2735,7 +2735,7 @@ namespace Pure.DI
         IBinding Bind<T1, T2, T3, T4, T5, T6, T7>(params object[] tags);
         
         /// <summary>
-        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
+        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for details.
         /// </summary>
         /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
         /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
@@ -2782,13 +2782,13 @@ namespace Pure.DI
         /// interface IDependency { }
         /// 
         ///
-        /// class AbcDependency : IDependency { }
+        /// class AbcDependency: IDependency { }
         /// 
         ///
-        /// class XyzDependency : IDependency { }
+        /// class XyzDependency: IDependency { }
         /// 
         ///
-        /// class Dependency : IDependency { }
+        /// class Dependency: IDependency { }
         /// 
         ///
         /// interface IService
@@ -2800,7 +2800,7 @@ namespace Pure.DI
         /// }
         ///
         /// 
-        /// class Service : IService
+        /// class Service: IService
         /// {
         ///     public Service(
         ///         [Tag("Abc")] IDependency dependency1,
@@ -2952,7 +2952,7 @@ namespace Pure.DI
         /// </example>
         /// </summary>
         /// <param name="factory">An expression for manually creating and initializing an instance.</param>
-        /// <typeparam name="T1">Type #1 of injected dependency.</typeparam>
+        /// <typeparam name="T1">Type #1 of the injected dependency.</typeparam>
         /// <typeparam name="T">The implementation type.</typeparam>
         /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="IConfiguration.Bind{T}"/>
@@ -2990,8 +2990,8 @@ namespace Pure.DI
         /// </example>
         /// </summary>
         /// <param name="factory">An expression for manually creating and initializing an instance.</param>
-        /// <typeparam name="T1">Type #1 of injected dependency.</typeparam>
-        /// <typeparam name="T2">Type #2 of injected dependency.</typeparam>
+        /// <typeparam name="T1">Type #1 of the injected dependency.</typeparam>
+        /// <typeparam name="T2">Type #2 of the injected dependency.</typeparam>
         /// <typeparam name="T">The implementation type.</typeparam>
         /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="IConfiguration.Bind{T}"/>
@@ -3005,9 +3005,9 @@ namespace Pure.DI
         /// Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the <see cref="TagAttribute"/> in front of the parameter to specify the tag of the injected dependency.
         /// </summary>
         /// <param name="factory">An expression for manually creating and initializing an instance.</param>
-        /// <typeparam name="T1">Type #1 of injected dependency.</typeparam>
-        /// <typeparam name="T2">Type #2 of injected dependency.</typeparam>
-        /// <typeparam name="T3">Type #3 of injected dependency.</typeparam>
+        /// <typeparam name="T1">Type #1 of the injected dependency.</typeparam>
+        /// <typeparam name="T2">Type #2 of the injected dependency.</typeparam>
+        /// <typeparam name="T3">Type #3 of the injected dependency.</typeparam>
         /// <typeparam name="T">The implementation type.</typeparam>
         /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="IConfiguration.Bind{T}"/>
@@ -3021,10 +3021,10 @@ namespace Pure.DI
         /// Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the <see cref="TagAttribute"/> in front of the parameter to specify the tag of the injected dependency.
         /// </summary>
         /// <param name="factory">An expression for manually creating and initializing an instance.</param>
-        /// <typeparam name="T1">Type #1 of injected dependency.</typeparam>
-        /// <typeparam name="T2">Type #2 of injected dependency.</typeparam>
-        /// <typeparam name="T3">Type #3 of injected dependency.</typeparam>
-        /// <typeparam name="T4">Type #4 of injected dependency.</typeparam>
+        /// <typeparam name="T1">Type #1 of the injected dependency.</typeparam>
+        /// <typeparam name="T2">Type #2 of the injected dependency.</typeparam>
+        /// <typeparam name="T3">Type #3 of the injected dependency.</typeparam>
+        /// <typeparam name="T4">Type #4 of the injected dependency.</typeparam>
         /// <typeparam name="T">The implementation type.</typeparam>
         /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="IConfiguration.Bind{T}"/>
@@ -3038,11 +3038,11 @@ namespace Pure.DI
         /// Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the <see cref="TagAttribute"/> in front of the parameter to specify the tag of the injected dependency.
         /// </summary>
         /// <param name="factory">An expression for manually creating and initializing an instance.</param>
-        /// <typeparam name="T1">Type #1 of injected dependency.</typeparam>
-        /// <typeparam name="T2">Type #2 of injected dependency.</typeparam>
-        /// <typeparam name="T3">Type #3 of injected dependency.</typeparam>
-        /// <typeparam name="T4">Type #4 of injected dependency.</typeparam>
-        /// <typeparam name="T5">Type #5 of injected dependency.</typeparam>
+        /// <typeparam name="T1">Type #1 of the injected dependency.</typeparam>
+        /// <typeparam name="T2">Type #2 of the injected dependency.</typeparam>
+        /// <typeparam name="T3">Type #3 of the injected dependency.</typeparam>
+        /// <typeparam name="T4">Type #4 of the injected dependency.</typeparam>
+        /// <typeparam name="T5">Type #5 of the injected dependency.</typeparam>
         /// <typeparam name="T">The implementation type.</typeparam>
         /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="IConfiguration.Bind{T}"/>
@@ -3056,12 +3056,12 @@ namespace Pure.DI
         /// Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the <see cref="TagAttribute"/> in front of the parameter to specify the tag of the injected dependency.
         /// </summary>
         /// <param name="factory">An expression for manually creating and initializing an instance.</param>
-        /// <typeparam name="T1">Type #1 of injected dependency.</typeparam>
-        /// <typeparam name="T2">Type #2 of injected dependency.</typeparam>
-        /// <typeparam name="T3">Type #3 of injected dependency.</typeparam>
-        /// <typeparam name="T4">Type #4 of injected dependency.</typeparam>
-        /// <typeparam name="T5">Type #5 of injected dependency.</typeparam>
-        /// <typeparam name="T6">Type #6 of injected dependency.</typeparam>
+        /// <typeparam name="T1">Type #1 of the injected dependency.</typeparam>
+        /// <typeparam name="T2">Type #2 of the injected dependency.</typeparam>
+        /// <typeparam name="T3">Type #3 of the injected dependency.</typeparam>
+        /// <typeparam name="T4">Type #4 of the injected dependency.</typeparam>
+        /// <typeparam name="T5">Type #5 of the injected dependency.</typeparam>
+        /// <typeparam name="T6">Type #6 of the injected dependency.</typeparam>
         /// <typeparam name="T">The implementation type.</typeparam>
         /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="IConfiguration.Bind{T}"/>
@@ -3075,13 +3075,13 @@ namespace Pure.DI
         /// Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the <see cref="TagAttribute"/> in front of the parameter to specify the tag of the injected dependency.
         /// </summary>
         /// <param name="factory">An expression for manually creating and initializing an instance.</param>
-        /// <typeparam name="T1">Type #1 of injected dependency.</typeparam>
-        /// <typeparam name="T2">Type #2 of injected dependency.</typeparam>
-        /// <typeparam name="T3">Type #3 of injected dependency.</typeparam>
-        /// <typeparam name="T4">Type #4 of injected dependency.</typeparam>
-        /// <typeparam name="T5">Type #5 of injected dependency.</typeparam>
-        /// <typeparam name="T6">Type #6 of injected dependency.</typeparam>
-        /// <typeparam name="T7">Type #7 of injected dependency.</typeparam>
+        /// <typeparam name="T1">Type #1 of the injected dependency.</typeparam>
+        /// <typeparam name="T2">Type #2 of the injected dependency.</typeparam>
+        /// <typeparam name="T3">Type #3 of the injected dependency.</typeparam>
+        /// <typeparam name="T4">Type #4 of the injected dependency.</typeparam>
+        /// <typeparam name="T5">Type #5 of the injected dependency.</typeparam>
+        /// <typeparam name="T6">Type #6 of the injected dependency.</typeparam>
+        /// <typeparam name="T7">Type #7 of the injected dependency.</typeparam>
         /// <typeparam name="T">The implementation type.</typeparam>
         /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="IConfiguration.Bind{T}"/>
@@ -3095,14 +3095,14 @@ namespace Pure.DI
         /// Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the <see cref="TagAttribute"/> in front of the parameter to specify the tag of the injected dependency.
         /// </summary>
         /// <param name="factory">An expression for manually creating and initializing an instance.</param>
-        /// <typeparam name="T1">Type #1 of injected dependency.</typeparam>
-        /// <typeparam name="T2">Type #2 of injected dependency.</typeparam>
-        /// <typeparam name="T3">Type #3 of injected dependency.</typeparam>
-        /// <typeparam name="T4">Type #4 of injected dependency.</typeparam>
-        /// <typeparam name="T5">Type #5 of injected dependency.</typeparam>
-        /// <typeparam name="T6">Type #6 of injected dependency.</typeparam>
-        /// <typeparam name="T7">Type #7 of injected dependency.</typeparam>
-        /// <typeparam name="T8">Type #7 of injected dependency.</typeparam>
+        /// <typeparam name="T1">Type #1 of the injected dependency.</typeparam>
+        /// <typeparam name="T2">Type #2 of the injected dependency.</typeparam>
+        /// <typeparam name="T3">Type #3 of the injected dependency.</typeparam>
+        /// <typeparam name="T4">Type #4 of the injected dependency.</typeparam>
+        /// <typeparam name="T5">Type #5 of the injected dependency.</typeparam>
+        /// <typeparam name="T6">Type #6 of the injected dependency.</typeparam>
+        /// <typeparam name="T7">Type #7 of the injected dependency.</typeparam>
+        /// <typeparam name="T8">Type #7 of the injected dependency.</typeparam>
         /// <typeparam name="T">The implementation type.</typeparam>
         /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="IConfiguration.Bind{T}"/>
@@ -3114,12 +3114,12 @@ namespace Pure.DI
     }
 
     /// <summary>
-    /// Injection context. Cannot be used outside of the binding setup.
+    /// Injection context. Cannot be used outside the binding setup.
     /// </summary>
     internal interface IContext
     {
         /// <summary>
-        /// The tag that was used to inject the current object in the object graph. Cannot be used outside of the binding setup. See also <see cref="IBinding.Tags"/>
+        /// The tag that was used to inject the current object in the object graph. Cannot be used outside the binding setup. See also <see cref="IBinding.Tags"/>
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
@@ -3137,13 +3137,13 @@ namespace Pure.DI
         object Tag { get; }
 
         /// <summary>
-        /// The types of consumers for which the instance is created. Cannot be used outside of the binding setup. Guaranteed to contain at least one element.
+        /// The types of consumers for which the instance is created. Cannot be used outside the binding setup. Guaranteed to contain at least one element.
         /// </summary>
         /// <seealso cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
         Type[] ConsumerTypes { get; }
 
         /// <summary>
-        /// Injects an instance of type <c>T</c>. Cannot be used outside of the binding setup.
+        /// Injects an instance of type <c>T</c>. Cannot be used outside the binding setup.
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
@@ -3177,7 +3177,7 @@ namespace Pure.DI
         void Inject<T>(out T value);
 
         /// <summary>
-        /// Injects an instance of type <c>T</c> marked with a tag. Cannot be used outside of the binding setup.
+        /// Injects an instance of type <c>T</c> marked with a tag. Cannot be used outside the binding setup.
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
@@ -3197,7 +3197,7 @@ namespace Pure.DI
         void Inject<T>(object tag, out T value);
 
         /// <summary>
-        /// Builds up of an existing object. In other words, injects the necessary dependencies via methods, properties, or fields into an existing object. Cannot be used outside of the binding setup.
+        /// Builds up of an existing object. In other words, injects the necessary dependencies via methods, properties, or fields into an existing object. Cannot be used outside the binding setup.
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
@@ -3218,7 +3218,7 @@ namespace Pure.DI
         void BuildUp<T>(T value);
 
         /// <summary>
-        /// Overrides the binding with the specified value. Cannot be used outside of the binding setting.
+        /// Overrides the binding with the specified value. Cannot be used outside the binding setting.
         /// <code>
         /// DI.Setup("Composition")
         ///     .Bind().To&lt;Func&lt;int, int, IDependency&gt;&gt;(ctx =&gt;
@@ -3237,7 +3237,7 @@ namespace Pure.DI
         ///             return dependency;
         ///         })
         /// </code>
-        /// Overrides uses a shared state to override values. And if this code is supposed to run in multiple threads at once, then you need to ensure their synchronization, for example:
+        /// Overrides uses a shared state to override values. And if this code is supposed to run in multiple threads at once, then you need to ensure their synchronization, for example
         /// <code>
         /// DI.Setup("Composition")
         ///     .Bind().To&lt;Func&lt;int, int, IDependency&gt;&gt;(ctx =&gt;
@@ -3279,6 +3279,8 @@ namespace Pure.DI
 #endif
     internal static class DI
     {
+        private static readonly Configuration SharedConfiguration = new Configuration();
+
         /// <summary>
         /// Begins the definitions of the Dependency Injection setup chain.
         /// <example>
@@ -3286,13 +3288,13 @@ namespace Pure.DI
         /// interface IDependency;
         ///
         /// 
-        /// class Dependency : IDependency;
+        /// class Dependency: IDependency;
         ///
         /// 
         /// interface IService;
         ///
         /// 
-        /// class Service(IDependency dependency) : IService;
+        /// class Service(IDependency dependency): IService;
         ///
         /// 
         /// DI.Setup("Composition")
@@ -3308,186 +3310,184 @@ namespace Pure.DI
         [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
         internal static IConfiguration Setup(string compositionTypeName = "", CompositionKind kind = CompositionKind.Public)
         {
-            return Configuration.Shared;
+            return SharedConfiguration;
         }
 
 #if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
         [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 #endif
-        private sealed class Configuration : IConfiguration, IBinding
+        private sealed class Configuration: IConfiguration, IBinding
         {
-            public static readonly Configuration Shared = new Configuration();
-            
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Bind(params object[] tags)
             {
-                return Shared;
+                return this;
             }
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Bind<T>(params object[] tags)
             {
-                return Shared;
+                return this;
             }
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Bind<T1, T2>(params object[] tags)
             {
-                return Shared;
+                return this;
             }
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Bind<T1, T2, T3>(params object[] tags)
             {
-                return Shared;
+                return this;
             }
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Bind<T1, T2, T3, T4>(params object[] tags)
             {
-                return Shared;
+                return this;
             }
             
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Bind<T1, T2, T3, T4, T5>(params object[] tags)
             {
-                return Shared;
+                return this;
             }
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Bind<T1, T2, T3, T4, T5, T6>(params object[] tags)
             {
-                return Shared;
+                return this;
             }
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Bind<T1, T2, T3, T4, T5, T6, T7>(params object[] tags)
             {
-                return Shared;
+                return this;
             }
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Bind<T1, T2, T3, T4, T5, T6, T7, T8>(params object[] tags)
             {
-                return Shared;
+                return this;
             }
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding RootBind<T>(string name, RootKinds kind, params object[] tags)
             {
-                return Shared;
+                return this;
             }
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration DependsOn(params string[] setupNames)
             {
-                return Shared;
+                return this;
             }
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration GenericTypeArgumentAttribute<T>()
-                where T : global::System.Attribute
+                where T: global::System.Attribute
             {
-                return Shared;
+                return this;
             }
             
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration TypeAttribute<T>(int typeArgumentPosition)
-                where T : global::System.Attribute
+                where T: global::System.Attribute
             {
-                return Shared;
+                return this;
             }
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration TagAttribute<T>(int tagArgumentPosition)
-                where T : global::System.Attribute
+                where T: global::System.Attribute
             {
-                return Shared;
+                return this;
             }
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration OrdinalAttribute<T>(int ordinalArgumentPosition)
-                where T : global::System.Attribute
+                where T: global::System.Attribute
             {
-                return Shared;
+                return this;
             }
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration DefaultLifetime(Pure.DI.Lifetime lifetime)
             {
-                return Shared;
+                return this;
             }
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration DefaultLifetime<T>(Lifetime lifetime, params object[] tags)
             {
-                return Shared;
+                return this;
             }
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration Arg<T>(string name, params object[] tags)
             {
-                return Shared;
+                return this;
             }
             
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration RootArg<T>(string name, params object[] tags)
             {
-                return Shared;
+                return this;
             }
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration Root<T>(string name, object tag, RootKinds rootKind)
             {
-                return Shared;
+                return this;
             }
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration Roots<T>(string name, RootKinds kind, string filter)
             {
-                return Shared;
+                return this;
             }
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration Builder<T>(string name, RootKinds kind)
             {
-                return Shared;
+                return this;
             }
             
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration Builders<T>(string name, RootKinds kind, string filter)
             {
-                return Shared;
+                return this;
             }
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration Hint(Hint hint, string value)
             {
-                return Shared;
+                return this;
             }
 
             /// <inheritdoc />
@@ -3495,105 +3495,105 @@ namespace Pure.DI
             public IConfiguration Accumulate<T, TAccumulator>(params Lifetime[] lifetimes)
                 where TAccumulator: new()
             {
-                return Shared;
+                return this;
             }
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration GenericTypeArgument<T>()
             {
-                return Shared;
+                return this;
             }
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding As(Pure.DI.Lifetime lifetime)
             {
-                return Shared;
+                return this;
             }
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Tags(params object[] tags)
             {
-                return Shared;
+                return this;
             }
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration To<T>()
             {
-                return Shared;
+                return this;
             }
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration To<T>(global::System.Func<IContext, T> factory)
             {
-                return Shared;
+                return this;
             }
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration To<T>(string sourceCodeStatement)
             {
-                return Shared;
+                return this;
             }
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration To<T1, T>(global::System.Func<T1, T> factory)
             {
-                return Shared;
+                return this;
             }
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration To<T1, T2, T>(global::System.Func<T1, T2, T> factory)
             {
-                return Shared;
+                return this;
             }
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration To<T1, T2, T3, T>(global::System.Func<T1, T2, T3, T> factory)
             {
-                return Shared;
+                return this;
             }
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration To<T1, T2, T3, T4, T>(Func<T1, T2, T3, T4, T> factory)
             {
-                return Shared;
+                return this;
             }
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration To<T1, T2, T3, T4, T5, T>(Func<T1, T2, T3, T4, T5, T> factory)
             {
-                return Shared;
+                return this;
             }
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration To<T1, T2, T3, T4, T5, T6, T>(Func<T1, T2, T3, T4, T5, T6, T> factory)
             {
-                return Shared;
+                return this;
             }
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration To<T1, T2, T3, T4, T5, T6, T7, T>(Func<T1, T2, T3, T4, T5, T6, T7, T> factory)
             {
-                return Shared;
+                return this;
             }
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration To<T1, T2, T3, T4, T5, T6, T7, T8, T>(Func<T1, T2, T3, T4, T5, T6, T7, T8, T> factory)
             {
-                return Shared;
+                return this;
             }
         }
     }
@@ -3605,20 +3605,15 @@ namespace Pure.DI
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 #endif
     [global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
-    internal struct Pair<TKey, TValue>
+    internal struct Pair<TValue>
     {
-        public readonly TKey Key;
+        public readonly global::System.Type Key;
         public readonly TValue Value;
 
-        public Pair(TKey key, TValue value)
+        public Pair(global::System.Type key, TValue value)
         {
             Key = key;
             Value = value;
-        }
-
-        public override string ToString()
-        {
-            return Key?.ToString() ?? "empty" + " = " + Value.ToString();
         }
     }
     
@@ -3628,7 +3623,7 @@ namespace Pure.DI
 #if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 #endif
-    internal static class Buckets<TKey, TValue>
+    internal static class Buckets<TValue>
     {
         [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
         public static uint GetDivisor(uint count)
@@ -3636,31 +3631,35 @@ namespace Pure.DI
             return count < 2 ? count : count << 1;
         }
 
-        public static Pair<TKey, TValue>[] Create(
+        public static Pair<TValue>[] Create(
             uint divisor,
-            out int bucketSize,
-            Pair<TKey, TValue>[] pairs)
+            out uint bucketSize,
+            Pair<TValue>[] pairs)
         {
             bucketSize = 0;
-            int[] bucketSizes = new int[divisor];
-            for (int i = 0; i < pairs.Length; i++)
+#if  NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
+            global::System.Span<uint> bucketSizes = divisor < 0x1000 ? stackalloc uint[(int)divisor] : new uint[divisor];
+#else
+            var bucketSizes = new uint[divisor];
+#endif
+            for (var i = 0; i < pairs.Length; i++)
             {
-                int bucket = (int)(((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(pairs[i].Key)) % divisor);
-                int size = bucketSizes[bucket] + 1;
-                bucketSizes[bucket] = size;
-                if (size > bucketSize)
+                var bucket = (int)(((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(pairs[i].Key)) % divisor);
+                ref var size = ref bucketSizes[bucket];
+                if (++size > bucketSize)
                 {
                     bucketSize = size;
                 }
             }
             
-            Pair<TKey, TValue>[] buckets = new Pair<TKey, TValue>[divisor * bucketSize];
-            for (int i = 0; i < pairs.Length; i++)
+            var buckets = new Pair<TValue>[divisor * bucketSize];
+            for (var i = 0; i < pairs.Length; i++)
             {
-                int bucket = (int)(((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(pairs[i].Key)) % divisor);
-                var index = bucketSizes[bucket];
-                buckets[bucket * bucketSize + bucketSize - index] = pairs[i];
-                bucketSizes[bucket] = index - 1;
+                ref var pair = ref pairs[i];
+                var bucket = (int)(((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(pair.Key)) % divisor);
+                ref var index = ref bucketSizes[bucket++];
+                buckets[bucket * bucketSize - index] = pair;
+                index--;
             }
             
             return buckets;

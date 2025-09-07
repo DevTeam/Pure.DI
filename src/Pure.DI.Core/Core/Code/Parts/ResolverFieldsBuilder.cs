@@ -21,8 +21,8 @@ sealed class ResolversFieldsBuilder(IBuilder<RootsContext, IEnumerable<ResolverI
         }
 
         var code = composition.Code;
-        code.AppendLine($"private readonly static int {Names.BucketSizeFieldName};");
-        var pairs = $"{Names.SystemNamespace}Type, {Names.IResolverTypeName}<{composition.Source.Source.Name.ClassName}, object>";
+        code.AppendLine($"private readonly static uint {Names.BucketSizeFieldName};");
+        var pairs = $"{Names.IResolverTypeName}<{composition.Source.Source.Name.ClassName}, object>";
         var pairTypeName = $"{Names.ApiNamespace}Pair<{pairs}>";
         code.AppendLine($"private readonly static {pairTypeName}[] {Names.BucketsFieldName};");
 

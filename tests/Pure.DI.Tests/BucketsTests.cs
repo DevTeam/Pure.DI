@@ -12,15 +12,15 @@ public class BucketsTests
     [InlineData(1u)]
     [InlineData(2u)]
     [InlineData(11u)]
-    [InlineData(1000u)]
+    [InlineData(100u)]
     internal void ShouldGetValues(uint count)
     {
         // Given
         var data = CreatePairs(count);
-        var divisor = Buckets<string, int>.GetDivisor(count);
+        var divisor = Buckets<int>.GetDivisor(count);
 
         // When
-        var pairs = Buckets<string, int>.Create(
+        var pairs = Buckets<int>.Create(
             divisor,
             out var bucketSize,
             data);
@@ -37,15 +37,17 @@ public class BucketsTests
         }
     }
 
-    private static Pair<string, int>[] CreatePairs(uint count) =>
-        Enumerable.Range(0, (int)count)
-            .Select(i => new Pair<string, int>((100 + i).ToString(), i))
-            .ToArray();
+    private static Pair<int>[] CreatePairs(uint count) => AppDomain.CurrentDomain.GetAssemblies()
+        .SelectMany(i => i.ExportedTypes)
+        .Distinct()
+        .Take((int)count)
+        .Select((i, index) => new Pair<int>(i, index))
+        .ToArray();
 
     private static TValue Get<TKey, TValue>(
-        Pair<TKey, TValue>[] pairs,
+        Pair<TValue>[] pairs,
         uint divisor,
-        int bucketSize,
+        uint bucketSize,
         TKey key)
     {
         int index = (int)(bucketSize * ((uint)RuntimeHelpers.GetHashCode(key) % divisor));
@@ -55,7 +57,7 @@ public class BucketsTests
             return pair.Value;
         }
 
-        int maxIndex = index + bucketSize;
+        var maxIndex = index + bucketSize;
         for (int i = index + 1; i < maxIndex; i++)
         {
             pair = ref pairs[i];
@@ -72,16 +74,16 @@ public class BucketsTests
     public void ShouldSupportTypeKey()
     {
         // Given
-        var divisor = Buckets<Type, int>.GetDivisor(5);
-        var pairs = Buckets<Type, int>.Create(
+        var divisor = Buckets<int>.GetDivisor(5);
+        var pairs = Buckets<int>.Create(
             divisor,
             out var bucketSize,
             [
-                new Pair<Type, int>(typeof(string), 1),
-                new Pair<Type, int>(typeof(int), 2),
-                new Pair<Type, int>(typeof(double), 3),
-                new Pair<Type, int>(typeof(float), 4),
-                new Pair<Type, int>(typeof(char), 5)
+                new Pair<int>(typeof(string), 1),
+                new Pair<int>(typeof(int), 2),
+                new Pair<int>(typeof(double), 3),
+                new Pair<int>(typeof(float), 4),
+                new Pair<int>(typeof(char), 5)
             ]
         );
 

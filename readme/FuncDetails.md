@@ -165,19 +165,19 @@ partial class Func
     throw new InvalidOperationException($"{CannotResolveMessage} \"{tag}\" {OfTypeMessage} {type}.");
   }
 
-  private readonly static int _bucketSize;
-  private readonly static Pair<Type, IResolver<Func, object>>[] _buckets;
+  private readonly static uint _bucketSize;
+  private readonly static Pair<IResolver<Func, object>>[] _buckets;
 
   static Func()
   {
     var valResolver_0000 = new Resolver_0000();
     Resolver<CompositionRoot>.Value = valResolver_0000;
-    _buckets = Buckets<Type, IResolver<Func, object>>.Create(
+    _buckets = Buckets<IResolver<Func, object>>.Create(
       1,
       out _bucketSize,
-      new Pair<Type, IResolver<Func, object>>[1]
+      new Pair<IResolver<Func, object>>[1]
       {
-         new Pair<Type, IResolver<Func, object>>(typeof(CompositionRoot), valResolver_0000)
+         new Pair<IResolver<Func, object>>(typeof(CompositionRoot), valResolver_0000)
       });
   }
 

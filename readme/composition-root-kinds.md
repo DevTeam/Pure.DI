@@ -168,8 +168,8 @@ partial class Composition
     throw new InvalidOperationException($"{CannotResolveMessage} \"{tag}\" {OfTypeMessage} {type}.");
   }
 
-  private readonly static int _bucketSize;
-  private readonly static Pair<Type, IResolver<Composition, object>>[] _buckets;
+  private readonly static uint _bucketSize;
+  private readonly static Pair<IResolver<Composition, object>>[] _buckets;
 
   static Composition()
   {
@@ -177,13 +177,13 @@ partial class Composition
     Resolver<IService>.Value = valResolver_0000;
     var valResolver_0001 = new Resolver_0001();
     Resolver<IDependency>.Value = valResolver_0001;
-    _buckets = Buckets<Type, IResolver<Composition, object>>.Create(
+    _buckets = Buckets<IResolver<Composition, object>>.Create(
       4,
       out _bucketSize,
-      new Pair<Type, IResolver<Composition, object>>[2]
+      new Pair<IResolver<Composition, object>>[2]
       {
-         new Pair<Type, IResolver<Composition, object>>(typeof(IService), valResolver_0000)
-        ,new Pair<Type, IResolver<Composition, object>>(typeof(IDependency), valResolver_0001)
+         new Pair<IResolver<Composition, object>>(typeof(IService), valResolver_0000)
+        ,new Pair<IResolver<Composition, object>>(typeof(IDependency), valResolver_0001)
       });
   }
 

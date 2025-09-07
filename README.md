@@ -335,6 +335,13 @@ Creates an attribute instance.
 </blockquote></details>
 
 
+<details><summary>Buckets`1</summary><blockquote>
+
+For internal use. 
+            
+</blockquote></details>
+
+
 <details><summary>CompositionKind</summary><blockquote>
 
 Determines how the partial class will be generated. The _Setup(System.String,Pure.DI.CompositionKind)_ method has an additional argument  `kind` , which defines the type of composition:
@@ -415,13 +422,13 @@ Begins the definitions of the Dependency Injection setup chain.
 interface IDependency;
             
              
-             class Dependency : IDependency;
+             class Dependency: IDependency;
             
              
              interface IService;
             
              
-             class Service(IDependency dependency) : IService;
+             class Service(IDependency dependency): IService;
             
              
              DI.Setup("Composition")
@@ -1478,7 +1485,7 @@ See also _Hint(Pure.DI.Hint,System.String)_.
 <details><summary>Field ResolveByTagMethodName</summary><blockquote>
 
 Overrides name of the method  `public T Resolve<T>(object? tag)` . "Resolve" by default.
-            For example:
+            For example
             
 ```c#
 
@@ -2128,7 +2135,7 @@ See also _As(Pure.DI.Lifetime)_.
 
 <details><summary>Method Bind``2(System.Object[])</summary><blockquote>
 
-Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
+Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for details.
             Type 1 of a dependency to be bound.Type 2 of a dependency to be bound.
  - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
 
@@ -2151,7 +2158,7 @@ See also _As(Pure.DI.Lifetime)_.
 
 <details><summary>Method Bind``3(System.Object[])</summary><blockquote>
 
-Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
+Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for details.
             Type 1 of a dependency to be bound.Type 2 of a dependency to be bound.Type 3 of a dependency to be bound.
  - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
 
@@ -2174,7 +2181,7 @@ See also _As(Pure.DI.Lifetime)_.
 
 <details><summary>Method Bind``4(System.Object[])</summary><blockquote>
 
-Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
+Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for details.
             Type 1 of a dependency to be bound.Type 2 of a dependency to be bound.Type 3 of a dependency to be bound.Type 3 of a dependency to be bound.
  - parameter _tags_ - The optional argument that specifies tags for a particular type of a dependency binding.
 
@@ -2236,13 +2243,13 @@ Defines the binding tags.
 interface IDependency { }
              
             
-             class AbcDependency : IDependency { }
+             class AbcDependency: IDependency { }
              
             
-             class XyzDependency : IDependency { }
+             class XyzDependency: IDependency { }
              
             
-             class Dependency : IDependency { }
+             class Dependency: IDependency { }
              
             
              interface IService
@@ -2254,7 +2261,7 @@ interface IDependency { }
              }
             
              
-             class Service : IService
+             class Service: IService
              {
                  public Service(
                      [Tag("Abc")] IDependency dependency1,
@@ -2459,7 +2466,7 @@ DI.Setup(nameof(Composition))
 
 
  - parameter _factory_ - An expression for manually creating and initializing an instance.
-Type #1 of injected dependency.The implementation type.
+Type #1 of the injected dependency.The implementation type.
  - returns Reference to the setup continuation chain.
 
 See also _Bind``1(System.Object[])_.
@@ -2511,7 +2518,7 @@ DI.Setup(nameof(Composition))
 
 
  - parameter _factory_ - An expression for manually creating and initializing an instance.
-Type #1 of injected dependency.Type #2 of injected dependency.The implementation type.
+Type #1 of the injected dependency.Type #2 of the injected dependency.The implementation type.
  - returns Reference to the setup continuation chain.
 
 See also _Bind``1(System.Object[])_.
@@ -2532,7 +2539,7 @@ See also _As(Pure.DI.Lifetime)_.
 Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the _TagAttribute_ in front of the parameter to specify the tag of the injected dependency.
             
  - parameter _factory_ - An expression for manually creating and initializing an instance.
-Type #1 of injected dependency.Type #2 of injected dependency.Type #3 of injected dependency.The implementation type.
+Type #1 of the injected dependency.Type #2 of the injected dependency.Type #3 of the injected dependency.The implementation type.
  - returns Reference to the setup continuation chain.
 
 See also _Bind``1(System.Object[])_.
@@ -2622,7 +2629,7 @@ See also _As(Pure.DI.Lifetime)_.
 
 <details><summary>Method Bind``2(System.Object[])</summary><blockquote>
 
-Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
+Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for details.
             Type 1 of a dependency to be bound.Type 2 of a dependency to be bound.
  - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
 
@@ -2645,7 +2652,7 @@ See also _As(Pure.DI.Lifetime)_.
 
 <details><summary>Method Bind``3(System.Object[])</summary><blockquote>
 
-Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
+Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for details.
             Type 1 of a dependency to be bound.Type 2 of a dependency to be bound.Type 3 of a dependency to be bound.
  - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
 
@@ -2668,7 +2675,7 @@ See also _As(Pure.DI.Lifetime)_.
 
 <details><summary>Method Bind``4(System.Object[])</summary><blockquote>
 
-Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for examples.
+Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for details.
             Type 1 of a dependency to be bound.Type 2 of a dependency to be bound.Type 3 of a dependency to be bound.Type 4 of a dependency to be bound.
  - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
 
@@ -2754,7 +2761,7 @@ Specifies a custom generic type argument attribute.
 ```c#
 
 [AttributeUsage(AttributeTargets.Interface | AttributeTargets.Class | AttributeTargets.Struct)]
-            class MyGenericTypeArgumentAttribute : Attribute;
+            class MyGenericTypeArgumentAttribute: Attribute;
              
             [MyGenericTypeArgument]
             interface TTMy; 
@@ -3153,11 +3160,11 @@ See also _GenericTypeArgumentAttribute``1_.
 
 <details><summary>IContext</summary><blockquote>
 
-Injection context. Cannot be used outside of the binding setup.
+Injection context. Cannot be used outside the binding setup.
             
 <details><summary>Property Tag</summary><blockquote>
 
-The tag that was used to inject the current object in the object graph. Cannot be used outside of the binding setup. See also _Tags(System.Object[])_
+The tag that was used to inject the current object in the object graph. Cannot be used outside the binding setup. See also _Tags(System.Object[])_
 ```c#
 
 DI.Setup("Composition")
@@ -3180,7 +3187,7 @@ See also _Tags(System.Object[])_.
 
 <details><summary>Property ConsumerTypes</summary><blockquote>
 
-The types of consumers for which the instance is created. Cannot be used outside of the binding setup. Guaranteed to contain at least one element.
+The types of consumers for which the instance is created. Cannot be used outside the binding setup. Guaranteed to contain at least one element.
             
 See also _To``1(System.Func{Pure.DI.IContext,``0})_.
 
@@ -3189,7 +3196,7 @@ See also _To``1(System.Func{Pure.DI.IContext,``0})_.
 
 <details><summary>Method Inject``1(``0@)</summary><blockquote>
 
-Injects an instance of type  `T` . Cannot be used outside of the binding setup.
+Injects an instance of type  `T` . Cannot be used outside the binding setup.
              
 ```c#
 
@@ -3232,7 +3239,7 @@ See also _To``1(System.Func{Pure.DI.IContext,``0})_.
 
 <details><summary>Method Inject``1(System.Object,``0@)</summary><blockquote>
 
-Injects an instance of type  `T`  marked with a tag. Cannot be used outside of the binding setup.
+Injects an instance of type  `T`  marked with a tag. Cannot be used outside the binding setup.
             
 ```c#
 
@@ -3260,7 +3267,7 @@ See also _To``1(System.Func{Pure.DI.IContext,``0})_.
 
 <details><summary>Method BuildUp``1(``0)</summary><blockquote>
 
-Builds up of an existing object. In other words, injects the necessary dependencies via methods, properties, or fields into an existing object. Cannot be used outside of the binding setup.
+Builds up of an existing object. In other words, injects the necessary dependencies via methods, properties, or fields into an existing object. Cannot be used outside the binding setup.
             
 ```c#
 
@@ -3286,7 +3293,7 @@ See also _To``1(System.Func{Pure.DI.IContext,``0})_.
 
 <details><summary>Method Override``1(``0,System.Object[])</summary><blockquote>
 
-Overrides the binding with the specified value. Cannot be used outside of the binding setting.
+Overrides the binding with the specified value. Cannot be used outside the binding setting.
             
 ```c#
 
@@ -3310,7 +3317,7 @@ DI.Setup("Composition")
 ```
 
 
-            Overrides uses a shared state to override values. And if this code is supposed to run in multiple threads at once, then you need to ensure their synchronization, for example:
+            Overrides uses a shared state to override values. And if this code is supposed to run in multiple threads at once, then you need to ensure their synchronization, for example
             
 ```c#
 
@@ -3488,7 +3495,7 @@ Represents an ordinal attribute.
              
 ```c#
 
-class Service : IService
+class Service: IService
              {
                  private readonly string _name;
              
@@ -3509,7 +3516,7 @@ class Service : IService
              
 ```c#
 
-class Person : IPerson
+class Person: IPerson
              {
                  private readonly string _name = "";
              
@@ -3607,6 +3614,13 @@ Creates a new instance.
 </blockquote></details>
 
 
+</blockquote></details>
+
+
+<details><summary>Pair`1</summary><blockquote>
+
+For internal use.
+            
 </blockquote></details>
 
 
@@ -3881,12 +3895,12 @@ Atomically generated smart tag with value "CompositionClass".
 </blockquote></details>
 
 
-<details><summary>Field VarName</summary><blockquote>
+<details><summary>Field UniqueTag</summary><blockquote>
 
-Atomically generated smart tag with value "VarName".
+Atomically generated smart tag with value "UniqueTag".
             It's used for:
             
-            class _Generator__VarsMap_ <-- _IIdGenerator_(VarName) -- _IdGenerator_ as _Transient_
+            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve__BindingBuilder_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
@@ -3899,21 +3913,12 @@ Atomically generated smart tag with value "UsingDeclarations".
 </blockquote></details>
 
 
-<details><summary>Field UniqueTag</summary><blockquote>
+<details><summary>Field VarName</summary><blockquote>
 
-Atomically generated smart tag with value "UniqueTag".
+Atomically generated smart tag with value "VarName".
             It's used for:
             
-            class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve__BindingBuilder_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve_
-</blockquote></details>
-
-
-<details><summary>Field Overrider</summary><blockquote>
-
-Atomically generated smart tag with value "Overrider".
-            It's used for:
-            
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Overrider) -- _GraphOverrider_ as _PerBlock_
+            class _Generator__VarsMap_ <-- _IIdGenerator_(VarName) -- _IdGenerator_ as _Transient_
 </blockquote></details>
 
 
@@ -3923,6 +3928,15 @@ Atomically generated smart tag with value "Override".
             It's used for:
             
             class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
+<details><summary>Field Overrider</summary><blockquote>
+
+Atomically generated smart tag with value "Overrider".
+            It's used for:
+            
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Overrider) -- _GraphOverrider_ as _PerBlock_
 </blockquote></details>
 
 
@@ -3940,13 +3954,13 @@ Represents a tag attribute overriding an injection tag. The tag can be a constan
 interface IDependency { }
              
             
-             class AbcDependency : IDependency { }
+             class AbcDependency: IDependency { }
              
             
-             class XyzDependency : IDependency { }
+             class XyzDependency: IDependency { }
              
             
-             class Dependency : IDependency { }
+             class Dependency: IDependency { }
              
             
              interface IService
@@ -3958,7 +3972,7 @@ interface IDependency { }
              }
             
              
-             class Service : IService
+             class Service: IService
              {
                  public Service(
                      [Tag("Abc")] IDependency dependency1,
@@ -4006,6 +4020,14 @@ Creates an attribute instance.
 
 Represents the generic type arguments marker for a reference type.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TT>>().To<Dependency<TT>>();
+            
+```
+
+
 </blockquote></details>
 
 
@@ -4013,6 +4035,14 @@ Represents the generic type arguments marker for a reference type.
 
 Represents the generic type arguments marker for a reference type.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TT1>>().To<Dependency<TT1>>();
+            
+```
+
+
 </blockquote></details>
 
 
@@ -4020,6 +4050,14 @@ Represents the generic type arguments marker for a reference type.
 
 Represents the generic type arguments marker for a reference type.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TT2>>().To<Dependency<TT2>>();
+            
+```
+
+
 </blockquote></details>
 
 
@@ -4027,6 +4065,14 @@ Represents the generic type arguments marker for a reference type.
 
 Represents the generic type arguments marker for a reference type.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TT3>>().To<Dependency<TT3>>();
+            
+```
+
+
 </blockquote></details>
 
 
@@ -4034,41 +4080,89 @@ Represents the generic type arguments marker for a reference type.
 
 Represents the generic type arguments marker for a reference type.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TT4>>().To<Dependency<TT4>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTCollection`1</summary><blockquote>
 
-Represents the generic type arguments marker for _ICollection>T>_.
+Represents the generic type arguments marker for _ICollection`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTCollection<TT>>>().To<Dependency<TTCollection<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTCollection1`1</summary><blockquote>
 
-Represents the generic type arguments marker for _ICollection>T>_.
+Represents the generic type arguments marker for _ICollection`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTCollection1<TT>>>().To<Dependency<TTCollection1<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTCollection2`1</summary><blockquote>
 
-Represents the generic type arguments marker for _ICollection>T>_.
+Represents the generic type arguments marker for _ICollection`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTCollection2<TT>>>().To<Dependency<TTCollection2<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTCollection3`1</summary><blockquote>
 
-Represents the generic type arguments marker for _ICollection>T>_.
+Represents the generic type arguments marker for _ICollection`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTCollection3<TT>>>().To<Dependency<TTCollection3<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTCollection4`1</summary><blockquote>
 
-Represents the generic type arguments marker for _ICollection>T>_.
+Represents the generic type arguments marker for _ICollection`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTCollection4<TT>>>().To<Dependency<TTCollection4<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
@@ -4076,13 +4170,29 @@ Represents the generic type arguments marker for _ICollection>T>_.
 
 Represents the generic type arguments marker for _IComparable_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTComparable>>().To<Dependency<TTComparable>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTComparable`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IComparable>T>_.
+Represents the generic type arguments marker for _IComparable`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTComparable<TT>>>().To<Dependency<TTComparable<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
@@ -4090,13 +4200,29 @@ Represents the generic type arguments marker for _IComparable>T>_.
 
 Represents the generic type arguments marker for _IComparable_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTComparable1>>().To<Dependency<TTComparable1>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTComparable1`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IComparable>T>_.
+Represents the generic type arguments marker for _IComparable`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTComparable1<TT>>>().To<Dependency<TTComparable1<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
@@ -4104,13 +4230,29 @@ Represents the generic type arguments marker for _IComparable>T>_.
 
 Represents the generic type arguments marker for _IComparable_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTComparable2>>().To<Dependency<TTComparable2>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTComparable2`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IComparable>T>_.
+Represents the generic type arguments marker for _IComparable`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTComparable2<TT>>>().To<Dependency<TTComparable2<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
@@ -4118,13 +4260,29 @@ Represents the generic type arguments marker for _IComparable>T>_.
 
 Represents the generic type arguments marker for _IComparable_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTComparable3>>().To<Dependency<TTComparable3>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTComparable3`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IComparable>T>_.
+Represents the generic type arguments marker for _IComparable`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTComparable3<TT>>>().To<Dependency<TTComparable3<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
@@ -4132,83 +4290,104 @@ Represents the generic type arguments marker for _IComparable>T>_.
 
 Represents the generic type arguments marker for _IComparable_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTComparable4>>().To<Dependency<TTComparable4>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTComparable4`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IComparable>T>_.
+Represents the generic type arguments marker for _IComparable`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTComparable4<TT>>>().To<Dependency<TTComparable4<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTComparer`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IComparer>T>_.
+Represents the generic type arguments marker for _IComparer`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTComparer<TT>>>().To<Dependency<TTComparer<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTComparer1`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IComparer>T>_.
+Represents the generic type arguments marker for _IComparer`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTComparer1<TT>>>().To<Dependency<TTComparer1<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTComparer2`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IComparer>T>_.
+Represents the generic type arguments marker for _IComparer`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTComparer2<TT>>>().To<Dependency<TTComparer2<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTComparer3`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IComparer>T>_.
+Represents the generic type arguments marker for _IComparer`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTComparer3<TT>>>().To<Dependency<TTComparer3<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTComparer4`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IComparer>T>_.
+Represents the generic type arguments marker for _IComparer`1_.
             
-</blockquote></details>
+```c#
 
-
-<details><summary>TTDictionary`2</summary><blockquote>
-
-Represents the generic type arguments marker for _IDictionary>TKey, TValue>_.
+DI.Setup("Composition")
+                .Bind<IDependency<TTComparer4<TT>>>().To<Dependency<TTComparer4<TT>>>();
             
-</blockquote></details>
+```
 
 
-<details><summary>TTDictionary1`2</summary><blockquote>
-
-Represents the generic type arguments marker for _IDictionary>TKey, TValue>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTDictionary2`2</summary><blockquote>
-
-Represents the generic type arguments marker for _IDictionary>TKey, TValue>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTDictionary3`2</summary><blockquote>
-
-Represents the generic type arguments marker for _IDictionary>TKey, TValue>_.
-            
-</blockquote></details>
-
-
-<details><summary>TTDictionary4`2</summary><blockquote>
-
-Represents the generic type arguments marker for _IDictionary>TKey, TValue>_.
-            
 </blockquote></details>
 
 
@@ -4216,6 +4395,14 @@ Represents the generic type arguments marker for _IDictionary>TKey, TValue>_.
 
 Represents the generic type arguments marker for _IDisposable_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTDisposable>>().To<Dependency<TTDisposable>>();
+            
+```
+
+
 </blockquote></details>
 
 
@@ -4223,6 +4410,14 @@ Represents the generic type arguments marker for _IDisposable_.
 
 Represents the generic type arguments marker for _IDisposable_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTDisposable1>>().To<Dependency<TTDisposable1>>();
+            
+```
+
+
 </blockquote></details>
 
 
@@ -4230,6 +4425,14 @@ Represents the generic type arguments marker for _IDisposable_.
 
 Represents the generic type arguments marker for _IDisposable_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTDisposable2>>().To<Dependency<TTDisposable2>>();
+            
+```
+
+
 </blockquote></details>
 
 
@@ -4237,6 +4440,14 @@ Represents the generic type arguments marker for _IDisposable_.
 
 Represents the generic type arguments marker for _IDisposable_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTDisposable3>>().To<Dependency<TTDisposable3>>();
+            
+```
+
+
 </blockquote></details>
 
 
@@ -4244,6 +4455,14 @@ Represents the generic type arguments marker for _IDisposable_.
 
 Represents the generic type arguments marker for _IDisposable_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTDisposable4>>().To<Dependency<TTDisposable4>>();
+            
+```
+
+
 </blockquote></details>
 
 
@@ -4251,6 +4470,14 @@ Represents the generic type arguments marker for _IDisposable_.
 
 Represents the generic type arguments marker for a enum type.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTE>>().To<Dependency<TTE>>();
+            
+```
+
+
 </blockquote></details>
 
 
@@ -4258,6 +4485,14 @@ Represents the generic type arguments marker for a enum type.
 
 Represents the generic type arguments marker for a enum type.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTE1>>().To<Dependency<TTE1>>();
+            
+```
+
+
 </blockquote></details>
 
 
@@ -4265,6 +4500,14 @@ Represents the generic type arguments marker for a enum type.
 
 Represents the generic type arguments marker for a enum type.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTE2>>().To<Dependency<TTE2>>();
+            
+```
+
+
 </blockquote></details>
 
 
@@ -4272,6 +4515,14 @@ Represents the generic type arguments marker for a enum type.
 
 Represents the generic type arguments marker for a enum type.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTE3>>().To<Dependency<TTE3>>();
+            
+```
+
+
 </blockquote></details>
 
 
@@ -4279,320 +4530,608 @@ Represents the generic type arguments marker for a enum type.
 
 Represents the generic type arguments marker for a enum type.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTE4>>().To<Dependency<TTE4>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTEnumerable`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IEnumerable>T>_.
+Represents the generic type arguments marker for _IEnumerable`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTEnumerable<TT>>>().To<Dependency<TTEnumerable<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTEnumerable1`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IEnumerable>T>_.
+Represents the generic type arguments marker for _IEnumerable`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTEnumerable1<TT>>>().To<Dependency<TTEnumerable1<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTEnumerable2`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IEnumerable>T>_.
+Represents the generic type arguments marker for _IEnumerable`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTEnumerable2<TT>>>().To<Dependency<TTEnumerable2<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTEnumerable3`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IEnumerable>T>_.
+Represents the generic type arguments marker for _IEnumerable`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTEnumerable3<TT>>>().To<Dependency<TTEnumerable3<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTEnumerable4`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IEnumerable>T>_.
+Represents the generic type arguments marker for _IEnumerable`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTEnumerable4<TT>>>().To<Dependency<TTEnumerable4<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTEnumerator`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IEnumerator>T>_.
+Represents the generic type arguments marker for _IEnumerator`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTEnumerator<TT>>>().To<Dependency<TTEnumerator<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTEnumerator1`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IEnumerator>T>_.
+Represents the generic type arguments marker for _IEnumerator`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTEnumerator1<TT>>>().To<Dependency<TTEnumerator1<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTEnumerator2`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IEnumerator>T>_.
+Represents the generic type arguments marker for _IEnumerator`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTEnumerator2<TT>>>().To<Dependency<TTEnumerator2<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTEnumerator3`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IEnumerator>T>_.
+Represents the generic type arguments marker for _IEnumerator`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTEnumerator3<TT>>>().To<Dependency<TTEnumerator3<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTEnumerator4`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IEnumerator>T>_.
+Represents the generic type arguments marker for _IEnumerator`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTEnumerator4<TT>>>().To<Dependency<TTEnumerator4<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTEqualityComparer`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IEqualityComparer>T>_.
+Represents the generic type arguments marker for _IEqualityComparer`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTEqualityComparer<TT>>>().To<Dependency<TTEqualityComparer<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTEqualityComparer1`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IEqualityComparer>T>_.
+Represents the generic type arguments marker for _IEqualityComparer`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTEqualityComparer1<TT>>>().To<Dependency<TTEqualityComparer1<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTEqualityComparer2`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IEqualityComparer>T>_.
+Represents the generic type arguments marker for _IEqualityComparer`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTEqualityComparer2<TT>>>().To<Dependency<TTEqualityComparer2<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTEqualityComparer3`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IEqualityComparer>T>_.
+Represents the generic type arguments marker for _IEqualityComparer`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTEqualityComparer3<TT>>>().To<Dependency<TTEqualityComparer3<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTEqualityComparer4`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IEqualityComparer>T>_.
+Represents the generic type arguments marker for _IEqualityComparer`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTEqualityComparer4<TT>>>().To<Dependency<TTEqualityComparer4<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTEquatable`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IEquatable>T>_.
+Represents the generic type arguments marker for _IEquatable`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTEquatable<TT>>>().To<Dependency<TTEquatable<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTEquatable1`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IEquatable>T>_.
+Represents the generic type arguments marker for _IEquatable`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTEquatable1<TT>>>().To<Dependency<TTEquatable1<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTEquatable2`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IEquatable>T>_.
+Represents the generic type arguments marker for _IEquatable`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTEquatable2<TT>>>().To<Dependency<TTEquatable2<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTEquatable3`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IEquatable>T>_.
+Represents the generic type arguments marker for _IEquatable`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTEquatable3<TT>>>().To<Dependency<TTEquatable3<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTEquatable4`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IEquatable>T>_.
+Represents the generic type arguments marker for _IEquatable`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTEquatable4<TT>>>().To<Dependency<TTEquatable4<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTList`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IList>T>_.
+Represents the generic type arguments marker for _IList`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTList<TT>>>().To<Dependency<TTList<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTList1`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IList>T>_.
+Represents the generic type arguments marker for _IList`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTList1<TT>>>().To<Dependency<TTList1<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTList2`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IList>T>_.
+Represents the generic type arguments marker for _IList`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTList2<TT>>>().To<Dependency<TTList2<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTList3`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IList>T>_.
+Represents the generic type arguments marker for _IList`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTList3<TT>>>().To<Dependency<TTList3<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTList4`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IList>T>_.
+Represents the generic type arguments marker for _IList`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTList4<TT>>>().To<Dependency<TTList4<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTObservable`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IObservable>T>_.
+Represents the generic type arguments marker for _IObservable`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTObservable<TT>>>().To<Dependency<TTObservable<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTObservable1`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IObservable>T>_.
+Represents the generic type arguments marker for _IObservable`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTObservable1<TT>>>().To<Dependency<TTObservable1<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTObservable2`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IObservable>T>_.
+Represents the generic type arguments marker for _IObservable`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTObservable2<TT>>>().To<Dependency<TTObservable2<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTObservable3`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IObservable>T>_.
+Represents the generic type arguments marker for _IObservable`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTObservable3<TT>>>().To<Dependency<TTObservable3<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTObservable4`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IObservable>T>_.
+Represents the generic type arguments marker for _IObservable`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTObservable4<TT>>>().To<Dependency<TTObservable4<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTObserver`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IObserver>T>_.
+Represents the generic type arguments marker for _IObserver`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTObserver<TT>>>().To<Dependency<TTObserver<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTObserver1`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IObserver>T>_.
+Represents the generic type arguments marker for _IObserver`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTObserver1<TT>>>().To<Dependency<TTObserver1<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTObserver2`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IObserver>T>_.
+Represents the generic type arguments marker for _IObserver`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTObserver2<TT>>>().To<Dependency<TTObserver2<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTObserver3`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IObserver>T>_.
+Represents the generic type arguments marker for _IObserver`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTObserver3<TT>>>().To<Dependency<TTObserver3<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTObserver4`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IObserver>T>_.
+Represents the generic type arguments marker for _IObserver`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTObserver4<TT>>>().To<Dependency<TTObserver4<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTReadOnlyCollection`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IReadOnlyCollection>T>_.
+Represents the generic type arguments marker for _IReadOnlyCollection`1_.
             
 </blockquote></details>
 
 
 <details><summary>TTReadOnlyCollection1`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IReadOnlyCollection>T>_.
+Represents the generic type arguments marker for _IReadOnlyCollection`1_.
             
 </blockquote></details>
 
 
 <details><summary>TTReadOnlyCollection2`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IReadOnlyCollection>T>_.
+Represents the generic type arguments marker for _IReadOnlyCollection`1_.
             
 </blockquote></details>
 
 
 <details><summary>TTReadOnlyCollection3`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IReadOnlyCollection>T>_.
+Represents the generic type arguments marker for _IReadOnlyCollection`1_.
             
 </blockquote></details>
 
 
 <details><summary>TTReadOnlyCollection4`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IReadOnlyCollection>T>_.
+Represents the generic type arguments marker for _IReadOnlyCollection`1_.
             
 </blockquote></details>
 
 
 <details><summary>TTReadOnlyList`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IReadOnlyList>T>_.
+Represents the generic type arguments marker for _IReadOnlyList`1_.
             
 </blockquote></details>
 
 
 <details><summary>TTReadOnlyList1`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IReadOnlyList>T>_.
+Represents the generic type arguments marker for _IReadOnlyList`1_.
             
 </blockquote></details>
 
 
 <details><summary>TTReadOnlyList2`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IReadOnlyList>T>_.
+Represents the generic type arguments marker for _IReadOnlyList`1_.
             
 </blockquote></details>
 
 
 <details><summary>TTReadOnlyList3`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IReadOnlyList>T>_.
+Represents the generic type arguments marker for _IReadOnlyList`1_.
             
 </blockquote></details>
 
 
 <details><summary>TTReadOnlyList4`1</summary><blockquote>
 
-Represents the generic type arguments marker for _IReadOnlyList>T>_.
+Represents the generic type arguments marker for _IReadOnlyList`1_.
             
 </blockquote></details>
 
@@ -4601,6 +5140,14 @@ Represents the generic type arguments marker for _IReadOnlyList>T>_.
 
 Represents the generic type arguments marker for a value type.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTS>>().To<Dependency<TTS>>();
+            
+```
+
+
 </blockquote></details>
 
 
@@ -4608,6 +5155,14 @@ Represents the generic type arguments marker for a value type.
 
 Represents the generic type arguments marker for a value type.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTS1>>().To<Dependency<TTS1>>();
+            
+```
+
+
 </blockquote></details>
 
 
@@ -4615,6 +5170,14 @@ Represents the generic type arguments marker for a value type.
 
 Represents the generic type arguments marker for a value type.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTS2>>().To<Dependency<TTS2>>();
+            
+```
+
+
 </blockquote></details>
 
 
@@ -4622,6 +5185,14 @@ Represents the generic type arguments marker for a value type.
 
 Represents the generic type arguments marker for a value type.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTS3>>().To<Dependency<TTS3>>();
+            
+```
+
+
 </blockquote></details>
 
 
@@ -4629,41 +5200,89 @@ Represents the generic type arguments marker for a value type.
 
 Represents the generic type arguments marker for a value type.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTS4>>().To<Dependency<TTS4>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTSet`1</summary><blockquote>
 
-Represents the generic type arguments marker for _ISet>T>_.
+Represents the generic type arguments marker for _ISet`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTSet<TT>>>().To<Dependency<TTSet<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTSet1`1</summary><blockquote>
 
-Represents the generic type arguments marker for _ISet>T>_.
+Represents the generic type arguments marker for _ISet`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTSet1<TT>>>().To<Dependency<TTSet1<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTSet2`1</summary><blockquote>
 
-Represents the generic type arguments marker for _ISet>T>_.
+Represents the generic type arguments marker for _ISet`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTSet2<TT>>>().To<Dependency<TTSet2<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTSet3`1</summary><blockquote>
 
-Represents the generic type arguments marker for _ISet>T>_.
+Represents the generic type arguments marker for _ISet`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTSet3<TT>>>().To<Dependency<TTSet3<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
 <details><summary>TTSet4`1</summary><blockquote>
 
-Represents the generic type arguments marker for _ISet>T>_.
+Represents the generic type arguments marker for _ISet`1_.
             
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTSet4<TT>>>().To<Dependency<TTSet4<TT>>>();
+            
+```
+
+
 </blockquote></details>
 
 
@@ -4677,10 +5296,10 @@ The injection type can be defined manually using the  `Type`  attribute. This at
 interface IDependency { }
              
             
-             class AbcDependency : IDependency { }
+             class AbcDependency: IDependency { }
             
             
-             class XyzDependency : IDependency { }
+             class XyzDependency: IDependency { }
             
             
              interface IService
@@ -4691,7 +5310,7 @@ interface IDependency { }
              }
             
             
-             class Service : IService
+             class Service: IService
              {
                  public Service(
                      [Type(typeof(AbcDependency))] IDependency dependency1,
@@ -5703,7 +6322,7 @@ Contextual AI needs to understand the situation it’s in. This means knowing de
 | --------------- | ---- | ------ |
 | [AI_CONTEXT_SMALL.md](AI_CONTEXT_SMALL.md) | 28KB | 7K |
 | [AI_CONTEXT_MEDIUM.md](AI_CONTEXT_MEDIUM.md) | 123KB | 31K |
-| [AI_CONTEXT_LARGE.md](AI_CONTEXT_LARGE.md) | 398KB | 102K |
+| [AI_CONTEXT_LARGE.md](AI_CONTEXT_LARGE.md) | 408KB | 104K |
 ## How to contribute to Pure.DI
 
 Thank you for your interest in contributing to the Pure.DI project! First of all, if you are going to make a big change or feature, please open a problem first. That way, we can coordinate and understand if the change you're going to work on fits with current priorities and if we can commit to reviewing and merging it within a reasonable timeframe. We don't want you to waste a lot of your valuable time on something that may not align with what we want for Pure.DI.

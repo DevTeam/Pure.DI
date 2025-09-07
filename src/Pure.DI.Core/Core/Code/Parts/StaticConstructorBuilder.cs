@@ -53,11 +53,11 @@ sealed class StaticConstructorBuilder(
                 code.AppendLine($"{Names.ResolverClassName}<{typeResolver.Resolve(composition.Source.Source, resolver.Type)}>.{Names.ResolverPropertyName} = val{className};");
             }
 
-            var divisor = Buckets<object, object>.GetDivisor((uint)resolvers.Count);
-            var pairs = $"{Names.SystemNamespace}Type, {Names.IResolverTypeName}<{composition.Source.Source.Name.ClassName}, object>";
+            var divisor = Buckets<object>.GetDivisor((uint)resolvers.Count);
+            var pairs = $"{Names.IResolverTypeName}<{composition.Source.Source.Name.ClassName}, object>";
             var bucketsTypeName = $"{Names.ApiNamespace}Buckets<{pairs}>";
             var pairTypeName = $"{Names.ApiNamespace}Pair<{pairs}>";
-            code.AppendLine($"{Names.BucketsFieldName} = {bucketsTypeName}.{nameof(Buckets<object, object>.Create)}(");
+            code.AppendLine($"{Names.BucketsFieldName} = {bucketsTypeName}.{nameof(Buckets<object>.Create)}(");
             using (code.Indent())
             {
                 code.AppendLine($"{divisor.ToString()},");

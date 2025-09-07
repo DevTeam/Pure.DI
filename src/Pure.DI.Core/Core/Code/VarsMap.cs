@@ -73,7 +73,7 @@ class VarsMap(
     public IDisposable LocalFunction(Var var, Lines lines)
     {
         var state = CreateState(var);
-        // Remove per block vars
+        // Remove per-block vars
         var removed = new List<KeyValuePair<int, Var>>();
         _map
             .Where(i => i.Value.Declaration.Node.Lifetime is Lifetime.PerBlock)
@@ -127,7 +127,7 @@ class VarsMap(
     private void RemoveNewPerBlockVars(Var var, IReadOnlyDictionary<int, VarState> state, Lines lines, string reason)
     {
 #if DEBUG
-        lines.AppendLine($"// remove new per block vars ({reason} {var.Declaration.Name})");
+        lines.AppendLine($"// remove new per-block vars ({reason} {var.Declaration.Name})");
 #endif
         var newItems = _map.Where(i => {
             if (state.ContainsKey(i.Key))

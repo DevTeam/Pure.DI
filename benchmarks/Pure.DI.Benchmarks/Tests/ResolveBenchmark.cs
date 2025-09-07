@@ -18,9 +18,9 @@ using BenchmarkDotNet.Order;
 public class ResolveBenchmark
 {
     private const int MaxItems = 10;
-    private static readonly Pair<Type, string>[] Pairs;
+    private static readonly Pair<string>[] Pairs;
     private static readonly uint Divisor;
-    private static readonly int BucketSize;
+    private static readonly uint BucketSize;
     private static readonly Type Key1;
     private static readonly Type Key2;
     private static readonly Type Key3;
@@ -36,8 +36,8 @@ public class ResolveBenchmark
     static ResolveBenchmark()
     {
         var data = CreatePairs();
-        Divisor = Buckets<Type, string>.GetDivisor((uint)data.Length);
-        Pairs = Buckets<Type, string>.Create(
+        Divisor = Buckets<string>.GetDivisor((uint)data.Length);
+        Pairs = Buckets<string>.Create(
             Divisor,
             out BucketSize,
             data);
@@ -110,9 +110,9 @@ public class ResolveBenchmark
         throw new System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
     }
 
-    private static Pair<Type, string>[] CreatePairs() =>
+    private static Pair<string>[] CreatePairs() =>
         Assembly.GetExecutingAssembly().GetTypes()
             .Take(MaxItems)
-            .Select(i => new Pair<Type, string>(i, i.ToString()))
+            .Select(i => new Pair<string>(i, i.ToString()))
             .ToArray();
 }

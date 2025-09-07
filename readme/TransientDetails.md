@@ -152,19 +152,19 @@ partial class Transient
     throw new InvalidOperationException($"{CannotResolveMessage} \"{tag}\" {OfTypeMessage} {type}.");
   }
 
-  private readonly static int _bucketSize;
-  private readonly static Pair<Type, IResolver<Transient, object>>[] _buckets;
+  private readonly static uint _bucketSize;
+  private readonly static Pair<IResolver<Transient, object>>[] _buckets;
 
   static Transient()
   {
     var valResolver_0000 = new Resolver_0000();
     Resolver<CompositionRoot>.Value = valResolver_0000;
-    _buckets = Buckets<Type, IResolver<Transient, object>>.Create(
+    _buckets = Buckets<IResolver<Transient, object>>.Create(
       1,
       out _bucketSize,
-      new Pair<Type, IResolver<Transient, object>>[1]
+      new Pair<IResolver<Transient, object>>[1]
       {
-         new Pair<Type, IResolver<Transient, object>>(typeof(CompositionRoot), valResolver_0000)
+         new Pair<IResolver<Transient, object>>(typeof(CompositionRoot), valResolver_0000)
       });
   }
 

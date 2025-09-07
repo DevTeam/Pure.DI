@@ -37,30 +37,46 @@ var netCoreTypes = new Dictionary<string, string> {
     { "global::System.Collections.Immutable.IImmutableStack<T>", "TTImmutableStack#<T>" }
 };
 #>
-<#for(var i = 0; i <= 16; i++) {#>
+<#for(var i = 0; i <= 16; i++)
+{
+    var typeName = i == 0 ? "" : i.ToString();#>
     /// <summary>
     /// Represents the generic type arguments marker for a reference type.
+    /// <example>
+    /// <code>
+    /// DI.Setup("Composition")
+    ///     .Bind&lt;IDependency&lt;TT<#=typeName#>&gt;&gt;().To&lt;Dependency&lt;TT<#=typeName#>&gt;&gt;();
+    /// </code>
+    /// </example>
     /// </summary>
     [GenericTypeArgument]
 #if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 #endif
-    internal abstract class TT<#=i == 0 ? "" : i.ToString()#> { }
+    internal abstract class TT<#=typeName#> { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a value type.
+    /// <code>
+    /// DI.Setup("Composition")
+    ///     .Bind&lt;IDependency&lt;TTS<#=typeName#>&gt;&gt;().To&lt;Dependency&lt;TTS<#=typeName#>&gt;&gt;();
+    /// </code>
     /// </summary>
     [GenericTypeArgument]
 #if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 #endif
-    internal struct TTS<#=i == 0 ? "" : i.ToString()#> { }
+    internal struct TTS<#=typeName#> { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a enum type.
+    /// <code>
+    /// DI.Setup("Composition")
+    ///     .Bind&lt;IDependency&lt;TTE<#=typeName#>&gt;&gt;().To&lt;Dependency&lt;TTE<#=typeName#>&gt;&gt;();
+    /// </code>
     /// </summary>
     [GenericTypeArgument]
-    internal enum TTE<#=i == 0 ? "" : i.ToString()#> { }
+    internal enum TTE<#=typeName#> { }
 
 <#
     if (i > 8)
@@ -70,13 +86,19 @@ var netCoreTypes = new Dictionary<string, string> {
 #if !NET35 && !NET20
 <#
     foreach(var type in netTypes)
-    {#>
+    {
+        typeName = type.Value.Replace("#", i == 0 ? "" : i.ToString());
+        var commentTypeName = typeName.Replace("in ", "").Replace("out ", "").Replace("<T>", "&lt;TT&gt;");#>
 
     /// <summary>
-    /// Represents the generic type arguments marker for <see cref="<#=type.Key.Replace('<','}').Replace('>','}')#>"/>.
+    /// Represents the generic type arguments marker for <see cref="<#=type.Key.Replace('<', '{').Replace('>', '}')#>"/>.
+    /// <code>
+    /// DI.Setup("Composition")
+    ///     .Bind&lt;IDependency&lt;<#=commentTypeName#>&gt;&gt;().To&lt;Dependency&lt;<#=commentTypeName#>&gt;&gt;();
+    /// </code>
     /// </summary>
     [GenericTypeArgument]
-    internal interface <#=type.Value.Replace("#", i == 0 ? "" : i.ToString())#>: <#=type.Key#> { }
+    internal interface <#=typeName#>: <#=type.Key#> { }
     <#}#>
 
 #endif
@@ -87,7 +109,7 @@ var netCoreTypes = new Dictionary<string, string> {
     {#>
 
     /// <summary>
-    /// Represents the generic type arguments marker for <see cref="<#=type.Key.Replace('<','}').Replace('>','}')#>"/>.
+    /// Represents the generic type arguments marker for <see cref="<#=type.Key.Replace('<', '{').Replace('>', '}')#>"/>.
     /// </summary>
     [GenericTypeArgument]
     internal interface <#=type.Value.Replace("#", i == 0 ? "" : i.ToString())#>: <#=type.Key#> { }
@@ -101,7 +123,7 @@ var netCoreTypes = new Dictionary<string, string> {
     {#>
 
     /// <summary>
-    /// Represents the generic type arguments marker for <see cref="<#=type.Key.Replace('<','}').Replace('>','}')#>"/>.
+    /// Represents the generic type arguments marker for <see cref="<#=type.Key.Replace('<', '{').Replace('>', '}')#>"/>.
     /// </summary>
     [GenericTypeArgument]
     internal interface <#=type.Value.Replace("#", i == 0 ? "" : i.ToString())#>: <#=type.Key#> { }
