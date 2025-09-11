@@ -3188,7 +3188,36 @@ See also _Tags(System.Object[])_.
 <details><summary>Property ConsumerTypes</summary><blockquote>
 
 The types of consumers for which the instance is created. Cannot be used outside the binding setup. Guaranteed to contain at least one element.
+             
+```c#
+
+var box = new Composition().Box;
+             // Output: ShroedingersCat, CardboardBox`1, Composition
             
+            
+             static void Setup() =>
+                 DI.Setup(nameof(Composition))
+                 .Bind().To(ctx => new Log(ctx.ConsumerTypes))
+                 .Bind().To<ShroedingersCat>()
+                 .Bind().To<CardboardBox<TT>>()
+                 .Root<CardboardBox<ShroedingersCat>>("Box");
+            
+            
+             public class Log
+             {
+                 public Log(Type[] types) =>
+                     Console.WriteLine(string.Join(", ", types.Select(type => type.Name)));
+             }
+            
+            
+             public record CardboardBox<T>(T Content);
+            
+            
+             public record ShroedingersCat(Log log);
+             
+```
+
+
 See also _To``1(System.Func{Pure.DI.IContext,``0})_.
 
 </blockquote></details>
@@ -3886,15 +3915,6 @@ Atomically generated smart tag with value "Cleaner".
 </blockquote></details>
 
 
-<details><summary>Field CompositionClass</summary><blockquote>
-
-Atomically generated smart tag with value "CompositionClass".
-            It's used for:
-            
-            class _Generator__CodeBuilder_ <-- _IBuilder{TData, T}_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
-</blockquote></details>
-
-
 <details><summary>Field UniqueTag</summary><blockquote>
 
 Atomically generated smart tag with value "UniqueTag".
@@ -3904,12 +3924,21 @@ Atomically generated smart tag with value "UniqueTag".
 </blockquote></details>
 
 
-<details><summary>Field UsingDeclarations</summary><blockquote>
+<details><summary>Field CompositionClass</summary><blockquote>
 
-Atomically generated smart tag with value "UsingDeclarations".
+Atomically generated smart tag with value "CompositionClass".
             It's used for:
             
-            class _Generator__CompositionClassBuilder_ <-- _IBuilder{TData, T}_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
+            class _Generator__CodeBuilder_ <-- _IBuilder{TData, T}_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field Override</summary><blockquote>
+
+Atomically generated smart tag with value "Override".
+            It's used for:
+            
+            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
@@ -3922,12 +3951,12 @@ Atomically generated smart tag with value "VarName".
 </blockquote></details>
 
 
-<details><summary>Field Override</summary><blockquote>
+<details><summary>Field UsingDeclarations</summary><blockquote>
 
-Atomically generated smart tag with value "Override".
+Atomically generated smart tag with value "UsingDeclarations".
             It's used for:
             
-            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
+            class _Generator__CompositionClassBuilder_ <-- _IBuilder{TData, T}_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
 </blockquote></details>
 
 
@@ -6322,7 +6351,7 @@ Contextual AI needs to understand the situation it’s in. This means knowing de
 | --------------- | ---- | ------ |
 | [AI_CONTEXT_SMALL.md](AI_CONTEXT_SMALL.md) | 28KB | 7K |
 | [AI_CONTEXT_MEDIUM.md](AI_CONTEXT_MEDIUM.md) | 123KB | 31K |
-| [AI_CONTEXT_LARGE.md](AI_CONTEXT_LARGE.md) | 408KB | 104K |
+| [AI_CONTEXT_LARGE.md](AI_CONTEXT_LARGE.md) | 409KB | 104K |
 ## How to contribute to Pure.DI
 
 Thank you for your interest in contributing to the Pure.DI project! First of all, if you are going to make a big change or feature, please open a problem first. That way, we can coordinate and understand if the change you're going to work on fits with current priorities and if we can commit to reviewing and merging it within a reasonable timeframe. We don't want you to waste a lot of your valuable time on something that may not align with what we want for Pure.DI.

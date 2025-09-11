@@ -44,6 +44,7 @@ class RootBuilder(
         var lines = new Lines();
         var ctx = new CodeContext(
             rootContext,
+            ImmutableArray<VarInjection>.Empty,
             rootVarInjection,
             rootContext.VarsMap,
             rootContext.IsThreadSafeEnabled,
@@ -151,7 +152,7 @@ class RootBuilder(
                 var injections = implementationDependencies.Select(dependency => varsMap.GetInjection(dependency.Injection, dependency.Source)).ToList();
                 foreach (var dependencyVar in SortInjections(injections))
                 {
-                    BuildCode(ctx with { VarInjection = dependencyVar });
+                    BuildCode(ctx.CreateChild(dependencyVar));
                 }
 
                 varInjections.AddRange(injections);
@@ -385,7 +386,7 @@ class RootBuilder(
                 var factoryExpression = (LambdaExpressionSyntax)factory.Source.LocalVariableRenamingRewriter.Clone().Rewrite(setup.SemanticModel, false, originalLambda);
                 var injections = new List<FactoryRewriter.Injection>();
                 var inits = new List<FactoryRewriter.Initializer>();
-                var factoryRewriter = factoryRewriterFactory(new FactoryRewriterContext(factory, varInjection, finishLabel, injections, inits));
+                var factoryRewriter = factoryRewriterFactory(new FactoryRewriterContext(factory, ctx.Parents, varInjection, finishLabel, injections, inits));
                 var lambda = factoryRewriter.Rewrite(ctx, factoryExpression);
                 factoryValidatorFactory(factory).Visit(lambda);
                 SyntaxNode syntaxNode = lambda.Block is not null ? lambda.Block : SyntaxFactory.ExpressionStatement((ExpressionSyntax)lambda.Body);
@@ -557,7 +558,7 @@ class RootBuilder(
                                 BuildOverrides(ctx, factory, resolver.Overrides, lines);
                             }
 
-                            BuildCode(ctx with { VarInjection = argument });
+                            BuildCode(ctx.CreateChild(argument));
                             lines.AppendLine($"{(injection.DeclarationRequired ? $"{typeResolver.Resolve(setup, argument.Injection.Type)} " : "")}{injection.VariableName} = {buildTools.OnInjected(ctx, argument)};");
 
                             continue;
@@ -574,7 +575,7 @@ class RootBuilder(
                             var initCtx = ctx;
                             var initializersWalker = initializersWalkerFactory(
                                 new InitializersWalkerContext(
-                                    i => BuildCode(initCtx with { VarInjection = i }),
+                                    i => BuildCode(initCtx.CreateChild(i)),
                                     initialization.VariableName,
                                     initializationArgsEnum));
                             initializersWalker.VisitInitializer(ctx, initializer);
@@ -628,7 +629,7 @@ class RootBuilder(
                                     {
                                         var dependencyVar = varsMap.GetInjection(dependency.Injection, dependency.Source);
                                         varInjections.Add(dependencyVar);
-                                        BuildCode(ctx with { VarInjection = dependencyVar });
+                                        BuildCode(ctx.CreateChild(dependencyVar));
                                         lines.AppendLine($"yield return {buildTools.OnInjected(ctx, dependencyVar)};");
                                         hasYieldReturn = true;
                                     }
@@ -658,7 +659,7 @@ class RootBuilder(
                                 var injections = arrayDependencies.Select(dependency => varsMap.GetInjection(dependency.Injection, dependency.Source)).ToList();
                                 foreach (var dependencyVar in SortInjections(injections))
                                 {
-                                    BuildCode(ctx with { VarInjection = dependencyVar });
+                                    BuildCode(ctx.CreateChild(dependencyVar));
                                 }
 
                                 varInjections.AddRange(injections);
@@ -683,7 +684,7 @@ class RootBuilder(
                                 var injections = spanDependencies.Select(dependency => varsMap.GetInjection(dependency.Injection, dependency.Source)).ToList();
                                 foreach (var dependencyVar in SortInjections(injections))
                                 {
-                                    BuildCode(ctx with { VarInjection = dependencyVar });
+                                    BuildCode(ctx.CreateChild(dependencyVar));
                                 }
 
                                 varInjections.AddRange(injections);

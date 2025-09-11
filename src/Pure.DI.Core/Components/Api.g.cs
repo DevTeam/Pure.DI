@@ -3138,6 +3138,33 @@ namespace Pure.DI
 
         /// <summary>
         /// The types of consumers for which the instance is created. Cannot be used outside the binding setup. Guaranteed to contain at least one element.
+        /// <example>
+        /// <code>
+        /// var box = new Composition().Box;
+        /// // Output: ShroedingersCat, CardboardBox`1, Composition
+        ///
+        ///
+        /// static void Setup() =&gt;
+        ///     DI.Setup(nameof(Composition))
+        ///     .Bind().To(ctx =&gt; new Log(ctx.ConsumerTypes))
+        ///     .Bind().To&lt;ShroedingersCat&gt;()
+        ///     .Bind().To&lt;CardboardBox&lt;TT&gt;&gt;()
+        ///     .Root&lt;CardboardBox&lt;ShroedingersCat&gt;&gt;(&quot;Box&quot;);
+        ///
+        ///
+        /// public class Log
+        /// {
+        ///     public Log(Type[] types) =&gt;
+        ///         Console.WriteLine(string.Join(&quot;, &quot;, types.Select(type =&gt; type.Name)));
+        /// }
+        ///
+        ///
+        /// public record CardboardBox&lt;T&gt;(T Content);
+        ///
+        ///
+        /// public record ShroedingersCat(Log log);
+        /// </code>
+        /// </example>
         /// </summary>
         /// <seealso cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
         Type[] ConsumerTypes { get; }

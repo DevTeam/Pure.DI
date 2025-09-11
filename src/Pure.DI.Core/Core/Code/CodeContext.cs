@@ -2,12 +2,17 @@
 
 record CodeContext(
     RootContext RootContext,
+    in ImmutableArray<VarInjection> Parents,
     VarInjection VarInjection,
     IVarsMap VarsMap,
     bool IsLockRequired,
     Lines Lines,
-    ImmutableArray<Accumulator> Accumulators,
+    in ImmutableArray<Accumulator> Accumulators,
     HashSet<string> Overrides,
     bool HasOverrides = false,
     object? ContextTag = null,
-    bool IsFactory = false);
+    bool IsFactory = false)
+{
+    public CodeContext CreateChild(VarInjection injection) =>
+        this with { Parents = Parents.Add(VarInjection), VarInjection = injection };
+}

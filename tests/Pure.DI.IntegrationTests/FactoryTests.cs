@@ -93,11 +93,11 @@ public class FactoryTests
     }
 
     [Theory]
-    [InlineData(nameof(Lifetime.Transient), "Service", "ServiceAbc", "Service", "ServiceAbc")]
-    [InlineData(nameof(Lifetime.Singleton), "Service", "ServiceAbc")]
-    [InlineData(nameof(Lifetime.Scoped), "Service", "ServiceAbc")]
-    [InlineData(nameof(Lifetime.PerBlock), "Service", "ServiceAbc")]
-    [InlineData(nameof(Lifetime.PerResolve), "Service", "ServiceAbc")]
+    [InlineData(nameof(Lifetime.Transient), "Consumer1, Root, Composition", "Consumer2, Root, Composition", "Root, Composition", "Composition")]
+    [InlineData(nameof(Lifetime.Singleton), "Consumer1, Root, Composition", "Consumer2, Root, Composition", "Root, Composition", "Composition")]
+    [InlineData(nameof(Lifetime.Scoped), "Consumer1, Root, Composition", "Consumer2, Root, Composition", "Root, Composition", "Composition")]
+    [InlineData(nameof(Lifetime.PerBlock), "Consumer1, Root, Composition", "Consumer2, Root, Composition", "Root, Composition", "Composition")]
+    [InlineData(nameof(Lifetime.PerResolve), "Consumer1, Root, Composition", "Consumer2, Root, Composition", "Root, Composition", "Composition")]
     public async Task ShouldSupportFactoryWhenUsingConsumers(string lifetime, params string[] consumers)
     {
         // Given
@@ -105,77 +105,57 @@ public class FactoryTests
         // When
         var result = await """
             using System;
+            using System.Linq;
             using Pure.DI;
 
             namespace Sample
             {
-                interface IDependency
+                public class Log
                 {
-                }
-            
-                class Dependency: IDependency
-                {
-                     public Dependency Init(Type[] consumers)
-                     {
-                        foreach(var type in consumers)
-                        {
-                            Console.WriteLine(type.Name);
-                        }
-                        
-                        return this;
-                     }
-                }
-            
-                interface IService
-                {
-                    IDependency Dep { get; }
-                }
-            
-                class Service: IService 
-                {
-                    public Service(IDependency dep, [Tag("Abc")] IService serviceAbc)
-                    { 
-                        Dep = dep;
-                    }
-            
-                    public IDependency Dep { get; }
-                }
+                    private readonly Type[] _types;
                 
-                class ServiceAbc: IService 
-                {
-                    public ServiceAbc(IDependency dep)
-                    { 
-                        Dep = dep;
+                    public Log(Type[] types)
+                    {
+                        _types = types;
                     }
                 
-                    public IDependency Dep { get; }
-                }
-            
-                internal partial class Composition
-                {
-                    private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime) 
+                    public void Info()
                     {
-                        return value;
+                        Console.WriteLine(string.Join(", ", _types.Select(t => t.Name)));
+                    }
+                }
+                
+                public class Consumer1
+                {
+                    public Consumer1(Log log)
+                    {
+                        log.Info();
+                    }
+                }
+                
+                public class Consumer2
+                {
+                    public Consumer2(Log log)
+                    {
+                        log.Info();
+                    }
+                }
+                
+                public class Root
+                {
+                    public Root(Log log, Consumer1 consumer1, Consumer2 consumer2)
+                    {
+                        log.Info();
                     }
                 }
             
-                static class Setup
+                public partial class Composition
                 {
-                    private static void SetupComposition()
-                    {
-                        // OnDependencyInjection = On
-                        // FormatCode = On
-                        DI.Setup("Composition")
-                            .Bind<Dependency>().As(Lifetime.Singleton).To<Dependency>()
-                            .Bind<IDependency>().As(Lifetime.#lifetime#).To(ctx =>
-                            { 
-                                 ctx.Inject<Dependency>(out var dependency);
-                                 return dependency.Init(ctx.ConsumerTypes);
-                            } )
-                            .Bind<IService>().To<Service>()
-                            .Bind<IService>("Abc").To<ServiceAbc>()
-                            .Root<IService>("Service");
-                    }
+                    void Setup() => DI.Setup()
+                        .Bind().To(ctx => new Log(ctx.ConsumerTypes))
+                        .Bind().As(Lifetime.#lifetime#).To<Consumer1>()
+                        .Root<Root>("Root")
+                        .Root<Log>("Log");
                 }
             
                 public class Program
@@ -183,7 +163,9 @@ public class FactoryTests
                     public static void Main()
                     {
                         var composition = new Composition();
-                        var service = composition.Service;
+                        var root = composition.Root;
+                        var log = composition.Log;
+                        log.Info();
                     }
                 }
             }

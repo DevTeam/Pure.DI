@@ -2,6 +2,7 @@
 
 record FactoryRewriterContext(
     DpFactory Factory,
+    in ImmutableArray<VarInjection> Parents,
     VarInjection VarInjection,
     string FinishLabel,
     ICollection<FactoryRewriter.Injection> Injections,

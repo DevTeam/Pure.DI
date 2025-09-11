@@ -286,31 +286,12 @@ sealed class FactoryRewriter(
             switch (node.Name.Identifier.Text)
             {
                 case nameof(IContext.Tag):
-                    return Visit(SyntaxFactory.ParseExpression($" {ctx.VarInjection.Injection.Tag.ValueToString()}"));
+                    return Visit(SyntaxFactory.ParseExpression($"{ctx.VarInjection.Injection.Tag.ValueToString()}"));
 
                 case nameof(IContext.ConsumerTypes):
-                    List<string> consumers;
-                    // ReSharper disable once ConvertIfStatementToConditionalTernaryExpression
-                    if (_ctx!.RootContext.Graph.Graph.TryGetOutEdges(ctx.VarInjection.Var.AbstractNode.Node, out var outDeps))
-                    {
-                        consumers = outDeps
-                            .GroupBy(i => i.Target.Type, SymbolEqualityComparer.Default)
-                            .Select(i => i.First().Target)
-                            .OrderBy(i => i.Binding.Id)
-                            .Select(target => $"typeof({symbolNames.GetGlobalName(target.Type)})")
-                            .ToList();
-                    }
-                    else
-                    {
-                        consumers = [];
-                    }
-
-                    if (consumers.Count == 0)
-                    {
-                        consumers.Add($"typeof({_ctx!.RootContext.Graph.Source.Name.FullName})");
-                    }
-
-                    return Visit(SyntaxFactory.ParseExpression($" new {Names.SystemNamespace}Type[{consumers.Count}]{{{string.Join(", ", consumers)}}}"));
+                    var consumers = _ctx?.Parents.Reverse().Select(i => $"typeof({symbolNames.GetGlobalName(i.Var.InstanceType)})").ToList() ?? [];
+                    consumers.Add($"typeof({_ctx!.RootContext.Graph.Source.Name.FullName})");
+                    return Visit(SyntaxFactory.ParseExpression($"new {Names.SystemNamespace}Type[{consumers.Count}]{{{string.Join(", ", consumers)}}}"));
             }
         }
 
