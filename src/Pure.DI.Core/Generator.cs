@@ -53,10 +53,10 @@ public sealed partial class Generator
             .Bind().To<TypeConstructor>()
             .Bind<IEqualityComparer<string>>().To(_ => InvariantCultureIgnoreCase)
             .Bind().To<BindingBuilder>()
-            .Bind<ILogger>().To(ctx =>
+            .Bind().To(ctx =>
             {
-                ctx.Inject<Logger>(out var logger);
-                return logger.WithTargetType(ctx.ConsumerTypes[0]);
+                ctx.Inject<IObserversProvider>(out var observersProvider);
+                return new Logger(observersProvider, ctx.ConsumerTypes[0]);
             })
             .Bind().To(_ => Compiled | CultureInvariant | Singleline | IgnoreCase)
             .Bind(VarName).To<IdGenerator>()
