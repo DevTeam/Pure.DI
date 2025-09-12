@@ -1,8 +1,9 @@
 ﻿/*
 $v=true
-$p=0
-$d=Serilog
-$r=Serilog.Core;Serilog.Events
+$p=19
+$d=Consumer types
+$h=`ConsumerTypes` is used to get the list of consumer types of a given dependency. It contains an array of types and guarantees that it will contain at least one element. The use of `ConsumerTypes` is demonstrated on the example of [Serilog library](https://serilog.net/):
+$r=Shouldly;Serilog.Core;Serilog.Events
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -15,21 +16,25 @@ $r=Serilog.Core;Serilog.Events
 // ReSharper disable UnusedTypeParameter
 // ReSharper disable UnusedMember.Local
 // ReSharper disable UnusedMemberInSuper.Global
-// ReSharper disable UnusedMember.Global
 #pragma warning disable CS9113 // Parameter is unread.
-#pragma warning disable CA1859
-namespace Pure.DI.UsageTests.UseCases.SerilogScenario;
+namespace Pure.DI.UsageTests.Advanced.ConsumerTypesScenario;
 
 #pragma warning disable CA2263
-using System.Runtime.CompilerServices;
 using Serilog.Core;
 using Serilog.Events;
 using Xunit;
 
 // {
 //# using Pure.DI;
-//# using System.Runtime.CompilerServices;
+//# using Serilog.Core;
 // }
+
+class EventSink(ICollection<LogEvent> events)
+    : ILogEventSink
+{
+    public void Emit(LogEvent logEvent) =>
+        events.Add(logEvent);
+}
 
 public class Scenario
 {
@@ -45,7 +50,7 @@ public class Scenario
         var composition = new Composition(logger: serilogLogger);
         var service = composition.Root;
 // }
-        events.Count.ShouldBe(5);
+        events.Count.ShouldBe(2);
         foreach (var @event in events)
         {
             @event.Properties.ContainsKey("SourceContext").ShouldBeTrue();
@@ -58,7 +63,13 @@ public class Scenario
 // {
 interface IDependency;
 
-class Dependency : IDependency;
+class Dependency : IDependency
+{
+    public Dependency(Serilog.ILogger log)
+    {
+        log.Information("created");
+    }
+}
 
 interface IService
 {
@@ -67,10 +78,12 @@ interface IService
 
 class Service : IService
 {
-    public Service(Serilog.ILogger log, IDependency dependency)
+    public Service(
+        Serilog.ILogger log,
+        IDependency dependency)
     {
         Dependency = dependency;
-        log.Information("Created");
+        log.Information("created");
     }
 
     public IDependency Dependency { get; }
@@ -84,40 +97,15 @@ partial class Composition
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Hint(Hint.OnNewInstance, "On")
-            .Hint(Hint.OnDependencyInjection, "On")
-            // Excluding loggers
-            .Hint(Hint.OnNewInstanceImplementationTypeNameRegularExpression, "^((?!Logger).)*$")
-            .Hint(Hint.OnDependencyInjectionContractTypeNameRegularExpression, "^((?!Logger).)*$")
-
             .Arg<Serilog.ILogger>("logger", "from arg")
-            .Bind<Serilog.ILogger>().To(ctx =>
+            .Bind().To(ctx =>
             {
-                ctx.Inject("from arg", out Serilog.ILogger logger);
-                return logger.ForContext(ctx.ConsumerType);
+                ctx.Inject<Serilog.ILogger>("from arg", out var logger);
+                return logger.ForContext(ctx.ConsumerTypes[0]);
             })
 
             .Bind().To<Dependency>()
             .Bind().To<Service>()
-            .Root<Serilog.ILogger>(nameof(Log), kind: RootKinds.Private)
             .Root<IService>(nameof(Root));
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    partial void OnNewInstance<T>(ref T value, object? tag, Lifetime lifetime) => 
-        Log.Information("Created [{Value}], tag [{Tag}] as {Lifetime}", value, tag, lifetime);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime)
-    {
-        Log.Information("Injected [{Value}], tag [{Tag}] as {Lifetime}", value, tag, lifetime);
-        return value;
-    }
 }
 // }
-
-class EventSink(ICollection<LogEvent> events)
-    : ILogEventSink
-{
-    public void Emit(LogEvent logEvent) =>
-        events.Add(logEvent);
-}

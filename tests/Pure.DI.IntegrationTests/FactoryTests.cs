@@ -179,6 +179,92 @@ public class FactoryTests
     }
 
     [Theory]
+    [InlineData(nameof(Lifetime.Transient), "Consumer1", "Consumer2", "Root", "Composition")]
+    [InlineData(nameof(Lifetime.Singleton), "Consumer1", "Consumer2", "Root", "Composition")]
+    [InlineData(nameof(Lifetime.Scoped), "Consumer1", "Consumer2", "Root", "Composition")]
+    [InlineData(nameof(Lifetime.PerBlock), "Consumer1", "Consumer2", "Root", "Composition")]
+    [InlineData(nameof(Lifetime.PerResolve), "Consumer1", "Consumer2", "Root", "Composition")]
+    public async Task ShouldSupportFactoryWhenUsingConsumer(string lifetime, params string[] consumers)
+    {
+        // Given
+
+        // When
+        var result = await """
+            using System;
+            using System.Linq;
+            using Pure.DI;
+
+            namespace Sample
+            {
+                public class Log
+                {
+                    private readonly Type _type;
+                
+                    public Log(Type type)
+                    {
+                        _type = type;
+                    }
+                
+                    public void Info()
+                    {
+                        Console.WriteLine(_type.Name);
+                    }
+                }
+                
+                public class Consumer1
+                {
+                    public Consumer1(Log log)
+                    {
+                        log.Info();
+                    }
+                }
+                
+                public class Consumer2
+                {
+                    public Consumer2(Log log)
+                    {
+                        log.Info();
+                    }
+                }
+                
+                public class Root
+                {
+                    public Root(Log log, Consumer1 consumer1, Consumer2 consumer2)
+                    {
+                        log.Info();
+                    }
+                }
+            
+                public partial class Composition
+                {
+                    void Setup() => DI.Setup()
+                        .Bind().To(ctx => new Log(ctx.ConsumerType))
+                        .Bind().As(Lifetime.#lifetime#).To<Consumer1>()
+                        .Root<Root>("Root")
+                        .Root<Log>("Log");
+                }
+            
+                public class Program
+                {
+                    public static void Main()
+                    {
+                        var composition = new Composition();
+                        var root = composition.Root;
+                        var log = composition.Log;
+                        log.Info();
+                    }
+                }
+            }
+            """
+            .Replace("#lifetime#", lifetime)
+            .RunAsync(new Options(LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(consumers.AsEnumerable(), result);
+    }
+
+    [Theory]
     [InlineData(Lifetime.Transient)]
     [InlineData(Lifetime.PerBlock)]
     [InlineData(Lifetime.PerResolve)]

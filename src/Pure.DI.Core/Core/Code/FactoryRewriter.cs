@@ -289,9 +289,12 @@ sealed class FactoryRewriter(
                     return Visit(SyntaxFactory.ParseExpression($"{ctx.VarInjection.Injection.Tag.ValueToString()}"));
 
                 case nameof(IContext.ConsumerTypes):
-                    var consumers = _ctx?.Parents.Reverse().Select(i => $"typeof({symbolNames.GetGlobalName(i.Var.InstanceType)})").ToList() ?? [];
-                    consumers.Add($"typeof({_ctx!.RootContext.Graph.Source.Name.FullName})");
+                    var consumers = GetConsumers().ToList();
                     return Visit(SyntaxFactory.ParseExpression($"new {Names.SystemNamespace}Type[{consumers.Count}]{{{string.Join(", ", consumers)}}}"));
+
+                case nameof(IContext.ConsumerType):
+                    var consumer = GetConsumers().First();
+                    return Visit(SyntaxFactory.ParseExpression(consumer));
             }
         }
 
@@ -301,4 +304,14 @@ sealed class FactoryRewriter(
     internal record Injection(string VariableName, bool DeclarationRequired);
 
     internal record Initializer(string VariableName);
+
+    private IEnumerable<string> GetConsumers()
+    {
+        foreach (var parent in _ctx?.Parents.Reverse() ?? [])
+        {
+            yield return $"typeof({symbolNames.GetGlobalName(parent.Var.InstanceType)})";
+        }
+
+        yield return $"typeof({_ctx!.RootContext.Graph.Source.Name.FullName})";
+    }
 }

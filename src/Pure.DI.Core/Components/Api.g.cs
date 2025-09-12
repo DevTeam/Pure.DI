@@ -3166,8 +3166,43 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
+        /// <seealso cref="IContext.ConsumerType"/>/>
         /// <seealso cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
         Type[] ConsumerTypes { get; }
+
+        /// <summary>
+        /// The types of consumer for which the instance is created. Cannot be used outside the binding setup.
+        /// <example>
+        /// <code>
+        /// var box = new Composition().Box;
+        /// // Output: ShroedingersCat
+        ///
+        ///
+        /// static void Setup() =&gt;
+        ///     DI.Setup(nameof(Composition))
+        ///     .Bind().To(ctx =&gt; new Log(ctx.ConsumerType))
+        ///     .Bind().To&lt;ShroedingersCat&gt;()
+        ///     .Bind().To&lt;CardboardBox&lt;TT&gt;&gt;()
+        ///     .Root&lt;CardboardBox&lt;ShroedingersCat&gt;&gt;(&quot;Box&quot;);
+        ///
+        ///
+        /// public class Log
+        /// {
+        ///     public Log(Type type) =&gt;
+        ///         Console.WriteLine(type.Name);
+        /// }
+        ///
+        ///
+        /// public record CardboardBox&lt;T&gt;(T Content);
+        ///
+        ///
+        /// public record ShroedingersCat(Log log);
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <seealso cref="IContext.ConsumerTypes"/>/>
+        /// <seealso cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
+        Type ConsumerType { get; }
 
         /// <summary>
         /// Injects an instance of type <c>T</c>. Cannot be used outside the binding setup.

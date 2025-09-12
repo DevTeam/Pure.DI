@@ -1,8 +1,8 @@
 ﻿/*
 $v=true
 $p=19
-$d=Consumer types
-$h=`ConsumerTypes` is used to get the list of consumer types of a given dependency. It contains an array of types and guarantees that it will contain at least one element. The use of `ConsumerTypes` is demonstrated on the example of [Serilog library](https://serilog.net/):
+$d=Consumer type
+$h=`ConsumerType` is used to get the consumer type of the given dependency. The use of `ConsumerType` is demonstrated on the example of [Serilog library](https://serilog.net/):
 $r=Shouldly;Serilog.Core;Serilog.Events
 */
 
@@ -17,7 +17,7 @@ $r=Shouldly;Serilog.Core;Serilog.Events
 // ReSharper disable UnusedMember.Local
 // ReSharper disable UnusedMemberInSuper.Global
 #pragma warning disable CS9113 // Parameter is unread.
-namespace Pure.DI.UsageTests.Basics.ConsumerTypesScenario;
+namespace Pure.DI.UsageTests.Basics.ConsumerTypeScenario;
 
 #pragma warning disable CA2263
 using Serilog.Core;
@@ -101,7 +101,7 @@ partial class Composition
             .Bind().To(ctx =>
             {
                 ctx.Inject<Serilog.ILogger>("from arg", out var logger);
-                return logger.ForContext(ctx.ConsumerTypes[0]);
+                return logger.ForContext(ctx.ConsumerType);
             })
 
             .Bind().To<Dependency>()
