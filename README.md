@@ -3187,7 +3187,7 @@ See also _Tags(System.Object[])_.
 
 <details><summary>Property ConsumerTypes</summary><blockquote>
 
-The types of consumers for which the instance is created. Cannot be used outside the binding setup. Guaranteed to contain at least one element.
+The chain of consumer types for which an instance is created, from the immediate consumer down to the composition type. Cannot be used outside the binding setup. Guaranteed to contain at least one element.
              
 ```c#
 
@@ -3217,6 +3217,48 @@ var box = new Composition().Box;
              
 ```
 
+
+See also _ConsumerType_.
+
+See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+
+</blockquote></details>
+
+
+<details><summary>Property ConsumerType</summary><blockquote>
+
+The immediate consumer type for which the instance is created. Cannot be used outside the binding setup.
+             
+```c#
+
+var box = new Composition().Box;
+             // Output: ShroedingersCat
+            
+            
+             static void Setup() =>
+                 DI.Setup(nameof(Composition))
+                 .Bind().To(ctx => new Log(ctx.ConsumerType))
+                 .Bind().To<ShroedingersCat>()
+                 .Bind().To<CardboardBox<TT>>()
+                 .Root<CardboardBox<ShroedingersCat>>("Box");
+            
+            
+             public class Log
+             {
+                 public Log(Type type) =>
+                     Console.WriteLine(type.Name);
+             }
+            
+            
+             public record CardboardBox<T>(T Content);
+            
+            
+             public record ShroedingersCat(Log log);
+             
+```
+
+
+See also _ConsumerTypes_.
 
 See also _To``1(System.Func{Pure.DI.IContext,``0})_.
 
@@ -3906,15 +3948,6 @@ Atomically generated smart tag with value "SyncRoot".
 </blockquote></details>
 
 
-<details><summary>Field Cleaner</summary><blockquote>
-
-Atomically generated smart tag with value "Cleaner".
-            It's used for:
-            
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
-</blockquote></details>
-
-
 <details><summary>Field UniqueTag</summary><blockquote>
 
 Atomically generated smart tag with value "UniqueTag".
@@ -3930,15 +3963,6 @@ Atomically generated smart tag with value "VarName".
             It's used for:
             
             class _Generator__VarsMap_ <-- _IIdGenerator_(VarName) -- _IdGenerator_ as _Transient_
-</blockquote></details>
-
-
-<details><summary>Field Override</summary><blockquote>
-
-Atomically generated smart tag with value "Override".
-            It's used for:
-            
-            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
@@ -3960,12 +3984,30 @@ Atomically generated smart tag with value "UsingDeclarations".
 </blockquote></details>
 
 
+<details><summary>Field Override</summary><blockquote>
+
+Atomically generated smart tag with value "Override".
+            It's used for:
+            
+            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
 <details><summary>Field Overrider</summary><blockquote>
 
 Atomically generated smart tag with value "Overrider".
             It's used for:
             
             class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Overrider) -- _GraphOverrider_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field Cleaner</summary><blockquote>
+
+Atomically generated smart tag with value "Cleaner".
+            It's used for:
+            
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
 </blockquote></details>
 
 
@@ -5413,7 +5455,8 @@ Creates an attribute instance.
 - [Overrides](readme/overrides.md)
 - [Root binding](readme/root-binding.md)
 - [Async Root](readme/async-root.md)
-- [Consumer types](readme/consumer-types.md)
+- [Consumer type](readme/consumer-type.md)
+- [Ref dependencies](readme/ref-dependencies.md)
 - [Roots](readme/roots.md)
 - [Roots with filter](readme/roots-with-filter.md)
 ### Lifetimes
@@ -5510,6 +5553,7 @@ Creates an attribute instance.
 - [Partial class](readme/partial-class.md)
 - [A few partial classes](readme/a-few-partial-classes.md)
 - [Thread-safe overrides](readme/thread-safe-overrides.md)
+- [Consumer types](readme/consumer-types.md)
 - [Tracking disposable instances per a composition root](readme/tracking-disposable-instances-per-a-composition-root.md)
 - [Tracking disposable instances in delegates](readme/tracking-disposable-instances-in-delegates.md)
 - [Tracking disposable instances using pre-built classes](readme/tracking-disposable-instances-using-pre-built-classes.md)
@@ -6351,7 +6395,7 @@ Contextual AI needs to understand the situation it’s in. This means knowing de
 | --------------- | ---- | ------ |
 | [AI_CONTEXT_SMALL.md](AI_CONTEXT_SMALL.md) | 28KB | 7K |
 | [AI_CONTEXT_MEDIUM.md](AI_CONTEXT_MEDIUM.md) | 123KB | 31K |
-| [AI_CONTEXT_LARGE.md](AI_CONTEXT_LARGE.md) | 409KB | 104K |
+| [AI_CONTEXT_LARGE.md](AI_CONTEXT_LARGE.md) | 413KB | 105K |
 ## How to contribute to Pure.DI
 
 Thank you for your interest in contributing to the Pure.DI project! First of all, if you are going to make a big change or feature, please open a problem first. That way, we can coordinate and understand if the change you're going to work on fits with current priorities and if we can commit to reviewing and merging it within a reasonable timeframe. We don't want you to waste a lot of your valuable time on something that may not align with what we want for Pure.DI.

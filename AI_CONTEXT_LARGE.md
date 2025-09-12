@@ -1614,9 +1614,9 @@ To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
 
 
-## Consumer types
+## Consumer type
 
-`ConsumerTypes` is used to get the list of consumer types of a given dependency. It contains an array of types and guarantees that it will contain at least one element. The use of `ConsumerTypes` is demonstrated on the example of [Serilog library](https://serilog.net/):
+`ConsumerType` is used to get the consumer type of the given dependency. The use of `ConsumerType` is demonstrated on the example of [Serilog library](https://serilog.net/):
 
 ```c#
 using Shouldly;
@@ -1666,7 +1666,7 @@ partial class Composition
             .Bind().To(ctx =>
             {
                 ctx.Inject<Serilog.ILogger>("from arg", out var logger);
-                return logger.ForContext(ctx.ConsumerTypes[0]);
+                return logger.ForContext(ctx.ConsumerType);
             })
 
             .Bind().To<Dependency>()
@@ -1680,6 +1680,43 @@ To run the above code, the following NuGet packages must be added:
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
  - [Serilog.Core](https://www.nuget.org/packages/Serilog.Core)
  - [Serilog.Events](https://www.nuget.org/packages/Serilog.Events)
+
+
+## Ref dependencies
+
+```c#
+using Shouldly;
+using Pure.DI;
+
+DI.Setup("Composition")
+    // Data
+    .Bind().To<int[]>(_ => [ 1, 2, 3])
+    .Root<Service>("MyService");
+
+var composition = new Composition();
+var service = composition.MyService;
+service.Sum.ShouldBe(6);
+
+class Service
+{
+    public int Sum { get; private set; }
+
+    [Ordinal]
+    public void Initialize(ref Data data) =>
+        Sum = data.Sum();
+}
+
+readonly ref struct Data(ref int[] data)
+{
+    private readonly ref int[] _dep = ref data;
+
+    public int Sum() => _dep.Sum();
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
 ## Roots
@@ -6705,6 +6742,74 @@ To run the above code, the following NuGet packages must be added:
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
+## Consumer types
+
+`ConsumerTypes` is used to get the list of consumer types of a given dependency. It contains an array of types and guarantees that it will contain at least one element. The use of `ConsumerTypes` is demonstrated on the example of [Serilog library](https://serilog.net/):
+
+```c#
+using Shouldly;
+using Serilog.Core;
+using Serilog.Events;
+using Pure.DI;
+using Serilog.Core;
+
+Serilog.ILogger serilogLogger = new Serilog.LoggerConfiguration().CreateLogger();
+var composition = new Composition(logger: serilogLogger);
+var service = composition.Root;
+
+interface IDependency;
+
+class Dependency : IDependency
+{
+    public Dependency(Serilog.ILogger log)
+    {
+        log.Information("created");
+    }
+}
+
+interface IService
+{
+    IDependency Dependency { get; }
+}
+
+class Service : IService
+{
+    public Service(
+        Serilog.ILogger log,
+        IDependency dependency)
+    {
+        Dependency = dependency;
+        log.Information("created");
+    }
+
+    public IDependency Dependency { get; }
+}
+
+partial class Composition
+{
+    private void Setup() =>
+
+        DI.Setup(nameof(Composition))
+            .Arg<Serilog.ILogger>("logger", "from arg")
+            .Bind().To(ctx =>
+            {
+                ctx.Inject<Serilog.ILogger>("from arg", out var logger);
+                return logger.ForContext(ctx.ConsumerTypes[0]);
+            })
+
+            .Bind().To<Dependency>()
+            .Bind().To<Service>()
+            .Root<IService>(nameof(Root));
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Serilog.Core](https://www.nuget.org/packages/Serilog.Core)
+ - [Serilog.Events](https://www.nuget.org/packages/Serilog.Events)
+
+
 ## Tracking disposable instances per a composition root
 
 ```c#
@@ -7709,7 +7814,7 @@ partial class Composition
             .Bind<Serilog.ILogger>().To(ctx =>
             {
                 ctx.Inject("from arg", out Serilog.ILogger logger);
-                return logger.ForContext(ctx.ConsumerTypes[0]);
+                return logger.ForContext(ctx.ConsumerType);
             })
 
             .Bind().To<Dependency>()
@@ -8073,7 +8178,7 @@ The [project file](/samples/AvaloniaApp/AvaloniaApp.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.10">
+        <PackageReference Include="Pure.DI" Version="2.2.11">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -8137,11 +8242,11 @@ The [project file](/samples/BlazorServerApp/BlazorServerApp.csproj) looks like t
 <Project Sdk="Microsoft.NET.Sdk.Web">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.10">
+        <PackageReference Include="Pure.DI" Version="2.2.11">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.2.10" />
+        <PackageReference Include="Pure.DI.MS" Version="2.2.11" />
     </ItemGroup>
 
 </Project>
@@ -8205,11 +8310,11 @@ The [project file](/samples/BlazorWebAssemblyApp/BlazorWebAssemblyApp.csproj) lo
 <Project Sdk="Microsoft.NET.Sdk.Web">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.10">
+        <PackageReference Include="Pure.DI" Version="2.2.11">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.2.10" />
+        <PackageReference Include="Pure.DI.MS" Version="2.2.11" />
     </ItemGroup>
 
 </Project>
@@ -8234,7 +8339,7 @@ The [project file](/samples/ShroedingersCatNativeAOT/ShroedingersCatNativeAOT.cs
 <Project Sdk="Microsoft.NET.Sdk">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.10">
+        <PackageReference Include="Pure.DI" Version="2.2.11">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -8335,7 +8440,7 @@ The [project file](/samples/ShroedingersCat/ShroedingersCat.csproj) looks like t
 <Project Sdk="Microsoft.NET.Sdk">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.10">
+        <PackageReference Include="Pure.DI" Version="2.2.11">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -8421,7 +8526,7 @@ The [project file](/samples/ShroedingersCatTopLevelStatements/ShroedingersCatTop
 <Project Sdk="Microsoft.NET.Sdk">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.10">
+        <PackageReference Include="Pure.DI" Version="2.2.11">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -8523,11 +8628,11 @@ The [project file](/samples/EF/EF.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk.Web">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.10">
+        <PackageReference Include="Pure.DI" Version="2.2.11">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.2.10" />
+        <PackageReference Include="Pure.DI.MS" Version="2.2.11" />
     </ItemGroup>
 
 </Project>
@@ -8591,11 +8696,11 @@ The [project file](/samples/GrpcService/GrpcService.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk.Web">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.10">
+        <PackageReference Include="Pure.DI" Version="2.2.11">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.2.10" />
+        <PackageReference Include="Pure.DI.MS" Version="2.2.11" />
     </ItemGroup>
 
 </Project>
@@ -8756,11 +8861,11 @@ The [project file](/samples/MAUIApp/MAUIApp.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.10">
+        <PackageReference Include="Pure.DI" Version="2.2.11">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.2.10" />
+        <PackageReference Include="Pure.DI.MS" Version="2.2.11" />
     </ItemGroup>
 
 </Project>
@@ -8848,11 +8953,11 @@ The [project file](/samples/WebAPI/WebAPI.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk.Web">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.10">
+        <PackageReference Include="Pure.DI" Version="2.2.11">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.2.10" />
+        <PackageReference Include="Pure.DI.MS" Version="2.2.11" />
     </ItemGroup>
 
 </Project>
@@ -9012,11 +9117,11 @@ The [project file](/samples/WebAPI/WebAPI.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk.Web">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.10">
+        <PackageReference Include="Pure.DI" Version="2.2.11">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.2.10" />
+        <PackageReference Include="Pure.DI.MS" Version="2.2.11" />
     </ItemGroup>
 
 </Project>
@@ -9081,11 +9186,11 @@ The [project file](/samples/WebApp/WebApp.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk.Web">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.10">
+        <PackageReference Include="Pure.DI" Version="2.2.11">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.2.10" />
+        <PackageReference Include="Pure.DI.MS" Version="2.2.11" />
     </ItemGroup>
 
 </Project>
@@ -9153,7 +9258,7 @@ The [project file](/samples/WinFormsAppNetCore/WinFormsAppNetCore.csproj) looks 
 <Project Sdk="Microsoft.NET.Sdk">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.10">
+        <PackageReference Include="Pure.DI" Version="2.2.11">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -9226,7 +9331,7 @@ The [project file](/samples/WinFormsApp/WinFormsApp.csproj) looks like this:
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.10">
+        <PackageReference Include="Pure.DI" Version="2.2.11">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -9354,7 +9459,7 @@ The [project file](/samples/WpfAppNetCore/WpfAppNetCore.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk">
    ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.10">
+        <PackageReference Include="Pure.DI" Version="2.2.11">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -12277,7 +12382,7 @@ See also _Tags(System.Object[])_.
 
 <details><summary>Property ConsumerTypes</summary><blockquote>
 
-The types of consumers for which the instance is created. Cannot be used outside the binding setup. Guaranteed to contain at least one element.
+The chain of consumer types for which an instance is created, from the immediate consumer down to the composition type. Cannot be used outside the binding setup. Guaranteed to contain at least one element.
              
 ```c#
 
@@ -12307,6 +12412,48 @@ var box = new Composition().Box;
              
 ```
 
+
+See also _ConsumerType_.
+
+See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+
+</blockquote></details>
+
+
+<details><summary>Property ConsumerType</summary><blockquote>
+
+The immediate consumer type for which the instance is created. Cannot be used outside the binding setup.
+             
+```c#
+
+var box = new Composition().Box;
+             // Output: ShroedingersCat
+            
+            
+             static void Setup() =>
+                 DI.Setup(nameof(Composition))
+                 .Bind().To(ctx => new Log(ctx.ConsumerType))
+                 .Bind().To<ShroedingersCat>()
+                 .Bind().To<CardboardBox<TT>>()
+                 .Root<CardboardBox<ShroedingersCat>>("Box");
+            
+            
+             public class Log
+             {
+                 public Log(Type type) =>
+                     Console.WriteLine(type.Name);
+             }
+            
+            
+             public record CardboardBox<T>(T Content);
+            
+            
+             public record ShroedingersCat(Log log);
+             
+```
+
+
+See also _ConsumerTypes_.
 
 See also _To``1(System.Func{Pure.DI.IContext,``0})_.
 
@@ -12996,15 +13143,6 @@ Atomically generated smart tag with value "SyncRoot".
 </blockquote></details>
 
 
-<details><summary>Field Cleaner</summary><blockquote>
-
-Atomically generated smart tag with value "Cleaner".
-            It's used for:
-            
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
-</blockquote></details>
-
-
 <details><summary>Field UniqueTag</summary><blockquote>
 
 Atomically generated smart tag with value "UniqueTag".
@@ -13020,15 +13158,6 @@ Atomically generated smart tag with value "VarName".
             It's used for:
             
             class _Generator__VarsMap_ <-- _IIdGenerator_(VarName) -- _IdGenerator_ as _Transient_
-</blockquote></details>
-
-
-<details><summary>Field Override</summary><blockquote>
-
-Atomically generated smart tag with value "Override".
-            It's used for:
-            
-            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
@@ -13050,12 +13179,30 @@ Atomically generated smart tag with value "UsingDeclarations".
 </blockquote></details>
 
 
+<details><summary>Field Override</summary><blockquote>
+
+Atomically generated smart tag with value "Override".
+            It's used for:
+            
+            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
 <details><summary>Field Overrider</summary><blockquote>
 
 Atomically generated smart tag with value "Overrider".
             It's used for:
             
             class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Overrider) -- _GraphOverrider_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field Cleaner</summary><blockquote>
+
+Atomically generated smart tag with value "Cleaner".
+            It's used for:
+            
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
 </blockquote></details>
 
 

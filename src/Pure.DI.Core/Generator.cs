@@ -56,7 +56,7 @@ public sealed partial class Generator
             .Bind().To(ctx =>
             {
                 ctx.Inject<IObserversProvider>(out var observersProvider);
-                return new Logger(observersProvider, ctx.ConsumerTypes[0]);
+                return new Logger(observersProvider, ctx.ConsumerType);
             })
             .Bind().To(_ => Compiled | CultureInvariant | Singleline | IgnoreCase)
             .Bind(VarName).To<IdGenerator>()

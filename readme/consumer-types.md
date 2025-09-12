@@ -155,7 +155,7 @@ classDiagram
 	Dependency *--  ILogger : ILogger
 	Service *--  ILogger : ILogger
 	Service *--  Dependency : IDependency
-	namespace Pure.DI.UsageTests.Basics.ConsumerTypesScenario {
+	namespace Pure.DI.UsageTests.Advanced.ConsumerTypesScenario {
 		class Composition {
 		<<partial>>
 		+IService Root

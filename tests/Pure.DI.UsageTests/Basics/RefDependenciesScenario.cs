@@ -1,17 +1,12 @@
 ﻿/*
 $v=true
-$p=21
+$p=20
 $d=Ref dependencies
 $r=Shouldly
 */
 
-// ReSharper disable CheckNamespace
-// ReSharper disable ArrangeTypeModifiers
-// ReSharper disable UnusedVariable
-// ReSharper disable UnusedMember.Local
-// ReSharper disable ArrangeTypeMemberModifiers
-// ReSharper disable MemberCanBeMadeStatic.Global
-#pragma warning disable CS9113 // Parameter is unread.
+// ReSharper disable once CheckNamespace
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.UsageTests.Basics.RefDependenciesScenario;
 
 using Xunit;

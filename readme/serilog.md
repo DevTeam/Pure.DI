@@ -46,7 +46,7 @@ partial class Composition
             .Bind<Serilog.ILogger>().To(ctx =>
             {
                 ctx.Inject("from arg", out Serilog.ILogger logger);
-                return logger.ForContext(ctx.ConsumerTypes[0]);
+                return logger.ForContext(ctx.ConsumerType);
             })
 
             .Bind().To<Dependency>()
@@ -131,8 +131,8 @@ partial class Composition
     get
     {
       Serilog.ILogger transILogger4;
-      Serilog.ILogger localLogger3 = _argLogger;
-      transILogger4 = localLogger3.ForContext(new Type[1] { typeof(Composition) }[0]);
+      Serilog.ILogger localLogger5 = _argLogger;
+      transILogger4 = localLogger5.ForContext(typeof(Composition));
       return transILogger4;
     }
   }
@@ -145,8 +145,8 @@ partial class Composition
       var transDependency2 = new Dependency();
       OnNewInstance<Dependency>(ref transDependency2, null, Lifetime.Transient);
       Serilog.ILogger transILogger1;
-      Serilog.ILogger localLogger2 = _argLogger;
-      transILogger1 = localLogger2.ForContext(new Type[2] { typeof(Service), typeof(Composition) }[0]);
+      Serilog.ILogger localLogger4 = _argLogger;
+      transILogger1 = localLogger4.ForContext(typeof(Service));
       var transService = new Service(transILogger1, OnDependencyInjection<IDependency>(transDependency2, null, Lifetime.Transient));
       OnNewInstance<Service>(ref transService, null, Lifetime.Transient);
       return OnDependencyInjection<IService>(transService, null, Lifetime.Transient);
