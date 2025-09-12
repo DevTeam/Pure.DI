@@ -28,6 +28,7 @@ sealed class RootDependencyNodeBuilder(ILocationProvider locationProvider)
                     rootBinding,
                     new Injection(
                         InjectionKind.Root,
+                        RefKind.None,
                         root.RootType.WithNullableAnnotation(NullableAnnotation.NotAnnotated),
                         root.Tag?.Value,
                         root.RootType.Locations),

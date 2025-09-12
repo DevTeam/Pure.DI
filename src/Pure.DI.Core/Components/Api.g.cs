@@ -3137,7 +3137,7 @@ namespace Pure.DI
         object Tag { get; }
 
         /// <summary>
-        /// The types of consumers for which the instance is created. Cannot be used outside the binding setup. Guaranteed to contain at least one element.
+        /// The chain of consumer types for which an instance is created, from the immediate consumer down to the composition type. Cannot be used outside the binding setup. Guaranteed to contain at least one element.
         /// <example>
         /// <code>
         /// var box = new Composition().Box;
@@ -3166,12 +3166,12 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IContext.ConsumerType"/>/>
+        /// <seealso cref="IContext.ConsumerType"/>
         /// <seealso cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
         Type[] ConsumerTypes { get; }
 
         /// <summary>
-        /// The types of consumer for which the instance is created. Cannot be used outside the binding setup.
+        /// The immediate consumer type for which the instance is created. Cannot be used outside the binding setup.
         /// <example>
         /// <code>
         /// var box = new Composition().Box;
@@ -3200,7 +3200,7 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IContext.ConsumerTypes"/>/>
+        /// <seealso cref="IContext.ConsumerTypes"/>
         /// <seealso cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
         Type ConsumerType { get; }
 

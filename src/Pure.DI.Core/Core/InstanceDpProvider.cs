@@ -64,6 +64,7 @@ sealed class InstanceDpProvider(
                                     ordinal,
                                     new Injection(
                                         InjectionKind.Field,
+                                        RefKind.None,
                                         attributes.GetAttribute(setup.SemanticModel, setup.TypeAttributes, field, AttributeKind.Type, typeConstructor.Construct(setup, type)),
                                         GetTagAttribute(setup, field),
                                         field.Locations)));
@@ -85,6 +86,7 @@ sealed class InstanceDpProvider(
                                     ordinal,
                                     new Injection(
                                         InjectionKind.Property,
+                                        RefKind.None,
                                         attributes.GetAttribute(setup.SemanticModel, setup.TypeAttributes, property, AttributeKind.Type, typeConstructor.Construct(setup, type)),
                                         GetTagAttribute(setup, property),
                                         property.Locations)));
@@ -120,6 +122,7 @@ sealed class InstanceDpProvider(
                     parameter,
                     new Injection(
                         InjectionKind.Parameter,
+                        parameter.RefKind,
                         attributes.GetAttribute(setup.SemanticModel, setup.TypeAttributes, parameter, AttributeKind.Type, typeConstructor.Construct(setup, type)),
                         GetTagAttribute(setup, parameter),
                         parameter.Locations)));

@@ -9,20 +9,9 @@ sealed class Injections(IBuildTools buildTools) : IInjections
     public void PropertyInjection(string targetName, CodeContext ctx, DpProperty property, VarInjection propertyVarInjection) =>
         ctx.Lines.AppendLine($"{targetName}.{property.Property.Name} = {buildTools.OnInjected(ctx, propertyVarInjection)};");
 
-    public void MethodInjection(string targetName, CodeContext ctx, DpMethod method, IReadOnlyList<VarInjection> methodVarInjections)
+    public void MethodInjection(string targetName, CodeContext ctx, DpMethod method, IReadOnlyList<VarInjection> methodArgsVarInjections)
     {
-        var args = new List<string>();
-        for (var index = 0; index < methodVarInjections.Count; index++)
-        {
-            var varInjection = methodVarInjections[index];
-            if (index < method.Parameters.Length)
-            {
-                varInjection.Var.Declaration.RefKind = method.Parameters[index].ParameterSymbol.RefKind;
-            }
-
-            args.Add(buildTools.OnInjected(ctx, varInjection));
-        }
-
+        var args = methodArgsVarInjections.Select(methodArgVarInjection => buildTools.OnInjected(ctx, methodArgVarInjection));
         ctx.Lines.AppendLine($"{targetName}.{method.Method.Name}({string.Join(", ", args)});");
     }
 }

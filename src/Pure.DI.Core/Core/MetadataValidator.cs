@@ -56,7 +56,7 @@ sealed class MetadataValidator(
             isValid = false;
         }
 
-        foreach (var routeGroups in setup.Roots.GroupBy(root => new Injection(InjectionKind.Root, root.RootType, root.Tag?.Value, root.RootType.Locations)))
+        foreach (var routeGroups in setup.Roots.GroupBy(root => new Injection(InjectionKind.Root, RefKind.None, root.RootType, root.Tag?.Value, root.RootType.Locations)))
         {
             var roots = routeGroups.ToList();
             if (roots.Count <= 1)

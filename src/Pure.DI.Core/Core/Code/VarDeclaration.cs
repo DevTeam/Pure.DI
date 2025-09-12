@@ -13,8 +13,6 @@ record VarDeclaration(
 
     public string Name => _name.Value;
 
-    public RefKind RefKind { get; set; } = RefKind.None;
-
     public bool ResetToDefaults()
     {
         var declaredDefault = IsDeclaredDefault(Node);

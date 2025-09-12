@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 
 readonly record struct Injection(
     InjectionKind Kind,
+    RefKind RefKind,
     ITypeSymbol Type,
     object? Tag,
     ImmutableArray<Location> Locations)

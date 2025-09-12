@@ -104,7 +104,7 @@ sealed class BuildTools(
     public string OnInjected(CodeContext ctx, VarInjection varInjection)
     {
         var injection = OnInjectedInternal(ctx, varInjection);
-        var refKind = varInjection.Var.Declaration.RefKind switch
+        var refKind = varInjection.Injection.RefKind switch
         {
             RefKind.Ref
 #if ROSLYN4_8_OR_GREATER

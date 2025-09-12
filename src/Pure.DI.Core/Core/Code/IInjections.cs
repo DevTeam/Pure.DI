@@ -6,5 +6,5 @@ interface IInjections
 
     void PropertyInjection(string targetName, CodeContext ctx, DpProperty property, VarInjection propertyVarInjection);
 
-    void MethodInjection(string targetName, CodeContext ctx, DpMethod method, IReadOnlyList<VarInjection> methodVarInjections);
+    void MethodInjection(string targetName, CodeContext ctx, DpMethod method, IReadOnlyList<VarInjection> methodArgsVarInjections);
 }

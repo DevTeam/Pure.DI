@@ -30,7 +30,7 @@ sealed class FactoryDependencyNodeBuilder(
                 }
 
                 locations = locations.AddRange(resolver.ContractType.Locations);
-                var injection = new Injection(InjectionKind.FactoryInjection, resolver.ContractType.WithNullableAnnotation(NullableAnnotation.NotAnnotated), tag, locations);
+                var injection = new Injection(InjectionKind.FactoryInjection, RefKind.None, resolver.ContractType.WithNullableAnnotation(NullableAnnotation.NotAnnotated), tag, locations);
                 resolvers.Add(new DpResolver(resolver, injection, CreateOverrides(resolver.Overrides)));
             }
 
@@ -58,6 +58,7 @@ sealed class FactoryDependencyNodeBuilder(
                 .Select(i => new DpOverride(i, i.Tags.Select(tag =>
                     new Injection(
                         InjectionKind.Override,
+                        RefKind.None,
                         i.ContractType,
                         tag.Value,
                         ImmutableArray.Create(locationProvider.GetLocation(i.Source)).AddRange(i.ContractType.Locations))).ToImmutableArray()))

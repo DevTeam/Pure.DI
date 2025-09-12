@@ -4,7 +4,6 @@ namespace Pure.DI.IntegrationTests;
 
 public class CtorTests
 {
-
     [Fact]
     public async Task ShouldPreferCtorWithActualDependency()
     {
@@ -224,6 +223,7 @@ public class CtorTests
         // Then
         result.Success.ShouldBeTrue(result);
     }
+
     [Fact]
     public async Task ShouldSelectValidCtor()
     {
@@ -439,4 +439,69 @@ public class CtorTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["99"], result);
     }
+
+#if ROSLYN4_8_OR_GREATER
+    [Fact]
+    public async Task ShouldSupportRefCtorArgs()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Service
+                               {
+                                   [Ordinal]
+                                   public void Initialize(ref Indexes indexes) =>
+                                       indexes.Print();
+                               }
+                               
+                               readonly ref struct Indexes
+                               {
+                                   private readonly ref int[] _dep;
+                                   
+                                   public Indexes(ref int[] dep)
+                                   {
+                                       _dep = ref dep;
+                                   }
+                               
+                                   public void Print()
+                                   {
+                                       foreach (var i in _dep)
+                                       {
+                                           Console.WriteLine(i);
+                                       }
+                                   }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind().To<int[]>(_ => new int[]{1, 2, 3})
+                                           .Root<Service>("MyService");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.MyService;
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Latest));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["1", "2", "3"], result);
+    }
+#endif
 }
