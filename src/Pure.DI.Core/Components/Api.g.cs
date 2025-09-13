@@ -3752,6 +3752,42 @@ namespace Pure.DI
         /// <seealso cref="DI.Setup"/>
         T ResolveByTag(TComposite composite, object tag);
     }
+
+    /// <summary>
+    /// Represents an exception thrown when a required composition root cannot be resolved.
+    /// </summary>
+    [global::System.Serializable]
+    internal class CannotResolveException: global::System.InvalidOperationException
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CannotResolveException"/> class with a default error message.
+        /// </summary>
+        /// <remarks>
+        /// It is generally recommended to use the overloaded constructor with a custom message <see cref="CannotResolveException(string)"/> for better error reporting and debugging.
+        /// </remarks>
+        public CannotResolveException()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CannotResolveException"/> class with a specified error message describing the resolution failure.
+        /// <p>
+        /// This constructor should be used when you need to provide a detailed description of why the resolution process failed. The message should include relevant information such as the name of the unresolved component or service.
+        /// </p>
+        /// </summary>
+        /// <param name="message">
+        /// A user-friendly message that describes the error that occurred during the
+        /// resolution process. The message should be clear and informative, providing
+        /// enough context to understand the nature of the failure.
+        /// </param>
+        /// <remarks>
+        /// It is recommended to include specific details in the message.
+        /// </remarks>
+        public CannotResolveException(string message)
+            : base(message)
+        {
+        }
+    }
 }
 #pragma warning restore
 #endif

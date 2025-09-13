@@ -12,7 +12,7 @@ namespace Pure.DI.MS
     /// A base class for a composition that can be used as a service provider factory <see cref="Microsoft.Extensions.DependencyInjection.IServiceProviderFactory{TContainerBuilder}"/>.
     /// <example>
     /// <code>
-    /// partial class Composition : ServiceProviderFactory&lt;Composition&gt;
+    /// partial class Composition: ServiceProviderFactory&lt;Composition&gt;
     /// {
     ///     void Setup() =&gt; DI.Setup()
     ///         .Bind().As(Singleton).To&lt;WeatherForecastService&gt;()
@@ -145,6 +145,8 @@ namespace Pure.DI.MS
         }
 
         /// <inheritdoc />
+        /// <exception cref="ArgumentNullException">Throws an exception if the service collection is null.</exception>
+        /// <exception cref="InvalidOperationException">Throws an exception if services are already defined.</exception>
         public IServiceProvider CreateServiceProvider(IServiceCollection services)
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
@@ -166,6 +168,8 @@ namespace Pure.DI.MS
         /// <param name="lifetime">Dependency resolution lifetime.</param>
         /// <typeparam name="T">Dependency resolution type.</typeparam>
         /// <returns>Resolved dependency instance.</returns>
+        /// <exception cref="InvalidOperationException">Throws an exception if the service provider is not yet defined when attempting to get it.</exception>
+        /// <exception cref="CannotResolveException">Will be thrown if the corresponding composition root was not specified.</exception>
         [global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         internal T OnCannotResolve<T>(object? tag, Lifetime lifetime)
         {
@@ -176,7 +180,7 @@ namespace Pure.DI.MS
             }
 
             return (T)(serviceProvider(typeof(T), tag)
-                   ?? throw new InvalidOperationException($"No composition root or service is registered for type {typeof(T)}{(tag == null ? "" : $"({tag})")}."));
+                   ?? throw new CannotResolveException($"No composition root or service is registered for type {typeof(T)}{(tag == null ? "" : $"({tag})")}."));
         }
 
         /// <summary>
@@ -188,6 +192,7 @@ namespace Pure.DI.MS
         /// <param name="lifetime">The lifetime of the composition root.</param>
         /// <typeparam name="TContract">The contract type of the composition root.</typeparam>
         /// <typeparam name="T">The implementation type of the composition root.</typeparam>
+        /// <exception cref="ArgumentNullException">Throws an exception if the instance resolver is null.</exception>
         [global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         internal static void OnNewRoot<TContract, T>(
             IResolver<TComposition, TContract> resolver,
