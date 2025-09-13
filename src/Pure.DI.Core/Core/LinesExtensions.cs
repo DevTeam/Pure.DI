@@ -17,4 +17,12 @@ static class LinesExtensions
             lines.AppendLine(BlockFinish);
         });
     }
+
+    public static void AppendComments(this Lines lines, params string[] comments)
+    {
+        foreach (var comment in comments)
+        {
+            lines.AppendLine($"// {comment}");
+        }
+    }
 }

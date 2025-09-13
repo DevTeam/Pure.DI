@@ -83,7 +83,7 @@ class RootBuilder(
             }
 
 #if DEBUG
-            parentCtx.Lines.AppendLine($"// {var.Name}: skip");
+            parentCtx.Lines.AppendComments($"{var.Name}: skip");
 #endif
             return;
         }
@@ -124,7 +124,7 @@ class RootBuilder(
         }
 
 #if DEBUG
-        varCtx.Lines.AppendLine($"// {var.Name}: {nameof(var.Declaration.IsDeclared)}={var.Declaration.IsDeclared}, {nameof(var.IsCreated)}={var.IsCreated}, {nameof(var.HasCycle)}={var.HasCycle}, {nameof(varCtx.IsLockRequired)}={varCtx.IsLockRequired}, {nameof(isLazy)}={isLazy}, {nameof(isBlock)}={isBlock}, {nameof(acc)}={acc.Length}");
+        varCtx.Lines.AppendComments($"{var.Name}: {nameof(var.Declaration.IsDeclared)}={var.Declaration.IsDeclared}, {nameof(var.IsCreated)}={var.IsCreated}, {nameof(var.HasCycle)}={var.HasCycle}, {nameof(varCtx.IsLockRequired)}={varCtx.IsLockRequired}, {nameof(isLazy)}={isLazy}, {nameof(isBlock)}={isBlock}, {nameof(acc)}={acc.Length}");
 #endif
 
         if (isBlock)
