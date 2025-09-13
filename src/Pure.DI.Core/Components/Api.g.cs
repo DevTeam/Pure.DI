@@ -3729,26 +3729,57 @@ namespace Pure.DI
     }
 
     /// <summary>
-    /// Abstract dependency resolver.
+    /// Represents an abstract dependency resolver interface responsible for resolving composition roots from composite objects. The resolver is designed to handle both generic resolution and tagged resolution, allowing for flexible dependency management in complex applications.
     /// </summary>
-    /// <typeparam name="TComposite">The composition type.</typeparam>
-    /// <typeparam name="T">The type of the composition root.</typeparam>
+    /// <typeparam name="TComposite">
+    /// The type of the composite object that contains the dependencies to be resolved.
+    /// </typeparam>
+    /// <typeparam name="T">
+    /// The type of the composition root that will be resolved. The composition root
+    /// represents the main entry point or service that the resolver will provide.
+    /// </typeparam>
+    /// <seealso cref="DI.Setup"/>
     internal interface IResolver<TComposite, out T>
     {
         /// <summary>
-        /// Resolves the composition root.
+        /// Resolves the composition root from the provided composite object using
+        /// the default resolution strategy.
+        ///
+        /// This method is used for straightforward dependency resolution where a
+        /// single implementation of the composition root is expected.
         /// </summary>
-        /// <param name="composite">The composition.</param>
-        /// <returns>A composition root.</returns>
+        /// <param name="composite">
+        /// The composite object containing the dependencies required for resolution.
+        /// </param>
+        /// <returns>
+        /// The resolved composition root of type <typeparamref name="T"/>. If the resolution fails, an <see cref="CannotResolveException"/> exception should be thrown.
+        /// </returns>
+        /// <exception cref="CannotResolveException">
+        /// Thrown when the composition root cannot be resolved from the provided composite.
+        /// </exception>
         /// <seealso cref="DI.Setup"/>
         T Resolve(TComposite composite);
         
         /// <summary>
-        /// Resolves the composition root by type and tag.
+        /// Resolves the composition root from the provided composite object using
+        /// a specific tag to identify the desired implementation.
+        ///
+        /// This method is useful when multiple implementations of the same composition
+        /// root exist and need to be differentiated by a tag.
         /// </summary>
-        /// <param name="composite">The composition.</param>
-        /// <param name="tag">The tag of a composition root.</param>
-        /// <returns>A composition root.</returns>
+        /// <param name="composite">
+        /// The composite object containing the dependencies required for resolution.
+        /// </param>
+        /// <param name="tag">
+        /// The tag used to identify the specific implementation of the composition root.
+        /// The tag can be any object that uniquely identifies the desired implementation.
+        /// </param>
+        /// <returns>
+        /// The resolved composition root of type <typeparamref name="T"/> that matches the specified tag.
+        /// </returns>
+        /// <exception cref="CannotResolveException">
+        /// Thrown when no matching implementation is found for the specified tag.
+        /// </exception>
         /// <seealso cref="DI.Setup"/>
         T ResolveByTag(TComposite composite, object tag);
     }
