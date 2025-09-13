@@ -3787,7 +3787,9 @@ namespace Pure.DI
     /// <summary>
     /// Represents an exception thrown when a required composition root cannot be resolved.
     /// </summary>
+#if NETSTANDARD2_0_OR_GREATER
     [global::System.Serializable]
+#endif
     internal class CannotResolveException: global::System.InvalidOperationException
     {
         /// <summary>
