@@ -3787,37 +3787,41 @@ namespace Pure.DI
     /// <summary>
     /// Represents an exception thrown when a required composition root cannot be resolved.
     /// </summary>
+#if NETSTANDARD2_0_OR_GREATER
     [global::System.Serializable]
+#endif
     internal class CannotResolveException: global::System.InvalidOperationException
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CannotResolveException"/> class with a default error message.
-        /// </summary>
-        /// <remarks>
-        /// It is generally recommended to use the overloaded constructor with a custom message <see cref="CannotResolveException(string)"/> for better error reporting and debugging.
-        /// </remarks>
-        public CannotResolveException()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CannotResolveException"/> class with a specified error message describing the resolution failure.
-        /// <p>
-        /// This constructor should be used when you need to provide a detailed description of why the resolution process failed. The message should include relevant information such as the name of the unresolved component or service.
-        /// </p>
+        /// Initializes a new instance of the <see cref="CannotResolveException"/> class with a specified error message, type, and optional tag describing the resolution failure.
         /// </summary>
         /// <param name="message">
         /// A user-friendly message that describes the error that occurred during the
         /// resolution process. The message should be clear and informative, providing
         /// enough context to understand the nature of the failure.
         /// </param>
-        /// <remarks>
-        /// It is recommended to include specific details in the message.
-        /// </remarks>
-        public CannotResolveException(string message)
+        /// <param name="type">
+        /// The <see cref="Type"/> used to resolve a composition root.
+        /// </param>
+        /// <param name="tag">
+        /// The tag used to resolve a composition root.
+        /// </param>
+        public CannotResolveException(string message, global::System.Type type, object? tag)
             : base(message)
         {
+            Type = type;
+            Tag = tag;
         }
+
+        /// <summary>
+        /// Gets the type used to resolve a composition root.
+        /// </summary>
+        public Type Type { get; }
+
+        /// <summary>
+        /// Gets the tag used to resolve a composition root.
+        /// </summary>
+        public object? Tag { get; }
     }
 }
 #pragma warning restore

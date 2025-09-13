@@ -33,14 +33,14 @@ sealed class ResolverClassesBuilder(IBuilder<RootsContext, IEnumerable<ResolverI
             code.AppendLine($"public virtual T {Names.ResolveMethodName}({composition.Source.Source.Name.ClassName} composite)");
             using (code.CreateBlock())
             {
-                code.AppendLine($"throw new {Names.ApiNamespace}{nameof(CannotResolveException)}($\"{{{Names.CannotResolveFieldName}}}{{{Names.OfTypeFieldName}}}{{typeof(T)}}.\");");
+                code.AppendLine($"throw new {Names.CannotResolveExceptionTypeName}($\"{{{Names.CannotResolveFieldName}}}{{{Names.OfTypeFieldName}}}{{typeof(T)}}.\", typeof(T), null);");
             }
 
             code.AppendLine();
             code.AppendLine($"public virtual T {Names.ResolveByTagMethodName}({composition.Source.Source.Name.ClassName} composite, object tag)");
             using (code.CreateBlock())
             {
-                code.AppendLine($"throw new {Names.ApiNamespace}{nameof(CannotResolveException)}($\"{{{Names.CannotResolveFieldName}}}\\\"{{tag}}\\\" {{{Names.OfTypeFieldName}}}{{typeof(T)}}.\");");
+                code.AppendLine($"throw new {Names.CannotResolveExceptionTypeName}($\"{{{Names.CannotResolveFieldName}}}\\\"{{tag}}\\\" {{{Names.OfTypeFieldName}}}{{typeof(T)}}.\", typeof(T), tag);");
             }
         }
 

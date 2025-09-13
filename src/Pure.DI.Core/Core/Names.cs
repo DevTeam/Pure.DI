@@ -56,6 +56,7 @@ static class Names
     public const string ReadOnlySpanTypeName = $"{SystemNamespace}ReadOnlySpan<>";
     public const string IEnumerableTypeName = $"{SystemNamespace}Collections.Generic.IEnumerable<>";
     public const string IAsyncEnumerableTypeName = $"{SystemNamespace}Collections.Generic.IAsyncEnumerable<>";
+    public const string CannotResolveExceptionTypeName = $"{ApiNamespace}{nameof(CannotResolveException)}";
 
     // Members
     public const string ResolveMethodName = nameof(IResolver<object, object>.Resolve);

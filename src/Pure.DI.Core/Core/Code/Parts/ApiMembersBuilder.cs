@@ -172,7 +172,7 @@ sealed class ApiMembersBuilder(
     private static void FinishComments(Lines apiCode)
     {
         apiCode.AppendLine("/// <returns>An instance of a composition root.</returns>");
-        apiCode.AppendLine($"/// <exception cref=\"{Names.ApiNamespace}CannotResolveException\">Will be thrown if the corresponding composition root was not specified. To specify a composition root use API method such as <see cref=\"{Names.IConfigurationTypeName}.Root{{T}}\"/>.</exception>");
+        apiCode.AppendLine($"/// <exception cref=\"{Names.CannotResolveExceptionTypeName}\">Will be thrown if the corresponding composition root was not specified. To specify a composition root use API method such as <see cref=\"{Names.IConfigurationTypeName}.Root{{T}}\"/>.</exception>");
         apiCode.AppendLine($"/// <seealso cref=\"{Names.IConfigurationTypeName}.RootBind{{T}}\"/>");
         apiCode.AppendLine($"/// <seealso cref=\"{Names.IConfigurationTypeName}.Roots{{T}}\"/>");
         apiCode.AppendLine($"/// <seealso cref=\"{Names.IConfigurationTypeName}.Builder{{T}}\"/>");
@@ -203,7 +203,7 @@ sealed class ApiMembersBuilder(
             }
             else
             {
-                code.AppendLine($"throw new {Names.ApiNamespace}{nameof(CannotResolveException)}($\"{{{Names.CannotResolveFieldName}}} {(byTag ? "\\\"{tag}\\\" " : "")}{{{Names.OfTypeFieldName}}} {{type}}.\");");
+                code.AppendLine($"throw new {Names.CannotResolveExceptionTypeName}($\"{{{Names.CannotResolveFieldName}}} {(byTag ? "\\\"{tag}\\\" " : "")}{{{Names.OfTypeFieldName}}} {{type}}.\", type, {(byTag ? "tag" : "null")});");
             }
         }
     }
@@ -232,7 +232,7 @@ sealed class ApiMembersBuilder(
             }
 
             code.AppendLine();
-            code.AppendLine($"throw new {Names.ApiNamespace}{nameof(CannotResolveException)}($\"{{{Names.CannotResolveFieldName}}} {(byTag ? "\\\"{tag}\\\" " : "")}{{{Names.OfTypeFieldName}}} {{type}}.\");");
+            code.AppendLine($"throw new {Names.ApiNamespace}{nameof(CannotResolveException)}($\"{{{Names.CannotResolveFieldName}}} {(byTag ? "\\\"{tag}\\\" " : "")}{{{Names.OfTypeFieldName}}} {{type}}.\", type, {(byTag ? "tag" : "null")});");
         }
     }
 }

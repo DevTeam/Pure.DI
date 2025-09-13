@@ -180,7 +180,7 @@ namespace Pure.DI.MS
             }
 
             return (T)(serviceProvider(typeof(T), tag)
-                   ?? throw new CannotResolveException($"No composition root or service is registered for type {typeof(T)}{(tag == null ? "" : $"({tag})")}."));
+                   ?? throw new CannotResolveException($"No composition root is registered for the type {typeof(T)}{(tag == null ? "" : $"({tag})")}.", typeof(T), tag));
         }
 
         /// <summary>
