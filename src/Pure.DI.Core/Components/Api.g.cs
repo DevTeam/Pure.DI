@@ -3637,9 +3637,6 @@ namespace Pure.DI
     /// <summary>
     /// Represents an exception thrown when a required composition root cannot be resolved.
     /// </summary>
-#if NETSTANDARD2_0_OR_GREATER
-    [global::System.Serializable]
-#endif
     internal class CannotResolveException: global::System.InvalidOperationException
     {
         /// <summary>
@@ -3662,6 +3659,16 @@ namespace Pure.DI
             Type = type;
             Tag = tag;
         }
+
+#if NETSTANDARD2_0_OR_GREATER
+        /// <summary>Initializes a new instance of the <see cref="CannotResolveException"></see> class with serialized data.</summary>
+        /// <param name="info">The object that holds the serialized object data.</param>
+        /// <param name="context">The contextual information about the source or destination.</param>
+        protected CannotResolveException(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context)
+            : base(info, context)
+        {
+        }
+#endif
 
         /// <summary>
         /// Gets the type used to resolve a composition root.
