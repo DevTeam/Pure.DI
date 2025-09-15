@@ -26,8 +26,9 @@ namespace Pure.DI
     using System;
 
     /// <summary>
-    /// Binding lifetimes.
+    /// Defines binding lifetimes for dependencies.
     /// <example>
+    /// Binding as Singleton:
     /// <code>
     /// DI.Setup("Composition")
     ///     .Bind&lt;IDependency&gt;().As(Lifetime.Singleton).To&lt;Dependency&gt;();
@@ -41,60 +42,67 @@ namespace Pure.DI
     internal enum Lifetime
     {
         /// <summary>
-        /// Specifies to create a new dependency instance each time. This is the default value and can be omitted.
+        /// Creates a new dependency instance for each injection (default behavior). Default behavior can be changed by <see cref="IConfiguration.DefaultLifetime"/> and <see cref="IConfiguration.DefaultLifetime{T}"/>.
         /// <example>
+        /// Explicit transient binding:
         /// <code>
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().As(Lifetime.Transient).To&lt;Dependency&gt;();
         /// </code>
-        /// This is the default lifetime, it can be omitted, for example,
+        /// Default behavior (equivalent):
         /// <code>
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
         /// </example>
         /// </summary>
+        /// <seealso cref="IConfiguration.DefaultLifetime"/>
+        /// <seealso cref="IConfiguration.DefaultLifetime{T}"/>
         Transient,
 
         /// <summary>
-        /// Ensures that there will be a single instance of the dependency for each composition.
+        /// Maintains a single instance per composition.
         /// <example>
+        /// Singleton binding:
         /// <code>
         /// DI.Setup("Composition")
-        ///     .Bind&lt;IDependency&gt;().As(Lifetime.Singleton).To&lt;Dependency&gt;();
+        ///     .Bind&lt;IService&gt;().As(Lifetime.Singleton).To&lt;Service&gt;();
         /// </code>
         /// </example>
         /// </summary>
         Singleton,
 
         /// <summary>
-        /// Guarantees that there will be a single instance of the dependency for each root of the composition.
+        /// Single instance per composition root.
         /// <example>
+        /// Per-resolve binding:
         /// <code>
         /// DI.Setup("Composition")
-        ///     .Bind&lt;IDependency&gt;().As(Lifetime.PerResolve).To&lt;Dependency&gt;();
+        ///     .Bind&lt;IProcessor&gt;().As(Lifetime.PerResolve).To&lt;Processor&gt;();
         /// </code>
         /// </example>
         /// </summary>
         PerResolve,
-        
+
         /// <summary>
-        /// Does not guarantee that there will be a single instance of the dependency for each root of the composition, but is useful to reduce the number of instances created.
+        /// Reuses instances within code blocks to reduce allocations.
         /// <example>
+        /// Per-block binding:
         /// <code>
         /// DI.Setup("Composition")
-        ///     .Bind&lt;IDependency&gt;().As(Lifetime.PerBlock).To&lt;Dependency&gt;();
+        ///     .Bind&lt;ILogger&gt;().As(Lifetime.PerBlock).To&lt;Logger&gt;();
         /// </code>
         /// </example>
         /// </summary>
         PerBlock,
-        
+
         /// <summary>
-        /// Ensures that there will be a single instance of the dependency for each scope.
+        /// Single instance per dependency scope.
         /// <example>
+        /// Scoped binding:
         /// <code>
         /// DI.Setup("Composition")
-        ///     .Bind&lt;IDependency&gt;().As(Lifetime.Scoped).To&lt;Dependency&gt;();
+        ///     .Bind&lt;IDatabase&gt;().As(Lifetime.Scoped).To&lt;Database&gt;();
         /// </code>
         /// </example>
         /// </summary>
@@ -102,7 +110,7 @@ namespace Pure.DI
     }
     
     /// <summary>
-    /// Hints for the code generator and can be used to fine-tune code generation.
+    /// Provides configuration hints for fine-tuning code generation behavior.
     /// <example>
     /// <code>
     /// // Resolve = Off
@@ -121,14 +129,14 @@ namespace Pure.DI
     internal enum Hint
     {
         /// <summary>
-        /// <c>On</c> or <c>Off</c>. Determines whether to generate <c>Resolve</c> methods. <c>On</c> by default.
+        /// Enables/disables generation of Resolve methods. Default: <c>On</c>.
         /// <example>
         /// <code>
         /// // Resolve = Off
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -137,18 +145,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         Resolve,
-        
+
         /// <summary>
-        /// <c>On</c> or <c>Off</c>. Determines whether to use partial <c>OnNewInstance</c> method. <c>Off</c> by default.
+        /// Enables/disables generation of OnNewInstance hooks. Default: <c>Off</c>.
         /// <example>
         /// <code>
         /// // OnNewInstance = On
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -157,18 +164,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         OnNewInstance,
-        
+
         /// <summary>
-        /// <c>On</c> or <c>Off</c>. Determines whether to generate partial <c>OnNewInstance</c> method when the _OnNewInstance_ hint is <c>On</c>. <c>On</c> by default.
+        /// Enables/disables partial method generation for OnNewInstance. Default: <c>On</c>.
         /// <example>
         /// <code>
         /// // OnNewInstancePartial = On
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -177,18 +183,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         OnNewInstancePartial,
-        
+
         /// <summary>
-        /// The regular expression to filter OnNewInstance by the instance type name. ".+" by default.
+        /// Regex filter for instance types in OnNewInstance hooks. Default: <c>.+</c>.
         /// <example>
         /// <code>
         /// // OnNewInstanceImplementationTypeNameRegularExpression = Dependency
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -197,38 +202,36 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         OnNewInstanceImplementationTypeNameRegularExpression,
-        
+
         /// <summary>
-        /// The wildcard to filter OnNewInstance by the instance type name. "*" by default.
+        /// Wildcard filter for instance types in OnNewInstance hooks. Default: <c>*</c>.
         /// <example>
         /// <code>
         /// // OnNewInstanceImplementationTypeNameWildcard = *Dependency
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
-        ///     .Hint(Hint.OnNewInstanceImplementationTypeNameWildcard, "*Dependency")
+        ///     .Hint(OnNewInstanceImplementationTypeNameWildcard, "*Dependency")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         OnNewInstanceImplementationTypeNameWildcard,
-        
+
         /// <summary>
-        /// The regular expression to filter OnNewInstance by the tag. ".+" by default.
+        /// Regex filter for tags in OnNewInstance hooks. Default: <c>.+</c>.
         /// <example>
         /// <code>
         /// // OnNewInstanceTagRegularExpression = IDependency
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -237,18 +240,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         OnNewInstanceTagRegularExpression,
-        
+
         /// <summary>
-        /// The wildcard to filter OnNewInstance by the tag. "*" by default.
+        /// Wildcard filter for tags in OnNewInstance hooks. Default: <c>*</c>.
         /// <example>
         /// <code>
         /// // OnNewInstanceTagWildcard = *IDependency
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -257,18 +259,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         OnNewInstanceTagWildcard,
-        
+
         /// <summary>
-        /// The regular expression to filter OnNewInstance by the lifetime. ".+" by default.
+        /// Regex filter for lifetimes in OnNewInstance hooks. Default: <c>.+</c>.
         /// <example>
         /// <code>
         /// // OnNewInstanceLifetimeRegularExpression = Singleton
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -277,18 +278,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         OnNewInstanceLifetimeRegularExpression,
-        
+
         /// <summary>
-        /// The wildcard to filter OnNewInstance by the lifetime. "*" by default.
+        /// Wildcard filter for lifetimes in OnNewInstance hooks. Default: <c>*</c>.
         /// <example>
         /// <code>
         /// // OnNewInstanceLifetimeWildcard = *Singleton
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -297,18 +297,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         OnNewInstanceLifetimeWildcard,
-        
+
         /// <summary>
-        /// <c>On</c> or <c>Off</c>. Determines whether to use partial <c>OnDependencyInjection</c> method to control of a dependency injection. <c>Off</c> by default.
+        /// Enables/disables dependency injection interception hooks. Default: <c>Off</c>.
         /// <example>
         /// <code>
         /// // OnDependencyInjection = On
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -317,18 +316,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         OnDependencyInjection,
-        
+
         /// <summary>
-        /// <c>On</c> or <c>Off</c>. Determines whether to generate partial <c>OnDependencyInjection</c> method when the _OnDependencyInjection_ hint is <c>On</c> to control of dependency injection. <c>On</c> by default.
+        /// Enables/disables partial method generation for dependency injection hooks. Default: <c>On</c>.
         /// <example>
         /// <code>
         /// // OnDependencyInjectionPartial = On
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -337,18 +335,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         OnDependencyInjectionPartial,
-        
+
         /// <summary>
-        /// The regular expression to filter OnDependencyInjection by the instance type name. ".+" by default.
+        /// Regex filter for implementation types in dependency injection hooks. Default: <c>.+</c>.
         /// <example>
         /// <code>
         /// // OnDependencyInjectionImplementationTypeNameRegularExpression = Dependency
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -357,18 +354,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         OnDependencyInjectionImplementationTypeNameRegularExpression,
-        
+
         /// <summary>
-        /// The wildcard to filter OnDependencyInjection by the instance type name. "*" by default.
+        /// Wildcard filter for implementation types in dependency injection hooks. Default: <c>*</c>.
         /// <example>
         /// <code>
         /// // OnDependencyInjectionImplementationTypeNameWildcard = *Dependency
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -377,18 +373,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         OnDependencyInjectionImplementationTypeNameWildcard,
-        
+
         /// <summary>
-        /// The regular expression to filter OnDependencyInjection by the resolving type name. ".+" by default.
+        /// Regex filter for contract types in dependency injection hooks. Default: <c>.+</c>.
         /// <example>
         /// <code>
         /// // OnDependencyInjectionContractTypeNameRegularExpression = IDependency
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -397,38 +392,36 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         OnDependencyInjectionContractTypeNameRegularExpression,
-        
+
         /// <summary>
-        /// The wildcard to filter OnDependencyInjection by the resolving type name. "*" by default.
+        /// Wildcard filter for contract types in dependency injection hooks. Default: <c>*</c>.
         /// <example>
         /// <code>
         /// // OnDependencyInjectionContractTypeNameWildcard = *IDependency
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
-        ///     .Hint(Hint.OnDependencyInjectionContractTypeName, "*IDependency")
+        ///     .Hint(Hint.OnDependencyInjectionContractTypeNameWildcard, "*IDependency")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         OnDependencyInjectionContractTypeNameWildcard,
-        
+
         /// <summary>
-        /// The regular expression to filter OnDependencyInjection by the tag. ".+" by default.
+        /// Regex filter for tags in dependency injection hooks. Default: <c>.+</c>.
         /// <example>
         /// <code>
         /// // OnDependencyInjectionTagRegularExpression = MyTag
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;("MyTag").To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -437,18 +430,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         OnDependencyInjectionTagRegularExpression,
-        
+
         /// <summary>
-        /// The wildcard to filter OnDependencyInjection by the tag. "*" by default.
+        /// Wildcard filter for tags in dependency injection hooks. Default: <c>*</c>.
         /// <example>
         /// <code>
         /// // OnDependencyInjectionTagWildcard = MyTag
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;("MyTag").To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -457,18 +449,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         OnDependencyInjectionTagWildcard,
-        
+
         /// <summary>
-        /// The regular expression to filter OnDependencyInjection by the lifetime. ".+" by default.
+        /// Regex filter for lifetimes in dependency injection hooks. Default: <c>.+</c>.
         /// <example>
         /// <code>
         /// // OnDependencyInjectionLifetimeRegularExpression = Singleton
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -477,18 +468,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         OnDependencyInjectionLifetimeRegularExpression,
-        
+
         /// <summary>
-        /// The wildcard to filter OnDependencyInjection by the lifetime. ".+" by default.
+        /// Wildcard filter for lifetimes in dependency injection hooks. Default: <c>*</c>.
         /// <example>
         /// <code>
         /// // OnDependencyInjectionLifetimeWildcard = *Singleton
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -497,18 +487,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         OnDependencyInjectionLifetimeWildcard,
-        
+
         /// <summary>
-        /// <c>On</c> or <c>Off</c>. Determines whether to use a partial <c>OnCannotResolve&lt;T&gt;(...)</c> method to handle a scenario in which the dependency cannot be resolved. <c>Off</c> by default.
+        /// Enables/disables unresolved dependency handlers. Default: <c>Off</c>.
         /// <example>
         /// <code>
         /// // OnCannotResolve = On
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -517,18 +506,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         OnCannotResolve,
-        
+
         /// <summary>
-        /// <c>On</c> or <c>Off</c>. Determines whether to generate a partial <c>OnCannotResolve&lt;T&gt;(...)</c> method when the <c>OnCannotResolve</c> hint is <c>On</c> to handle a scenario in which the dependency cannot be resolved. <c>On</c> by default.
+        /// Enables/disables partial method generation for unresolved dependency handlers. Default: <c>On</c>.
         /// <example>
         /// <code>
         /// // OnCannotResolvePartial = On
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -537,18 +525,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         OnCannotResolvePartial,
-        
+
         /// <summary>
-        /// The regular expression to filter OnCannotResolve by the resolving type name. ".+" by default.
+        /// Regex filter for contract types in unresolved dependency handlers. Default: <c>.+</c>.
         /// <example>
         /// <code>
         /// // OnCannotResolveContractTypeNameRegularExpression = OtherType
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -557,18 +544,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         OnCannotResolveContractTypeNameRegularExpression,
-        
+
         /// <summary>
-        /// The wildcard to filter OnCannotResolve by the resolving type name. "*" by default.
+        /// Wildcard filter for contract types in unresolved dependency handlers. Default: <c>*</c>.
         /// <example>
         /// <code>
         /// // OnCannotResolveContractTypeNameWildcard = *OtherType
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -577,18 +563,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         OnCannotResolveContractTypeNameWildcard,
-        
+
         /// <summary>
-        /// The regular expression to filter OnCannotResolve by the tag. ".+" by default.
+        /// Regex filter for tags in unresolved dependency handlers. Default: <c>.+</c>.
         /// <example>
         /// <code>
         /// // OnCannotResolveTagRegularExpression = MyTag
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -597,18 +582,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         OnCannotResolveTagRegularExpression,
-        
+
         /// <summary>
-        /// The wildcard to filter OnCannotResolve by the tag. "*" by default.
+        /// Wildcard filter for tags in unresolved dependency handlers. Default: <c>*</c>.
         /// <example>
         /// <code>
         /// // OnCannotResolveTagWildcard = MyTag
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -617,18 +601,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         OnCannotResolveTagWildcard,
-        
+
         /// <summary>
-        /// The regular expression to filter OnCannotResolve by the lifetime. ".+" by default.
+        /// Regex filter for lifetimes in unresolved dependency handlers. Default: <c>.+</c>.
         /// <example>
         /// <code>
         /// // OnCannotResolveLifetimeRegularExpression = Singleton
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -637,18 +620,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         OnCannotResolveLifetimeRegularExpression,
-        
+
         /// <summary>
-        /// The wildcard to filter OnCannotResolve by the lifetime. "*" by default.
+        /// Wildcard filter for lifetimes in unresolved dependency handlers. Default: <c>*</c>.
         /// <example>
         /// <code>
         /// // OnCannotResolveLifetimeWildcard = *Singleton
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -657,18 +639,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         OnCannotResolveLifetimeWildcard,
-        
+
         /// <summary>
-        /// <c>On</c> or <c>Off</c>. Determines whether to use a static partial <c>OnNewRoot&lt;T&gt;(...)</c> method to handle the new composition root registration event. <c>Off</c> by default.
+        /// Enables/disables composition root registration event handlers. Default: <c>Off</c>.
         /// <example>
         /// <code>
         /// // OnNewRoot = On
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -677,18 +658,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         OnNewRoot,
-        
+
         /// <summary>
-        /// <c>On</c> or <c>Off</c>. Determines whether to generate a static partial <c>OnNewRoot&lt;T&gt;(...)</c> method when the <c>OnNewRoot</c> hint is <c>On</c> to handle the new composition root registration event. <c>On</c> by default.
+        /// Enables/disables partial method generation for composition root events. Default: <c>Off</c>.
         /// <example>
         /// <code>
         /// // OnNewRootPartial = On
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -697,18 +677,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         OnNewRootPartial,
-        
+
         /// <summary>
-        /// <c>On</c> or <c>Off</c>. Determine if the <c>ToString()</c> method should be generated. This method provides a text-based class diagram in the format mermaid. <c>Off</c> by default. 
+        /// Enables/disables generation of mermaid-format class diagram via ToString(). Default: <c>Off</c>.
         /// <example>
         /// <code>
         /// // ToString = On
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -717,18 +696,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         ToString,
-        
+
         /// <summary>
-        /// <c>On</c> or <c>Off</c>. This hint determines whether object composition will be created in a thread-safe manner. <c>On</c> by default.
+        /// Enables/disables thread-safe composition object creation. Default: <c>On</c>.
         /// <example>
         /// <code>
         /// // ThreadSafe = Off
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -737,18 +715,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         ThreadSafe,
-        
+
         /// <summary>
-        /// Overrides modifiers of the method <c>public T Resolve&lt;T&gt;()</c>. "Public" by default.
+        /// Modifier override for Resolve&lt;T&gt;() method. Default: <c>public</c>.
         /// <example>
         /// <code>
         /// // ResolveMethodModifiers = internal
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -757,18 +734,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         ResolveMethodModifiers,
-        
+
         /// <summary>
-        /// Overrides name of the method <c>public T Resolve&lt;T&gt;()</c>. "Resolve" by default.
+        /// Name override for Resolve&lt;T&gt;() method. Default: <c>Resolve</c>.
         /// <example>
         /// <code>
         /// // ResolveMethodName = GetService
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -777,18 +753,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         ResolveMethodName,
-        
+
         /// <summary>
-        /// Overrides modifiers of the method <c>public T Resolve&lt;T&gt;(object? tag)</c>. "public" by default.
+        /// Modifier override for Resolve&lt;T&gt;(tag) method. Default: <c>public</c>.
         /// <example>
         /// <code>
         /// // ResolveByTagMethodModifiers = internal
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -797,11 +772,10 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         ResolveByTagMethodModifiers,
-        
+
         /// <summary>
-        /// Overrides name of the method <c>public T Resolve&lt;T&gt;(object? tag)</c>. "Resolve" by default.
+        /// Name override for Resolve&lt;T&gt;(tag) method. Default: <c>Resolve</c>.
         /// <example>
         /// For example
         /// <code>
@@ -809,7 +783,7 @@ namespace Pure.DI
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -818,18 +792,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         ResolveByTagMethodName,
-        
+
         /// <summary>
-        /// Overrides modifiers of the method <c>public object Resolve(Type type)</c>. "public" by default.
+        /// Modifier override for Resolve(Type) method. Default: <c>public</c>.
         /// <example>
         /// <code>
         /// // ObjectResolveMethodModifiers = internal
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -838,18 +811,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         ObjectResolveMethodModifiers,
-        
+
         /// <summary>
-        /// Overrides name of the method <c>public object Resolve(Type type)</c>. "Resolve" by default.
+        /// Name override for Resolve(Type) method. Default: <c>Resolve</c>.
         /// <example>
         /// <code>
         /// // ObjectResolveMethodName = GetService
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -858,18 +830,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         ObjectResolveMethodName,
-        
+
         /// <summary>
-        /// Overrides modifiers of the method <c>public object Resolve(Type type, object? tag)</c>. "public" by default.
+        /// Modifier override for Resolve(Type, tag) method. Default: <c>public</c>.
         /// <example>
         /// <code>
         /// // ObjectResolveByTagMethodModifiers = internal
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -878,18 +849,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         ObjectResolveByTagMethodModifiers,
-        
+
         /// <summary>
-        /// Overrides name of the method <c>public object Resolve(Type type, object? tag)</c>. "Resolve" by default.
+        /// Name override for Resolve(Type, tag) method. Default: <c>Resolve</c>.
         /// <example>
         /// <code>
         /// // ObjectResolveByTagMethodName = GetService
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -898,18 +868,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         ObjectResolveByTagMethodName,
-        
+
         /// <summary>
-        /// Overrides modifiers of the method <c>public void Dispose()</c>. "public" by default.
+        /// Modifier override for Dispose() method. Default: <c>public</c>.
         /// <example>
         /// <code>
         /// // DisposeMethodModifiers = internal
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -918,18 +887,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         DisposeMethodModifiers,
-        
+
         /// <summary>
-        /// Overrides modifiers of the method <c>public <see cref="ValueTask"/> DisposeAsyncMethodModifiers()</c>. "public" by default.
+        /// Modifier override for DisposeAsync() method. Default: <c>public</c>.
         /// <example>
         /// <code>
         /// // DisposeAsyncMethodModifiers = internal
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -938,18 +906,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         DisposeAsyncMethodModifiers,
-        
+
         /// <summary>
-        /// <c>On</c> or <c>Off</c>. Specifies whether the generated code should be formatted. This option consumes a lot of CPU resources. <c>Off</c> by default.
+        /// Enables/disables code formatting (CPU intensive). Default: <c>Off</c>.
         /// <example>
         /// <code>
         /// // FormatCode = On
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -958,38 +925,36 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         FormatCode,
-        
+
         /// <summary>
-        /// <c>Error</c> or <c>Warning</c> or <c>Info</c> or <c>Hidden</c>. Indicates the severity level of the situation when, in the binding, an implementation does not implement a contract. <c>Error</c> by default.
+        /// Severity level for unimplemented contract errors. Default: <c>Error</c>.
         /// <example>
         /// <code>
-        /// // FormatCode = On
+        /// // SeverityOfNotImplementedContract = Warning
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
-        ///     .Hint(Hint.SeverityOfNotImplementedContracts, "On")
+        ///     .Hint(Hint.SeverityOfNotImplementedContract, "Warning")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         SeverityOfNotImplementedContract,
-        
+
         /// <summary>
-        /// <c>On</c> or <c>Off</c>. Specifies whether the generated code should be commented. <c>On</c> by default.
+        /// Enables/disables generated code comments. Default: <c>On</c>.
         /// <example>
         /// <code>
         /// // Comments = Off
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -998,18 +963,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         Comments,
 
         /// <summary>
-        /// <c>On</c> or <c>Off</c>. Determines whether to skip using the default constructor to create an instance. <c>Off</c> by default.
+        /// Enables/disables skipping the default constructor. Default: <c>Off</c> (meaning the default constructor is used when available).
         /// <example>
         /// <code>
         /// // SkipDefaultConstructor = On
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -1018,18 +982,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         SkipDefaultConstructor,
 
         /// <summary>
-        /// The regular expression to filter whether to skip using the default constructor to create an instance by the instance type name. ".+" by default.
+        /// Regex filter for types to skip default constructors. Default: <c>.+</c>.
         /// <example>
         /// <code>
         /// // SkipDefaultConstructorImplementationTypeNameRegularExpression = Dependency
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -1038,18 +1001,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         SkipDefaultConstructorImplementationTypeNameRegularExpression,
 
         /// <summary>
-        /// The wildcard to filter whether to skip using the default constructor to create an instance by the instance type name. "*" by default.
+        /// Wildcard filter for types to skip default constructors. Default: <c>*</c>.
         /// <example>
         /// <code>
         /// // SkipDefaultConstructorImplementationTypeNameWildcard = *Dependency
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -1058,18 +1020,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         SkipDefaultConstructorImplementationTypeNameWildcard,
 
         /// <summary>
-        /// The regular expression to filter whether to skip using the default constructor to create an instance by the lifetime. ".+" by default.
+        /// Regex filter for lifetimes to skip default constructors. Default: <c>.+</c>.
         /// <example>
         /// <code>
         /// // SkipDefaultConstructorLifetimeRegularExpression = Singleton
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -1078,18 +1039,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         SkipDefaultConstructorLifetimeRegularExpression,
 
         /// <summary>
-        /// The wildcard to filter whether to skip using the default constructor to create an instance by the lifetime. ".+" by default.
+        /// Wildcard filter for lifetimes to skip default constructors. Default: <c>*</c>.
         /// <example>
         /// <code>
         /// // SkipDefaultConstructorLifetimeWildcard = *Singleton
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -1098,18 +1058,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         SkipDefaultConstructorLifetimeWildcard,
 
         /// <summary>
-        /// <c>On</c> or <c>Off</c>. Determines whether dependency injection should NOT be performed if a binding for that dependency has not been explicitly defined. <c>Off</c> by default.
+        /// Disables automatic binding when no explicit binding exists. Default: <c>Off</c>.
         /// <example>
         /// <code>
         /// // DisableAutoBinding = On
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
@@ -1118,87 +1077,90 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         DisableAutoBinding,
 
         /// <summary>
-        /// The regular expression by the instance type name to filter whether a dependency injection should NOT be performed if a binding for that dependency has not been explicitly defined. ".+" by default.
+        /// Regex filter for implementation types to disable auto-binding. Default: <c>.+</c>.
         /// <example>
         /// <code>
         /// // DisableAutoBindingImplementationTypeNameRegularExpression = Dependency
         /// DI.Setup("Composition")
+        ///     .Hint(Hint.DisableAutoBinding, "Off")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
+        ///     .Hint(Hint.DisableAutoBinding, "Off")
         ///     .Hint(Hint.DisableAutoBindingImplementationTypeNameRegularExpression, "Dependency")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         DisableAutoBindingImplementationTypeNameRegularExpression,
 
         /// <summary>
-        /// The wildcard by the instance type name to filter whether a dependency injection should NOT be performed if a binding for that dependency has not been explicitly defined. "*" by default.
+        /// Wildcard filter for implementation types to disable auto-binding. Default: <c>*</c>.
         /// <example>
         /// <code>
         /// // DisableAutoBindingImplementationTypeNameWildcard = *Dependency
         /// DI.Setup("Composition")
+        ///     .Hint(Hint.DisableAutoBinding, "Off")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
+        ///     .Hint(Hint.DisableAutoBinding, "Off")
         ///     .Hint(Hint.DisableAutoBindingImplementationTypeNameWildcard, "*Dependency")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         DisableAutoBindingImplementationTypeNameWildcard,
 
         /// <summary>
-        /// The regular expression by the lifetime to filter whether a dependency injection should NOT be performed if a binding for that dependency has not been explicitly defined. ".+" by default.
+        /// Regex filter for lifetimes to disable auto-binding. Default: <c>.+</c>.
         /// <example>
         /// <code>
         /// // DisableAutoBindingLifetimeRegularExpression = Singleton
         /// DI.Setup("Composition")
+        ///     .Hint(Hint.DisableAutoBinding, "Off")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
+        ///     .Hint(Hint.DisableAutoBinding, "Off")
         ///     .Hint(Hint.DisableAutoBindingLifetimeRegularExpression, "Singleton")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         DisableAutoBindingLifetimeRegularExpression,
 
         /// <summary>
-        /// The wildcard by the lifetime to filter whether a dependency injection should NOT be performed if a binding for that dependency has not been explicitly defined. ".+" by default.
+        /// Wildcard filter for lifetimes to disable auto-binding. Default: <c>*</c>.
         /// <example>
         /// <code>
         /// // DisableAutoBindingLifetimeWildcard = *Singleton
         /// DI.Setup("Composition")
+        ///     .Hint(Hint.DisableAutoBinding, "Off")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
-        /// <br/>
+        ///
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
+        ///     .Hint(Hint.DisableAutoBinding, "Off")
         ///     .Hint(Hint.DisableAutoBindingLifetimeWildcard, "*Singleton")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
         /// </example>
         /// </summary>
-        /// <seealso cref="IConfiguration.Hint"/>
         DisableAutoBindingLifetimeWildcard,
     }
 
@@ -1220,36 +1182,33 @@ namespace Pure.DI
     internal sealed class GenericTypeArgumentAttribute: global::System.Attribute { }
     
     /// <summary>
-    /// Represents an ordinal attribute.
-    /// This attribute is part of the API, but you can use your own attribute at any time, and this allows you to define them in the assembly and namespace you want.
+    /// Specifies injection order priority for constructors, methods, properties, and fields.
+    /// While this attribute is part of the DI API, you can implement custom ordering attributes in any namespace.
     /// <example>
     /// For constructors, it defines the sequence of attempts to use a particular constructor to create an object:
     /// <code>
     /// class Service: IService
     /// {
     ///     private readonly string _name;
-    /// 
     ///
     ///     [Ordinal(1)]
     ///     public Service(IDependency dependency) =&gt;
     ///         _name = "with dependency";
-    /// 
     ///
     ///     [Ordinal(0)]
     ///     public Service(string name) =&gt; _name = name;
     /// }
     /// </code>
-    /// <br/>
+    ///
     /// For fields, properties and methods, it specifies to perform dependency injection and defines the sequence:
     /// <code>
     /// class Person: IPerson
     /// {
     ///     private readonly string _name = "";
-    /// 
+    ///
     ///     [Ordinal(0)]
     ///     public int Id;
     ///
-    /// 
     ///     [Ordinal(1)]
     ///     public string FirstName
     ///     {
@@ -1258,10 +1217,8 @@ namespace Pure.DI
     ///             _name = value;
     ///         }
     ///     }
-    /// 
     ///
     ///     public IDependency? Dependency { get; private set; }
-    /// 
     ///
     ///     [Ordinal(2)]
     ///     public void SetDependency(IDependency dependency) =&gt;
@@ -1280,9 +1237,9 @@ namespace Pure.DI
     internal class OrdinalAttribute: global::System.Attribute
     {
         /// <summary>
-        /// Creates an attribute instance.
+        /// Initializes an attribute instance with the specified injection priority.
         /// </summary>
-        /// <param name="ordinal">The injection ordinal.</param>
+        /// <param name="ordinal">Lower values indicate higher priority (0 executes before 1). Default: 0.</param>
         public OrdinalAttribute(int ordinal = 0) { }
     }
 
@@ -1415,23 +1372,24 @@ namespace Pure.DI
     }
 
     /// <summary>
-    /// A universal DI attribute that allows to specify the tag and ordinal of an injection.
+    /// Combines injection tagging and ordering capabilities in a single attribute.
+    /// Allows simultaneous specification of both tag and ordinal for dependency injection points.
     /// </summary>
-    /// <param name="tag">The injection tag. See also <see cref="IBinding.Tags"/></param>.
-    /// <param name="ordinal">The injection ordinal.</param>
+    /// <param name="tag">Identifies the specific dependency variation to inject. See also <see cref="IBinding.Tags"/>.</param>
+    /// <param name="ordinal">Determines injection order priority (lower values execute first).</param>
     /// <seealso cref="OrdinalAttribute"/>
     /// <seealso cref="TagAttribute"/>
     [global::System.AttributeUsage(global::System.AttributeTargets.Constructor | global::System.AttributeTargets.Method | global::System.AttributeTargets.Parameter | global::System.AttributeTargets.Property | global::System.AttributeTargets.Field)]
-#if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
+    #if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-#endif
+    #endif
     internal class DependencyAttribute: global::System.Attribute
     {
         /// <summary>
-        /// Creates an attribute instance.
+        /// Initializes an attribute instance with optional tag and priority.
         /// </summary>
-        /// <param name="tag">The injection tag. See also <see cref="IBinding.Tags"/></param>.
-        /// <param name="ordinal">The injection ordinal.</param>
+        /// <param name="tag">Identifies a specific dependency variation. See also <see cref="IBinding.Tags"/>.</param>
+        /// <param name="ordinal">Injection execution priority (0 = highest priority). Default: 0.</param>
         public DependencyAttribute(object? tag = null, int ordinal = 0) { }
     };
 
@@ -1502,7 +1460,8 @@ namespace Pure.DI
     }
 
     /// <summary>
-    /// Determines a kind of root of the composition.
+    /// Specifies configuration flags for composition root members, controlling their access level, modifiers, and representation.
+    /// Flags can be combined to define complex root behaviors.
     /// </summary>
     /// <seealso cref="IConfiguration.Root{T}"/>
     /// <seealso cref="IConfiguration.RootBind{T}"/>
@@ -1513,69 +1472,70 @@ namespace Pure.DI
     internal enum RootKinds
     {
         /// <summary>
-        /// Specifies to use the default composition root kind.
+        /// Default configuration: Public access modifier and property representation.
         /// </summary>
         Default = RootKinds.Public | RootKinds.Property,
-        
+
         /// <summary>
-        /// Specifies to use a <c>public</c> access modifier for the root of the composition.
+        /// Public access modifier for the composition root.
         /// </summary>
         Public = 1,
-        
+
         /// <summary>
-        /// Specifies to use a <c>internal</c> access modifier for the root of the composition.
+        /// Internal access modifier for the composition root.
         /// </summary>
         Internal = 1 << 1,
-        
+
         /// <summary>
-        /// Specifies to use a <c>private</c> access modifier for the root of the composition.
+        /// Private access modifier for the composition root.
         /// </summary>
         Private = 1 << 2,
-        
+
         /// <summary>
-        /// Specifies to create a composition root as a property.
+        /// Represents the composition root as a property.
         /// </summary>
         Property = 1 << 3,
-        
+
+        ///
         /// <summary>
-        /// Specifies to create a composition root as a method.
+        /// Represents the composition root as a method.
         /// </summary>
         Method = 1 << 4,
-        
+
         /// <summary>
-        /// Specifies to create a static root of the composition.
+        /// Defines the composition root as static.
         /// </summary>
         Static = 1 << 5,
-        
+
         /// <summary>
-        /// Specifies to create a partial root of the composition.
+        /// Defines the composition root as partial.
         /// </summary>
         Partial = 1 << 6,
-        
+
         /// <summary>
-        /// Specifies to create an exposed root of the composition.
+        /// Exposes the root for external binding via attributes.
         /// </summary>
         /// <seealso cref="BindAttribute"/>
         Exposed = 1 << 7,
-        
+
         /// <summary>
-        /// Specifies to use a <c>protected</c> access modifier for the root of the composition.
+        /// Protected access modifier for the composition root.
         /// </summary>
         Protected = 1 << 8,
 
         /// <summary>
-        /// Specifies to use a <c>virtual</c> modifier for the root of the composition.
+        /// Applies virtual modifier to enable overriding in derived classes.
         /// </summary>
         Virtual = 1 << 9,
-        
+
         /// <summary>
-        /// Specifies to use a <c>override</c> modifier for the root of the composition.
+        /// Applies override modifier to redefine a base implementation.
         /// </summary>
         Override = 1 << 10,
     }
     
-    /// <summary>
-    /// Represents well-known tags.
+        /// <summary>
+    /// Provides standardized tags for dependency binding scenarios, including special tags for unique bindings, type-based identification, and injection targeting.
     /// </summary>
     /// <seealso cref="IConfiguration.Bind{T}"/>
     /// <seealso cref="IBinding.Tags"/>
@@ -1587,8 +1547,7 @@ namespace Pure.DI
         private static readonly Tag Shared = new Tag();
 
         /// <summary>
-        /// Unique tag.
-        /// Begins the definition of the binding.
+        /// Enables multiple distinct bindings for the same instance type. Used for collection injection.
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
@@ -1601,7 +1560,7 @@ namespace Pure.DI
         public static readonly Tag Unique = new Tag();
 
         /// <summary>
-        /// Tag of a target implementation type.
+        /// Tags bindings by their implementation type for explicit injection.
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
@@ -1613,7 +1572,7 @@ namespace Pure.DI
         public static readonly Tag Type = new Tag();
 
         /// <summary>
-        /// Any tag.
+        /// Matches any tag during resolution. Used for conditional bindings that accept any tag.
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
@@ -1624,24 +1583,24 @@ namespace Pure.DI
         /// </example>
         /// </summary>
         public static readonly Tag Any = new Tag();
-        
+
         /// <summary>
-        /// This tag allows you to determine which binding will be used for explicit injection for a particular injection site.
+        /// Creates a tag targeting specific injection sites using member identifiers.
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
         ///     .Bind(Tag.On("MyNamespace.Service.Service:dep"))
         ///         .To&lt;Dependency&gt;()
         ///     .Bind().To&lt;Service&gt;()
-        ///     .Root&lt;IService&gt;("Root");
+        ///     .Root&lt;&lt;IService&gt;("Root");
         /// </code>
         /// </example>
         /// </summary>
-        /// <param name="injectionSites">Set of labels for injection each must be specified in a special format: &lt;namespace&gt;.&lt;type&gt;.&lt;member&gt;[:argument]. The argument is specified only for the constructor and methods. The wildcards &apos;*&apos; and &apos;?&apos; are supported. All names are case-sensitive. The global namespace prefix &apos;global::&apos; must be omitted.</param>
+        /// <param name="injectionSites">Member identifiers in format: [namespace].[type].[member][:argument]. Case-sensitive. Wildcards (*, ?) supported. Omit 'global::'.</param>
         public static Tag On(params string[] injectionSites) => Shared;
-        
+
         /// <summary>
-        /// This tag allows you to determine which binding will be used for explicit injection for a particular constructor argument.
+        /// Creates a tag targeting a specific constructor parameter by name.
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
@@ -1652,11 +1611,11 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <param name="argName">The name of the constructor argument.</param>
+        /// <param name="argName">Constructor parameter name</param>
         public static Tag OnConstructorArg<T>(string argName) => Shared;
-        
+
         /// <summary>
-        /// This tag allows you to define which binding will be used for explicit injection for a property or field of the type.
+        /// Creates a tag targeting a specific field or property by name.
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
@@ -1667,11 +1626,11 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <param name="memberName">The name of the type member.</param>
+        /// <param name="memberName">Field or property name</param>
         public static Tag OnMember<T>(string memberName) => Shared;
-        
+
         /// <summary>
-        /// This tag allows you to determine which binding will be used for explicit injection for a particular method argument.
+        /// Creates a tag targeting a specific method parameter by method and argument names.
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
@@ -1682,36 +1641,41 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <param name="methodName">The name of the type method.</param>
-        /// <param name="argName">The name of the method argument.</param>
+        /// <param name="methodName">Method name</param>
+        /// <param name="argName">Parameter name</param>
         public static Tag OnMethodArg<T>(string methodName, string argName) => Shared;
     }
 
     /// <summary>
-    /// Represents well-known names.
+    /// Provides well-known names used throughout the dependency injection configuration.
     /// </summary>
-#if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
+    /// <remarks>
+    /// These names serve as standardized identifiers for common DI components and behaviors.
+    /// </remarks>
+    #if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-#endif
+    #endif
     internal partial class Name
     {
     }
 
     /// <summary>
-    /// This abstraction allows a disposable object to be disposed of.
+    /// Represents an owned resource whose lifetime is managed by its owner.
+    /// Provides both synchronous and asynchronous disposal capabilities for proper resource cleanup.
     /// </summary>
     /// <seealso cref="Owned"/>
     /// <seealso cref="IConfiguration.Accumulate{T,TAccumulator}"/>
     internal interface IOwned
         : global::System.IDisposable
-#if NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
-        , global::System.IAsyncDisposable
-#endif
+    #if NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+            , global::System.IAsyncDisposable
+    #endif
     {
     }
 
     /// <summary>
-    /// Performs accumulation and disposal of disposable objects.
+    /// Manages lifetime of disposable objects by accumulating them and providing deterministic disposal.
+    /// Implements both synchronous and asynchronous disposal patterns for comprehensive resource cleanup.
     /// </summary>
     /// <seealso cref="IOwned"/>
     /// <seealso cref="IConfiguration.Accumulate{T,TAccumulator}"/>
@@ -1725,54 +1689,58 @@ namespace Pure.DI
         /// <inheritdoc />
         public void Dispose()
         {
-            if (_isDisposed)
-            {
-                return;
-            }
+            // Skip if already disposed
+            if (_isDisposed) return;
 
             _isDisposed = true;
             try
             {
+                // Process disposables in reverse order (most recent first)
                 for (var i = Count - 1; i >= 0; i--)
                 {
                     switch (this[i])
                     {
-                        case global::Pure.DI.IOwned _:
+                        case global::Pure.DI.IOwned _:  // Skip nested owned collections
                             break;
 
                         case global::System.IDisposable disposableInstance:
                             try
                             {
+                                // Perform synchronous disposal
                                 disposableInstance.Dispose();
                             }
                             catch (global::System.Exception exception)
                             {
+                                // Handle synchronous disposal exceptions
                                 OnDisposeException(disposableInstance, exception);
                             }
-
                             break;
 
 #if NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
-                    case global::System.IAsyncDisposable asyncDisposableInstance:
-                        try
-                        {
-                            var valueTask = asyncDisposableInstance.DisposeAsync();
-                            if (!valueTask.IsCompleted)
+                        case global::System.IAsyncDisposable asyncDisposableInstance:
+                            try
                             {
-                                valueTask.AsTask().Wait();
+                                // Handle async disposables in synchronous context
+                                var valueTask = asyncDisposableInstance.DisposeAsync();
+                                if (!valueTask.IsCompleted)
+                                {
+                                    // Block until async disposal completes
+                                    valueTask.AsTask().Wait();
+                                }
                             }
-                        }
-                        catch (global::System.Exception exception)
-                        {
-                            OnDisposeAsyncException(asyncDisposableInstance, exception);
-                        }
-                        break;
+                            catch (global::System.Exception exception)
+                            {
+                                // Handle asynchronous disposal exceptions
+                                OnDisposeAsyncException(asyncDisposableInstance, exception);
+                            }
+                            break;
 #endif
                     }
                 }
             }
             finally
             {
+                // Clear all references to allow garbage collection
                 Clear();
             }
         }
@@ -1781,28 +1749,29 @@ namespace Pure.DI
         /// <inheritdoc />
         public async global::System.Threading.Tasks.ValueTask DisposeAsync()
         {
-            if (_isDisposed)
-            {
-                return;
-            }
+            // Skip if already disposed
+            if (_isDisposed) return;
 
             _isDisposed = true;
             try
             {
+                // Process disposables in reverse order (most recent first)
                 for (var i = Count - 1; i >= 0; i--)
                 {
                     switch (this[i])
                     {
-                        case global::Pure.DI.IOwned _:
+                        case global::Pure.DI.IOwned _:  // Skip nested owned collections
                             break;
 
                         case global::System.IAsyncDisposable asyncDisposableInstance:
                             try
                             {
+                                // Handle async disposables natively
                                 await asyncDisposableInstance.DisposeAsync();
                             }
                             catch (global::System.Exception exception)
                             {
+                                // Handle asynchronous disposal exceptions
                                 OnDisposeAsyncException(asyncDisposableInstance, exception);
                             }
                             break;
@@ -1810,10 +1779,12 @@ namespace Pure.DI
                         case global::System.IDisposable disposableInstance:
                             try
                             {
+                                // Handle sync disposables directly
                                 disposableInstance.Dispose();
                             }
                             catch (global::System.Exception exception)
                             {
+                                // Handle synchronous disposal exceptions
                                 OnDisposeException(disposableInstance, exception);
                             }
                             break;
@@ -1822,38 +1793,40 @@ namespace Pure.DI
             }
             finally
             {
+                // Clear all references to allow garbage collection
                 Clear();
             }
         }
 #endif
 
-
         /// <summary>
-        /// Implement this partial method to handle the exception on disposing.
+        /// Override this partial method to implement custom exception handling
+        /// during synchronous disposal of an <see cref="IDisposable"/> instance.
         /// </summary>
-        /// <param name="disposableInstance">The disposable instance.</param>
-        /// <param name="exception">Exception occurring during disposal.</param>
-        /// <typeparam name="T">The actual type of instance being disposed of.</typeparam>
-        /// <seealso cref="IDisposable"/>
+        /// <param name="disposableInstance">The instance that failed disposal</param>
+        /// <param name="exception">Exception that occurred during disposal</param>
+        /// <typeparam name="T">Concrete type of the disposable instance</typeparam>
         partial void OnDisposeException<T>(T disposableInstance, global::System.Exception exception)
             where T: global::System.IDisposable;
-        
-#if NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER        
+
+#if NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
         /// <summary>
-        /// Implement this partial method to handle the exception on disposing.
+        /// Override this partial method to implement custom exception handling
+        /// during asynchronous disposal of an <see cref="IAsyncDisposable"/> instance.
         /// </summary>
-        /// <param name="asyncDisposableInstance">The disposable instance.</param>
-        /// <param name="exception">Exception occurring during disposal.</param>
-        /// <typeparam name="T">The actual type of instance being disposed of.</typeparam>
+        /// <param name="asyncDisposableInstance">The instance that failed disposal</param>
+        /// <param name="exception">Exception that occurred during disposal</param>
+        /// <typeparam name="T">Concrete type of the disposable instance</typeparam>
         partial void OnDisposeAsyncException<T>(T asyncDisposableInstance, global::System.Exception exception)
             where T: global::System.IAsyncDisposable;
 #endif
     }
     
     /// <summary>
-    /// Contains a value and gives the ability to dispose of that value.
+    /// Represents an owned resource of type <typeparamref name="T"/> that combines a value with its disposal mechanism.
+    /// Provides deterministic lifetime management through both synchronous and asynchronous disposal patterns.
     /// </summary>
-    /// <typeparam name="T">Type of value owned.</typeparam>
+    /// <typeparam name="T">The type of the owned value.</typeparam>
     /// <seealso cref="IOwned"/>
     /// <seealso cref="Owned"/>
     /// <seealso cref="IConfiguration.Accumulate{T,TAccumulator}"/>
@@ -1862,28 +1835,29 @@ namespace Pure.DI
     internal readonly struct Owned<T>: global::Pure.DI.IOwned
     {
         /// <summary>
-        /// Own value.
+        /// The owned value instance.
         /// </summary>
         public readonly T Value;
+
         private readonly global::Pure.DI.IOwned _owned;
 
         /// <summary>
-        /// Creates a new instance.
+        /// Initializes a new owned value with its associated disposal mechanism.
         /// </summary>
-        /// <param name="value">Own value.</param>
-        /// <param name="owned">The abstraction allows a disposable object to be disposed of.</param>
+        /// <param name="value">The value to be owned and managed.</param>
+        /// <param name="owned">The disposal mechanism responsible for cleaning up the owned value.</param>
         public Owned(T value, global::Pure.DI.IOwned owned)
         {
             Value = value;
             _owned = owned;
         }
-        
+
         /// <inheritdoc />
         public void Dispose()
         {
             _owned.Dispose();
         }
-        
+
 #if NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
         /// <inheritdoc />
         public global::System.Threading.Tasks.ValueTask DisposeAsync()
@@ -1903,13 +1877,19 @@ namespace Pure.DI
             {
                 _owned = owned;
             }
-            
+
+            /// <summary>
+            /// The owned value visible in debugger.
+            /// </summary>
             public T Value
             {
                 get { return _owned.Value; }
             }
-                
+
             [global::System.Diagnostics.DebuggerBrowsable(global::System.Diagnostics.DebuggerBrowsableState.Collapsed)]
+            /// <summary>
+            /// The disposal mechanism for the owned value (collapsed in debugger by default).
+            /// </summary>
             public global::Pure.DI.IOwned Owned
             {
                 get { return _owned._owned; }
@@ -1918,14 +1898,14 @@ namespace Pure.DI
     }
 
     /// <summary>
-    /// An API for a Dependency Injection setup.
+    /// Defines an API for configuring Dependency Injection bindings.
     /// </summary>
     /// <seealso cref="DI.Setup"/>
     internal interface IConfiguration
     {
         /// <summary>
-        /// Begins the binding definition for the implementation type itself, and if the implementation is not an abstract class or structure, for all abstract but NOT special types that are directly implemented.
-        /// Special types include:
+        /// Starts binding definition for the implementation type itself. Also binds all directly implemented abstract types excluding special system interfaces.
+        /// Special system interfaces are excluded from binding:
         /// <list type="bullet">
         /// <item>System.Object</item>
         /// <item>System.Enum</item>
@@ -1950,8 +1930,8 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <param name="tags">Optional tags to associate with the binding.</param>
+        /// <returns>Binding configuration interface for method chaining.</returns>
         /// <seealso cref="IBinding.To{T}()"/>
         /// <seealso cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
         /// <seealso cref="IBinding.To{T1,T}()"/>
@@ -1959,9 +1939,9 @@ namespace Pure.DI
         /// <seealso cref="IBinding.Tags"/>
         /// <seealso cref="IBinding.As"/>
         IBinding Bind(params object[] tags);
-        
+
         /// <summary>
-        /// Begins the definition of the binding.
+        /// Starts binding definition for a specific dependency type.
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
@@ -1969,9 +1949,9 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <typeparam name="T">The type of dependency to be bound.</typeparam>
-        /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <typeparam name="T">Dependency type to bind.</typeparam>
+        /// <param name="tags">Optional tags to associate with the binding.</param>
+        /// <returns>Binding configuration interface for method chaining.</returns>
         /// <seealso cref="IBinding.To{T}()"/>
         /// <seealso cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
         /// <seealso cref="IBinding.To{T1,T}()"/>
@@ -1979,30 +1959,32 @@ namespace Pure.DI
         /// <seealso cref="IBinding.Tags"/>
         /// <seealso cref="IBinding.As"/>
         IBinding Bind<T>(params object[] tags);
-        
+
         /// <summary>
-        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for details.
+        /// Starts binding definition for multiple dependency types simultaneously.
+        /// See <see cref="Bind{T}"/> for detailed usage.
         /// </summary>
-        /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
-        /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <typeparam name="T1">First dependency type to bind.</typeparam>
+        /// <typeparam name="T2">Second dependency type to bind.</typeparam>
+        /// <param name="tags">Optional tags to associate with the binding.</param>
+        /// <returns>Binding configuration interface for method chaining.</returns>
         /// <seealso cref="IBinding.To{T}()"/>
         /// <seealso cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
         /// <seealso cref="IBinding.To{T1,T}()"/>
         /// <seealso cref="IBinding.To{T1,T2,T}()"/>
         /// <seealso cref="IBinding.Tags"/>
-        /// <seealso cref="IBinding.As"/>
+        ///seealso cref="IBinding.As"/>
         IBinding Bind<T1, T2>(params object[] tags);
-        
+
         /// <summary>
-        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for details.
+        /// Starts binding definition for multiple dependency types simultaneously.
+        /// See <see cref="Bind{T}"/> for detailed usage.
         /// </summary>
-        /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T3">Type 3 of a dependency to be bound.</typeparam>
-        /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <typeparam name="T1">First dependency type to bind.</typeparam>
+        /// <typeparam name="T2">Second dependency type to bind.</typeparam>
+        /// <typeparam name="T3">Third dependency type to bind.</typeparam>
+        /// <param name="tags">Optional tags to associate with the binding.</param>
+        /// <returns>Binding configuration interface for method chaining.</returns>
         /// <seealso cref="IBinding.To{T}()"/>
         /// <seealso cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
         /// <seealso cref="IBinding.To{T1,T}()"/>
@@ -2010,16 +1992,17 @@ namespace Pure.DI
         /// <seealso cref="IBinding.Tags"/>
         /// <seealso cref="IBinding.As"/>
         IBinding Bind<T1, T2, T3>(params object[] tags);
-        
+
         /// <summary>
-        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for details.
+        /// Starts binding definition for multiple dependency types simultaneously.
+        /// See <see cref="Bind{T}"/> for detailed usage.
         /// </summary>
-        /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T3">Type 3 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T4">Type 4 of a dependency to be bound.</typeparam>
-        /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <typeparam name="T1">First dependency type to bind.</typeparam>
+        /// <typeparam name="T2">Second dependency type to bind.</typeparam>
+        /// <typeparam name="T3">Third dependency type to bind.</typeparam>
+        /// <typeparam name="T4">Fourth dependency type to bind.</typeparam>
+        /// <param name="tags">Optional tags to associate with the binding.</param>
+        /// <returns>Binding configuration interface for method chaining.</returns>
         /// <seealso cref="IBinding.To{T}()"/>
         /// <seealso cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
         /// <seealso cref="IBinding.To{T1,T}()"/>
@@ -2027,17 +2010,18 @@ namespace Pure.DI
         /// <seealso cref="IBinding.Tags"/>
         /// <seealso cref="IBinding.As"/>
         IBinding Bind<T1, T2, T3, T4>(params object[] tags);
-        
+
         /// <summary>
-        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for details.
+        /// Starts binding definition for multiple dependency types simultaneously.
+        /// See <see cref="Bind{T}"/> for detailed usage.
         /// </summary>
-        /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T3">Type 3 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T4">Type 4 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T5">Type 5 of a dependency to be bound.</typeparam>
-        /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <typeparam name="T1">First dependency type to bind.</typeparam>
+        /// <typeparam name="T2">Second dependency type to bind.</typeparam>
+        /// <typeparam name="T3">Third dependency type to bind.</typeparam>
+        /// <typeparam name="T4">Fourth dependency type to bind.</typeparam>
+        /// <typeparam name="T5">Fifth dependency type to bind.</typeparam>
+        /// <param name="tags">Optional tags to associate with the binding.</param>
+        /// <returns>Binding configuration interface for method chaining.</returns>
         /// <seealso cref="IBinding.To{T}()"/>
         /// <seealso cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
         /// <seealso cref="IBinding.To{T1,T}()"/>
@@ -2045,18 +2029,19 @@ namespace Pure.DI
         /// <seealso cref="IBinding.Tags"/>
         /// <seealso cref="IBinding.As"/>
         IBinding Bind<T1, T2, T3, T4, T5>(params object[] tags);
-        
+
         /// <summary>
-        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for details.
+        /// Starts binding definition for multiple dependency types simultaneously.
+        /// See <see cref="Bind{T}"/> for detailed usage.
         /// </summary>
-        /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T3">Type 3 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T4">Type 4 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T5">Type 5 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T6">Type 6 of a dependency to be bound.</typeparam> 
-        /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <typeparam name="T1">First dependency type to bind.</typeparam>
+        /// <typeparam name="T2">Second dependency type to bind.</typeparam>
+        /// <typeparam name="T3">Third dependency type to bind.</typeparam>
+        /// <typeparam name="T4">Fourth dependency type to bind.</typeparam>
+        /// <typeparam name="T5">Fifth dependency type to bind.</typeparam>
+        /// <typeparam name="T6">Sixth dependency type to bind.</typeparam>
+        /// <param name="tags">Optional tags to associate with the binding.</param>
+        /// <returns>Binding configuration interface for method chaining.</returns>
         /// <seealso cref="IBinding.To{T}()"/>
         /// <seealso cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
         /// <seealso cref="IBinding.To{T1,T}()"/>
@@ -2064,19 +2049,20 @@ namespace Pure.DI
         /// <seealso cref="IBinding.Tags"/>
         /// <seealso cref="IBinding.As"/>
         IBinding Bind<T1, T2, T3, T4, T5, T6>(params object[] tags);
-        
+
         /// <summary>
-        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for details.
+        /// Starts binding definition for multiple dependency types simultaneously.
+        /// See <see cref="Bind{T}"/> for detailed usage.
         /// </summary>
-        /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T3">Type 3 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T4">Type 4 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T5">Type 5 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T6">Type 6 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T7">Type 7 of a dependency to be bound.</typeparam>
-        /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <typeparam name="T1">First dependency type to bind.</typeparam>
+        /// <typeparam name="T2">Second dependency type to bind.</typeparam>
+        /// <typeparam name="T3">Third dependency type to bind.</typeparam>
+        /// <typeparam name="T4">Fourth dependency type to bind.</typeparam>
+        /// <typeparam name="T5">Fifth dependency type to bind.</typeparam>
+        /// <typeparam name="T6">Sixth dependency type to bind.</typeparam>
+        /// <typeparam name="T7">Seventh dependency type to bind.</typeparam>
+        /// <param name="tags">Optional tags to associate with the binding.</param>
+        /// <returns>Binding configuration interface for method chaining.</returns>
         /// <seealso cref="IBinding.To{T}()"/>
         /// <seealso cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
         /// <seealso cref="IBinding.To{T1,T}()"/>
@@ -2084,20 +2070,21 @@ namespace Pure.DI
         /// <seealso cref="IBinding.Tags"/>
         /// <seealso cref="IBinding.As"/>
         IBinding Bind<T1, T2, T3, T4, T5, T6, T7>(params object[] tags);
-        
+
         /// <summary>
-        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for details.
+        /// Starts binding definition for multiple dependency types simultaneously.
+        /// See <see cref="Bind{T}"/> for detailed usage.
         /// </summary>
-        /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T3">Type 3 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T4">Type 4 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T5">Type 5 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T6">Type 6 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T7">Type 7 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T8">Type 8 of a dependency to be bound.</typeparam>
-        /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <typeparam name="T1">First dependency type to bind.</typeparam>
+        /// <typeparam name="T2">Second dependency type to bind.</typeparam>
+        /// <typeparam name="T3">Third dependency type to bind.</typeparam>
+        /// <typeparam name="T4">Fourth dependency type to bind.</typeparam>
+        /// <typeparam name="T5">Fifth dependency type to bind.</typeparam>
+        /// <typeparam name="T6">Sixth dependency type to bind.</typeparam>
+        /// <typeparam name="T7">Seventh dependency type to bind.</typeparam>
+        /// <typeparam name="T8">Eighth dependency type to bind.</typeparam>
+        /// <param name="tags">Optional tags to associate with the binding.</param>
+        /// <returns>Binding configuration interface for method chaining.</returns>
         /// <seealso cref="IBinding.To{T}()"/>
         /// <seealso cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
         /// <seealso cref="IBinding.To{T1,T}()"/>
@@ -2107,7 +2094,7 @@ namespace Pure.DI
         IBinding Bind<T1, T2, T3, T4, T5, T6, T7, T8>(params object[] tags);
 
         /// <summary>
-        /// Begins the definition of the binding with <see cref="Root{T}"/> applied.
+        /// Starts binding definition with automatic root creation for a dependency type.
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
@@ -2115,34 +2102,14 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <typeparam name="T">The type of dependency to be bound.</typeparam>
+        /// <typeparam name="T">Dependency type to bind and expose as root.</typeparam>
         /// <param name="name">
-        /// Specifies the name of the root of the composition. If the value is empty, a private root will be created, which can be used when calling <c>Resolve</c> methods.
-        /// <para>
-        /// The name supports templating:
-        /// <list type="table">
-        /// <listheader>
-        /// <term>Template</term>
-        /// <description>Description</description>
-        /// </listheader>
-        /// <item>
-        /// <term>{type}</term>
-        /// <description>Will be replaced by the short name of the root type without its namespaces.</description>
-        /// </item>
-        /// <item>
-        /// <term>{TYPE}</term>
-        /// <description>Will be replaced with the full name of the root type.</description>
-        /// </item>
-        /// <item>
-        /// <term>{tag}</term>
-        /// <description>Will be replaced with the first tag name.</description>
-        /// </item>
-        /// </list>
-        /// </para>
+        /// Root name template (supports {type}, {TYPE}, {tag} placeholders).
+        /// Empty name creates a private root accessible only via Resolve methods.
         /// </param>
-        /// <param name="kind">The optional argument specifying the kind for the root of the composition.</param>
-        /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding. If it is is not empty, the first tag is used for the root.</param>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <param name="kind">Specifies root accessibility and creation method.</param>
+        /// <param name="tags">Tags for binding (first tag used for {tag} placeholder).</param>
+        /// <returns>Binding configuration interface for method chaining.</returns>
         /// <seealso cref="IBinding.To{T}()"/>
         /// <seealso cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
         /// <seealso cref="IBinding.To{T1,T}()"/>
@@ -2152,7 +2119,7 @@ namespace Pure.DI
         IBinding RootBind<T>(string name = "", RootKinds kind = RootKinds.Default, params object[] tags);
 
         /// <summary>
-        /// Indicates the use of some single or multiple setups as base setups by name.
+        /// Specifies base setups to inherit bindings from.
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
@@ -2160,34 +2127,34 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <param name="setupNames">A set of names for the basic setups on which this one depends.</param>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <param name="setupNames">Names of base composition setups.</param>
+        /// <returns>Configuration interface for method chaining.</returns>
         /// <seealso cref="DI.Setup"/>
         IConfiguration DependsOn(params string[] setupNames);
-        
+
         /// <summary>
-        /// Specifies a custom generic type argument attribute.
+        /// Registers custom generic type markers.
         /// <example>
         /// <code>
         /// [AttributeUsage(AttributeTargets.Interface | AttributeTargets.Class | AttributeTargets.Struct)]
         /// class MyGenericTypeArgumentAttribute: Attribute;
-        ///  
+        ///
         /// [MyGenericTypeArgument]
-        /// interface TTMy; 
-        ///  
+        /// interface TTMy;
+        ///
         /// DI.Setup("Composition")
         ///     .GenericTypeAttribute&lt;MyGenericTypeArgumentAttribute&gt;()
         ///     .Bind&lt;IDependency&lt;TTMy&gt;&gt;().To&lt;Dependency&lt;TTMy&gt;&gt;();
         /// </code>
         /// </example>
         /// </summary>
-        /// <typeparam name="T">The attribute type.</typeparam>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <typeparam name="T">Custom attribute type.</typeparam>
+        /// <returns>Configuration interface for method chaining.</returns>
         /// <seealso cref="GenericTypeArgumentAttribute"/>
         IConfiguration GenericTypeArgumentAttribute<T>() where T: global::System.Attribute;
 
         /// <summary>
-        /// Specifies a custom attribute that overrides the injection type.
+        /// Registers a custom attribute to override injection types.
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
@@ -2195,14 +2162,14 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <param name="typeArgumentPosition">The optional parameter that specifies the position of the type parameter in the attribute constructor. 0 by default. See predefined attribute <see cref="TypeAttribute{T}"/>.</param>
-        /// <typeparam name="T">The attribute type.</typeparam>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <param name="typeArgumentPosition">Position of type parameter in attribute constructor (default: 0).</param>
+        /// <typeparam name="T">Custom attribute type.</typeparam>
+        /// <returns>Configuration interface for method chaining.</returns>
         /// <seealso cref="Pure.DI.TypeAttribute"/>
         IConfiguration TypeAttribute<T>(int typeArgumentPosition = 0) where T: global::System.Attribute;
 
         /// <summary>
-        /// Specifies a tag attribute that overrides the injected tag.
+        /// Registers a custom attribute to override injection tags.
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
@@ -2210,14 +2177,14 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <param name="tagArgumentPosition">The optional parameter that specifies the position of the tag parameter in the attribute constructor. 0 by default. See the predefined <see cref="TagAttribute{T}"/> attribute.</param>
-        /// <typeparam name="T">The attribute type.</typeparam>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <param name="tagArgumentPosition">Position of tag parameter in attribute constructor (default: 0).</param>
+        /// <typeparam name="T">Custom attribute type.</typeparam>
+        /// <returns>Configuration interface for method chaining.</returns>
         /// <seealso cref="Pure.DI.TagAttribute"/>
         IConfiguration TagAttribute<T>(int tagArgumentPosition = 0) where T: global::System.Attribute;
 
         /// <summary>
-        /// Specifies a custom attribute that overrides the injection ordinal.
+        /// Registers a custom attribute to override injection priority.
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
@@ -2225,14 +2192,14 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <param name="ordinalArgumentPosition">The optional parameter that specifies the position of the ordinal parameter in the attribute constructor. 0 by default. See the predefined <see cref="OrdinalAttribute{T}"/> attribute.</param>
-        /// <typeparam name="T">The attribute type.</typeparam>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <param name="ordinalArgumentPosition">Position of ordinal parameter in attribute constructor (default: 0).</param>
+        /// <typeparam name="T">Custom attribute type.</typeparam>
+        /// <returns>Configuration interface for method chaining.</returns>
         /// <seealso cref="Pure.DI.OrdinalAttribute"/>
         IConfiguration OrdinalAttribute<T>(int ordinalArgumentPosition = 0) where T: global::System.Attribute;
 
         /// <summary>
-        /// Overrides the default <see cref="Lifetime"/> for all bindings further down the chain. If not specified, the <see cref="Lifetime.Transient"/> lifetime is used.
+        /// Sets the default lifetime for the following bindings.
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
@@ -2240,14 +2207,14 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <param name="lifetime">The default lifetime.</param>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <param name="lifetime">Default lifetime to apply.</param>
+        /// <returns>Configuration interface for method chaining.</returns>
         /// <seealso cref="Lifetime"/>
         /// <seealso cref="IBinding.As"/>
         IConfiguration DefaultLifetime(Pure.DI.Lifetime lifetime);
-        
+
         /// <summary>
-        /// Overrides the default <see cref="Lifetime"/> for all bindings can be casted to type <typeparamref name="T"/> further down the chain.
+        /// Sets the default lifetime for bindings of specific types for the following bindings.
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
@@ -2259,16 +2226,16 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <param name="lifetime">The default lifetime.</param>
-        /// <param name="tags">The optional argument specifying the binding tags for which it will set the default lifetime. If not specified, the default lifetime will be set for any tags.</param>
-        /// <typeparam name="T">The default lifetime will be applied to bindings if the implementation class can be cast to type <typeparamref name="T"/>.</typeparam>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <param name="lifetime">Default lifetime to apply.</param>
+        /// <param name="tags">Tags specifying which bindings to apply this lifetime to.</param>
+        /// <typeparam name="T">Type filter for applicable bindings.</typeparam>
+        /// <returns>Configuration interface for method chaining.</returns>
         /// <seealso cref="Lifetime"/>
         /// <seealso cref="IBinding.As"/>
         IConfiguration DefaultLifetime<T>(Pure.DI.Lifetime lifetime, params object[] tags);
-        
+
         /// <summary>
-        /// Adds a partial class argument and replaces the default constructor by adding this argument as a parameter. It is only created if this argument is actually used. 
+        /// Adds a composition argument to be injected.
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
@@ -2276,38 +2243,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
+        /// <typeparam name="T">Argument type.</typeparam>
         /// <param name="name">
-        /// The argument name.
-        /// <para>
-        /// The name supports templating:
-        /// <list type="table">
-        /// <listheader>
-        /// <term>Template</term>
-        /// <description>Description</description>
-        /// </listheader>
-        /// <item>
-        /// <term>{type}</term>
-        /// <description>Will be replaced by the short name of the argument type without its namespaces.</description>
-        /// </item>
-        /// <item>
-        /// <term>{TYPE}</term>
-        /// <description>Will be replaced with the full name of the argument type.</description>
-        /// </item>
-        /// <item>
-        /// <term>{tag}</term>
-        /// <description>Will be replaced with the first tag name.</description>
-        /// </item>
-        /// </list>
-        /// </para>
+        /// Argument name template (supports {type}, {TYPE}, {tag} placeholders).
         /// </param>
-        /// <param name="tags">The optional argument that specifies the tags for the argument.</param>
-        /// <typeparam name="T">The argument type.</typeparam>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <param name="tags">Tags to associate with the argument.</param>
+        /// <returns>Configuration interface for method chaining.</returns>
         /// <seealso cref="RootArg{T}"/>
         IConfiguration Arg<T>(string name, params object[] tags);
-        
+
         /// <summary>
-        /// Adds a root argument to use as a root parameter. 
+        /// Adds a root argument to be injected.
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
@@ -2315,38 +2261,17 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
+        /// <typeparam name="T">Argument type.</typeparam>
         /// <param name="name">
-        /// The argument name.
-        /// <para>
-        /// The name supports templating:
-        /// <list type="table">
-        /// <listheader>
-        /// <term>Template</term>
-        /// <description>Description</description>
-        /// </listheader>
-        /// <item>
-        /// <term>{type}</term>
-        /// <description>Will be replaced by the short name of the argument type without its namespaces.</description>
-        /// </item>
-        /// <item>
-        /// <term>{TYPE}</term>
-        /// <description>Will be replaced with the full name of the argument type.</description>
-        /// </item>
-        /// <item>
-        /// <term>{tag}</term>
-        /// <description>Will be replaced with the first tag name.</description>
-        /// </item>
-        /// </list>
-        /// </para>
+        /// Argument name template (supports {type}, {TYPE}, {tag} placeholders).
         /// </param>
-        /// <param name="tags">The optional argument that specifies the tags for the argument.</param>
-        /// <typeparam name="T">The argument type.</typeparam>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <param name="tags">Tags to associate with the argument.</param>
+        /// <returns>Configuration interface for method chaining.</returns>
         /// <seealso cref="Arg{T}"/>
         IConfiguration RootArg<T>(string name, params object[] tags);
-        
+
         /// <summary>
-        /// Specifying the root of the composition.
+        /// Defines the composition root.
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
@@ -2360,40 +2285,20 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
+        /// <typeparam name="T">Root type to expose.</typeparam>
         /// <param name="name">
-        /// Specifies the name of the root of the composition. If the value is empty, a private root will be created, which can be used when calling <c>Resolve</c> methods.
-        /// <para>
-        /// The name supports templating:
-        /// <list type="table">
-        /// <listheader>
-        /// <term>Template</term>
-        /// <description>Description</description>
-        /// </listheader>
-        /// <item>
-        /// <term>{type}</term>
-        /// <description>Will be replaced by the short name of the root type without its namespaces.</description>
-        /// </item>
-        /// <item>
-        /// <term>{TYPE}</term>
-        /// <description>Will be replaced with the full name of the root type.</description>
-        /// </item>
-        /// <item>
-        /// <term>{tag}</term>
-        /// <description>Will be replaced with the root tag name.</description>
-        /// </item>
-        /// </list>
-        /// </para>
+        /// Root name template (supports {type}, {TYPE}, {tag} placeholders).
+        /// Empty name creates the private root accessible only via <c>Resolve</c> methods.
         /// </param>
-        /// <param name="tag">The optional argument specifying the tag for the root of the composition.</param>
-        /// <param name="kind">The optional argument specifying the kind for the root of the composition.</param>
-        /// <typeparam name="T">The composition root type.</typeparam>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <param name="tag">Tag to associate with the root.</param>
+        /// <param name="kind">Specifies root accessibility and creation method.</param>
+        /// <returns>Configuration interface for method chaining.</returns>
         /// <seealso cref="RootBind{T}"/>
         /// <seealso cref="Roots{T}"/>
         IConfiguration Root<T>(string name = "", object tag = null, RootKinds kind = RootKinds.Default);
 
         /// <summary>
-        /// Specifies to define composition roots for all types inherited from <see cref="T"/> available at compile time at the point where the method is called.
+        /// Automatically creates roots for all base type implementations found at the time the method is called.
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
@@ -2407,35 +2312,19 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
+        /// <typeparam name="T">Base type for auto-root discovery.</typeparam>
         /// <param name="name">
-        /// Specifies the name of the roots of the composition. If the value is empty, private roots will be created, which can be used when calling <c>Resolve</c> methods.
-        /// <para>
-        /// The name supports templating:
-        /// <list type="table">
-        /// <listheader>
-        /// <term>Template</term>
-        /// <description>Description</description>
-        /// </listheader>
-        /// <item>
-        /// <term>{type}</term>
-        /// <description>Will be replaced by the short name of the type without its namespaces.</description>
-        /// </item>
-        /// <item>
-        /// <term>{TYPE}</term>
-        /// <description>Will be replaced with the full name of the type.</description>
-        /// </item>
-        /// </list>
-        /// </para>
+        /// Root name template (supports {type}, {TYPE} placeholders).
+        /// Empty name creates private roots accessible only via Resolve methods.
         /// </param>
-        /// <param name="kind">The optional argument specifying the kind for the root of the composition.</param>
-        /// <param name="filter">A wildcard to filter root types by their full name.</param>
-        /// <typeparam name="T">The composition root base type.</typeparam>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <param name="kind">Specifies root accessibility and creation method.</param>
+        /// <param name="filter">Wildcard pattern to filter types by full name.</param>
+        /// <returns>Configuration interface for method chaining.</returns>
         /// <seealso cref="Root{T}"/>
         IConfiguration Roots<T>(string name = "", RootKinds kind = RootKinds.Default, string filter = "*");
 
         /// <summary>
-        /// Specifies the method of the composition builder. The first argument to the method will always be the instance to be built. The remaining arguments to this method will be listed in the order in which they are defined in the setup.Specifies to create a composition builder method. The first argument to the method will always be the instance to be built. The remaining arguments to this method will be listed in the order in which they are defined in the setup.
+        /// Defines a builder method for initializing instances post-creation.
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
@@ -2443,34 +2332,18 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
+        /// <typeparam name="T">Type the builder method applies to.</typeparam>
         /// <param name="name">
-        /// Specifies the name of the builder. The default name is "BuildUp".
-        /// <para>
-        /// The name supports templating:
-        /// <list type="table">
-        /// <listheader>
-        /// <term>Template</term>
-        /// <description>Description</description>
-        /// </listheader>
-        /// <item>
-        /// <term>{type}</term>
-        /// <description>Will be replaced by the short name of the type without its namespaces.</description>
-        /// </item>
-        /// <item>
-        /// <term>{TYPE}</term>
-        /// <description>Will be replaced with the full name of the type.</description>
-        /// </item>
-        /// </list>
-        /// </para>
+        /// Builder method name template (supports {type}, {TYPE} placeholders).
+        /// Default: "BuildUp".
         /// </param>
-        /// <param name="kind">The optional argument specifying the kind for the root of the composition.</param>
-        /// <typeparam name="T">The composition root type.</typeparam>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <param name="kind">Specifies builder accessibility.</param>
+        /// <returns>Configuration interface for method chaining.</returns>
         /// <seealso cref="Builders{T}"/>
         IConfiguration Builder<T>(string name = "BuildUp", RootKinds kind = RootKinds.Default);
-        
+
         /// <summary>
-        /// Specifies to define builders for all types inherited from <see cref="T"/> available at compile time at the point where the method is called.
+        /// Automatically creates builders for all discoverable implementations of a base type found at the time the method is called.
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
@@ -2490,35 +2363,19 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
+        /// <typeparam name="T">Base type for builder discovery.</typeparam>
         /// <param name="name">
-        /// Specifies the name of the builders. The default name is "BuildUp".
-        /// <para>
-        /// The name supports templating:
-        /// <list type="table">
-        /// <listheader>
-        /// <term>Template</term>
-        /// <description>Description</description>
-        /// </listheader>
-        /// <item>
-        /// <term>{type}</term>
-        /// <description>Will be replaced by the short name of the type without its namespaces.</description>
-        /// </item>
-        /// <item>
-        /// <term>{TYPE}</term>
-        /// <description>Will be replaced with the full name of the type.</description>
-        /// </item>
-        /// </list>
-        /// </para>
+        /// Builder method name template (supports {type}, {TYPE} placeholders).
+        /// Default: "BuildUp".
         /// </param>
-        /// <param name="kind">The optional argument specifying the kind for the root of the composition.</param>
-        /// <param name="filter">A wildcard to filter builder types by their full name.</param>
-        /// <typeparam name="T">The composition root base type.</typeparam>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <param name="kind">Specifies builder accessibility.</param>
+        /// <param name="filter">Wildcard pattern to filter types by full name.</param>
+        /// <returns>Configuration interface for method chaining.</returns>
         /// <seealso cref="Builder{T}"/>
         IConfiguration Builders<T>(string name = "BuildUp", RootKinds kind = RootKinds.Default, string filter = "*");
 
         /// <summary>
-        /// Defines a hint for fine-tuning code generation.
+        /// Configures code generation options.
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
@@ -2526,14 +2383,14 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <param name="hint">The hint type.</param>
-        /// <param name="value">The hint value.</param>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <param name="hint">Hint type to configure.</param>
+        /// <param name="value">Value to set for the hint.</param>
+        /// <returns>Configuration interface for method chaining.</returns>
         /// <seealso cref="Pure.DI.Hint"/>
         IConfiguration Hint(Hint hint, string value);
 
         /// <summary>
-        /// Registers an accumulator for instances.
+        /// Registers an accumulator for collecting instances of specific lifetimes. If no lifetime is specified, it works for all.
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
@@ -2541,40 +2398,42 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <param name="lifetimes"><see cref="Lifetime"/> of the instances to be accumulated. Instances with lifetime <see cref="Lifetime.Singleton"/>, <see cref="Lifetime.Scoped"/>, or <see cref="Lifetime.PerResolve"/> only accumulate in an accumulator that is NOT lazily created.</param>
-        /// <typeparam name="T">The type of instance. All instances that can be cast to this type will be accumulated.</typeparam>
-        /// <typeparam name="TAccumulator">The type of accumulator. It must have a public constructor without parameters and a <c>Add</c> method with a single argument that allows you to add an instance of type <typeparamref name="T"/>.</typeparam>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <param name="lifetimes">Lifetimes of instances to accumulate.</param>
+        /// <typeparam name="T">Type of instances to collect.</typeparam>
+        /// <typeparam name="TAccumulator">
+        /// Accumulator type (requires parameterless constructor and Add(T) method).
+        /// </typeparam>
+        /// <returns>Configuration interface for method chaining.</returns>
         /// <seealso cref="Pure.DI.Lifetime"/>
         IConfiguration Accumulate<T, TAccumulator>(params Lifetime[] lifetimes)
             where TAccumulator: new();
-        
+
         /// <summary>
-        /// Specifies a custom generic type argument.
+        /// Defines a generic type marker for generic bindings.
         /// <example>
         /// <code>
         /// interface TTMy;
-        ///  
+        ///
         /// DI.Setup("Composition")
         ///     .GenericTypeArgument&lt;TTMy&gt;()
         ///     .Bind&lt;IDependency&lt;TTMy&gt;&gt;().To&lt;Dependency&lt;TTMy&gt;&gt;();
         /// </code>
         /// </example>
         /// </summary>
-        /// <typeparam name="T">The generic type marker.</typeparam>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <typeparam name="T">Generic type marker.</typeparam>
+        /// <returns>Configuration interface for method chaining.</returns>
         /// <seealso cref="GenericTypeArgumentAttribute{T}"/>
         IConfiguration GenericTypeArgument<T>();
     }
 
     /// <summary>
-    /// An API for a binding setup.
+    /// Defines the API for configuring dependency bindings in the composition.
     /// </summary>
     internal interface IBinding
     {
         /// <summary>
-        /// Begins the binding definition for the implementation type itself, and if the implementation is not an abstract class or structure, for all abstract but NOT special types that are directly implemented.
-        /// Special types include:
+        /// Starts binding definition for the implementation type itself. Also binds all directly implemented abstract types excluding special system interfaces.
+        /// Special system interfaces are excluded from binding:
         /// <list type="bullet">
         /// <item>System.Object</item>
         /// <item>System.Enum</item>
@@ -2582,7 +2441,7 @@ namespace Pure.DI
         /// <item>System.Delegate</item>
         /// <item>System.Collections.IEnumerable</item>
         /// <item>System.Collections.Generic.IEnumerable&lt;T&gt;</item>
-        /// <item>System.Collections.Generic.IList&lt;T&gt;</item>
+        /// <item>System.Collections.Generic.Iist&lt;T&gt;</item>
         /// <item>System.Collections.Generic.ICollection&lt;T&gt;</item>
         /// <item>System.Collections.IEnumerator</item>
         /// <item>System.Collections.Generic.IEnumerator&lt;T&gt;</item>
@@ -2599,8 +2458,8 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <param name="tags">Optional tags to associate with this binding.</param>
+        /// <returns>Binding configuration interface for method chaining.</returns>
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
         /// <seealso cref="To{T1,T}()"/>
@@ -2608,9 +2467,9 @@ namespace Pure.DI
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
         IBinding Bind(params object[] tags);
-        
+
         /// <summary>
-        /// Begins the definition of the binding.
+        /// Starts binding definition for a specific dependency type.
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
@@ -2618,9 +2477,9 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <typeparam name="T">The type of dependency to be bound. Common type markers such as <see cref="TT"/>, <see cref="TTList{T}"/> and others are also supported.</typeparam>
-        /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <typeparam name="T">Dependency type to bind. Supports type markers like <see cref="TT"/> and <see cref="TTList{T}"/>.</typeparam>
+        /// <param name="tags">Optional tags to associate with this binding.</param>
+        /// <returns>Binding configuration interface for method chaining.</returns>
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
         /// <seealso cref="To{T1,T}()"/>
@@ -2628,14 +2487,15 @@ namespace Pure.DI
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
         IBinding Bind<T>(params object[] tags);
-        
+
         /// <summary>
-        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for details.
+        /// Starts binding definition for multiple dependency types simultaneously.
+        /// See <see cref="Bind{T}"/> for detailed usage.
         /// </summary>
-        /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
-        /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <typeparam name="T1">First dependency type to bind.</typeparam>
+        /// <typeparam name="T2">Second dependency type to bind.</typeparam>
+        /// <param name="tags">Optional tags to associate with these bindings.</param>
+        /// <returns>Binding configuration interface for method chaining.</returns>
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
         /// <seealso cref="To{T1,T}()"/>
@@ -2643,15 +2503,16 @@ namespace Pure.DI
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
         IBinding Bind<T1, T2>(params object[] tags);
-        
+
         /// <summary>
-        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for details.
+        /// Starts binding definition for multiple dependency types simultaneously.
+        /// See <see cref="Bind{T}"/> for detailed usage.
         /// </summary>
-        /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T3">Type 3 of a dependency to be bound.</typeparam>
-        /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <typeparam name="T1">First dependency type to bind.</typeparam>
+        /// <typeparam name="T2">Second dependency type to bind.</typeparam>
+        /// <typeparam name="T3">Third dependency type to bind.</typeparam>
+        /// <param name="tags">Optional tags to associate with these bindings.</param>
+        /// <returns>Binding configuration interface for method chaining.</returns>
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
         /// <seealso cref="To{T1,T}()"/>
@@ -2659,16 +2520,17 @@ namespace Pure.DI
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
         IBinding Bind<T1, T2, T3>(params object[] tags);
-        
+
         /// <summary>
-        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for details.
+        /// Starts binding definition for multiple dependency types simultaneously.
+        /// See <see cref="Bind{T}"/> for detailed usage.
         /// </summary>
-        /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T3">Type 3 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T4">Type 3 of a dependency to be bound.</typeparam>
-        /// <param name="tags">The optional argument that specifies tags for a particular type of a dependency binding.</param>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <typeparam name="T1">First dependency type to bind.</typeparam>
+        /// <typeparam name="T2">Second dependency type to bind.</typeparam>
+        /// <typeparam name="T3">Third dependency type to bind.</typeparam>
+        /// <typeparam name="T4">Fourth dependency type to bind.</typeparam>
+        /// <param name="tags">Optional tags to associate with these bindings.</param>
+        /// <returns>Binding configuration interface for method chaining.</returns>
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
         /// <seealso cref="To{T1,T}()"/>
@@ -2676,17 +2538,18 @@ namespace Pure.DI
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
         IBinding Bind<T1, T2, T3, T4>(params object[] tags);
-        
+
         /// <summary>
-        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for details.
+        /// Starts binding definition for multiple dependency types simultaneously.
+        /// See <see cref="Bind{T}"/> for detailed usage.
         /// </summary>
-        /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T3">Type 3 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T4">Type 3 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T5">Type 5 of a dependency to be bound.</typeparam>
-        /// <param name="tags">The optional argument that specifies tags for a particular type of a dependency binding.</param>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <typeparam name="T1">First dependency type to bind.</typeparam>
+        /// <typeparam name="T2">Second dependency type to bind.</typeparam>
+        /// <typeparam name="T3">Third dependency type to bind.</typeparam>
+        /// <typeparam name="T4">Fourth dependency type to bind.</typeparam>
+        /// <typeparam name="T5">Fifth dependency type to bind.</typeparam>
+        /// <param name="tags">Optional tags to associate with these bindings.</param>
+        /// <returns>Binding configuration interface for method chaining.</returns>
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
         /// <seealso cref="To{T1,T}()"/>
@@ -2694,18 +2557,19 @@ namespace Pure.DI
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
         IBinding Bind<T1, T2, T3, T4, T5>(params object[] tags);
-        
+
         /// <summary>
-        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for details.
+        /// Starts binding definition for multiple dependency types simultaneously.
+        /// See <see cref="Bind{T}"/> for detailed usage.
         /// </summary>
-        /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T3">Type 3 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T4">Type 3 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T5">Type 5 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T6">Type 6 of a dependency to be bound.</typeparam>
-        /// <param name="tags">The optional argument that specifies tags for a particular type of a dependency binding.</param>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <typeparam name="T1">First dependency type to bind.</typeparam>
+        /// <typeparam name="T2">Second dependency type to bind.</typeparam>
+        /// <typeparam name="T3">Third dependency type to bind.</typeparam>
+        /// <typeparam name="T4">Fourth dependency type to bind.</typeparam>
+        /// <typeparam name="T5">Fifth dependency type to bind.</typeparam>
+        /// <typeparam name="T6">Sixth dependency type to bind.</typeparam>
+        /// <param name="tags">Optional tags to associate with these bindings.</param>
+        /// <returns>Binding configuration interface for method chaining.</returns>
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
         /// <seealso cref="To{T1,T}()"/>
@@ -2713,19 +2577,20 @@ namespace Pure.DI
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
         IBinding Bind<T1, T2, T3, T4, T5, T6>(params object[] tags);
-        
+
         /// <summary>
-        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for details.
+        /// Starts binding definition for multiple dependency types simultaneously.
+        /// See <see cref="Bind{T}"/> for detailed usage.
         /// </summary>
-        /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T3">Type 3 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T4">Type 3 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T5">Type 5 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T6">Type 6 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T7">Type 7 of a dependency to be bound.</typeparam>
-        /// <param name="tags">The optional argument that specifies tags for a particular type of a dependency binding.</param>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <typeparam name="T1">First dependency type to bind.</typeparam>
+        /// <typeparam name="T2">Second dependency type to bind.</typeparam>
+        /// <typeparam name="T3">Third dependency type to bind.</typeparam>
+        /// <typeparam name="T4">Fourth dependency type to bind.</typeparam>
+        /// <typeparam name="T5">Fifth dependency type to bind.</typeparam>
+        /// <typeparam name="T6">Sixth dependency type to bind.</typeparam>
+        /// <typeparam name="T7">Seventh dependency type to bind.</typeparam>
+        /// <param name="tags">Optional tags to associate with these bindings.</param>
+        /// <returns>Binding configuration interface for method chaining.</returns>
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
         /// <seealso cref="To{T1,T}()"/>
@@ -2733,20 +2598,21 @@ namespace Pure.DI
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
         IBinding Bind<T1, T2, T3, T4, T5, T6, T7>(params object[] tags);
-        
+
         /// <summary>
-        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for details.
+        /// Starts binding definition for multiple dependency types simultaneously.
+        /// See <see cref="Bind{T}"/> for detailed usage.
         /// </summary>
-        /// <typeparam name="T1">Type 1 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T2">Type 2 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T3">Type 3 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T4">Type 3 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T5">Type 5 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T6">Type 6 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T7">Type 7 of a dependency to be bound.</typeparam>
-        /// <typeparam name="T8">Type 8 of a dependency to be bound.</typeparam>
-        /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <typeparam name="T1">First dependency type to bind.</typeparam>
+        /// <typeparam name="T2">Second dependency type to bind.</typeparam>
+        /// <typeparam name="T3">Third dependency type to bind.</typeparam>
+        /// <typeparam name="T4">Fourth dependency type to bind.</typeparam>
+        /// <typeparam name="T5">Fifth dependency type to bind.</typeparam>
+        /// <typeparam name="T6">Sixth dependency type to bind.</typeparam>
+        /// <typeparam name="T7">Seventh dependency type to bind.</typeparam>
+        /// <typeparam name="T8">Eighth dependency type to bind.</typeparam>
+        /// <param name="tags">Optional tags to associate with these bindings.</param>
+        /// <returns>Binding configuration interface for method chaining.</returns>
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
         /// <seealso cref="To{T1,T}()"/>
@@ -2756,7 +2622,7 @@ namespace Pure.DI
         IBinding Bind<T1, T2, T3, T4, T5, T6, T7, T8>(params object[] tags);
 
         /// <summary>
-        /// Determines the <see cref="Lifetime"/> of a binding.
+        /// Specifies the lifetime scope for the binding.
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
@@ -2764,8 +2630,8 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <param name="lifetime">The <see cref="Lifetime"/> of a binding</param>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <param name="lifetime">Lifetime scope for the binding.</param>
+        /// <returns>Binding configuration interface for method chaining.</returns>
         /// <seealso cref="IConfiguration.Bind{T}"/>
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
@@ -2775,31 +2641,23 @@ namespace Pure.DI
         IBinding As(Pure.DI.Lifetime lifetime);
 
         /// <summary>
-        /// Defines the binding tags.
+        /// Specifies binding tags to differentiate between multiple implementations of the same interface.
         /// <example>
-        /// Sometimes it's important to take control of building a dependency graph. For example, when there are multiple implementations of the same contract. In this case, tags will help:
         /// <code>
         /// interface IDependency { }
-        /// 
         ///
         /// class AbcDependency: IDependency { }
-        /// 
         ///
         /// class XyzDependency: IDependency { }
-        /// 
         ///
         /// class Dependency: IDependency { }
-        /// 
         ///
         /// interface IService
         /// {
         ///     IDependency Dependency1 { get; }
-        /// 
-        ///
         ///     IDependency Dependency2 { get; }
         /// }
         ///
-        /// 
         /// class Service: IService
         /// {
         ///     public Service(
@@ -2811,12 +2669,9 @@ namespace Pure.DI
         ///     }
         ///
         ///     public IDependency Dependency1 { get; }
-        ///
-        /// 
         ///     public IDependency Dependency2 { get; }
         /// }
         ///
-        /// 
         /// DI.Setup("Composition")
         ///     .Bind&lt;IDependency&gt;().Tags("Abc").To&lt;AbcDependency&gt;()
         ///     .Bind&lt;IDependency&gt;().Tags("Xyz").To&lt;XyzDependency&gt;()
@@ -2824,8 +2679,8 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <param name="tags">The binding tags.</param>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <param name="tags">Tags to associate with this binding.</param>
+        /// <returns>Binding configuration interface for method chaining.</returns>
         /// <seealso cref="IConfiguration.Bind{T}"/>
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
@@ -2835,7 +2690,7 @@ namespace Pure.DI
         IBinding Tags(params object[] tags);
 
         /// <summary>
-        /// Completes the binding chain by specifying the implementation.
+        /// Specifies the implementation type for the binding.
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
@@ -2843,8 +2698,8 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <typeparam name="T">The implementation type. Also supports generic type markers such as <see cref="TT"/>, <see cref="TTList{T}"/>, and others.</typeparam>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <typeparam name="T">Implementation type. Supports generic type markers.</typeparam>
+        /// <returns>Configuration interface for method chaining.</returns>
         /// <seealso cref="IConfiguration.Bind{T}"/>
         /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
         /// <seealso cref="To{T1,T}()"/>
@@ -2854,7 +2709,7 @@ namespace Pure.DI
         IConfiguration To<T>();
 
         /// <summary>
-        /// Completes the binding chain by specifying the implementation using a factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc.
+        /// Specifies a factory method to create the implementation instance.
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
@@ -2865,48 +2720,54 @@ namespace Pure.DI
         ///         service.Initialize();
         ///         return service;
         ///     })
-        /// </code>
-        /// <br/>
-        /// another example:
-        /// <code>
+        ///
+        /// // Another example:
         /// DI.Setup("Composition")
-        ///     .Bind&amp;lt;IService&amp;gt;()
-        ///     To(ctx =&amp;gt;
+        ///     .Bind&lt;IService&gt;()
+        ///     To(ctx =&gt;
         ///     {
         ///         ctx.Inject&lt;IDependency&gt;(out var dependency);
         ///         return new Service(dependency);
         ///     })
-        /// </code>
-        /// <br/>
-        /// and another example:
-        /// <code>
+        ///
+        /// // And another example:
         /// DI.Setup("Composition")
-        ///     .Bind&amp;lt;IService&amp;gt;()
-        ///     To(ctx =&amp;gt;
+        ///     .Bind&lt;IService&gt;()
+        ///     To(ctx =&gt;
         ///     {
         ///         // Builds up an instance with all necessary dependencies
         ///         ctx.Inject&lt;Service&gt;(out var service);
-        ///
-        /// 
         ///         service.Initialize();
         ///         return service;
         ///     })
         /// </code>
         /// </example>
         /// </summary>
-        /// <param name="factory">An expression for manually creating and initializing an instance.</param>
-        /// <typeparam name="T">The implementation type.</typeparam>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <param name="factory">Factory method to create and initialize the instance.</param>
+        /// <typeparam name="T">Implementation type.</typeparam>
+        /// <returns>Configuration interface for method chaining.</returns>
         /// <seealso cref="IConfiguration.Bind{T}"/>
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="To{T1,T}()"/>
         /// <seealso cref="To{T1,T2,T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
+        /// <remarks>
+        /// This method is useful for creating and initializing an instance manually.
+        /// At the compilation stage, the set of dependencies that the object to be created needs is determined.
+        /// In most cases, this happens automatically, according to the set of constructors and their arguments, and does not require additional customization efforts.
+        /// But sometimes it is necessary to manually create and/or initialize an object.
+        /// There are scenarios where manual control over the creation process is required, such as
+        /// <list type="bullet">
+        /// <item>when additional initialization logic is needed</item>
+        /// <item>when complex construction steps are required</item>
+        /// <item>when specific object states need to be set during creation</item>
+        /// </list>
+        /// </remarks>
         IConfiguration To<T>(global::System.Func<IContext, T> factory);
-        
+
         /// <summary>
-        /// Completes the binding chain by specifying the implementation using a source code statement.
+        /// Specifies a source code statement to create the implementation.
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
@@ -2921,14 +2782,14 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <param name="sourceCodeStatement">Source code statement</param>
-        /// <typeparam name="T">The implementation type.</typeparam>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <param name="sourceCodeStatement">Source code expression to create the instance.</param>
+        /// <typeparam name="T">Implementation type.</typeparam>
+        /// <returns>Configuration interface for method chaining.</returns>
         /// <seealso cref="IConfiguration.Bind{T}"/>
         IConfiguration To<T>(string sourceCodeStatement);
 
         /// <summary>
-        /// Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the <see cref="TagAttribute"/> in front of the parameter to specify the tag of the injected dependency.
+        /// Specifies a simplified factory method with dependency parameters.
         /// <example>
         /// <code>
         /// DI.Setup(nameof(Composition))
@@ -2938,12 +2799,11 @@ namespace Pure.DI
         ///         dependency.Initialize();
         ///         return dependency;
         ///     });
-        /// </code>
-        /// A variant using <see cref="TagAttribute"/>:
-        /// <code>
+        ///
+        /// // Variant using TagAttribute:
         /// DI.Setup(nameof(Composition))
         ///     .Bind&lt;IDependency&gt;().To((
-        ///         [Tag(&quot;some tag&quot;)] Dependency dependency) =&gt;
+        ///         [Tag("some tag")] Dependency dependency) =&gt;
         ///     {
         ///         dependency.Initialize();
         ///         return dependency;
@@ -2951,10 +2811,10 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <param name="factory">An expression for manually creating and initializing an instance.</param>
-        /// <typeparam name="T1">Type #1 of the injected dependency.</typeparam>
-        /// <typeparam name="T">The implementation type.</typeparam>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <param name="factory">Factory method with injected dependencies.</param>
+        /// <typeparam name="T1">Type of the first dependency parameter.</typeparam>
+        /// <typeparam name="T">Implementation type.</typeparam>
+        /// <returns>Configuration interface for method chaining.</returns>
         /// <seealso cref="IConfiguration.Bind{T}"/>
         /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
         /// <seealso cref="To{T}()"/>
@@ -2963,7 +2823,7 @@ namespace Pure.DI
         IConfiguration To<T1, T>(global::System.Func<T1, T> factory);
 
         /// <summary>
-        /// Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the <see cref="TagAttribute"/> in front of the parameter to specify the tag of the injected dependency.
+        /// Specifies a simplified factory method with multiple dependency parameters.
         /// <example>
         /// <code>
         /// DI.Setup(nameof(Composition))
@@ -2974,14 +2834,13 @@ namespace Pure.DI
         ///         dependency.Initialize(time);
         ///         return dependency;
         ///     });
-        /// </code>
-        /// A variant using <see cref="TagAttribute"/>:
-        /// <code>
+        ///
+        /// // Variant using TagAttribute:
         /// DI.Setup(nameof(Composition))
-        ///     .Bind(&quot;now datetime&quot;).To(_ =&gt; DateTimeOffset.Now)
+        ///     .Bind("now datetime").To(_ =&gt; DateTimeOffset.Now)
         ///     .Bind&lt;IDependency&gt;().To((
         ///         Dependency dependency,
-        ///         [Tag(&quot;now datetime&quot;)] DateTimeOffset time) =&gt;
+        ///         [Tag("now datetime")] DateTimeOffset time) =&gt;
         ///     {
         ///         dependency.Initialize(time);
         ///         return dependency;
@@ -2989,122 +2848,122 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <param name="factory">An expression for manually creating and initializing an instance.</param>
-        /// <typeparam name="T1">Type #1 of the injected dependency.</typeparam>
-        /// <typeparam name="T2">Type #2 of the injected dependency.</typeparam>
-        /// <typeparam name="T">The implementation type.</typeparam>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <param name="factory">Factory method with injected dependencies.</param>
+        /// <typeparam name="T1">Type of the first dependency parameter.</typeparam>
+        /// <typeparam name="T2">Type of second dependency parameter.</typeparam>
+        /// <typeparam name="T">Implementation type.</typeparam>
+        /// <returns>Configuration interface for method chaining.</returns>
         /// <seealso cref="IConfiguration.Bind{T}"/>
         /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
         IConfiguration To<T1, T2, T>(global::System.Func<T1, T2, T> factory);
-        
+
         /// <summary>
-        /// Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the <see cref="TagAttribute"/> in front of the parameter to specify the tag of the injected dependency.
+        /// Specifies a simplified factory method with multiple dependency parameters.
         /// </summary>
-        /// <param name="factory">An expression for manually creating and initializing an instance.</param>
-        /// <typeparam name="T1">Type #1 of the injected dependency.</typeparam>
-        /// <typeparam name="T2">Type #2 of the injected dependency.</typeparam>
-        /// <typeparam name="T3">Type #3 of the injected dependency.</typeparam>
-        /// <typeparam name="T">The implementation type.</typeparam>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <param name="factory">Factory method with injected dependencies.</param>
+        /// <typeparam name="T1">Type of the first dependency parameter.</typeparam>
+        /// <typeparam name="T2">Type of the second dependency parameter.</typeparam>
+        /// <typeparam name="T3">Type of the third dependency parameter.</typeparam>
+        /// <typeparam name="T">Implementation type.</typeparam>
+        /// <returns>Configuration interface for method chaining.</returns>
         /// <seealso cref="IConfiguration.Bind{T}"/>
         /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
         IConfiguration To<T1, T2, T3, T>(global::System.Func<T1, T2, T3, T> factory);
-        
+
         /// <summary>
-        /// Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the <see cref="TagAttribute"/> in front of the parameter to specify the tag of the injected dependency.
+        /// Specifies a simplified factory method with multiple dependency parameters.
         /// </summary>
-        /// <param name="factory">An expression for manually creating and initializing an instance.</param>
-        /// <typeparam name="T1">Type #1 of the injected dependency.</typeparam>
-        /// <typeparam name="T2">Type #2 of the injected dependency.</typeparam>
-        /// <typeparam name="T3">Type #3 of the injected dependency.</typeparam>
-        /// <typeparam name="T4">Type #4 of the injected dependency.</typeparam>
-        /// <typeparam name="T">The implementation type.</typeparam>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <param name="factory">Factory method with injected dependencies.</param>
+        /// <typeparam name="T1">Type of the first dependency parameter.</typeparam>
+        /// <typeparam name="T2">Type of the second dependency parameter.</typeparam>
+        /// <typeparam name="T3">Type of the third dependency parameter.</typeparam>
+        /// <typeparam name="T4">Type of the fourth dependency parameter.</typeparam>
+        /// <typeparam name="T">Implementation type.</typeparam>
+        /// <returns>Configuration interface for method chaining.</returns>
         /// <seealso cref="IConfiguration.Bind{T}"/>
         /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
         IConfiguration To<T1, T2, T3, T4, T>(global::System.Func<T1, T2, T3, T4, T> factory);
-        
+
         /// <summary>
-        /// Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the <see cref="TagAttribute"/> in front of the parameter to specify the tag of the injected dependency.
+        /// Specifies a simplified factory method with multiple dependency parameters.
         /// </summary>
-        /// <param name="factory">An expression for manually creating and initializing an instance.</param>
-        /// <typeparam name="T1">Type #1 of the injected dependency.</typeparam>
-        /// <typeparam name="T2">Type #2 of the injected dependency.</typeparam>
-        /// <typeparam name="T3">Type #3 of the injected dependency.</typeparam>
-        /// <typeparam name="T4">Type #4 of the injected dependency.</typeparam>
-        /// <typeparam name="T5">Type #5 of the injected dependency.</typeparam>
-        /// <typeparam name="T">The implementation type.</typeparam>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <param name="factory">Factory method with injected dependencies.</param>
+        /// <typeparam name="T1">Type of the first dependency parameter.</typeparam>
+        /// <typeparam name="T2">Type of the second dependency parameter.</typeparam>
+        /// <typeparam name="T3">Type of the third dependency parameter.</typeparam>
+        /// <typeparam name="T4">Type of the fourth dependency parameter.</typeparam>
+        /// <typeparam name="T5">Type of the fifth dependency parameter.</typeparam>
+        /// <typeparam name="T">Implementation type.</typeparam>
+        /// <returns>Configuration interface for method chaining.</returns>
         /// <seealso cref="IConfiguration.Bind{T}"/>
         /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
         IConfiguration To<T1, T2, T3, T4, T5, T>(global::System.Func<T1, T2, T3, T4, T5, T> factory);
-        
+
         /// <summary>
-        /// Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the <see cref="TagAttribute"/> in front of the parameter to specify the tag of the injected dependency.
+        /// Specifies a simplified factory method with multiple dependency parameters.
         /// </summary>
-        /// <param name="factory">An expression for manually creating and initializing an instance.</param>
-        /// <typeparam name="T1">Type #1 of the injected dependency.</typeparam>
-        /// <typeparam name="T2">Type #2 of the injected dependency.</typeparam>
-        /// <typeparam name="T3">Type #3 of the injected dependency.</typeparam>
-        /// <typeparam name="T4">Type #4 of the injected dependency.</typeparam>
-        /// <typeparam name="T5">Type #5 of the injected dependency.</typeparam>
-        /// <typeparam name="T6">Type #6 of the injected dependency.</typeparam>
-        /// <typeparam name="T">The implementation type.</typeparam>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <param name="factory">Factory method with injected dependencies.</param>
+        /// <typeparam name="T1">Type of the first dependency parameter.</typeparam>
+        /// <typeparam name="T2">Type of the second dependency parameter.</typeparam>
+        /// <typeparam name="T3">Type of the third dependency parameter.</typeparam>
+        /// <typeparam name="T4">Type of the fourth dependency parameter.</typeparam>
+        /// <typeparam name="T5">Type of the fifth dependency parameter.</typeparam>
+        /// <typeparam name="T6">Type of the sixth dependency parameter.</typeparam>
+        /// <typeparam name="T">Implementation type.</typeparam>
+        /// <returns>Configuration interface for method chaining.</returns>
         /// <seealso cref="IConfiguration.Bind{T}"/>
         /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
         IConfiguration To<T1, T2, T3, T4, T5, T6, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T> factory);
-        
+
         /// <summary>
-        /// Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the <see cref="TagAttribute"/> in front of the parameter to specify the tag of the injected dependency.
+        /// Specifies a simplified factory method with multiple dependency parameters.
         /// </summary>
-        /// <param name="factory">An expression for manually creating and initializing an instance.</param>
-        /// <typeparam name="T1">Type #1 of the injected dependency.</typeparam>
-        /// <typeparam name="T2">Type #2 of the injected dependency.</typeparam>
-        /// <typeparam name="T3">Type #3 of the injected dependency.</typeparam>
-        /// <typeparam name="T4">Type #4 of the injected dependency.</typeparam>
-        /// <typeparam name="T5">Type #5 of the injected dependency.</typeparam>
-        /// <typeparam name="T6">Type #6 of the injected dependency.</typeparam>
-        /// <typeparam name="T7">Type #7 of the injected dependency.</typeparam>
-        /// <typeparam name="T">The implementation type.</typeparam>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <param name="factory">Factory method with injected dependencies.</param>
+        /// <typeparam name="T1">Type of the first dependency parameter.</typeparam>
+        /// <typeparam name="T2">Type of the second dependency parameter.</typeparam>
+        /// <typeparam name="T3">Type of the third dependency parameter.</typeparam>
+        /// <typeparam name="T4">Type of the fourth dependency parameter.</typeparam>
+        /// <typeparam name="T5">Type of the fifth dependency parameter.</typeparam>
+        /// <typeparam name="T6">Type of the sixth dependency parameter.</typeparam>
+        /// <typeparam name="T7">Type of the seventh dependency parameter.</typeparam>
+        /// <typeparam name="T">Implementation type.</typeparam>
+        /// <returns>Configuration interface for method chaining.</returns>
         /// <seealso cref="IConfiguration.Bind{T}"/>
         /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
         IConfiguration To<T1, T2, T3, T4, T5, T6, T7, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T> factory);
-        
+
         /// <summary>
-        /// Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the <see cref="TagAttribute"/> in front of the parameter to specify the tag of the injected dependency.
+        /// Specifies a simplified factory method with multiple dependency parameters.
         /// </summary>
-        /// <param name="factory">An expression for manually creating and initializing an instance.</param>
-        /// <typeparam name="T1">Type #1 of the injected dependency.</typeparam>
-        /// <typeparam name="T2">Type #2 of the injected dependency.</typeparam>
-        /// <typeparam name="T3">Type #3 of the injected dependency.</typeparam>
-        /// <typeparam name="T4">Type #4 of the injected dependency.</typeparam>
-        /// <typeparam name="T5">Type #5 of the injected dependency.</typeparam>
-        /// <typeparam name="T6">Type #6 of the injected dependency.</typeparam>
-        /// <typeparam name="T7">Type #7 of the injected dependency.</typeparam>
-        /// <typeparam name="T8">Type #7 of the injected dependency.</typeparam>
-        /// <typeparam name="T">The implementation type.</typeparam>
-        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <param name="factory">Factory method with injected dependencies.</param>
+        /// <typeparam name="T1">Type of the first dependency parameter.</typeparam>
+        /// <typeparam name="T2">Type of the second dependency parameter.</typeparam>
+        /// <typeparam name="T3">Type of the third dependency parameter.</typeparam>
+        /// <typeparam name="T4">Type of the fourth dependency parameter.</typeparam>
+        /// <typeparam name="T5">Type of the fifth dependency parameter.</typeparam>
+        /// <typeparam name="T6">Type of the sixth dependency parameter.</typeparam>
+        /// <typeparam name="T7">Type of the seventh dependency parameter.</typeparam>
+        /// <typeparam name="T8">Type of the eighth dependency parameter.</typeparam>
+        /// <typeparam name="T">Implementation type.</typeparam>
+        /// <returns>Configuration interface for method chaining.</returns>
         /// <seealso cref="IConfiguration.Bind{T}"/>
         /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
         /// <seealso cref="To{T}()"/>
@@ -3143,7 +3002,6 @@ namespace Pure.DI
         /// var box = new Composition().Box;
         /// // Output: ShroedingersCat, CardboardBox`1, Composition
         ///
-        ///
         /// static void Setup() =&gt;
         ///     DI.Setup(nameof(Composition))
         ///     .Bind().To(ctx =&gt; new Log(ctx.ConsumerTypes))
@@ -3151,16 +3009,13 @@ namespace Pure.DI
         ///     .Bind().To&lt;CardboardBox&lt;TT&gt;&gt;()
         ///     .Root&lt;CardboardBox&lt;ShroedingersCat&gt;&gt;(&quot;Box&quot;);
         ///
-        ///
         /// public class Log
         /// {
         ///     public Log(Type[] types) =&gt;
         ///         Console.WriteLine(string.Join(&quot;, &quot;, types.Select(type =&gt; type.Name)));
         /// }
         ///
-        ///
         /// public record CardboardBox&lt;T&gt;(T Content);
-        ///
         ///
         /// public record ShroedingersCat(Log log);
         /// </code>
@@ -3177,7 +3032,6 @@ namespace Pure.DI
         /// var box = new Composition().Box;
         /// // Output: ShroedingersCat
         ///
-        ///
         /// static void Setup() =&gt;
         ///     DI.Setup(nameof(Composition))
         ///     .Bind().To(ctx =&gt; new Log(ctx.ConsumerType))
@@ -3185,16 +3039,13 @@ namespace Pure.DI
         ///     .Bind().To&lt;CardboardBox&lt;TT&gt;&gt;()
         ///     .Root&lt;CardboardBox&lt;ShroedingersCat&gt;&gt;(&quot;Box&quot;);
         ///
-        ///
         /// public class Log
         /// {
         ///     public Log(Type type) =&gt;
         ///         Console.WriteLine(type.Name);
         /// }
         ///
-        ///
         /// public record CardboardBox&lt;T&gt;(T Content);
-        ///
         ///
         /// public record ShroedingersCat(Log log);
         /// </code>
@@ -3226,7 +3077,6 @@ namespace Pure.DI
         ///         // Builds up an instance with all necessary dependencies
         ///         ctx.Inject&lt;Service&gt;(out var service);
         ///
-        /// 
         ///         service.Initialize();
         ///         return service;
         ///     })
@@ -3280,7 +3130,7 @@ namespace Pure.DI
         void BuildUp<T>(T value);
 
         /// <summary>
-        /// Overrides the binding with the specified value. Cannot be used outside the binding setting.
+        /// Overrides the binding with the specified value. Cannot be used outside the binding setup.
         /// <code>
         /// DI.Setup("Composition")
         ///     .Bind().To&lt;Func&lt;int, int, IDependency&gt;&gt;(ctx =&gt;
@@ -3323,7 +3173,7 @@ namespace Pure.DI
         ///             }
         ///         })
         /// </code>
-        /// An alternative to synchronizing streams yourself is to use types like <see cref="Func{TArg1,TArg2,TResult}">this</see>. There, threads synchronization is performed automatically.
+        /// An alternative to synchronizing thread yourself is to use types like <see cref="Func{TArg1,TArg2,TResult}">this</see>. There, threads synchronization is performed automatically.
         /// </summary>
         /// <param name="value">The object that will be used to override a binding.</param>
         /// <typeparam name="T">Object type that will be used to override a binding.</typeparam>
