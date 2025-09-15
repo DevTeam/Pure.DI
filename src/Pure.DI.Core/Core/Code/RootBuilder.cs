@@ -386,7 +386,8 @@ class RootBuilder(
                 var factoryExpression = (LambdaExpressionSyntax)factory.Source.LocalVariableRenamingRewriter.Clone().Rewrite(setup.SemanticModel, false, originalLambda);
                 var injections = new List<FactoryRewriter.Injection>();
                 var inits = new List<FactoryRewriter.Initializer>();
-                var factoryRewriter = factoryRewriterFactory(new FactoryRewriterContext(factory, ctx.Parents, varInjection, finishLabel, injections, inits));
+                var rewriterContext = new FactoryRewriterContext(factory, varInjection, finishLabel, injections, inits);
+                var factoryRewriter = factoryRewriterFactory(rewriterContext);
                 var lambda = factoryRewriter.Rewrite(ctx, factoryExpression);
                 factoryValidatorFactory(factory).Visit(lambda);
                 SyntaxNode syntaxNode = lambda.Block is not null ? lambda.Block : SyntaxFactory.ExpressionStatement((ExpressionSyntax)lambda.Body);
