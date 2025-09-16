@@ -7,4 +7,6 @@ record RootContext(
     Lines Lines)
 {
     public bool IsThreadSafeEnabled => Graph.Source.Hints.IsThreadSafeEnabled;
+
+    public bool LockIsInUse { get; set; }
 }

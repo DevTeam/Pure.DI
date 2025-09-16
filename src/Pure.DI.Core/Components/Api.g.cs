@@ -3056,6 +3056,26 @@ namespace Pure.DI
         Type ConsumerType { get; }
 
         /// <summary>
+        /// Gets the synchronization object used to control thread-safe access during composition.
+        /// Used to prevent race conditions during dependency resolution and override operations.
+        /// <example>
+        /// <code>
+        /// DI.Setup(nameof(Composition))
+        ///     .Bind&lt;IDependency&gt;().To&lt;IDependency&gt;(ctx =&gt;
+        ///     {
+        ///         lock (ctx.Lock)
+        ///         {
+        ///             ctx.Inject(out Dependency dependency);
+        ///             dependency.Initialize();
+        ///             return dependency;
+        ///         }
+        ///     })
+        /// </code>
+        /// </example>
+        /// </summary>
+        object Lock { get; }
+
+        /// <summary>
         /// Injects an instance of type <c>T</c>. Cannot be used outside the binding setup.
         /// <example>
         /// <code>

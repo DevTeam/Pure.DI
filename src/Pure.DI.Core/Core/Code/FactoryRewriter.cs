@@ -295,6 +295,14 @@ sealed class FactoryRewriter(
                 case nameof(IContext.ConsumerType):
                     var consumer = GetConsumers().First();
                     return Visit(SyntaxFactory.ParseExpression(consumer));
+
+                case nameof(IContext.Lock):
+                    if (_ctx is {} codeCtx)
+                    {
+                        codeCtx.RootContext.LockIsInUse = true;
+                    }
+
+                    return Visit(SyntaxFactory.ParseExpression(Names.LockFieldName));
             }
         }
 
