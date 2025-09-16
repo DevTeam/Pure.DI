@@ -37,7 +37,7 @@ sealed class ScopeConstructorBuilder(ILocks locks) : IClassPartBuilder
                 }
             }
 
-            if (composition.Singletons.Length > 0 && composition.IsThreadSafe || locks.HasLockField(composition.Source))
+            if (!composition.IsStaticThreadSafe && composition.IsLockRequired(locks))
             {
                 code.AppendLine($"{Names.LockFieldName} = {Names.ParentScopeArgName}.{Names.LockFieldName};");
             }

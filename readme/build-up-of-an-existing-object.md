@@ -106,6 +106,7 @@ partial class Composition
 
   internal Composition(Composition parentScope)
   {
+    _lock = parentScope._lock;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -113,11 +114,11 @@ partial class Composition
   {
     if (name is null) throw new ArgumentNullException(nameof(name));
     Dependency transDependency1;
-    var localDependency1 = new Dependency();
+    var localDependency2 = new Dependency();
     Guid transGuid3 = Guid.NewGuid();
-    localDependency1.Name = name;
-    localDependency1.SetId(transGuid3);
-    transDependency1 = localDependency1;
+    localDependency2.Name = name;
+    localDependency2.SetId(transGuid3);
+    transDependency1 = localDependency2;
     return new Service(transDependency1);
   }
 }

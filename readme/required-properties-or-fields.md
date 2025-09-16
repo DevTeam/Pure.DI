@@ -99,6 +99,7 @@ partial class Composition
   internal Composition(Composition parentScope)
   {
     _argName = parentScope._argName;
+    _lock = parentScope._lock;
   }
 
   public IService Root

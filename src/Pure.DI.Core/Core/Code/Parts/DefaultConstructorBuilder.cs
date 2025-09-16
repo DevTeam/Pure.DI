@@ -35,7 +35,7 @@ sealed class DefaultConstructorBuilder(
                 code.AppendLine($"{Names.RootFieldName} = this;");
             }
 
-            if (composition.IsThreadSafe || locks.HasLockField(composition.Source))
+            if (!composition.IsStaticThreadSafe && composition.IsLockRequired(locks))
             {
                 code.AppendLine(new Line(int.MinValue, "#if NET9_0_OR_GREATER"));
                 code.AppendLine($"{Names.LockFieldName} = new {Names.LockTypeName}();");

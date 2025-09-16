@@ -4,5 +4,7 @@ interface ILifetimeAnalyzer
 {
     Lifetime GetActualDependencyLifetime(Lifetime targetLifetime, Lifetime dependencyLifetime);
 
-    bool ValidateLifetimes(Lifetime actualTargetLifetime, Lifetime dependencyLifetime);
+    bool ValidateScopedToSingleton(Lifetime actualTargetLifetime, Lifetime dependencyLifetime);
+
+    bool ValidateRootKindSpecificLifetime(Root root, Lifetime lifetime);
 }

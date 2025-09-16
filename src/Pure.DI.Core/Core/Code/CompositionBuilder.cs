@@ -17,7 +17,8 @@ class CompositionBuilder(
         var varsMap = varsMapFactory();
         var classArgs = new List<VarDeclaration>();
         // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
-        var lockIsInUse = false;
+        var isThreadSafe = false;
+        var isStaticThreadSafe = false;
         foreach (var root in graph.Roots)
         {
             if (cancellationToken.IsCancellationRequested)
@@ -29,7 +30,16 @@ class CompositionBuilder(
             using var rootToken = varsMap.Root(lines);
             var ctx = new RootContext(graph, root, varsMap, lines);
             var rootVarInjection = rootBuilder().Build(ctx);
-            lockIsInUse |= ctx.LockIsInUse;
+            var isThreadSafeRoot = ctx.LockIsInUse || graph.Source.Hints.IsThreadSafeEnabled && varsMap.IsThreadSafe;
+            if (root.IsStatic)
+            {
+                isStaticThreadSafe |= isThreadSafeRoot;
+            }
+            else
+            {
+                isThreadSafe |= isThreadSafeRoot;
+            }
+
             lines.AppendLine($"return {rootVarInjection.Var.CodeExpression};");
             foreach (var localFunction in varsMap.Vars.Select(i => i.LocalFunction).Where(i => i.Count > 0))
             {
@@ -78,7 +88,8 @@ class CompositionBuilder(
             disposables.Count,
             asyncDisposables.Count,
             totalDisposables.Count(i => i.Node.Lifetime == Lifetime.Scoped),
-            lockIsInUse || graph.Source.Hints.IsThreadSafeEnabled && varsMap.IsThreadSafe,
+            isThreadSafe,
+            isStaticThreadSafe,
             new Lines(),
             singletons,
             varDeclarationTools.Sort(classArgs).Distinct().ToImmutableArray());

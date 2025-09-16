@@ -119,7 +119,7 @@ partial class Composition
       }
     }
 
-    throw new InvalidOperationException($"{CannotResolveMessage} {OfTypeMessage} {type}.");
+    throw new CannotResolveException($"{CannotResolveMessage} {OfTypeMessage} {type}.", type, null);
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -143,7 +143,7 @@ partial class Composition
       }
     }
 
-    throw new InvalidOperationException($"{CannotResolveMessage} \"{tag}\" {OfTypeMessage} {type}.");
+    throw new CannotResolveException($"{CannotResolveMessage} \"{tag}\" {OfTypeMessage} {type}.", type, tag);
   }
 
   private readonly static uint _bucketSize;
@@ -171,12 +171,12 @@ partial class Composition
 
     public virtual T Resolve(Composition composite)
     {
-      throw new InvalidOperationException($"{CannotResolveMessage}{OfTypeMessage}{typeof(T)}.");
+      throw new CannotResolveException($"{CannotResolveMessage}{OfTypeMessage}{typeof(T)}.", typeof(T), null);
     }
 
     public virtual T ResolveByTag(Composition composite, object tag)
     {
-      throw new InvalidOperationException($"{CannotResolveMessage}\"{tag}\" {OfTypeMessage}{typeof(T)}.");
+      throw new CannotResolveException($"{CannotResolveMessage}\"{tag}\" {OfTypeMessage}{typeof(T)}.", typeof(T), tag);
     }
   }
 

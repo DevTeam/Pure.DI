@@ -9,9 +9,11 @@ sealed class Locks(IOverridesRegistry overridesRegistry) : ILocks
 
     public void AddLockStatements(Lines lines, bool isAsync)
     {
-        if (!isAsync)
+        if (isAsync)
         {
-            lines.AppendLine($"lock ({Names.LockFieldName})");
+            return;
         }
+
+        lines.AppendLine($"lock ({Names.LockFieldName})");
     }
 }

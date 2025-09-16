@@ -2492,4 +2492,66 @@ public class FactoryTests
         // Then
         result.Success.ShouldBeTrue(result);
     }
+
+    [Fact]
+    public async Task ShouldSupportCtxLockWhenStaticRoot()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                           
+                               class Dependency: IDependency {}
+                           
+                               interface IService
+                               {
+                                   IDependency Dep { get; }
+                               }
+                           
+                               class Service: IService 
+                               {
+                                   public Service(IDependency dep)
+                                   { 
+                                       Dep = dep;
+                                   }
+                           
+                                   public IDependency Dep { get; }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To(ctx => new Dependency())
+                                           .Bind<IService>().To(ctx => {
+                                               lock(ctx.Lock)
+                                               {
+                                                   ctx.Inject<IDependency>(out var dependency);
+                                                   return new Service(dependency);
+                                               }
+                                           })
+                                           .Root<IService>("Service", kind: RootKinds.Static);
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var service = Composition.Service;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
 }

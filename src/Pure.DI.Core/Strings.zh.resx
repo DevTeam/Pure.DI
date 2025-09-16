@@ -166,4 +166,7 @@
     <data name="Error_TypeCannotBeInferred" xml:space="preserve">
         <value>无法确定类型。请尝试明确指定。</value>
     </data>
+    <data name="Error_Template_StaicRootDoesNotSupportLifetime" xml:space="preserve">
+        <value>类型 {1} 的静态根 {0} 不支持 {2} 生存期。</value>
+    </data>
 </root>

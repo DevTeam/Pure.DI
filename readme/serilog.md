@@ -123,6 +123,7 @@ partial class Composition
   internal Composition(Composition parentScope)
   {
     _argLogger = parentScope._argLogger;
+    _lock = parentScope._lock;
   }
 
   private Serilog.ILogger Log

@@ -3,8 +3,8 @@
 namespace Pure.DI.Core;
 
 sealed class LifetimesValidator(
-    IGraphWalker<HashSet<object>, ImmutableArray<Dependency>> graphWalker,
-    [Tag(typeof(LifetimesValidatorVisitor))] IGraphVisitor<HashSet<object>, ImmutableArray<Dependency>> visitor,
+    IGraphWalker<LifetimesValidatorContext, ImmutableArray<Dependency>> graphWalker,
+    [Tag(typeof(LifetimesValidatorVisitor))] IGraphVisitor<LifetimesValidatorContext, ImmutableArray<Dependency>> visitor,
     CancellationToken cancellationToken)
     : IValidator<DependencyGraph>
 {
@@ -20,7 +20,7 @@ sealed class LifetimesValidator(
         foreach (var root in dependencyGraph.Roots)
         {
             graphWalker.Walk(
-                errors,
+                new LifetimesValidatorContext(root, errors),
                 graph,
                 root.Node,
                 visitor,

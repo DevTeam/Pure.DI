@@ -85,6 +85,7 @@ partial class Composition
   internal Composition(Composition parentScope)
   {
     _argBaseComposition = parentScope._argBaseComposition;
+    _lock = parentScope._lock;
   }
 
   public Program Program

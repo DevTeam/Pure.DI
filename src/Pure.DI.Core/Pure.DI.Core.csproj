@@ -51,6 +51,15 @@
         <EmbeddedResource Update="Strings.zh.resx">
           <DependentUpon>Strings.resx</DependentUpon>
         </EmbeddedResource>
+        <EmbeddedResource Update="Strings.ar.resx">
+            <DependentUpon>Strings.resx</DependentUpon>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Strings.hi.resx">
+            <DependentUpon>Strings.resx</DependentUpon>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Strings.pt.resx">
+            <DependentUpon>Strings.resx</DependentUpon>
+        </EmbeddedResource>
     </ItemGroup>
 
     <ItemGroup>

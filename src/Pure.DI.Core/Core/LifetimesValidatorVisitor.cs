@@ -4,7 +4,7 @@ sealed class LifetimesValidatorVisitor(
     ILogger logger,
     ILifetimeAnalyzer lifetimeAnalyzer,
     ILocationProvider locationProvider)
-    : IGraphVisitor<HashSet<object>, ImmutableArray<Dependency>>
+    : IGraphVisitor<LifetimesValidatorContext, ImmutableArray<Dependency>>
 {
     public ImmutableArray<Dependency> Create(
         IGraph<DependencyNode, Dependency> graph,
@@ -21,22 +21,45 @@ sealed class LifetimesValidatorVisitor(
             : parent.Add(dependency);
 
     public bool Visit(
-        HashSet<object> errors,
+        LifetimesValidatorContext ctx,
         IGraph<DependencyNode, Dependency> graph,
         in ImmutableArray<Dependency> path)
     {
         var actualTargetLifetimeNode = path[0].Target;
-        for (var i = 1; i < path.Length; i++)
+        // ReSharper disable once UseDeconstruction
+        foreach (var dependency in path)
         {
-            var dependency = path[i];
             var targetNode = dependency.Target;
-            if (!lifetimeAnalyzer.ValidateLifetimes(actualTargetLifetimeNode.Lifetime, targetNode.Lifetime))
+            if (!lifetimeAnalyzer.ValidateScopedToSingleton(actualTargetLifetimeNode.Lifetime, targetNode.Lifetime))
             {
-                if (errors.Add(new ErrorKey(actualTargetLifetimeNode, targetNode)))
+                if (ctx.Errors.Add(new ScopedToSingletonErrorKey(actualTargetLifetimeNode, targetNode)))
                 {
                     logger.CompileError(
                         string.Format(Strings.Error_Template_TypeWithLifetimeRequiresDirectOrTransitiveInjection, actualTargetLifetimeNode.Type, actualTargetLifetimeNode.Lifetime, targetNode.Type, targetNode.Lifetime),
                         ImmutableArray.Create(locationProvider.GetLocation(targetNode.Binding.Source)),
+                        LogId.ErrorLifetimeDefect);
+                }
+            }
+
+            if (!lifetimeAnalyzer.ValidateRootKindSpecificLifetime(ctx.Root, targetNode.Lifetime))
+            {
+                if (ctx.Errors.Add(new RootKindSpecificLifetimeErrorKey(ctx.Root, targetNode)))
+                {
+                    logger.CompileError(
+                        string.Format(Strings.Error_Template_StaicRootDoesNotSupportLifetime, ctx.Root.Name, ctx.Root.Source.RootType, targetNode.Lifetime),
+                        dependency.Injection.Locations,
+                        LogId.ErrorLifetimeDefect);
+                }
+            }
+
+            var sourceNode = dependency.Source;
+            if (!lifetimeAnalyzer.ValidateRootKindSpecificLifetime(ctx.Root, sourceNode.Lifetime))
+            {
+                if (ctx.Errors.Add(new RootKindSpecificLifetimeErrorKey(ctx.Root, sourceNode)))
+                {
+                    logger.CompileError(
+                        string.Format(Strings.Error_Template_StaicRootDoesNotSupportLifetime, ctx.Root.Name, ctx.Root.Source.RootType, sourceNode.Lifetime),
+                        dependency.Injection.Locations,
                         LogId.ErrorLifetimeDefect);
                 }
             }
@@ -49,4 +72,10 @@ sealed class LifetimesValidatorVisitor(
 
         return true;
     }
+
+    [SuppressMessage("ReSharper", "NotAccessedPositionalProperty.Local")]
+    private record ScopedToSingletonErrorKey(DependencyNode TargetNode, DependencyNode SourceNode);
+
+    [SuppressMessage("ReSharper", "NotAccessedPositionalProperty.Local")]
+    private record RootKindSpecificLifetimeErrorKey(Root root, DependencyNode SourceNode);
 }

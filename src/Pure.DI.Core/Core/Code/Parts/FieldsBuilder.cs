@@ -24,13 +24,13 @@ sealed class FieldsBuilder(
             membersCounter++;
         }
 
-        if (composition.IsThreadSafe || locks.HasLockField(composition.Source))
+        if (composition.IsLockRequired(locks))
         {
             // _lock field
             code.AppendLine(new Line(int.MinValue, "#if NET9_0_OR_GREATER"));
-            code.AppendLine($"private readonly {Names.LockTypeName} {Names.LockFieldName};");
+            code.AppendLine($"private {(composition.IsStaticThreadSafe ? "static " : "")}readonly {Names.LockTypeName} {Names.LockFieldName}{(composition.IsStaticThreadSafe ? $" = new {Names.LockTypeName}()" : "")};");
             code.AppendLine(new Line(int.MinValue, "#else"));
-            code.AppendLine($"private readonly {Names.ObjectTypeName} {Names.LockFieldName};");
+            code.AppendLine($"private {(composition.IsStaticThreadSafe ? "static " : "")}readonly {Names.ObjectTypeName} {Names.LockFieldName}{(composition.IsStaticThreadSafe ? $" = new {Names.ObjectTypeName}()" : "")};");
             code.AppendLine(new Line(int.MinValue, "#endif"));
             membersCounter++;
         }

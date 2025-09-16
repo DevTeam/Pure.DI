@@ -108,11 +108,11 @@ partial class Composition
     get
     {
       Dependency transDependency1;
-      Dependency localDependency4 = new Dependency();
+      Dependency localDependency5 = new Dependency();
       DateTimeOffset transDateTimeOffset3 = DateTimeOffset.Now;
       DateTimeOffset localTime = transDateTimeOffset3;
-      localDependency4.Initialize(localTime);
-      transDependency1 = localDependency4;
+      localDependency5.Initialize(localTime);
+      transDependency1 = localDependency5;
       return new Service(transDependency1);
     }
   }

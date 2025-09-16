@@ -166,4 +166,7 @@
     <data name="Error_TypeCannotBeInferred" xml:space="preserve">
         <value>No se pudo determinar el tipo. Especifíquelo explícitamente.</value>
     </data>
+    <data name="Error_Template_StaicRootDoesNotSupportLifetime" xml:space="preserve">
+        <value>La raíz estática {0} de tipo {1} no admite la duración {2}.</value>
+    </data>
 </root>

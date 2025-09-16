@@ -1,5 +1,12 @@
 # Localization
 
+Translate the text below to Arabic, German, Spanish, French, Hindi, Japanese, Portuguese, Russian, Simplified Chinese. Keep placeholders (e.g. {0}, ") and technical terms completely intact. The translation was made for software engineers.
+
+```
+```
+
+# XML Localization
+
 Russian, German, Arabic, Simplified Chinese, Japanese, French, Spanish, Hindi, Portuguese
 
 In the XML document below, translate all <value> elements into Russian. Keep the XML document structure, placeholders (e.g. {0}, ") and technical terms completely intact. The translation was made for software engineers.

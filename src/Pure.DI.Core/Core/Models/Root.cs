@@ -16,6 +16,8 @@ record Root(
 
     public string DisplayName => IsPublic ? Name : $"{Names.PrivateRootName}{Index}";
 
+    public bool IsStatic => (Kind & RootKinds.Static) == RootKinds.Static;
+
     public virtual bool Equals(Root? other)
     {
         if (other is null) return false;

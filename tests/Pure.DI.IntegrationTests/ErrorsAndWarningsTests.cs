@@ -1584,4 +1584,252 @@ public class ErrorsAndWarningsTests
         result.Success.ShouldBeFalse(result);
         result.Logs.Count(i => i.Id == LogId.ErrorTypeCannotBeInferred && i.Locations.FirstOrDefault().GetSource() == "repo").ShouldBe(1, result);
     }
+
+    [Theory]
+    [InlineData("Singleton")]
+    [InlineData("Scoped")]
+    public async Task ShouldShowErrorWhenStaticRootHasSingletonOrScopedDependency(string lifetime)
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               internal interface IDependency { }
+                           
+                               internal class Dependency : IDependency { }
+                           
+                               internal interface IService
+                               {
+                                   public IDependency Dependency1 { get; }
+                                           
+                                   public IDependency Dependency2 { get; }
+                               }
+                           
+                               internal class Service : IService
+                               {
+                                   public Service(IDependency dependency1, Func<IDependency> dependency2)
+                                   {
+                                       Dependency1 = dependency1;
+                                       Dependency2 = dependency2();
+                                   }
+                           
+                                   public IDependency Dependency1 { get; }
+                                           
+                                   public IDependency Dependency2 { get; }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Bind<IDependency>().As(Lifetime.#lifetime#).To<Dependency>()
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IDependency>("Dependency")
+                                           .Root<IService>("Root", kind: RootKinds.Static);
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var service1 = Composition.Root;
+                                       var service2 = Composition.Root;
+                                       Console.WriteLine(service1.Dependency1 == service1.Dependency2);        
+                                       Console.WriteLine(service2.Dependency1 == service1.Dependency1);
+                                   }
+                               }
+                           }
+                           """.Replace("#lifetime#", lifetime).RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Logs.Count(i => i.Id == LogId.ErrorLifetimeDefect).ShouldBe(1, result);
+    }
+
+    [Theory]
+    [InlineData("Singleton")]
+    [InlineData("Scoped")]
+    public async Task ShouldShowErrorWhenStaticRootHasSingletonOrScopedFactoryDependency(string lifetime)
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency
+                               {
+                                   bool IsInitialized { get; }
+                               }
+                               
+                               class Dependency : IDependency
+                               {
+                                   public bool IsInitialized { get; private set; }
+                               
+                                   public void Initialize() => IsInitialized = true;
+                               }
+                               
+                               interface IService
+                               {
+                                   IDependency Dependency { get; }
+                               }
+                               
+                               class Service : IService
+                               {
+                                   public Service(IDependency dependency)
+                                   {
+                                       Dependency = dependency;
+                                   }
+                                   public IDependency Dependency { get; }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                       .Bind<IDependency>().As(Lifetime.#lifetime#).To<IDependency>(ctx =>
+                                       {
+                                           // Some logic for creating an instance:
+                                           ctx.Inject(out Dependency dependency);
+                                           dependency.Initialize();
+                                           return dependency;
+                                       })
+                                       .Bind<IService>().To<Service>()
+                                       
+                                       // Composition root
+                                       .Root<IService>("MyService", kind: RootKinds.Static);
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var service = Composition.MyService;
+                                   }
+                               }
+                           }
+                           """.Replace("#lifetime#", lifetime).RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Logs.Count(i => i.Id == LogId.ErrorLifetimeDefect).ShouldBe(1, result);
+    }
+
+    [Theory]
+    [InlineData("Singleton")]
+    [InlineData("Scoped")]
+    public async Task ShouldShowErrorWhenStaticRootHasSingletonOrScopedShortDependency(string lifetime)
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                           
+                               class Dependency : IDependency {}
+                               
+                               interface IService {}
+                               
+                               class Service : IService
+                               {
+                                   public Service(IDependency dependency)
+                                   {
+                                   }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Bind().As(Lifetime.#lifetime#).To<Dependency>()
+                                           .Bind().To<Service>()
+                                           .Root<IService>("MyRoot", kind: RootKinds.Static);
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var root = Composition.MyRoot;
+                                   }
+                               }
+                           }
+                           """.Replace("#lifetime#", lifetime).RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Logs.Count(i => i.Id == LogId.ErrorLifetimeDefect).ShouldBe(1, result);
+    }
+
+    [Theory]
+    [InlineData("Singleton")]
+    [InlineData("Scoped")]
+    public async Task ShouldShowErrorWhenStaticRootHasSingletonOrScopedRootDependency(string lifetime)
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                           
+                               class Dependency : IDependency {}
+                               
+                               interface IService {}
+                               
+                               class Service : IService
+                               {
+                                   public Service(IDependency dependency)
+                                   {
+                                   }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Bind().To<Dependency>()
+                                           .Bind().As(Lifetime.#lifetime#).To<Service>()
+                                           .Root<IService>("MyRoot", kind: RootKinds.Static);
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var root = Composition.MyRoot;
+                                   }
+                               }
+                           }
+                           """.Replace("#lifetime#", lifetime).RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Logs.Count(i => i.Id == LogId.ErrorLifetimeDefect).ShouldBe(1, result);
+    }
 }

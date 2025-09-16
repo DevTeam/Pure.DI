@@ -83,6 +83,7 @@ partial class Composition
 
   internal Composition(Composition parentScope)
   {
+    _lock = parentScope._lock;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]

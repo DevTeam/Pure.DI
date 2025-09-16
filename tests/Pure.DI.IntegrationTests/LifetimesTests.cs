@@ -854,6 +854,88 @@ public class LifetimesTests
         result.StdOut.ShouldBe(["True", "True"], result);
     }
 
+    [Fact]
+    public async Task ShouldSupportPerResolveWhenStatic()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency1 {}
+                           
+                               class Dependency1: IDependency1 {}
+                           
+                               interface IDependency2
+                               {
+                                   IDependency1 Dep1 { get; }
+                               }
+                           
+                               class Dependency2: IDependency2
+                               {
+                                   public Dependency2(IDependency1 dep1) => Dep1 = dep1;
+                           
+                                   public IDependency1 Dep1 { get; }
+                               }
+                           
+                               interface IService
+                               {
+                                   IDependency1 Dep1 { get; }
+                           
+                                   IDependency2 Dep2 { get; }
+                                   
+                                   IDependency1 Dep3 { get; }
+                               }
+                           
+                               class Service: IService 
+                               {
+                                   public Service(IDependency1 dep1, IDependency2 dep2, IDependency1 dep3)
+                                   {
+                                       Dep1 = dep1;
+                                       Dep2 = dep2;
+                                       Dep3 = dep3;
+                                   }
+                           
+                                   public IDependency1 Dep1 { get; }
+                           
+                                   public IDependency2 Dep2 { get; }
+                                   
+                                   public IDependency1 Dep3 { get; }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Bind<IDependency1>().As(Lifetime.PerResolve).To<Dependency1>()
+                                           .Bind<IDependency2>().To<Dependency2>()
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service", kind: RootKinds.Static);
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var service = Composition.Service;
+                                       Console.WriteLine(service.Dep1 == service.Dep2.Dep1);
+                                       Console.WriteLine(service.Dep1 == service.Dep3);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True"], result);
+    }
+
     [Theory]
     [InlineData(Lifetime.Singleton)]
     [InlineData(Lifetime.Scoped)]

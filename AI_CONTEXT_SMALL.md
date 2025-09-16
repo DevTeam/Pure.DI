@@ -323,7 +323,7 @@ using Pure.DI;
 DI.Setup(nameof(Composition))
     .Bind<IDependency>().To<IDependency>(ctx =>
     {
-        // Some logic for creating an instance:
+        // Some logic for creating an instance
         ctx.Inject(out Dependency dependency);
         dependency.Initialize();
         return dependency;
@@ -364,7 +364,7 @@ To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
-There are scenarios where manual control over the creation process is required, such as:
+There are scenarios where manual control over the creation process is required, such as
 - When additional initialization logic is needed
 - When complex construction steps are required
 - When specific object states need to be set during creation

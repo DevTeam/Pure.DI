@@ -127,6 +127,7 @@ partial class Composition
     _argId = parentScope._argId;
     _argServiceName = parentScope._argServiceName;
     _argDependencyName = parentScope._argDependencyName;
+    _lock = parentScope._lock;
   }
 
   public IService MyService

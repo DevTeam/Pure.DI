@@ -186,7 +186,8 @@ sealed class DisposeMethodBuilder(
     {
         code.AppendLine("int disposeIndex;");
         code.AppendLine("object[] disposables;");
-        if (composition.IsThreadSafe)
+        var isLockRequired = composition.IsLockRequired(locks);
+        if (isLockRequired)
         {
             locks.AddLockStatements(code, isAsync);
             code.AppendLine(BlockStart);
@@ -211,7 +212,7 @@ sealed class DisposeMethodBuilder(
         }
 
         // ReSharper disable once InvertIf
-        if (composition.IsThreadSafe)
+        if (isLockRequired)
         {
             code.DecIndent();
             code.AppendLine(BlockFinish);

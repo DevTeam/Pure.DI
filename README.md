@@ -342,6 +342,55 @@ For internal use.
 </blockquote></details>
 
 
+<details><summary>CannotResolveException</summary><blockquote>
+
+Represents an exception thrown when a required composition root cannot be resolved.
+            
+<details><summary>Constructor CannotResolveException(System.String,System.Type,System.Object)</summary><blockquote>
+
+Initializes a new instance of the _CannotResolveException_ class with a specified error message, type, and optional tag describing the resolution failure.
+            
+ - parameter _message_ - A user-friendly message that describes the error that occurred during the
+            resolution process. The message should be clear and informative, providing
+            enough context to understand the nature of the failure.
+            
+
+ - parameter _type_ - The _Type_ used to resolve a composition root.
+            
+
+ - parameter _tag_ - The tag used to resolve a composition root.
+            
+
+</blockquote></details>
+
+
+<details><summary>Constructor CannotResolveException(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)</summary><blockquote>
+
+Initializes a new instance of the _CannotResolveException_ class with serialized data.
+ - parameter _info_ - The object that holds the serialized object data.
+
+ - parameter _context_ - The contextual information about the source or destination.
+
+</blockquote></details>
+
+
+<details><summary>Property Type</summary><blockquote>
+
+Gets the type used to resolve a composition root.
+            
+</blockquote></details>
+
+
+<details><summary>Property Tag</summary><blockquote>
+
+Gets the tag used to resolve a composition root.
+            
+</blockquote></details>
+
+
+</blockquote></details>
+
+
 <details><summary>CompositionKind</summary><blockquote>
 
 Determines how the partial class will be generated. The _Setup(System.String,Pure.DI.CompositionKind)_ method has an additional argument  `kind` , which defines the type of composition:
@@ -381,12 +430,12 @@ No partial classes will be created when this value is specified, but this settin
 
 <details><summary>DependencyAttribute</summary><blockquote>
 
-A universal DI attribute that allows to specify the tag and ordinal of an injection.
+Combines injection tagging and ordering capabilities in a single attribute.
+            Allows simultaneous specification of both tag and ordinal for dependency injection points.
             
- - parameter _tag_ - The injection tag. See also _Tags(System.Object[])_
-.
-            
- - parameter _ordinal_ - The injection ordinal.
+ - parameter _tag_ - Identifies the specific dependency variation to inject. See also _Tags(System.Object[])_.
+
+ - parameter _ordinal_ - Determines injection order priority (lower values execute first).
 
 See also _OrdinalAttribute_.
 
@@ -394,12 +443,11 @@ See also _TagAttribute_.
 
 <details><summary>Constructor DependencyAttribute(System.Object,System.Int32)</summary><blockquote>
 
-Creates an attribute instance.
+Initializes an attribute instance with optional tag and priority.
             
- - parameter _tag_ - The injection tag. See also _Tags(System.Object[])_
-.
-            
- - parameter _ordinal_ - The injection ordinal.
+ - parameter _tag_ - Identifies a specific dependency variation. See also _Tags(System.Object[])_.
+
+ - parameter _ordinal_ - Injection execution priority (0 = highest priority). Default: 0.
 
 </blockquote></details>
 
@@ -472,7 +520,7 @@ See also _GenericTypeArgument``1_.
 
 <details><summary>Hint</summary><blockquote>
 
-Hints for the code generator and can be used to fine-tune code generation.
+Provides configuration hints for fine-tuning code generation behavior.
             
 ```c#
 
@@ -498,1567 +546,1521 @@ See also _Hint(Pure.DI.Hint,System.String)_.
 
 <details><summary>Field Resolve</summary><blockquote>
 
- `On`  or  `Off` . Determines whether to generate  `Resolve`  methods.  `On`  by default.
-            
+Enables/disables generation of Resolve methods. Default:  `On` .
+             
 ```c#
 
 // Resolve = Off
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.Resolve, "Off")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.Resolve, "Off")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field OnNewInstance</summary><blockquote>
 
- `On`  or  `Off` . Determines whether to use partial  `OnNewInstance`  method.  `Off`  by default.
-            
+Enables/disables generation of OnNewInstance hooks. Default:  `Off` .
+             
 ```c#
 
 // OnNewInstance = On
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.OnNewInstance, "On")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.OnNewInstance, "On")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field OnNewInstancePartial</summary><blockquote>
 
- `On`  or  `Off` . Determines whether to generate partial  `OnNewInstance`  method when the _OnNewInstance_ hint is  `On` .  `On`  by default.
-            
+Enables/disables partial method generation for OnNewInstance. Default:  `On` .
+             
 ```c#
 
 // OnNewInstancePartial = On
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.OnNewInstancePartial, "On")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.OnNewInstancePartial, "On")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field OnNewInstanceImplementationTypeNameRegularExpression</summary><blockquote>
 
-The regular expression to filter OnNewInstance by the instance type name. ".+" by default.
-            
+Regex filter for instance types in OnNewInstance hooks. Default:  `.+` .
+             
 ```c#
 
 // OnNewInstanceImplementationTypeNameRegularExpression = Dependency
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.OnNewInstanceImplementationTypeNameRegularExpression, "Dependency")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.OnNewInstanceImplementationTypeNameRegularExpression, "Dependency")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field OnNewInstanceImplementationTypeNameWildcard</summary><blockquote>
 
-The wildcard to filter OnNewInstance by the instance type name. "*" by default.
-            
+Wildcard filter for instance types in OnNewInstance hooks. Default:  `*` .
+             
 ```c#
 
 // OnNewInstanceImplementationTypeNameWildcard = *Dependency
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.OnNewInstanceImplementationTypeNameWildcard, "*Dependency")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(OnNewInstanceImplementationTypeNameWildcard, "*Dependency")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field OnNewInstanceTagRegularExpression</summary><blockquote>
 
-The regular expression to filter OnNewInstance by the tag. ".+" by default.
-            
+Regex filter for tags in OnNewInstance hooks. Default:  `.+` .
+             
 ```c#
 
 // OnNewInstanceTagRegularExpression = IDependency
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.OnNewInstanceTagRegularExpression, "IDependency")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.OnNewInstanceTagRegularExpression, "IDependency")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field OnNewInstanceTagWildcard</summary><blockquote>
 
-The wildcard to filter OnNewInstance by the tag. "*" by default.
-            
+Wildcard filter for tags in OnNewInstance hooks. Default:  `*` .
+             
 ```c#
 
 // OnNewInstanceTagWildcard = *IDependency
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.OnNewInstanceTagWildcard, "*IDependency")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.OnNewInstanceTagWildcard, "*IDependency")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field OnNewInstanceLifetimeRegularExpression</summary><blockquote>
 
-The regular expression to filter OnNewInstance by the lifetime. ".+" by default.
-            
+Regex filter for lifetimes in OnNewInstance hooks. Default:  `.+` .
+             
 ```c#
 
 // OnNewInstanceLifetimeRegularExpression = Singleton
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.OnNewInstanceLifetimeRegularExpression, "Singleton")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.OnNewInstanceLifetimeRegularExpression, "Singleton")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field OnNewInstanceLifetimeWildcard</summary><blockquote>
 
-The wildcard to filter OnNewInstance by the lifetime. "*" by default.
-            
+Wildcard filter for lifetimes in OnNewInstance hooks. Default:  `*` .
+             
 ```c#
 
 // OnNewInstanceLifetimeWildcard = *Singleton
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.OnNewInstanceLifetimeWildcard, "*Singleton")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.OnNewInstanceLifetimeWildcard, "*Singleton")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field OnDependencyInjection</summary><blockquote>
 
- `On`  or  `Off` . Determines whether to use partial  `OnDependencyInjection`  method to control of a dependency injection.  `Off`  by default.
-            
+Enables/disables dependency injection interception hooks. Default:  `Off` .
+             
 ```c#
 
 // OnDependencyInjection = On
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.OnDependencyInjection, "On")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.OnDependencyInjection, "On")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field OnDependencyInjectionPartial</summary><blockquote>
 
- `On`  or  `Off` . Determines whether to generate partial  `OnDependencyInjection`  method when the _OnDependencyInjection_ hint is  `On`  to control of dependency injection.  `On`  by default.
-            
+Enables/disables partial method generation for dependency injection hooks. Default:  `On` .
+             
 ```c#
 
 // OnDependencyInjectionPartial = On
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.OnDependencyInjectionPartial, "On")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.OnDependencyInjectionPartial, "On")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field OnDependencyInjectionImplementationTypeNameRegularExpression</summary><blockquote>
 
-The regular expression to filter OnDependencyInjection by the instance type name. ".+" by default.
-            
+Regex filter for implementation types in dependency injection hooks. Default:  `.+` .
+             
 ```c#
 
 // OnDependencyInjectionImplementationTypeNameRegularExpression = Dependency
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.OnDependencyInjectionImplementationTypeNameRegularExpression, "Dependency")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.OnDependencyInjectionImplementationTypeNameRegularExpression, "Dependency")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field OnDependencyInjectionImplementationTypeNameWildcard</summary><blockquote>
 
-The wildcard to filter OnDependencyInjection by the instance type name. "*" by default.
-            
+Wildcard filter for implementation types in dependency injection hooks. Default:  `*` .
+             
 ```c#
 
 // OnDependencyInjectionImplementationTypeNameWildcard = *Dependency
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.OnDependencyInjectionImplementationTypeNameWildcard, "*Dependency")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.OnDependencyInjectionImplementationTypeNameWildcard, "*Dependency")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field OnDependencyInjectionContractTypeNameRegularExpression</summary><blockquote>
 
-The regular expression to filter OnDependencyInjection by the resolving type name. ".+" by default.
-            
+Regex filter for contract types in dependency injection hooks. Default:  `.+` .
+             
 ```c#
 
 // OnDependencyInjectionContractTypeNameRegularExpression = IDependency
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.OnDependencyInjectionContractTypeNameRegularExpression, "IDependency")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.OnDependencyInjectionContractTypeNameRegularExpression, "IDependency")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field OnDependencyInjectionContractTypeNameWildcard</summary><blockquote>
 
-The wildcard to filter OnDependencyInjection by the resolving type name. "*" by default.
-            
+Wildcard filter for contract types in dependency injection hooks. Default:  `*` .
+             
 ```c#
 
 // OnDependencyInjectionContractTypeNameWildcard = *IDependency
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.OnDependencyInjectionContractTypeName, "*IDependency")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.OnDependencyInjectionContractTypeNameWildcard, "*IDependency")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field OnDependencyInjectionTagRegularExpression</summary><blockquote>
 
-The regular expression to filter OnDependencyInjection by the tag. ".+" by default.
-            
+Regex filter for tags in dependency injection hooks. Default:  `.+` .
+             
 ```c#
 
 // OnDependencyInjectionTagRegularExpression = MyTag
-            DI.Setup("Composition")
-                .Bind<IDependency>("MyTag").To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>("MyTag").To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.OnDependencyInjectionTagRegularExpression, "MyTag")
-                .Bind<IDependency>("MyTag").To<Dependency>();
-            
+                 .Hint(Hint.OnDependencyInjectionTagRegularExpression, "MyTag")
+                 .Bind<IDependency>("MyTag").To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field OnDependencyInjectionTagWildcard</summary><blockquote>
 
-The wildcard to filter OnDependencyInjection by the tag. "*" by default.
-            
+Wildcard filter for tags in dependency injection hooks. Default:  `*` .
+             
 ```c#
 
 // OnDependencyInjectionTagWildcard = MyTag
-            DI.Setup("Composition")
-                .Bind<IDependency>("MyTag").To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>("MyTag").To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.OnDependencyInjectionTagWildcard, "MyTag")
-                .Bind<IDependency>("MyTag").To<Dependency>();
-            
+                 .Hint(Hint.OnDependencyInjectionTagWildcard, "MyTag")
+                 .Bind<IDependency>("MyTag").To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field OnDependencyInjectionLifetimeRegularExpression</summary><blockquote>
 
-The regular expression to filter OnDependencyInjection by the lifetime. ".+" by default.
-            
+Regex filter for lifetimes in dependency injection hooks. Default:  `.+` .
+             
 ```c#
 
 // OnDependencyInjectionLifetimeRegularExpression = Singleton
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.OnDependencyInjectionLifetimeRegularExpression, "Singleton")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.OnDependencyInjectionLifetimeRegularExpression, "Singleton")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field OnDependencyInjectionLifetimeWildcard</summary><blockquote>
 
-The wildcard to filter OnDependencyInjection by the lifetime. ".+" by default.
-            
+Wildcard filter for lifetimes in dependency injection hooks. Default:  `*` .
+             
 ```c#
 
 // OnDependencyInjectionLifetimeWildcard = *Singleton
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.OnDependencyInjectionLifetimeWildcard, "*Singleton")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.OnDependencyInjectionLifetimeWildcard, "*Singleton")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field OnCannotResolve</summary><blockquote>
 
- `On`  or  `Off` . Determines whether to use a partial  `OnCannotResolve<T>(...)`  method to handle a scenario in which the dependency cannot be resolved.  `Off`  by default.
-            
+Enables/disables unresolved dependency handlers. Default:  `Off` .
+             
 ```c#
 
 // OnCannotResolve = On
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.OnCannotResolve, "On")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.OnCannotResolve, "On")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field OnCannotResolvePartial</summary><blockquote>
 
- `On`  or  `Off` . Determines whether to generate a partial  `OnCannotResolve<T>(...)`  method when the  `OnCannotResolve`  hint is  `On`  to handle a scenario in which the dependency cannot be resolved.  `On`  by default.
-            
+Enables/disables partial method generation for unresolved dependency handlers. Default:  `On` .
+             
 ```c#
 
 // OnCannotResolvePartial = On
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.OnCannotResolvePartial, "On")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.OnCannotResolvePartial, "On")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field OnCannotResolveContractTypeNameRegularExpression</summary><blockquote>
 
-The regular expression to filter OnCannotResolve by the resolving type name. ".+" by default.
-            
+Regex filter for contract types in unresolved dependency handlers. Default:  `.+` .
+             
 ```c#
 
 // OnCannotResolveContractTypeNameRegularExpression = OtherType
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.OnCannotResolveContractTypeNameRegularExpression, "OtherType")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.OnCannotResolveContractTypeNameRegularExpression, "OtherType")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field OnCannotResolveContractTypeNameWildcard</summary><blockquote>
 
-The wildcard to filter OnCannotResolve by the resolving type name. "*" by default.
-            
+Wildcard filter for contract types in unresolved dependency handlers. Default:  `*` .
+             
 ```c#
 
 // OnCannotResolveContractTypeNameWildcard = *OtherType
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.OnCannotResolveContractTypeNameWildcard, "*OtherType")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.OnCannotResolveContractTypeNameWildcard, "*OtherType")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field OnCannotResolveTagRegularExpression</summary><blockquote>
 
-The regular expression to filter OnCannotResolve by the tag. ".+" by default.
-            
+Regex filter for tags in unresolved dependency handlers. Default:  `.+` .
+             
 ```c#
 
 // OnCannotResolveTagRegularExpression = MyTag
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.OnCannotResolveTagRegularExpression, "MyTag")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.OnCannotResolveTagRegularExpression, "MyTag")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field OnCannotResolveTagWildcard</summary><blockquote>
 
-The wildcard to filter OnCannotResolve by the tag. "*" by default.
-            
+Wildcard filter for tags in unresolved dependency handlers. Default:  `*` .
+             
 ```c#
 
 // OnCannotResolveTagWildcard = MyTag
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.OnCannotResolveTagWildcard, "MyTag")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.OnCannotResolveTagWildcard, "MyTag")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field OnCannotResolveLifetimeRegularExpression</summary><blockquote>
 
-The regular expression to filter OnCannotResolve by the lifetime. ".+" by default.
-            
+Regex filter for lifetimes in unresolved dependency handlers. Default:  `.+` .
+             
 ```c#
 
 // OnCannotResolveLifetimeRegularExpression = Singleton
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.OnCannotResolveLifetimeRegularExpression, "Singleton")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.OnCannotResolveLifetimeRegularExpression, "Singleton")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field OnCannotResolveLifetimeWildcard</summary><blockquote>
 
-The wildcard to filter OnCannotResolve by the lifetime. "*" by default.
-            
+Wildcard filter for lifetimes in unresolved dependency handlers. Default:  `*` .
+             
 ```c#
 
 // OnCannotResolveLifetimeWildcard = *Singleton
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.OnCannotResolveLifetimeWildcard, "*Singleton")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.OnCannotResolveLifetimeWildcard, "*Singleton")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field OnNewRoot</summary><blockquote>
 
- `On`  or  `Off` . Determines whether to use a static partial  `OnNewRoot<T>(...)`  method to handle the new composition root registration event.  `Off`  by default.
-            
+Enables/disables composition root registration event handlers. Default:  `Off` .
+             
 ```c#
 
 // OnNewRoot = On
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.OnNewRoot, "On")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.OnNewRoot, "On")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field OnNewRootPartial</summary><blockquote>
 
- `On`  or  `Off` . Determines whether to generate a static partial  `OnNewRoot<T>(...)`  method when the  `OnNewRoot`  hint is  `On`  to handle the new composition root registration event.  `On`  by default.
-            
+Enables/disables partial method generation for composition root events. Default:  `Off` .
+             
 ```c#
 
 // OnNewRootPartial = On
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.OnNewRootPartial, "On")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.OnNewRootPartial, "On")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field ToString</summary><blockquote>
 
- `On`  or  `Off` . Determine if the  `ToString()`  method should be generated. This method provides a text-based class diagram in the format mermaid.  `Off`  by default. 
-            
+Enables/disables generation of mermaid-format class diagram via ToString(). Default:  `Off` .
+             
 ```c#
 
 // ToString = On
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.ToString, "On")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.ToString, "On")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field ThreadSafe</summary><blockquote>
 
- `On`  or  `Off` . This hint determines whether object composition will be created in a thread-safe manner.  `On`  by default.
-            
+Enables/disables thread-safe composition object creation. Default:  `On` .
+             
 ```c#
 
 // ThreadSafe = Off
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.ThreadSafe, "Off")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.ThreadSafe, "Off")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field ResolveMethodModifiers</summary><blockquote>
 
-Overrides modifiers of the method  `public T Resolve<T>()` . "Public" by default.
-            
+Modifier override for Resolve<T>() method. Default:  `public` .
+             
 ```c#
 
 // ResolveMethodModifiers = internal
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.ResolveMethodModifiers, "internal")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.ResolveMethodModifiers, "internal")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field ResolveMethodName</summary><blockquote>
 
-Overrides name of the method  `public T Resolve<T>()` . "Resolve" by default.
-            
+Name override for Resolve<T>() method. Default:  `Resolve` .
+             
 ```c#
 
 // ResolveMethodName = GetService
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.ResolveMethodName, "GetService")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.ResolveMethodName, "GetService")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field ResolveByTagMethodModifiers</summary><blockquote>
 
-Overrides modifiers of the method  `public T Resolve<T>(object? tag)` . "public" by default.
-            
+Modifier override for Resolve<T>(tag) method. Default:  `public` .
+             
 ```c#
 
 // ResolveByTagMethodModifiers = internal
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.ResolveByTagMethodModifiers, "internal")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.ResolveByTagMethodModifiers, "internal")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field ResolveByTagMethodName</summary><blockquote>
 
-Overrides name of the method  `public T Resolve<T>(object? tag)` . "Resolve" by default.
-            For example
-            
+Name override for Resolve<T>(tag) method. Default:  `Resolve` .
+             For example
+             
 ```c#
 
 // ResolveByTagMethodName = GetService
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.ResolveByTagMethodName, "GetService")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.ResolveByTagMethodName, "GetService")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field ObjectResolveMethodModifiers</summary><blockquote>
 
-Overrides modifiers of the method  `public object Resolve(Type type)` . "public" by default.
-            
+Modifier override for Resolve(Type) method. Default:  `public` .
+             
 ```c#
 
 // ObjectResolveMethodModifiers = internal
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.ObjectResolveMethodModifiers, "internal")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.ObjectResolveMethodModifiers, "internal")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field ObjectResolveMethodName</summary><blockquote>
 
-Overrides name of the method  `public object Resolve(Type type)` . "Resolve" by default.
-            
+Name override for Resolve(Type) method. Default:  `Resolve` .
+             
 ```c#
 
 // ObjectResolveMethodName = GetService
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.ObjectResolveMethodName, "GetService")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.ObjectResolveMethodName, "GetService")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field ObjectResolveByTagMethodModifiers</summary><blockquote>
 
-Overrides modifiers of the method  `public object Resolve(Type type, object? tag)` . "public" by default.
-            
+Modifier override for Resolve(Type, tag) method. Default:  `public` .
+             
 ```c#
 
 // ObjectResolveByTagMethodModifiers = internal
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.ObjectResolveByTagMethodModifiers, "internal")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.ObjectResolveByTagMethodModifiers, "internal")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field ObjectResolveByTagMethodName</summary><blockquote>
 
-Overrides name of the method  `public object Resolve(Type type, object? tag)` . "Resolve" by default.
-            
+Name override for Resolve(Type, tag) method. Default:  `Resolve` .
+             
 ```c#
 
 // ObjectResolveByTagMethodName = GetService
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.ObjectResolveByTagMethodName, "GetService")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.ObjectResolveByTagMethodName, "GetService")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field DisposeMethodModifiers</summary><blockquote>
 
-Overrides modifiers of the method  `public void Dispose()` . "public" by default.
-            
+Modifier override for Dispose() method. Default:  `public` .
+             
 ```c#
 
 // DisposeMethodModifiers = internal
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.DisposeMethodModifiers, "internal")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.DisposeMethodModifiers, "internal")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field DisposeAsyncMethodModifiers</summary><blockquote>
 
-Overrides modifiers of the method  `public _ValueTask_ DisposeAsyncMethodModifiers()` . "public" by default.
-            
+Modifier override for DisposeAsync() method. Default:  `public` .
+             
 ```c#
 
 // DisposeAsyncMethodModifiers = internal
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.DisposeAsyncMethodModifiers, "internal")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.DisposeAsyncMethodModifiers, "internal")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field FormatCode</summary><blockquote>
 
- `On`  or  `Off` . Specifies whether the generated code should be formatted. This option consumes a lot of CPU resources.  `Off`  by default.
-            
+Enables/disables code formatting (CPU intensive). Default:  `Off` .
+             
 ```c#
 
 // FormatCode = On
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.FormatCode, "On")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.FormatCode, "On")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field SeverityOfNotImplementedContract</summary><blockquote>
 
- `Error`  or  `Warning`  or  `Info`  or  `Hidden` . Indicates the severity level of the situation when, in the binding, an implementation does not implement a contract.  `Error`  by default.
-            
+Severity level for unimplemented contract errors. Default:  `Error` .
+             
 ```c#
 
-// FormatCode = On
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+// SeverityOfNotImplementedContract = Warning
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.SeverityOfNotImplementedContracts, "On")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.SeverityOfNotImplementedContract, "Warning")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field Comments</summary><blockquote>
 
- `On`  or  `Off` . Specifies whether the generated code should be commented.  `On`  by default.
-            
+Enables/disables generated code comments. Default:  `On` .
+             
 ```c#
 
 // Comments = Off
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.Comments, "Off")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.Comments, "Off")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field SkipDefaultConstructor</summary><blockquote>
 
- `On`  or  `Off` . Determines whether to skip using the default constructor to create an instance.  `Off`  by default.
-            
+Enables/disables skipping the default constructor. Default:  `Off`  (meaning the default constructor is used when available).
+             
 ```c#
 
 // SkipDefaultConstructor = On
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.UseDefaultConstructor, "Off")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.UseDefaultConstructor, "Off")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field SkipDefaultConstructorImplementationTypeNameRegularExpression</summary><blockquote>
 
-The regular expression to filter whether to skip using the default constructor to create an instance by the instance type name. ".+" by default.
-            
+Regex filter for types to skip default constructors. Default:  `.+` .
+             
 ```c#
 
 // SkipDefaultConstructorImplementationTypeNameRegularExpression = Dependency
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.SkipDefaultConstructorImplementationTypeNameRegularExpression, "Dependency")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.SkipDefaultConstructorImplementationTypeNameRegularExpression, "Dependency")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field SkipDefaultConstructorImplementationTypeNameWildcard</summary><blockquote>
 
-The wildcard to filter whether to skip using the default constructor to create an instance by the instance type name. "*" by default.
-            
+Wildcard filter for types to skip default constructors. Default:  `*` .
+             
 ```c#
 
 // SkipDefaultConstructorImplementationTypeNameWildcard = *Dependency
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.SkipDefaultConstructorImplementationTypeNameWildcard, "*Dependency")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.SkipDefaultConstructorImplementationTypeNameWildcard, "*Dependency")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field SkipDefaultConstructorLifetimeRegularExpression</summary><blockquote>
 
-The regular expression to filter whether to skip using the default constructor to create an instance by the lifetime. ".+" by default.
-            
+Regex filter for lifetimes to skip default constructors. Default:  `.+` .
+             
 ```c#
 
 // SkipDefaultConstructorLifetimeRegularExpression = Singleton
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.SkipDefaultConstructorLifetimeRegularExpression, "Singleton")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.SkipDefaultConstructorLifetimeRegularExpression, "Singleton")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field SkipDefaultConstructorLifetimeWildcard</summary><blockquote>
 
-The wildcard to filter whether to skip using the default constructor to create an instance by the lifetime. ".+" by default.
-            
+Wildcard filter for lifetimes to skip default constructors. Default:  `*` .
+             
 ```c#
 
 // SkipDefaultConstructorLifetimeWildcard = *Singleton
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.SkipDefaultConstructorLifetimeWildcard, "*Singleton")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.SkipDefaultConstructorLifetimeWildcard, "*Singleton")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field DisableAutoBinding</summary><blockquote>
 
- `On`  or  `Off` . Determines whether dependency injection should NOT be performed if a binding for that dependency has not been explicitly defined.  `Off`  by default.
-            
+Disables automatic binding when no explicit binding exists. Default:  `Off` .
+             
 ```c#
 
 // DisableAutoBinding = On
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.DisableAutoBinding, "Off")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.DisableAutoBinding, "Off")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field DisableAutoBindingImplementationTypeNameRegularExpression</summary><blockquote>
 
-The regular expression by the instance type name to filter whether a dependency injection should NOT be performed if a binding for that dependency has not been explicitly defined. ".+" by default.
-            
+Regex filter for implementation types to disable auto-binding. Default:  `.+` .
+             
 ```c#
 
 // DisableAutoBindingImplementationTypeNameRegularExpression = Dependency
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Hint(Hint.DisableAutoBinding, "Off")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.DisableAutoBindingImplementationTypeNameRegularExpression, "Dependency")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.DisableAutoBinding, "Off")
+                 .Hint(Hint.DisableAutoBindingImplementationTypeNameRegularExpression, "Dependency")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field DisableAutoBindingImplementationTypeNameWildcard</summary><blockquote>
 
-The wildcard by the instance type name to filter whether a dependency injection should NOT be performed if a binding for that dependency has not been explicitly defined. "*" by default.
-            
+Wildcard filter for implementation types to disable auto-binding. Default:  `*` .
+             
 ```c#
 
 // DisableAutoBindingImplementationTypeNameWildcard = *Dependency
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Hint(Hint.DisableAutoBinding, "Off")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.DisableAutoBindingImplementationTypeNameWildcard, "*Dependency")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.DisableAutoBinding, "Off")
+                 .Hint(Hint.DisableAutoBindingImplementationTypeNameWildcard, "*Dependency")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field DisableAutoBindingLifetimeRegularExpression</summary><blockquote>
 
-The regular expression by the lifetime to filter whether a dependency injection should NOT be performed if a binding for that dependency has not been explicitly defined. ".+" by default.
-            
+Regex filter for lifetimes to disable auto-binding. Default:  `.+` .
+             
 ```c#
 
 // DisableAutoBindingLifetimeRegularExpression = Singleton
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Hint(Hint.DisableAutoBinding, "Off")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.DisableAutoBindingLifetimeRegularExpression, "Singleton")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.DisableAutoBinding, "Off")
+                 .Hint(Hint.DisableAutoBindingLifetimeRegularExpression, "Singleton")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
 
 <details><summary>Field DisableAutoBindingLifetimeWildcard</summary><blockquote>
 
-The wildcard by the lifetime to filter whether a dependency injection should NOT be performed if a binding for that dependency has not been explicitly defined. ".+" by default.
-            
+Wildcard filter for lifetimes to disable auto-binding. Default:  `*` .
+             
 ```c#
 
 // DisableAutoBindingLifetimeWildcard = *Singleton
-            DI.Setup("Composition")
-                .Bind<IDependency>().To<Dependency>();
-            
+             DI.Setup("Composition")
+                 .Hint(Hint.DisableAutoBinding, "Off")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
 
-            or using the API call _Hint(Pure.DI.Hint,System.String)_:
             
+             or using the API call _Hint(Pure.DI.Hint,System.String)_:
+             
 ```c#
 
 DI.Setup("Composition")
-                .Hint(Hint.DisableAutoBindingLifetimeWildcard, "*Singleton")
-                .Bind<IDependency>().To<Dependency>();
-            
+                 .Hint(Hint.DisableAutoBinding, "Off")
+                 .Hint(Hint.DisableAutoBindingLifetimeWildcard, "*Singleton")
+                 .Bind<IDependency>().To<Dependency>();
+             
 ```
 
-
-See also _Hint(Pure.DI.Hint,System.String)_.
 
 </blockquote></details>
 
@@ -2068,13 +2070,13 @@ See also _Hint(Pure.DI.Hint,System.String)_.
 
 <details><summary>IBinding</summary><blockquote>
 
-An API for a binding setup.
+Defines the API for configuring dependency bindings in the composition.
             
 <details><summary>Method Bind(System.Object[])</summary><blockquote>
 
-Begins the binding definition for the implementation type itself, and if the implementation is not an abstract class or structure, for all abstract but NOT special types that are directly implemented.
-            Special types include:
-            System.ObjectSystem.EnumSystem.MulticastDelegateSystem.DelegateSystem.Collections.IEnumerableSystem.Collections.Generic.IEnumerable<T>System.Collections.Generic.IList<T>System.Collections.Generic.ICollection<T>System.Collections.IEnumeratorSystem.Collections.Generic.IEnumerator<T>System.Collections.Generic.IIReadOnlyList<T>System.Collections.Generic.IReadOnlyCollection<T>System.IDisposableSystem.IAsyncResultSystem.AsyncCallback
+Starts binding definition for the implementation type itself. Also binds all directly implemented abstract types excluding special system interfaces.
+            Special system interfaces are excluded from binding:
+            System.ObjectSystem.EnumSystem.MulticastDelegateSystem.DelegateSystem.Collections.IEnumerableSystem.Collections.Generic.IEnumerable<T>System.Collections.Generic.Iist<T>System.Collections.Generic.ICollection<T>System.Collections.IEnumeratorSystem.Collections.Generic.IEnumerator<T>System.Collections.Generic.IIReadOnlyList<T>System.Collections.Generic.IReadOnlyCollection<T>System.IDisposableSystem.IAsyncResultSystem.AsyncCallback
 ```c#
 
 DI.Setup("Composition")
@@ -2083,9 +2085,9 @@ DI.Setup("Composition")
 ```
 
 
- - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
+ - parameter _tags_ - Optional tags to associate with this binding.
 
- - returns Reference to the setup continuation chain.
+ - returns Binding configuration interface for method chaining.
 
 See also _To``1_.
 
@@ -2104,7 +2106,7 @@ See also _As(Pure.DI.Lifetime)_.
 
 <details><summary>Method Bind``1(System.Object[])</summary><blockquote>
 
-Begins the definition of the binding.
+Starts binding definition for a specific dependency type.
             
 ```c#
 
@@ -2113,10 +2115,10 @@ DI.Setup("Composition")
             
 ```
 
-The type of dependency to be bound. Common type markers such as _TT_, _TTList`1_ and others are also supported.
- - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
+Dependency type to bind. Supports type markers like _TT_ and _TTList`1_.
+ - parameter _tags_ - Optional tags to associate with this binding.
 
- - returns Reference to the setup continuation chain.
+ - returns Binding configuration interface for method chaining.
 
 See also _To``1_.
 
@@ -2135,11 +2137,12 @@ See also _As(Pure.DI.Lifetime)_.
 
 <details><summary>Method Bind``2(System.Object[])</summary><blockquote>
 
-Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for details.
-            Type 1 of a dependency to be bound.Type 2 of a dependency to be bound.
- - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
+Starts binding definition for multiple dependency types simultaneously.
+            See _Bind``1(System.Object[])_ for detailed usage.
+            First dependency type to bind.Second dependency type to bind.
+ - parameter _tags_ - Optional tags to associate with these bindings.
 
- - returns Reference to the setup continuation chain.
+ - returns Binding configuration interface for method chaining.
 
 See also _To``1_.
 
@@ -2158,11 +2161,12 @@ See also _As(Pure.DI.Lifetime)_.
 
 <details><summary>Method Bind``3(System.Object[])</summary><blockquote>
 
-Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for details.
-            Type 1 of a dependency to be bound.Type 2 of a dependency to be bound.Type 3 of a dependency to be bound.
- - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
+Starts binding definition for multiple dependency types simultaneously.
+            See _Bind``1(System.Object[])_ for detailed usage.
+            First dependency type to bind.Second dependency type to bind.Third dependency type to bind.
+ - parameter _tags_ - Optional tags to associate with these bindings.
 
- - returns Reference to the setup continuation chain.
+ - returns Binding configuration interface for method chaining.
 
 See also _To``1_.
 
@@ -2181,11 +2185,12 @@ See also _As(Pure.DI.Lifetime)_.
 
 <details><summary>Method Bind``4(System.Object[])</summary><blockquote>
 
-Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for details.
-            Type 1 of a dependency to be bound.Type 2 of a dependency to be bound.Type 3 of a dependency to be bound.Type 3 of a dependency to be bound.
- - parameter _tags_ - The optional argument that specifies tags for a particular type of a dependency binding.
+Starts binding definition for multiple dependency types simultaneously.
+            See _Bind``1(System.Object[])_ for detailed usage.
+            First dependency type to bind.Second dependency type to bind.Third dependency type to bind.Fourth dependency type to bind.
+ - parameter _tags_ - Optional tags to associate with these bindings.
 
- - returns Reference to the setup continuation chain.
+ - returns Binding configuration interface for method chaining.
 
 See also _To``1_.
 
@@ -2204,7 +2209,7 @@ See also _As(Pure.DI.Lifetime)_.
 
 <details><summary>Method As(Pure.DI.Lifetime)</summary><blockquote>
 
-Determines the _Lifetime_ of a binding.
+Specifies the lifetime scope for the binding.
             
 ```c#
 
@@ -2214,9 +2219,9 @@ DI.Setup("Composition")
 ```
 
 
- - parameter _lifetime_ - The _Lifetime_ of a binding
+ - parameter _lifetime_ - Lifetime scope for the binding.
 
- - returns Reference to the setup continuation chain.
+ - returns Binding configuration interface for method chaining.
 
 See also _Bind``1(System.Object[])_.
 
@@ -2235,32 +2240,24 @@ See also _Tags(System.Object[])_.
 
 <details><summary>Method Tags(System.Object[])</summary><blockquote>
 
-Defines the binding tags.
-             Sometimes it's important to take control of building a dependency graph. For example, when there are multiple implementations of the same contract. In this case, tags will help:
+Specifies binding tags to differentiate between multiple implementations of the same interface.
              
 ```c#
 
 interface IDependency { }
-             
             
              class AbcDependency: IDependency { }
-             
             
              class XyzDependency: IDependency { }
-             
             
              class Dependency: IDependency { }
-             
             
              interface IService
              {
                  IDependency Dependency1 { get; }
-             
-            
                  IDependency Dependency2 { get; }
              }
             
-             
              class Service: IService
              {
                  public Service(
@@ -2272,12 +2269,9 @@ interface IDependency { }
                  }
             
                  public IDependency Dependency1 { get; }
-            
-             
                  public IDependency Dependency2 { get; }
              }
             
-             
              DI.Setup("Composition")
                  .Bind<IDependency>().Tags("Abc").To<AbcDependency>()
                  .Bind<IDependency>().Tags("Xyz").To<XyzDependency>()
@@ -2286,9 +2280,9 @@ interface IDependency { }
 ```
 
 
- - parameter _tags_ - The binding tags.
+ - parameter _tags_ - Tags to associate with this binding.
 
- - returns Reference to the setup continuation chain.
+ - returns Binding configuration interface for method chaining.
 
 See also _Bind``1(System.Object[])_.
 
@@ -2307,7 +2301,7 @@ See also _As(Pure.DI.Lifetime)_.
 
 <details><summary>Method To``1</summary><blockquote>
 
-Completes the binding chain by specifying the implementation.
+Specifies the implementation type for the binding.
             
 ```c#
 
@@ -2316,8 +2310,8 @@ DI.Setup("Composition")
             
 ```
 
-The implementation type. Also supports generic type markers such as _TT_, _TTList`1_, and others.
- - returns Reference to the setup continuation chain.
+Implementation type. Supports generic type markers.
+ - returns Configuration interface for method chaining.
 
 See also _Bind``1(System.Object[])_.
 
@@ -2336,7 +2330,7 @@ See also _As(Pure.DI.Lifetime)_.
 
 <details><summary>Method To``1(System.Func{Pure.DI.IContext,``0})</summary><blockquote>
 
-Completes the binding chain by specifying the implementation using a factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc.
+Specifies a factory method to create the implementation instance.
              
 ```c#
 
@@ -2348,37 +2342,23 @@ DI.Setup("Composition")
                      service.Initialize();
                      return service;
                  })
-             
-```
-
-
-             another example:
-             
-```c#
-
-DI.Setup("Composition")
-                 .Bind&lt;IService&gt;()
-                 To(ctx =&gt;
+            
+             // Another example:
+             DI.Setup("Composition")
+                 .Bind<IService>()
+                 To(ctx =>
                  {
                      ctx.Inject<IDependency>(out var dependency);
                      return new Service(dependency);
                  })
-             
-```
-
-
-             and another example:
-             
-```c#
-
-DI.Setup("Composition")
-                 .Bind&lt;IService&gt;()
-                 To(ctx =&gt;
+            
+             // And another example:
+             DI.Setup("Composition")
+                 .Bind<IService>()
+                 To(ctx =>
                  {
                      // Builds up an instance with all necessary dependencies
                      ctx.Inject<Service>(out var service);
-            
-             
                      service.Initialize();
                      return service;
                  })
@@ -2386,9 +2366,9 @@ DI.Setup("Composition")
 ```
 
 
- - parameter _factory_ - An expression for manually creating and initializing an instance.
-The implementation type.
- - returns Reference to the setup continuation chain.
+ - parameter _factory_ - Factory method to create and initialize the instance.
+Implementation type.
+ - returns Configuration interface for method chaining.
 
 See also _Bind``1(System.Object[])_.
 
@@ -2401,13 +2381,18 @@ See also _!:To<T1,T2,T>()_.
 See also _Tags(System.Object[])_.
 
 See also _As(Pure.DI.Lifetime)_.
-
+This method is useful for creating and initializing an instance manually.
+             At the compilation stage, the set of dependencies that the object to be created needs is determined.
+             In most cases, this happens automatically, according to the set of constructors and their arguments, and does not require additional customization efforts.
+             But sometimes it is necessary to manually create and/or initialize an object.
+             There are scenarios where manual control over the creation process is required, such as
+             when additional initialization logic is neededwhen complex construction steps are requiredwhen specific object states need to be set during creation
 </blockquote></details>
 
 
 <details><summary>Method To``1(System.String)</summary><blockquote>
 
-Completes the binding chain by specifying the implementation using a source code statement.
+Specifies a source code statement to create the implementation.
             
 ```c#
 
@@ -2424,9 +2409,9 @@ DI.Setup("Composition")
 ```
 
 
- - parameter _sourceCodeStatement_ - Source code statement
-The implementation type.
- - returns Reference to the setup continuation chain.
+ - parameter _sourceCodeStatement_ - Source code expression to create the instance.
+Implementation type.
+ - returns Configuration interface for method chaining.
 
 See also _Bind``1(System.Object[])_.
 
@@ -2435,39 +2420,33 @@ See also _Bind``1(System.Object[])_.
 
 <details><summary>Method To``2(System.Func{``0,``1})</summary><blockquote>
 
-Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the _TagAttribute_ in front of the parameter to specify the tag of the injected dependency.
-            
+Specifies a simplified factory method with dependency parameters.
+             
 ```c#
 
 DI.Setup(nameof(Composition))
-                .Bind<IDependency>().To((
-                    Dependency dependency) =>
-                {
-                    dependency.Initialize();
-                    return dependency;
-                });
+                 .Bind<IDependency>().To((
+                     Dependency dependency) =>
+                 {
+                     dependency.Initialize();
+                     return dependency;
+                 });
             
+             // Variant using TagAttribute:
+             DI.Setup(nameof(Composition))
+                 .Bind<IDependency>().To((
+                     [Tag("some tag")] Dependency dependency) =>
+                 {
+                     dependency.Initialize();
+                     return dependency;
+                 });
+             
 ```
 
 
-            A variant using _TagAttribute_:
-            
-```c#
-
-DI.Setup(nameof(Composition))
-                .Bind<IDependency>().To((
-                    [Tag("some tag")] Dependency dependency) =>
-                {
-                    dependency.Initialize();
-                    return dependency;
-                });
-            
-```
-
-
- - parameter _factory_ - An expression for manually creating and initializing an instance.
-Type #1 of the injected dependency.The implementation type.
- - returns Reference to the setup continuation chain.
+ - parameter _factory_ - Factory method with injected dependencies.
+Type of the first dependency parameter.Implementation type.
+ - returns Configuration interface for method chaining.
 
 See also _Bind``1(System.Object[])_.
 
@@ -2484,42 +2463,36 @@ See also _As(Pure.DI.Lifetime)_.
 
 <details><summary>Method To``3(System.Func{``0,``1,``2})</summary><blockquote>
 
-Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the _TagAttribute_ in front of the parameter to specify the tag of the injected dependency.
-            
+Specifies a simplified factory method with multiple dependency parameters.
+             
 ```c#
 
 DI.Setup(nameof(Composition))
-                .Bind<IDependency>().To((
-                    Dependency dependency,
-                    DateTimeOffset time) =>
-                {
-                    dependency.Initialize(time);
-                    return dependency;
-                });
+                 .Bind<IDependency>().To((
+                     Dependency dependency,
+                     DateTimeOffset time) =>
+                 {
+                     dependency.Initialize(time);
+                     return dependency;
+                 });
             
+             // Variant using TagAttribute:
+             DI.Setup(nameof(Composition))
+                 .Bind("now datetime").To(_ => DateTimeOffset.Now)
+                 .Bind<IDependency>().To((
+                     Dependency dependency,
+                     [Tag("now datetime")] DateTimeOffset time) =>
+                 {
+                     dependency.Initialize(time);
+                     return dependency;
+                 });
+             
 ```
 
 
-            A variant using _TagAttribute_:
-            
-```c#
-
-DI.Setup(nameof(Composition))
-                .Bind("now datetime").To(_ => DateTimeOffset.Now)
-                .Bind<IDependency>().To((
-                    Dependency dependency,
-                    [Tag("now datetime")] DateTimeOffset time) =>
-                {
-                    dependency.Initialize(time);
-                    return dependency;
-                });
-            
-```
-
-
- - parameter _factory_ - An expression for manually creating and initializing an instance.
-Type #1 of the injected dependency.Type #2 of the injected dependency.The implementation type.
- - returns Reference to the setup continuation chain.
+ - parameter _factory_ - Factory method with injected dependencies.
+Type of the first dependency parameter.Type of second dependency parameter.Implementation type.
+ - returns Configuration interface for method chaining.
 
 See also _Bind``1(System.Object[])_.
 
@@ -2536,11 +2509,11 @@ See also _As(Pure.DI.Lifetime)_.
 
 <details><summary>Method To``4(System.Func{``0,``1,``2,``3})</summary><blockquote>
 
-Completes the binding chain by specifying the implementation using a simplified factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc. Each parameter of this factory method represents a dependency injection. Starting with C# 10, you can also put the _TagAttribute_ in front of the parameter to specify the tag of the injected dependency.
+Specifies a simplified factory method with multiple dependency parameters.
             
- - parameter _factory_ - An expression for manually creating and initializing an instance.
-Type #1 of the injected dependency.Type #2 of the injected dependency.Type #3 of the injected dependency.The implementation type.
- - returns Reference to the setup continuation chain.
+ - parameter _factory_ - Factory method with injected dependencies.
+Type of the first dependency parameter.Type of the second dependency parameter.Type of the third dependency parameter.Implementation type.
+ - returns Configuration interface for method chaining.
 
 See also _Bind``1(System.Object[])_.
 
@@ -2560,14 +2533,14 @@ See also _As(Pure.DI.Lifetime)_.
 
 <details><summary>IConfiguration</summary><blockquote>
 
-An API for a Dependency Injection setup.
+Defines an API for configuring Dependency Injection bindings.
             
 See also _Setup(System.String,Pure.DI.CompositionKind)_.
 
 <details><summary>Method Bind(System.Object[])</summary><blockquote>
 
-Begins the binding definition for the implementation type itself, and if the implementation is not an abstract class or structure, for all abstract but NOT special types that are directly implemented.
-            Special types include:
+Starts binding definition for the implementation type itself. Also binds all directly implemented abstract types excluding special system interfaces.
+            Special system interfaces are excluded from binding:
             System.ObjectSystem.EnumSystem.MulticastDelegateSystem.DelegateSystem.Collections.IEnumerableSystem.Collections.Generic.IEnumerable<T>System.Collections.Generic.IList<T>System.Collections.Generic.ICollection<T>System.Collections.IEnumeratorSystem.Collections.Generic.IEnumerator<T>System.Collections.Generic.IIReadOnlyList<T>System.Collections.Generic.IReadOnlyCollection<T>System.IDisposableSystem.IAsyncResultSystem.AsyncCallback
 ```c#
 
@@ -2577,9 +2550,9 @@ DI.Setup("Composition")
 ```
 
 
- - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
+ - parameter _tags_ - Optional tags to associate with the binding.
 
- - returns Reference to the setup continuation chain.
+ - returns Binding configuration interface for method chaining.
 
 See also _To``1_.
 
@@ -2598,7 +2571,7 @@ See also _As(Pure.DI.Lifetime)_.
 
 <details><summary>Method Bind``1(System.Object[])</summary><blockquote>
 
-Begins the definition of the binding.
+Starts binding definition for a specific dependency type.
             
 ```c#
 
@@ -2607,10 +2580,10 @@ DI.Setup("Composition")
             
 ```
 
-The type of dependency to be bound.
- - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
+Dependency type to bind.
+ - parameter _tags_ - Optional tags to associate with the binding.
 
- - returns Reference to the setup continuation chain.
+ - returns Binding configuration interface for method chaining.
 
 See also _To``1_.
 
@@ -2629,11 +2602,12 @@ See also _As(Pure.DI.Lifetime)_.
 
 <details><summary>Method Bind``2(System.Object[])</summary><blockquote>
 
-Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for details.
-            Type 1 of a dependency to be bound.Type 2 of a dependency to be bound.
- - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
+Starts binding definition for multiple dependency types simultaneously.
+             See _Bind``1(System.Object[])_ for detailed usage.
+             First dependency type to bind.Second dependency type to bind.
+ - parameter _tags_ - Optional tags to associate with the binding.
 
- - returns Reference to the setup continuation chain.
+ - returns Binding configuration interface for method chaining.
 
 See also _To``1_.
 
@@ -2645,18 +2619,19 @@ See also _To<T1,T2,T>()_.
 
 See also _Tags(System.Object[])_.
 
-See also _As(Pure.DI.Lifetime)_.
-
+            seealso cref="IBinding.As"/>
+        
 </blockquote></details>
 
 
 <details><summary>Method Bind``3(System.Object[])</summary><blockquote>
 
-Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for details.
-            Type 1 of a dependency to be bound.Type 2 of a dependency to be bound.Type 3 of a dependency to be bound.
- - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
+Starts binding definition for multiple dependency types simultaneously.
+            See _Bind``1(System.Object[])_ for detailed usage.
+            First dependency type to bind.Second dependency type to bind.Third dependency type to bind.
+ - parameter _tags_ - Optional tags to associate with the binding.
 
- - returns Reference to the setup continuation chain.
+ - returns Binding configuration interface for method chaining.
 
 See also _To``1_.
 
@@ -2675,11 +2650,12 @@ See also _As(Pure.DI.Lifetime)_.
 
 <details><summary>Method Bind``4(System.Object[])</summary><blockquote>
 
-Begins binding definition for multiple dependencies. See _Bind``1(System.Object[])_ for details.
-            Type 1 of a dependency to be bound.Type 2 of a dependency to be bound.Type 3 of a dependency to be bound.Type 4 of a dependency to be bound.
- - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding.
+Starts binding definition for multiple dependency types simultaneously.
+            See _Bind``1(System.Object[])_ for detailed usage.
+            First dependency type to bind.Second dependency type to bind.Third dependency type to bind.Fourth dependency type to bind.
+ - parameter _tags_ - Optional tags to associate with the binding.
 
- - returns Reference to the setup continuation chain.
+ - returns Binding configuration interface for method chaining.
 
 See also _To``1_.
 
@@ -2698,7 +2674,7 @@ See also _As(Pure.DI.Lifetime)_.
 
 <details><summary>Method RootBind``1(System.String,Pure.DI.RootKinds,System.Object[])</summary><blockquote>
 
-Begins the definition of the binding with _Root``1(System.String,System.Object,Pure.DI.RootKinds)_ applied.
+Starts binding definition with automatic root creation for a dependency type.
             
 ```c#
 
@@ -2707,16 +2683,16 @@ DI.Setup("Composition")
             
 ```
 
-The type of dependency to be bound.
- - parameter _name_ - Specifies the name of the root of the composition. If the value is empty, a private root will be created, which can be used when calling  `Resolve`  methods.
-            The name supports templating:
-            TemplateDescription{type}Will be replaced by the short name of the root type without its namespaces.{TYPE}Will be replaced with the full name of the root type.{tag}Will be replaced with the first tag name.
+Dependency type to bind and expose as root.
+ - parameter _name_ - Root name template (supports {type}, {TYPE}, {tag} placeholders).
+            Empty name creates a private root accessible only via Resolve methods.
+            
 
- - parameter _kind_ - The optional argument specifying the kind for the root of the composition.
+ - parameter _kind_ - Specifies root accessibility and creation method.
 
- - parameter _tags_ - The optional argument that specifies tags for a particular type of dependency binding. If it is is not empty, the first tag is used for the root.
+ - parameter _tags_ - Tags for binding (first tag used for {tag} placeholder).
 
- - returns Reference to the setup continuation chain.
+ - returns Binding configuration interface for method chaining.
 
 See also _To``1_.
 
@@ -2735,7 +2711,7 @@ See also _As(Pure.DI.Lifetime)_.
 
 <details><summary>Method DependsOn(System.String[])</summary><blockquote>
 
-Indicates the use of some single or multiple setups as base setups by name.
+Specifies base setups to inherit bindings from.
             
 ```c#
 
@@ -2745,9 +2721,9 @@ DI.Setup("Composition")
 ```
 
 
- - parameter _setupNames_ - A set of names for the basic setups on which this one depends.
+ - parameter _setupNames_ - Names of base composition setups.
 
- - returns Reference to the setup continuation chain.
+ - returns Configuration interface for method chaining.
 
 See also _Setup(System.String,Pure.DI.CompositionKind)_.
 
@@ -2756,24 +2732,24 @@ See also _Setup(System.String,Pure.DI.CompositionKind)_.
 
 <details><summary>Method GenericTypeArgumentAttribute``1</summary><blockquote>
 
-Specifies a custom generic type argument attribute.
-            
+Registers custom generic type markers.
+             
 ```c#
 
 [AttributeUsage(AttributeTargets.Interface | AttributeTargets.Class | AttributeTargets.Struct)]
-            class MyGenericTypeArgumentAttribute: Attribute;
-             
-            [MyGenericTypeArgument]
-            interface TTMy; 
-             
-            DI.Setup("Composition")
-                .GenericTypeAttribute<MyGenericTypeArgumentAttribute>()
-                .Bind<IDependency<TTMy>>().To<Dependency<TTMy>>();
+             class MyGenericTypeArgumentAttribute: Attribute;
             
+             [MyGenericTypeArgument]
+             interface TTMy;
+            
+             DI.Setup("Composition")
+                 .GenericTypeAttribute<MyGenericTypeArgumentAttribute>()
+                 .Bind<IDependency<TTMy>>().To<Dependency<TTMy>>();
+             
 ```
 
-The attribute type.
- - returns Reference to the setup continuation chain.
+Custom attribute type.
+ - returns Configuration interface for method chaining.
 
 See also _GenericTypeArgumentAttribute``1_.
 
@@ -2782,7 +2758,7 @@ See also _GenericTypeArgumentAttribute``1_.
 
 <details><summary>Method TypeAttribute``1(System.Int32)</summary><blockquote>
 
-Specifies a custom attribute that overrides the injection type.
+Registers a custom attribute to override injection types.
             
 ```c#
 
@@ -2792,9 +2768,9 @@ DI.Setup("Composition")
 ```
 
 
- - parameter _typeArgumentPosition_ - The optional parameter that specifies the position of the type parameter in the attribute constructor. 0 by default. See predefined attribute _TypeAttribute``1(System.Int32)_.
-The attribute type.
- - returns Reference to the setup continuation chain.
+ - parameter _typeArgumentPosition_ - Position of type parameter in attribute constructor (default: 0).
+Custom attribute type.
+ - returns Configuration interface for method chaining.
 
 See also _TypeAttribute_.
 
@@ -2803,7 +2779,7 @@ See also _TypeAttribute_.
 
 <details><summary>Method TagAttribute``1(System.Int32)</summary><blockquote>
 
-Specifies a tag attribute that overrides the injected tag.
+Registers a custom attribute to override injection tags.
             
 ```c#
 
@@ -2813,9 +2789,9 @@ DI.Setup("Composition")
 ```
 
 
- - parameter _tagArgumentPosition_ - The optional parameter that specifies the position of the tag parameter in the attribute constructor. 0 by default. See the predefined _TagAttribute``1(System.Int32)_ attribute.
-The attribute type.
- - returns Reference to the setup continuation chain.
+ - parameter _tagArgumentPosition_ - Position of tag parameter in attribute constructor (default: 0).
+Custom attribute type.
+ - returns Configuration interface for method chaining.
 
 See also _TagAttribute_.
 
@@ -2824,7 +2800,7 @@ See also _TagAttribute_.
 
 <details><summary>Method OrdinalAttribute``1(System.Int32)</summary><blockquote>
 
-Specifies a custom attribute that overrides the injection ordinal.
+Registers a custom attribute to override injection priority.
             
 ```c#
 
@@ -2834,9 +2810,9 @@ DI.Setup("Composition")
 ```
 
 
- - parameter _ordinalArgumentPosition_ - The optional parameter that specifies the position of the ordinal parameter in the attribute constructor. 0 by default. See the predefined _OrdinalAttribute``1(System.Int32)_ attribute.
-The attribute type.
- - returns Reference to the setup continuation chain.
+ - parameter _ordinalArgumentPosition_ - Position of ordinal parameter in attribute constructor (default: 0).
+Custom attribute type.
+ - returns Configuration interface for method chaining.
 
 See also _OrdinalAttribute_.
 
@@ -2845,7 +2821,7 @@ See also _OrdinalAttribute_.
 
 <details><summary>Method DefaultLifetime(Pure.DI.Lifetime)</summary><blockquote>
 
-Overrides the default _Lifetime_ for all bindings further down the chain. If not specified, the _Transient_ lifetime is used.
+Sets the default lifetime for the following bindings.
             
 ```c#
 
@@ -2855,9 +2831,9 @@ DI.Setup("Composition")
 ```
 
 
- - parameter _lifetime_ - The default lifetime.
+ - parameter _lifetime_ - Default lifetime to apply.
 
- - returns Reference to the setup continuation chain.
+ - returns Configuration interface for method chaining.
 
 See also _Lifetime_.
 
@@ -2868,7 +2844,7 @@ See also _As(Pure.DI.Lifetime)_.
 
 <details><summary>Method DefaultLifetime``1(Pure.DI.Lifetime,System.Object[])</summary><blockquote>
 
-Overrides the default _Lifetime_ for all bindings can be casted to type  further down the chain.
+Sets the default lifetime for bindings of specific types for the following bindings.
             
 ```c#
 
@@ -2886,11 +2862,11 @@ DI.Setup("Composition")
 ```
 
 
- - parameter _lifetime_ - The default lifetime.
+ - parameter _lifetime_ - Default lifetime to apply.
 
- - parameter _tags_ - The optional argument specifying the binding tags for which it will set the default lifetime. If not specified, the default lifetime will be set for any tags.
-The default lifetime will be applied to bindings if the implementation class can be cast to type .
- - returns Reference to the setup continuation chain.
+ - parameter _tags_ - Tags specifying which bindings to apply this lifetime to.
+Type filter for applicable bindings.
+ - returns Configuration interface for method chaining.
 
 See also _Lifetime_.
 
@@ -2901,7 +2877,7 @@ See also _As(Pure.DI.Lifetime)_.
 
 <details><summary>Method Arg``1(System.String,System.Object[])</summary><blockquote>
 
-Adds a partial class argument and replaces the default constructor by adding this argument as a parameter. It is only created if this argument is actually used. 
+Adds a composition argument to be injected.
             
 ```c#
 
@@ -2910,14 +2886,13 @@ DI.Setup("Composition")
             
 ```
 
+Argument type.
+ - parameter _name_ - Argument name template (supports {type}, {TYPE}, {tag} placeholders).
+            
 
- - parameter _name_ - The argument name.
-            The name supports templating:
-            TemplateDescription{type}Will be replaced by the short name of the argument type without its namespaces.{TYPE}Will be replaced with the full name of the argument type.{tag}Will be replaced with the first tag name.
+ - parameter _tags_ - Tags to associate with the argument.
 
- - parameter _tags_ - The optional argument that specifies the tags for the argument.
-The argument type.
- - returns Reference to the setup continuation chain.
+ - returns Configuration interface for method chaining.
 
 See also _RootArg``1(System.String,System.Object[])_.
 
@@ -2926,7 +2901,7 @@ See also _RootArg``1(System.String,System.Object[])_.
 
 <details><summary>Method RootArg``1(System.String,System.Object[])</summary><blockquote>
 
-Adds a root argument to use as a root parameter. 
+Adds a root argument to be injected.
             
 ```c#
 
@@ -2935,14 +2910,13 @@ DI.Setup("Composition")
             
 ```
 
+Argument type.
+ - parameter _name_ - Argument name template (supports {type}, {TYPE}, {tag} placeholders).
+            
 
- - parameter _name_ - The argument name.
-            The name supports templating:
-            TemplateDescription{type}Will be replaced by the short name of the argument type without its namespaces.{TYPE}Will be replaced with the full name of the argument type.{tag}Will be replaced with the first tag name.
+ - parameter _tags_ - Tags to associate with the argument.
 
- - parameter _tags_ - The optional argument that specifies the tags for the argument.
-The argument type.
- - returns Reference to the setup continuation chain.
+ - returns Configuration interface for method chaining.
 
 See also _Arg``1(System.String,System.Object[])_.
 
@@ -2951,7 +2925,7 @@ See also _Arg``1(System.String,System.Object[])_.
 
 <details><summary>Method Root``1(System.String,System.Object,Pure.DI.RootKinds)</summary><blockquote>
 
-Specifying the root of the composition.
+Defines the composition root.
             
 ```c#
 
@@ -2968,16 +2942,16 @@ DI.Setup("Composition")
             
 ```
 
+Root type to expose.
+ - parameter _name_ - Root name template (supports {type}, {TYPE}, {tag} placeholders).
+            Empty name creates the private root accessible only via  `Resolve`  methods.
+            
 
- - parameter _name_ - Specifies the name of the root of the composition. If the value is empty, a private root will be created, which can be used when calling  `Resolve`  methods.
-            The name supports templating:
-            TemplateDescription{type}Will be replaced by the short name of the root type without its namespaces.{TYPE}Will be replaced with the full name of the root type.{tag}Will be replaced with the root tag name.
+ - parameter _tag_ - Tag to associate with the root.
 
- - parameter _tag_ - The optional argument specifying the tag for the root of the composition.
+ - parameter _kind_ - Specifies root accessibility and creation method.
 
- - parameter _kind_ - The optional argument specifying the kind for the root of the composition.
-The composition root type.
- - returns Reference to the setup continuation chain.
+ - returns Configuration interface for method chaining.
 
 See also _RootBind``1(System.String,Pure.DI.RootKinds,System.Object[])_.
 
@@ -2988,7 +2962,7 @@ See also _Roots``1(System.String,Pure.DI.RootKinds,System.String)_.
 
 <details><summary>Method Roots``1(System.String,Pure.DI.RootKinds,System.String)</summary><blockquote>
 
-Specifies to define composition roots for all types inherited from _!:T_ available at compile time at the point where the method is called.
+Automatically creates roots for all base type implementations found at the time the method is called.
             
 ```c#
 
@@ -3005,16 +2979,16 @@ DI.Setup("Composition")
             
 ```
 
+Base type for auto-root discovery.
+ - parameter _name_ - Root name template (supports {type}, {TYPE} placeholders).
+            Empty name creates private roots accessible only via Resolve methods.
+            
 
- - parameter _name_ - Specifies the name of the roots of the composition. If the value is empty, private roots will be created, which can be used when calling  `Resolve`  methods.
-            The name supports templating:
-            TemplateDescription{type}Will be replaced by the short name of the type without its namespaces.{TYPE}Will be replaced with the full name of the type.
+ - parameter _kind_ - Specifies root accessibility and creation method.
 
- - parameter _kind_ - The optional argument specifying the kind for the root of the composition.
+ - parameter _filter_ - Wildcard pattern to filter types by full name.
 
- - parameter _filter_ - A wildcard to filter root types by their full name.
-The composition root base type.
- - returns Reference to the setup continuation chain.
+ - returns Configuration interface for method chaining.
 
 See also _Root``1(System.String,System.Object,Pure.DI.RootKinds)_.
 
@@ -3023,7 +2997,7 @@ See also _Root``1(System.String,System.Object,Pure.DI.RootKinds)_.
 
 <details><summary>Method Builder``1(System.String,Pure.DI.RootKinds)</summary><blockquote>
 
-Specifies the method of the composition builder. The first argument to the method will always be the instance to be built. The remaining arguments to this method will be listed in the order in which they are defined in the setup.Specifies to create a composition builder method. The first argument to the method will always be the instance to be built. The remaining arguments to this method will be listed in the order in which they are defined in the setup.
+Defines a builder method for initializing instances post-creation.
             
 ```c#
 
@@ -3032,14 +3006,14 @@ DI.Setup("Composition")
             
 ```
 
+Type the builder method applies to.
+ - parameter _name_ - Builder method name template (supports {type}, {TYPE} placeholders).
+            Default: "BuildUp".
+            
 
- - parameter _name_ - Specifies the name of the builder. The default name is "BuildUp".
-            The name supports templating:
-            TemplateDescription{type}Will be replaced by the short name of the type without its namespaces.{TYPE}Will be replaced with the full name of the type.
+ - parameter _kind_ - Specifies builder accessibility.
 
- - parameter _kind_ - The optional argument specifying the kind for the root of the composition.
-The composition root type.
- - returns Reference to the setup continuation chain.
+ - returns Configuration interface for method chaining.
 
 See also _Builders``1(System.String,Pure.DI.RootKinds,System.String)_.
 
@@ -3048,7 +3022,7 @@ See also _Builders``1(System.String,Pure.DI.RootKinds,System.String)_.
 
 <details><summary>Method Builders``1(System.String,Pure.DI.RootKinds,System.String)</summary><blockquote>
 
-Specifies to define builders for all types inherited from _!:T_ available at compile time at the point where the method is called.
+Automatically creates builders for all discoverable implementations of a base type found at the time the method is called.
             
 ```c#
 
@@ -3073,16 +3047,16 @@ DI.Setup("Composition")
             
 ```
 
+Base type for builder discovery.
+ - parameter _name_ - Builder method name template (supports {type}, {TYPE} placeholders).
+            Default: "BuildUp".
+            
 
- - parameter _name_ - Specifies the name of the builders. The default name is "BuildUp".
-            The name supports templating:
-            TemplateDescription{type}Will be replaced by the short name of the type without its namespaces.{TYPE}Will be replaced with the full name of the type.
+ - parameter _kind_ - Specifies builder accessibility.
 
- - parameter _kind_ - The optional argument specifying the kind for the root of the composition.
+ - parameter _filter_ - Wildcard pattern to filter types by full name.
 
- - parameter _filter_ - A wildcard to filter builder types by their full name.
-The composition root base type.
- - returns Reference to the setup continuation chain.
+ - returns Configuration interface for method chaining.
 
 See also _Builder``1(System.String,Pure.DI.RootKinds)_.
 
@@ -3091,7 +3065,7 @@ See also _Builder``1(System.String,Pure.DI.RootKinds)_.
 
 <details><summary>Method Hint(Pure.DI.Hint,System.String)</summary><blockquote>
 
-Defines a hint for fine-tuning code generation.
+Configures code generation options.
             
 ```c#
 
@@ -3101,11 +3075,11 @@ DI.Setup("Composition")
 ```
 
 
- - parameter _hint_ - The hint type.
+ - parameter _hint_ - Hint type to configure.
 
- - parameter _value_ - The hint value.
+ - parameter _value_ - Value to set for the hint.
 
- - returns Reference to the setup continuation chain.
+ - returns Configuration interface for method chaining.
 
 See also _Hint_.
 
@@ -3114,7 +3088,7 @@ See also _Hint_.
 
 <details><summary>Method Accumulate``2(Pure.DI.Lifetime[])</summary><blockquote>
 
-Registers an accumulator for instances.
+Registers an accumulator for collecting instances of specific lifetimes. If no lifetime is specified, it works for all.
             
 ```c#
 
@@ -3124,9 +3098,10 @@ DI.Setup("Composition")
 ```
 
 
- - parameter _lifetimes_ - _Lifetime_ of the instances to be accumulated. Instances with lifetime _Singleton_, _Scoped_, or _PerResolve_ only accumulate in an accumulator that is NOT lazily created.
-The type of instance. All instances that can be cast to this type will be accumulated.The type of accumulator. It must have a public constructor without parameters and a  `Add`  method with a single argument that allows you to add an instance of type .
- - returns Reference to the setup continuation chain.
+ - parameter _lifetimes_ - Lifetimes of instances to accumulate.
+Type of instances to collect.Accumulator type (requires parameterless constructor and Add(T) method).
+            
+ - returns Configuration interface for method chaining.
 
 See also _Lifetime_.
 
@@ -3135,20 +3110,20 @@ See also _Lifetime_.
 
 <details><summary>Method GenericTypeArgument``1</summary><blockquote>
 
-Specifies a custom generic type argument.
-            
+Defines a generic type marker for generic bindings.
+             
 ```c#
 
 interface TTMy;
-             
-            DI.Setup("Composition")
-                .GenericTypeArgument<TTMy>()
-                .Bind<IDependency<TTMy>>().To<Dependency<TTMy>>();
             
+             DI.Setup("Composition")
+                 .GenericTypeArgument<TTMy>()
+                 .Bind<IDependency<TTMy>>().To<Dependency<TTMy>>();
+             
 ```
 
-The generic type marker.
- - returns Reference to the setup continuation chain.
+Generic type marker.
+ - returns Configuration interface for method chaining.
 
 See also _GenericTypeArgumentAttribute``1_.
 
@@ -3194,7 +3169,6 @@ The chain of consumer types for which an instance is created, from the immediate
 var box = new Composition().Box;
              // Output: ShroedingersCat, CardboardBox`1, Composition
             
-            
              static void Setup() =>
                  DI.Setup(nameof(Composition))
                  .Bind().To(ctx => new Log(ctx.ConsumerTypes))
@@ -3202,16 +3176,13 @@ var box = new Composition().Box;
                  .Bind().To<CardboardBox<TT>>()
                  .Root<CardboardBox<ShroedingersCat>>("Box");
             
-            
              public class Log
              {
                  public Log(Type[] types) =>
                      Console.WriteLine(string.Join(", ", types.Select(type => type.Name)));
              }
             
-            
              public record CardboardBox<T>(T Content);
-            
             
              public record ShroedingersCat(Log log);
              
@@ -3234,7 +3205,6 @@ The immediate consumer type for which the instance is created. Cannot be used ou
 var box = new Composition().Box;
              // Output: ShroedingersCat
             
-            
              static void Setup() =>
                  DI.Setup(nameof(Composition))
                  .Bind().To(ctx => new Log(ctx.ConsumerType))
@@ -3242,16 +3212,13 @@ var box = new Composition().Box;
                  .Bind().To<CardboardBox<TT>>()
                  .Root<CardboardBox<ShroedingersCat>>("Box");
             
-            
              public class Log
              {
                  public Log(Type type) =>
                      Console.WriteLine(type.Name);
              }
             
-            
              public record CardboardBox<T>(T Content);
-            
             
              public record ShroedingersCat(Log log);
              
@@ -3261,6 +3228,30 @@ var box = new Composition().Box;
 See also _ConsumerTypes_.
 
 See also _To``1(System.Func{Pure.DI.IContext,``0})_.
+
+</blockquote></details>
+
+
+<details><summary>Property Lock</summary><blockquote>
+
+Gets the synchronization object used to control thread-safe access during composition.
+            Used to prevent race conditions during dependency resolution and override operations.
+            
+```c#
+
+DI.Setup(nameof(Composition))
+                .Bind<IDependency>().To<IDependency>(ctx =>
+                {
+                    lock (ctx.Lock)
+                    {
+                        ctx.Inject(out Dependency dependency);
+                        dependency.Initialize();
+                        return dependency;
+                    }
+                })
+            
+```
+
 
 </blockquote></details>
 
@@ -3292,7 +3283,6 @@ DI.Setup("Composition")
                      // Builds up an instance with all necessary dependencies
                      ctx.Inject<Service>(out var service);
             
-             
                      service.Initialize();
                      return service;
                  })
@@ -3364,7 +3354,7 @@ See also _To``1(System.Func{Pure.DI.IContext,``0})_.
 
 <details><summary>Method Override``1(``0,System.Object[])</summary><blockquote>
 
-Overrides the binding with the specified value. Cannot be used outside the binding setting.
+Overrides the binding with the specified value. Cannot be used outside the binding setup.
             
 ```c#
 
@@ -3417,7 +3407,7 @@ DI.Setup("Composition")
 ```
 
 
-            An alternative to synchronizing streams yourself is to use types like _Func`3_this. There, threads synchronization is performed automatically.
+            An alternative to synchronizing thread yourself is to use types like _Func`3_this. There, threads synchronization is performed automatically.
             
  - parameter _value_ - The object that will be used to override a binding.
 Object type that will be used to override a binding.
@@ -3434,7 +3424,8 @@ See also _To<T>(System.Func<TArg1,T>)_.
 
 <details><summary>IOwned</summary><blockquote>
 
-This abstraction allows a disposable object to be disposed of.
+Represents an owned resource whose lifetime is managed by its owner.
+            Provides both synchronous and asynchronous disposal capabilities for proper resource cleanup.
             
 See also _Owned_.
 
@@ -3445,7 +3436,8 @@ See also _Accumulate``2(Pure.DI.Lifetime[])_.
 
 <details><summary>Lifetime</summary><blockquote>
 
-Binding lifetimes.
+Defines binding lifetimes for dependencies.
+            Binding as Singleton:
             
 ```c#
 
@@ -3465,7 +3457,8 @@ See also _DefaultLifetime``1(Pure.DI.Lifetime,System.Object[])_.
 
 <details><summary>Field Transient</summary><blockquote>
 
-Specifies to create a new dependency instance each time. This is the default value and can be omitted.
+Creates a new dependency instance for each injection (default behavior). Default behavior can be changed by _DefaultLifetime(Pure.DI.Lifetime)_ and _DefaultLifetime``1(Pure.DI.Lifetime,System.Object[])_.
+            Explicit transient binding:
             
 ```c#
 
@@ -3475,7 +3468,7 @@ DI.Setup("Composition")
 ```
 
 
-            This is the default lifetime, it can be omitted, for example,
+            Default behavior (equivalent):
             
 ```c#
 
@@ -3485,17 +3478,22 @@ DI.Setup("Composition")
 ```
 
 
+See also _DefaultLifetime(Pure.DI.Lifetime)_.
+
+See also _DefaultLifetime``1(Pure.DI.Lifetime,System.Object[])_.
+
 </blockquote></details>
 
 
 <details><summary>Field Singleton</summary><blockquote>
 
-Ensures that there will be a single instance of the dependency for each composition.
+Maintains a single instance per composition.
+            Singleton binding:
             
 ```c#
 
 DI.Setup("Composition")
-                .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>();
+                .Bind<IService>().As(Lifetime.Singleton).To<Service>();
             
 ```
 
@@ -3505,12 +3503,13 @@ DI.Setup("Composition")
 
 <details><summary>Field PerResolve</summary><blockquote>
 
-Guarantees that there will be a single instance of the dependency for each root of the composition.
+Single instance per composition root.
+            Per-resolve binding:
             
 ```c#
 
 DI.Setup("Composition")
-                .Bind<IDependency>().As(Lifetime.PerResolve).To<Dependency>();
+                .Bind<IProcessor>().As(Lifetime.PerResolve).To<Processor>();
             
 ```
 
@@ -3520,12 +3519,13 @@ DI.Setup("Composition")
 
 <details><summary>Field PerBlock</summary><blockquote>
 
-Does not guarantee that there will be a single instance of the dependency for each root of the composition, but is useful to reduce the number of instances created.
+Reuses instances within code blocks to reduce allocations.
+            Per-block binding:
             
 ```c#
 
 DI.Setup("Composition")
-                .Bind<IDependency>().As(Lifetime.PerBlock).To<Dependency>();
+                .Bind<ILogger>().As(Lifetime.PerBlock).To<Logger>();
             
 ```
 
@@ -3535,12 +3535,13 @@ DI.Setup("Composition")
 
 <details><summary>Field Scoped</summary><blockquote>
 
-Ensures that there will be a single instance of the dependency for each scope.
+Single instance per dependency scope.
+            Scoped binding:
             
 ```c#
 
 DI.Setup("Composition")
-                .Bind<IDependency>().As(Lifetime.Scoped).To<Dependency>();
+                .Bind<IDatabase>().As(Lifetime.Scoped).To<Database>();
             
 ```
 
@@ -3553,15 +3554,16 @@ DI.Setup("Composition")
 
 <details><summary>Name</summary><blockquote>
 
-Represents well-known names.
+Provides well-known names used throughout the dependency injection configuration.
+            These names serve as standardized identifiers for common DI components and behaviors.
             
 </blockquote></details>
 
 
 <details><summary>OrdinalAttribute</summary><blockquote>
 
-Represents an ordinal attribute.
-             This attribute is part of the API, but you can use your own attribute at any time, and this allows you to define them in the assembly and namespace you want.
+Specifies injection order priority for constructors, methods, properties, and fields.
+             While this attribute is part of the DI API, you can implement custom ordering attributes in any namespace.
              For constructors, it defines the sequence of attempts to use a particular constructor to create an object:
              
 ```c#
@@ -3569,12 +3571,10 @@ Represents an ordinal attribute.
 class Service: IService
              {
                  private readonly string _name;
-             
             
                  [Ordinal(1)]
                  public Service(IDependency dependency) =>
                      _name = "with dependency";
-             
             
                  [Ordinal(0)]
                  public Service(string name) => _name = name;
@@ -3583,6 +3583,7 @@ class Service: IService
 ```
 
 
+            
              For fields, properties and methods, it specifies to perform dependency injection and defines the sequence:
              
 ```c#
@@ -3590,11 +3591,10 @@ class Service: IService
 class Person: IPerson
              {
                  private readonly string _name = "";
-             
+            
                  [Ordinal(0)]
                  public int Id;
             
-             
                  [Ordinal(1)]
                  public string FirstName
                  {
@@ -3603,10 +3603,8 @@ class Person: IPerson
                          _name = value;
                      }
                  }
-             
             
                  public IDependency? Dependency { get; private set; }
-             
             
                  [Ordinal(2)]
                  public void SetDependency(IDependency dependency) =>
@@ -3624,9 +3622,9 @@ See also _TypeAttribute_.
 
 <details><summary>Constructor OrdinalAttribute(System.Int32)</summary><blockquote>
 
-Creates an attribute instance.
+Initializes an attribute instance with the specified injection priority.
             
- - parameter _ordinal_ - The injection ordinal.
+ - parameter _ordinal_ - Lower values indicate higher priority (0 executes before 1). Default: 0.
 
 </blockquote></details>
 
@@ -3636,7 +3634,8 @@ Creates an attribute instance.
 
 <details><summary>Owned</summary><blockquote>
 
-Performs accumulation and disposal of disposable objects.
+Manages lifetime of disposable objects by accumulating them and providing deterministic disposal.
+            Implements both synchronous and asynchronous disposal patterns for comprehensive resource cleanup.
             
 See also _IOwned_.
 
@@ -3653,8 +3652,9 @@ See also _Accumulate``2(Pure.DI.Lifetime[])_.
 
 <details><summary>Owned`1</summary><blockquote>
 
-Contains a value and gives the ability to dispose of that value.
-            Type of value owned.
+Represents an owned resource of type  that combines a value with its disposal mechanism.
+            Provides deterministic lifetime management through both synchronous and asynchronous disposal patterns.
+            The type of the owned value.
 See also _IOwned_.
 
 See also _Owned_.
@@ -3663,18 +3663,18 @@ See also _Accumulate``2(Pure.DI.Lifetime[])_.
 
 <details><summary>Field Value</summary><blockquote>
 
-Own value.
+The owned value instance.
             
 </blockquote></details>
 
 
 <details><summary>Constructor Owned`1(`0,Pure.DI.IOwned)</summary><blockquote>
 
-Creates a new instance.
+Initializes a new owned value with its associated disposal mechanism.
             
- - parameter _value_ - Own value.
+ - parameter _value_ - The value to be owned and managed.
 
- - parameter _owned_ - The abstraction allows a disposable object to be disposed of.
+ - parameter _owned_ - The disposal mechanism responsible for cleaning up the owned value.
 
 </blockquote></details>
 
@@ -3697,7 +3697,8 @@ For internal use.
 
 <details><summary>RootKinds</summary><blockquote>
 
-Determines a kind of root of the composition.
+Specifies configuration flags for composition root members, controlling their access level, modifiers, and representation.
+            Flags can be combined to define complex root behaviors.
             
 See also _Root``1(System.String,System.Object,Pure.DI.RootKinds)_.
 
@@ -3711,63 +3712,63 @@ See also _Builders``1(System.String,Pure.DI.RootKinds,System.String)_.
 
 <details><summary>Field Default</summary><blockquote>
 
-Specifies to use the default composition root kind.
+Default configuration: Public access modifier and property representation.
             
 </blockquote></details>
 
 
 <details><summary>Field Public</summary><blockquote>
 
-Specifies to use a  `public`  access modifier for the root of the composition.
+Public access modifier for the composition root.
             
 </blockquote></details>
 
 
 <details><summary>Field Internal</summary><blockquote>
 
-Specifies to use a  `internal`  access modifier for the root of the composition.
+Internal access modifier for the composition root.
             
 </blockquote></details>
 
 
 <details><summary>Field Private</summary><blockquote>
 
-Specifies to use a  `private`  access modifier for the root of the composition.
+Private access modifier for the composition root.
             
 </blockquote></details>
 
 
 <details><summary>Field Property</summary><blockquote>
 
-Specifies to create a composition root as a property.
+Represents the composition root as a property.
             
 </blockquote></details>
 
 
 <details><summary>Field Method</summary><blockquote>
 
-Specifies to create a composition root as a method.
-            
+Represents the composition root as a method.
+             
 </blockquote></details>
 
 
 <details><summary>Field Static</summary><blockquote>
 
-Specifies to create a static root of the composition.
+Defines the composition root as static.
             
 </blockquote></details>
 
 
 <details><summary>Field Partial</summary><blockquote>
 
-Specifies to create a partial root of the composition.
+Defines the composition root as partial.
             
 </blockquote></details>
 
 
 <details><summary>Field Exposed</summary><blockquote>
 
-Specifies to create an exposed root of the composition.
+Exposes the root for external binding via attributes.
             
 See also _BindAttribute_.
 
@@ -3776,21 +3777,21 @@ See also _BindAttribute_.
 
 <details><summary>Field Protected</summary><blockquote>
 
-Specifies to use a  `protected`  access modifier for the root of the composition.
+Protected access modifier for the composition root.
             
 </blockquote></details>
 
 
 <details><summary>Field Virtual</summary><blockquote>
 
-Specifies to use a  `virtual`  modifier for the root of the composition.
+Applies virtual modifier to enable overriding in derived classes.
             
 </blockquote></details>
 
 
 <details><summary>Field Override</summary><blockquote>
 
-Specifies to use a  `override`  modifier for the root of the composition.
+Applies override modifier to redefine a base implementation.
             
 </blockquote></details>
 
@@ -3800,7 +3801,7 @@ Specifies to use a  `override`  modifier for the root of the composition.
 
 <details><summary>Tag</summary><blockquote>
 
-Represents well-known tags.
+Provides standardized tags for dependency binding scenarios, including special tags for unique bindings, type-based identification, and injection targeting.
             
 See also _Bind``1(System.Object[])_.
 
@@ -3808,8 +3809,7 @@ See also _Tags(System.Object[])_.
 
 <details><summary>Field Unique</summary><blockquote>
 
-Unique tag.
-            Begins the definition of the binding.
+Enables multiple distinct bindings for the same instance type. Used for collection injection.
             
 ```c#
 
@@ -3826,7 +3826,7 @@ DI.Setup("Composition")
 
 <details><summary>Field Type</summary><blockquote>
 
-Tag of a target implementation type.
+Tags bindings by their implementation type for explicit injection.
             
 ```c#
 
@@ -3842,7 +3842,7 @@ DI.Setup("Composition")
 
 <details><summary>Field Any</summary><blockquote>
 
-Any tag.
+Matches any tag during resolution. Used for conditional bindings that accept any tag.
             
 ```c#
 
@@ -3859,7 +3859,7 @@ DI.Setup("Composition")
 
 <details><summary>Method On(System.String[])</summary><blockquote>
 
-This tag allows you to determine which binding will be used for explicit injection for a particular injection site.
+Creates a tag targeting specific injection sites using member identifiers.
             
 ```c#
 
@@ -3867,19 +3867,19 @@ DI.Setup("Composition")
                 .Bind(Tag.On("MyNamespace.Service.Service:dep"))
                     .To<Dependency>()
                 .Bind().To<Service>()
-                .Root<IService>("Root");
+                .Root<<IService>("Root");
             
 ```
 
 
- - parameter _injectionSites_ - Set of labels for injection each must be specified in a special format: <namespace>.<type>.<member>[:argument]. The argument is specified only for the constructor and methods. The wildcards '*' and '?' are supported. All names are case-sensitive. The global namespace prefix 'global::' must be omitted.
+ - parameter _injectionSites_ - Member identifiers in format: [namespace].[type].[member][:argument]. Case-sensitive. Wildcards (*, ?) supported. Omit 'global::'.
 
 </blockquote></details>
 
 
 <details><summary>Method OnConstructorArg``1(System.String)</summary><blockquote>
 
-This tag allows you to determine which binding will be used for explicit injection for a particular constructor argument.
+Creates a tag targeting a specific constructor parameter by name.
             
 ```c#
 
@@ -3892,14 +3892,14 @@ DI.Setup("Composition")
 ```
 
 
- - parameter _argName_ - The name of the constructor argument.
+ - parameter _argName_ - Constructor parameter name
 
 </blockquote></details>
 
 
 <details><summary>Method OnMember``1(System.String)</summary><blockquote>
 
-This tag allows you to define which binding will be used for explicit injection for a property or field of the type.
+Creates a tag targeting a specific field or property by name.
             
 ```c#
 
@@ -3912,14 +3912,14 @@ DI.Setup("Composition")
 ```
 
 
- - parameter _memberName_ - The name of the type member.
+ - parameter _memberName_ - Field or property name
 
 </blockquote></details>
 
 
 <details><summary>Method OnMethodArg``1(System.String,System.String)</summary><blockquote>
 
-This tag allows you to determine which binding will be used for explicit injection for a particular method argument.
+Creates a tag targeting a specific method parameter by method and argument names.
             
 ```c#
 
@@ -3932,9 +3932,9 @@ DI.Setup("Composition")
 ```
 
 
- - parameter _methodName_ - The name of the type method.
+ - parameter _methodName_ - Method name
 
- - parameter _argName_ - The name of the method argument.
+ - parameter _argName_ - Parameter name
 
 </blockquote></details>
 
@@ -3954,15 +3954,6 @@ Atomically generated smart tag with value "UniqueTag".
             It's used for:
             
             class _Generator__ApiInvocationProcessor_ <-- (UniqueTag) -- _IdGenerator_ as _PerResolve__BindingBuilder_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve_
-</blockquote></details>
-
-
-<details><summary>Field VarName</summary><blockquote>
-
-Atomically generated smart tag with value "VarName".
-            It's used for:
-            
-            class _Generator__VarsMap_ <-- _IIdGenerator_(VarName) -- _IdGenerator_ as _Transient_
 </blockquote></details>
 
 
@@ -3990,6 +3981,15 @@ Atomically generated smart tag with value "Override".
             It's used for:
             
             class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
+<details><summary>Field VarName</summary><blockquote>
+
+Atomically generated smart tag with value "VarName".
+            It's used for:
+            
+            class _Generator__VarsMap_ <-- _IIdGenerator_(VarName) -- _IdGenerator_ as _Transient_
 </blockquote></details>
 
 
@@ -5454,6 +5454,7 @@ Creates an attribute instance.
 - [Required properties or fields](readme/required-properties-or-fields.md)
 - [Overrides](readme/overrides.md)
 - [Root binding](readme/root-binding.md)
+- [Static root](readme/static-root.md)
 - [Async Root](readme/async-root.md)
 - [Consumer type](readme/consumer-type.md)
 - [Ref dependencies](readme/ref-dependencies.md)
@@ -5537,6 +5538,7 @@ Creates an attribute instance.
 - [Check for a root](readme/check-for-a-root.md)
 ### Advanced
 - [Composition root kinds](readme/composition-root-kinds.md)
+- [Factory with thread synchronization](readme/factory-with-thread-synchronization.md)
 - [Root with name template](readme/root-with-name-template.md)
 - [Tag Any](readme/tag-any.md)
 - [Tag Type](readme/tag-type.md)
@@ -6395,7 +6397,7 @@ Contextual AI needs to understand the situation it’s in. This means knowing de
 | --------------- | ---- | ------ |
 | [AI_CONTEXT_SMALL.md](AI_CONTEXT_SMALL.md) | 28KB | 7K |
 | [AI_CONTEXT_MEDIUM.md](AI_CONTEXT_MEDIUM.md) | 123KB | 31K |
-| [AI_CONTEXT_LARGE.md](AI_CONTEXT_LARGE.md) | 413KB | 105K |
+| [AI_CONTEXT_LARGE.md](AI_CONTEXT_LARGE.md) | 411KB | 105K |
 ## How to contribute to Pure.DI
 
 Thank you for your interest in contributing to the Pure.DI project! First of all, if you are going to make a big change or feature, please open a problem first. That way, we can coordinate and understand if the change you're going to work on fits with current priorities and if we can commit to reviewing and merging it within a reasonable timeframe. We don't want you to waste a lot of your valuable time on something that may not align with what we want for Pure.DI.

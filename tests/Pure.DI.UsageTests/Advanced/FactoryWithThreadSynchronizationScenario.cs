@@ -1,15 +1,8 @@
 ﻿/*
 $v=true
 $p=2
-$d=Factory
-$h=This example demonstrates how to create and initialize an instance manually. At the compilation stage, the set of dependencies that the object to be created needs is determined. In most cases, this happens automatically, according to the set of constructors and their arguments, and does not require additional customization efforts. But sometimes it is necessary to manually create and/or initialize an object, as in lines of code:
-$f=There are scenarios where manual control over the creation process is required, such as
-$f=- When additional initialization logic is needed
-$f=- When complex construction steps are required
-$f=- When specific object states need to be set during creation
-$f=
-$f=> [!IMPORTANT]
-$f=> The method `Inject()`cannot be used outside of the binding setup.
+$h=In some cases, initialization of objects requires synchronization of the overall composition flow.
+$d=Factory with thread synchronization
 $r=Shouldly
 */
 
@@ -19,7 +12,7 @@ $r=Shouldly
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable UnusedMember.Global
 
-namespace Pure.DI.UsageTests.Basics.FactoryScenario;
+namespace Pure.DI.UsageTests.Advanced.FactoryWithThreadSynchronizationScenario;
 
 using Shouldly;
 using Xunit;
@@ -39,10 +32,14 @@ public class Scenario
         DI.Setup(nameof(Composition))
             .Bind<IDependency>().To<IDependency>(ctx =>
             {
-                // Some logic for creating an instance
-                ctx.Inject(out Dependency dependency);
-                dependency.Initialize();
-                return dependency;
+                // Some instance initialization logic that requires
+                // synchronization of the overall composition flow
+                lock (ctx.Lock)
+                {
+                    ctx.Inject(out Dependency dependency);
+                    dependency.Initialize();
+                    return dependency;
+                }
             })
             .Bind<IService>().To<Service>()
 

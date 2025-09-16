@@ -111,6 +111,7 @@ partial class Composition
 
   internal Composition(Composition parentScope)
   {
+    _lock = parentScope._lock;
   }
 
   #pragma warning disable CS0162

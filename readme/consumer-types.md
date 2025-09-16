@@ -118,6 +118,7 @@ partial class Composition
   internal Composition(Composition parentScope)
   {
     _argLogger = parentScope._argLogger;
+    _lock = parentScope._lock;
   }
 
   public IService Root

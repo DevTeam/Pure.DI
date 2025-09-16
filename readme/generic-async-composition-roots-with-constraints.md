@@ -110,6 +110,7 @@ partial class Composition
 
   internal Composition(Composition parentScope)
   {
+    _lock = parentScope._lock;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -123,8 +124,8 @@ partial class Composition
     () =>
     {
       OtherService<T2> transOtherService3;
-      IDependency<T2> localDependency5 = new Dependency<T2>();
-      transOtherService3 = new OtherService<T2>(localDependency5);
+      IDependency<T2> localDependency6 = new Dependency<T2>();
+      transOtherService3 = new OtherService<T2>(localDependency6);
       IService<T2, bool> localValue25 = transOtherService3;
       return localValue25;
     });

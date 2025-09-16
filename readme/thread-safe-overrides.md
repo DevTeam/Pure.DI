@@ -185,8 +185,8 @@ partial class Composition
                 _root._singleClock53 = new Clock();
               }
 
-          Dependency localDependency = new Dependency(overrString2, _root._singleClock53, overrInt32, overrInt321, overrColor3);
-          return localDependency;
+          Dependency localDependency1 = new Dependency(overrString2, _root._singleClock53, overrInt32, overrInt321, overrColor3);
+          return localDependency1;
         }
       };
       return new Service(transFunc1);

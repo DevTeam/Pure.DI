@@ -96,9 +96,8 @@ sealed class ResolverClassesBuilder(IBuilder<RootsContext, IEnumerable<ResolverI
         {
             if (defaultRoot is not null)
             {
-                var isStatic = (defaultRoot.Kind & RootKinds.Static) == RootKinds.Static;
                 var isMethod = !defaultRoot.RootArgs.IsEmpty || (defaultRoot.Kind & RootKinds.Method) == RootKinds.Method;
-                code.AppendLine($"return {(isStatic ? composition.Source.Source.Name.ClassName : "composition")}.{defaultRoot.DisplayName}{(isMethod ? "()" : "")};");
+                code.AppendLine($"return {(defaultRoot.IsStatic ? composition.Source.Source.Name.ClassName : "composition")}.{defaultRoot.DisplayName}{(isMethod ? "()" : "")};");
             }
             else
             {
@@ -169,7 +168,7 @@ sealed class ResolverClassesBuilder(IBuilder<RootsContext, IEnumerable<ResolverI
 
     private static string GetRoot(CompositionCode composition, Root root)
     {
-        var target = (root.Kind & RootKinds.Static) == RootKinds.Static ? composition.Source.Source.Name.ClassName : "composition";
+        var target = root.IsStatic ? composition.Source.Source.Name.ClassName : "composition";
         var isMethod = !root.RootArgs.IsEmpty || (root.Kind & RootKinds.Method) == RootKinds.Method;
         return $"{target}.{root.DisplayName}{(isMethod ? "()" : "")}";
     }

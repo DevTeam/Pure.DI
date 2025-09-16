@@ -34,6 +34,9 @@ sealed class LifetimeAnalyzer : ILifetimeAnalyzer
             ? targetLifetime
             : dependencyLifetime;
 
-    public bool ValidateLifetimes(Lifetime actualTargetLifetime, Lifetime dependencyLifetime) =>
+    public bool ValidateScopedToSingleton(Lifetime actualTargetLifetime, Lifetime dependencyLifetime) =>
         !(actualTargetLifetime == Lifetime.Singleton && dependencyLifetime == Lifetime.Scoped);
+
+    public bool ValidateRootKindSpecificLifetime(Root root, Lifetime lifetime) =>
+        !root.IsStatic || lifetime is not Lifetime.Singleton and not Lifetime.Scoped;
 }

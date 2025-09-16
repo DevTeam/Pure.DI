@@ -15,7 +15,7 @@ class RootSignatureProvider(
     {
         var rootSignature = new StringBuilder();
         rootSignature.Append(GetAccessModifier(root));
-        if ((root.Kind & RootKinds.Static) == RootKinds.Static)
+        if (root.IsStatic)
         {
             rootSignature.Append(" static");
         }

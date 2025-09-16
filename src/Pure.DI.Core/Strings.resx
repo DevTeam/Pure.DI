@@ -66,6 +66,9 @@
     <data name="Error_Template_TypeWithLifetimeRequiresDirectOrTransitiveInjection" xml:space="preserve">
         <value>Type {0} with lifetime {1} requires direct or transitive dependency injection of type {2} with lifetime {3}, which can lead to data leakage and unexpected behavior.</value>
     </data>
+    <data name="Error_Template_StaicRootDoesNotSupportLifetime" xml:space="preserve">
+        <value>Static root {0} of type {1} does not support {2} lifetime.</value>
+    </data>
     <data name="Error_Template_MaximumNumberOfIterations" xml:space="preserve">
         <value>The maximum number of iterations {0} was exceeded  was exceeded when building the optimal dependency graph. Try to specify the dependency graph more accurately.</value>
     </data>

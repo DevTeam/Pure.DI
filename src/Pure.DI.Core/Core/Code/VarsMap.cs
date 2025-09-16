@@ -67,6 +67,8 @@ class VarsMap(
                 var.CodeExpression = "";
                 var.HasCycle = null;
             }
+
+            IsThreadSafe = false;
         });
     }
 

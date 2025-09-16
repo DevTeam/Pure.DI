@@ -393,6 +393,15 @@ namespace Pure.DI {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Static root {0} of type {1} does not support {2} lifetime..
+        /// </summary>
+        internal static string Error_Template_StaicRootDoesNotSupportLifetime {
+            get {
+                return ResourceManager.GetString("Error_Template_StaicRootDoesNotSupportLifetime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The composition is too large. Stopped on the #{0} dependency..
         /// </summary>
         internal static string Error_Template_TooLargeComposition {

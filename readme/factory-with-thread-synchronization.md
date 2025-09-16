@@ -1,6 +1,6 @@
-#### Factory
+#### Factory with thread synchronization
 
-This example demonstrates how to create and initialize an instance manually. At the compilation stage, the set of dependencies that the object to be created needs is determined. In most cases, this happens automatically, according to the set of constructors and their arguments, and does not require additional customization efforts. But sometimes it is necessary to manually create and/or initialize an object, as in lines of code:
+In some cases, initialization of objects requires synchronization of the overall composition flow.
 
 
 ```c#
@@ -10,10 +10,14 @@ using Pure.DI;
 DI.Setup(nameof(Composition))
     .Bind<IDependency>().To<IDependency>(ctx =>
     {
-        // Some logic for creating an instance
-        ctx.Inject(out Dependency dependency);
-        dependency.Initialize();
-        return dependency;
+        // Some instance initialization logic that requires
+        // synchronization of the overall composition flow
+        lock (ctx.Lock)
+        {
+            ctx.Inject(out Dependency dependency);
+            dependency.Initialize();
+            return dependency;
+        }
     })
     .Bind<IService>().To<Service>()
 
@@ -74,26 +78,30 @@ dotnet run
 
 </details>
 
-There are scenarios where manual control over the creation process is required, such as
-- When additional initialization logic is needed
-- When complex construction steps are required
-- When specific object states need to be set during creation
-
-> [!IMPORTANT]
-> The method `Inject()`cannot be used outside of the binding setup.
-
 The following partial class will be generated:
 
 ```c#
 partial class Composition
 {
+#if NET9_0_OR_GREATER
+  private readonly Lock _lock;
+#else
+  private readonly Object _lock;
+#endif
+
   [OrdinalAttribute(256)]
   public Composition()
   {
+#if NET9_0_OR_GREATER
+    _lock = new Lock();
+#else
+    _lock = new Object();
+#endif
   }
 
   internal Composition(Composition parentScope)
   {
+    _lock = parentScope._lock;
   }
 
   public IService MyService
@@ -102,10 +110,20 @@ partial class Composition
     get
     {
       IDependency transIDependency1;
-      // Some logic for creating an instance
-      Dependency localDependency3 = new Dependency();
-      localDependency3.Initialize();
-      transIDependency1 = localDependency3;
+      // Some instance initialization logic that requires
+      // synchronization of the overall composition flow
+      lock (_lock)
+      {
+        Dependency localDependency = new Dependency();
+        localDependency.Initialize();
+        {
+          transIDependency1 = localDependency;
+          goto transIDependency1Finish;
+        }
+      }
+
+      transIDependency1Finish:
+        ;
       return new Service(transIDependency1);
     }
   }
@@ -127,7 +145,7 @@ classDiagram
 	Composition ..> Service : IService MyService
 	IDependency *--  Dependency : Dependency
 	Service *--  IDependency : IDependency
-	namespace Pure.DI.UsageTests.Basics.FactoryScenario {
+	namespace Pure.DI.UsageTests.Advanced.FactoryWithThreadSynchronizationScenario {
 		class Composition {
 		<<partial>>
 		+IService MyService
