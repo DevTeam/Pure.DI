@@ -139,7 +139,7 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private Clock? _singleClock53;
+  private Clock? _singleClock52;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -177,14 +177,14 @@ partial class Composition
         Drawing.Color transColor2 = Color.Red;
         Drawing.Color localRed1 = transColor2;
         Drawing.Color overrColor3 = localRed1;
-        if (_root._singleClock53 is null)
+        if (_root._singleClock52 is null)
           lock (_lock)
-            if (_root._singleClock53 is null)
+            if (_root._singleClock52 is null)
             {
-              _root._singleClock53 = new Clock();
+              _root._singleClock52 = new Clock();
             }
 
-        Dependency localDependency4 = new Dependency(overrString2, _root._singleClock53, overrInt32, overrInt321, overrColor3);
+        Dependency localDependency4 = new Dependency(overrString2, _root._singleClock52, overrInt32, overrInt321, overrColor3);
         return localDependency4;
       };
       return new Service(transFunc1);

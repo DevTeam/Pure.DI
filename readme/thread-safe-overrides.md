@@ -14,10 +14,7 @@ DI.Setup(nameof(Composition))
         (dependencyId, subId) =>
         {
             ctx.Inject(Tag.Red, out Color red);
-
-            // Get composition sync root object
-            ctx.Inject(Tag.SyncRoot, out Lock lockObject);
-            lock (lockObject)
+            lock (ctx.Lock)
             {
                 // Overrides with a lambda argument
                 ctx.Override(dependencyId);
@@ -135,7 +132,7 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private Clock? _singleClock53;
+  private Clock? _singleClock52;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -165,10 +162,7 @@ partial class Composition
       {
         Drawing.Color transColor2 = Color.Red;
         Drawing.Color localRed = transColor2;
-        // Get composition sync root object
-        Lock transLock3 = _lock;
-        Lock localLockObject = transLock3;
-        lock (localLockObject)
+        lock (_lock)
         {
           // Overrides with a lambda argument
           // Overrides with tag using lambda argument
@@ -178,14 +172,14 @@ partial class Composition
           int overrInt321 = localSubId;
           string overrString2 = $"Dep {localDependencyId} {localSubId}";
           Drawing.Color overrColor3 = localRed;
-          if (_root._singleClock53 is null)
+          if (_root._singleClock52 is null)
             lock (_lock)
-              if (_root._singleClock53 is null)
+              if (_root._singleClock52 is null)
               {
-                _root._singleClock53 = new Clock();
+                _root._singleClock52 = new Clock();
               }
 
-          Dependency localDependency1 = new Dependency(overrString2, _root._singleClock53, overrInt32, overrInt321, overrColor3);
+          Dependency localDependency1 = new Dependency(overrString2, _root._singleClock52, overrInt32, overrInt321, overrColor3);
           return localDependency1;
         }
       };
@@ -208,7 +202,6 @@ Class diagram:
 classDiagram
 	Service --|> IService
 	Composition ..> Service : IService Root
-	FuncᐸInt32ˏInt32ˏIDependencyᐳ *--  Lock : "SyncRoot"  Lock
 	FuncᐸInt32ˏInt32ˏIDependencyᐳ *--  Color : "Red"  Color
 	FuncᐸInt32ˏInt32ˏIDependencyᐳ *--  Dependency : Dependency
 	Service *--  FuncᐸInt32ˏInt32ˏIDependencyᐳ : FuncᐸInt32ˏInt32ˏIDependencyᐳ
@@ -251,11 +244,6 @@ classDiagram
 	namespace System.Drawing {
 		class Color {
 			<<struct>>
-		}
-	}
-	namespace System.Threading {
-		class Lock {
-			<<class>>
 		}
 	}
 ```

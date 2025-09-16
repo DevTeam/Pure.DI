@@ -81,7 +81,7 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private XyzDependency? _singleXyzDependency54;
+  private XyzDependency? _singleXyzDependency53;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -107,15 +107,15 @@ partial class Composition
     {
       var blockMyAccumulator1 = new MyAccumulator();
       var blockAbcDependency5 = new AbcDependency();
-      if (_root._singleXyzDependency54 is null)
+      if (_root._singleXyzDependency53 is null)
         lock (_lock)
-          if (_root._singleXyzDependency54 is null)
+          if (_root._singleXyzDependency53 is null)
           {
-            XyzDependency _singleXyzDependency54Temp;
-            _singleXyzDependency54Temp = new XyzDependency();
-            blockMyAccumulator1.Add(_singleXyzDependency54Temp);
+            XyzDependency _singleXyzDependency53Temp;
+            _singleXyzDependency53Temp = new XyzDependency();
+            blockMyAccumulator1.Add(_singleXyzDependency53Temp);
             Thread.MemoryBarrier();
-            _root._singleXyzDependency54 = _singleXyzDependency54Temp;
+            _root._singleXyzDependency53 = _singleXyzDependency53Temp;
           }
 
       var transAbcDependency3 = new AbcDependency();
@@ -124,7 +124,7 @@ partial class Composition
         blockMyAccumulator1.Add(transAbcDependency3);
       }
 
-      var transService2 = new Service(transAbcDependency3, _root._singleXyzDependency54, blockAbcDependency5);
+      var transService2 = new Service(transAbcDependency3, _root._singleXyzDependency53, blockAbcDependency5);
       lock (_lock)
       {
         blockMyAccumulator1.Add(transService2);

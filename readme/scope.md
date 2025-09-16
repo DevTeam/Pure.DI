@@ -123,7 +123,7 @@ partial class Composition: IDisposable
   private object[] _disposables;
   private int _disposeIndex;
 
-  private Dependency? _scopedDependency52;
+  private Dependency? _scopedDependency51;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -149,15 +149,15 @@ partial class Composition: IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_scopedDependency52 is null)
+      if (_scopedDependency51 is null)
         lock (_lock)
-          if (_scopedDependency52 is null)
+          if (_scopedDependency51 is null)
           {
-            _scopedDependency52 = new Dependency();
-            _disposables[_disposeIndex++] = _scopedDependency52;
+            _scopedDependency51 = new Dependency();
+            _disposables[_disposeIndex++] = _scopedDependency51;
           }
 
-      return new Service(_scopedDependency52);
+      return new Service(_scopedDependency51);
     }
   }
 
@@ -188,7 +188,7 @@ partial class Composition: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _scopedDependency52 = null;
+      _scopedDependency51 = null;
     }
 
     while (disposeIndex-- > 0)

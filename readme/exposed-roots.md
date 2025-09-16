@@ -73,7 +73,7 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private OtherAssembly.CompositionInOtherProject? _singleCompositionInOtherProject52;
+  private OtherAssembly.CompositionInOtherProject? _singleCompositionInOtherProject51;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -98,14 +98,14 @@ partial class Composition
     get
     {
       OtherAssembly.IMyService transIMyService1;
-      if (_root._singleCompositionInOtherProject52 is null)
+      if (_root._singleCompositionInOtherProject51 is null)
         lock (_lock)
-          if (_root._singleCompositionInOtherProject52 is null)
+          if (_root._singleCompositionInOtherProject51 is null)
           {
-            _root._singleCompositionInOtherProject52 = new OtherAssembly.CompositionInOtherProject();
+            _root._singleCompositionInOtherProject51 = new OtherAssembly.CompositionInOtherProject();
           }
 
-      OtherAssembly.CompositionInOtherProject localInstance_1182D1272 = _root._singleCompositionInOtherProject52;
+      OtherAssembly.CompositionInOtherProject localInstance_1182D1272 = _root._singleCompositionInOtherProject51;
       transIMyService1 = localInstance_1182D1272.MyService;
       return new Program(transIMyService1);
     }

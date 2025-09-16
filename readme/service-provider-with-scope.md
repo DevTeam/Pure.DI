@@ -119,8 +119,8 @@ partial class Composition: IDisposable
   private object[] _disposables;
   private int _disposeIndex;
 
-  private Service? _scopedService53;
-  private Dependency? _singleDependency52;
+  private Service? _scopedService52;
+  private Dependency? _singleDependency51;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -147,15 +147,15 @@ partial class Composition: IDisposable
     get
     {
       EnsureDependencyExists();
-      return _root._singleDependency52;
+      return _root._singleDependency51;
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureDependencyExists()
       {
-        if (_root._singleDependency52 is null)
+        if (_root._singleDependency51 is null)
           lock (_lock)
-            if (_root._singleDependency52 is null)
+            if (_root._singleDependency51 is null)
             {
-              _root._singleDependency52 = new Dependency();
+              _root._singleDependency51 = new Dependency();
             }
       }
     }
@@ -166,24 +166,24 @@ partial class Composition: IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_scopedService53 is null)
+      if (_scopedService52 is null)
         lock (_lock)
-          if (_scopedService53 is null)
+          if (_scopedService52 is null)
           {
             EnsureDependencyExists();
-            _scopedService53 = new Service(_root._singleDependency52);
-            _disposables[_disposeIndex++] = _scopedService53;
+            _scopedService52 = new Service(_root._singleDependency51);
+            _disposables[_disposeIndex++] = _scopedService52;
           }
 
-      return _scopedService53;
+      return _scopedService52;
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureDependencyExists()
       {
-        if (_root._singleDependency52 is null)
+        if (_root._singleDependency51 is null)
           lock (_lock)
-            if (_root._singleDependency52 is null)
+            if (_root._singleDependency51 is null)
             {
-              _root._singleDependency52 = new Dependency();
+              _root._singleDependency51 = new Dependency();
             }
       }
     }
@@ -259,8 +259,8 @@ partial class Composition: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _scopedService53 = null;
-      _singleDependency52 = null;
+      _scopedService52 = null;
+      _singleDependency51 = null;
     }
 
     while (disposeIndex-- > 0)

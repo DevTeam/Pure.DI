@@ -43,10 +43,7 @@ public class Scenario
                 (dependencyId, subId) =>
                 {
                     ctx.Inject(Tag.Red, out Color red);
-
-                    // Get composition sync root object
-                    ctx.Inject(Tag.SyncRoot, out Lock lockObject);
-                    lock (lockObject)
+                    lock (ctx.Lock)
                     {
                         // Overrides with a lambda argument
                         ctx.Override(dependencyId);

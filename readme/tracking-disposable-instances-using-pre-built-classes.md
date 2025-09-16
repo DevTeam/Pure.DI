@@ -143,7 +143,7 @@ partial class Composition: IDisposable
   private object[] _disposables;
   private int _disposeIndex;
 
-  private Dependency? _singleDependency53;
+  private Dependency? _singleDependency52;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -201,15 +201,15 @@ partial class Composition: IDisposable
         Abstractions.Own<IDependency> blockOwn7;
         // Creates the owner of an instance
         Abstractions.Own localOwn1 = blockOwn6;
-        if (_root._singleDependency53 is null)
+        if (_root._singleDependency52 is null)
           lock (_lock)
-            if (_root._singleDependency53 is null)
+            if (_root._singleDependency52 is null)
             {
-              _root._singleDependency53 = new Dependency();
-              _root._disposables[_root._disposeIndex++] = _root._singleDependency53;
+              _root._singleDependency52 = new Dependency();
+              _root._disposables[_root._disposeIndex++] = _root._singleDependency52;
             }
 
-        IDependency localValue10 = _root._singleDependency53;
+        IDependency localValue10 = _root._singleDependency52;
         blockOwn7 = new Abstractions.Own<IDependency>(localValue10, localOwn1);
         lock (_lock)
         {
@@ -233,7 +233,7 @@ partial class Composition: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _singleDependency53 = null;
+      _singleDependency52 = null;
     }
 
     while (disposeIndex-- > 0)

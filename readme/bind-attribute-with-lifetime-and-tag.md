@@ -82,7 +82,7 @@ partial class Composition
 #endif
 
   private IDependency? _singleIDependency;
-  private Facade? _singleFacade52;
+  private Facade? _singleFacade51;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -110,12 +110,12 @@ partial class Composition
         lock (_lock)
           if (_root._singleIDependency is null)
           {
-            if (_root._singleFacade52 is null)
+            if (_root._singleFacade51 is null)
             {
-              _root._singleFacade52 = new Facade();
+              _root._singleFacade51 = new Facade();
             }
 
-            Facade localInstance_1182D1278 = _root._singleFacade52;
+            Facade localInstance_1182D1278 = _root._singleFacade51;
             _root._singleIDependency = localInstance_1182D1278.Dependency;
           }
 

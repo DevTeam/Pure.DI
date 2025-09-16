@@ -105,7 +105,7 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private Clock? _singleClock52;
+  private Clock? _singleClock51;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -130,22 +130,20 @@ partial class Composition
     get
     {
       Func<int, string, IDependency> blockFunc1;
-      Func<int, string, IDependency> localFactory2 = new Func<int, string, IDependency>((int localArg1, string localArg2) =>
+      Func<int, string, IDependency> localFactory2 = new Func<int, string, IDependency>((int localArg17, string localArg26) =>
       {
-        Lock transLock2 = _lock;
-        Lock localLockObject2 = transLock2;
-        lock (localLockObject2)
+        lock (_lock)
         {
-          int overrInt32 = localArg1;
-          string overrString2 = localArg2;
-          if (_root._singleClock52 is null)
+          int overrInt32 = localArg17;
+          string overrString2 = localArg26;
+          if (_root._singleClock51 is null)
             lock (_lock)
-              if (_root._singleClock52 is null)
+              if (_root._singleClock51 is null)
               {
-                _root._singleClock52 = new Clock();
+                _root._singleClock51 = new Clock();
               }
 
-          IDependency localValue19 = new Dependency(overrString2, _root._singleClock52, overrInt32);
+          IDependency localValue19 = new Dependency(overrString2, _root._singleClock51, overrInt32);
           return localValue19;
         }
       });
@@ -174,7 +172,6 @@ classDiagram
 	Dependency *--  Int32 : Int32
 	Dependency *--  String : String
 	Service o-- "PerBlock" FuncᐸInt32ˏStringˏIDependencyᐳ : FuncᐸInt32ˏStringˏIDependencyᐳ
-	FuncᐸInt32ˏStringˏIDependencyᐳ *--  Lock : "SyncRoot"  Lock
 	FuncᐸInt32ˏStringˏIDependencyᐳ *--  Dependency : IDependency
 	namespace Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario {
 		class Clock {
@@ -207,11 +204,6 @@ classDiagram
 			<<struct>>
 		}
 		class String {
-			<<class>>
-		}
-	}
-	namespace System.Threading {
-		class Lock {
 			<<class>>
 		}
 	}

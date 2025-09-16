@@ -116,13 +116,11 @@ partial class Composition
     get
     {
       Func<int, IDependency> blockFunc1;
-      Func<int, IDependency> localFactory1 = new Func<int, IDependency>((int localArg13) =>
+      Func<int, IDependency> localFactory1 = new Func<int, IDependency>((int localArg1) =>
       {
-        Lock transLock2 = _lock;
-        Lock localLockObject1 = transLock2;
-        lock (localLockObject1)
+        lock (_lock)
         {
-          int overrInt32 = localArg13;
+          int overrInt32 = localArg1;
           IDependency localValue17 = new Dependency(overrInt32);
           return localValue17;
         }
@@ -150,7 +148,6 @@ classDiagram
 	Composition ..> Service : IService Root
 	Dependency *--  Int32 : Int32
 	Service o-- "PerBlock" FuncᐸInt32ˏIDependencyᐳ : FuncᐸInt32ˏIDependencyᐳ
-	FuncᐸInt32ˏIDependencyᐳ *--  Lock : "SyncRoot"  Lock
 	FuncᐸInt32ˏIDependencyᐳ *--  Dependency : IDependency
 	namespace Pure.DI.UsageTests.Basics.InjectionOnDemandWithArgumentsScenario {
 		class Composition {
@@ -178,11 +175,6 @@ classDiagram
 		}
 		class Int32 {
 			<<struct>>
-		}
-	}
-	namespace System.Threading {
-		class Lock {
-			<<class>>
 		}
 	}
 ```

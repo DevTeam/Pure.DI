@@ -183,11 +183,11 @@ partial class Composition: IDisposable
   private object[] _disposables;
   private int _disposeIndex;
 
-  private Microsoft.Extensions.Logging.ILogger? _singleILogger56;
-  private Func<Student, Person>? _singleFunc60;
-  private AutoMapper.Mapper? _singleMapper57;
-  private PersonFormatter? _singlePersonFormatter54;
-  private LoggerFactory? _singleLoggerFactory55;
+  private Microsoft.Extensions.Logging.ILogger? _singleILogger55;
+  private Func<Student, Person>? _singleFunc59;
+  private AutoMapper.Mapper? _singleMapper56;
+  private PersonFormatter? _singlePersonFormatter53;
+  private LoggerFactory? _singleLoggerFactory54;
 
   private readonly ICollection<string> _argLogMessage;
 
@@ -217,16 +217,16 @@ partial class Composition: IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singleFunc60 is null)
+      if (_root._singleFunc59 is null)
         lock (_lock)
-          if (_root._singleFunc60 is null)
+          if (_root._singleFunc59 is null)
           {
-            _root._singleFunc60 = source =>
+            _root._singleFunc59 = source =>
             {
-              if (_root._singleMapper57 is null)
+              if (_root._singleMapper56 is null)
               {
                 EnsureLoggerFactoryExists();
-                LoggerFactory localLoggerFactory = _root._singleLoggerFactory55;
+                LoggerFactory localLoggerFactory = _root._singleLoggerFactory54;
                 // Create the mapping configuration
                 var localConfiguration = new MapperConfiguration(cfg =>
                 {
@@ -234,42 +234,42 @@ partial class Composition: IDisposable
                 }, localLoggerFactory);
                 localConfiguration.CompileMappings();
                 // Create the mapper
-                _root._singleMapper57 = new Mapper(localConfiguration);
+                _root._singleMapper56 = new Mapper(localConfiguration);
               }
 
-              AutoMapper.IMapper localMapper = _root._singleMapper57;
+              AutoMapper.IMapper localMapper = _root._singleMapper56;
               // source -> target
               Person localTarget = localMapper.Map<Student, Person>(source);
               // Building-up a mapped value with dependencies
-              if (_root._singlePersonFormatter54 is null)
+              if (_root._singlePersonFormatter53 is null)
               {
-                _root._singlePersonFormatter54 = new PersonFormatter();
+                _root._singlePersonFormatter53 = new PersonFormatter();
               }
 
-              localTarget.Formatter = _root._singlePersonFormatter54;
+              localTarget.Formatter = _root._singlePersonFormatter53;
               return localTarget;
             };
           }
 
-      if (_root._singleILogger56 is null)
+      if (_root._singleILogger55 is null)
         lock (_lock)
-          if (_root._singleILogger56 is null)
+          if (_root._singleILogger55 is null)
           {
             EnsureLoggerFactoryExists();
-            LoggerFactory localLoggerFactory1 = _root._singleLoggerFactory55;
-            _root._singleILogger56 = localLoggerFactory1.CreateLogger("info");
+            LoggerFactory localLoggerFactory1 = _root._singleLoggerFactory54;
+            _root._singleILogger55 = localLoggerFactory1.CreateLogger("info");
           }
 
-      return new Program(_root._singleILogger56, new StudentService(_root._singleFunc60));
+      return new Program(_root._singleILogger55, new StudentService(_root._singleFunc59));
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureLoggerFactoryExists()
       {
-        if (_root._singleLoggerFactory55 is null)
+        if (_root._singleLoggerFactory54 is null)
           lock (_lock)
-            if (_root._singleLoggerFactory55 is null)
+            if (_root._singleLoggerFactory54 is null)
             {
-              _root._singleLoggerFactory55 = new LoggerFactory(_argLogMessage);
-              _root._disposables[_root._disposeIndex++] = _root._singleLoggerFactory55;
+              _root._singleLoggerFactory54 = new LoggerFactory(_argLogMessage);
+              _root._disposables[_root._disposeIndex++] = _root._singleLoggerFactory54;
             }
       }
     }
@@ -285,11 +285,11 @@ partial class Composition: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _singleILogger56 = null;
-      _singleFunc60 = null;
-      _singleMapper57 = null;
-      _singlePersonFormatter54 = null;
-      _singleLoggerFactory55 = null;
+      _singleILogger55 = null;
+      _singleFunc59 = null;
+      _singleMapper56 = null;
+      _singlePersonFormatter53 = null;
+      _singleLoggerFactory54 = null;
     }
 
     while (disposeIndex-- > 0)

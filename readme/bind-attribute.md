@@ -85,7 +85,7 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private Facade? _singleFacade52;
+  private Facade? _singleFacade51;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -110,14 +110,14 @@ partial class Composition
     get
     {
       IDependency transIDependency1;
-      if (_root._singleFacade52 is null)
+      if (_root._singleFacade51 is null)
         lock (_lock)
-          if (_root._singleFacade52 is null)
+          if (_root._singleFacade51 is null)
           {
-            _root._singleFacade52 = new Facade();
+            _root._singleFacade51 = new Facade();
           }
 
-      Facade localInstance_1182D1277 = _root._singleFacade52;
+      Facade localInstance_1182D1277 = _root._singleFacade51;
       transIDependency1 = localInstance_1182D1277.Dependency;
       return new Service(transIDependency1);
     }

@@ -104,7 +104,7 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private Dependency? _scopedDependency52;
+  private Dependency? _scopedDependency51;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -151,14 +151,14 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_scopedDependency52 is null)
+      if (_scopedDependency51 is null)
         lock (_lock)
-          if (_scopedDependency52 is null)
+          if (_scopedDependency51 is null)
           {
-            _scopedDependency52 = new Dependency();
+            _scopedDependency51 = new Dependency();
           }
 
-      return new Service(_scopedDependency52);
+      return new Service(_scopedDependency51);
     }
   }
 }

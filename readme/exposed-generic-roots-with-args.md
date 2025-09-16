@@ -73,7 +73,7 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private OtherAssembly.CompositionWithGenericRootsAndArgsInOtherProject? _singleCompositionWithGenericRootsAndArgsInOtherProject53;
+  private OtherAssembly.CompositionWithGenericRootsAndArgsInOtherProject? _singleCompositionWithGenericRootsAndArgsInOtherProject52;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -97,14 +97,14 @@ partial class Composition
   {
     OtherAssembly.IMyGenericService<int> transIMyGenericService1;
     int localId = id;
-    if (_root._singleCompositionWithGenericRootsAndArgsInOtherProject53 is null)
+    if (_root._singleCompositionWithGenericRootsAndArgsInOtherProject52 is null)
       lock (_lock)
-        if (_root._singleCompositionWithGenericRootsAndArgsInOtherProject53 is null)
+        if (_root._singleCompositionWithGenericRootsAndArgsInOtherProject52 is null)
         {
-          _root._singleCompositionWithGenericRootsAndArgsInOtherProject53 = new OtherAssembly.CompositionWithGenericRootsAndArgsInOtherProject();
+          _root._singleCompositionWithGenericRootsAndArgsInOtherProject52 = new OtherAssembly.CompositionWithGenericRootsAndArgsInOtherProject();
         }
 
-    OtherAssembly.CompositionWithGenericRootsAndArgsInOtherProject localInstance_1182D1271 = _root._singleCompositionWithGenericRootsAndArgsInOtherProject53;
+    OtherAssembly.CompositionWithGenericRootsAndArgsInOtherProject localInstance_1182D1271 = _root._singleCompositionWithGenericRootsAndArgsInOtherProject52;
     transIMyGenericService1 = localInstance_1182D1271.GetMyService<int>(localId);
     return new Program(transIMyGenericService1);
   }

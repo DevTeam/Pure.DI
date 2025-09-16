@@ -90,7 +90,7 @@ partial class Composition: IDisposable, IAsyncDisposable
   private object[] _disposables;
   private int _disposeIndex;
 
-  private Dependency? _singleDependency52;
+  private Dependency? _singleDependency51;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -116,15 +116,15 @@ partial class Composition: IDisposable, IAsyncDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singleDependency52 is null)
+      if (_root._singleDependency51 is null)
         lock (_lock)
-          if (_root._singleDependency52 is null)
+          if (_root._singleDependency51 is null)
           {
-            _root._singleDependency52 = new Dependency();
-            _root._disposables[_root._disposeIndex++] = _root._singleDependency52;
+            _root._singleDependency51 = new Dependency();
+            _root._disposables[_root._disposeIndex++] = _root._singleDependency51;
           }
 
-      return new Service(_root._singleDependency52);
+      return new Service(_root._singleDependency51);
     }
   }
 
@@ -138,7 +138,7 @@ partial class Composition: IDisposable, IAsyncDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _singleDependency52 = null;
+      _singleDependency51 = null;
     }
 
     while (disposeIndex-- > 0)
@@ -174,7 +174,7 @@ partial class Composition: IDisposable, IAsyncDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _singleDependency52 = null;
+      _singleDependency51 = null;
     }
 
     while (disposeIndex-- > 0)

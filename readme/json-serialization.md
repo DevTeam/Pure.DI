@@ -120,10 +120,10 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private Func<string, Settings>? _singleFunc57;
-  private Func<Settings, string>? _singleFunc58;
-  private Storage? _singleStorage56;
-  private Text.Json.JsonSerializerOptions? _singleJsonSerializerOptions53;
+  private Func<string, Settings>? _singleFunc56;
+  private Func<Settings, string>? _singleFunc57;
+  private Storage? _singleStorage55;
+  private Text.Json.JsonSerializerOptions? _singleJsonSerializerOptions52;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -147,11 +147,20 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singleStorage56 is null)
+      if (_root._singleStorage55 is null)
         lock (_lock)
-          if (_root._singleStorage56 is null)
+          if (_root._singleStorage55 is null)
           {
-            _root._singleStorage56 = new Storage();
+            _root._singleStorage55 = new Storage();
+          }
+
+      if (_root._singleFunc56 is null)
+        lock (_lock)
+          if (_root._singleFunc56 is null)
+          {
+            EnsureJsonSerializerOptionsExists();
+            Text.Json.JsonSerializerOptions localOptions = _root._singleJsonSerializerOptions52;
+            _root._singleFunc56 = json => JsonSerializer.Deserialize<Settings>(json, localOptions);
           }
 
       if (_root._singleFunc57 is null)
@@ -159,28 +168,19 @@ partial class Composition
           if (_root._singleFunc57 is null)
           {
             EnsureJsonSerializerOptionsExists();
-            Text.Json.JsonSerializerOptions localOptions = _root._singleJsonSerializerOptions53;
-            _root._singleFunc57 = json => JsonSerializer.Deserialize<Settings>(json, localOptions);
+            Text.Json.JsonSerializerOptions localOptions1 = _root._singleJsonSerializerOptions52;
+            _root._singleFunc57 = value => JsonSerializer.Serialize(value, localOptions1);
           }
 
-      if (_root._singleFunc58 is null)
-        lock (_lock)
-          if (_root._singleFunc58 is null)
-          {
-            EnsureJsonSerializerOptionsExists();
-            Text.Json.JsonSerializerOptions localOptions1 = _root._singleJsonSerializerOptions53;
-            _root._singleFunc58 = value => JsonSerializer.Serialize(value, localOptions1);
-          }
-
-      return new SettingsService(_root._singleFunc57, _root._singleFunc58, _root._singleStorage56);
+      return new SettingsService(_root._singleFunc56, _root._singleFunc57, _root._singleStorage55);
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureJsonSerializerOptionsExists()
       {
-        if (_root._singleJsonSerializerOptions53 is null)
+        if (_root._singleJsonSerializerOptions52 is null)
           lock (_lock)
-            if (_root._singleJsonSerializerOptions53 is null)
+            if (_root._singleJsonSerializerOptions52 is null)
             {
-              _root._singleJsonSerializerOptions53 = new JsonSerializerOptions
+              _root._singleJsonSerializerOptions52 = new JsonSerializerOptions
               {
                 WriteIndented = true
               };

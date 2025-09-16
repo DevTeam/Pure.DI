@@ -60,7 +60,7 @@ partial class Composition
 {
   private readonly Composition _root;
 
-  private Service? _singleService53;
+  private Service? _singleService52;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -78,7 +78,7 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singleService53 is null)
+      if (_root._singleService52 is null)
       {
         Func<IDependency> blockFunc1 = new Func<IDependency>(
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -87,10 +87,10 @@ partial class Composition
           IDependency localValue29 = new Dependency();
           return localValue29;
         });
-        _root._singleService53 = new Service(blockFunc1);
+        _root._singleService52 = new Service(blockFunc1);
       }
 
-      return _root._singleService53;
+      return _root._singleService52;
     }
   }
 }
