@@ -28,9 +28,9 @@ sealed class FieldsBuilder(
         {
             // _lock field
             code.AppendLine(new Line(int.MinValue, "#if NET9_0_OR_GREATER"));
-            code.AppendLine($"private {(composition.IsStaticThreadSafe ? "static " : "")}readonly {Names.LockTypeName} {Names.LockFieldName}{(composition.IsStaticThreadSafe ? $" = new {Names.LockTypeName}()" : "")};");
+            code.AppendLine($"private readonly {Names.LockTypeName} {Names.LockFieldName};");
             code.AppendLine(new Line(int.MinValue, "#else"));
-            code.AppendLine($"private {(composition.IsStaticThreadSafe ? "static " : "")}readonly {Names.ObjectTypeName} {Names.LockFieldName}{(composition.IsStaticThreadSafe ? $" = new {Names.ObjectTypeName}()" : "")};");
+            code.AppendLine($"private readonly {Names.ObjectTypeName} {Names.LockFieldName};");
             code.AppendLine(new Line(int.MinValue, "#endif"));
             membersCounter++;
         }

@@ -74,14 +74,14 @@ static class Names
     public const string EnumerateMethodNamePrefix = "EnumerationOf";
 
     // Vars
-    public const string TransientVariablePrefix = "trans";
-    public const string PerBlockVariablePrefix = "block";
-    public const string PerResolveVariablePrefix = "resolve";
-    public const string SingletonVariablePrefix = "_single";
+    public const string TransientVariablePrefix = "transient";
+    public const string PerBlockVariablePrefix = "perBlock";
+    public const string PerResolveVariablePrefix = "perResolve";
+    public const string SingletonVariablePrefix = "_singleton";
     public const string ScopedVariablePrefix = "_scoped";
     public const string ArgVariablePrefix = "_arg";
     public const string LocalVariablePrefix = "local";
-    public const string OverriddenVariablePrefix = "overr";
+    public const string OverriddenVariablePrefix = "overridden";
     public static readonly string InjectionMarker = "injectMarker" + Salt;
     public static readonly string InitializationMarker = "initializeMarker" + Salt;
     public static readonly string OverrideMarker = "overrideMarker" + Salt;
@@ -95,6 +95,7 @@ static class Names
     public static readonly string DisposeIndexFieldName = "_disposeIndex" + Salt;
     public static readonly string DisposablesFieldName = "_disposables" + Salt;
     public static readonly string LockFieldName = "_lock" + Salt;
+    public static readonly string PerResolveLockFieldName = "perResolveLock" + Salt;
     public static readonly string RootFieldName = "_root" + Salt;
     public static readonly string CannotResolveFieldName = "CannotResolveMessage" + Salt;
     public static readonly string OfTypeFieldName = "OfTypeMessage" + Salt;

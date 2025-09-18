@@ -64,7 +64,7 @@ sealed class BuildTools(
         var code = new Lines();
         if (ctx.IsLockRequired && accLines.Count > 0)
         {
-            locks.AddLockStatements(code, false);
+            locks.AddLockStatements(ctx.RootContext.Root.IsStatic, code, false);
             code.AppendLine(BlockStart);
             code.IncIndent();
         }

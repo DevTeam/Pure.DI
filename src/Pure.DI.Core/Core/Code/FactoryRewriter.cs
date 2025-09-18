@@ -302,7 +302,7 @@ sealed class FactoryRewriter(
                         codeCtx.RootContext.LockIsInUse = true;
                     }
 
-                    return Visit(SyntaxFactory.ParseExpression(Names.LockFieldName));
+                    return Visit(SyntaxFactory.ParseExpression(_ctx?.RootContext.Root.IsStatic == true ? Names.PerResolveLockFieldName : Names.LockFieldName));
             }
         }
 

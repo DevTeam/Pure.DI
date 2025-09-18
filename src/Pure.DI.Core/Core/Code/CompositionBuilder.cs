@@ -8,6 +8,7 @@ class CompositionBuilder(
     INodeTools nodeTools,
     IVarDeclarationTools varDeclarationTools,
     IBuilder<CompositionCode, Lines> classDiagramBuilder,
+    IOverridesRegistry overridesRegistry,
     CancellationToken cancellationToken)
     : IBuilder<DependencyGraph, CompositionCode>
 {
@@ -18,7 +19,6 @@ class CompositionBuilder(
         var classArgs = new List<VarDeclaration>();
         // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
         var isThreadSafe = false;
-        var isStaticThreadSafe = false;
         foreach (var root in graph.Roots)
         {
             if (cancellationToken.IsCancellationRequested)
@@ -33,7 +33,19 @@ class CompositionBuilder(
             var isThreadSafeRoot = ctx.LockIsInUse || graph.Source.Hints.IsThreadSafeEnabled && varsMap.IsThreadSafe;
             if (root.IsStatic)
             {
-                isStaticThreadSafe |= isThreadSafeRoot;
+                if (isThreadSafeRoot || overridesRegistry.GetOverrides(root).Any())
+                {
+                    // resolveLock local field
+                    var newLines = new Lines();
+                    newLines.AppendLine(new Line(int.MinValue, "#if NET9_0_OR_GREATER"));
+                    newLines.AppendLine($"var {Names.PerResolveLockFieldName} = new {Names.LockTypeName}();");
+                    newLines.AppendLine(new Line(int.MinValue, "#else"));
+                    newLines.AppendLine($"var {Names.PerResolveLockFieldName} = new {Names.ObjectTypeName}();");
+                    newLines.AppendLine(new Line(int.MinValue, "#endif"));
+                    newLines.AppendLines(ctx.Lines);
+                    lines = newLines;
+                    ctx = ctx with { Lines = lines };
+                }
             }
             else
             {
@@ -89,7 +101,6 @@ class CompositionBuilder(
             asyncDisposables.Count,
             totalDisposables.Count(i => i.Node.Lifetime == Lifetime.Scoped),
             isThreadSafe,
-            isStaticThreadSafe,
             new Lines(),
             singletons,
             varDeclarationTools.Sort(classArgs).Distinct().ToImmutableArray());

@@ -189,7 +189,7 @@ sealed class DisposeMethodBuilder(
         var isLockRequired = composition.IsLockRequired(locks);
         if (isLockRequired)
         {
-            locks.AddLockStatements(code, isAsync);
+            locks.AddLockStatements(false, code, isAsync);
             code.AppendLine(BlockStart);
             code.IncIndent();
         }

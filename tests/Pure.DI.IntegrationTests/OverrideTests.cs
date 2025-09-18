@@ -1273,6 +1273,155 @@ public class OverrideTests
     }
 
     [Theory]
+    [InlineData(Lifetime.Transient, "Sample.LoggerA;Sample.LoggerA;Sample.LoggerB;Sample.LoggerB;Sample.LoggerC;Sample.LoggerC")]
+    [InlineData(Lifetime.PerBlock, "Sample.LoggerA;Sample.LoggerA;Sample.LoggerB;Sample.LoggerB;Sample.LoggerC;Sample.LoggerC")]
+    [InlineData(Lifetime.PerResolve, "Sample.LoggerA;Sample.LoggerA;Sample.LoggerB;Sample.LoggerB;Sample.LoggerC;Sample.LoggerC")]
+    internal async Task ShouldSupportOverrideWhenStaticRoot(Lifetime lifetime, string output)
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface ILogger {}
+                               
+                               class LoggerA: ILogger
+                               {
+                               }
+                               
+                               class LoggerB: ILogger
+                               {
+                               }
+                               
+                               class LoggerC: ILogger
+                               {
+                               }
+                               
+                               interface IDependency 
+                               {
+                                    ILogger Logger { get; }
+                               }
+                           
+                               class Dependency: IDependency
+                               {
+                                   public Dependency(ILogger logger)
+                                   {
+                                        Logger = logger;
+                                   }
+                                   
+                                   public ILogger Logger { get; set; }
+                               }
+                           
+                               interface IService
+                               {
+                                   IDependency Dep { get; }
+                                   
+                                   ILogger Logger { get; }
+                               }
+                           
+                               class ServiceA: IService 
+                               {
+                                   public ServiceA(IDependency dep, ILogger logger)
+                                   {
+                                        Dep = dep;
+                                        Logger = logger;
+                                   }
+                           
+                                   public IDependency Dep { get; set; }
+                                   
+                                   public ILogger Logger { get; set; }
+                               }
+                               
+                               class ServiceB: IService 
+                               {
+                                   public ServiceB(ILogger logger, IDependency dep)
+                                   {
+                                        Logger = logger;
+                                        Dep = dep;
+                                   }
+                               
+                                   public IDependency Dep { get; set; }
+                                   
+                                   public ILogger Logger { get; set; }
+                               }
+                               
+                               class ServiceC: IService 
+                               {
+                                   public ServiceC(IDependency dep)
+                                   {
+                                        Logger = new LoggerC();
+                                        Dep = dep;
+                                   }
+                               
+                                   public IDependency Dep { get; set; }
+                                   
+                                   public ILogger Logger { get; set; }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       // FormatCode = On
+                                       DI.Setup("Composition")
+                                           .Bind().As(Lifetime.#lifetime#).To<Dependency>()
+                                           .Bind<IService>("A").To(ctx => 
+                                           {
+                                                ctx.Inject(out LoggerA logger);
+                                                ctx.Override<ILogger>(logger);
+                                                ctx.Inject(out ServiceA service);
+                                                return service;
+                                           })
+                                           .Bind<IService>("B").As(Lifetime.#lifetime#).To(ctx => 
+                                           {
+                                                ctx.Inject(out LoggerB logger);
+                                                ctx.Override<ILogger>(logger);
+                                                ctx.Inject(out ServiceB service);
+                                                return service;
+                                           })
+                                           .Bind<IService>("C").To(ctx => 
+                                           {
+                                                ctx.Inject(out LoggerC logger);
+                                                ctx.Override<ILogger>(logger);
+                                                ctx.Inject(out ServiceC service);
+                                                return service;
+                                           })
+                                           .Root<IService>("RootA", "A", kind: RootKinds.Static)
+                                           .Root<IService>("RootB", "B", kind: RootKinds.Static)
+                                           .Root<IService>("RootC", "C", kind: RootKinds.Static);
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var rootA = Composition.RootA;
+                                       Console.WriteLine(rootA.Logger);
+                                       Console.WriteLine(rootA.Dep.Logger);
+
+                                       var rootB = Composition.RootB;
+                                       Console.WriteLine(rootB.Logger);
+                                       Console.WriteLine(rootB.Dep.Logger);
+                                       
+                                       var rootC = Composition.RootC;
+                                       Console.WriteLine(rootC.Logger);
+                                       Console.WriteLine(rootC.Dep.Logger);
+                                   }
+                               }
+                           }
+                           """.Replace("#lifetime#", lifetime.ToString()).RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe([..output.Split(";")], result);
+    }
+
+    [Theory]
     [InlineData(Lifetime.Transient, "Sample.LoggerA;Sample.LoggerA;Sample.LoggerA;Sample.LoggerA;Sample.LoggerC;Sample.LoggerA")]
     [InlineData(Lifetime.Scoped, "Sample.LoggerA;Sample.LoggerA;Sample.LoggerB;Sample.LoggerA;Sample.LoggerC;Sample.LoggerA")]
     [InlineData(Lifetime.Singleton, "Sample.LoggerA;Sample.LoggerA;Sample.LoggerB;Sample.LoggerA;Sample.LoggerC;Sample.LoggerA")]

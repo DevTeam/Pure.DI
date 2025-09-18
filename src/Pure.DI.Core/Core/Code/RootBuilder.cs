@@ -413,7 +413,7 @@ class RootBuilder(
                         var.Declaration.IsDeclared = true;
                     }
 
-                    locks.AddLockStatements(lines, false);
+                    locks.AddLockStatements(ctx.RootContext.Root.IsStatic, lines, false);
                     lines.AppendLine(BlockStart);
                     lines.IncIndent();
                     ctx = ctx with { IsLockRequired = false };
@@ -824,7 +824,7 @@ class RootBuilder(
         if (isLockRequired)
         {
             lines.IncIndent();
-            locks.AddLockStatements(lines, false);
+            locks.AddLockStatements(ctx.RootContext.Root.IsStatic, lines, false);
             lines.IncIndent();
             lines.AppendLine($"if ({checkExpression})");
         }

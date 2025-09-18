@@ -9,7 +9,6 @@ record CompositionCode(
     int AsyncDisposableCount,
     int DisposablesScopedCount,
     bool IsThreadSafe,
-    bool IsStaticThreadSafe,
     Lines Diagram,
     in ImmutableArray<VarDeclaration> Singletons,
     in ImmutableArray<VarDeclaration> ClassArgs,
@@ -17,5 +16,5 @@ record CompositionCode(
 {
     public Compilation Compilation => Source.Source.SemanticModel.Compilation;
 
-    public bool IsLockRequired(ILocks locks) => IsStaticThreadSafe || IsThreadSafe || locks.HasLockField(Source);
+    public bool IsLockRequired(ILocks locks) => IsThreadSafe || locks.HasLockField(Source);
 }

@@ -166,7 +166,7 @@
     <data name="Error_TypeCannotBeInferred" xml:space="preserve">
         <value>प्रकार निर्धारित नहीं किया जा सका। इसे स्पष्ट रूप से निर्दिष्ट करें।</value>
     </data>
-    <data name="Error_Template_StaicRootDoesNotSupportLifetime" xml:space="preserve">
-        <value>टाइप {1} का स्थिर रूट {0}, {2} लाइफटाइम का समर्थन नहीं करता है।</value>
+    <data name="Error_Template_StaicRootCannotUseLifetime" xml:space="preserve">
+        <value>स्टैटिक रूट {0} प्रकार {1} का, सीधे या किसी निर्भरता के माध्यम से लाइफटाइम {2} का उपयोग नहीं कर सकता।</value>
     </data>
 </root>

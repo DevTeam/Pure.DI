@@ -47,7 +47,7 @@ sealed class ParameterizedConstructorBuilder(
                 code.AppendLine($"{Names.RootFieldName} = this;");
             }
 
-            if (!composition.IsStaticThreadSafe && composition.IsLockRequired(locks))
+            if (composition.IsLockRequired(locks))
             {
                 code.AppendLine(new Line(int.MinValue, "#if NET9_0_OR_GREATER"));
                 code.AppendLine($"{Names.LockFieldName} = new {Names.LockTypeName}();");

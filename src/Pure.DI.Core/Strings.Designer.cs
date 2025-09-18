@@ -393,11 +393,11 @@ namespace Pure.DI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Static root {0} of type {1} does not support {2} lifetime..
+        ///   Looks up a localized string similar to Static root {0} of type {1} cannot use lifetime {2} directly or through a dependency..
         /// </summary>
-        internal static string Error_Template_StaicRootDoesNotSupportLifetime {
+        internal static string Error_Template_StaicRootCannotUseLifetime {
             get {
-                return ResourceManager.GetString("Error_Template_StaicRootDoesNotSupportLifetime", resourceCulture);
+                return ResourceManager.GetString("Error_Template_StaicRootCannotUseLifetime", resourceCulture);
             }
         }
         

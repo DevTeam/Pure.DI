@@ -166,7 +166,7 @@
     <data name="Error_TypeCannotBeInferred" xml:space="preserve">
         <value>型を特定できません。明示的に指定してください。</value>
     </data>
-    <data name="Error_Template_StaicRootDoesNotSupportLifetime" xml:space="preserve">
-        <value>タイプ {1} の静的ルート {0} は、{2} ライフタイムをサポートしていません。</value>
+    <data name="Error_Template_StaicRootCannotUseLifetime" xml:space="preserve">
+        <value>タイプ {1} の静的ルート {0} は、ライフタイム {2} を直接または依存関係を通じて使用できません。</value>
     </data>
 </root>

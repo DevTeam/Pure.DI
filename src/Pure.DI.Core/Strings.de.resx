@@ -166,7 +166,7 @@
     <data name="Error_TypeCannotBeInferred" xml:space="preserve">
         <value>Typ konnte nicht ermittelt werden. Explizit angeben.</value>
     </data>
-    <data name="Error_Template_StaicRootDoesNotSupportLifetime" xml:space="preserve">
-        <value>Statische Wurzel {0} vom Typ {1} unterstützt die Lebensdauer {2} nicht.</value>
+    <data name="Error_Template_StaicRootCannotUseLifetime" xml:space="preserve">
+        <value>Statische Wurzel {0} vom Typ {1} kann Lebensdauer {2} nicht direkt oder über eine Abhängigkeit verwenden.</value>
     </data>
 </root>

@@ -3,6 +3,7 @@
 Translate the text below to Arabic, German, Spanish, French, Hindi, Japanese, Portuguese, Russian, Simplified Chinese. Keep placeholders (e.g. {0}, ") and technical terms completely intact. The translation was made for software engineers.
 
 ```
+Static root {0} of type {1} cannot use lifetime {2} directly or through a dependency.
 ```
 
 # XML Localization
