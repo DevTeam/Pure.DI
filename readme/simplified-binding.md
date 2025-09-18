@@ -138,8 +138,8 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var blockDependency1 = new Dependency();
-      return new Service(blockDependency1, blockDependency1, blockDependency1);
+      var perBlockDependency1 = new Dependency();
+      return new Service(perBlockDependency1, perBlockDependency1, perBlockDependency1);
     }
   }
 }

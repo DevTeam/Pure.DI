@@ -54,12 +54,6 @@ The following partial class will be generated:
 ```c#
 partial class Composition
 {
-#if NET9_0_OR_GREATER
-  private static readonly Lock _lock = new Lock();
-#else
-  private static readonly Object _lock = new Object();
-#endif
-
   [OrdinalAttribute(256)]
   public Composition()
   {
@@ -74,15 +68,20 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var resolveDependency1 = default(Dependency);
-      if (resolveDependency1 is null)
-        lock (_lock)
-          if (resolveDependency1 is null)
+      #if NET9_0_OR_GREATER
+      var perResolveLock = new Lock();
+      #else
+      var perResolveLock = new Object();
+      #endif
+      var perResolveDependency1 = default(Dependency);
+      if (perResolveDependency1 is null)
+        lock (perResolveLock)
+          if (perResolveDependency1 is null)
           {
-            resolveDependency1 = new Dependency();
+            perResolveDependency1 = new Dependency();
           }
 
-      return new Service(resolveDependency1);
+      return new Service(perResolveDependency1);
     }
   }
 }

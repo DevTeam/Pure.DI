@@ -106,8 +106,8 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private DependencyStruct<int> _singleDependencyStruct59;
-  private bool _singleDependencyStruct59Created;
+  private DependencyStruct<int> _singletonDependencyStruct59;
+  private bool _singletonDependencyStruct59Created;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -131,16 +131,16 @@ partial class Composition
     where T1: notnull
   {
     if (depArg is null) throw new ArgumentNullException(nameof(depArg));
-    if (!_root._singleDependencyStruct59Created)
+    if (!_root._singletonDependencyStruct59Created)
       lock (_lock)
-        if (!_root._singleDependencyStruct59Created)
+        if (!_root._singletonDependencyStruct59Created)
         {
-          _root._singleDependencyStruct59 = new DependencyStruct<int>();
+          _root._singletonDependencyStruct59 = new DependencyStruct<int>();
           Thread.MemoryBarrier();
-          _root._singleDependencyStruct59Created = true;
+          _root._singletonDependencyStruct59Created = true;
         }
 
-    return new Program<T1>(new Service<T1, int, List<T1>, Dictionary<T1, int>>(new Dependency<T1>(depArg), _root._singleDependencyStruct59));
+    return new Program<T1>(new Service<T1, int, List<T1>, Dictionary<T1, int>>(new Dependency<T1>(depArg), _root._singletonDependencyStruct59));
   }
 }
 ```

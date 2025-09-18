@@ -105,7 +105,7 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private Clock? _singleClock51;
+  private Clock? _singletonClock51;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -129,26 +129,26 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<int, string, IDependency> blockFunc1;
-      Func<int, string, IDependency> localFactory2 = new Func<int, string, IDependency>((int localArg17, string localArg26) =>
+      Func<int, string, IDependency> perBlockFunc1;
+      Func<int, string, IDependency> localFactory2 = new Func<int, string, IDependency>((int localArg16, string localArg26) =>
       {
         lock (_lock)
         {
-          int overrInt32 = localArg17;
-          string overrString2 = localArg26;
-          if (_root._singleClock51 is null)
+          int overriddenInt32 = localArg16;
+          string overriddenString2 = localArg26;
+          if (_root._singletonClock51 is null)
             lock (_lock)
-              if (_root._singleClock51 is null)
+              if (_root._singletonClock51 is null)
               {
-                _root._singleClock51 = new Clock();
+                _root._singletonClock51 = new Clock();
               }
 
-          IDependency localValue19 = new Dependency(overrString2, _root._singleClock51, overrInt32);
+          IDependency localValue19 = new Dependency(overriddenString2, _root._singletonClock51, overriddenInt32);
           return localValue19;
         }
       });
-      blockFunc1 = localFactory2;
-      return new Service(blockFunc1);
+      perBlockFunc1 = localFactory2;
+      return new Service(perBlockFunc1);
     }
   }
 }

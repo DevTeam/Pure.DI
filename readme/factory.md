@@ -101,12 +101,12 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      IDependency transIDependency1;
+      IDependency transientIDependency1;
       // Some logic for creating an instance
       Dependency localDependency3 = new Dependency();
       localDependency3.Initialize();
-      transIDependency1 = localDependency3;
-      return new Service(transIDependency1);
+      transientIDependency1 = localDependency3;
+      return new Service(transientIDependency1);
     }
   }
 }

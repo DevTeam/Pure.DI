@@ -139,7 +139,7 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private Clock? _singleClock52;
+  private Clock? _singletonClock52;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -163,7 +163,7 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<int, int, IDependency> transFunc1 =
+      Func<int, int, IDependency> transientFunc1 =
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       (localDependencyId1, localSubId1) =>
       {
@@ -171,23 +171,23 @@ partial class Composition
         // Overrides with tag using lambda argument
         // Overrides with some value
         // Overrides with injected value
-        int overrInt32 = localDependencyId1;
-        int overrInt321 = localSubId1;
-        string overrString2 = $"Dep {localDependencyId1} {localSubId1}";
-        Drawing.Color transColor2 = Color.Red;
-        Drawing.Color localRed1 = transColor2;
-        Drawing.Color overrColor3 = localRed1;
-        if (_root._singleClock52 is null)
+        int overriddenInt32 = localDependencyId1;
+        int overriddenInt321 = localSubId1;
+        string overriddenString2 = $"Dep {localDependencyId1} {localSubId1}";
+        Drawing.Color transientColor2 = Color.Red;
+        Drawing.Color localRed1 = transientColor2;
+        Drawing.Color overriddenColor3 = localRed1;
+        if (_root._singletonClock52 is null)
           lock (_lock)
-            if (_root._singleClock52 is null)
+            if (_root._singletonClock52 is null)
             {
-              _root._singleClock52 = new Clock();
+              _root._singletonClock52 = new Clock();
             }
 
-        Dependency localDependency4 = new Dependency(overrString2, _root._singleClock52, overrInt32, overrInt321, overrColor3);
+        Dependency localDependency4 = new Dependency(overriddenString2, _root._singletonClock52, overriddenInt32, overriddenInt321, overriddenColor3);
         return localDependency4;
       };
-      return new Service(transFunc1);
+      return new Service(transientFunc1);
     }
   }
 }

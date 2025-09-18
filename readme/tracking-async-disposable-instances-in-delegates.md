@@ -130,39 +130,39 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var blockOwned2 = new Owned();
-      Func<Owned<IDependency>> blockFunc1 = new Func<Owned<IDependency>>(
+      var perBlockOwned2 = new Owned();
+      Func<Owned<IDependency>> perBlockFunc1 = new Func<Owned<IDependency>>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        Owned<IDependency> blockOwned3;
+        Owned<IDependency> perBlockOwned3;
         // Creates the owner of an instance
-        Owned transOwned4;
-        Owned localOwned1 = blockOwned2;
-        transOwned4 = localOwned1;
+        Owned transientOwned4;
+        Owned localOwned1 = perBlockOwned2;
+        transientOwned4 = localOwned1;
         lock (_lock)
         {
-          blockOwned2.Add(transOwned4);
+          perBlockOwned2.Add(transientOwned4);
         }
 
-        IOwned localOwned = transOwned4;
-        var transDependency5 = new Dependency();
+        IOwned localOwned = transientOwned4;
+        var transientDependency5 = new Dependency();
         lock (_lock)
         {
-          blockOwned2.Add(transDependency5);
+          perBlockOwned2.Add(transientDependency5);
         }
 
-        IDependency localValue2 = transDependency5;
-        blockOwned3 = new Owned<IDependency>(localValue2, localOwned);
+        IDependency localValue2 = transientDependency5;
+        perBlockOwned3 = new Owned<IDependency>(localValue2, localOwned);
         lock (_lock)
         {
-          blockOwned2.Add(blockOwned3);
+          perBlockOwned2.Add(perBlockOwned3);
         }
 
-        Owned<IDependency> localValue1 = blockOwned3;
+        Owned<IDependency> localValue1 = perBlockOwned3;
         return localValue1;
       });
-      return new Service(blockFunc1);
+      return new Service(perBlockFunc1);
     }
   }
 }

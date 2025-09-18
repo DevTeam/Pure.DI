@@ -78,8 +78,8 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Point transPoint2 = new Point(7, 9);
-      return new Service((transPoint2, new Dependency()));
+      Point transientPoint2 = new Point(7, 9);
+      return new Service((transientPoint2, new Dependency()));
     }
   }
 }

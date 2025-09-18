@@ -103,18 +103,18 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<int, IDependency<string>> blockFunc1;
+      Func<int, IDependency<string>> perBlockFunc1;
       Func<int, IDependency<string>> localFactory8 = new Func<int, IDependency<string>>((int localArg1) =>
       {
         lock (_lock)
         {
-          int overrInt32 = localArg1;
-          IDependency<string> localValue28 = new Dependency<string>(overrInt32);
+          int overriddenInt32 = localArg1;
+          IDependency<string> localValue28 = new Dependency<string>(overriddenInt32);
           return localValue28;
         }
       });
-      blockFunc1 = localFactory8;
-      return new Service<string>(blockFunc1);
+      perBlockFunc1 = localFactory8;
+      return new Service<string>(perBlockFunc1);
     }
   }
 }

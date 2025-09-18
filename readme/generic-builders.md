@@ -120,30 +120,30 @@ partial class Composition
     where T1: struct
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    IService<T1, T4> transIService;
+    IService<T1, T4> transientIService;
     IService<T1, T4> localBuildingInstance9 = buildingInstance;
     switch (localBuildingInstance9)
     {
       case Service1<T1, T4> localService1_TT_TT2:
       {
-        transIService = BuildUpGeneric(localService1_TT_TT2);
-        goto transIServiceFinish;
+        transientIService = BuildUpGeneric(localService1_TT_TT2);
+        goto transientIServiceFinish;
       }
 
       case Service2<T1, T4> localService2_TT_TT2:
       {
-        transIService = BuildUpGeneric(localService2_TT_TT2);
-        goto transIServiceFinish;
+        transientIService = BuildUpGeneric(localService2_TT_TT2);
+        goto transientIServiceFinish;
       }
 
       default:
         throw new ArgumentException($"Unable to build an instance of typeof type {localBuildingInstance9.GetType()}.", "buildingInstance");
     }
 
-    transIService = localBuildingInstance9;
-    transIServiceFinish:
+    transientIService = localBuildingInstance9;
+    transientIServiceFinish:
       ;
-    return transIService;
+    return transientIService;
   }
   #pragma warning restore CS0162
 
@@ -152,11 +152,11 @@ partial class Composition
     where T1: struct
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    Service2<T1, T4> transService22;
+    Service2<T1, T4> transientService22;
     Service2<T1, T4> localBuildingInstance10 = buildingInstance;
     localBuildingInstance10.Dependency = new Dependency<T4>();
-    transService22 = localBuildingInstance10;
-    return transService22;
+    transientService22 = localBuildingInstance10;
+    return transientService22;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -164,13 +164,13 @@ partial class Composition
     where T1: struct
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    Service1<T1, T4> transService15;
+    Service1<T1, T4> transientService15;
     Service1<T1, T4> localBuildingInstance11 = buildingInstance;
-    T1 transTT8 = (T1)(object)Guid.NewGuid();
+    T1 transientTT8 = (T1)(object)Guid.NewGuid();
     localBuildingInstance11.Dependency = new Dependency<T4>();
-    localBuildingInstance11.SetId(transTT8);
-    transService15 = localBuildingInstance11;
-    return transService15;
+    localBuildingInstance11.SetId(transientTT8);
+    transientService15 = localBuildingInstance11;
+    return transientService15;
   }
 }
 ```

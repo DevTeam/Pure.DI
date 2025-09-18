@@ -124,24 +124,24 @@ partial class Composition
   public Service1 BuildUpService1(Service1 buildingInstance)
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    Service1 transService15;
+    Service1 transientService15;
     Service1 localBuildingInstance6 = buildingInstance;
-    Guid transGuid8 = Guid.NewGuid();
+    Guid transientGuid8 = Guid.NewGuid();
     localBuildingInstance6.Dependency = new Dependency();
-    localBuildingInstance6.SetId(transGuid8);
-    transService15 = localBuildingInstance6;
-    return transService15;
+    localBuildingInstance6.SetId(transientGuid8);
+    transientService15 = localBuildingInstance6;
+    return transientService15;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Service2 BuildUpService2(Service2 buildingInstance)
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    Service2 transService22;
+    Service2 transientService22;
     Service2 localBuildingInstance5 = buildingInstance;
     localBuildingInstance5.Dependency = new Dependency();
-    transService22 = localBuildingInstance5;
-    return transService22;
+    transientService22 = localBuildingInstance5;
+    return transientService22;
   }
 
   #pragma warning disable CS0162
@@ -149,30 +149,30 @@ partial class Composition
   public IService BuildUpIService(IService buildingInstance)
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    IService transIService;
+    IService transientIService;
     IService localBuildingInstance4 = buildingInstance;
     switch (localBuildingInstance4)
     {
       case Service1 localService11:
       {
-        transIService = BuildUpService1(localService11);
-        goto transIServiceFinish;
+        transientIService = BuildUpService1(localService11);
+        goto transientIServiceFinish;
       }
 
       case Service2 localService21:
       {
-        transIService = BuildUpService2(localService21);
-        goto transIServiceFinish;
+        transientIService = BuildUpService2(localService21);
+        goto transientIServiceFinish;
       }
 
       default:
         throw new ArgumentException($"Unable to build an instance of typeof type {localBuildingInstance4.GetType()}.", "buildingInstance");
     }
 
-    transIService = localBuildingInstance4;
-    transIServiceFinish:
+    transientIService = localBuildingInstance4;
+    transientIServiceFinish:
       ;
-    return transIService;
+    return transientIService;
   }
   #pragma warning restore CS0162
 }

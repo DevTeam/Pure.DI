@@ -98,8 +98,8 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Dependency transDependency = new Dependency("Other");
-      return transDependency;
+      Dependency transientDependency = new Dependency("Other");
+      return transientDependency;
     }
   }
 
@@ -108,17 +108,17 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Dependency transDependency2 = new Dependency("Abc");
-      Dependency transDependency4 = new Dependency(null);
-      Func<IDependency> blockFunc3 = new Func<IDependency>(
+      Dependency transientDependency2 = new Dependency("Abc");
+      Dependency transientDependency4 = new Dependency(null);
+      Func<IDependency> perBlockFunc3 = new Func<IDependency>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        Dependency transDependency5 = new Dependency(123);
-        IDependency localValue = transDependency5;
+        Dependency transientDependency5 = new Dependency(123);
+        IDependency localValue = transientDependency5;
         return localValue;
       });
-      return new Service(transDependency2, blockFunc3, transDependency4);
+      return new Service(transientDependency2, perBlockFunc3, transientDependency4);
     }
   }
 }

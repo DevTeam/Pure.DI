@@ -120,7 +120,7 @@ partial class Composition: IDisposable
   private int _disposeIndex;
 
   private Service? _scopedService52;
-  private Dependency? _singleDependency51;
+  private Dependency? _singletonDependency51;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -147,15 +147,15 @@ partial class Composition: IDisposable
     get
     {
       EnsureDependencyExists();
-      return _root._singleDependency51;
+      return _root._singletonDependency51;
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureDependencyExists()
       {
-        if (_root._singleDependency51 is null)
+        if (_root._singletonDependency51 is null)
           lock (_lock)
-            if (_root._singleDependency51 is null)
+            if (_root._singletonDependency51 is null)
             {
-              _root._singleDependency51 = new Dependency();
+              _root._singletonDependency51 = new Dependency();
             }
       }
     }
@@ -171,7 +171,7 @@ partial class Composition: IDisposable
           if (_scopedService52 is null)
           {
             EnsureDependencyExists();
-            _scopedService52 = new Service(_root._singleDependency51);
+            _scopedService52 = new Service(_root._singletonDependency51);
             _disposables[_disposeIndex++] = _scopedService52;
           }
 
@@ -179,11 +179,11 @@ partial class Composition: IDisposable
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureDependencyExists()
       {
-        if (_root._singleDependency51 is null)
+        if (_root._singletonDependency51 is null)
           lock (_lock)
-            if (_root._singleDependency51 is null)
+            if (_root._singletonDependency51 is null)
             {
-              _root._singleDependency51 = new Dependency();
+              _root._singletonDependency51 = new Dependency();
             }
       }
     }
@@ -260,7 +260,7 @@ partial class Composition: IDisposable
       disposables = _disposables;
       _disposables = new object[1];
       _scopedService52 = null;
-      _singleDependency51 = null;
+      _singletonDependency51 = null;
     }
 
     while (disposeIndex-- > 0)

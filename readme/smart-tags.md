@@ -118,7 +118,7 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private XyzDependency? _singleXyzDependency52;
+  private XyzDependency? _singletonXyzDependency52;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -143,15 +143,15 @@ partial class Composition
     get
     {
       EnsureXyzDependencyXyzExists();
-      return _root._singleXyzDependency52;
+      return _root._singletonXyzDependency52;
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureXyzDependencyXyzExists()
       {
-        if (_root._singleXyzDependency52 is null)
+        if (_root._singletonXyzDependency52 is null)
           lock (_lock)
-            if (_root._singleXyzDependency52 is null)
+            if (_root._singletonXyzDependency52 is null)
             {
-              _root._singleXyzDependency52 = new XyzDependency();
+              _root._singletonXyzDependency52 = new XyzDependency();
             }
       }
     }
@@ -163,15 +163,15 @@ partial class Composition
     get
     {
       EnsureXyzDependencyXyzExists();
-      return new Service(new AbcDependency(), _root._singleXyzDependency52, new AbcDependency());
+      return new Service(new AbcDependency(), _root._singletonXyzDependency52, new AbcDependency());
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureXyzDependencyXyzExists()
       {
-        if (_root._singleXyzDependency52 is null)
+        if (_root._singletonXyzDependency52 is null)
           lock (_lock)
-            if (_root._singleXyzDependency52 is null)
+            if (_root._singletonXyzDependency52 is null)
             {
-              _root._singleXyzDependency52 = new XyzDependency();
+              _root._singletonXyzDependency52 = new XyzDependency();
             }
       }
     }

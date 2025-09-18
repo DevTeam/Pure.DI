@@ -114,10 +114,10 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      long transInt644 = GenerateId();
-      long transInt645 = GenerateId();
-      string transString1 = $"{_serviceName}_{GenerateId()}";
-      return new Service(transString1, new Dependency(transInt644), new Dependency(transInt645));
+      long transientInt644 = GenerateId();
+      long transientInt645 = GenerateId();
+      string transientString1 = $"{_serviceName}_{GenerateId()}";
+      return new Service(transientString1, new Dependency(transientInt644), new Dependency(transientInt645));
     }
   }
 }

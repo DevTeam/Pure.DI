@@ -120,10 +120,10 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private Func<string, Settings>? _singleFunc56;
-  private Func<Settings, string>? _singleFunc57;
-  private Storage? _singleStorage55;
-  private Text.Json.JsonSerializerOptions? _singleJsonSerializerOptions52;
+  private Func<string, Settings>? _singletonFunc56;
+  private Func<Settings, string>? _singletonFunc57;
+  private Storage? _singletonStorage55;
+  private Text.Json.JsonSerializerOptions? _singletonJsonSerializerOptions52;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -147,40 +147,40 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singleStorage55 is null)
+      if (_root._singletonStorage55 is null)
         lock (_lock)
-          if (_root._singleStorage55 is null)
+          if (_root._singletonStorage55 is null)
           {
-            _root._singleStorage55 = new Storage();
+            _root._singletonStorage55 = new Storage();
           }
 
-      if (_root._singleFunc56 is null)
+      if (_root._singletonFunc56 is null)
         lock (_lock)
-          if (_root._singleFunc56 is null)
-          {
-            EnsureJsonSerializerOptionsExists();
-            Text.Json.JsonSerializerOptions localOptions = _root._singleJsonSerializerOptions52;
-            _root._singleFunc56 = json => JsonSerializer.Deserialize<Settings>(json, localOptions);
-          }
-
-      if (_root._singleFunc57 is null)
-        lock (_lock)
-          if (_root._singleFunc57 is null)
+          if (_root._singletonFunc56 is null)
           {
             EnsureJsonSerializerOptionsExists();
-            Text.Json.JsonSerializerOptions localOptions1 = _root._singleJsonSerializerOptions52;
-            _root._singleFunc57 = value => JsonSerializer.Serialize(value, localOptions1);
+            Text.Json.JsonSerializerOptions localOptions = _root._singletonJsonSerializerOptions52;
+            _root._singletonFunc56 = json => JsonSerializer.Deserialize<Settings>(json, localOptions);
           }
 
-      return new SettingsService(_root._singleFunc56, _root._singleFunc57, _root._singleStorage55);
+      if (_root._singletonFunc57 is null)
+        lock (_lock)
+          if (_root._singletonFunc57 is null)
+          {
+            EnsureJsonSerializerOptionsExists();
+            Text.Json.JsonSerializerOptions localOptions1 = _root._singletonJsonSerializerOptions52;
+            _root._singletonFunc57 = value => JsonSerializer.Serialize(value, localOptions1);
+          }
+
+      return new SettingsService(_root._singletonFunc56, _root._singletonFunc57, _root._singletonStorage55);
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureJsonSerializerOptionsExists()
       {
-        if (_root._singleJsonSerializerOptions52 is null)
+        if (_root._singletonJsonSerializerOptions52 is null)
           lock (_lock)
-            if (_root._singleJsonSerializerOptions52 is null)
+            if (_root._singletonJsonSerializerOptions52 is null)
             {
-              _root._singleJsonSerializerOptions52 = new JsonSerializerOptions
+              _root._singletonJsonSerializerOptions52 = new JsonSerializerOptions
               {
                 WriteIndented = true
               };

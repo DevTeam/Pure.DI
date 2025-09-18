@@ -90,9 +90,9 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var transService = new Service();
-      transService.Initialize(new XyzDependency());
-      return transService;
+      var transientService = new Service();
+      transientService.Initialize(new XyzDependency());
+      return transientService;
     }
   }
 }

@@ -109,7 +109,7 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      IDependency transIDependency1;
+      IDependency transientIDependency1;
       // Some instance initialization logic that requires
       // synchronization of the overall composition flow
       lock (_lock)
@@ -117,14 +117,14 @@ partial class Composition
         Dependency localDependency = new Dependency();
         localDependency.Initialize();
         {
-          transIDependency1 = localDependency;
-          goto transIDependency1Finish;
+          transientIDependency1 = localDependency;
+          goto transientIDependency1Finish;
         }
       }
 
-      transIDependency1Finish:
+      transientIDependency1Finish:
         ;
-      return new Service(transIDependency1);
+      return new Service(transientIDependency1);
     }
   }
 }

@@ -107,13 +107,13 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Dependency transDependency1;
+      Dependency transientDependency1;
       Dependency localDependency5 = new Dependency();
-      DateTimeOffset transDateTimeOffset3 = DateTimeOffset.Now;
-      DateTimeOffset localTime = transDateTimeOffset3;
+      DateTimeOffset transientDateTimeOffset3 = DateTimeOffset.Now;
+      DateTimeOffset localTime = transientDateTimeOffset3;
       localDependency5.Initialize(localTime);
-      transDependency1 = localDependency5;
-      return new Service(transDependency1);
+      transientDependency1 = localDependency5;
+      return new Service(transientDependency1);
     }
   }
 }

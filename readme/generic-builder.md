@@ -98,13 +98,13 @@ partial class Composition
     where T3: struct
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    Service<T3, T4> transService;
+    Service<T3, T4> transientService;
     Service<T3, T4> localBuildingInstance8 = buildingInstance;
-    T3 transTTS3 = (T3)(object)Guid.NewGuid();
+    T3 transientTTS3 = (T3)(object)Guid.NewGuid();
     localBuildingInstance8.Dependency = new Dependency<T4>();
-    localBuildingInstance8.SetId(transTTS3);
-    transService = localBuildingInstance8;
-    return transService;
+    localBuildingInstance8.SetId(transientTTS3);
+    transientService = localBuildingInstance8;
+    return transientService;
   }
 }
 ```
