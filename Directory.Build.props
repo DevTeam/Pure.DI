@@ -1,7 +1,7 @@
 <Project>
 
     <PropertyGroup>
-        <InternalVersion>2.2.12-beta01</InternalVersion>
+        <InternalVersion>2.2.12</InternalVersion>
         <BasePackageId>Pure.DI</BasePackageId>
         <LangVersion>latest</LangVersion>
         <!--Make sure that Build.Settings.BaseDotNetFrameworkMajorVersion has been updated.-->
