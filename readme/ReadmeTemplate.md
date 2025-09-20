@@ -72,7 +72,6 @@ partial class Composition
     
     public Program Root
     {
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
       get
       {
         var stateFunc = new Func<State>(() => {

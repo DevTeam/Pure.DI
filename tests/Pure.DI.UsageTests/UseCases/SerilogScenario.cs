@@ -11,7 +11,6 @@ $r=Serilog.Core;Serilog.Events
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedVariable
-
 // ReSharper disable UnusedTypeParameter
 // ReSharper disable UnusedMember.Local
 // ReSharper disable UnusedMemberInSuper.Global
@@ -21,14 +20,12 @@ $r=Serilog.Core;Serilog.Events
 namespace Pure.DI.UsageTests.UseCases.SerilogScenario;
 
 #pragma warning disable CA2263
-using System.Runtime.CompilerServices;
 using Serilog.Core;
 using Serilog.Events;
 using Xunit;
 
 // {
 //# using Pure.DI;
-//# using System.Runtime.CompilerServices;
 // }
 
 public class Scenario
@@ -102,11 +99,9 @@ partial class Composition
             .Root<Serilog.ILogger>(nameof(Log), kind: RootKinds.Private)
             .Root<IService>(nameof(Root));
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    partial void OnNewInstance<T>(ref T value, object? tag, Lifetime lifetime) => 
+    partial void OnNewInstance<T>(ref T value, object? tag, Lifetime lifetime) =>
         Log.Information("Created [{Value}], tag [{Tag}] as {Lifetime}", value, tag, lifetime);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime)
     {
         Log.Information("Injected [{Value}], tag [{Tag}] as {Lifetime}", value, tag, lifetime);

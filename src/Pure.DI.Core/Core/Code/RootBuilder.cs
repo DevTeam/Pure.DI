@@ -79,6 +79,7 @@ class RootBuilder(
             if (parentCtx.IsFactory && !string.IsNullOrWhiteSpace(var.LocalFunctionName))
             {
                 parentCtx.Lines.AppendLine($"{var.LocalFunctionName}();");
+                // ReSharper disable once RedundantJumpStatement
                 return;
             }
 
@@ -614,11 +615,6 @@ class RootBuilder(
                         case MdConstructKind.Enumerable:
                         case MdConstructKind.AsyncEnumerable:
                             var localMethodName = $"{Names.EnumerateMethodNamePrefix}_{var.Declaration.Name}".Replace("__", "_");
-                            if (compilations.GetLanguageVersion(construct.Source.SemanticModel.Compilation) >= LanguageVersion.CSharp9)
-                            {
-                                buildTools.AddAggressiveInlining(lines);
-                            }
-
                             var methodPrefix = construct.Source.Kind == MdConstructKind.AsyncEnumerable ? "async " : "";
                             lines.AppendLine($"{methodPrefix}{typeResolver.Resolve(ctx.RootContext.Graph.Source, var.InstanceType)} {localMethodName}()");
                             using (lines.CreateBlock())
@@ -738,11 +734,6 @@ class RootBuilder(
         {
             var baseName = nameFormatter.Format("{type}{tag}", varCtx.VarInjection.Var.InstanceType, varCtx.VarInjection.Injection.Tag);
             var localFunction = var.LocalFunction;
-            if (compilations.GetLanguageVersion(varCtx.RootContext.Graph.Source.SemanticModel.Compilation) >= LanguageVersion.CSharp9)
-            {
-                buildTools.AddAggressiveInlining(localFunction);
-            }
-
             var.LocalFunctionName = uniqueNameProvider.GetUniqueName($"Ensure{baseName}Exists{Names.Salt}");
             localFunction.AppendLine($"void {var.LocalFunctionName}()");
             using (localFunction.CreateBlock())

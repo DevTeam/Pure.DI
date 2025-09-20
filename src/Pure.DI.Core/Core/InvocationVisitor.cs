@@ -1,7 +1,5 @@
 ﻿namespace Pure.DI.Core;
 
-using System.Runtime.CompilerServices;
-
 readonly record struct InvocationVisitor(
     SemanticModel SemanticModel,
     InvocationExpressionSyntax Invocation,
@@ -86,7 +84,6 @@ readonly record struct InvocationVisitor(
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void AddAction<T>(Action<IMetadataVisitor, T> action, IMetadataVisitor visitor, in T state) =>
         _actions.Add(new VisitorAction<T>(action, visitor, state));
 

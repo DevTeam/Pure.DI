@@ -59,7 +59,6 @@ public partial class Enum : BenchmarkBase
             new Service4(),
             new Service4());
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     private static IEnumerable<IService3> EnumerableOfIService3()
     {
         yield return new Service3(new Service4(), new Service4());

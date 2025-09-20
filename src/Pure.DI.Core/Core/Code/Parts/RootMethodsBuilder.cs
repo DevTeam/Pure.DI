@@ -85,18 +85,10 @@ sealed class RootMethodsBuilder(
             }
         }
 
-        if (root.IsMethod)
+        if (root is { IsMethod: true, Source.BuilderRoots.IsDefaultOrEmpty: false })
         {
-            if (!root.Source.BuilderRoots.IsDefaultOrEmpty)
-            {
-                // Common builder
-                code.AppendLine("#pragma warning disable CS0162");
-                buildTools.AddNoInlining(code);
-            }
-            else
-            {
-                buildTools.AddAggressiveInlining(code);
-            }
+            // Common builder
+            code.AppendLine("#pragma warning disable CS0162");
         }
 
         code.AppendLine(rootSignatureProvider.GetRootSignature(composition, root));
@@ -123,7 +115,6 @@ sealed class RootMethodsBuilder(
             }
             else
             {
-                buildTools.AddAggressiveInlining(code);
                 code.AppendLine("get");
                 code.AppendLine(BlockStart);
                 indentToken = code.Indent();

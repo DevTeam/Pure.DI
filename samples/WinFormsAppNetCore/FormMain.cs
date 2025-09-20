@@ -17,8 +17,11 @@ public partial class FormMain : Form
         labelTime.DataBindings.Add(CreateBinding(clock, nameof(clock.Time)));
     }
 
-    protected override void OnClosing(CancelEventArgs e) =>
+    protected override void OnFormClosed(FormClosedEventArgs e)
+    {
         _viewModels.ForEach(vm => vm.PropertyChanged -= OnPropertyChanged);
+        base.OnFormClosed(e);
+    }
 
     private Binding CreateBinding(object model, string propertyName, string targetName = nameof(Text)) =>
         _bindings.GetOrAdd(

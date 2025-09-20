@@ -5,19 +5,10 @@ namespace Pure.DI.Core.Code;
 
 sealed class FactoryRewriter(
     IArguments arguments,
-    ICompilations compilations,
     ISymbolNames symbolNames,
     FactoryRewriterContext ctx)
     : CSharpSyntaxRewriter, IFactoryRewriter
 {
-    private static readonly AttributeListSyntax MethodImplAttribute = SyntaxFactory.AttributeList().AddAttributes(
-        SyntaxFactory.Attribute(
-            SyntaxFactory.IdentifierName(Names.MethodImplAttributeName),
-            SyntaxFactory.AttributeArgumentList().AddArguments(
-                    SyntaxFactory.AttributeArgument(
-                        SyntaxFactory.CastExpression(SyntaxFactory.ParseTypeName($"{Names.MethodImplOptionsName}"), SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(256)))))
-                .WithTrailingTrivia(SyntaxTriviaList.Create(SyntaxFactory.SyntaxTrivia(SyntaxKind.WhitespaceTrivia, " ")))));
-
     private static readonly IdentifierNameSyntax InjectionMarkerExpression = SyntaxFactory.IdentifierName(Names.InjectionMarker);
     private static readonly IdentifierNameSyntax InitializationMarkerExpression = SyntaxFactory.IdentifierName(Names.InitializationMarker);
     private static readonly IdentifierNameSyntax OverrideMarkerExpression = SyntaxFactory.IdentifierName(Names.OverrideMarker);
@@ -48,18 +39,10 @@ sealed class FactoryRewriter(
 
     public override SyntaxNode? VisitParenthesizedLambdaExpression(ParenthesizedLambdaExpressionSyntax node)
     {
+        _nestedLambdaCounter++;
         try
         {
-            _nestedLambdaCounter++;
-            var processedNode = base.VisitParenthesizedLambdaExpression(node);
-            if (_nestedBlockCounter > 0
-                || processedNode is not ParenthesizedLambdaExpressionSyntax lambda
-                || compilations.GetLanguageVersion(ctx.Factory.Source.SemanticModel.Compilation) < LanguageVersion.CSharp10)
-            {
-                return processedNode;
-            }
-
-            return lambda.AddAttributeLists(MethodImplAttribute);
+            return base.VisitParenthesizedLambdaExpression(node);
         }
         finally
         {

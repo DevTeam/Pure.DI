@@ -4,7 +4,6 @@
 namespace Pure.DI.Core;
 
 using System.Buffers;
-using System.Runtime.CompilerServices;
 
 sealed class Lines: IEnumerable<Line>
 {
@@ -29,10 +28,8 @@ sealed class Lines: IEnumerable<Line>
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Append(string text) => _sb.Append(text);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void AppendLine(in Line line)
     {
         FlushLines();
@@ -76,10 +73,8 @@ sealed class Lines: IEnumerable<Line>
         return Disposables.Create(() => DecIndent(size));
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void IncIndent(int size = 1) => _indent = new Indent(_indent.Value + size);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DecIndent(int size = 1) => _indent = new Indent(_indent.Value - size);
 
     public IDisposable SaveToArray(Encoding encoding, out byte[] buffer, out int size)
@@ -116,7 +111,6 @@ sealed class Lines: IEnumerable<Line>
         return Encoding.UTF8.GetString(buffer, 0, size);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void FlushLines()
     {
         if (_sb.Length > 0)
@@ -125,10 +119,8 @@ sealed class Lines: IEnumerable<Line>
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static string GetIndent(int indent) =>
         new Indent(indent).ToString();
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private Line CreateLine(Line line) => line with { Indent = line.Indent + _indent.Value };
 }

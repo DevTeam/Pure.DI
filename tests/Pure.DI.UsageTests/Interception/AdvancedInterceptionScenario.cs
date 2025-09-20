@@ -17,7 +17,6 @@ namespace Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario;
 
 using System.Collections.Immutable;
 using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
 using Castle.DynamicProxy;
 using Shouldly;
 using Xunit;
@@ -25,7 +24,6 @@ using Xunit;
 // {
 //# using System.Collections.Immutable;
 //# using System.Linq.Expressions;
-//# using System.Runtime.CompilerServices;
 //# using Pure.DI;
 // }
 
@@ -97,7 +95,6 @@ internal partial class Composition : IInterceptor
         _interceptors = [this];
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private partial T OnDependencyInjection<T>(
         in T value,
         object? tag,

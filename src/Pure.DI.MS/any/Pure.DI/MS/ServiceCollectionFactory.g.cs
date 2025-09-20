@@ -78,7 +78,6 @@ namespace Pure.DI.MS
         /// <param name="resolver">Instance resolver.</param>
         /// <param name="tag">The resolving tag.</param>
         /// <typeparam name="TContract">The type of object that the resolver returns.</typeparam>
-        [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
         internal void AddResolver<TContract>(IResolver<TComposition, TContract> resolver, object tag = default)
         {
             if (resolver == null) throw new ArgumentNullException(nameof(resolver));
@@ -93,7 +92,6 @@ namespace Pure.DI.MS
 #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
         [global::System.Diagnostics.Contracts.Pure]
 #endif
-        [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
         public IServiceCollection CreateServiceCollection(TComposition composition)
         {
             if (composition == null) throw new ArgumentNullException(nameof(composition));
@@ -105,7 +103,6 @@ namespace Pure.DI.MS
         /// </summary>
         /// <param name="composition">An instance of composition.</param>
         /// <returns>An enumeration of <see cref="Microsoft.Extensions.DependencyInjection.ServiceDescriptor"/>.</returns>
-        [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
         private IEnumerable<ServiceDescriptor> CreateDescriptors(TComposition composition)
         {
             return _resolvers.Select(resolver => ServiceDescriptorProvider(composition, resolver));

@@ -32,7 +32,6 @@ Advantages over classical DI container libraries:
 For types inherited from `MonoBehaviour`, a `BuildUp` composition method will be generated. This method will look as follows:
 
 ```csharp
-[CompilerServices.MethodImpl(MethodImplOptions.AggressiveInlining)]
 public Clock BuildUp(Clock buildingInstance)
 {
     if (buildingInstance is null) 
