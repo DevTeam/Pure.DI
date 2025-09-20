@@ -274,7 +274,7 @@ class ReadmeTarget(
         var salt = $"{DateTime.Now.DayOfYear}d";
         foreach (var generatedCodeFile in Directory.GetFiles(Path.Combine(logsDirectory, "Pure.DI", "Pure.DI.SourceGenerator"), exampleSearchPattern).OrderBy(i => i))
         {
-            var ns = string.Join('.', Path.GetFileName(generatedCodeFile).Split('.').Reverse().Skip(3).Reverse()) + ".";
+            var ns = string.Join('.', Path.GetFileName(generatedCodeFile).Split('.').AsEnumerable().Reverse().Skip(3).Reverse()) + ".";
             await writer.WriteLineAsync("The following partial class will be generated:");
             await writer.WriteLineAsync();
             await writer.WriteLineAsync("```c#");

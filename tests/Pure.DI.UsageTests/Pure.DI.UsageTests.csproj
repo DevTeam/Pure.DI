@@ -16,6 +16,7 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Update="Castle.Core" Version="5.2.1" />
+        <PackageReference Update="Microsoft.Extensions.DependencyInjection" Version="9.0.9" />
     </ItemGroup>
 
 </Project>

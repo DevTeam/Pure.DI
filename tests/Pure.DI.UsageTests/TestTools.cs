@@ -8,7 +8,7 @@ public static class TestTools
     {
         var logDirName = Path.Combine(GetSolutionDirectory(), ".logs");
         Directory.CreateDirectory(logDirName);
-        var fileName = Path.Combine(logDirName, $"{name ?? composition.GetType().FullName!.Split('.').Reverse().Skip(1).First()}.Mermaid");
+        var fileName = Path.Combine(logDirName, $"{name ?? composition.GetType().FullName!.Split('.').AsEnumerable().Reverse().Skip(1).First()}.Mermaid");
         if (File.Exists(fileName))
         {
             File.Delete(fileName);
