@@ -81,10 +81,8 @@ partial class Composition
 
   public IService<string> Root
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
       IEnumerable<IDependency<string>> EnumerationOf_perBlockIEnumerable1()
       {
         yield return new AbcDependency<string>();

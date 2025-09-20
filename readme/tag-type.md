@@ -118,12 +118,10 @@ partial class Composition
 
   public IDependency XyzRoot
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       EnsureXyzDependencyPureDIUsageTestsAdvancedTagTypeScenarioXyzDependencyExists();
       return _root._singletonXyzDependency52;
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureXyzDependencyPureDIUsageTestsAdvancedTagTypeScenarioXyzDependencyExists()
       {
         if (_root._singletonXyzDependency52 is null)
@@ -138,12 +136,10 @@ partial class Composition
 
   public IService Root
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       EnsureXyzDependencyPureDIUsageTestsAdvancedTagTypeScenarioXyzDependencyExists();
       return new Service(new AbcDependency(), _root._singletonXyzDependency52, new AbcDependency());
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureXyzDependencyPureDIUsageTestsAdvancedTagTypeScenarioXyzDependencyExists()
       {
         if (_root._singletonXyzDependency52 is null)

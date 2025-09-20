@@ -86,7 +86,6 @@ partial class Transient
   {
   }
 
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public partial CompositionRoot TestPureDIByCR()
   {
     return new CompositionRoot(new Service1(new Service2(new Service3(new Service4(), new Service4()), new Service3(new Service4(), new Service4()), new Service3(new Service4(), new Service4()), new Service3(new Service4(), new Service4()), new Service3(new Service4(), new Service4()))), new Service2(new Service3(new Service4(), new Service4()), new Service3(new Service4(), new Service4()), new Service3(new Service4(), new Service4()), new Service3(new Service4(), new Service4()), new Service3(new Service4(), new Service4())), new Service2(new Service3(new Service4(), new Service4()), new Service3(new Service4(), new Service4()), new Service3(new Service4(), new Service4()), new Service3(new Service4(), new Service4()), new Service3(new Service4(), new Service4())), new Service2(new Service3(new Service4(), new Service4()), new Service3(new Service4(), new Service4()), new Service3(new Service4(), new Service4()), new Service3(new Service4(), new Service4()), new Service3(new Service4(), new Service4())), new Service3(new Service4(), new Service4()), new Service4(), new Service4());

@@ -111,7 +111,6 @@ partial class Composition
 
   internal Service Root
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       long transientInt644 = GenerateId();

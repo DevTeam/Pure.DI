@@ -160,12 +160,9 @@ partial class Composition
 
   public IService Root
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<int, int, IDependency> transientFunc1 =
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      (localDependencyId1, localSubId1) =>
+      Func<int, int, IDependency> transientFunc1 = (localDependencyId1, localSubId1) =>
       {
         // Overrides with a lambda argument
         // Overrides with tag using lambda argument

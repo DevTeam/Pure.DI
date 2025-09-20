@@ -120,7 +120,6 @@ partial class Composition
     _lock = parentScope._lock;
   }
 
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Service1 BuildUpService1(Service1 buildingInstance)
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
@@ -133,7 +132,6 @@ partial class Composition
     return transientService15;
   }
 
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Service2 BuildUpService2(Service2 buildingInstance)
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
@@ -145,7 +143,6 @@ partial class Composition
   }
 
   #pragma warning disable CS0162
-  [MethodImpl(MethodImplOptions.NoInlining)]
   public IService BuildUpIService(IService buildingInstance)
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));

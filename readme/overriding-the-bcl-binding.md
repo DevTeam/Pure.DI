@@ -83,7 +83,6 @@ partial class Composition
 
   public IService Root
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       IDependency[] transient1 = [new AbcDependency(), new XyzDependency(), new AbcDependency()];

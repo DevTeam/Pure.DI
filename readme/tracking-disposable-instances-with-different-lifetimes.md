@@ -153,13 +153,10 @@ partial class Composition: IDisposable
 
   public Service Root
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       var perBlockOwned3 = new Owned();
-      Func<Owned<IDependency>> perBlockFunc1 = new Func<Owned<IDependency>>(
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      () =>
+      Func<Owned<IDependency>> perBlockFunc1 = new Func<Owned<IDependency>>(() =>
       {
         Owned<IDependency> perBlockOwned4;
         // Creates the owner of an instance
@@ -189,9 +186,7 @@ partial class Composition: IDisposable
         return localValue11;
       });
       var perBlockOwned7 = new Owned();
-      Func<Owned<IDependency>> perBlockFunc2 = new Func<Owned<IDependency>>(
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      () =>
+      Func<Owned<IDependency>> perBlockFunc2 = new Func<Owned<IDependency>>(() =>
       {
         Owned<IDependency> perBlockOwned8;
         // Creates the owner of an instance

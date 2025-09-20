@@ -100,7 +100,6 @@ partial class Composition
 
   public IService Root
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       var transientString2 = OnCannotResolve<string>(null, Lifetime.Transient);

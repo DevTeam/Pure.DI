@@ -146,7 +146,6 @@ partial class Composition: IDisposable
 
   public IService SessionRoot
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       if (_scopedDependency51 is null)
@@ -163,12 +162,9 @@ partial class Composition: IDisposable
 
   public Program ProgramRoot
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<Session> perBlockFunc1 = new Func<Session>(
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      () =>
+      Func<Session> perBlockFunc1 = new Func<Session>(() =>
       {
         var transientComposition3 = this;
         Session localValue32 = new Session(transientComposition3);

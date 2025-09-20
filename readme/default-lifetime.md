@@ -107,7 +107,6 @@ partial class Composition
 
   public IService Root
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       if (_root._singletonService52 is null)
@@ -119,7 +118,6 @@ partial class Composition
           }
 
       return _root._singletonService52;
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureDependencyExists()
       {
         if (_root._singletonDependency51 is null)

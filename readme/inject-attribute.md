@@ -105,7 +105,6 @@ partial class PersonComposition
 
   public IPerson Person
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       string transientString1 = "Nik";

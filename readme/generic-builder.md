@@ -93,7 +93,6 @@ partial class Composition
     _lock = parentScope._lock;
   }
 
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Service<T3, T4> BuildUpGeneric<T3, T4>(Service<T3, T4> buildingInstance)
     where T3: struct
   {

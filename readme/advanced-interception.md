@@ -8,7 +8,6 @@ using Shouldly;
 using Castle.DynamicProxy;
 using System.Collections.Immutable;
 using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
 using Pure.DI;
 
 // OnDependencyInjection = On
@@ -66,7 +65,6 @@ internal partial class Composition : IInterceptor
         _interceptors = [this];
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private partial T OnDependencyInjection<T>(
         in T value,
         object? tag,
@@ -162,7 +160,6 @@ partial class Composition
 
   public IService Root
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       return OnDependencyInjection<IService>(new Service(OnDependencyInjection<IDependency>(new Dependency(), null, Lifetime.Transient)), null, Lifetime.Transient);

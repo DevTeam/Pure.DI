@@ -65,7 +65,6 @@ partial class Composition
 
   public static IService MyStaticRoot
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       #if NET9_0_OR_GREATER

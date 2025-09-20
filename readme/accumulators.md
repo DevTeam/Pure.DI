@@ -102,7 +102,6 @@ partial class Composition
 
   public (IService service, MyAccumulator accumulator) Root
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       var perBlockMyAccumulator1 = new MyAccumulator();

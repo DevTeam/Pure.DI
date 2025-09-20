@@ -70,7 +70,6 @@ partial class Composition
 
   public IService Root
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       return new Service(new WeakReference<IDependency>(new Dependency()));

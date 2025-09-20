@@ -112,12 +112,10 @@ partial class Composition
 
   private IDependency Root2
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       EnsureDependencyExists();
       return _root._singletonDependency51;
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureDependencyExists()
       {
         if (_root._singletonDependency51 is null)
@@ -132,12 +130,10 @@ partial class Composition
 
   private IService Root1
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       EnsureDependencyExists();
       return new Service(_root._singletonDependency51);
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureDependencyExists()
       {
         if (_root._singletonDependency51 is null)

@@ -3842,7 +3842,6 @@ Interception allows you to enrich or change the behavior of a certain set of obj
 ```c#
 using Shouldly;
 using Castle.DynamicProxy;
-using System.Runtime.CompilerServices;
 using Pure.DI;
 
 // OnDependencyInjection = On
@@ -3869,7 +3868,6 @@ partial class Composition : IInterceptor
 {
     private static readonly ProxyGenerator ProxyGenerator = new();
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private partial T OnDependencyInjection<T>(
         in T value,
         object? tag,
@@ -3928,7 +3926,6 @@ using Shouldly;
 using Castle.DynamicProxy;
 using System.Collections.Immutable;
 using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
 using Pure.DI;
 
 // OnDependencyInjection = On
@@ -3986,7 +3983,6 @@ internal partial class Composition : IInterceptor
         _interceptors = [this];
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private partial T OnDependencyInjection<T>(
         in T value,
         object? tag,

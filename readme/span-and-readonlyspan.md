@@ -88,7 +88,6 @@ partial class Composition
 
   public IService Root
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       ReadOnlySpan<Dependency> transientReadOnlySpan1 = stackalloc Dependency[3]

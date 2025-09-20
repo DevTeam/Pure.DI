@@ -6,7 +6,6 @@ Interception allows you to enrich or change the behavior of a certain set of obj
 ```c#
 using Shouldly;
 using Castle.DynamicProxy;
-using System.Runtime.CompilerServices;
 using Pure.DI;
 
 // OnDependencyInjection = On
@@ -33,7 +32,6 @@ partial class Composition : IInterceptor
 {
     private static readonly ProxyGenerator ProxyGenerator = new();
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private partial T OnDependencyInjection<T>(
         in T value,
         object? tag,
@@ -123,7 +121,6 @@ partial class Composition
 
   public IService Root
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       return OnDependencyInjection<IService>(new Service(), null, Lifetime.Transient);

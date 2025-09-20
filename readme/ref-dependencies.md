@@ -74,7 +74,6 @@ partial class Composition
 
   public Service MyService
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       int[] transient2 = [1, 2, 3];

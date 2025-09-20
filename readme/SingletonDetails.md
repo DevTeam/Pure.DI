@@ -93,7 +93,6 @@ partial class Singleton
     _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
   }
 
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public partial CompositionRoot TestPureDIByCR()
   {
     if (_scopedService149 is null)
@@ -103,7 +102,6 @@ partial class Singleton
     }
 
     return new CompositionRoot(_scopedService149, new Service2(new Service3(_scopedService452, _scopedService452), new Service3(_scopedService452, _scopedService452), new Service3(_scopedService452, _scopedService452), new Service3(_scopedService452, _scopedService452), new Service3(_scopedService452, _scopedService452)), new Service2(new Service3(_scopedService452, _scopedService452), new Service3(_scopedService452, _scopedService452), new Service3(_scopedService452, _scopedService452), new Service3(_scopedService452, _scopedService452), new Service3(_scopedService452, _scopedService452)), new Service2(new Service3(_scopedService452, _scopedService452), new Service3(_scopedService452, _scopedService452), new Service3(_scopedService452, _scopedService452), new Service3(_scopedService452, _scopedService452), new Service3(_scopedService452, _scopedService452)), new Service3(_scopedService452, _scopedService452), _scopedService452, _scopedService452);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void EnsureService4Exists()
     {
       if (_scopedService452 is null)

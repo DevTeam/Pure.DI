@@ -115,7 +115,6 @@ partial class Composition
   }
 
   #pragma warning disable CS0162
-  [MethodImpl(MethodImplOptions.NoInlining)]
   public IService<T1, T4> BuildUpGeneric<T1, T4>(IService<T1, T4> buildingInstance)
     where T1: struct
   {
@@ -147,7 +146,6 @@ partial class Composition
   }
   #pragma warning restore CS0162
 
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Service2<T1, T4> BuildUpGeneric<T1, T4>(Service2<T1, T4> buildingInstance)
     where T1: struct
   {
@@ -159,7 +157,6 @@ partial class Composition
     return transientService22;
   }
 
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Service1<T1, T4> BuildUpGeneric<T1, T4>(Service1<T1, T4> buildingInstance)
     where T1: struct
   {

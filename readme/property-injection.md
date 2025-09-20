@@ -84,7 +84,6 @@ partial class Composition
 
   public IService MyService
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       var transientService = new Service();

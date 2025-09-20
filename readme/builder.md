@@ -111,7 +111,6 @@ partial class Composition
     _lock = parentScope._lock;
   }
 
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Service BuildUpService(Service buildingInstance)
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));

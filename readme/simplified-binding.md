@@ -135,7 +135,6 @@ partial class Composition
 
   public IService MyService
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       var perBlockDependency1 = new Dependency();

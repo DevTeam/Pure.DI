@@ -113,10 +113,8 @@ partial class Enum
   {
   }
 
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public partial CompositionRoot TestPureDIByCR()
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     IEnumerable<IService3> EnumerationOf_perBlockIEnumerable9()
     {
       yield return new Service3(new Service4(), new Service4());

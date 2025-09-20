@@ -214,7 +214,6 @@ partial class Composition: IDisposable
 
   public Program Root
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       if (_root._singletonFunc59 is null)
@@ -261,7 +260,6 @@ partial class Composition: IDisposable
           }
 
       return new Program(_root._singletonILogger55, new StudentService(_root._singletonFunc59));
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureLoggerFactoryExists()
       {
         if (_root._singletonLoggerFactory54 is null)

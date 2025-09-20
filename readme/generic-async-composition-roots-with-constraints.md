@@ -113,15 +113,12 @@ partial class Composition
     _lock = parentScope._lock;
   }
 
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Task<IService<T2, bool>> GetOtherServiceAsync<T2>(CancellationToken cancellationToken)
     where T2: IDisposable
   {
     Task<IService<T2, bool>> transientTask;
     // Injects an instance factory
-    Func<IService<T2, bool>> perBlockFunc1 = new Func<IService<T2, bool>>(
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    () =>
+    Func<IService<T2, bool>> perBlockFunc1 = new Func<IService<T2, bool>>(() =>
     {
       OtherService<T2> transientOtherService3;
       IDependency<T2> localDependency6 = new Dependency<T2>();
@@ -146,16 +143,13 @@ partial class Composition
     return transientTask;
   }
 
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Task<IService<T2, T3>> GetMyRootAsync<T2, T3>(CancellationToken cancellationToken)
     where T2: IDisposable
     where T3: struct
   {
     Task<IService<T2, T3>> transientTask9;
     // Injects an instance factory
-    Func<IService<T2, T3>> perBlockFunc10 = new Func<IService<T2, T3>>(
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    () =>
+    Func<IService<T2, T3>> perBlockFunc10 = new Func<IService<T2, T3>>(() =>
     {
       IService<T2, T3> localValue26 = new Service<T2, T3>(new Dependency<T2>());
       return localValue26;

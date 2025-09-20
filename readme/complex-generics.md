@@ -126,7 +126,6 @@ partial class Composition
     _lock = parentScope._lock;
   }
 
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Program<T1> GetRoot<T1>(T1 depArg)
     where T1: notnull
   {

@@ -92,7 +92,6 @@ partial class Composition
     _lock = parentScope._lock;
   }
 
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Program GetProgram(int id)
   {
     OtherAssembly.IMyGenericService<int> transientIMyGenericService1;

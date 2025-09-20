@@ -79,7 +79,6 @@ partial class Composition
   {
   }
 
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public OtherService<T1> GetMyOtherService_T<T1>()
   {
     OtherService<T1> transientOtherService;
@@ -88,7 +87,6 @@ partial class Composition
     return transientOtherService;
   }
 
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Service<T1> GetMyService_T<T1>()
   {
     return new Service<T1>(new Dependency<T1>());

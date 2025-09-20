@@ -89,7 +89,6 @@ partial class Composition
 
   public IService OtherService
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       return new OtherService();
@@ -98,7 +97,6 @@ partial class Composition
 
   private IService Root2
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       return new Service(new Dependency());

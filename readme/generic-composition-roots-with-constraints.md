@@ -99,7 +99,6 @@ partial class Composition
   {
   }
 
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public IService<T2, bool> GetOtherService<T2>()
     where T2: IDisposable
   {
@@ -109,7 +108,6 @@ partial class Composition
     return transientOtherService;
   }
 
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public IService<T2, T3> GetMyRoot<T2, T3>()
     where T2: IDisposable
     where T3: struct

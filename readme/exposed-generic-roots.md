@@ -96,7 +96,6 @@ partial class Composition
 
   public Program Program
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       OtherAssembly.IMyGenericService<int> transientIMyGenericService1;

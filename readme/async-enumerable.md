@@ -90,10 +90,8 @@ partial class Composition
 
   public IService Root
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
       async IAsyncEnumerable<IDependency> EnumerationOf_transientIAsyncEnumerable1()
       {
         yield return new AbcDependency();

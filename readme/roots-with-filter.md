@@ -83,7 +83,6 @@ partial class Composition
 
   public Service2 MyService2
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       if (_root._singletonDependency51 is null)

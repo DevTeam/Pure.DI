@@ -86,12 +86,10 @@ partial class Composition
 
   public Service2 MyService2
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       EnsureDependencyExists();
       return new Service2(_root._singletonDependency51);
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureDependencyExists()
       {
         if (_root._singletonDependency51 is null)
@@ -106,12 +104,10 @@ partial class Composition
 
   public Service1 MyService1
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       EnsureDependencyExists();
       return new Service1(_root._singletonDependency51);
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureDependencyExists()
       {
         if (_root._singletonDependency51 is null)

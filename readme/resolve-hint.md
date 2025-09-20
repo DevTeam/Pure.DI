@@ -71,7 +71,6 @@ partial class Composition
 
   public IDependency DependencyRoot
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       return new Dependency();
@@ -80,7 +79,6 @@ partial class Composition
 
   public IService Root
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       return new Service(new Dependency());

@@ -106,7 +106,6 @@ partial class Composition
 
   public IService MyService
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       IDependency transientIDependency1;

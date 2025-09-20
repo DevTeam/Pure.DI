@@ -114,7 +114,6 @@ partial class Composition
     _lock = parentScope._lock;
   }
 
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public IService GetRoot(int id)
   {
     return new Service(OnDependencyInjection<IDependency>(new Dependency(OnDependencyInjection<int>(id, null, Lifetime.Transient)), null, Lifetime.Transient));

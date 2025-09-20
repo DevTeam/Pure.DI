@@ -105,7 +105,6 @@ partial class Composition
 
   public Service Root
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       var perBlockDependency1 = new Dependency();

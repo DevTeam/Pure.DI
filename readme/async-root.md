@@ -80,14 +80,11 @@ partial class Composition
     _lock = parentScope._lock;
   }
 
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Task<IService> GetMyServiceAsync(CancellationToken cancellationToken)
   {
     Task<IService> transientTask;
     // Injects an instance factory
-    Func<IService> perBlockFunc1 = new Func<IService>(
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    () =>
+    Func<IService> perBlockFunc1 = new Func<IService>(() =>
     {
       IService localValue15 = new Service(new Dependency());
       return localValue15;

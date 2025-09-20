@@ -143,12 +143,10 @@ partial class Composition: IDisposable
 
   private IDependency Root2
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       EnsureDependencyExists();
       return _root._singletonDependency51;
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureDependencyExists()
       {
         if (_root._singletonDependency51 is null)
@@ -163,7 +161,6 @@ partial class Composition: IDisposable
 
   private IService Root1
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       if (_scopedService52 is null)
@@ -176,7 +173,6 @@ partial class Composition: IDisposable
           }
 
       return _scopedService52;
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureDependencyExists()
       {
         if (_root._singletonDependency51 is null)

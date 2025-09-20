@@ -108,7 +108,6 @@ partial class Composition
 
   public IService Root
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       return new Service(new XyzDependency(), new XyzDependency(), new Consumer<string>(new AbcDependency()))

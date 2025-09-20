@@ -81,7 +81,6 @@ partial class Composition
 
   public IService Root
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       ValueTask<IDependency> transientValueTask1;

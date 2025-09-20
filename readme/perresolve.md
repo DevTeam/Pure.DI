@@ -105,7 +105,6 @@ partial class Composition
 
   public Service Root
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       var perResolveDependency1 = default(Dependency);
@@ -120,7 +119,6 @@ partial class Composition
           }
 
       return new Service(perResolveDependency1, perResolveDependency1, _root._singletonValueTuple52);
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureDependencyExists()
       {
         if (perResolveDependency1 is null)

@@ -86,7 +86,6 @@ partial class Composition
     _lock = parentScope._lock;
   }
 
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public IService<T> GetMyService<T>(MyData<T> complexArg)
   {
     if (complexArg is null) throw new ArgumentNullException(nameof(complexArg));

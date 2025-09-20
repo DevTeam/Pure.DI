@@ -120,7 +120,6 @@ partial class Composition
 
   public Owned<IService> Root
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       var perBlockOwned1 = new Owned();

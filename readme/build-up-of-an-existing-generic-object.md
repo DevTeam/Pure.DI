@@ -111,7 +111,6 @@ partial class Composition
     _lock = parentScope._lock;
   }
 
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public IService<Guid> GetMyService(string name)
   {
     if (name is null) throw new ArgumentNullException(nameof(name));

@@ -5069,7 +5069,6 @@ Interception allows you to enrich or change the behavior of a certain set of obj
 ```c#
 using Shouldly;
 using Castle.DynamicProxy;
-using System.Runtime.CompilerServices;
 using Pure.DI;
 
 // OnDependencyInjection = On
@@ -5096,7 +5095,6 @@ partial class Composition : IInterceptor
 {
     private static readonly ProxyGenerator ProxyGenerator = new();
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private partial T OnDependencyInjection<T>(
         in T value,
         object? tag,
@@ -5155,7 +5153,6 @@ using Shouldly;
 using Castle.DynamicProxy;
 using System.Collections.Immutable;
 using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
 using Pure.DI;
 
 // OnDependencyInjection = On
@@ -5213,7 +5210,6 @@ internal partial class Composition : IInterceptor
         _interceptors = [this];
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private partial T OnDependencyInjection<T>(
         in T value,
         object? tag,
@@ -7855,7 +7851,6 @@ To run the above code, the following NuGet packages must be added:
 using Serilog.Core;
 using Serilog.Events;
 using Pure.DI;
-using System.Runtime.CompilerServices;
 
 Serilog.ILogger serilogLogger = new Serilog.LoggerConfiguration().CreateLogger();
 var composition = new Composition(logger: serilogLogger);
@@ -7904,11 +7899,9 @@ partial class Composition
             .Root<Serilog.ILogger>(nameof(Log), kind: RootKinds.Private)
             .Root<IService>(nameof(Root));
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     partial void OnNewInstance<T>(ref T value, object? tag, Lifetime lifetime) =>
         Log.Information("Created [{Value}], tag [{Tag}] as {Lifetime}", value, tag, lifetime);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime)
     {
         Log.Information("Injected [{Value}], tag [{Tag}] as {Lifetime}", value, tag, lifetime);
@@ -9086,7 +9079,6 @@ Advantages over classical DI container libraries:
 For types inherited from `MonoBehaviour`, a `BuildUp` composition method will be generated. This method will look as follows:
 
 ```csharp
-[CompilerServices.MethodImpl(MethodImplOptions.AggressiveInlining)]
 public Clock BuildUp(Clock buildingInstance)
 {
     if (buildingInstance is null) 
@@ -13223,21 +13215,21 @@ Atomically generated smart tag with value "UniqueTag".
 </blockquote></details>
 
 
-<details><summary>Field CompositionClass</summary><blockquote>
-
-Atomically generated smart tag with value "CompositionClass".
-            It's used for:
-            
-            class _Generator__CodeBuilder_ <-- _IBuilder{TData, T}_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
-</blockquote></details>
-
-
 <details><summary>Field Override</summary><blockquote>
 
 Atomically generated smart tag with value "Override".
             It's used for:
             
             class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
+<details><summary>Field CompositionClass</summary><blockquote>
+
+Atomically generated smart tag with value "CompositionClass".
+            It's used for:
+            
+            class _Generator__CodeBuilder_ <-- _IBuilder{TData, T}_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
 </blockquote></details>
 
 
@@ -13250,21 +13242,21 @@ Atomically generated smart tag with value "UsingDeclarations".
 </blockquote></details>
 
 
-<details><summary>Field VarName</summary><blockquote>
-
-Atomically generated smart tag with value "VarName".
-            It's used for:
-            
-            class _Generator__VarsMap_ <-- _IIdGenerator_(VarName) -- _IdGenerator_ as _Transient_
-</blockquote></details>
-
-
 <details><summary>Field Overrider</summary><blockquote>
 
 Atomically generated smart tag with value "Overrider".
             It's used for:
             
             class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Overrider) -- _GraphOverrider_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field VarName</summary><blockquote>
+
+Atomically generated smart tag with value "VarName".
+            It's used for:
+            
+            class _Generator__VarsMap_ <-- _IIdGenerator_(VarName) -- _IdGenerator_ as _Transient_
 </blockquote></details>
 
 

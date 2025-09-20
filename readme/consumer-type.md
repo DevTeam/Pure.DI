@@ -123,7 +123,6 @@ partial class Composition
 
   public IService Root
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       Serilog.ILogger transientILogger3;

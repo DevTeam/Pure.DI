@@ -74,14 +74,11 @@ partial class Composition
 
   public IService Root
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       Lazy<IDependency> transientLazy1;
       // Injects an instance factory
-      Func<IDependency> perBlockFunc2 = new Func<IDependency>(
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      () =>
+      Func<IDependency> perBlockFunc2 = new Func<IDependency>(() =>
       {
         IDependency localValue21 = new Dependency();
         return localValue21;

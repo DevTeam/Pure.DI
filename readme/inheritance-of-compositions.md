@@ -78,7 +78,6 @@ partial class Composition
 
   public Program Root
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       return new Program(new Service(new Dependency()));

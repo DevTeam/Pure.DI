@@ -132,7 +132,6 @@ partial class Composition
 
   public IService MyService
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       return new Service(_argServiceName, new Dependency(_argId, _argDependencyName));

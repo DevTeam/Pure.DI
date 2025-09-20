@@ -84,7 +84,6 @@ partial class Composition
     _lock = parentScope._lock;
   }
 
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Program GetProgram(OtherAssembly.CompositionInOtherProject baseComposition)
   {
     if (baseComposition is null) throw new ArgumentNullException(nameof(baseComposition));

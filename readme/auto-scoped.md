@@ -125,12 +125,9 @@ partial class Composition
 
   public Program ProgramRoot
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<IService> perBlockFunc1 = new Func<IService>(
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      () =>
+      Func<IService> perBlockFunc1 = new Func<IService>(() =>
       {
         IService transientIService2;
         var transientComposition3 = this;
@@ -148,7 +145,6 @@ partial class Composition
 
   private Service SessionRoot
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       if (_scopedDependency51 is null)

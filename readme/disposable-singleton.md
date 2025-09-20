@@ -113,7 +113,6 @@ partial class Composition: IDisposable
 
   public IService Root
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       if (_root._singletonDependency51 is null)

@@ -5,7 +5,6 @@
 using Serilog.Core;
 using Serilog.Events;
 using Pure.DI;
-using System.Runtime.CompilerServices;
 
 Serilog.ILogger serilogLogger = new Serilog.LoggerConfiguration().CreateLogger();
 var composition = new Composition(logger: serilogLogger);
@@ -54,11 +53,9 @@ partial class Composition
             .Root<Serilog.ILogger>(nameof(Log), kind: RootKinds.Private)
             .Root<IService>(nameof(Root));
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     partial void OnNewInstance<T>(ref T value, object? tag, Lifetime lifetime) =>
         Log.Information("Created [{Value}], tag [{Tag}] as {Lifetime}", value, tag, lifetime);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime)
     {
         Log.Information("Injected [{Value}], tag [{Tag}] as {Lifetime}", value, tag, lifetime);
@@ -128,7 +125,6 @@ partial class Composition
 
   private Serilog.ILogger Log
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       Serilog.ILogger transientILogger4;
@@ -140,7 +136,6 @@ partial class Composition
 
   public IService Root
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       var transientDependency2 = new Dependency();

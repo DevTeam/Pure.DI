@@ -79,12 +79,9 @@ partial class Composition
 
   public IService<int> Root
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<IDependency<int>> perBlockFunc1 = new Func<IDependency<int>>(
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      () =>
+      Func<IDependency<int>> perBlockFunc1 = new Func<IDependency<int>>(() =>
       {
         IDependency<int> localValue27 = new Dependency<int>();
         return localValue27;

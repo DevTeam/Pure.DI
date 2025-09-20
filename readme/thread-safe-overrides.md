@@ -153,12 +153,9 @@ partial class Composition
 
   public IService Root
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<int, int, IDependency> transientFunc1 =
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      (localDependencyId, localSubId) =>
+      Func<int, int, IDependency> transientFunc1 = (localDependencyId, localSubId) =>
       {
         Drawing.Color transientColor2 = Color.Red;
         Drawing.Color localRed = transientColor2;

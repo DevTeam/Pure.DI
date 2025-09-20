@@ -120,13 +120,10 @@ partial class Composition
 
   public Service Root
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       var perBlockOwned2 = new Owned();
-      Func<Owned<IDependency>> perBlockFunc1 = new Func<Owned<IDependency>>(
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      () =>
+      Func<Owned<IDependency>> perBlockFunc1 = new Func<Owned<IDependency>>(() =>
       {
         Owned<IDependency> perBlockOwned3;
         // Creates the owner of an instance

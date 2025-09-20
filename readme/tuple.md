@@ -75,7 +75,6 @@ partial class Composition
 
   public IService Root
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       Point transientPoint2 = new Point(7, 9);

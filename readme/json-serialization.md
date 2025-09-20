@@ -144,7 +144,6 @@ partial class Composition
 
   public ISettingsService Settings
   {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       if (_root._singletonStorage55 is null)
@@ -173,7 +172,6 @@ partial class Composition
           }
 
       return new SettingsService(_root._singletonFunc56, _root._singletonFunc57, _root._singletonStorage55);
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureJsonSerializerOptionsExists()
       {
         if (_root._singletonJsonSerializerOptions52 is null)
