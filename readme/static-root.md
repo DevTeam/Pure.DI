@@ -68,20 +68,7 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      #if NET9_0_OR_GREATER
-      var perResolveLock = new Lock();
-      #else
-      var perResolveLock = new Object();
-      #endif
-      var perResolveDependency1 = default(Dependency);
-      if (perResolveDependency1 is null)
-        lock (perResolveLock)
-          if (perResolveDependency1 is null)
-          {
-            perResolveDependency1 = new Dependency();
-          }
-
-      return new Service(perResolveDependency1);
+      return new Service(new Dependency());
     }
   }
 }

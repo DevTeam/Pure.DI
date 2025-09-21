@@ -2,4 +2,7 @@
 
 record CyclicDependenciesValidatorContext(
     DependencyGraph DependencyGraph,
-    HashSet<object> Errors);
+    HashSet<object> Errors)
+{
+    public Dependency? Cyclicdependency;
+}

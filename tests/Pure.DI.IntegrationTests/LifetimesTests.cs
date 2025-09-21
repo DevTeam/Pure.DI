@@ -1,5 +1,7 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
+using Core;
+
 public class LifetimesTests
 {
 
@@ -2264,5 +2266,359 @@ public class LifetimesTests
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Theory]
+    [InlineData(Lifetime.PerBlock, Names.PerBlockVariablePrefix)]
+    [InlineData(Lifetime.PerResolve, Names.PerResolveVariablePrefix)]
+    internal async Task ShouldSupportLifetimeOptimizationWhenComplex(Lifetime lifetime, string prefix)
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency1 {}
+                           
+                               class Dependency1: IDependency1 {}
+                           
+                               interface IDependency2 { }
+                           
+                               class Dependency2: IDependency2 { }
+                           
+                               interface IService
+                               {
+                                   IDependency1 Dep1 { get; }
+                           
+                                   IDependency2 Dep2 { get; }
+                               }
+                           
+                               class Service: IService
+                               {
+                                   public Service(IDependency1 dep1, IDependency2 dep2)
+                                   {
+                                       Dep1 = dep1;
+                                       Dep2 = dep2;
+                                   }
+                           
+                                   public IDependency1 Dep1 { get; }
+                           
+                                   public IDependency2 Dep2 { get; }
+                           
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency1>().As(Lifetime.#lifetime#).To<Dependency1>()
+                                           .Bind<IDependency2>().To<Dependency2>()
+                                           .Bind<IService>().To<Service>()
+                                           .Bind<IService>(2).To<Service>()
+                                           .Root<IService>("Service")
+                                           .Root<IService>("Service2", 2);
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                       var service2 = composition.Service2;
+                                   }
+                               }
+                           }
+                           """.Replace("#lifetime#", lifetime.ToString()).RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.GeneratedCode.Contains(prefix).ShouldBeFalse(result);
+    }
+
+    [Theory]
+    [InlineData(Lifetime.PerBlock, Names.PerBlockVariablePrefix)]
+    [InlineData(Lifetime.PerResolve, Names.PerResolveVariablePrefix)]
+    internal async Task ShouldSupportLifetimeOptimization(Lifetime lifetime, string prefix)
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency { }
+                           
+                               class Dependency : IDependency {}
+                               
+                               interface IService { }
+                               
+                               class Service : IService
+                               {
+                                   public Service(IDependency dependency)
+                                   {
+                                   }
+                               }
+                               
+                               class Consumer
+                               {
+                                   private readonly IService _service;
+                                   
+                                   public Consumer(IService service)
+                                   {
+                                       _service = service;
+                                   }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().As(Lifetime.#lifetime#).To<Dependency>()
+                                           .Bind<IService>().To<Service>()
+                                           .Root<Consumer>("Root");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var consumer = composition.Root;
+                                   }
+                               }
+                           }
+                           """.Replace("#lifetime#", lifetime.ToString()).RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.GeneratedCode.Contains(prefix).ShouldBeFalse(result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportLifetimeOptimizationWhenPerBlockAndLazy()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency1 {}
+                           
+                               class Dependency1: IDependency1 {}
+                           
+                               interface IDependency2 { }
+                           
+                               class Dependency2: IDependency2 { }
+                           
+                               interface IService
+                               {
+                                   IDependency1 Dep1 { get; }
+                           
+                                   IDependency2 Dep2 { get; }
+                               }
+                           
+                               class Service: IService
+                               {
+                                   public Service(Func<IDependency1> dep1, IDependency2 dep2)
+                                   {
+                                       Dep1 = dep1();
+                                       Dep2 = dep2;
+                                   }
+                           
+                                   public IDependency1 Dep1 { get; }
+                           
+                                   public IDependency2 Dep2 { get; }
+                           
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency1>().As(Lifetime.PerBlock).To<Dependency1>()
+                                           .Bind<IDependency2>().To<Dependency2>()
+                                           .Bind<IService>().To<Service>()
+                                           .Bind<IService>(2).To<Service>()
+                                           .Root<Func<Lazy<IService>>>("Service")
+                                           .Root<IService>("Service2", 2);
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service().Value;
+                                       var service2 = composition.Service2;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.GeneratedCode.Contains(Names.PerBlockVariablePrefix).ShouldBeFalse(result);
+    }
+
+    [Fact]
+    public async Task ShouldNotSupportLifetimeOptimizationWhenPerResolveAndLazy()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency1 {}
+                           
+                               class Dependency1: IDependency1 {}
+                           
+                               interface IDependency2 { }
+                           
+                               class Dependency2: IDependency2 { }
+                           
+                               interface IService
+                               {
+                                   IDependency1 Dep1 { get; }
+                           
+                                   IDependency2 Dep2 { get; }
+                               }
+                           
+                               class Service: IService
+                               {
+                                   public Service(Func<IDependency1> dep1, IDependency2 dep2)
+                                   {
+                                       Dep1 = dep1();
+                                       Dep2 = dep2;
+                                   }
+                           
+                                   public IDependency1 Dep1 { get; }
+                           
+                                   public IDependency2 Dep2 { get; }
+                           
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency1>().As(Lifetime.PerResolve).To<Dependency1>()
+                                           .Bind<IDependency2>().To<Dependency2>()
+                                           .Bind<IService>().To<Service>()
+                                           .Bind<IService>(2).To<Service>()
+                                           .Root<Lazy<IService>>("Service")
+                                           .Root<IService>("Service2", 2);
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service.Value;
+                                       var service2 = composition.Service2;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.GeneratedCode.Contains(Names.PerResolveVariablePrefix).ShouldBeTrue(result);
+    }
+
+    [Fact]
+    public async Task ShouldNotSupportLifetimeOptimizationWhenPerResolveAndSeveralDeps()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency1 {}
+                           
+                               class Dependency1: IDependency1 {}
+                           
+                               interface IDependency2 { }
+                           
+                               class Dependency2: IDependency2 { }
+                           
+                               interface IService
+                               {
+                                   IDependency1 Dep1 { get; }
+                           
+                                   IDependency2 Dep2 { get; }
+                               }
+                           
+                               class Service: IService
+                               {
+                                   public Service(IDependency1 dep11, IDependency1 dep12, IDependency2 dep2)
+                                   {
+                                       Dep1 = dep11;
+                                       Dep2 = dep2;
+                                   }
+                           
+                                   public IDependency1 Dep1 { get; }
+                           
+                                   public IDependency2 Dep2 { get; }
+                           
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency1>().As(Lifetime.PerResolve).To<Dependency1>()
+                                           .Bind<IDependency2>().To<Dependency2>()
+                                           .Bind<IService>().To<Service>()
+                                           .Bind<IService>(2).To<Service>()
+                                           .Root<IService>("Service")
+                                           .Root<IService>("Service2", 2);
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                       var service2 = composition.Service2;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.GeneratedCode.Contains(Names.PerResolveVariablePrefix).ShouldBeTrue(result);
     }
 }

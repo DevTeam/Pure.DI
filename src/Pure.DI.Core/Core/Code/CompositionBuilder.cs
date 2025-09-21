@@ -82,7 +82,7 @@ class CompositionBuilder(
             roots.Add(processedRoot);
         }
 
-        var singletons = varsMap.Declarations.Where(i => i.Node.Lifetime is Lifetime.Singleton or Lifetime.Scoped).ToImmutableArray();
+        var singletons = varsMap.Declarations.Where(i => i.Node.ActualLifetime is Lifetime.Singleton or Lifetime.Scoped).ToImmutableArray();
         var publicRoots = roots
             .OrderByDescending(root => root.IsPublic)
             .ThenBy(root => root.Node.Binding.Id)
@@ -99,7 +99,7 @@ class CompositionBuilder(
             totalDisposables.Count,
             disposables.Count,
             asyncDisposables.Count,
-            totalDisposables.Count(i => i.Node.Lifetime == Lifetime.Scoped),
+            totalDisposables.Count(i => i.Node.ActualLifetime == Lifetime.Scoped),
             isThreadSafe,
             new Lines(),
             singletons,

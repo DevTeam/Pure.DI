@@ -2,7 +2,7 @@
 
 interface IGraphWalker<TContext, T>
 {
-    void Walk(
+    T Walk(
         TContext ctx,
         IGraph<DependencyNode, Dependency> graph,
         DependencyNode root,

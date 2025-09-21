@@ -2,20 +2,18 @@
 
 using static Lifetime;
 
-sealed class CyclicDependencyValidatorVisitor(
-    ILogger logger,
-    INodeTools nodeTools,
-    ILocationProvider locationProvider,
-    ITypeResolver typeResolver)
+sealed class CyclicDependencyValidatorVisitor(INodeTools nodeTools)
     : IGraphVisitor<CyclicDependenciesValidatorContext, ImmutableArray<Dependency>>
 {
     public ImmutableArray<Dependency> Create(
+        CyclicDependenciesValidatorContext ctx,
         IGraph<DependencyNode, Dependency> graph,
         DependencyNode rootNode,
         ImmutableArray<Dependency> parent) =>
         ImmutableArray<Dependency>.Empty;
 
-    public ImmutableArray<Dependency> Append(
+    public ImmutableArray<Dependency> AppendDependency(
+        CyclicDependenciesValidatorContext ctx,
         IGraph<DependencyNode, Dependency> graph,
         Dependency dependency,
         ImmutableArray<Dependency> parent = default) =>
@@ -34,7 +32,6 @@ sealed class CyclicDependencyValidatorVisitor(
         }
 
         var nodes = new HashSet<DependencyNode>();
-        var result = true;
         foreach (var dependency in path)
         {
             var source = dependency.Source;
@@ -53,16 +50,10 @@ sealed class CyclicDependencyValidatorVisitor(
                 continue;
             }
 
-            var pathStr = string.Join(" <-- ", path.Select(i => typeResolver.Resolve(ctx.DependencyGraph.Source, i.Source.Type).Name.Replace(Names.GlobalNamespacePrefix, "")));
-            var locations = (dependency.Injection.Locations.IsDefault ? ImmutableArray<Location>.Empty : dependency.Injection.Locations)
-                .AddRange(path.SelectMany(i => i.Injection.Locations.IsDefault ? ImmutableArray<Location>.Empty : i.Injection.Locations))
-                .Add(locationProvider.GetLocation(source.Binding.Source));
-
-            logger.CompileError(string.Format(Strings.Error_Template_CyclicDependency, pathStr), locations, LogId.ErrorCyclicDependency);
-            result = false;
-            break;
+            ctx.Cyclicdependency = dependency;
+            return false;
         }
 
-        return result;
+        return true;
     }
 }

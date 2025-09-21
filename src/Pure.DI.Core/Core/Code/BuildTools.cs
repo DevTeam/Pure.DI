@@ -134,9 +134,9 @@ sealed class BuildTools(
             var skipNotNullCheck =
                 varInjection.Var.InstanceType.IsReferenceType
                 && ctx.RootContext.Graph.Source.SemanticModel.Compilation.Options.NullableContextOptions != NullableContextOptions.Disable
-                && (hasCycle || varInjection.Var.AbstractNode.Lifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve);
+                && (hasCycle || varInjection.Var.AbstractNode.ActualLifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve);
 
-            if (skipNotNullCheck && (hasCycle || varInjection.Var.AbstractNode.Lifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve))
+            if (skipNotNullCheck && (hasCycle || varInjection.Var.AbstractNode.ActualLifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve))
             {
                 variableCode = $"{variableCode}";
             }

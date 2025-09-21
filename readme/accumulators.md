@@ -106,7 +106,6 @@ partial class Composition
     get
     {
       var perBlockMyAccumulator1 = new MyAccumulator();
-      var perBlockAbcDependency5 = new AbcDependency();
       if (_root._singletonXyzDependency53 is null)
         lock (_lock)
           if (_root._singletonXyzDependency53 is null)
@@ -124,7 +123,7 @@ partial class Composition
         perBlockMyAccumulator1.Add(transientAbcDependency3);
       }
 
-      var transientService2 = new Service(transientAbcDependency3, _root._singletonXyzDependency53, perBlockAbcDependency5);
+      var transientService2 = new Service(transientAbcDependency3, _root._singletonXyzDependency53, new AbcDependency());
       lock (_lock)
       {
         perBlockMyAccumulator1.Add(transientService2);

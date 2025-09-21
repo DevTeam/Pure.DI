@@ -55,5 +55,7 @@ record DependencyNode(
 
     public int BindingId => Binding.Id;
 
+    public Lifetime ActualLifetime => Lifetime;
+
     public DependencyNode Node => this;
 }

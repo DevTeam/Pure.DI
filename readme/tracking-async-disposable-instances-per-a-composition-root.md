@@ -124,7 +124,7 @@ partial class Composition
     get
     {
       var perBlockOwned1 = new Owned();
-      Owned<IService> perBlockOwned;
+      Owned<IService> transientOwned;
       // Creates the owner of an instance
       Owned transientOwned2;
       Owned localOwned3 = perBlockOwned1;
@@ -142,13 +142,13 @@ partial class Composition
       }
 
       IService localValue3 = new Service(transientDependency4);
-      perBlockOwned = new Owned<IService>(localValue3, localOwned2);
+      transientOwned = new Owned<IService>(localValue3, localOwned2);
       lock (_lock)
       {
-        perBlockOwned1.Add(perBlockOwned);
+        perBlockOwned1.Add(transientOwned);
       }
 
-      return perBlockOwned;
+      return transientOwned;
     }
   }
 }

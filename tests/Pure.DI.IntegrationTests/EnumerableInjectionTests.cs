@@ -1,5 +1,7 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
+using Core;
+
 public class EnumerableInjectionTests
 {
     [Theory]
@@ -7,6 +9,73 @@ public class EnumerableInjectionTests
     [InlineData(LanguageVersion.CSharp9)]
     [InlineData(LanguageVersion.CSharp10)]
     public async Task ShouldSupportEnumerableInjection(LanguageVersion languageVersion)
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                           
+                               class Dependency: IDependency
+                               {        
+                                   public Dependency()
+                                   {
+                                       Console.WriteLine("Dependency created");
+                                   }
+                               }
+                           
+                               interface IService
+                               {                    
+                               }
+                           
+                               class Service: IService 
+                               {
+                                   public Service(System.Collections.Generic.IEnumerable<IDependency> deps, System.Collections.Generic.IEnumerable<IDependency> deps2)
+                                   { 
+                                       Console.WriteLine("Service creating");
+                                       foreach (var dep in deps)
+                                       {
+                                       }
+                                   }    
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>(1).To<Dependency>()
+                                           .Bind<IDependency>(2).To<Dependency>()
+                                           .Bind<IDependency>(3).To<Dependency>()
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;                              
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(languageVersion));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Service creating", "Dependency created", "Dependency created", "Dependency created"], result);
+        result.GeneratedCode.Contains(Names.PerBlockVariablePrefix).ShouldBeTrue(result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportEnumerableInjectionOptimization()
     {
         // Given
 
@@ -64,11 +133,12 @@ public class EnumerableInjectionTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(languageVersion));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Service creating", "Dependency created", "Dependency created", "Dependency created"], result);
+        result.GeneratedCode.Contains(Names.PerBlockVariablePrefix).ShouldBeFalse(result);
     }
 
     [Fact]

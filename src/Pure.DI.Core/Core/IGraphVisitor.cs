@@ -5,11 +5,13 @@ namespace Pure.DI.Core;
 interface IGraphVisitor<in TContext, T>
 {
     T Create(
+        TContext ctx,
         IGraph<DependencyNode, Dependency> graph,
         DependencyNode rootNode,
         T? parent = default);
 
-    T Append(
+    T AppendDependency(
+        TContext ctx,
         IGraph<DependencyNode, Dependency> graph,
         Dependency dependency,
         T? parent = default);

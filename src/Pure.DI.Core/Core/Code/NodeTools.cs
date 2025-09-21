@@ -11,7 +11,7 @@ sealed class NodeTools(ITypes types) : INodeTools
         IsDelegate(node) || IsEnumerable(node) || IsAsyncEnumerable(node);
 
     public bool IsBlock(IDependencyNode node) =>
-        node.Lifetime is Singleton or Scoped or PerResolve;
+        node.ActualLifetime is Singleton or Scoped or PerResolve;
 
     public bool IsDisposableAny(DependencyNode node) =>
         node.Type.AllInterfaces.Any(i =>

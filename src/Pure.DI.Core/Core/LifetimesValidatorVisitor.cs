@@ -7,12 +7,14 @@ sealed class LifetimesValidatorVisitor(
     : IGraphVisitor<LifetimesValidatorContext, ImmutableArray<Dependency>>
 {
     public ImmutableArray<Dependency> Create(
+        LifetimesValidatorContext ctx,
         IGraph<DependencyNode, Dependency> graph,
         DependencyNode rootNode,
         ImmutableArray<Dependency> parent) =>
         ImmutableArray<Dependency>.Empty;
 
-    public ImmutableArray<Dependency> Append(
+    public ImmutableArray<Dependency> AppendDependency(
+        LifetimesValidatorContext ctx,
         IGraph<DependencyNode, Dependency> graph,
         Dependency dependency,
         ImmutableArray<Dependency> parent = default) =>
@@ -25,6 +27,11 @@ sealed class LifetimesValidatorVisitor(
         IGraph<DependencyNode, Dependency> graph,
         in ImmutableArray<Dependency> path)
     {
+        if (path.IsEmpty)
+        {
+            return true;
+        }
+
         var actualTargetLifetimeNode = path[0].Target;
         // ReSharper disable once UseDeconstruction
         foreach (var dependency in path)

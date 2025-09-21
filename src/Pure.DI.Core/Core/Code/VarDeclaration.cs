@@ -28,5 +28,5 @@ record VarDeclaration(
     public override string ToString() => $"{InstanceType} {Name}";
 
     private static bool IsDeclaredDefault(IDependencyNode node) =>
-        node.Lifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve || node.Arg is not null;
+        node.ActualLifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve || node.Arg is not null;
 }

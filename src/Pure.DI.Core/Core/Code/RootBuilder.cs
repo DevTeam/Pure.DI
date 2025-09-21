@@ -40,7 +40,7 @@ class RootBuilder(
     public VarInjection Build(RootContext rootContext)
     {
         var rootVarsMap = rootContext.VarsMap;
-        var rootVarInjection = rootVarsMap.GetInjection(rootContext.Root.Injection, rootContext.Root.Node);
+        var rootVarInjection = rootVarsMap.GetInjection(rootContext.Graph, rootContext.Root, rootContext.Root.Injection, rootContext.Root.Node);
         var lines = new Lines();
         var ctx = new CodeContext(
             rootContext,
@@ -49,7 +49,7 @@ class RootBuilder(
             rootContext.VarsMap,
             rootContext.IsThreadSafeEnabled,
             lines,
-            accumulators.CreateAccumulators(accumulators.GetAccumulators(rootContext.Graph.Graph, rootContext.Root.Node), rootVarsMap).ToImmutableArray(),
+            accumulators.CreateAccumulators(rootContext.Graph, rootContext.Root, accumulators.GetAccumulators(rootContext.Graph.Graph, rootContext.Root.Node), rootVarsMap).ToImmutableArray(),
             []);
 
         accumulators.BuildAccumulators(ctx);
@@ -57,7 +57,7 @@ class RootBuilder(
         rootVarInjection.Var.CodeExpression = buildTools.OnInjected(ctx, rootVarInjection);
 
         var setup = rootContext.Graph.Source;
-        foreach (var perResolve in rootVarsMap.Declarations.Where(i => i.Node.Lifetime is PerResolve).OrderBy(i => i.Node.BindingId))
+        foreach (var perResolve in rootVarsMap.Declarations.Where(i => i.Node.ActualLifetime is PerResolve).OrderBy(i => i.Node.BindingId))
         {
             rootContext.Lines.AppendLine($"var {perResolve.Name} = default({typeResolver.Resolve(setup, perResolve.InstanceType)});");
             if (perResolve.InstanceType.IsValueType)
@@ -106,7 +106,6 @@ class RootBuilder(
         var setup = varCtx.RootContext.Graph.Source;
         var isBlock = nodeTools.IsBlock(var.AbstractNode);
         var isLazy = nodeTools.IsLazy(var.AbstractNode.Node);
-        var.HasCycle ??= IsCycle(varCtx.RootContext.Graph.Graph, var.Declaration.Node.Node, ImmutableHashSet<DependencyNode>.Empty);
         var acc = isLazy ? accumulators.GetAccumulators(varCtx.RootContext.Graph.Graph, var.AbstractNode).ToImmutableArray() : ImmutableArray<(MdAccumulator, Dependency)>.Empty;
         var isLocalFunction = localFunctions.UseFor(varCtx);
         var mapToken =
@@ -124,7 +123,14 @@ class RootBuilder(
         }
 
 #if DEBUG
-        varCtx.Lines.AppendComments($"{var.Name}: {nameof(var.Declaration.IsDeclared)}={var.Declaration.IsDeclared}, {nameof(var.IsCreated)}={var.IsCreated}, {nameof(var.HasCycle)}={var.HasCycle}, {nameof(varCtx.IsLockRequired)}={varCtx.IsLockRequired}, {nameof(isLazy)}={isLazy}, {nameof(isBlock)}={isBlock}, {nameof(acc)}={acc.Length}");
+        varCtx.Lines.AppendComments($"{var.Name}: Lifetime: {var.Declaration.Node.Lifetime}, {nameof(var.Declaration.IsDeclared)}={var.Declaration.IsDeclared}, {nameof(var.IsCreated)}={var.IsCreated}, {nameof(var.HasCycle)}={var.HasCycle}, {nameof(varCtx.IsLockRequired)}={varCtx.IsLockRequired}, {nameof(isLazy)}={isLazy}, {nameof(isBlock)}={isBlock}, {nameof(acc)}={acc.Length}");
+        if (!var.Trace.IsDefaultOrEmpty)
+        {
+            foreach (var varTrace in var.Trace)
+            {
+                parentCtx.Lines.AppendComments($"{varTrace}");
+            }
+        }
 #endif
 
         if (isBlock)
@@ -136,7 +142,7 @@ class RootBuilder(
         var ctx = varCtx;
         if (isLazy)
         {
-            ctx = ctx with { Accumulators = ctx.Accumulators.AddRange(accumulators.CreateAccumulators(acc, varsMap)), IsFactory = false };
+            ctx = ctx with { Accumulators = ctx.Accumulators.AddRange(accumulators.CreateAccumulators(varCtx.RootContext.Graph, varCtx.RootContext.Root, acc, varsMap)), IsFactory = false };
             ctx.Overrides.Clear();
             accumulators.BuildAccumulators(ctx);
         }
@@ -149,7 +155,7 @@ class RootBuilder(
         {
             if (ctx.RootContext.Graph.Graph.TryGetInEdges(var.AbstractNode.Node, out var implementationDependencies))
             {
-                var injections = implementationDependencies.Select(dependency => varsMap.GetInjection(dependency.Injection, dependency.Source)).ToList();
+                var injections = implementationDependencies.Select(dependency => varsMap.GetInjection(varCtx.RootContext.Graph, varCtx.RootContext.Root, dependency.Injection, dependency.Source)).ToList();
                 foreach (var dependencyVar in SortInjections(injections))
                 {
                     BuildCode(ctx.CreateChild(dependencyVar));
@@ -214,7 +220,7 @@ class RootBuilder(
             var hasAlternativeInjections = visits.Count > 0;
             var tempVariableInit =
                 ctx.RootContext.IsThreadSafeEnabled
-                && var.AbstractNode.Lifetime is not Transient and not PerBlock
+                && var.AbstractNode.ActualLifetime is not Transient and not PerBlock
                 && (hasAlternativeInjections || hasOnCreatedStatements);
 
             var tempVar = var;
@@ -229,7 +235,7 @@ class RootBuilder(
             }
 
             var instantiation = CreateInstantiation(ctx, ctorArgs, requiredFields, requiredProperties);
-            if (var.AbstractNode.Lifetime is not Transient
+            if (var.AbstractNode.ActualLifetime is not Transient
                 || hasAlternativeInjections
                 || tempVariableInit
                 || hasOnCreatedStatements)
@@ -467,7 +473,7 @@ class RootBuilder(
                     // ReSharper disable once LoopCanBeConvertedToQuery
                     foreach (var dependency in dependencies)
                     {
-                        var dependencyVar = varsMap.GetInjection(dependency.Injection, dependency.Source);
+                        var dependencyVar = varsMap.GetInjection(varCtx.RootContext.Graph, varCtx.RootContext.Root, dependency.Injection, dependency.Source);
                         varInjections.Add(dependencyVar);
                     }
                 }
@@ -479,7 +485,7 @@ class RootBuilder(
                 if (injectionArgs.Count != injections.Count)
                 {
                     throw new CompileErrorException(
-                        string.Format(Strings.Error_Template_LifetimeDoesNotSupportCyclicDependencies, var.AbstractNode.Lifetime),
+                        string.Format(Strings.Error_Template_LifetimeDoesNotSupportCyclicDependencies, var.AbstractNode.ActualLifetime),
                         ImmutableArray.Create(locationProvider.GetLocation(factory.Source.Source)),
                         LogId.ErrorInvalidMetadata);
                 }
@@ -629,7 +635,7 @@ class RootBuilder(
                                 {
                                     foreach (var dependency in enumerableDependencies)
                                     {
-                                        var dependencyVar = varsMap.GetInjection(dependency.Injection, dependency.Source);
+                                        var dependencyVar = varsMap.GetInjection(varCtx.RootContext.Graph, varCtx.RootContext.Root, dependency.Injection, dependency.Source);
                                         varInjections.Add(dependencyVar);
                                         BuildCode(ctx.CreateChild(dependencyVar));
                                         lines.AppendLine($"yield return {buildTools.OnInjected(ctx, dependencyVar)};");
@@ -651,14 +657,24 @@ class RootBuilder(
                             }
 
                             lines.AppendLine();
-                            lines.AppendLine($"{buildTools.GetDeclaration(ctx, var.Declaration, useVar: true)}{var.Name} = {localMethodName}();");
-                            lines.AppendLines(buildTools.OnCreated(ctx, varInjection));
+                            var newEnum = $"{localMethodName}()";
+                            var onEnumCreated = buildTools.OnCreated(ctx, varInjection);
+                            if (onEnumCreated.Count > 0)
+                            {
+                                lines.AppendLine($"{buildTools.GetDeclaration(ctx, var.Declaration, useVar: true)}{var.Name} = {newEnum};");
+                                lines.AppendLines(onEnumCreated);
+                            }
+                            else
+                            {
+                                var.CodeExpression = newEnum;
+                            }
+
                             break;
 
                         case MdConstructKind.Array:
                             if (ctx.RootContext.Graph.Graph.TryGetInEdges(var.AbstractNode.Node, out var arrayDependencies))
                             {
-                                var injections = arrayDependencies.Select(dependency => varsMap.GetInjection(dependency.Injection, dependency.Source)).ToList();
+                                var injections = arrayDependencies.Select(dependency => varsMap.GetInjection(varCtx.RootContext.Graph, varCtx.RootContext.Root, dependency.Injection, dependency.Source)).ToList();
                                 foreach (var dependencyVar in SortInjections(injections))
                                 {
                                     BuildCode(ctx.CreateChild(dependencyVar));
@@ -667,23 +683,24 @@ class RootBuilder(
                                 varInjections.AddRange(injections);
                             }
 
-                            var instantiation = $"new {typeResolver.Resolve(ctx.RootContext.Graph.Source, construct.Source.ElementType)}[{varInjections.Count.ToString()}] {{ {string.Join(", ", varInjections.Select(item => buildTools.OnInjected(ctx, item)))} }}";
-                            var onCreated = buildTools.OnCreated(ctx, varInjection);
-                            if (onCreated.Count > 0)
+                            var newArray = $"new {typeResolver.Resolve(ctx.RootContext.Graph.Source, construct.Source.ElementType)}[{varInjections.Count.ToString()}] {{ {string.Join(", ", varInjections.Select(item => buildTools.OnInjected(ctx, item)))} }}";
+                            var onArrayCreated = buildTools.OnCreated(ctx, varInjection);
+                            if (onArrayCreated.Count > 0)
                             {
-                                lines.AppendLine($"{buildTools.GetDeclaration(ctx, var.Declaration, useVar: true)}{var.Name} = {instantiation};");
-                                lines.AppendLines(onCreated);
+                                lines.AppendLine($"{buildTools.GetDeclaration(ctx, var.Declaration, useVar: true)}{var.Name} = {newArray};");
+                                lines.AppendLines(onArrayCreated);
                             }
                             else
                             {
-                                var.CodeExpression =  instantiation;
+                                var.CodeExpression =  newArray;
                             }
+
                             break;
 
                         case MdConstructKind.Span:
                             if (ctx.RootContext.Graph.Graph.TryGetInEdges(var.AbstractNode.Node, out var spanDependencies))
                             {
-                                var injections = spanDependencies.Select(dependency => varsMap.GetInjection(dependency.Injection, dependency.Source)).ToList();
+                                var injections = spanDependencies.Select(dependency => varsMap.GetInjection(varCtx.RootContext.Graph, varCtx.RootContext.Root, dependency.Injection, dependency.Source)).ToList();
                                 foreach (var dependencyVar in SortInjections(injections))
                                 {
                                     BuildCode(ctx.CreateChild(dependencyVar));
@@ -699,21 +716,30 @@ class RootBuilder(
                                 && spanDependencies.Count <= Const.MaxStackalloc
                                 && compilations.GetLanguageVersion(construct.Binding.SemanticModel.Compilation) >= LanguageVersion.CSharp7_3;
 
-                            var createInstance = isStackalloc ? $"stackalloc {createArray}" : $"new {Names.SystemNamespace}Span<{typeResolver.Resolve(ctx.RootContext.Graph.Source, construct.Source.ElementType)}>(new {createArray})";
-                            lines.AppendLine($"{buildTools.GetDeclaration(ctx, var.Declaration)}{var.Name} = {createInstance};");
-                            lines.AppendLines(buildTools.OnCreated(ctx, varInjection));
+                            var newSpan = isStackalloc ? $"stackalloc {createArray}" : $"new {Names.SystemNamespace}Span<{typeResolver.Resolve(ctx.RootContext.Graph.Source, construct.Source.ElementType)}>(new {createArray})";
+                            var onSpanCreated = buildTools.OnCreated(ctx, varInjection);
+                            if (onSpanCreated.Count > 0)
+                            {
+                                lines.AppendLine($"{buildTools.GetDeclaration(ctx, var.Declaration)}{var.Name} = {newSpan};");
+                                lines.AppendLines(onSpanCreated);
+                            }
+                            else
+                            {
+                                var.CodeExpression =  newSpan;
+                            }
+
                             break;
 
                         case MdConstructKind.Composition:
-                            lines.AppendLine($"{buildTools.GetDeclaration(ctx, var.Declaration, useVar: true)}{var.Name} = this;");
+                            var.CodeExpression = "this";
                             break;
 
                         case MdConstructKind.OnCannotResolve:
-                            lines.AppendLine($"{buildTools.GetDeclaration(ctx, var.Declaration, useVar: true)}{var.Name} = {Names.OnCannotResolve}<{varInjection.ContractType}>({varInjection.Injection.Tag.ValueToString()}, {var.AbstractNode.Lifetime.ValueToString()});");
+                            var.CodeExpression = $"{Names.OnCannotResolve}<{varInjection.ContractType}>({varInjection.Injection.Tag.ValueToString()}, {var.AbstractNode.Lifetime.ValueToString()})";
                             break;
 
                         case MdConstructKind.ExplicitDefaultValue:
-                            lines.AppendLine($"{buildTools.GetDeclaration(ctx, var.Declaration)}{var.Name} = {construct.Source.ExplicitDefaultValue.ValueToString()};");
+                            var.CodeExpression = construct.Source.ExplicitDefaultValue.ValueToString();
                             break;
 
                         case MdConstructKind.Accumulator:
@@ -776,7 +802,7 @@ class RootBuilder(
 
         if (node.Node.Implementation is not null)
         {
-            return node.Lifetime switch
+            return node.ActualLifetime switch
             {
                 PerBlock => 10,
                 Singleton => 11,
@@ -838,10 +864,10 @@ class RootBuilder(
     {
         var var = ctx.VarInjection.Var;
         var lines = ctx.Lines;
-        if (var.AbstractNode.Lifetime is Singleton or Scoped && nodeTools.IsDisposableAny(var.AbstractNode.Node))
+        if (var.AbstractNode.ActualLifetime is Singleton or Scoped && nodeTools.IsDisposableAny(var.AbstractNode.Node))
         {
             var parent = "";
-            if (var.AbstractNode.Lifetime == Singleton)
+            if (var.AbstractNode.ActualLifetime == Singleton)
             {
                 parent = $"{Names.RootFieldName}.";
             }
@@ -851,7 +877,7 @@ class RootBuilder(
 
         if (var.InstanceType.IsValueType)
         {
-            if (var.AbstractNode.Lifetime is not Transient and not PerBlock && ctx.RootContext.IsThreadSafeEnabled)
+            if (var.AbstractNode.ActualLifetime is not Transient and not PerBlock && ctx.RootContext.IsThreadSafeEnabled)
             {
                 lines.AppendLine($"{Names.SystemNamespace}Threading.Thread.MemoryBarrier();");
             }
@@ -897,32 +923,6 @@ class RootBuilder(
         }
 
         return code.ToString();
-    }
-
-    private static bool IsCycle(
-        IGraph<DependencyNode, Dependency> graph,
-        DependencyNode node,
-        ImmutableHashSet<DependencyNode> processed)
-    {
-        if (processed.Contains(node))
-        {
-            return true;
-        }
-
-        processed = processed.Add(node);
-        if (graph.TryGetInEdges(node, out var dependencies))
-        {
-            // ReSharper disable once LoopCanBeConvertedToQuery
-            foreach (var dependency in dependencies)
-            {
-                if (IsCycle(graph, dependency.Source, processed))
-                {
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 
     private void BuildOverrides(CodeContext ctx, DpFactory factory, ILocalVariableRenamingRewriter localVariableRenamingRewriter, ImmutableArray<DpOverride> overrides, Lines lines)

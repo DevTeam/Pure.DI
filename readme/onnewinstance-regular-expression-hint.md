@@ -137,9 +137,9 @@ partial class Composition
             _root._singletonDependency51 = _singletonDependency51Temp;
           }
 
-      var perBlockService = new Service(_root._singletonDependency51);
-      OnNewInstance<Service>(ref perBlockService, null, Lifetime.PerBlock);
-      return perBlockService;
+      var transientService = new Service(_root._singletonDependency51);
+      OnNewInstance<Service>(ref transientService, null, Lifetime.PerBlock);
+      return transientService;
     }
   }
 

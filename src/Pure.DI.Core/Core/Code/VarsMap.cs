@@ -3,7 +3,9 @@ namespace Pure.DI.Core.Code;
 
 class VarsMap(
     [Tag(Tag.VarName)] IIdGenerator idGenerator,
-    INameProvider nameProvider)
+    INameProvider nameProvider,
+    ICycleTools cycleTools,
+    ILifetimeOptimizer lifetimeOptimizer)
     : IVarsMap
 {
     private readonly Dictionary<int, Var> _map = [];
@@ -14,10 +16,22 @@ class VarsMap(
 
     public bool IsThreadSafe { get; private set; }
 
-    public VarInjection GetInjection(in Injection injection, IDependencyNode node)
+    public VarInjection GetInjection(DependencyGraph graph, Root root, in Injection injection, IDependencyNode node)
     {
+        var hasCycle = cycleTools.GetCyclicNode(graph.Graph, node.Node) == node.Node;
         VarInjection varInjection;
-        switch (node.Lifetime)
+        var trace = new StringBuilder();
+        if (!hasCycle)
+        {
+            var optimizedLifetime = lifetimeOptimizer.Optimize(root, graph, node, trace);
+            if (optimizedLifetime != node.Lifetime)
+            {
+                node = new OptimizedNode(node, optimizedLifetime);
+            }
+        }
+
+        ImmutableArray<string> varTrace;
+        switch (node.ActualLifetime)
         {
             case Lifetime.Singleton:
             case Lifetime.Scoped:
@@ -26,7 +40,10 @@ class VarsMap(
             case Lifetime.Transient when node.Arg is not null:
                 if (!_map.TryGetValue(node.BindingId, out var var))
                 {
-                    var = new Var(CreateDeclaration(node));
+#if DEBUG
+                    varTrace = ImmutableArray.Create(trace.ToString());
+#endif
+                    var = new Var(CreateDeclaration(node), varTrace);
                     _map.Add(node.BindingId, var);
                 }
                 varInjection = new VarInjection(var, injection);
@@ -34,14 +51,18 @@ class VarsMap(
 
             case Lifetime.Transient:
             default:
-                varInjection = new VarInjection(new Var(CreateDeclaration(node)), injection);
+#if DEBUG
+                varTrace = ImmutableArray.Create(trace.ToString());
+#endif
+                varInjection = new VarInjection(new Var(CreateDeclaration(node), varTrace), injection);
                 break;
         }
 
-        IsThreadSafe |= node.Lifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve
+        IsThreadSafe |= node.ActualLifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve
                         || node.Arg is not null
                         || node.Construct is { Source.Kind: MdConstructKind.Accumulator };
 
+        varInjection.Var.HasCycle = hasCycle;
         return varInjection;
     }
 
@@ -49,7 +70,7 @@ class VarsMap(
     {
         return Disposables.Create(() => {
             _map
-                .Where(i => !(i.Value.Declaration.Node.Lifetime is Lifetime.Singleton or Lifetime.Scoped || i.Value.Declaration.Node.Arg is { Source.Kind: ArgKind.Class }))
+                .Where(i => !(i.Value.Declaration.Node.ActualLifetime is Lifetime.Singleton or Lifetime.Scoped || i.Value.Declaration.Node.Arg is { Source.Kind: ArgKind.Class }))
                 .ToList()
                 .ForEach(i => {
 #if DEBUG
@@ -78,7 +99,7 @@ class VarsMap(
         // Remove per-block vars
         var removed = new List<KeyValuePair<int, Var>>();
         _map
-            .Where(i => i.Value.Declaration.Node.Lifetime is Lifetime.PerBlock)
+            .Where(i => i.Value.Declaration.Node.ActualLifetime is Lifetime.PerBlock)
             .ToList()
             .ForEach(i => {
 #if DEBUG
@@ -143,7 +164,7 @@ class VarsMap(
                 return false;
             }
 
-            return !(node.Lifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve || node.Arg is not null);
+            return !(node.ActualLifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve || node.Arg is not null);
         }).ToList();
 
         foreach (var item in newItems)
@@ -208,5 +229,23 @@ class VarsMap(
         public readonly bool IsDeclared = Var.Declaration.IsDeclared;
 
         public readonly bool IsCreated = Var.IsCreated;
+    }
+
+    private record OptimizedNode(
+        IDependencyNode BaseNode,
+        Lifetime ActualLifetime)
+        : IDependencyNode
+    {
+        public int BindingId => BaseNode.BindingId;
+
+        public MdBinding Binding => BaseNode.Binding;
+
+        public Lifetime Lifetime => BaseNode.Lifetime;
+
+        public DpArg? Arg => BaseNode.Arg;
+
+        public DpConstruct? Construct => BaseNode.Construct;
+
+        public DependencyNode Node => BaseNode.Node;
     }
 }

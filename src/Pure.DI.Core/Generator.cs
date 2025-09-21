@@ -114,6 +114,9 @@ public sealed partial class Generator
             .Bind(Cleaner).To<GraphCleaner>()
             .Bind().To<NodesFactory>()
             .Bind().To<LocationProvider>()
+            .Bind().To<LifetimeOptimizer>()
+            .Bind().To<RootCompositionDependencyRefCounterVisitor>()
+            .Bind().To<CycleTools>()
 
             // Validators
             .Bind(Type).To<MetadataValidator>()

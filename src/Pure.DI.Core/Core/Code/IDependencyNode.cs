@@ -8,6 +8,8 @@ interface IDependencyNode
 
     Lifetime Lifetime { get; }
 
+    Lifetime ActualLifetime { get; }
+
     DpArg? Arg { get; }
 
     DpConstruct? Construct { get; }
