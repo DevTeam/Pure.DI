@@ -3237,7 +3237,6 @@ namespace Pure.DI
         /// <param name="compositionTypeName">An optional argument specifying the partial class name to generate.</param>
         /// <param name="kind">An optional argument specifying the kind of setup. Please <see cref="Pure.DI.CompositionKind"/> for details. It defaults to <c>Public</c>.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
-        [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
         internal static IConfiguration Setup(string compositionTypeName = "", CompositionKind kind = CompositionKind.Public)
         {
             return SharedConfiguration;
@@ -3249,84 +3248,72 @@ namespace Pure.DI
         private sealed class Configuration: IConfiguration, IBinding
         {
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Bind(params object[] tags)
             {
                 return this;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Bind<T>(params object[] tags)
             {
                 return this;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Bind<T1, T2>(params object[] tags)
             {
                 return this;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Bind<T1, T2, T3>(params object[] tags)
             {
                 return this;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Bind<T1, T2, T3, T4>(params object[] tags)
             {
                 return this;
             }
             
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Bind<T1, T2, T3, T4, T5>(params object[] tags)
             {
                 return this;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Bind<T1, T2, T3, T4, T5, T6>(params object[] tags)
             {
                 return this;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Bind<T1, T2, T3, T4, T5, T6, T7>(params object[] tags)
             {
                 return this;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Bind<T1, T2, T3, T4, T5, T6, T7, T8>(params object[] tags)
             {
                 return this;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding RootBind<T>(string name, RootKinds kind, params object[] tags)
             {
                 return this;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration DependsOn(params string[] setupNames)
             {
                 return this;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration GenericTypeArgumentAttribute<T>()
                 where T: global::System.Attribute
             {
@@ -3334,7 +3321,6 @@ namespace Pure.DI
             }
             
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration TypeAttribute<T>(int typeArgumentPosition)
                 where T: global::System.Attribute
             {
@@ -3342,7 +3328,6 @@ namespace Pure.DI
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration TagAttribute<T>(int tagArgumentPosition)
                 where T: global::System.Attribute
             {
@@ -3350,7 +3335,6 @@ namespace Pure.DI
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration OrdinalAttribute<T>(int ordinalArgumentPosition)
                 where T: global::System.Attribute
             {
@@ -3358,70 +3342,60 @@ namespace Pure.DI
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration DefaultLifetime(Pure.DI.Lifetime lifetime)
             {
                 return this;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration DefaultLifetime<T>(Lifetime lifetime, params object[] tags)
             {
                 return this;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration Arg<T>(string name, params object[] tags)
             {
                 return this;
             }
             
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration RootArg<T>(string name, params object[] tags)
             {
                 return this;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration Root<T>(string name, object tag, RootKinds rootKind)
             {
                 return this;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration Roots<T>(string name, RootKinds kind, string filter)
             {
                 return this;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration Builder<T>(string name, RootKinds kind)
             {
                 return this;
             }
             
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration Builders<T>(string name, RootKinds kind, string filter)
             {
                 return this;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration Hint(Hint hint, string value)
             {
                 return this;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration Accumulate<T, TAccumulator>(params Lifetime[] lifetimes)
                 where TAccumulator: new()
             {
@@ -3429,98 +3403,84 @@ namespace Pure.DI
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration GenericTypeArgument<T>()
             {
                 return this;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding As(Pure.DI.Lifetime lifetime)
             {
                 return this;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Tags(params object[] tags)
             {
                 return this;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration To<T>()
             {
                 return this;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration To<T>(global::System.Func<IContext, T> factory)
             {
                 return this;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration To<T>(string sourceCodeStatement)
             {
                 return this;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration To<T1, T>(global::System.Func<T1, T> factory)
             {
                 return this;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration To<T1, T2, T>(global::System.Func<T1, T2, T> factory)
             {
                 return this;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration To<T1, T2, T3, T>(global::System.Func<T1, T2, T3, T> factory)
             {
                 return this;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration To<T1, T2, T3, T4, T>(Func<T1, T2, T3, T4, T> factory)
             {
                 return this;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration To<T1, T2, T3, T4, T5, T>(Func<T1, T2, T3, T4, T5, T> factory)
             {
                 return this;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration To<T1, T2, T3, T4, T5, T6, T>(Func<T1, T2, T3, T4, T5, T6, T> factory)
             {
                 return this;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration To<T1, T2, T3, T4, T5, T6, T7, T>(Func<T1, T2, T3, T4, T5, T6, T7, T> factory)
             {
                 return this;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration To<T1, T2, T3, T4, T5, T6, T7, T8, T>(Func<T1, T2, T3, T4, T5, T6, T7, T8, T> factory)
             {
                 return this;

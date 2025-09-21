@@ -128,7 +128,6 @@ namespace Pure.DI.MS
 #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
         [global::System.Diagnostics.Contracts.Pure]
 #endif
-        [global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         protected static IServiceCollection CreateServiceCollection(TComposition composition)
         {
             if (composition == null) throw new ArgumentNullException(nameof(composition));
@@ -136,7 +135,6 @@ namespace Pure.DI.MS
         }
 
         /// <inheritdoc />
-        [global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         public IServiceCollection CreateBuilder(IServiceCollection services)
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
@@ -170,7 +168,6 @@ namespace Pure.DI.MS
         /// <returns>Resolved dependency instance.</returns>
         /// <exception cref="InvalidOperationException">Throws an exception if the service provider is not yet defined when attempting to get it.</exception>
         /// <exception cref="CannotResolveException">Will be thrown if the corresponding composition root was not specified.</exception>
-        [global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         internal T OnCannotResolve<T>(object? tag, Lifetime lifetime)
         {
             Func<Type, object, object?>? serviceProvider;
@@ -193,7 +190,6 @@ namespace Pure.DI.MS
         /// <typeparam name="TContract">The contract type of the composition root.</typeparam>
         /// <typeparam name="T">The implementation type of the composition root.</typeparam>
         /// <exception cref="ArgumentNullException">Throws an exception if the instance resolver is null.</exception>
-        [global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         internal static void OnNewRoot<TContract, T>(
             IResolver<TComposition, TContract> resolver,
             string name, object tag, Lifetime lifetime)

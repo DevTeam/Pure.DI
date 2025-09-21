@@ -45,8 +45,7 @@ public partial class Func : BenchmarkBase
     [Benchmark(Description = "Hand Coded", Baseline = true)]
     public CompositionRoot TestHandCoded()
     {
-        var func = new Func<IService3>(
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]() => new Service3(new Service4(), new Service4()));
+        var func = new Func<IService3>(() => new Service3(new Service4(), new Service4()));
 
         return new CompositionRoot(
             new Service1(new Service2Func(func)),
