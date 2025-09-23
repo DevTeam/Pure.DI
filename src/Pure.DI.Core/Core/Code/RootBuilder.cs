@@ -383,7 +383,8 @@ class RootBuilder(
 
                 // Rewrites syntax tree
                 var finishLabel = $"{var.Declaration.Name}Finish";
-                var factoryExpression = (LambdaExpressionSyntax)factory.Source.LocalVariableRenamingRewriter.Clone().Rewrite(setup.SemanticModel, false, originalLambda);
+                var localVariableRenamingRewriter = factory.Source.LocalVariableRenamingRewriter.Clone();
+                var factoryExpression = (LambdaExpressionSyntax)localVariableRenamingRewriter.Rewrite(setup.SemanticModel, false, originalLambda);
                 var injections = new List<FactoryRewriter.Injection>();
                 var inits = new List<FactoryRewriter.Initializer>();
                 var rewriterContext = new FactoryRewriterContext(factory, varInjection, finishLabel, injections, inits);
@@ -556,7 +557,7 @@ class RootBuilder(
                             var (injection, argument, resolver) = resolvers.Current;
                             if (hasOverrides)
                             {
-                                BuildOverrides(ctx, factory, resolver.Overrides, lines);
+                                BuildOverrides(ctx, factory, localVariableRenamingRewriter, resolver.Overrides, lines);
                             }
 
                             BuildCode(ctx.CreateChild(argument));
@@ -570,7 +571,7 @@ class RootBuilder(
                             var (initialization, initializer) = initializers.Current;
                             if (hasOverrides)
                             {
-                                BuildOverrides(ctx, factory, initializer.Overrides, lines);
+                                BuildOverrides(ctx, factory, localVariableRenamingRewriter, initializer.Overrides, lines);
                             }
 
                             var initCtx = ctx;
@@ -924,13 +925,14 @@ class RootBuilder(
         return false;
     }
 
-    private void BuildOverrides(CodeContext ctx, DpFactory factory, ImmutableArray<DpOverride> overrides, Lines lines)
+    private void BuildOverrides(CodeContext ctx, DpFactory factory, ILocalVariableRenamingRewriter localVariableRenamingRewriter, ImmutableArray<DpOverride> overrides, Lines lines)
     {
         foreach (var @override in overrides.OrderBy(i => i.Source.Position).Select(i => factory.ResolveOverride(i)))
         {
             var name = nameProvider.GetOverrideVariableName(@override.Source);
             var isDeclared = !ctx.Overrides.Add(name);
-            lines.AppendLine($"{(isDeclared ? "" : $"{typeResolver.Resolve(ctx.RootContext.Graph.Source, @override.Source.ContractType)} ")}{name} = {@override.Source.ValueExpression};");
+            var valueExpression = localVariableRenamingRewriter.Clone().Rewrite(ctx.RootContext.Graph.Source.SemanticModel, false, @override.Source.ValueExpression);
+            lines.AppendLine($"{(isDeclared ? "" : $"{typeResolver.Resolve(ctx.RootContext.Graph.Source, @override.Source.ContractType)} ")}{name} = {valueExpression};");
             overridesRegistry.Register(ctx.RootContext.Root, @override);
         }
     }

@@ -3235,4 +3235,90 @@ public class OverrideTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["20", "Sample.GlobalRepository"], result);
     }
+
+    [Fact]
+    public async Task ShouldSupportOverrideWithMemberAccessor()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               partial class Composition
+                               {
+                                   public void Setup()
+                                   {
+                                       DI.Setup()
+                                           .Arg<string>("config")
+                                           .DefaultLifetime(Lifetime.Singleton)
+                                           .Bind().To((string configJson) => new Config(new ServiceConfig("a")))
+                                           .Bind(123).To<Service>()
+                                           .Bind().To(cxt =>
+                                           {
+                                               cxt.Inject(out Config config);
+                                               cxt.Override<ServiceConfig>(config.ServiceConfig1);
+                                               cxt.Inject(123, out Service service);
+                                               return service;
+                                           })
+                               
+                                           .Bind().To<ServiceWrapper>()
+                                           .Root<ServiceWrapper>(nameof(ServiceWrapper));
+                                   }
+                               }
+                               
+                               public sealed class ServiceWrapper
+                               {
+                                   public Service Service1 { get; }
+                               
+                                   public ServiceWrapper(Service service1)
+                                   {
+                                       Service1 = service1;
+                                   }
+                               }
+                               
+                               public sealed class Service
+                               {
+                                   public ServiceConfig Config { get; }
+                               
+                                   public Service(ServiceConfig config) => Config = config;
+                               }
+                               
+                               public sealed class ServiceConfig
+                               {
+                                   public string Config { get; }
+                                   
+                                   public ServiceConfig(string config)
+                                   {
+                                       Config = config;
+                                   }
+                               }
+                               
+                               public sealed class Config
+                               {
+                                   public ServiceConfig ServiceConfig1 { get; }
+                                   
+                                   public Config(ServiceConfig serviceConfig1)
+                                   {
+                                       ServiceConfig1 = serviceConfig1;
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition("JSON");
+                                       var wrapper = composition.ServiceWrapper;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
 }
