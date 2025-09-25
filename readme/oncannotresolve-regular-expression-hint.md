@@ -103,8 +103,7 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var transientString2 = OnCannotResolve<string>(null, Lifetime.Transient);
-      return new Service(new Dependency(transientString2));
+      return new Service(new Dependency(OnCannotResolve<string>(null, Lifetime.Transient)));
     }
   }
 

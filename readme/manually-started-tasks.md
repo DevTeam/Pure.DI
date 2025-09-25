@@ -124,14 +124,14 @@ partial class Composition
   public IService GetRoot(CancellationToken cancellationToken)
   {
     Task<IDependency> transientTask1;
-    Func<IDependency> perBlockFunc2 = new Func<IDependency>(
+    Func<IDependency> transientFunc2 = new Func<IDependency>(
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     () =>
     {
       IDependency localValue22 = new Dependency();
       return localValue22;
     });
-    Func<IDependency> localFactory4 = perBlockFunc2;
+    Func<IDependency> localFactory4 = transientFunc2;
     CancellationToken localCancellationToken1 = cancellationToken;
     transientTask1 = new Task<IDependency>(localFactory4, localCancellationToken1);
     return new Service(transientTask1);

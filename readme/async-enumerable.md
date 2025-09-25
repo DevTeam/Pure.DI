@@ -101,8 +101,7 @@ partial class Composition
         await Task.CompletedTask;
       }
 
-      var transientIAsyncEnumerable1 = EnumerationOf_transientIAsyncEnumerable1();
-      return new Service(transientIAsyncEnumerable1);
+      return new Service(EnumerationOf_transientIAsyncEnumerable1());
     }
   }
 }

@@ -110,7 +110,7 @@ partial class Composition
     {
       Dependency transientDependency2 = new Dependency("Abc");
       Dependency transientDependency4 = new Dependency(null);
-      Func<IDependency> perBlockFunc3 = new Func<IDependency>(
+      Func<IDependency> transientFunc3 = new Func<IDependency>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
@@ -118,7 +118,7 @@ partial class Composition
         IDependency localValue = transientDependency5;
         return localValue;
       });
-      return new Service(transientDependency2, perBlockFunc3, transientDependency4);
+      return new Service(transientDependency2, transientFunc3, transientDependency4);
     }
   }
 }

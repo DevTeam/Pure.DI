@@ -170,11 +170,11 @@ partial class Composition: IDisposable
     get
     {
       var perBlockOwn3 = new Abstractions.Own();
-      Func<Abstractions.Own<IDependency>> perBlockFunc1 = new Func<Abstractions.Own<IDependency>>(
+      Func<Abstractions.Own<IDependency>> transientFunc1 = new Func<Abstractions.Own<IDependency>>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        Abstractions.Own<IDependency> perBlockOwn4;
+        Abstractions.Own<IDependency> transientOwn4;
         // Creates the owner of an instance
         Abstractions.Own localOwn = perBlockOwn3;
         var transientDependency5 = new Dependency();
@@ -184,21 +184,21 @@ partial class Composition: IDisposable
         }
 
         IDependency localValue8 = transientDependency5;
-        perBlockOwn4 = new Abstractions.Own<IDependency>(localValue8, localOwn);
+        transientOwn4 = new Abstractions.Own<IDependency>(localValue8, localOwn);
         lock (_lock)
         {
-          perBlockOwn3.Add(perBlockOwn4);
+          perBlockOwn3.Add(transientOwn4);
         }
 
-        Abstractions.Own<IDependency> localValue7 = perBlockOwn4;
+        Abstractions.Own<IDependency> localValue7 = transientOwn4;
         return localValue7;
       });
       var perBlockOwn6 = new Abstractions.Own();
-      Func<Abstractions.Own<IDependency>> perBlockFunc2 = new Func<Abstractions.Own<IDependency>>(
+      Func<Abstractions.Own<IDependency>> transientFunc2 = new Func<Abstractions.Own<IDependency>>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        Abstractions.Own<IDependency> perBlockOwn7;
+        Abstractions.Own<IDependency> transientOwn7;
         // Creates the owner of an instance
         Abstractions.Own localOwn1 = perBlockOwn6;
         if (_root._singletonDependency52 is null)
@@ -210,16 +210,16 @@ partial class Composition: IDisposable
             }
 
         IDependency localValue10 = _root._singletonDependency52;
-        perBlockOwn7 = new Abstractions.Own<IDependency>(localValue10, localOwn1);
+        transientOwn7 = new Abstractions.Own<IDependency>(localValue10, localOwn1);
         lock (_lock)
         {
-          perBlockOwn6.Add(perBlockOwn7);
+          perBlockOwn6.Add(transientOwn7);
         }
 
-        Abstractions.Own<IDependency> localValue9 = perBlockOwn7;
+        Abstractions.Own<IDependency> localValue9 = transientOwn7;
         return localValue9;
       });
-      return new Service(perBlockFunc1, perBlockFunc2);
+      return new Service(transientFunc1, transientFunc2);
     }
   }
 

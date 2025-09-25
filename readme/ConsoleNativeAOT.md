@@ -10,7 +10,7 @@ The [project file](/samples/ShroedingersCatNativeAOT/ShroedingersCatNativeAOT.cs
 <Project Sdk="Microsoft.NET.Sdk">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.12">
+        <PackageReference Include="Pure.DI" Version="2.2.13">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>

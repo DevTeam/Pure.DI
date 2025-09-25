@@ -166,15 +166,14 @@ partial class Composition: IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<Session> perBlockFunc1 = new Func<Session>(
+      Func<Session> transientFunc1 = new Func<Session>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        var transientComposition3 = this;
-        Session localValue32 = new Session(transientComposition3);
+        Session localValue32 = new Session(this);
         return localValue32;
       });
-      return new Program(perBlockFunc1);
+      return new Program(transientFunc1);
     }
   }
 

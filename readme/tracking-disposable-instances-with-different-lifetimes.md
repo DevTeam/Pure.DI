@@ -157,11 +157,11 @@ partial class Composition: IDisposable
     get
     {
       var perBlockOwned3 = new Owned();
-      Func<Owned<IDependency>> perBlockFunc1 = new Func<Owned<IDependency>>(
+      Func<Owned<IDependency>> transientFunc1 = new Func<Owned<IDependency>>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        Owned<IDependency> perBlockOwned4;
+        Owned<IDependency> transientOwned4;
         // Creates the owner of an instance
         Owned transientOwned5;
         Owned localOwned9 = perBlockOwned3;
@@ -179,21 +179,21 @@ partial class Composition: IDisposable
         }
 
         IDependency localValue12 = transientDependency6;
-        perBlockOwned4 = new Owned<IDependency>(localValue12, localOwned8);
+        transientOwned4 = new Owned<IDependency>(localValue12, localOwned8);
         lock (_lock)
         {
-          perBlockOwned3.Add(perBlockOwned4);
+          perBlockOwned3.Add(transientOwned4);
         }
 
-        Owned<IDependency> localValue11 = perBlockOwned4;
+        Owned<IDependency> localValue11 = transientOwned4;
         return localValue11;
       });
       var perBlockOwned7 = new Owned();
-      Func<Owned<IDependency>> perBlockFunc2 = new Func<Owned<IDependency>>(
+      Func<Owned<IDependency>> transientFunc2 = new Func<Owned<IDependency>>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        Owned<IDependency> perBlockOwned8;
+        Owned<IDependency> transientOwned8;
         // Creates the owner of an instance
         Owned transientOwned9;
         Owned localOwned11 = perBlockOwned7;
@@ -213,16 +213,16 @@ partial class Composition: IDisposable
             }
 
         IDependency localValue14 = _root._singletonDependency52;
-        perBlockOwned8 = new Owned<IDependency>(localValue14, localOwned10);
+        transientOwned8 = new Owned<IDependency>(localValue14, localOwned10);
         lock (_lock)
         {
-          perBlockOwned7.Add(perBlockOwned8);
+          perBlockOwned7.Add(transientOwned8);
         }
 
-        Owned<IDependency> localValue13 = perBlockOwned8;
+        Owned<IDependency> localValue13 = transientOwned8;
         return localValue13;
       });
-      return new Service(perBlockFunc1, perBlockFunc2);
+      return new Service(transientFunc1, transientFunc2);
     }
   }
 

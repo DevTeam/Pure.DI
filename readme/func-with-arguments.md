@@ -129,13 +129,13 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<int, string, IDependency> perBlockFunc1;
-      Func<int, string, IDependency> localFactory2 = new Func<int, string, IDependency>((int localArg16, string localArg25) =>
+      Func<int, string, IDependency> transientFunc1;
+      Func<int, string, IDependency> localFactory2 = new Func<int, string, IDependency>((int localArg12, string localArg24) =>
       {
         lock (_lock)
         {
-          int overriddenInt32 = localArg16;
-          string overriddenString2 = localArg25;
+          int overriddenInt32 = localArg12;
+          string overriddenString2 = localArg24;
           if (_root._singletonClock51 is null)
             lock (_lock)
               if (_root._singletonClock51 is null)
@@ -147,8 +147,8 @@ partial class Composition
           return localValue19;
         }
       });
-      perBlockFunc1 = localFactory2;
-      return new Service(perBlockFunc1);
+      transientFunc1 = localFactory2;
+      return new Service(transientFunc1);
     }
   }
 }
