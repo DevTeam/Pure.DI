@@ -81,7 +81,7 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private IDependency? _singletonIDependency;
+  private IDependency? _singletonIDependency2147483217;
   private Facade? _singletonFacade51;
 
   [OrdinalAttribute(256)]
@@ -106,20 +106,20 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonIDependency is null)
+      if (_root._singletonIDependency2147483217 is null)
         lock (_lock)
-          if (_root._singletonIDependency is null)
+          if (_root._singletonIDependency2147483217 is null)
           {
             if (_root._singletonFacade51 is null)
             {
               _root._singletonFacade51 = new Facade();
             }
 
-            Facade localInstance_1182D1278 = _root._singletonFacade51;
-            _root._singletonIDependency = localInstance_1182D1278.Dependency;
+            Facade localInstance_1182D1279 = _root._singletonFacade51;
+            _root._singletonIDependency2147483217 = localInstance_1182D1279.Dependency;
           }
 
-      return new Service(_root._singletonIDependency);
+      return new Service(_root._singletonIDependency2147483217);
     }
   }
 }
@@ -138,8 +138,8 @@ Class diagram:
 classDiagram
 	Service --|> IService
 	Composition ..> Service : IService Root
-	IDependency o-- "Singleton" Facade : Facade
 	Service o-- "Singleton" IDependency : "my tag"  IDependency
+	IDependency o-- "Singleton" Facade : Facade
 	namespace Pure.DI.UsageTests.Basics.BindAttributeWithLifetimeAndTagScenario {
 		class Composition {
 		<<partial>>

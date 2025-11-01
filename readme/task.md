@@ -121,8 +121,8 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     () =>
     {
-      IDependency localValue23 = new Dependency();
-      return localValue23;
+      IDependency localValue24 = new Dependency();
+      return localValue24;
     });
     Func<IDependency> localFactory5 = transientFunc2;
     // Injects a task factory creating and scheduling task objects

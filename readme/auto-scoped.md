@@ -138,8 +138,8 @@ partial class Composition
         var localScope = new Composition(localParentScope);
         // Provides the session root in a new scope
         transientIService2 = localScope.SessionRoot;
-        IService localValue31 = transientIService2;
-        return localValue31;
+        IService localValue32 = transientIService2;
+        return localValue32;
       });
       return new Program(transientFunc1);
     }

@@ -86,8 +86,8 @@ partial class Composition
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        IDependency<int> localValue27 = new Dependency<int>();
-        return localValue27;
+        IDependency<int> localValue28 = new Dependency<int>();
+        return localValue28;
       });
       return new Service<int>(transientFunc1);
     }

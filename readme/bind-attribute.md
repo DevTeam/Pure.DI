@@ -29,10 +29,23 @@ class Dependency : IDependency
     }
 }
 
+interface IOtherDependency
+{
+    public void DoSomething();
+}
+
+class OtherDependency : IOtherDependency
+{
+    public void DoSomething()
+    {
+    }
+}
+
 class Facade
 {
-    [Bind]
-    public IDependency Dependency { get; } = new Dependency();
+    [Bind] public IDependency Dependency { get; } = new Dependency();
+
+    [Bind] public IOtherDependency OtherDependency { get; } = new OtherDependency();
 }
 
 interface IService
@@ -40,9 +53,13 @@ interface IService
     public void DoSomething();
 }
 
-class Service(IDependency dep) : IService
+class Service(IDependency dep, Func<IOtherDependency> otherDep) : IService
 {
-    public void DoSomething() => dep.DoSomething();
+    public void DoSomething()
+    {
+        dep.DoSomething();
+        otherDep().DoSomething();
+    }
 }
 ```
 
@@ -110,16 +127,31 @@ partial class Composition
     get
     {
       IDependency transientIDependency1;
-      if (_root._singletonFacade51 is null)
-        lock (_lock)
-          if (_root._singletonFacade51 is null)
-          {
-            _root._singletonFacade51 = new Facade();
-          }
-
+      EnsureFacadeExists();
       Facade localInstance_1182D1277 = _root._singletonFacade51;
       transientIDependency1 = localInstance_1182D1277.Dependency;
-      return new Service(transientIDependency1);
+      Func<IOtherDependency> transientFunc2 = new Func<IOtherDependency>(
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      () =>
+      {
+        IOtherDependency transientIOtherDependency4;
+        EnsureFacadeExists();
+        Facade localInstance_1182D1278 = _root._singletonFacade51;
+        transientIOtherDependency4 = localInstance_1182D1278.OtherDependency;
+        IOtherDependency localValue16 = transientIOtherDependency4;
+        return localValue16;
+      });
+      return new Service(transientIDependency1, transientFunc2);
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      void EnsureFacadeExists()
+      {
+        if (_root._singletonFacade51 is null)
+          lock (_lock)
+            if (_root._singletonFacade51 is null)
+            {
+              _root._singletonFacade51 = new Facade();
+            }
+      }
     }
   }
 }
@@ -138,8 +170,11 @@ Class diagram:
 classDiagram
 	Service --|> IService
 	Composition ..> Service : IService Root
-	IDependency o-- "Singleton" Facade : Facade
 	Service *--  IDependency : IDependency
+	Service o-- "PerBlock" FuncᐸIOtherDependencyᐳ : FuncᐸIOtherDependencyᐳ
+	IOtherDependency o-- "Singleton" Facade : Facade
+	IDependency o-- "Singleton" Facade : Facade
+	FuncᐸIOtherDependencyᐳ *--  IOtherDependency : IOtherDependency
 	namespace Pure.DI.UsageTests.Basics.BindAttributeScenario {
 		class Composition {
 		<<partial>>
@@ -152,12 +187,20 @@ classDiagram
 		class IDependency {
 				<<interface>>
 		}
+		class IOtherDependency {
+				<<interface>>
+		}
 		class IService {
 			<<interface>>
 		}
 		class Service {
 				<<class>>
-			+Service(IDependency dep)
+			+Service(IDependency dep, FuncᐸIOtherDependencyᐳ otherDep)
+		}
+	}
+	namespace System {
+		class FuncᐸIOtherDependencyᐳ {
+				<<delegate>>
 		}
 	}
 ```

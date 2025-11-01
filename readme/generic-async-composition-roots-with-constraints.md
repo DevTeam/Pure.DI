@@ -126,8 +126,8 @@ partial class Composition
       OtherService<T2> transientOtherService3;
       IDependency<T2> localDependency6 = new Dependency<T2>();
       transientOtherService3 = new OtherService<T2>(localDependency6);
-      IService<T2, bool> localValue25 = transientOtherService3;
-      return localValue25;
+      IService<T2, bool> localValue26 = transientOtherService3;
+      return localValue26;
     });
     Func<IService<T2, bool>> localFactory6 = transientFunc1;
     // Injects a task factory creating and scheduling task objects
@@ -157,8 +157,8 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     () =>
     {
-      IService<T2, T3> localValue26 = new Service<T2, T3>(new Dependency<T2>());
-      return localValue26;
+      IService<T2, T3> localValue27 = new Service<T2, T3>(new Dependency<T2>());
+      return localValue27;
     });
     Func<IService<T2, T3>> localFactory7 = transientFunc10;
     // Injects a task factory creating and scheduling task objects

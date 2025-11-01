@@ -116,13 +116,13 @@ partial class Composition
     get
     {
       Func<int, IDependency> transientFunc1;
-      Func<int, IDependency> localFactory1 = new Func<int, IDependency>((int localArg15) =>
+      Func<int, IDependency> localFactory1 = new Func<int, IDependency>((int localArg12) =>
       {
         lock (_lock)
         {
-          int overriddenInt32 = localArg15;
-          IDependency localValue17 = new Dependency(overriddenInt32);
-          return localValue17;
+          int overriddenInt32 = localArg12;
+          IDependency localValue18 = new Dependency(overriddenInt32);
+          return localValue18;
         }
       });
       transientFunc1 = localFactory1;

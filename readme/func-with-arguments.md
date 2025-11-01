@@ -130,12 +130,12 @@ partial class Composition
     get
     {
       Func<int, string, IDependency> transientFunc1;
-      Func<int, string, IDependency> localFactory2 = new Func<int, string, IDependency>((int localArg12, string localArg24) =>
+      Func<int, string, IDependency> localFactory2 = new Func<int, string, IDependency>((int localArg15, string localArg22) =>
       {
         lock (_lock)
         {
-          int overriddenInt32 = localArg12;
-          string overriddenString2 = localArg24;
+          int overriddenInt32 = localArg15;
+          string overriddenString2 = localArg22;
           if (_root._singletonClock51 is null)
             lock (_lock)
               if (_root._singletonClock51 is null)
@@ -143,8 +143,8 @@ partial class Composition
                 _root._singletonClock51 = new Clock();
               }
 
-          IDependency localValue19 = new Dependency(overriddenString2, _root._singletonClock51, overriddenInt32);
-          return localValue19;
+          IDependency localValue20 = new Dependency(overriddenString2, _root._singletonClock51, overriddenInt32);
+          return localValue20;
         }
       });
       transientFunc1 = localFactory2;
