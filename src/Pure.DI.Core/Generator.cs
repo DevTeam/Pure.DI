@@ -181,6 +181,7 @@ public sealed partial class Generator
             .Bind().To<Filter>()
             .Bind(UniqueTag).To<IdGenerator>()
             .Bind(Tag.Override).To<IdGenerator>()
+            .Bind(SpecialBinding).To<IdGenerator>()
             .Bind().To<Registry<TT>>()
             .Bind().To<Locks>()
             .Bind().To<RootAccessModifierResolver>()

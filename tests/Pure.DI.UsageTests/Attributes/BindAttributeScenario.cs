@@ -55,10 +55,23 @@ class Dependency : IDependency
     }
 }
 
+interface IOtherDependency
+{
+    public void DoSomething();
+}
+
+class OtherDependency : IOtherDependency
+{
+    public void DoSomething()
+    {
+    }
+}
+
 class Facade
 {
-    [Bind]
-    public IDependency Dependency { get; } = new Dependency();
+    [Bind] public IDependency Dependency { get; } = new Dependency();
+
+    [Bind] public IOtherDependency OtherDependency { get; } = new OtherDependency();
 }
 
 interface IService
@@ -66,8 +79,12 @@ interface IService
     public void DoSomething();
 }
 
-class Service(IDependency dep) : IService
+class Service(IDependency dep, Func<IOtherDependency> otherDep) : IService
 {
-    public void DoSomething() => dep.DoSomething();
+    public void DoSomething()
+    {
+        dep.DoSomething();
+        otherDep().DoSomething();
+    }
 }
 // }

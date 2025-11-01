@@ -10,13 +10,13 @@ class GraphOverrider(
     public IGraph<DependencyNode, Dependency> Rewrite(
         MdSetup setup,
         IGraph<DependencyNode, Dependency> graph,
-        ref int maxId)
+        ref int bindingId)
     {
         var entries = new List<GraphEntry<DependencyNode, Dependency>>(graph.Entries.Count);
         var processed = new Dictionary<int, DependencyNode>(graph.Entries.Count);
         foreach (var rootNode in from node in graph.Vertices where node.Root is not null select node)
         {
-            Override(processed, new Dictionary<Injection, DependencyNode>(), new Dictionary<int, DpOverride>(), setup, graph, rootNode, rootNode, ref maxId, entries);
+            Override(processed, new Dictionary<Injection, DependencyNode>(), new Dictionary<int, DpOverride>(), setup, graph, rootNode, rootNode, ref bindingId, entries);
             if (cancellationToken.IsCancellationRequested)
             {
                 return graph;

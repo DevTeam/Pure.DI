@@ -7,12 +7,12 @@ interface IBindingsFactory
         Injection injection,
         DependencyNode sourceNode,
         ITypeConstructor typeConstructor,
-        int newId);
+        int bindingId);
 
     MdBinding CreateAccumulatorBinding(
         MdSetup setup,
         DependencyNode targetNode,
-        ref int newId,
+        ref int bindingId,
         IReadOnlyCollection<MdAccumulator> accumulators,
         bool hasExplicitDefaultValue,
         object? explicitDefaultValue);
@@ -22,7 +22,7 @@ interface IBindingsFactory
         DependencyNode targetNode,
         Injection injection,
         ITypeConstructor typeConstructor,
-        int newId);
+        int bindingId);
 
     MdBinding CreateConstructBinding(
         MdSetup setup,
@@ -31,7 +31,7 @@ interface IBindingsFactory
         ITypeSymbol elementType,
         Lifetime lifetime,
         ITypeConstructor typeConstructor,
-        int newId,
+        int bindingId,
         MdConstructKind constructKind,
         object? tag = null,
         bool hasExplicitDefaultValue = false,

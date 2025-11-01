@@ -10,7 +10,7 @@ sealed class ApiInvocationProcessor(
     IArguments arguments,
     ISemantic semantic,
     ISymbolNames symbolNames,
-    [Tag(Tag.UniqueTag)] IdGenerator idGenerator,
+    [Tag(Tag.UniqueTag)] IIdGenerator idGenerator,
     IOverrideIdProvider overrideIdProvider,
     IBaseSymbolsProvider baseSymbolsProvider,
     INameFormatter nameFormatter,

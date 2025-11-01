@@ -7,6 +7,7 @@ using static Tag;
 
 sealed class BindingBuilder(
     [Tag(UniqueTag)] IIdGenerator idGenerator,
+    [Tag(SpecialBinding)] IIdGenerator specialBindingIdGenerator,
     IBaseSymbolsProvider baseSymbolsProvider,
     ITypes types,
     ILocationProvider locationProvider)
@@ -130,7 +131,7 @@ sealed class BindingBuilder(
                 var id = new Lazy<int>(idGenerator.Generate);
                 var implementationTags = _tags.Select(tag => BuildTag(tag, implementationType, id)).ToImmutableArray();
                 return new MdBinding(
-                    0,
+                    int.MaxValue - specialBindingIdGenerator.Generate(),
                     source,
                     setup,
                     semanticModel,

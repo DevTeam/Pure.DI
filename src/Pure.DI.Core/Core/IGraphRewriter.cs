@@ -5,5 +5,5 @@ interface IGraphRewriter
     IGraph<DependencyNode, Dependency> Rewrite(
         MdSetup setup,
         IGraph<DependencyNode, Dependency> graph,
-        ref int maxId);
+        ref int bindingId);
 }

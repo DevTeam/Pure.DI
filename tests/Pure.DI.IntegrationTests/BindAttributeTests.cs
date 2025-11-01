@@ -145,6 +145,7 @@ public class BindAttributeTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["123", "Abc"], result);
     }
+
     [Fact]
     public async Task ShouldSupportBindAttribute()
     {
@@ -182,6 +183,67 @@ public class BindAttributeTests
                                    {
                                        DI.Setup("Composition")
                                            .Bind().To<BaseComposition>()
+                                           .Bind().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }  
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition(); 
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportBindAttributeWhenSeveral()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               internal interface IDependency { }
+                               
+                               internal interface IDependency2 { }
+                           
+                               internal class Dependency : IDependency { }
+                               
+                               internal class Dependency2 : IDependency2 { }
+                           
+                               internal interface IService { }
+                           
+                               internal class Service : IService
+                               {
+                                   public Service(IDependency dependency, IDependency2 dependency2)
+                                   {
+                                   }
+                               }
+                               
+                               internal class ServiceProvider
+                               {
+                                   [Bind] public IDependency Dep => new Dependency();
+                                   
+                                   [Bind] public IDependency2 Dep2 => new Dependency2();
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind().To<ServiceProvider>()
                                            .Bind().To<Service>()
                                            .Root<IService>("Service");
                                    }

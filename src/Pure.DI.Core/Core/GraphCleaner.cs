@@ -7,7 +7,7 @@ class GraphCleaner(
     public IGraph<DependencyNode, Dependency> Rewrite(
         MdSetup setup,
         IGraph<DependencyNode, Dependency> graph,
-        ref int maxId)
+        ref int bindingId)
     {
         var existingEntries = new List<GraphEntry<DependencyNode, Dependency>>();
         var processed = new HashSet<int>();

@@ -34,7 +34,7 @@ sealed class DependencyGraphBuilder(
         out IGraph<DependencyNode, Dependency>? graph)
     {
         graph = null;
-        var maxId = 0;
+        var maxBindingId = 0;
         var map = new Dictionary<Injection, DependencyNode>(nodes.Count);
         var contextMap = new Dictionary<Injection, DependencyNode>(nodes.Count);
         var queue = new Queue<IProcessingNode>();
@@ -42,9 +42,9 @@ sealed class DependencyGraphBuilder(
         {
             cancellationToken.ThrowIfCancellationRequested();
             var node = processingNode.Node;
-            if (node.Binding.Id > maxId)
+            if (node.Binding.Id > maxBindingId)
             {
-                maxId = node.Binding.Id;
+                maxBindingId = node.Binding.Id;
             }
 
             if (node.Root is null)
@@ -119,7 +119,7 @@ sealed class DependencyGraphBuilder(
                     var accumulatorBinding = bindingsFactory.CreateAccumulatorBinding(
                         setup,
                         targetNode,
-                        ref maxId,
+                        ref maxBindingId,
                         accs,
                         hasExplicitDefaultValue,
                         explicitDefaultValue);
@@ -163,7 +163,7 @@ sealed class DependencyGraphBuilder(
                                 newInjection,
                                 sourceNode,
                                 typeConstructor,
-                                ++maxId);
+                                ++maxBindingId);
 
                             var genericNode = nodesFactory.CreateNodes(setup, typeConstructor, genericBinding).Single(i => i.Variation == sourceNode.Variation);
                             UpdateMap(newInjection, genericNode);
@@ -205,7 +205,7 @@ sealed class DependencyGraphBuilder(
                                         constructType,
                                         lifetime,
                                         typeConstructor,
-                                        ++maxId,
+                                        ++maxBindingId,
                                         constructKind);
 
                                     foreach (var newNode in nodesFactory.CreateNodes(setup, typeConstructor, constructBinding))
@@ -222,7 +222,7 @@ sealed class DependencyGraphBuilder(
                         }
 
                         // OnCannotResolve
-                        if (TryCreateOnCannotResolve(setup, typeConstructor, targetNode, injection, ref maxId, map, processed))
+                        if (TryCreateOnCannotResolve(setup, typeConstructor, targetNode, injection, ref maxBindingId, map, processed))
                         {
                             continue;
                         }
@@ -240,7 +240,7 @@ sealed class DependencyGraphBuilder(
                             arrayType.ElementType,
                             Lifetime.Transient,
                             typeConstructor,
-                            ++maxId,
+                            ++maxBindingId,
                             MdConstructKind.Array);
 
                         foreach (var newNode in nodesFactory.CreateNodes(setup, typeConstructor, arrayBinding))
@@ -265,7 +265,7 @@ sealed class DependencyGraphBuilder(
                         injection.Type,
                         Lifetime.Transient,
                         typeConstructor,
-                        ++maxId,
+                        ++maxBindingId,
                         MdConstructKind.ExplicitDefaultValue,
                         null,
                         hasExplicitDefaultValue, explicitDefaultValue);
@@ -297,7 +297,7 @@ sealed class DependencyGraphBuilder(
                         injection.Type,
                         Lifetime.Transient,
                         typeConstructor,
-                        ++maxId,
+                        ++maxBindingId,
                         MdConstructKind.Composition);
 
                     foreach (var newNode in nodesFactory.CreateNodes(setup, typeConstructor, compositionBinding))
@@ -314,7 +314,7 @@ sealed class DependencyGraphBuilder(
                 // Auto-binding
                 if (injection.Type is { IsAbstract: false, SpecialType: Microsoft.CodeAnalysis.SpecialType.None })
                 {
-                    var autoBinding = bindingsFactory.CreateAutoBinding(setup, targetNode, injection, typeConstructor, ++maxId);
+                    var autoBinding = bindingsFactory.CreateAutoBinding(setup, targetNode, injection, typeConstructor, ++maxBindingId);
                     var disableAutoBinding = false;
                     if (setup.Hints.DisableAutoBinding)
                     {
@@ -336,7 +336,7 @@ sealed class DependencyGraphBuilder(
                 }
 
                 // OnCannotResolve
-                if (TryCreateOnCannotResolve(setup, typeConstructor, targetNode, injection, ref maxId, map, processed))
+                if (TryCreateOnCannotResolve(setup, typeConstructor, targetNode, injection, ref maxBindingId, map, processed))
                 {
                     continue;
                 }
@@ -384,12 +384,12 @@ sealed class DependencyGraphBuilder(
         }
 
         graph = new Graph<DependencyNode, Dependency>(entries);
-        var lastId = maxId;
-        graph = graphOverrider.Rewrite(setup, graph, ref maxId);
+        var lastId = maxBindingId;
+        graph = graphOverrider.Rewrite(setup, graph, ref maxBindingId);
         // Has overrides
-        if (lastId != maxId)
+        if (lastId != maxBindingId)
         {
-            graph = graphCleaner.Rewrite(setup, graph, ref maxId);
+            graph = graphCleaner.Rewrite(setup, graph, ref maxBindingId);
         }
 
         return ImmutableArray<DependencyNode>.Empty;
@@ -425,7 +425,7 @@ sealed class DependencyGraphBuilder(
         ITypeConstructor typeConstructor,
         DependencyNode ownerNode,
         Injection unresolvedInjection,
-        ref int maxId,
+        ref int bindingId,
         IDictionary<Injection, DependencyNode> map,
         ISet<IProcessingNode> processed)
     {
@@ -447,7 +447,7 @@ sealed class DependencyGraphBuilder(
                     unresolvedInjection.Type,
                     Lifetime.Transient,
                     typeConstructor,
-                    ++maxId,
+                    ++bindingId,
                     MdConstructKind.OnCannotResolve,
                     unresolvedInjection.Tag);
 

@@ -11,7 +11,7 @@ class BindingsFactory(
         Injection injection,
         DependencyNode sourceNode,
         ITypeConstructor typeConstructor,
-        int newId)
+        int bindingId)
     {
         var newContracts = sourceNode.Binding.Contracts
             .Where(contract => contract.ContractType is not null)
@@ -24,7 +24,7 @@ class BindingsFactory(
 
         return sourceNode.Binding with
         {
-            Id = newId,
+            Id = bindingId,
             OriginalIds = ImmutableArray.Create(sourceNode.Binding.Id),
             TypeConstructor = typeConstructor,
             Contracts = newContracts,
@@ -50,14 +50,14 @@ class BindingsFactory(
     public MdBinding CreateAccumulatorBinding(
         MdSetup setup,
         DependencyNode targetNode,
-        ref int newId,
+        ref int bindingId,
         IReadOnlyCollection<MdAccumulator> accumulators,
         bool hasExplicitDefaultValue,
         object? explicitDefaultValue)
     {
         var accumulator = accumulators.First();
         return new MdBinding(
-            ++newId,
+            ++bindingId,
             targetNode.Binding.Source,
             setup,
             targetNode.Binding.SemanticModel,
@@ -84,7 +84,7 @@ class BindingsFactory(
         DependencyNode targetNode,
         Injection injection,
         ITypeConstructor typeConstructor,
-        int newId)
+        int bindingId)
     {
         var semanticModel = targetNode.Binding.SemanticModel;
         var sourceType = injection.Type;
@@ -100,7 +100,7 @@ class BindingsFactory(
 
         var newContracts = ImmutableArray.Create(new MdContract(semanticModel, setup.Source, sourceType, ContractKind.Implicit, ImmutableArray<MdTag>.Empty));
         var newBinding = new MdBinding(
-            newId,
+            bindingId,
             targetNode.Binding.Source,
             setup,
             semanticModel,
@@ -119,7 +119,7 @@ class BindingsFactory(
         ITypeSymbol elementType,
         Lifetime lifetime,
         ITypeConstructor typeConstructor,
-        int newId,
+        int bindingId,
         MdConstructKind constructKind,
         object? tag = null,
         bool hasExplicitDefaultValue = false,
@@ -172,7 +172,7 @@ class BindingsFactory(
             : ImmutableArray<MdTag>.Empty;
         var newContracts = ImmutableArray.Create(new MdContract(targetNode.Binding.SemanticModel, targetNode.Binding.Source, injection.Type, ContractKind.Implicit, newTags));
         var newBinding = new MdBinding(
-            newId,
+            bindingId,
             targetNode.Binding.Source,
             setup,
             targetNode.Binding.SemanticModel,
