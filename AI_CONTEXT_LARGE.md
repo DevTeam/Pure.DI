@@ -13248,15 +13248,6 @@ Atomically generated smart tag with value "UsingDeclarations".
 </blockquote></details>
 
 
-<details><summary>Field UniqueTag</summary><blockquote>
-
-Atomically generated smart tag with value "UniqueTag".
-            It's used for:
-            
-            class _Generator__ApiInvocationProcessor_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve__BindingBuilder_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve_
-</blockquote></details>
-
-
 <details><summary>Field Overrider</summary><blockquote>
 
 Atomically generated smart tag with value "Overrider".
@@ -13275,12 +13266,12 @@ Atomically generated smart tag with value "Cleaner".
 </blockquote></details>
 
 
-<details><summary>Field SpecialBinding</summary><blockquote>
+<details><summary>Field UniqueTag</summary><blockquote>
 
-Atomically generated smart tag with value "SpecialBinding".
+Atomically generated smart tag with value "UniqueTag".
             It's used for:
             
-            class _Generator__BindingBuilder_ <-- _IIdGenerator_(SpecialBinding) -- _IdGenerator_ as _PerResolve_
+            class _Generator__ApiInvocationProcessor_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve__BindingBuilder_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
@@ -13290,6 +13281,15 @@ Atomically generated smart tag with value "Override".
             It's used for:
             
             class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
+<details><summary>Field SpecialBinding</summary><blockquote>
+
+Atomically generated smart tag with value "SpecialBinding".
+            It's used for:
+            
+            class _Generator__BindingBuilder_ <-- _IIdGenerator_(SpecialBinding) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 

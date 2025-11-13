@@ -43,7 +43,7 @@ class Settings(Properties properties, Versions versions)
     ];
 
     // Make sure that /Directory.Build.props has been updated.
-    public int BaseDotNetFrameworkMajorVersion => 9;
+    public int BaseDotNetFrameworkMajorVersion => 10;
 
     public string BaseDotNetFrameworkVersion => $"{BaseDotNetFrameworkMajorVersion}.0";
 

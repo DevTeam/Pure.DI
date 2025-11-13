@@ -69,11 +69,11 @@ class Service(Func<int, string, IDependency> dependencyFactory): IService
 <details>
 <summary>Running this code sample locally</summary>
 
-- Make sure you have the [.NET SDK 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) or later is installed
+- Make sure you have the [.NET SDK 10.0](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) or later is installed
 ```bash
 dotnet --list-sdk
 ```
-- Create a net9.0 (or later) console application
+- Create a net10.0 (or later) console application
 ```bash
 dotnet new console -n Sample
 ```
@@ -130,12 +130,12 @@ partial class Composition
     get
     {
       Func<int, string, IDependency> transientFunc1;
-      Func<int, string, IDependency> localFactory2 = new Func<int, string, IDependency>((int localArg15, string localArg22) =>
+      Func<int, string, IDependency> localFactory2 = new Func<int, string, IDependency>((int localArg12, string localArg21) =>
       {
         lock (_lock)
         {
-          int overriddenInt32 = localArg15;
-          string overriddenString2 = localArg22;
+          int overriddenInt32 = localArg12;
+          string overriddenString2 = localArg21;
           if (_root._singletonClock51 is null)
             lock (_lock)
               if (_root._singletonClock51 is null)

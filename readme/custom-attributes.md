@@ -72,11 +72,11 @@ class Person([MyTag("NikName")] string name) : IPerson
 <details>
 <summary>Running this code sample locally</summary>
 
-- Make sure you have the [.NET SDK 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) or later is installed
+- Make sure you have the [.NET SDK 10.0](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) or later is installed
 ```bash
 dotnet --list-sdk
 ```
-- Create a net9.0 (or later) console application
+- Create a net10.0 (or later) console application
 ```bash
 dotnet new console -n Sample
 ```
@@ -153,9 +153,9 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
+	Uri --|> IEquatableᐸUriᐳ
 	Uri --|> IFormattable
 	Uri --|> ISpanFormattable
-	Uri --|> IEquatableᐸUriᐳ
 	Uri --|> ISerializable
 	Person --|> IPerson
 	PersonComposition ..> Person : IPerson Person

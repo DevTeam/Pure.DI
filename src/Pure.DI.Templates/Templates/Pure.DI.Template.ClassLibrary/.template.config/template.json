@@ -30,7 +30,7 @@
     "framework": {
       "type": "parameter",
       "datatype": "string",
-      "description": "The target framework for the project (e.g. net9.0).",
+      "description": "The target framework for the project (e.g. net10.0).",
       "defaultValue": ""
     },
     "frameworkDefault": {
@@ -43,7 +43,7 @@
         "cases": [
           {
             "condition": "(framework == '')",
-            "value": "net9.0"
+            "value": "net10.0"
           },
           {
             "condition": "(framework != '')",

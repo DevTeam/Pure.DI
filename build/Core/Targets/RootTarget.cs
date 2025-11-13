@@ -15,6 +15,17 @@ class RootTarget(
             await initializable.InitializeAsync(cancellationToken);
         }
 
-        return await rootCommand.InvokeAsync(Args.ToArray());
+        var parseResult = rootCommand.Parse(Args);
+        if (!parseResult.Errors.Any())
+        {
+            return await parseResult.InvokeAsync(cancellationToken: cancellationToken);
+        }
+
+        foreach (var error in parseResult.Errors)
+        {
+            Error(error.Message);
+        }
+
+        return 1;
     }
 }

@@ -13,11 +13,11 @@ class Commands(RootCommand rootCommand)
         params string[] aliases)
     {
         var command = new Command(name, description);
-        command.SetHandler(async ctx => {
+        command.SetAction(async ctx => {
             Summary($"\"{description}\" started");
             try
             {
-                var result = await target.RunAsync(ctx.GetCancellationToken());
+                var result = await target.RunAsync(CancellationToken.None);
                 Summary($"\"{description}\" ", "finished".WithColor(Color.Success), " with result ", result.WithColor(Color.Details));
             }
             catch (Exception)
@@ -29,10 +29,10 @@ class Commands(RootCommand rootCommand)
 
         foreach (var alias in aliases)
         {
-            command.AddAlias(alias);
+            command.Aliases.Add(alias);
         }
 
-        rootCommand.AddCommand(command);
+        rootCommand.Subcommands.Add(command);
         return Task.CompletedTask;
     }
 }

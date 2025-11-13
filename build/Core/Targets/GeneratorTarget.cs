@@ -70,9 +70,17 @@ class GeneratorTarget(
             Directory.Delete(obj, true);
         }
 
+        await new DotNetRestore()
+            .WithShortName($"restoring {codeAnalysis.AnalyzerRoslynPackageVersion}")
+            .WithProps(props)
+            .BuildAsync(cancellationToken: cancellationToken).EnsureSuccess();
+
+        props.Add(("PackGenerator", "true"));
+
         await new DotNetBuild()
             .WithShortName($"building {codeAnalysis.AnalyzerRoslynPackageVersion}")
             .WithProps(props)
+            .WithNoRestore(true)
             .BuildAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
         if (settings.Tests)

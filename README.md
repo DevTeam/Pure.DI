@@ -3954,15 +3954,6 @@ Atomically generated smart tag with value "UsingDeclarations".
 </blockquote></details>
 
 
-<details><summary>Field UniqueTag</summary><blockquote>
-
-Atomically generated smart tag with value "UniqueTag".
-            It's used for:
-            
-            class _Generator__ApiInvocationProcessor_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve__BindingBuilder_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve_
-</blockquote></details>
-
-
 <details><summary>Field Overrider</summary><blockquote>
 
 Atomically generated smart tag with value "Overrider".
@@ -3981,12 +3972,12 @@ Atomically generated smart tag with value "Cleaner".
 </blockquote></details>
 
 
-<details><summary>Field SpecialBinding</summary><blockquote>
+<details><summary>Field UniqueTag</summary><blockquote>
 
-Atomically generated smart tag with value "SpecialBinding".
+Atomically generated smart tag with value "UniqueTag".
             It's used for:
             
-            class _Generator__BindingBuilder_ <-- _IIdGenerator_(SpecialBinding) -- _IdGenerator_ as _PerResolve_
+            class _Generator__ApiInvocationProcessor_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve__BindingBuilder_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
@@ -3996,6 +3987,15 @@ Atomically generated smart tag with value "Override".
             It's used for:
             
             class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
+<details><summary>Field SpecialBinding</summary><blockquote>
+
+Atomically generated smart tag with value "SpecialBinding".
+            It's used for:
+            
+            class _Generator__BindingBuilder_ <-- _IIdGenerator_(SpecialBinding) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
@@ -6399,7 +6399,7 @@ Contextual AI needs to understand the situation it’s in. This means knowing de
 
 Thank you for your interest in contributing to the Pure.DI project! First of all, if you are going to make a big change or feature, please open a problem first. That way, we can coordinate and understand if the change you're going to work on fits with current priorities and if we can commit to reviewing and merging it within a reasonable timeframe. We don't want you to waste a lot of your valuable time on something that may not align with what we want for Pure.DI.
 
-Contribution prerequisites: [.NET SDK 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) or later is installed.
+Contribution prerequisites: [.NET SDK 10.0](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) or later is installed.
 
 This repository contains the following directories and files:
 
@@ -6440,21 +6440,21 @@ The entire build logic is a regular [console .NET application](/build). You can 
 
 | Commands | Description |
 |----------|-------------|
-| ai | Generate AI context |
-| bm, benchmarks | Run benchmarks |
-| c, check | Compatibility checks |
-| dp, deploy | Package deployment |
-| e, example | Create examples |
-| g, generator | Build and test the source code generator |
-| i, install | Install templates |
-| l, libs | Build and test libraries |
-| p, pack | Create NuGet packages |
-| perf, performance | Performance tests |
-| pb, publish | Publish the balazor web sssembly example |
-| r, readme | Generate README.md |
-| t, template | Create and deploy templates |
-| te, testexamples | Test examples |
-| u, upgrade | Upgrading the internal version of DI to the latest public version |
+|  | Generate AI context |
+| bm | Run benchmarks |
+| c | Compatibility checks |
+| dp | Package deployment |
+| e | Create examples |
+| g | Build and test the source code generator |
+| i | Install templates |
+| l | Build and test libraries |
+| p | Create NuGet packages |
+| perf | Performance tests |
+| pb | Publish the balazor web sssembly example |
+| r | Generate README.md |
+| t | Create and deploy templates |
+| te | Test examples |
+| u | Upgrading the internal version of DI to the latest public version |
 
 For example, to build and test the source code generator: 
 
