@@ -6,7 +6,6 @@
 **/*.csproj.user
 **/*.log
 benchmarks/data/*.log
-benchmarks/data/results/*.csv
 benchmarks/data/results/*.md
 *.suo
 .vs/

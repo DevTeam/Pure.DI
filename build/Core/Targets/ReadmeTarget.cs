@@ -31,6 +31,14 @@ class ReadmeTarget(
     private const string ContributingTemplateFile = "ContributingTemplate.md";
     private const string ReadmeFile = "README.md";
     private const string ContributingFile = "CONTRIBUTING.md";
+    private static readonly List<string> Reports =
+    [
+        "Transient", "Singleton", "Func", "Enum", "Array"
+    ];
+    private static readonly HashSet<string> Columns =
+    [
+        "Method", "Mean", "Error", "StdDev", "Ratio", "RatioSD", "Gen0", "Gen1", "Allocated", "Alloc Ratio"
+    ];
 
     public Task InitializeAsync(CancellationToken cancellationToken) => commands.RegisterAsync(
         this, $"Generate {CommonReadmeFile}", "readme", "r");
@@ -324,56 +332,45 @@ class ReadmeTarget(
 
     private static async Task AddBenchmarksAsync(string logsDirectory, TextWriter readmeWriter)
     {
-        var benchmarksReportFiles = Directory.EnumerateFiles(logsDirectory, "*.html").ToArray();
+        var benchmarksReportFiles = Directory.EnumerateFiles(logsDirectory, "*.csv").ToArray();
         if (benchmarksReportFiles.Length != 0)
         {
             await readmeWriter.WriteLineAsync();
             await readmeWriter.WriteLineAsync("## Benchmarks");
             await readmeWriter.WriteLineAsync();
-            var files = benchmarksReportFiles.OrderBy(i => i).ToArray();
-            for (var fileIndex = 0; fileIndex < files.Length; fileIndex++)
+            if (Directory.EnumerateFiles(logsDirectory, "*.html").FirstOrDefault() is {} htmlFile)
             {
-                var benchmarksReportFile = files[fileIndex];
-                var reportName = new string(Path.GetFileNameWithoutExtension(benchmarksReportFile).SkipWhile(ch => ch != ' ').Skip(1).ToArray());
-                Info($"Processing benchmarks \"{reportName}\"");
-                var lines = await File.ReadAllLinesAsync(benchmarksReportFile);
-                await readmeWriter.WriteLineAsync("<details>");
-                await readmeWriter.WriteLineAsync($"<summary>{reportName}</summary>");
-                await readmeWriter.WriteLineAsync();
-                var contentLines = lines
-                    .SkipWhile(i => !i.Contains("<table>"))
-                    .TakeWhile(i => !i.Contains("</body>"))
-                    .Where(i => !i.Contains("<td>NA</td>"));
-
-                foreach (var contentLine in contentLines)
+                var lines = await File.ReadAllLinesAsync(htmlFile);
+                var env = lines.SkipWhile(i => i != "<pre><code>").Skip(1).Reverse().SkipWhile(i => i != "</code></pre>").Skip(1).Reverse().Take(3).ToList();
+                if (env.Count > 0)
                 {
-                    await readmeWriter.WriteLineAsync(contentLine.Replace('?', ' '));
-                }
-
-                await readmeWriter.WriteLineAsync();
-                await readmeWriter.WriteLineAsync($"[{reportName} details]({ReadmeDir}/{reportName}Details.md)");
-                await readmeWriter.WriteLineAsync();
-                await readmeWriter.WriteLineAsync("</details>");
-                await readmeWriter.WriteLineAsync();
-
-                if (fileIndex == files.Length - 1)
-                {
-                    await readmeWriter.WriteLineAsync("<details>");
-                    await readmeWriter.WriteLineAsync("<summary>Benchmarks environment</summary>");
-                    await readmeWriter.WriteLineAsync();
-
-                    var headerLines = lines
-                        .SkipWhile(i => !i.Contains("<pre><code>"))
-                        .TakeWhile(i => !i.Contains("<pre><code></code></pre>"));
-
-                    foreach (var headerLine in headerLines)
+                    foreach (var line in env)
                     {
-                        await readmeWriter.WriteLineAsync(headerLine);
+                        await readmeWriter.WriteLineAsync(line);
                     }
 
                     await readmeWriter.WriteLineAsync();
-                    await readmeWriter.WriteLineAsync("</details>");
                 }
+            }
+
+            var reports = new Dictionary<string, string>();
+            foreach (var benchmarksReportFile in benchmarksReportFiles)
+            {
+                var reportName = new string(Path.GetFileNameWithoutExtension(benchmarksReportFile).SkipWhile(ch => ch != ' ').Skip(1).ToArray());
+                reports[reportName] = benchmarksReportFile;
+            }
+
+            foreach (var report in Reports)
+            {
+                if (reports.TryGetValue(report, out var benchmarksReportFile))
+                {
+                    await AddReport(readmeWriter, report, benchmarksReportFile);
+                }
+            }
+
+            foreach (var reportItem in reports.Where(reportItem => !Reports.Contains(reportItem.Key)))
+            {
+                await AddReport(readmeWriter, reportItem.Key, reportItem.Value);
             }
         }
 
@@ -403,6 +400,66 @@ class ReadmeTarget(
             await classDiagramWriter.WriteLineAsync();
             await AddExample(logsDirectory, $"Pure.DI.Benchmarks.Benchmarks.{name}.g.cs", classDiagramWriter);
         }
+    }
+
+    private static async Task AddReport(TextWriter readmeWriter, string reportName, string benchmarksReportFile)
+    {
+        Info($"Processing benchmarks \"{reportName}\"");
+        var lines = await File.ReadAllLinesAsync(benchmarksReportFile);
+        var vals = lines.Select(line => line.Split(';')).Where(i => i.Length > Columns.Count).Where(i => i.All(j => j.Trim() != "NA")).ToList();
+        if (vals.Count == 0)
+        {
+            Warning($"Empty report \"{reportName}\"");
+            return;
+        }
+
+        await readmeWriter.WriteLineAsync("<details>");
+        await readmeWriter.WriteLineAsync($"<summary>{reportName}</summary>");
+        await readmeWriter.WriteLineAsync();
+
+        var columnsRow = vals.First();
+        var columnsIndices = new HashSet<int>();
+        await readmeWriter.WriteAsync("|");
+        for (var index = 0; index < columnsRow.Length; index++)
+        {
+            await readmeWriter.WriteAsync(" ");
+            var columnName = columnsRow[index].Trim();
+            if (!Columns.Contains(columnName))
+            {
+                continue;
+            }
+
+            columnsIndices.Add(index);
+            await readmeWriter.WriteAsync(columnName);
+            await readmeWriter.WriteAsync(" |");
+        }
+
+        await readmeWriter.WriteLineAsync();
+        await readmeWriter.WriteLineAsync($"|{string.Join("|", Enumerable.Range(0, columnsIndices.Count).Select(_ => "--:"))}|");
+        foreach (var row in vals.Skip(1))
+        {
+            await readmeWriter.WriteAsync("|");
+            for (var index = 0; index < row.Length; index++)
+            {
+                if (!columnsIndices.Contains(index))
+                {
+                    continue;
+                }
+
+                var val = row[index].Replace("'", "").Replace("\"", "").Trim();
+                await readmeWriter.WriteAsync(" ");
+                await readmeWriter.WriteAsync(val);
+                await readmeWriter.WriteAsync(" |");
+            }
+
+            await readmeWriter.WriteLineAsync();
+        }
+
+        await readmeWriter.WriteLineAsync();
+        await readmeWriter.WriteLineAsync($"[{reportName} details]({ReadmeDir}/{reportName}Details.md)");
+        await readmeWriter.WriteLineAsync();
+        await readmeWriter.WriteLineAsync("</details>");
+        await readmeWriter.WriteLineAsync();
     }
 
     private static string CreateExampleFileName(string text) =>

@@ -3936,33 +3936,6 @@ DI.Setup("Composition")
 </blockquote></details>
 
 
-<details><summary>Field VarName</summary><blockquote>
-
-Atomically generated smart tag with value "VarName".
-            It's used for:
-            
-            class _Generator__VarsMap_ <-- _IIdGenerator_(VarName) -- _IdGenerator_ as _Transient_
-</blockquote></details>
-
-
-<details><summary>Field UniqueTag</summary><blockquote>
-
-Atomically generated smart tag with value "UniqueTag".
-            It's used for:
-            
-            class _Generator__ApiInvocationProcessor_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve__BindingBuilder_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve_
-</blockquote></details>
-
-
-<details><summary>Field Override</summary><blockquote>
-
-Atomically generated smart tag with value "Override".
-            It's used for:
-            
-            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
-</blockquote></details>
-
-
 <details><summary>Field UsingDeclarations</summary><blockquote>
 
 Atomically generated smart tag with value "UsingDeclarations".
@@ -3972,12 +3945,12 @@ Atomically generated smart tag with value "UsingDeclarations".
 </blockquote></details>
 
 
-<details><summary>Field SpecialBinding</summary><blockquote>
+<details><summary>Field VarName</summary><blockquote>
 
-Atomically generated smart tag with value "SpecialBinding".
+Atomically generated smart tag with value "VarName".
             It's used for:
             
-            class _Generator__BindingBuilder_ <-- _IIdGenerator_(SpecialBinding) -- _IdGenerator_ as _PerResolve_
+            class _Generator__VarsMap_ <-- _IIdGenerator_(VarName) -- _IdGenerator_ as _Transient_
 </blockquote></details>
 
 
@@ -3999,12 +3972,39 @@ Atomically generated smart tag with value "Cleaner".
 </blockquote></details>
 
 
+<details><summary>Field SpecialBinding</summary><blockquote>
+
+Atomically generated smart tag with value "SpecialBinding".
+            It's used for:
+            
+            class _Generator__BindingBuilder_ <-- _IIdGenerator_(SpecialBinding) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
+<details><summary>Field UniqueTag</summary><blockquote>
+
+Atomically generated smart tag with value "UniqueTag".
+            It's used for:
+            
+            class _Generator__ApiInvocationProcessor_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve__BindingBuilder_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
 <details><summary>Field CompositionClass</summary><blockquote>
 
 Atomically generated smart tag with value "CompositionClass".
             It's used for:
             
             class _Generator__CodeBuilder_ <-- _IBuilder{TData, T}_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field Override</summary><blockquote>
+
+Atomically generated smart tag with value "Override".
+            It's used for:
+            
+            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
@@ -6482,124 +6482,106 @@ Thanks!
 
 ## Benchmarks
 
-<details>
-<summary>Array</summary>
-
-<table>
-<thead><tr><th>Method              </th><th>Mean  </th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Gen1</th><th>Allocated</th><th>Alloc Ratio</th>
-</tr>
-</tr><tr><td>&#39;Hand Coded&#39;</td><td>49.22 ns</td><td>0.915 ns</td><td>0.811 ns</td><td>1.00</td><td>0.02</td><td>0.0244</td><td>-</td><td>408 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>49.45 ns</td><td>0.897 ns</td><td>1.258 ns</td><td>1.00</td><td>0.03</td><td>0.0244</td><td>-</td><td>408 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>49.70 ns</td><td>1.031 ns</td><td>1.304 ns</td><td>1.01</td><td>0.03</td><td>0.0244</td><td>-</td><td>408 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>51.40 ns</td><td>0.974 ns</td><td>1.627 ns</td><td>1.04</td><td>0.04</td><td>0.0244</td><td>-</td><td>408 B</td><td>1.00</td>
-</tr><tr><td>LightInject</td><td>55.91 ns</td><td>1.129 ns</td><td>1.207 ns</td><td>1.14</td><td>0.03</td><td>0.0244</td><td>-</td><td>408 B</td><td>1.00</td>
-</tr><tr><td>DryIoc</td><td>56.44 ns</td><td>0.834 ns</td><td>0.739 ns</td><td>1.15</td><td>0.02</td><td>0.0243</td><td>-</td><td>408 B</td><td>1.00</td>
-</tr><tr><td>Unity</td><td>3,249.01 ns</td><td>30.386 ns</td><td>28.423 ns</td><td>66.03</td><td>1.18</td><td>0.8659</td><td>0.0076</td><td>14520 B</td><td>35.59</td>
-</tr><tr><td>Autofac</td><td>12,395.24 ns</td><td>155.505 ns</td><td>121.408 ns</td><td>251.91</td><td>4.64</td><td>1.5717</td><td>0.0610</td><td>26496 B</td><td>64.94</td>
-</tr></tbody></table>
-
-[Array details](readme/ArrayDetails.md)
-
-</details>
-
-<details>
-<summary>Enum</summary>
-
-<table>
-<thead><tr><th>Method              </th><th>Mean   </th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Gen1</th><th>Allocated</th><th>Alloc Ratio</th>
-</tr>
-</tr><tr><td>&#39;Hand Coded&#39;</td><td>8.269 ns</td><td>0.1261 ns</td><td>0.1179 ns</td><td>1.00</td><td>0.02</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>8.587 ns</td><td>0.1281 ns</td><td>0.1198 ns</td><td>1.04</td><td>0.02</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>8.698 ns</td><td>0.1473 ns</td><td>0.1378 ns</td><td>1.05</td><td>0.02</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>10.261 ns</td><td>0.1868 ns</td><td>0.1656 ns</td><td>1.24</td><td>0.03</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Microsoft DI&#39;</td><td>20.245 ns</td><td>0.4555 ns</td><td>0.4038 ns</td><td>2.45</td><td>0.06</td><td>0.0072</td><td>-</td><td>120 B</td><td>5.00</td>
-</tr><tr><td>LightInject</td><td>53.336 ns</td><td>0.7231 ns</td><td>0.6410 ns</td><td>6.45</td><td>0.12</td><td>0.0244</td><td>-</td><td>408 B</td><td>17.00</td>
-</tr><tr><td>DryIoc</td><td>57.240 ns</td><td>1.1981 ns</td><td>1.9686 ns</td><td>6.92</td><td>0.25</td><td>0.0243</td><td>-</td><td>408 B</td><td>17.00</td>
-</tr><tr><td>Unity</td><td>1,509.864 ns</td><td>13.7627 ns</td><td>12.8737 ns</td><td>182.62</td><td>2.93</td><td>0.1278</td><td>-</td><td>2168 B</td><td>90.33</td>
-</tr><tr><td>Autofac</td><td>11,990.057 ns</td><td>59.8834 ns</td><td>46.7530 ns</td><td>1,450.21</td><td>20.65</td><td>1.5717</td><td>0.0610</td><td>26496 B</td><td>1,104.00</td>
-</tr></tbody></table>
-
-[Enum details](readme/EnumDetails.md)
-
-</details>
-
-<details>
-<summary>Func</summary>
-
-<table>
-<thead><tr><th>Method              </th><th>Mean  </th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Gen1</th><th>Allocated</th><th>Alloc Ratio</th>
-</tr>
-</tr><tr><td>&#39;Hand Coded&#39;</td><td>2.866 ns</td><td>0.1032 ns</td><td>0.1147 ns</td><td>1.00</td><td>0.05</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>3.055 ns</td><td>0.0520 ns</td><td>0.0434 ns</td><td>1.07</td><td>0.04</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>3.084 ns</td><td>0.1107 ns</td><td>0.0925 ns</td><td>1.08</td><td>0.05</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>4.861 ns</td><td>0.1193 ns</td><td>0.1057 ns</td><td>1.70</td><td>0.07</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>DryIoc</td><td>22.473 ns</td><td>0.3504 ns</td><td>0.3277 ns</td><td>7.85</td><td>0.32</td><td>0.0072</td><td>-</td><td>120 B</td><td>5.00</td>
-</tr><tr><td>LightInject</td><td>98.988 ns</td><td>0.8830 ns</td><td>0.7373 ns</td><td>34.60</td><td>1.34</td><td>0.0148</td><td>-</td><td>248 B</td><td>10.33</td>
-</tr><tr><td>Unity</td><td>1,390.493 ns</td><td>14.1015 ns</td><td>12.5006 ns</td><td>485.97</td><td>19.00</td><td>0.1507</td><td>-</td><td>2552 B</td><td>106.33</td>
-</tr><tr><td>Autofac</td><td>4,863.464 ns</td><td>55.1501 ns</td><td>48.8891 ns</td><td>1,699.75</td><td>66.85</td><td>0.7782</td><td>0.0076</td><td>13128 B</td><td>547.00</td>
-</tr></tbody></table>
-
-[Func details](readme/FuncDetails.md)
-
-</details>
-
-<details>
-<summary>Singleton</summary>
-
-<table>
-<thead><tr><th>Method              </th><th>Mean   </th><th>Error  </th><th>StdDev </th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Gen1</th><th>Allocated</th><th>Alloc Ratio</th>
-</tr>
-</thead><tbody><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>3.032 ns</td><td>0.0612 ns</td><td>0.0543 ns</td><td>0.94</td><td>0.02</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>3.046 ns</td><td>0.1022 ns</td><td>0.0906 ns</td><td>0.94</td><td>0.03</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Hand Coded&#39;</td><td>3.238 ns</td><td>0.0278 ns</td><td>0.0260 ns</td><td>1.00</td><td>0.01</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>6.391 ns</td><td>0.1792 ns</td><td>0.4188 ns</td><td>1.97</td><td>0.13</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Microsoft DI&#39;</td><td>9.289 ns</td><td>0.1147 ns</td><td>0.1073 ns</td><td>2.87</td><td>0.04</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>DryIoc</td><td>11.405 ns</td><td>0.0624 ns</td><td>0.0487 ns</td><td>3.52</td><td>0.03</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Simple Injector&#39;</td><td>12.485 ns</td><td>0.2894 ns</td><td>0.3445 ns</td><td>3.86</td><td>0.11</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>LightInject</td><td>364.238 ns</td><td>6.9542 ns</td><td>6.5050 ns</td><td>112.48</td><td>2.14</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>Unity</td><td>2,371.937 ns</td><td>16.5860 ns</td><td>15.5145 ns</td><td>732.48</td><td>7.39</td><td>0.1869</td><td>-</td><td>3184 B</td><td>132.67</td>
-</tr><tr><td>Autofac</td><td>8,264.212 ns</td><td>118.6169 ns</td><td>99.0505 ns</td><td>2,552.09</td><td>35.63</td><td>1.3123</td><td>0.0458</td><td>22048 B</td><td>918.67</td>
-</tr><tr><td>&#39;Castle Windsor&#39;</td><td>13,758.214 ns</td><td>232.7438 ns</td><td>206.3213 ns</td><td>4,248.70</td><td>70.00</td><td>1.3733</td><td>-</td><td>23112 B</td><td>963.00</td>
-</tr><tr><td>Ninject</td><td>62,474.870 ns</td><td>1,292.3985 ns</td><td>3,728.8654 ns</td><td>19,292.98</td><td>1,155.86</td><td>3.9673</td><td>0.9766</td><td>67040 B</td><td>2,793.33</td>
-</tr></tbody></table>
-
-[Singleton details](readme/SingletonDetails.md)
-
-</details>
+BenchmarkDotNet v0.15.0, Windows 10 (10.0.19045.6332/22H2/2022Update)
+AMD Ryzen 9 5900X 4.20GHz, 1 CPU, 24 logical and 12 physical cores
+.NET SDK 10.0.100
 
 <details>
 <summary>Transient</summary>
 
-<table>
-<thead><tr><th>Method              </th><th>Mean    </th><th>Error  </th><th>StdDev  </th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Gen1</th><th>Allocated</th><th>Alloc Ratio</th>
-</tr>
-</thead><tbody><tr><td>&#39;Pure.DI composition root&#39;</td><td>2.671 ns</td><td>0.0225 ns</td><td>0.0188 ns</td><td>0.98</td><td>0.01</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Hand Coded&#39;</td><td>2.723 ns</td><td>0.0266 ns</td><td>0.0235 ns</td><td>1.00</td><td>0.01</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>2.776 ns</td><td>0.0801 ns</td><td>0.0710 ns</td><td>1.02</td><td>0.03</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>6.154 ns</td><td>0.1737 ns</td><td>0.3428 ns</td><td>2.26</td><td>0.13</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>LightInject</td><td>6.880 ns</td><td>0.0203 ns</td><td>0.0180 ns</td><td>2.53</td><td>0.02</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Microsoft DI&#39;</td><td>8.603 ns</td><td>0.0174 ns</td><td>0.0136 ns</td><td>3.16</td><td>0.03</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Simple Injector&#39;</td><td>10.257 ns</td><td>0.0308 ns</td><td>0.0241 ns</td><td>3.77</td><td>0.03</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>DryIoc</td><td>11.148 ns</td><td>0.0579 ns</td><td>0.0484 ns</td><td>4.09</td><td>0.04</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>Unity</td><td>3,377.572 ns</td><td>28.4610 ns</td><td>26.6225 ns</td><td>1,240.29</td><td>13.99</td><td>0.3090</td><td>-</td><td>5176 B</td><td>215.67</td>
-</tr><tr><td>Autofac</td><td>12,655.059 ns</td><td>50.4007 ns</td><td>47.1448 ns</td><td>4,647.11</td><td>42.06</td><td>1.8158</td><td>0.0916</td><td>30424 B</td><td>1,267.67</td>
-</tr><tr><td>&#39;Castle Windsor&#39;</td><td>26,703.771 ns</td><td>136.6734 ns</td><td>127.8444 ns</td><td>9,805.98</td><td>93.24</td><td>3.0518</td><td>0.0305</td><td>51520 B</td><td>2,146.67</td>
-</tr><tr><td>Ninject</td><td>134,273.557 ns</td><td>3,863.1979 ns</td><td>11,084.2398 ns</td><td>49,307.06</td><td>4,071.01</td><td>7.0801</td><td>1.3428</td><td>119712 B</td><td>4,988.00</td>
-</tr></tbody></table>
+| Method |                                            Mean | Error | StdDev | Ratio | RatioSD | Gen0 | Gen1 | Allocated | Alloc Ratio |
+|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
+| Pure.DI composition root | 2.671 ns | 0.0225 ns | 0.0188 ns | 0.98 | 0.01 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| Hand Coded | 2.723 ns | 0.0266 ns | 0.0235 ns | 1.00 | 0.01 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| Pure.DI Resolve<T>() | 2.776 ns | 0.0801 ns | 0.0710 ns | 1.02 | 0.03 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| Pure.DI Resolve(Type) | 6.154 ns | 0.1737 ns | 0.3428 ns | 2.26 | 0.13 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| LightInject | 6.880 ns | 0.0203 ns | 0.0180 ns | 2.53 | 0.02 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| Microsoft DI | 8.603 ns | 0.0174 ns | 0.0136 ns | 3.16 | 0.03 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| Simple Injector | 10.257 ns | 0.0308 ns | 0.0241 ns | 3.77 | 0.03 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| DryIoc | 11.148 ns | 0.0579 ns | 0.0484 ns | 4.09 | 0.04 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| Unity | 3,377.572 ns | 28.4610 ns | 26.6225 ns | 1,240.29 | 13.99 | 0.3090 | 0.0000 | 5176 B | 215.67 |
+| Autofac | 12,655.059 ns | 50.4007 ns | 47.1448 ns | 4,647.11 | 42.06 | 1.8158 | 0.0916 | 30424 B | 1,267.67 |
+| Castle Windsor | 26,703.771 ns | 136.6734 ns | 127.8444 ns | 9,805.98 | 93.24 | 3.0518 | 0.0305 | 51520 B | 2,146.67 |
+| Ninject | 134,273.557 ns | 3,863.1979 ns | 11,084.2398 ns | 49,307.06 | 4,071.01 | 7.0801 | 1.3428 | 119712 B | 4,988.00 |
 
 [Transient details](readme/TransientDetails.md)
 
 </details>
 
 <details>
-<summary>Benchmarks environment</summary>
+<summary>Singleton</summary>
 
-<pre><code>
-BenchmarkDotNet v0.15.0, Windows 10 (10.0.19045.6332/22H2/2022Update)
-AMD Ryzen 9 5900X 4.20GHz, 1 CPU, 24 logical and 12 physical cores
-.NET SDK 10.0.100
-  [Host]     : .NET 10.0.0 (10.0.25.52411), X64 RyuJIT AVX2
-  DefaultJob : .NET 10.0.0 (10.0.25.52411), X64 RyuJIT AVX2
-</code></pre>
+| Method |                                            Mean | Error | StdDev | Ratio | RatioSD | Gen0 | Gen1 | Allocated | Alloc Ratio |
+|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
+| Pure.DI Resolve<T>() | 3.032 ns | 0.0612 ns | 0.0543 ns | 0.94 | 0.02 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| Pure.DI composition root | 3.046 ns | 0.1022 ns | 0.0906 ns | 0.94 | 0.03 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| Hand Coded | 3.238 ns | 0.0278 ns | 0.0260 ns | 1.00 | 0.01 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| Pure.DI Resolve(Type) | 6.391 ns | 0.1792 ns | 0.4188 ns | 1.97 | 0.13 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| Microsoft DI | 9.289 ns | 0.1147 ns | 0.1073 ns | 2.87 | 0.04 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| DryIoc | 11.405 ns | 0.0624 ns | 0.0487 ns | 3.52 | 0.03 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| Simple Injector | 12.485 ns | 0.2894 ns | 0.3445 ns | 3.86 | 0.11 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| LightInject | 364.238 ns | 6.9542 ns | 6.5050 ns | 112.48 | 2.14 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| Unity | 2,371.937 ns | 16.5860 ns | 15.5145 ns | 732.48 | 7.39 | 0.1869 | 0.0000 | 3184 B | 132.67 |
+| Autofac | 8,264.212 ns | 118.6169 ns | 99.0505 ns | 2,552.09 | 35.63 | 1.3123 | 0.0458 | 22048 B | 918.67 |
+| Castle Windsor | 13,758.214 ns | 232.7438 ns | 206.3213 ns | 4,248.70 | 70.00 | 1.3733 | 0.0000 | 23112 B | 963.00 |
+| Ninject | 62,474.870 ns | 1,292.3985 ns | 3,728.8654 ns | 19,292.98 | 1,155.86 | 3.9673 | 0.9766 | 67040 B | 2,793.33 |
+
+[Singleton details](readme/SingletonDetails.md)
 
 </details>
+
+<details>
+<summary>Func</summary>
+
+| Method |                                            Mean | Error | StdDev | Ratio | RatioSD | Gen0 | Gen1 | Allocated | Alloc Ratio |
+|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
+| Hand Coded | 2.866 ns | 0.1032 ns | 0.1147 ns | 1.00 | 0.05 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| Pure.DI Resolve<T>() | 3.055 ns | 0.0520 ns | 0.0434 ns | 1.07 | 0.04 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| Pure.DI composition root | 3.084 ns | 0.1107 ns | 0.0925 ns | 1.08 | 0.05 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| Pure.DI Resolve(Type) | 4.861 ns | 0.1193 ns | 0.1057 ns | 1.70 | 0.07 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| DryIoc | 22.473 ns | 0.3504 ns | 0.3277 ns | 7.85 | 0.32 | 0.0072 | 0.0000 | 120 B | 5.00 |
+| LightInject | 98.988 ns | 0.8830 ns | 0.7373 ns | 34.60 | 1.34 | 0.0148 | 0.0000 | 248 B | 10.33 |
+| Unity | 1,390.493 ns | 14.1015 ns | 12.5006 ns | 485.97 | 19.00 | 0.1507 | 0.0000 | 2552 B | 106.33 |
+| Autofac | 4,863.464 ns | 55.1501 ns | 48.8891 ns | 1,699.75 | 66.85 | 0.7782 | 0.0076 | 13128 B | 547.00 |
+
+[Func details](readme/FuncDetails.md)
+
+</details>
+
+<details>
+<summary>Enum</summary>
+
+| Method |                                            Mean | Error | StdDev | Ratio | RatioSD | Gen0 | Gen1 | Allocated | Alloc Ratio |
+|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
+| Hand Coded | 8.269 ns | 0.1261 ns | 0.1179 ns | 1.00 | 0.02 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| Pure.DI Resolve<T>() | 8.587 ns | 0.1281 ns | 0.1198 ns | 1.04 | 0.02 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| Pure.DI composition root | 8.698 ns | 0.1473 ns | 0.1378 ns | 1.05 | 0.02 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| Pure.DI Resolve(Type) | 10.261 ns | 0.1868 ns | 0.1656 ns | 1.24 | 0.03 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| Microsoft DI | 20.245 ns | 0.4555 ns | 0.4038 ns | 2.45 | 0.06 | 0.0072 | 0.0000 | 120 B | 5.00 |
+| LightInject | 53.336 ns | 0.7231 ns | 0.6410 ns | 6.45 | 0.12 | 0.0244 | 0.0000 | 408 B | 17.00 |
+| DryIoc | 57.240 ns | 1.1981 ns | 1.9686 ns | 6.92 | 0.25 | 0.0243 | 0.0000 | 408 B | 17.00 |
+| Unity | 1,509.864 ns | 13.7627 ns | 12.8737 ns | 182.62 | 2.93 | 0.1278 | 0.0000 | 2168 B | 90.33 |
+| Autofac | 11,990.057 ns | 59.8834 ns | 46.7530 ns | 1,450.21 | 20.65 | 1.5717 | 0.0610 | 26496 B | 1,104.00 |
+
+[Enum details](readme/EnumDetails.md)
+
+</details>
+
+<details>
+<summary>Array</summary>
+
+| Method |                                            Mean | Error | StdDev | Ratio | RatioSD | Gen0 | Gen1 | Allocated | Alloc Ratio |
+|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
+| Hand Coded | 49.22 ns | 0.915 ns | 0.811 ns | 1.00 | 0.02 | 0.0244 | 0.0000 | 408 B | 1.00 |
+| Pure.DI composition root | 49.45 ns | 0.897 ns | 1.258 ns | 1.00 | 0.03 | 0.0244 | 0.0000 | 408 B | 1.00 |
+| Pure.DI Resolve<T>() | 49.70 ns | 1.031 ns | 1.304 ns | 1.01 | 0.03 | 0.0244 | 0.0000 | 408 B | 1.00 |
+| Pure.DI Resolve(Type) | 51.40 ns | 0.974 ns | 1.627 ns | 1.04 | 0.04 | 0.0244 | 0.0000 | 408 B | 1.00 |
+| LightInject | 55.91 ns | 1.129 ns | 1.207 ns | 1.14 | 0.03 | 0.0244 | 0.0000 | 408 B | 1.00 |
+| DryIoc | 56.44 ns | 0.834 ns | 0.739 ns | 1.15 | 0.02 | 0.0243 | 0.0000 | 408 B | 1.00 |
+| Unity | 3,249.01 ns | 30.386 ns | 28.423 ns | 66.03 | 1.18 | 0.8659 | 0.0076 | 14520 B | 35.59 |
+| Autofac | 12,395.24 ns | 155.505 ns | 121.408 ns | 251.91 | 4.64 | 1.5717 | 0.0610 | 26496 B | 64.94 |
+
+[Array details](readme/ArrayDetails.md)
+
+</details>
+

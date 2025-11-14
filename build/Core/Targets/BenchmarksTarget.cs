@@ -37,7 +37,9 @@ class BenchmarksTarget(
         }
 
         var index = 0;
-        foreach (var originalReportFile in fileSystem.EnumerateFiles(artifactsDirectory, "*.html", SearchOption.AllDirectories))
+        var files = fileSystem.EnumerateFiles(artifactsDirectory, "*.csv", SearchOption.AllDirectories)
+            .Concat(fileSystem.EnumerateFiles(artifactsDirectory, "*.html", SearchOption.AllDirectories));
+        foreach (var originalReportFile in files )
         {
             var reportFile = $"{index++:00} {Path.GetFileName(originalReportFile).Replace("Pure.DI.Benchmarks.Benchmarks.", "").Replace("-report", "")}";
             reportFile = Path.Combine(logsDirectory, reportFile);
