@@ -13,7 +13,7 @@ class Commands(RootCommand rootCommand)
         params string[] aliases)
     {
         var command = new Command(name, description);
-        command.SetAction(async ctx => {
+        command.SetAction(async _ => {
             Summary($"\"{description}\" started");
             try
             {

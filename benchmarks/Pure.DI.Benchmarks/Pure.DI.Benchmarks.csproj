@@ -15,15 +15,15 @@
     <ItemGroup>
         <ProjectReference Include="..\..\src\Pure.DI.Core\Pure.DI.Core.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
         <ProjectReference Include="..\..\src\Pure.DI\Pure.DI.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
-        <PackageReference Include="BenchmarkDotNet" Version="0.15.0" />
-        <PackageReference Include="BenchmarkDotNet.Diagnostics.Windows" Version="0.15.0" />
+        <PackageReference Include="BenchmarkDotNet" Version="0.15.6" />
+        <PackageReference Include="BenchmarkDotNet.Diagnostics.Windows" Version="0.15.6" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
         <PackageReference Include="IoC.Container" Version="1.3.8"/>
         <PackageReference Include="Moq" Version="4.20.72"/>
         <PackageReference Include="SimpleInjector" Version="5.5.0"/>
         <PackageReference Include="Unity" Version="5.11.10"/>
         <PackageReference Include="DryIoc.dll" Version="5.4.3"/>
-        <PackageReference Include="Autofac" Version="8.4.0" />
+        <PackageReference Include="Autofac" Version="9.0.0" />
         <PackageReference Include="LightInject" Version="7.0.1"/>
         <PackageReference Include="Ninject" Version="3.3.6"/>
         <PackageReference Include="Castle.Windsor" Version="6.0.0"/>
