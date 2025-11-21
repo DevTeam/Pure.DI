@@ -1,3 +1,4 @@
+// ReSharper disable UnusedMember.Local
 namespace AvaloniaApp;
 
 using Pure.DI;

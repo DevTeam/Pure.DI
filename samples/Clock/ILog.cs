@@ -1,4 +1,5 @@
-﻿namespace Clock;
+﻿// ReSharper disable UnusedTypeParameter
+namespace Clock;
 
 public interface ILog<T>
 {

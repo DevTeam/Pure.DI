@@ -1,8 +1,10 @@
+// ReSharper disable UnusedMember.Local
+// ReSharper disable ClassNeverInstantiated.Global
 namespace WpfAppNetCore;
 
 using Pure.DI;
 
-internal partial class DesignTimeComposition
+partial class DesignTimeComposition
 {
     [Conditional("DI")]
     private void Setup() => DI.Setup()

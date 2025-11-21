@@ -1,7 +1,13 @@
 ﻿using static Pure.DI.Tag;
+// ReSharper disable UnusedMember.Local
+// ReSharper disable UnusedParameterInPartialMethod
+// ReSharper disable HeapView.PossibleBoxingAllocation
 
 namespace ConsoleApp;
 
+using System.Diagnostics.CodeAnalysis;
+
+[SuppressMessage("Performance", "CA1822:Mark members as static")]
 partial class Composition
 {
     [Conditional("DI")]

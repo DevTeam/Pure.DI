@@ -44,7 +44,7 @@ static class Names
     // Types
     public const string IDisposableTypeName = $"{SystemNamespace}{nameof(IDisposable)}";
     public const string IAsyncDisposableTypeName = $"{SystemNamespace}IAsyncDisposable";
-    public const string IResolverTypeName = $"{ApiNamespace}{nameof(IResolver<object, object>)}";
+    public const string IResolverTypeName = $"{ApiNamespace}{nameof(IResolver<,>)}";
     public const string IContextTypeName = $"{ApiNamespace}{nameof(IContext)}";
     public const string IConfigurationTypeName = $"{ApiNamespace}{nameof(IConfiguration)}";
     public const string ObjectTypeName = $"{SystemNamespace}Object";
@@ -59,8 +59,8 @@ static class Names
     public const string CannotResolveExceptionTypeName = $"{ApiNamespace}{nameof(CannotResolveException)}";
 
     // Members
-    public const string ResolveMethodName = nameof(IResolver<object, object>.Resolve);
-    public const string ResolveByTagMethodName = nameof(IResolver<object, object>.ResolveByTag);
+    public const string ResolveMethodName = nameof(IResolver<,>.Resolve);
+    public const string ResolveByTagMethodName = nameof(IResolver<,>.ResolveByTag);
 
     // Partial methods
     public const string OnNewInstanceMethodName = "OnNewInstance";

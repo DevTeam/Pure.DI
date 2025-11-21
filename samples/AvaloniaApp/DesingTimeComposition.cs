@@ -1,3 +1,5 @@
+// ReSharper disable UnusedMember.Local
+// ReSharper disable ClassNeverInstantiated.Global
 namespace AvaloniaApp;
 
 using Pure.DI;

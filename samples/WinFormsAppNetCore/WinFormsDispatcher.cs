@@ -1,6 +1,6 @@
 ﻿namespace WinFormsAppNetCore;
 
-internal class WinFormsDispatcher(Func<FormMain> formProvider)
+class WinFormsDispatcher(Func<FormMain> formProvider)
     : IDispatcher
 {
     public void Dispatch(Action action)

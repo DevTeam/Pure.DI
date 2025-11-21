@@ -1,4 +1,6 @@
-﻿#pragma warning disable CS8618
+﻿// ReSharper disable UnusedAutoPropertyAccessor.Local
+// ReSharper disable UnusedMember.Global
+#pragma warning disable CS8618
 namespace EF;
 
 using System.ComponentModel.DataAnnotations;
@@ -12,7 +14,7 @@ record Contact
 
     public int PersonId { get; private set; }
 
-    public Person Person { get; set; }
+    public Person Person { get; private set; }
 
     [StringLength(10)]
     public string PhoneNumber { get; init; } = "";

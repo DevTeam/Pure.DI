@@ -1,4 +1,5 @@
-﻿global using System.Diagnostics;
+﻿// ReSharper disable RedundantUsingDirective.Global
+global using System.Diagnostics;
 global using System.Threading.Tasks;
 global using Clock;
 global using Microsoft.AspNetCore.Mvc;

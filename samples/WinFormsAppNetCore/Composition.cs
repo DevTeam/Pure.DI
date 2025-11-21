@@ -1,3 +1,4 @@
+// ReSharper disable UnusedMember.Local
 using Pure.DI;
 using static Pure.DI.Lifetime;
 

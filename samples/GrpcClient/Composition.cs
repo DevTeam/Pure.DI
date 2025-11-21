@@ -1,5 +1,6 @@
 ﻿using Pure.DI;
 using static Pure.DI.Lifetime;
+// ReSharper disable UnusedMember.Local
 
 namespace GrpcClient;
 

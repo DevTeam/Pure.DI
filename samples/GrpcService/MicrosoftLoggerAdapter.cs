@@ -1,6 +1,8 @@
-﻿namespace GrpcService;
+﻿// ReSharper disable TemplateIsNotCompileTimeConstantProblem
+#pragma warning disable CA2254
+namespace GrpcService;
 
-internal class MicrosoftLoggerAdapter<T>(ILogger<T> logger) : ILog<T>
+class MicrosoftLoggerAdapter<T>(ILogger<T> logger) : ILog<T>
 {
     public void Info(string message) => 
         logger.LogInformation(message);

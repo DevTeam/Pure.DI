@@ -1,6 +1,7 @@
 using Pure.DI;
 using Pure.DI.MS;
 using static Pure.DI.Lifetime;
+// ReSharper disable UnusedMember.Local
 
 namespace MinimalWebAPI;
 

@@ -1,4 +1,5 @@
-﻿namespace AvaloniaApp;
+﻿// ReSharper disable ClassNeverInstantiated.Global
+namespace AvaloniaApp;
 
 public class Program
 {

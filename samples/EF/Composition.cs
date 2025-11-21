@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using Pure.DI;
 using Pure.DI.MS;
+// ReSharper disable UnusedMember.Local
 
 namespace EF;
 

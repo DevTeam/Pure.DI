@@ -22,14 +22,14 @@ public class Packages
         }
 
         await using var outStream = File.Create(targetPackage);
-        using var outArchive = new ZipArchive(outStream, ZipArchiveMode.Create);
+        await using var outArchive = new ZipArchive(outStream, ZipArchiveMode.Create);
         var buffer = new byte[4096];
         var paths = new HashSet<string>();
         await foreach (var package in mergingPackages.WithCancellation(cancellationToken))
         {
             Info($"Processing \"{package}\".");
             await using var inStream = File.OpenRead(package);
-            using var inArchive = new ZipArchive(inStream, ZipArchiveMode.Read);
+            await using var inArchive = new ZipArchive(inStream, ZipArchiveMode.Read);
             foreach (var entry in inArchive.Entries)
             {
                 if (entry.Length <= 0 || !paths.Add(entry.FullName))
@@ -38,9 +38,9 @@ public class Packages
                     continue;
                 }
 
-                await using var prevStream = entry.Open();
+                await using var prevStream = await entry.OpenAsync(cancellationToken);
                 var newEntry = outArchive.CreateEntry(entry.FullName, CompressionLevel.Optimal);
-                await using var newStream = newEntry.Open();
+                await using var newStream = await newEntry.OpenAsync(cancellationToken);
                 int size;
                 do
                 {

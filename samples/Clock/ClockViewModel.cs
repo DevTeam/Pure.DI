@@ -7,7 +7,6 @@ public sealed class ClockViewModel
     private readonly IClockModel _clockModel;
     private readonly ITicks _ticks;
     private DateTimeOffset _now;
-    private string _title = "", _time = "", _date = "";
 
     public ClockViewModel(
         ILog<ClockViewModel> log,
@@ -22,21 +21,21 @@ public sealed class ClockViewModel
 
     public string Title
     {
-        get => _title;
-        private set => _title = OnPropertyChanged(value);
-    }
+        get;
+        private set => field = OnPropertyChanged(value);
+    } = "";
 
     public string Time
     {
-        get => _time;
-        private set => _time = OnPropertyChanged(value);
-    }
+        get;
+        private set => field = OnPropertyChanged(value);
+    } = "";
 
     public string Date
     {
-        get => _date;
-        private set => _date = OnPropertyChanged(value);
-    }
+        get;
+        private set => field = OnPropertyChanged(value);
+    } = "";
 
     private void OnTick()
     {

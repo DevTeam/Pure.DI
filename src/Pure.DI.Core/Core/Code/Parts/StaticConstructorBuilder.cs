@@ -57,7 +57,7 @@ sealed class StaticConstructorBuilder(
             var pairs = $"{Names.IResolverTypeName}<{composition.Source.Source.Name.ClassName}, object>";
             var bucketsTypeName = $"{Names.ApiNamespace}Buckets<{pairs}>";
             var pairTypeName = $"{Names.ApiNamespace}Pair<{pairs}>";
-            code.AppendLine($"{Names.BucketsFieldName} = {bucketsTypeName}.{nameof(Buckets<object>.Create)}(");
+            code.AppendLine($"{Names.BucketsFieldName} = {bucketsTypeName}.{nameof(Buckets<>.Create)}(");
             using (code.Indent())
             {
                 code.AppendLine($"{divisor.ToString()},");

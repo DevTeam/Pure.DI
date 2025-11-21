@@ -1,4 +1,5 @@
-﻿namespace Pure.DI.Core;
+﻿// ReSharper disable ConvertToExtensionBlock
+namespace Pure.DI.Core;
 
 using System.Runtime.CompilerServices;
 

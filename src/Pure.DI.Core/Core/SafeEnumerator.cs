@@ -4,7 +4,6 @@ namespace Pure.DI.Core;
 sealed class SafeEnumerator<T>(IEnumerator<T> source) : IEnumerator<T>
     where T : class
 {
-    private T? _current;
     private bool _result;
 
     public T? Current
@@ -13,11 +12,11 @@ sealed class SafeEnumerator<T>(IEnumerator<T> source) : IEnumerator<T>
         {
             if (!_result)
             {
-                return _current;
+                return field;
             }
 
-            _current = source.Current;
-            return _current;
+            field = source.Current;
+            return field;
         }
     }
 

@@ -17,13 +17,6 @@ sealed class RootCompositionDependencyRefCounterVisitor(INodeTools nodeTools)
         ImmutableArray<DependencyNode> parent = default) =>
         parent.Add(dependency.Source);
 
-    public ImmutableArray<DependencyNode> AppendLeafNode(
-        RootCompositionDependencyRefCounterContext ctx,
-        IGraph<DependencyNode, Dependency> graph,
-        DependencyNode leafDependencyNode,
-        ImmutableArray<DependencyNode> parent = default) =>
-        parent.Add(leafDependencyNode);
-
     public bool Visit(
         RootCompositionDependencyRefCounterContext ctx,
         IGraph<DependencyNode, Dependency> graph,

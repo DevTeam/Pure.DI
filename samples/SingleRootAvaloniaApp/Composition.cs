@@ -1,6 +1,8 @@
 using Pure.DI;
 using static Pure.DI.Lifetime;
 using static Pure.DI.RootKinds;
+// ReSharper disable ArrangeTypeMemberModifiers
+// ReSharper disable UnusedMember.Local
 
 namespace AvaloniaApp;
 

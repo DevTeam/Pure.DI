@@ -1,4 +1,5 @@
-﻿namespace EF;
+﻿// ReSharper disable UnusedAutoPropertyAccessor.Local
+namespace EF;
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
