@@ -29,21 +29,23 @@ public class Scenario
     {
 // {
         var composition = new Composition();
-        var service = composition.Root;
+        var commenter = composition.Commenter;
 // }
-        service.ShouldBeOfType<Service>();
+        commenter.ShouldBeOfType<ClassCommenter>();
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+// Infrastructure interface for retrieving comments (e.g., from a database)
+interface IComments;
 
-class Dependency : IDependency;
+class Comments : IComments;
 
-interface IService;
+// Domain service for handling class comments
+interface IClassCommenter;
 
-class Service(IDependency dependency) : IService;
+class ClassCommenter(IComments comments) : IClassCommenter;
 
 partial class Composition
 {
@@ -51,25 +53,28 @@ partial class Composition
     // This hint indicates to not generate methods such as Resolve
     // Resolve = Off
 // {
-    // This method will not be called in runtime
-    static void Setup1() =>
+    // Infrastructure layer setup.
+    // This method isolates the configuration of databases or external services.
+    static void SetupInfrastructure() =>
         DI.Setup()
-            .Bind<IDependency>().To<Dependency>();
+            .Bind<IComments>().To<Comments>();
 }
 
 partial class Composition
 {
-    // This method will not be called in runtime
-    static void Setup2() =>
+    // Domain logic layer setup.
+    // Here we bind domain services.
+    static void SetupDomain() =>
         DI.Setup()
-            .Bind<IService>().To<Service>();
+            .Bind<IClassCommenter>().To<ClassCommenter>();
 }
 
 partial class Composition
 {
-    // This method will not be called in runtime
-    private static void Setup3() =>
+    // Public API setup (Composition Roots).
+    // Determines which objects can be retrieved directly from the container.
+    private static void SetupApi() =>
         DI.Setup()
-            .Root<IService>("Root");
+            .Root<IClassCommenter>("Commenter");
 }
 // }

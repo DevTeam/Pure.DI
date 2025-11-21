@@ -30,53 +30,60 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Bind<IDependency>(Tag.Any).To(ctx => new Dependency(ctx.Tag))
-            .Bind<IService>().To<Service>()
+            // Binds IQueue to the Queue implementation.
+            // Tag.Any creates a binding that matches any tag (including null),
+            // allowing the specific tag value to be used within the factory (ctx.Tag).
+            .Bind<IQueue>(Tag.Any).To(ctx => new Queue(ctx.Tag))
+            .Bind<IQueueService>().To<QueueService>()
 
             // Composition root
-            .Root<IService>("Root")
+            .Root<IQueueService>("QueueService")
 
-            // Root by Tag.Any
-            .Root<IDependency>("OtherDependency", "Other");
+            // Root by Tag.Any: Resolves IQueue with the tag "Audit"
+            .Root<IQueue>("AuditQueue", "Audit");
 
         var composition = new Composition();
-        var service = composition.Root;
-        service.Dependency1.Key.ShouldBe("Abc");
-        service.Dependency2.Key.ShouldBe(123);
-        service.Dependency3.Key.ShouldBeNull();
-        composition.OtherDependency.Key.ShouldBe("Other");
-// }
+        var queueService = composition.QueueService;
+
+        queueService.WorkItemsQueue.Id.ShouldBe("WorkItems");
+        queueService.PartitionQueue.Id.ShouldBe(42);
+        queueService.DefaultQueue.Id.ShouldBeNull();
+        composition.AuditQueue.Id.ShouldBe("Audit");
+        // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency
+interface IQueue
 {
-    object? Key { get; }
+    object? Id { get; }
 }
 
-record Dependency(object? Key) : IDependency;
+record Queue(object? Id) : IQueue;
 
-interface IService
+interface IQueueService
 {
-    IDependency Dependency1 { get; }
+    IQueue WorkItemsQueue { get; }
 
-    IDependency Dependency2 { get; }
+    IQueue PartitionQueue { get; }
 
-    IDependency Dependency3 { get; }
+    IQueue DefaultQueue { get; }
 }
 
-class Service(
-    [Tag("Abc")] IDependency dependencyAbc,
-    [Tag(123)] Func<IDependency> dependency123Factory,
-    IDependency dependency)
-    : IService
+class QueueService(
+    // Injects IQueue tagged with "WorkItems"
+    [Tag("WorkItems")] IQueue workItemsQueue,
+    // Injects IQueue tagged with integer 42
+    [Tag(42)] Func<IQueue> partitionQueueFactory,
+    // Injects IQueue with the default (null) tag
+    IQueue defaultQueue)
+    : IQueueService
 {
-    public IDependency Dependency1 { get; } = dependencyAbc;
+    public IQueue WorkItemsQueue { get; } = workItemsQueue;
 
-    public IDependency Dependency2 { get; } = dependency123Factory();
+    public IQueue PartitionQueue { get; } = partitionQueueFactory();
 
-    public IDependency Dependency3 { get; } = dependency;
+    public IQueue DefaultQueue { get; } = defaultQueue;
 }
 // }

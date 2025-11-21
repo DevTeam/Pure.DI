@@ -29,66 +29,66 @@ public class Scenario
     {
         // This hint indicates to not generate methods such as Resolve
         // Resolve = Off
-// {
+        // {
         DI.Setup(nameof(Composition))
             .Bind().To(_ => Guid.NewGuid())
-            .Bind().To<Dependency>()
+            .Bind().To<WiFi>()
             // Creates a builder based on the name template
-            // for each type inherited from IService.
+            // for each type inherited from IDevice.
             // These types must be available at this point in the code.
-            .Builders<IService>("BuildUp{type}");
+            .Builders<IDevice>("Install{type}");
 
         var composition = new Composition();
-        
-        var service1 = composition.BuildUpService1(new Service1());
-        service1.Id.ShouldNotBe(Guid.Empty);
-        service1.Dependency.ShouldBeOfType<Dependency>();
 
-        var service2 = composition.BuildUpService2(new Service2());
-        service2.Id.ShouldBe(Guid.Empty);
-        service2.Dependency.ShouldBeOfType<Dependency>();
+        var webcam = composition.InstallWebcam(new Webcam());
+        webcam.Id.ShouldNotBe(Guid.Empty);
+        webcam.Network.ShouldBeOfType<WiFi>();
+
+        var thermostat = composition.InstallThermostat(new Thermostat());
+        thermostat.Id.ShouldBe(Guid.Empty);
+        thermostat.Network.ShouldBeOfType<WiFi>();
 
         // Uses a common method to build an instance
-        IService abstractService = new Service1();
-        abstractService = composition.BuildUpIService(abstractService);
-        abstractService.ShouldBeOfType<Service1>();
-        abstractService.Id.ShouldNotBe(Guid.Empty);
-        abstractService.Dependency.ShouldBeOfType<Dependency>();
-// }
+        IDevice device = new Webcam();
+        device = composition.InstallIDevice(device);
+        device.ShouldBeOfType<Webcam>();
+        device.Id.ShouldNotBe(Guid.Empty);
+        device.Network.ShouldBeOfType<WiFi>();
+        // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+interface INetwork;
 
-class Dependency : IDependency;
+class WiFi : INetwork;
 
-interface IService
+interface IDevice
 {
     Guid Id { get; }
-    
-    IDependency? Dependency { get; }
+
+    INetwork? Network { get; }
 }
 
-record Service1: IService
+record Webcam : IDevice
 {
     public Guid Id { get; private set; } = Guid.Empty;
-    
+
     // The Dependency attribute specifies to perform an injection
     [Dependency]
-    public IDependency? Dependency { get; set; }
+    public INetwork? Network { get; set; }
 
     [Dependency]
     public void SetId(Guid id) => Id = id;
 }
 
-record Service2 : IService
+record Thermostat : IDevice
 {
     public Guid Id => Guid.Empty;
 
     // The Dependency attribute specifies to perform an injection
     [Dependency]
-    public IDependency? Dependency { get; set; }
+    public INetwork? Network { get; set; }
 }
 // }

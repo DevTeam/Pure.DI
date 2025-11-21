@@ -56,7 +56,7 @@ $r=Shouldly
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedTypeParameter
 // ReSharper disable ArrangeTypeModifiers
-
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.UsageTests.Generics.GenericsScenario;
 
 using Shouldly;
@@ -77,40 +77,50 @@ public class Scenario
         DI.Setup(nameof(Composition))
             // This hint indicates to not generate methods such as Resolve
             .Hint(Hint.Resolve, "Off")
-            .Bind<IDependency<TT>>().To<Dependency<TT>>()
-            .Bind<IService>().To<Service>()
+            // Binding a generic interface to a generic implementation
+            // using the marker type TT. This allows Pure.DI to match
+            // IRepository<User> to Repository<User>, IRepository<Order> to Repository<Order>, etc.
+            .Bind<IRepository<TT>>().To<Repository<TT>>()
+            .Bind<IDataService>().To<DataService>()
 
             // Composition root
-            .Root<IService>("Root");
+            .Root<IDataService>("DataService");
 
         var composition = new Composition();
-        var service = composition.Root;
-        service.IntDependency.ShouldBeOfType<Dependency<int>>();
-        service.StringDependency.ShouldBeOfType<Dependency<string>>();
+        var dataService = composition.DataService;
+
+        // Verifying that the correct generic types were injected
+        dataService.Users.ShouldBeOfType<Repository<User>>();
+        dataService.Orders.ShouldBeOfType<Repository<Order>>();
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency<T>;
+interface IRepository<T>;
 
-class Dependency<T> : IDependency<T>;
+class Repository<T> : IRepository<T>;
 
-interface IService
+// Domain entities
+record User;
+
+record Order;
+
+interface IDataService
 {
-    IDependency<int> IntDependency { get; }
+    IRepository<User> Users { get; }
 
-    IDependency<string> StringDependency { get; }
+    IRepository<Order> Orders { get; }
 }
 
-class Service(
-    IDependency<int> intDependency,
-    IDependency<string> stringDependency)
-    : IService
+class DataService(
+    IRepository<User> users,
+    IRepository<Order> orders)
+    : IDataService
 {
-    public IDependency<int> IntDependency { get; } = intDependency;
+    public IRepository<User> Users { get; } = users;
 
-    public IDependency<string> StringDependency { get; } = stringDependency;
+    public IRepository<Order> Orders { get; } = orders;
 }
 // }

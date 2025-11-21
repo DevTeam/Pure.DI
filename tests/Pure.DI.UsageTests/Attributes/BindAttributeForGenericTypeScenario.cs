@@ -11,7 +11,7 @@ $r=Shouldly
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable MemberCanBeMadeStatic.Global
 // ReSharper disable UnusedTypeParameter
-
+// ReSharper disable ClassNeverInstantiated.Global
 #pragma warning disable CA1822
 namespace Pure.DI.UsageTests.Basics.BindAttributeForGenericTypeScenario;
 
@@ -28,50 +28,55 @@ public class Scenario
     {
         // This hint indicates to not generate methods such as Resolve
         // Resolve = Off
-// {
+        // {
         DI.Setup(nameof(Composition))
-            .Bind().As(Lifetime.Singleton).To<Facade>()
-            .Bind().To<Service>()
+            .Bind().As(Lifetime.Singleton).To<CommentsFactory>()
+            .Bind().To<ArticleService>()
 
             // Composition root
-            .Root<IService>("Root");
+            .Root<IArticleService>("ArticleService");
 
         var composition = new Composition();
-        var service = composition.Root;
-        service.DoSomething();
-// }
+        var articleService = composition.ArticleService;
+        articleService.DisplayComments();
+        // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency<T>
+interface IComments<T>
 {
-    public void DoSomething();
+    void Load();
 }
 
-class Dependency<T> : IDependency<T>
+class Comments<T> : IComments<T>
 {
-    public void DoSomething()
+    public void Load()
     {
     }
 }
 
-class Facade
+class CommentsFactory
 {
-    [Bind(typeof(IDependency<TT>))]
-    public IDependency<T> GetDependency<T>() => new Dependency<T>();
+    // The 'TT' type marker in the attribute indicates that this method
+    // can produce 'IComments<T>' for any generic type 'T'.
+    // This allows the factory to handle all requests for IComments<T>.
+    [Bind(typeof(IComments<TT>))]
+    public IComments<T> Create<T>() => new Comments<T>();
 }
 
-interface IService
+interface IArticleService
 {
-    public void DoSomething();
+    void DisplayComments();
 }
 
-class Service(IDependency<int> dep) : IService
+class ArticleService(IComments<Article> comments) : IArticleService
 {
-    public void DoSomething() => dep.DoSomething();
+    public void DisplayComments() => comments.Load();
 }
+
+class Article;
 // }
 
 #pragma warning restore CA1822

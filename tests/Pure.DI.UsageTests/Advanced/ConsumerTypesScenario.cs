@@ -48,7 +48,7 @@ public class Scenario
 // {
         //# Serilog.ILogger serilogLogger = new Serilog.LoggerConfiguration().CreateLogger();
         var composition = new Composition(logger: serilogLogger);
-        var service = composition.Root;
+        var orderProcessing = composition.OrderProcessing;
 // }
         events.Count.ShouldBe(2);
         foreach (var @event in events)
@@ -61,32 +61,32 @@ public class Scenario
 }
 
 // {
-interface IDependency;
+interface IPaymentGateway;
 
-class Dependency : IDependency
+class PaymentGateway : IPaymentGateway
 {
-    public Dependency(Serilog.ILogger log)
+    public PaymentGateway(Serilog.ILogger log)
     {
-        log.Information("created");
+        log.Information("Payment gateway initialized");
     }
 }
 
-interface IService
+interface IOrderProcessing
 {
-    IDependency Dependency { get; }
+    IPaymentGateway PaymentGateway { get; }
 }
 
-class Service : IService
+class OrderProcessing : IOrderProcessing
 {
-    public Service(
+    public OrderProcessing(
         Serilog.ILogger log,
-        IDependency dependency)
+        IPaymentGateway paymentGateway)
     {
-        Dependency = dependency;
-        log.Information("created");
+        PaymentGateway = paymentGateway;
+        log.Information("Order processing initialized");
     }
 
-    public IDependency Dependency { get; }
+    public IPaymentGateway PaymentGateway { get; }
 }
 
 partial class Composition
@@ -98,14 +98,15 @@ partial class Composition
 // {
         DI.Setup(nameof(Composition))
             .Arg<Serilog.ILogger>("logger", "from arg")
-            .Bind().To(ctx =>
-            {
+            .Bind().To(ctx => {
                 ctx.Inject<Serilog.ILogger>("from arg", out var logger);
+
+                // Using ConsumerTypes to get the type of the consumer.
+                // This allows us to create a logger with a context specific to the consuming class.
                 return logger.ForContext(ctx.ConsumerTypes[0]);
             })
-
-            .Bind().To<Dependency>()
-            .Bind().To<Service>()
-            .Root<IService>(nameof(Root));
+            .Bind().To<PaymentGateway>()
+            .Bind().To<OrderProcessing>()
+            .Root<IOrderProcessing>(nameof(OrderProcessing));
 }
 // }

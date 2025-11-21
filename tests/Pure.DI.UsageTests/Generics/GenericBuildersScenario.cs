@@ -12,6 +12,7 @@ $r=Shouldly
 // ReSharper disable UnusedTypeParameter
 // ReSharper disable UnusedMemberInSuper.Global
 // ReSharper disable UnassignedGetOnlyAutoProperty
+// ReSharper disable RedundantArgumentDefaultValue
 namespace Pure.DI.UsageTests.Generics.GenericBuildersScenario;
 
 using Shouldly;
@@ -31,61 +32,73 @@ public class Scenario
 // {
         DI.Setup(nameof(Composition))
             .Bind(Tag.Id).To<TT>(_ => (TT)(object)Guid.NewGuid())
-            .Bind().To<Dependency<TT>>()
-            // Generic service builder
-            .Builders<IService<TT, TT2>>("BuildUpGeneric");
+            .Bind().To<MessageTracker<TT>>()
+            // Generic builder to inject dependencies into existing messages
+            .Builders<IMessage<TT, TT2>>("BuildUp");
 
         var composition = new Composition();
 
-        var service1 = composition.BuildUpGeneric(new Service1<Guid, string>());
-        service1.Id.ShouldNotBe(Guid.Empty);
-        service1.Dependency.ShouldBeOfType<Dependency<string>>();
+        // A Query is created (e.g. by API controller), ID is missing
+        var query = new QueryMessage<Guid, string>();
 
-        var service2 = composition.BuildUpGeneric(new Service2<Guid, int>());
-        service2.Id.ShouldBe(Guid.Empty);
-        service2.Dependency.ShouldBeOfType<Dependency<int>>();
+        // Composition injects dependencies and generates an ID
+        var queryWithDeps = composition.BuildUp(query);
 
-        // Uses a common method to build an instance
-        IService<Guid, Uri> abstractService = new Service1<Guid, Uri>();
-        abstractService = composition.BuildUpGeneric(abstractService);
-        abstractService.ShouldBeOfType<Service1<Guid, Uri>>();
-        abstractService.Id.ShouldNotBe(Guid.Empty);
-        abstractService.Dependency.ShouldBeOfType<Dependency<Uri>>();
-// }
+        queryWithDeps.Id.ShouldNotBe(Guid.Empty);
+        queryWithDeps.Tracker.ShouldBeOfType<MessageTracker<string>>();
+
+        // A Command is created, usually with a specific ID
+        var command = new CommandMessage<Guid, int>();
+
+        // Composition injects dependencies only
+        var commandWithDeps = composition.BuildUp(command);
+
+        commandWithDeps.Id.ShouldBe(Guid.Empty);
+        commandWithDeps.Tracker.ShouldBeOfType<MessageTracker<int>>();
+
+        // Works with abstract types/interfaces too
+        var queryMessage = new QueryMessage<Guid, double>();
+        queryMessage = composition.BuildUp(queryMessage);
+
+        queryMessage.ShouldBeOfType<QueryMessage<Guid, double>>();
+        queryMessage.Id.ShouldNotBe(Guid.Empty);
+        queryMessage.Tracker.ShouldBeOfType<MessageTracker<double>>();
+        // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency<T>;
+interface IMessageTracker<T>;
 
-class Dependency<T> : IDependency<T>;
+class MessageTracker<T> : IMessageTracker<T>;
 
-interface IService<out T, T2>
+interface IMessage<out TId, TContent>
 {
-    T Id { get; }
-    
-    IDependency<T2>? Dependency { get; }
+    TId Id { get; }
+
+    IMessageTracker<TContent>? Tracker { get; }
 }
 
-record Service1<T, T2>: IService<T, T2>
-    where T: struct
+record QueryMessage<TId, TContent> : IMessage<TId, TContent>
+    where TId : struct
 {
-    public T Id { get; private set; }
-    
-    [Dependency]
-    public IDependency<T2>? Dependency { get; set; }
+    public TId Id { get; private set; }
 
     [Dependency]
-    public void SetId([Tag(Tag.Id)] T id) => Id = id;
+    public IMessageTracker<TContent>? Tracker { get; set; }
+
+    // Injects a new ID
+    [Dependency]
+    public void SetId([Tag(Tag.Id)] TId id) => Id = id;
 }
 
-record Service2<T, T2>: IService<T, T2>
-    where T: struct
+record CommandMessage<TId, TContent> : IMessage<TId, TContent>
+    where TId : struct
 {
-    public T Id { get; }
+    public TId Id { get; }
 
     [Dependency]
-    public IDependency<T2>? Dependency { get; set; }
+    public IMessageTracker<TContent>? Tracker { get; set; }
 }
 // }

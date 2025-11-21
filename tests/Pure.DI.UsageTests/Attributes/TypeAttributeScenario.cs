@@ -32,41 +32,43 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Bind().To<Service>()
+            .Bind().To<NotificationService>()
 
             // Composition root
-            .Root<IService>("Root");
+            .Root<INotificationService>("NotificationService");
 
         var composition = new Composition();
-        var service = composition.Root;
-        service.Dependency1.ShouldBeOfType<AbcDependency>();
-        service.Dependency2.ShouldBeOfType<XyzDependency>();
+        var notificationService = composition.NotificationService;
+        notificationService.UserNotifier.ShouldBeOfType<EmailSender>();
+        notificationService.AdminNotifier.ShouldBeOfType<SmsSender>();
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+interface IMessageSender;
 
-class AbcDependency : IDependency;
+class EmailSender : IMessageSender;
 
-class XyzDependency : IDependency;
+class SmsSender : IMessageSender;
 
-interface IService
+interface INotificationService
 {
-    IDependency Dependency1 { get; }
+    IMessageSender UserNotifier { get; }
 
-    IDependency Dependency2 { get; }
+    IMessageSender AdminNotifier { get; }
 }
 
-class Service(
-    [Type(typeof(AbcDependency))] IDependency dependency1,
-    [Type(typeof(XyzDependency))] IDependency dependency2)
-    : IService
+class NotificationService(
+    // The [Type] attribute forces the injection of a specific type,
+    // overriding the default resolution behavior.
+    [Type(typeof(EmailSender))] IMessageSender userNotifier,
+    [Type(typeof(SmsSender))] IMessageSender adminNotifier)
+    : INotificationService
 {
-    public IDependency Dependency1 { get; } = dependency1;
+    public IMessageSender UserNotifier { get; } = userNotifier;
 
-    public IDependency Dependency2 { get; } = dependency2;
+    public IMessageSender AdminNotifier { get; } = adminNotifier;
 }
 // }

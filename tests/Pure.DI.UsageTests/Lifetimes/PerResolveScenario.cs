@@ -13,6 +13,7 @@ $r=Shouldly
 namespace Pure.DI.UsageTests.Lifetimes.PerResolveScenario;
 
 using Xunit;
+using Shouldly;
 using static Lifetime;
 
 // {
@@ -29,42 +30,69 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Bind().As(PerResolve).To<Dependency>()
-            .Bind().As(Singleton).To<(IDependency dep3, IDependency dep4)>()
+            // PerResolve = one "planning session" per root access.
+            // Imagine: each time you ask for a plan, you get a fresh context.
+            .Bind().As(PerResolve).To<RoutePlanningSession>()
+
+            // Singleton = created once per Composition instance.
+            // Here it intentionally captures session when it's created the first time
+            // (this is a realistic pitfall: singleton accidentally holds request-scoped state).
+            .Bind().As(Singleton).To<(IRoutePlanningSession s3, IRoutePlanningSession s4)>()
 
             // Composition root
-            .Root<Service>("Root");
+            .Root<TrainTripPlanner>("Planner");
 
         var composition = new Composition();
 
-        var service1 = composition.Root;
-        service1.Dep1.ShouldBe(service1.Dep2);
-        service1.Dep3.ShouldBe(service1.Dep4);
-        service1.Dep1.ShouldBe(service1.Dep3);
+        // First "user request": plan a trip now
+        var plan1 = composition.Planner;
 
-        var service2 = composition.Root;
-        service2.Dep1.ShouldNotBe(service1.Dep1);
+        // In the same request, PerResolve dependencies are the same instance:
+        plan1.SessionForOutbound.ShouldBe(plan1.SessionForReturn);
+
+        // Tuple is Singleton, so both entries are the same captured instance:
+        plan1.CapturedSessionA.ShouldBe(plan1.CapturedSessionB);
+
+        // Because the singleton tuple was created during the first request,
+        // it captured THAT request's PerResolve session:
+        plan1.SessionForOutbound.ShouldBe(plan1.CapturedSessionA);
+
+        // Second "user request": plan another trip (new root access)
+        var plan2 = composition.Planner;
+
+        // New request => new PerResolve session:
+        plan2.SessionForOutbound.ShouldNotBe(plan1.SessionForOutbound);
+
+        // But the singleton still holds the old captured session from the first request:
+        plan2.CapturedSessionA.ShouldBe(plan1.CapturedSessionA);
+        plan2.SessionForOutbound.ShouldNotBe(plan2.CapturedSessionA);
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+// A request-scoped context: e.g., contains "now", locale, pricing rules version,
+// feature flags, etc. You typically want a new one per route planning request.
+interface IRoutePlanningSession;
 
-class Dependency : IDependency;
+class RoutePlanningSession : IRoutePlanningSession;
 
-class Service(
-    IDependency dep1,
-    IDependency dep2,
-    (IDependency dep3, IDependency dep4) deps)
+// A service that plans a train trip.
+// It asks for two session instances to demonstrate PerResolve:
+// both should be the same within a single request.
+class TrainTripPlanner(
+    IRoutePlanningSession sessionForOutbound,
+    IRoutePlanningSession sessionForReturn,
+    (IRoutePlanningSession capturedA, IRoutePlanningSession capturedB) capturedSessions)
 {
-    public IDependency Dep1 { get; } = dep1;
+    public IRoutePlanningSession SessionForOutbound { get; } = sessionForOutbound;
 
-    public IDependency Dep2 { get; } = dep2;
+    public IRoutePlanningSession SessionForReturn { get; } = sessionForReturn;
 
-    public IDependency Dep3 { get; } = deps.dep3;
+    // These come from a singleton tuple — effectively "global cached" instances.
+    public IRoutePlanningSession CapturedSessionA { get; } = capturedSessions.capturedA;
 
-    public IDependency Dep4 { get; } = deps.dep4;
+    public IRoutePlanningSession CapturedSessionB { get; } = capturedSessions.capturedB;
 }
 // }

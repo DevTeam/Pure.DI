@@ -38,49 +38,48 @@ public class Scenario
         DI.Setup(nameof(Composition))
             // This hint indicates to not generate methods such as Resolve
             .Hint(Hint.Resolve, "Off")
-            .Bind().To<Dependency<TT>>()
-            .Bind().To<Service<TT>>()
-            // Creates OtherService manually,
+            .Bind().To<Repository<TT>>()
+            .Bind().To<CreateCommandHandler<TT>>()
+            // Creates UpdateCommandHandler manually,
             // just for the sake of example
-            .Bind("Other").To(ctx =>
-            {
-                ctx.Inject(out IDependency<TT> dependency);
-                return new OtherService<TT>(dependency);
+            .Bind("Update").To(ctx => {
+                ctx.Inject(out IRepository<TT> repository);
+                return new UpdateCommandHandler<TT>(repository);
             })
 
             // Specifies to create a regular public method
-            // to get a composition root of type Service<T>
-            // with the name "GetMyRoot"
-            .Root<IService<TT>>("GetMyRoot")
+            // to get a composition root of type ICommandHandler<T>
+            // with the name "GetCreateCommandHandler"
+            .Root<ICommandHandler<TT>>("GetCreateCommandHandler")
 
             // Specifies to create a regular public method
-            // to get a composition root of type OtherService<T>
-            // with the name "GetOtherService"
-            // using the "Other" tag
-            .Root<IService<TT>>("GetOtherService", "Other");
+            // to get a composition root of type ICommandHandler<T>
+            // with the name "GetUpdateCommandHandler"
+            // using the "Update" tag
+            .Root<ICommandHandler<TT>>("GetUpdateCommandHandler", "Update");
 
         var composition = new Composition();
 
-        // service = new Service<int>(new Dependency<int>());
-        var service = composition.GetMyRoot<int>();
+        // createHandler = new CreateCommandHandler<int>(new Repository<int>());
+        var createHandler = composition.GetCreateCommandHandler<int>();
 
-        // someOtherService = new OtherService<int>(new Dependency<int>());
-        var someOtherService = composition.GetOtherService<string>();
+        // updateHandler = new UpdateCommandHandler<string>(new Repository<string>());
+        var updateHandler = composition.GetUpdateCommandHandler<string>();
 // }
-        service.ShouldBeOfType<Service<int>>();
-        someOtherService.ShouldBeOfType<OtherService<string>>();
+        createHandler.ShouldBeOfType<CreateCommandHandler<int>>();
+        updateHandler.ShouldBeOfType<UpdateCommandHandler<string>>();
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency<T>;
+interface IRepository<T>;
 
-class Dependency<T> : IDependency<T>;
+class Repository<T> : IRepository<T>;
 
-interface IService<T>;
+interface ICommandHandler<T>;
 
-class Service<T>(IDependency<T> dependency) : IService<T>;
+class CreateCommandHandler<T>(IRepository<T> repository) : ICommandHandler<T>;
 
-class OtherService<T>(IDependency<T> dependency) : IService<T>;
+class UpdateCommandHandler<T>(IRepository<T> repository) : ICommandHandler<T>;
 // }

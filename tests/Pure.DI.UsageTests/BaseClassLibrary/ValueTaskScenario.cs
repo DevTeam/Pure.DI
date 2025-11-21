@@ -25,42 +25,44 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Bind<IDependency>().To<Dependency>()
-            .Bind<IService>().To<Service>()
+            .Bind<IConnection>().To<CloudConnection>()
+            .Bind<IDataProcessor>().To<DataProcessor>()
 
             // Composition root
-            .Root<IService>("Root");
+            .Root<IDataProcessor>("DataProcessor");
 
         var composition = new Composition();
-        var service = composition.Root;
-        await service.RunAsync();
+        var processor = composition.DataProcessor;
+        await processor.ProcessDataAsync();
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency
+interface IConnection
 {
-    ValueTask DoSomething();
+    ValueTask<bool> PingAsync();
 }
 
-class Dependency : IDependency
+class CloudConnection : IConnection
 {
-    public ValueTask DoSomething() => ValueTask.CompletedTask;
+    public ValueTask<bool> PingAsync() => ValueTask.FromResult(true);
 }
 
-interface IService
+interface IDataProcessor
 {
-    ValueTask RunAsync();
+    ValueTask ProcessDataAsync();
 }
 
-class Service(ValueTask<IDependency> dependencyTask) : IService
+class DataProcessor(ValueTask<IConnection> connectionTask) : IDataProcessor
 {
-    public async ValueTask RunAsync()
+    public async ValueTask ProcessDataAsync()
     {
-        var dependency = await dependencyTask;
-        await dependency.DoSomething();
+        // The connection is resolved asynchronously, allowing potential
+        // non-blocking initialization or resource allocation.
+        var connection = await connectionTask;
+        await connection.PingAsync();
     }
 }
 // }

@@ -8,7 +8,7 @@ $d=Bind attribute with lifetime and tag
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedType.Global
 // ReSharper disable ArrangeTypeModifiers
-
+// ReSharper disable LocalizableElement
 namespace Pure.DI.UsageTests.Basics.BindAttributeWithLifetimeAndTagScenario;
 
 using Xunit;
@@ -24,48 +24,49 @@ public class Scenario
     {
         // This hint indicates to not generate methods such as Resolve
         // Resolve = Off
-// {
+        // {
         DI.Setup(nameof(Composition))
-            .Bind().As(Lifetime.Singleton).To<Facade>()
-            .Bind().To<Service>()
+            .Bind().As(Lifetime.Singleton).To<GraphicsAdapter>()
+            .Bind().To<RayTracer>()
 
             // Composition root
-            .Root<IService>("Root");
+            .Root<IRenderer>("Renderer");
 
         var composition = new Composition();
-        var service = composition.Root;
-        service.DoSomething();
-// }
+        var renderer = composition.Renderer;
+        renderer.Render();
+        // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency
+interface IGpu
 {
-    public void DoSomething();
+    void RenderFrame();
 }
 
-class Dependency : IDependency
+class DiscreteGpu : IGpu
 {
-    public void DoSomething()
-    {
-    }
+    public void RenderFrame() => Console.WriteLine("Rendering with Discrete GPU");
 }
 
-class Facade
+class GraphicsAdapter
 {
-    [Bind(lifetime: Lifetime.Singleton, tags: ["my tag"])]
-    public IDependency Dependency { get; } = new Dependency();
+    // Binds the property to the container with the specified
+    // lifetime and tag. This allows the "HighPerformance" GPU
+    // to be injected into other components.
+    [Bind(lifetime: Lifetime.Singleton, tags: ["HighPerformance"])]
+    public IGpu HighPerfGpu { get; } = new DiscreteGpu();
 }
 
-interface IService
+interface IRenderer
 {
-    public void DoSomething();
+    void Render();
 }
 
-class Service([Tag("my tag")] IDependency dep) : IService
+class RayTracer([Tag("HighPerformance")] IGpu gpu) : IRenderer
 {
-    public void DoSomething() => dep.DoSomething();
+    public void Render() => gpu.RenderFrame();
 }
 // }

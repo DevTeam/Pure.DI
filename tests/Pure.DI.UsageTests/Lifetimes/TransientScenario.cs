@@ -37,41 +37,45 @@ public class Scenario
     {
         // This hint indicates to not generate methods such as Resolve
         // Resolve = Off
-// {
+        // {
         DI.Setup(nameof(Composition))
-            .Bind().As(Transient).To<Dependency>()
-            .Bind().To<Service>()
-            .Root<IService>("Root");
+            .Bind().As(Transient).To<Buffer>()
+            .Bind().To<BatchProcessor>()
+            .Root<IBatchProcessor>("Processor");
 
         var composition = new Composition();
-        var service1 = composition.Root;
-        var service2 = composition.Root;
-        service1.Dependency1.ShouldNotBe(service1.Dependency2);
-        service2.Dependency1.ShouldNotBe(service1.Dependency1);
-// }
+        var processor = composition.Processor;
+
+        // Verify that input and output buffers are different instances.
+        // This is critical for the batch processor to avoid data corruption
+        // during reading. The Transient lifetime ensures a new instance
+        // is created for each dependency injection.
+        processor.Input.ShouldNotBe(processor.Output);
+        // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+// Represents a memory buffer that should be unique for each operation
+interface IBuffer;
 
-class Dependency : IDependency;
+class Buffer : IBuffer;
 
-interface IService
+interface IBatchProcessor
 {
-    public IDependency Dependency1 { get; }
+    public IBuffer Input { get; }
 
-    public IDependency Dependency2 { get; }
+    public IBuffer Output { get; }
 }
 
-class Service(
-    IDependency dependency1,
-    IDependency dependency2)
-    : IService
+class BatchProcessor(
+    IBuffer input,
+    IBuffer output)
+    : IBatchProcessor
 {
-    public IDependency Dependency1 { get; } = dependency1;
+    public IBuffer Input { get; } = input;
 
-    public IDependency Dependency2 { get; } = dependency2;
+    public IBuffer Output { get; } = output;
 }
 // }

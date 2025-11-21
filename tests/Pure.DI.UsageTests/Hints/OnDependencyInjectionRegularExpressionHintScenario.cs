@@ -39,19 +39,27 @@ public class Scenario
 // {
         // OnDependencyInjection = On
         DI.Setup(nameof(Composition))
-            .Hint(OnDependencyInjectionContractTypeNameRegularExpression, "(.*IDependency|int)$")
-            .RootArg<int>("id")
-            .Bind().To<Dependency>()
-            .Bind().To<Service>()
-            .Root<IService>("GetRoot");
+            // Filters types by regular expression to control which types trigger the OnDependencyInjection method.
+            // In this case, we want to intercept the injection of any "Gateway" (like IPaymentGateway)
+            // and integer configuration values.
+            .Hint(OnDependencyInjectionContractTypeNameRegularExpression, "(.*Gateway|int)$")
+            .RootArg<int>("maxAttempts")
+            .Bind().To<PayPalGateway>()
+            .Bind().To<PaymentService>()
+            .Root<IPaymentService>("GetPaymentService");
 
         var log = new List<string>();
         var composition = new Composition(log);
-        var service = composition.GetRoot(33);
+
+        // Resolving the root service triggers the injection chain.
+        // 1. int maxAttempts is injected into PayPalGateway.
+        // 2. PayPalGateway is injected into PaymentService.
+        // PaymentService itself is not logged because "IPaymentService" does not match the regex.
+        var service = composition.GetPaymentService(3);
 
         log.ShouldBe([
             "Int32 injected",
-            "Dependency injected"
+            "PayPalGateway injected"
         ]);
 // }
         composition.SaveClassDiagram();
@@ -59,18 +67,18 @@ public class Scenario
 }
 
 // {
-interface IDependency;
+interface IPaymentGateway;
 
-record Dependency(int Id) : IDependency;
+record PayPalGateway(int MaxAttempts) : IPaymentGateway;
 
-interface IService
+interface IPaymentService
 {
-    IDependency Dependency { get; }
+    IPaymentGateway Gateway { get; }
 }
 
-class Service(IDependency dependency) : IService
+class PaymentService(IPaymentGateway gateway) : IPaymentService
 {
-    public IDependency Dependency { get; } = dependency;
+    public IPaymentGateway Gateway { get; } = gateway;
 }
 
 partial class Composition
@@ -85,6 +93,7 @@ partial class Composition
         object? tag,
         Lifetime lifetime)
     {
+        // Logs the actual runtime type of the injected instance
         _log.Add($"{value?.GetType().Name} injected");
         return value;
     }

@@ -37,62 +37,66 @@ public class Scenario
         DI.Setup(nameof(Composition))
             // This hint indicates to not generate methods such as Resolve
             .Hint(Hint.Resolve, "Off")
-            .Bind<IDependency>().To<Dependency>()
-            .Bind<IService>().To<Service>()
+            .Bind<IDatabaseService>().To<DatabaseService>()
+            .Bind<IApplication>().To<Application>()
 
-            // Some argument
-            .RootArg<int>("id")
-            .RootArg<string>("dependencyName")
+            // Root arguments serve as values passed
+            // to the composition root method
+            .RootArg<int>("port")
+            .RootArg<string>("connectionString")
 
-            // An argument can be tagged (e.g., tag "forService")
+            // An argument can be tagged
             // to be injectable by type and this tag
-            .RootArg<string>("serviceName", ForService)
+            .RootArg<string>("appName", AppDetail)
 
             // Composition root
-            .Root<IService>("CreateServiceWithArgs");
+            .Root<IApplication>("CreateApplication");
 
         var composition = new Composition();
 
-        // service = new Service("Abc", new Dependency(123, "dependency 123"));
-        var service = composition.CreateServiceWithArgs(serviceName: "Abc", id: 123, dependencyName: "dependency 123");
+        // Creates an application with specific arguments
+        var app = composition.CreateApplication(
+            appName: "MySuperApp",
+            port: 8080,
+            connectionString: "Server=.;Database=MyDb;");
 
-        service.Name.ShouldBe("Abc");
-        service.Dependency.Id.ShouldBe(123);
-        service.Dependency.DependencyName.ShouldBe("dependency 123");
+        app.Name.ShouldBe("MySuperApp");
+        app.Database.Port.ShouldBe(8080);
+        app.Database.ConnectionString.ShouldBe("Server=.;Database=MyDb;");
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency
+interface IDatabaseService
 {
-    int Id { get; }
+    int Port { get; }
 
-    public string DependencyName { get; }
+    string ConnectionString { get; }
 }
 
-class Dependency(int id, string dependencyName) : IDependency
+class DatabaseService(int port, string connectionString) : IDatabaseService
 {
-    public int Id { get; } = id;
+    public int Port { get; } = port;
 
-    public string DependencyName { get; } = dependencyName;
+    public string ConnectionString { get; } = connectionString;
 }
 
-interface IService
+interface IApplication
 {
     string Name { get; }
 
-    IDependency Dependency { get; }
+    IDatabaseService Database { get; }
 }
 
-class Service(
-    [Tag(ForService)] string name,
-    IDependency dependency)
-    : IService
+class Application(
+    [Tag(AppDetail)] string name,
+    IDatabaseService database)
+    : IApplication
 {
     public string Name { get; } = name;
 
-    public IDependency Dependency { get; } = dependency;
+    public IDatabaseService Database { get; } = database;
 }
 // }

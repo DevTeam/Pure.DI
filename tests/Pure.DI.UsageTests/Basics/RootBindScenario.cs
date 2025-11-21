@@ -30,25 +30,30 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Bind().As(Lifetime.Singleton).To<Dependency>()
-            .RootBind<IService>("MyRoot").To<Service>();
-        // It's the same as:
-        //  .Bind<IService>().To<Service>()
-        //  .Root<IService>("MyRoot")
+            .Bind().As(Lifetime.Singleton).To<DbConnection>()
+            // RootBind allows you to define a binding and a composition root
+            // simultaneously. This is useful for creating public entry points
+            // for your application components while keeping the configuration concise.
+            .RootBind<IOrderService>("OrderService").To<OrderService>();
+
+        // The line above is functionally equivalent to:
+        //  .Bind<IOrderService>().To<OrderService>()
+        //  .Root<IOrderService>("OrderService")
 
         var composition = new Composition();
-        composition.MyRoot.ShouldBeOfType<Service>();
-// }
+        var orderService = composition.OrderService;
+        orderService.ShouldBeOfType<OrderService>();
+        // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+interface IDbConnection;
 
-class Dependency : IDependency;
+class DbConnection : IDbConnection;
 
-interface IService;
+interface IOrderService;
 
-class Service(IDependency dependency) : IService;
+class OrderService(IDbConnection connection) : IOrderService;
 // }

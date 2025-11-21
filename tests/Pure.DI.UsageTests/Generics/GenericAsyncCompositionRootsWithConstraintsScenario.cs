@@ -37,14 +37,13 @@ public class Scenario
         DI.Setup(nameof(Composition))
             // This hint indicates to not generate methods such as Resolve
             .Hint(Hint.Resolve, "Off")
-            .Bind().To<Dependency<TTDisposable>>()
-            .Bind().To<Service<TTDisposable, TTS>>()
-            // Creates OtherService manually,
+            .Bind().To<ConnectionProvider<TTDisposable>>()
+            .Bind().To<DataQuery<TTDisposable, TTS>>()
+            // Creates StatusQuery manually,
             // just for the sake of example
-            .Bind("Other").To(ctx =>
-            {
-                ctx.Inject(out IDependency<TTDisposable> dependency);
-                return new OtherService<TTDisposable>(dependency);
+            .Bind("Status").To(ctx => {
+                ctx.Inject(out IConnectionProvider<TTDisposable> connectionProvider);
+                return new StatusQuery<TTDisposable>(connectionProvider);
             })
 
             // Specifies to use CancellationToken from the argument
@@ -52,43 +51,45 @@ public class Scenario
             .RootArg<CancellationToken>("cancellationToken")
 
             // Specifies to create a regular public method
-            // to get a composition root of type Task<Service<T, TStruct>>
-            // with the name "GetMyRootAsync"
-            .Root<Task<IService<TTDisposable, TTS>>>("GetMyRootAsync")
+            // to get a composition root of type Task<DataQuery<T, TStruct>>
+            // with the name "GetDataQueryAsync"
+            .Root<Task<IQuery<TTDisposable, TTS>>>("GetDataQueryAsync")
 
             // Specifies to create a regular public method
-            // to get a composition root of type Task<OtherService<T>>
-            // with the name "GetOtherServiceAsync"
-            // using the "Other" tag
-            .Root<Task<IService<TTDisposable, bool>>>("GetOtherServiceAsync", "Other");
+            // to get a composition root of type Task<StatusQuery<T>>
+            // with the name "GetStatusQueryAsync"
+            // using the "Status" tag
+            .Root<Task<IQuery<TTDisposable, bool>>>("GetStatusQueryAsync", "Status");
 
         var composition = new Composition();
 
         // Resolves composition roots asynchronously
-        var service = await composition.GetMyRootAsync<Stream, double>(CancellationToken.None);
-        var someOtherService = await composition.GetOtherServiceAsync<BinaryReader>(CancellationToken.None);
+        var query = await composition.GetDataQueryAsync<Stream, double>(CancellationToken.None);
+        var status = await composition.GetStatusQueryAsync<BinaryReader>(CancellationToken.None);
 // }
-        service.ShouldBeOfType<Service<Stream, double>>();
-        someOtherService.ShouldBeOfType<OtherService<BinaryReader>>();
+        query.ShouldBeOfType<DataQuery<Stream, double>>();
+        status.ShouldBeOfType<StatusQuery<BinaryReader>>();
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency<T>
+interface IConnectionProvider<T>
     where T : IDisposable;
 
-class Dependency<T> : IDependency<T>
+class ConnectionProvider<T> : IConnectionProvider<T>
     where T : IDisposable;
 
-interface IService<T, TStruct>
-    where T : IDisposable
-    where TStruct : struct;
+interface IQuery<TConnection, TResult>
+    where TConnection : IDisposable
+    where TResult : struct;
 
-class Service<T, TStruct>(IDependency<T> dependency) : IService<T, TStruct>
-    where T : IDisposable
-    where TStruct : struct;
+class DataQuery<TConnection, TResult>(IConnectionProvider<TConnection> connectionProvider)
+    : IQuery<TConnection, TResult>
+    where TConnection : IDisposable
+    where TResult : struct;
 
-class OtherService<T>(IDependency<T> dependency) : IService<T, bool>
-    where T : IDisposable;
+class StatusQuery<TConnection>(IConnectionProvider<TConnection> connectionProvider)
+    : IQuery<TConnection, bool>
+    where TConnection : IDisposable;
 // }

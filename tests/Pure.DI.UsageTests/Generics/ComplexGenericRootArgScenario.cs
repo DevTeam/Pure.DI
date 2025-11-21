@@ -2,6 +2,7 @@
 $v=true
 $p=9
 $d=Complex generic root arguments
+$r=Shouldly
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -31,37 +32,52 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .RootArg<MyData<TT>>("complexArg")
-            .Bind<IService<TT2>>().To<Service<TT2>>()
+            // Defines a generic root argument 'config' of type SourceConfig<T>.
+            // This allows passing specific configuration when resolving ISource<T>.
+            .RootArg<SourceConfig<TT>>("config")
+            .Bind<ISource<TT2>>().To<Source<TT2>>()
 
-            // Composition root
-            .Root<IService<TT3>>("GetMyService");
+            // Composition root that creates a source for a specific type.
+            // The 'GetSource' method will accept 'SourceConfig<T>' as an argument.
+            .Root<ISource<TT3>>("GetSource");
 
         var composition = new Composition();
-        IService<int> service = composition.GetMyService<int>(
-            new MyData<int>(33, "Just contains an integer value 33"));
-// }
+
+        // Resolve a source for 'int', passing specific configuration
+        var source = composition.GetSource<int>(
+            new SourceConfig<int>(33, "IntSource"));
+
+        source.Value.ShouldBe(33);
+        source.Name.ShouldBe("IntSource");
+        // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-record MyData<T>(T Value, string Description); 
-    
-interface IService<out T>
+// Represents configuration for a data source, including a default value
+record SourceConfig<T>(T DefaultValue, string SourceName);
+
+interface ISource<out T>
 {
-    T? Val { get; }
+    T? Value { get; }
+    string Name { get; }
 }
 
-class Service<T> : IService<T>
+class Source<T> : ISource<T>
 {
-    // The Dependency attribute specifies to perform an injection,
-    // the integer value in the argument specifies
-    // the ordinal of injection
+    // The Dependency attribute specifies to perform an injection.
+    // We use method injection to initialize the source with configuration
+    // passed from the composition root.
     [Dependency]
-    public void SetDependency(MyData<T> data) =>
-        Val = data.Value;
+    public void Initialize(SourceConfig<T> config)
+    {
+        Value = config.DefaultValue;
+        Name = config.SourceName;
+    }
 
-    public T? Val { get; private set; }
+    public T? Value { get; private set; }
+
+    public string Name { get; private set; } = "";
 }
 // }

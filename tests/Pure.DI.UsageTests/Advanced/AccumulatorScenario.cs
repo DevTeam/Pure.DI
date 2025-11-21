@@ -34,40 +34,57 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Accumulate<IAccumulating, MyAccumulator>(Transient, Singleton)
-            .Bind<IDependency>().As(PerBlock).To<AbcDependency>()
-            .Bind<IDependency>(Tag.Type).To<AbcDependency>()
-            .Bind<IDependency>(Tag.Type).As(Singleton).To<XyzDependency>()
-            .Bind<IService>().To<Service>()
-            .Root<(IService service, MyAccumulator accumulator)>("Root");
+            // Accumulates all instances implementing ITelemetrySource
+            // into a collection of type TelemetryRegistry.
+            // The accumulation applies to Transient and Singleton lifetimes.
+            .Accumulate<ITelemetrySource, TelemetryRegistry>(Transient, Singleton)
+
+            // Infrastructure bindings
+            .Bind<IDataSource>().As(PerBlock).To<SqlDataSource>()
+            .Bind<IDataSource>(Tag.Type).To<SqlDataSource>()
+            .Bind<IDataSource>(Tag.Type).As(Singleton).To<NetworkDataSource>()
+            .Bind<IDashboard>().To<Dashboard>()
+
+            // Composition root
+            .Root<(IDashboard dashboard, TelemetryRegistry registry)>("Root");
 
         var composition = new Composition();
-        var (service, accumulator) = composition.Root;
-        accumulator.Count.ShouldBe(3);
-        accumulator[0].ShouldBeOfType<XyzDependency>();
-        accumulator[1].ShouldBeOfType<AbcDependency>();
-        accumulator[2].ShouldBeOfType<Service>();
+        var (dashboard, registry) = composition.Root;
+
+        // Checks that all telemetry sources have been collected
+        registry.Count.ShouldBe(3);
+        // The order of accumulation depends on the order of object creation in the graph
+        registry[0].ShouldBeOfType<NetworkDataSource>();
+        registry[1].ShouldBeOfType<SqlDataSource>();
+        registry[2].ShouldBeOfType<Dashboard>();
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IAccumulating;
+// Represents a component that produces telemetry data
+interface ITelemetrySource;
 
-class MyAccumulator : List<IAccumulating>;
+// Accumulator for collecting all telemetry sources in the object graph
+class TelemetryRegistry : List<ITelemetrySource>;
 
-interface IDependency;
+// Abstract data source interface
+interface IDataSource;
 
-class AbcDependency : IDependency, IAccumulating;
+// SQL database implementation acting as a telemetry source
+class SqlDataSource : IDataSource, ITelemetrySource;
 
-class XyzDependency : IDependency, IAccumulating;
+// Network data source implementation acting as a telemetry source
+class NetworkDataSource : IDataSource, ITelemetrySource;
 
-interface IService;
+// Dashboard interface
+interface IDashboard;
 
-class Service(
-    [Tag(typeof(AbcDependency))] IDependency dependency1,
-    [Tag(typeof(XyzDependency))] IDependency dependency2,
-    IDependency dependency3)
-    : IService, IAccumulating;
+// Dashboard implementation aggregating data from sources
+class Dashboard(
+    [Tag(typeof(SqlDataSource))] IDataSource primaryDb,
+    [Tag(typeof(NetworkDataSource))] IDataSource externalApi,
+    IDataSource fallbackDb)
+    : IDashboard, ITelemetrySource;
 // }

@@ -27,77 +27,91 @@ public class Scenario
     {
 // {
         var composition = new Composition();
-        var root1 = composition.Root;
-        var root2 = composition.Root;
-        root1.Dependency.ShouldNotBe(root2.Dependency);
-        root1.SingleDependency.ShouldBe(root2.SingleDependency);
+        var queryHandler1 = composition.QueryHandler;
+        var queryHandler2 = composition.QueryHandler;
 
-        root2.Dispose();
+        // The exclusive connection is created for each handler
+        queryHandler1.ExclusiveConnection.ShouldNotBe(queryHandler2.ExclusiveConnection);
 
-        // Checks that the disposable instances
-        // associated with root1 have been disposed of
-        root2.Dependency.IsDisposed.ShouldBeTrue();
+        // The shared connection is the same for all handlers
+        queryHandler1.SharedConnection.ShouldBe(queryHandler2.SharedConnection);
 
-        // But the singleton is still not disposed of
-        root2.SingleDependency.IsDisposed.ShouldBeFalse();
+        // Disposing the second handler
+        queryHandler2.Dispose();
 
-        // Checks that the disposable instances
-        // associated with root2 have not been disposed of
-        root1.Dependency.IsDisposed.ShouldBeFalse();
-        root1.SingleDependency.IsDisposed.ShouldBeFalse();
+        // Checks that the exclusive connection
+        // associated with queryHandler2 has been disposed of
+        queryHandler2.ExclusiveConnection.IsDisposed.ShouldBeTrue();
 
-        root1.Dispose();
+        // But the shared connection is still alive (not disposed)
+        // because it is a Singleton and shared with other consumers
+        queryHandler2.SharedConnection.IsDisposed.ShouldBeFalse();
 
-        // Checks that the disposable instances
-        // associated with root2 have been disposed of
-        root1.Dependency.IsDisposed.ShouldBeTrue();
+        // Checks that the connections associated with root1 
+        // are not affected by queryHandler2 disposal
+        queryHandler1.ExclusiveConnection.IsDisposed.ShouldBeFalse();
+        queryHandler1.SharedConnection.IsDisposed.ShouldBeFalse();
 
-        // But the singleton is still not disposed of
-        root1.SingleDependency.IsDisposed.ShouldBeFalse();
-        
+        // Disposing the first handler
+        queryHandler1.Dispose();
+
+        // Its exclusive connection is now disposed
+        queryHandler1.ExclusiveConnection.IsDisposed.ShouldBeTrue();
+
+        // The shared connection is STILL alive
+        queryHandler1.SharedConnection.IsDisposed.ShouldBeFalse();
+
+        // Disposing the composition root container
+        // This should dispose all Singletons
         composition.Dispose();
-        root1.SingleDependency.IsDisposed.ShouldBeTrue();
+
+        // Now the shared connection is disposed
+        queryHandler1.SharedConnection.IsDisposed.ShouldBeTrue();
 // }
         new Composition().SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency
+interface IConnection
 {
     bool IsDisposed { get; }
 }
 
-class Dependency : IDependency, IDisposable
+class Connection : IConnection, IDisposable
 {
     public bool IsDisposed { get; private set; }
 
     public void Dispose() => IsDisposed = true;
 }
 
-interface IService
+interface IQueryHandler
 {
-    public IDependency Dependency { get; }
-    
-    public IDependency SingleDependency { get; }
+    public IConnection ExclusiveConnection { get; }
+
+    public IConnection SharedConnection { get; }
 }
 
-class Service(
-    Func<Owned<IDependency>> dependencyFactory,
-    [Tag("single")] Func<Owned<IDependency>> singleDependencyFactory)
-    : IService, IDisposable
+class QueryHandler(
+    Func<Owned<IConnection>> connectionFactory,
+    [Tag("Shared")] Func<Owned<IConnection>> sharedConnectionFactory)
+    : IQueryHandler, IDisposable
 {
-    private readonly Owned<IDependency> _dependency = dependencyFactory();
-    private readonly Owned<IDependency> _singleDependency = singleDependencyFactory();
+    private readonly Owned<IConnection> _exclusiveConnection = connectionFactory();
+    private readonly Owned<IConnection> _sharedConnection = sharedConnectionFactory();
 
-    public IDependency Dependency => _dependency.Value;
+    public IConnection ExclusiveConnection => _exclusiveConnection.Value;
 
-    public IDependency SingleDependency => _singleDependency.Value;
+    public IConnection SharedConnection => _sharedConnection.Value;
 
     public void Dispose()
     {
-        _dependency.Dispose();
-        _singleDependency.Dispose();
+        // Disposes the owned instances.
+        // For the exclusive connection (Transient), this disposes the actual connection.
+        // For the shared connection (Singleton), this just releases the ownership
+        // but does NOT dispose the underlying singleton instance until the container is disposed.
+        _exclusiveConnection.Dispose();
+        _sharedConnection.Dispose();
     }
 }
 
@@ -109,11 +123,11 @@ partial class Composition
         // Resolve = Off
 // {
         DI.Setup()
-            .Bind().To<Dependency>()
-            .Bind("single").As(Lifetime.Singleton).To<Dependency>()
-            .Bind().To<Service>()
+            .Bind().To<Connection>()
+            .Bind("Shared").As(Lifetime.Singleton).To<Connection>()
+            .Bind().To<QueryHandler>()
 
             // Composition root
-            .Root<Service>("Root");
+            .Root<QueryHandler>("QueryHandler");
 }
 // }

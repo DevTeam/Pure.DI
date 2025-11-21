@@ -39,38 +39,39 @@ public class Scenario
 // {
         // OnDependencyInjection = On
         DI.Setup(nameof(Composition))
-            .Hint(OnDependencyInjectionContractTypeNameWildcard, "*IDependency")
-            .Hint(OnDependencyInjectionContractTypeNameWildcard, "*IService")
+            .Hint(OnDependencyInjectionContractTypeNameWildcard, "*IUserRepository")
+            .Hint(OnDependencyInjectionContractTypeNameWildcard, "*IUserService")
             .RootArg<int>("id")
-            .Bind().To<Dependency>()
-            .Bind().To<Service>()
-            .Root<IService>("GetRoot");
+            .Bind().To<UserRepository>()
+            .Bind().To<UserService>()
+            .Root<IUserService>("GetUserService");
 
         var log = new List<string>();
         var composition = new Composition(log);
-        var service = composition.GetRoot(33);
+        var service = composition.GetUserService(33);
 
         log.ShouldBe([
-            "Dependency injected",
-            "Service injected"]);
+            "UserRepository injected",
+            "UserService injected"
+        ]);
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+interface IUserRepository;
 
-record Dependency(int Id) : IDependency;
+record UserRepository(int Id) : IUserRepository;
 
-interface IService
+interface IUserService
 {
-    IDependency Dependency { get; }
+    IUserRepository Repository { get; }
 }
 
-class Service(IDependency dependency) : IService
+class UserService(IUserRepository repository) : IUserService
 {
-    public IDependency Dependency { get; } = dependency;
+    public IUserRepository Repository { get; } = repository;
 }
 
 partial class Composition

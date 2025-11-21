@@ -18,6 +18,7 @@ using Xunit;
 // {
 //# using Pure.DI;
 //# using System.Collections.Immutable;
+//# using Shouldly;
 // }
 
 public class Scenario
@@ -27,39 +28,44 @@ public class Scenario
     {
         // This hint indicates to not generate methods such as Resolve
         // Resolve = Off
-// {
+        // {
         DI.Setup(nameof(Composition))
-            .Bind<IDependency>("my tag").To<Dependency>()
-            .Bind<IService>().To<Service>()
+            .Bind<IDbConnection>("postgres").To<NpgsqlConnection>()
+            .Bind<IConnectionPool>().To<ConnectionPool>()
 
             // Composition root
-            .Root<IService>("Root");
+            .Root<IConnectionPool>("ConnectionPool");
 
         var composition = new Composition();
-        var service = composition.Root;
-        service.Dependencies.Length.ShouldBe(3);
-// }
+        var pool = composition.ConnectionPool;
+
+        // Check that the pool has created 3 connections
+        pool.Connections.Length.ShouldBe(3);
+        pool.Connections[0].ShouldBeOfType<NpgsqlConnection>();
+        // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+interface IDbConnection;
 
-class Dependency : IDependency;
+// Specific implementation for PostgreSQL
+class NpgsqlConnection : IDbConnection;
 
-interface IService
+interface IConnectionPool
 {
-    ImmutableArray<IDependency> Dependencies { get; }
+    ImmutableArray<IDbConnection> Connections { get; }
 }
 
-class Service([Tag("my tag")] Func<IDependency> dependencyFactory): IService
+class ConnectionPool([Tag("postgres")] Func<IDbConnection> connectionFactory) : IConnectionPool
 {
-    public ImmutableArray<IDependency> Dependencies { get; } =
+    public ImmutableArray<IDbConnection> Connections { get; } =
     [
-        dependencyFactory(),
-        dependencyFactory(),
-        dependencyFactory()
+        // Use the factory to create distinct connection instances
+        connectionFactory(),
+        connectionFactory(),
+        connectionFactory()
     ];
 }
 // }

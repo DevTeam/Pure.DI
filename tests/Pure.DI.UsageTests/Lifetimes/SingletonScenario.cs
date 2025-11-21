@@ -25,11 +25,13 @@ $r=Shouldly
 
 namespace Pure.DI.UsageTests.Lifetimes.SingletonScenario;
 
+using System.Diagnostics.CodeAnalysis;
 using Xunit;
 using static Lifetime;
 
 // {
 //# using Pure.DI;
+//# using System.Diagnostics.CodeAnalysis;
 //# using static Pure.DI.Lifetime;
 // }
 
@@ -42,39 +44,69 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Bind().As(Singleton).To<Dependency>()
-            .Bind().To<Service>()
-            .Root<IService>("Root");
+            // Bind the cache as Singleton to share it across all services
+            .Bind().As(Singleton).To<Cache>()
+            // Bind the order service as Transient (default) for per-request instances
+            .Bind().To<OrderService>()
+            .Root<IOrderService>("OrderService");
 
         var composition = new Composition();
-        var service1 = composition.Root;
-        var service2 = composition.Root;
-        service1.Dependency1.ShouldBe(service1.Dependency2);
-        service2.Dependency1.ShouldBe(service1.Dependency1);
+        var orderService1 = composition.OrderService; // First order service instance
+        var orderService2 = composition.OrderService; // Second order service instance
+
+        // Verify that both services share the same cache instance (Singleton behavior)
+        orderService1.Cache.ShouldBe(orderService2.Cache);
+        // Simulate real-world usage: add data to cache via one service and check via another
+        orderService1.AddToCache("Order123", "Processed");
+        orderService2.GetFromCache("Order123").ShouldBe("Processed");
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
-
-class Dependency : IDependency;
-
-interface IService
+// Interface for a shared cache (e.g., for storing order statuses)
+interface ICache
 {
-    public IDependency Dependency1 { get; }
+    void Add(string key, string value);
 
-    public IDependency Dependency2 { get; }
+    bool TryGet(string key, [MaybeNullWhen(false)] out string value);
 }
 
-class Service(
-    IDependency dependency1,
-    IDependency dependency2)
-    : IService
+// Implementation of a simple in-memory cache (must be thread-safe in real apps)
+class Cache : ICache
 {
-    public IDependency Dependency1 { get; } = dependency1;
+    private readonly Dictionary<string, string> _data = new();
 
-    public IDependency Dependency2 { get; } = dependency2;
+    public void Add(string key, string value) =>
+        _data[key] = value;
+
+    public bool TryGet(string key, [MaybeNullWhen(false)] out string value) =>
+        _data.TryGetValue(key, out value);
+}
+
+// Interface for order processing service
+interface IOrderService
+{
+    ICache Cache { get; }
+
+    void AddToCache(string orderId, string status);
+
+    string GetFromCache(string orderId);
+}
+
+// Order service that uses the shared cache
+class OrderService(ICache cache) : IOrderService
+{
+    // The cache is injected and shared (Singleton)
+    public ICache Cache { get; } = cache;
+
+    // Real-world method: add order status to cache
+    public void AddToCache(string orderId, string status) =>
+        Cache.Add(orderId, status);
+
+    // Real-world method: retrieve order status from cache
+    public string GetFromCache(string orderId) =>
+        Cache.TryGet(orderId, out var status) ? status : "unknown";
 }
 // }

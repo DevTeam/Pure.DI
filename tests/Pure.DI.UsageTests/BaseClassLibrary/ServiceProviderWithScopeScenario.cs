@@ -29,45 +29,55 @@ public class Scenario
     [Fact]
     public void Run()
     {
-// {
+        // {
         using var composition = new Composition();
 
+        // Creates the first scope (e.g., for a web request)
         using var scope1 = composition.CreateScope();
-        var service1 = scope1.ServiceProvider.GetRequiredService<IService>();
-        var dependency1 = composition.GetRequiredService<IDependency>();
-        service1.Dependency.ShouldBe(dependency1);
-        service1.ShouldBe(scope1.ServiceProvider.GetRequiredService<IService>());
+        var session1 = scope1.ServiceProvider.GetRequiredService<ISession>();
+        var config1 = composition.GetRequiredService<IConfiguration>();
 
+        // The session must use the global configuration
+        session1.Configuration.ShouldBe(config1);
+
+        // Within the same scope, the session instance must be the same
+        session1.ShouldBe(scope1.ServiceProvider.GetRequiredService<ISession>());
+
+        // Creates the second scope
         using var scope2 = composition.CreateScope();
-        var service2 = scope2.ServiceProvider.GetRequiredService<IService>();
-        var dependency2 = composition.GetRequiredService<IDependency>();
-        service2.Dependency.ShouldBe(dependency2);
-        service2.ShouldBe(scope2.ServiceProvider.GetRequiredService<IService>());
+        var session2 = scope2.ServiceProvider.GetRequiredService<ISession>();
+        var config2 = composition.GetRequiredService<IConfiguration>();
 
-        service1.ShouldNotBe(service2);
-        dependency1.ShouldBe(dependency2);
-// }
+        session2.Configuration.ShouldBe(config2);
+        session2.ShouldBe(scope2.ServiceProvider.GetRequiredService<ISession>());
+
+        // Sessions in different scopes are different instances
+        session1.ShouldNotBe(session2);
+
+        // Configuration is a singleton, so it's the same instance
+        config1.ShouldBe(config2);
+        // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+// Represents a global configuration (Singleton)
+interface IConfiguration;
 
-class Dependency : IDependency;
+class Configuration : IConfiguration;
 
-interface IService : IDisposable
+// Represents a user session (Scoped)
+interface ISession : IDisposable
 {
-    IDependency Dependency { get; }
+    IConfiguration Configuration { get; }
 }
 
-class Service(IDependency dependency) : IService
+class Session(IConfiguration configuration) : ISession
 {
-    public IDependency Dependency { get; } = dependency;
+    public IConfiguration Configuration { get; } = configuration;
 
-    public void Dispose()
-    {
-    }
+    public void Dispose() {}
 }
 
 partial class Composition
@@ -86,12 +96,12 @@ partial class Composition
             // "object Resolve(Type type, object tag)" method in "GetRequiredKeyedService",
             // which implements the "IKeyedServiceProvider" interface
             .Hint(Hint.ObjectResolveByTagMethodName, "GetRequiredKeyedService")
-            .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
-            .Bind<IService>().As(Lifetime.Scoped).To<Service>()
+            .Bind<IConfiguration>().As(Lifetime.Singleton).To<Configuration>()
+            .Bind<ISession>().As(Lifetime.Scoped).To<Session>()
 
             // Composition roots
-            .Root<IDependency>()
-            .Root<IService>();
+            .Root<IConfiguration>()
+            .Root<ISession>();
 
     public IServiceProvider ServiceProvider => this;
 

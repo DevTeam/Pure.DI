@@ -38,40 +38,43 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Bind().To<AbcDependency>()
-            .Bind(Tag.OnMethodArg<Service>(nameof(Service.Initialize), "dep"))
-                .To<XyzDependency>()
-            .Bind<IService>().To<Service>()
+            .Bind().To<TemperatureSensor>()
+            // Binds specifically to the argument "sensor" of the "Calibrate" method
+            // in the "WeatherStation" class
+            .Bind(Tag.OnMethodArg<WeatherStation>(nameof(WeatherStation.Calibrate), "sensor"))
+            .To<HumiditySensor>()
+            .Bind<IWeatherStation>().To<WeatherStation>()
 
-            // Specifies to create the composition root named "Root"
-            .Root<IService>("Root");
+            // Specifies to create the composition root named "Station"
+            .Root<IWeatherStation>("Station");
 
         var composition = new Composition();
-        var service = composition.Root;
-        service.Dependency.ShouldBeOfType<XyzDependency>();
+        var station = composition.Station;
+        station.Sensor.ShouldBeOfType<HumiditySensor>();
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+interface ISensor;
 
-class AbcDependency : IDependency;
+class TemperatureSensor : ISensor;
 
-class XyzDependency : IDependency;
+class HumiditySensor : ISensor;
 
-interface IService
+interface IWeatherStation
 {
-    IDependency? Dependency { get; }
+    ISensor? Sensor { get; }
 }
 
-class Service : IService
+class WeatherStation : IWeatherStation
 {
+    // The [Dependency] attribute is used to mark the method for injection
     [Dependency]
-    public void Initialize(IDependency dep) =>
-        Dependency = dep;
+    public void Calibrate(ISensor sensor) =>
+        Sensor = sensor;
 
-    public IDependency? Dependency { get; private set; }
+    public ISensor? Sensor { get; private set; }
 }
 // }

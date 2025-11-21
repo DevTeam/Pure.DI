@@ -29,27 +29,40 @@ public class Scenario
     {
 // {
         var serviceProvider = new Composition();
-        var service = serviceProvider.GetRequiredKeyedService<IService>("Service Key");
-        var dependency = serviceProvider.GetRequiredKeyedService<IDependency>("Dependency Key");
-        service.Dependency.ShouldBe(dependency);
+
+        // Resolve the order service by key "Online".
+        // This service expects a dependency with the key "PayPal".
+        var orderService = serviceProvider.GetRequiredKeyedService<IOrderService>("Online");
+
+        // Resolve the payment gateway by key "PayPal" to verify the correct injection
+        var paymentGateway = serviceProvider.GetRequiredKeyedService<IPaymentGateway>("PayPal");
+
+        // Check that the expected gateway instance was injected into the order service
+        orderService.PaymentGateway.ShouldBe(paymentGateway);
 // }
         serviceProvider.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+// Payment gateway interface
+interface IPaymentGateway;
 
-class Dependency : IDependency;
+// Payment gateway implementation (e.g., PayPal)
+class PayPalGateway : IPaymentGateway;
 
-interface IService
+// Order service interface
+interface IOrderService
 {
-    IDependency Dependency { get; }
+    IPaymentGateway PaymentGateway { get; }
 }
 
-class Service([Tag("Dependency Key")] IDependency dependency) : IService
+// Implementation of the service for online orders.
+// The [Tag("PayPal")] attribute indicates that an implementation 
+// of IPaymentGateway registered with the key "PayPal" should be injected.
+class OnlineOrderService([Tag("PayPal")] IPaymentGateway paymentGateway) : IOrderService
 {
-    public IDependency Dependency { get; } = dependency;
+    public IPaymentGateway PaymentGateway { get; } = paymentGateway;
 }
 
 partial class Composition : IKeyedServiceProvider
@@ -64,10 +77,16 @@ partial class Composition : IKeyedServiceProvider
             // "object Resolve(Type type, object tag)" method in "GetRequiredKeyedService",
             // which implements the "IKeyedServiceProvider" interface
             .Hint(Hint.ObjectResolveByTagMethodName, "GetRequiredKeyedService")
-            .Bind<IDependency>("Dependency Key").As(Lifetime.Singleton).To<Dependency>()
-            .Bind<IService>("Service Key").To<Service>()
-            .Root<IDependency>(tag: "Dependency Key")
-            .Root<IService>(tag: "Service Key");
+
+            // Register PayPalGateway as a singleton with the key "PayPal"
+            .Bind<IPaymentGateway>("PayPal").As(Lifetime.Singleton).To<PayPalGateway>()
+
+            // Register OnlineOrderService with the key "Online"
+            .Bind<IOrderService>("Online").To<OnlineOrderService>()
+
+            // Composition roots available by keys
+            .Root<IPaymentGateway>(tag: "PayPal")
+            .Root<IOrderService>(tag: "Online");
 
     public object GetKeyedService(Type serviceType, object? serviceKey) =>
         GetRequiredKeyedService(serviceType, serviceKey);

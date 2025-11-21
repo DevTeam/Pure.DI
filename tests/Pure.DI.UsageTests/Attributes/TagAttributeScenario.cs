@@ -30,45 +30,43 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Bind("Abc").To<AbcDependency>()
-            .Bind("Xyz").To<XyzDependency>()
-            .Bind().To<Service>()
+            .Bind("Fast").To<FastRenderer>()
+            .Bind("Quality").To<QualityRenderer>()
+            .Bind().To<PageRenderer>()
 
             // Composition root
-            .Root<IService>("Root");
+            .Root<IPageRenderer>("Renderer");
 
         var composition = new Composition();
-        var service = composition.Root;
-        service.Dependency1.ShouldBeOfType<AbcDependency>();
-        service.Dependency2.ShouldBeOfType<XyzDependency>();
+        var pageRenderer = composition.Renderer;
+        pageRenderer.FastRenderer.ShouldBeOfType<FastRenderer>();
+        pageRenderer.QualityRenderer.ShouldBeOfType<QualityRenderer>();
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+interface IRenderer;
 
-class AbcDependency : IDependency;
+class FastRenderer : IRenderer;
 
-class XyzDependency : IDependency;
+class QualityRenderer : IRenderer;
 
-class Dependency : IDependency;
-
-interface IService
+interface IPageRenderer
 {
-    IDependency Dependency1 { get; }
+    IRenderer FastRenderer { get; }
 
-    IDependency Dependency2 { get; }
+    IRenderer QualityRenderer { get; }
 }
 
-class Service(
-    [Tag("Abc")] IDependency dependency1,
-    [Tag("Xyz")] IDependency dependency2)
-    : IService
+class PageRenderer(
+    [Tag("Fast")] IRenderer fastRenderer,
+    [Tag("Quality")] IRenderer qualityRenderer)
+    : IPageRenderer
 {
-    public IDependency Dependency1 { get; } = dependency1;
+    public IRenderer FastRenderer { get; } = fastRenderer;
 
-    public IDependency Dependency2 { get; } = dependency2;
+    public IRenderer QualityRenderer { get; } = qualityRenderer;
 }
 // }

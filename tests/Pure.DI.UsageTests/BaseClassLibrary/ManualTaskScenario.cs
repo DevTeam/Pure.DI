@@ -32,63 +32,65 @@ public class Scenario
             // Overrides the default binding that performs an auto-start of a task
             // when it is created. This binding will simply create the task.
             // The start will be handled by the consumer.
-            .Bind<Task<TT>>().To(ctx =>
-            {
+            .Bind<Task<TT>>().To(ctx => {
                 ctx.Inject(ctx.Tag, out Func<TT> factory);
                 ctx.Inject(out CancellationToken cancellationToken);
                 return new Task<TT>(factory, cancellationToken);
             })
             // Specifies to use CancellationToken from the composition root argument,
-            // if not specified then CancellationToken.None will be used
+            // if not specified, then CancellationToken.None will be used
             .RootArg<CancellationToken>("cancellationToken")
-            .Bind<IDependency>().To<Dependency>()
-            .Bind<IService>().To<Service>()
+            .Bind<IUserPreferences>().To<UserPreferences>()
+            .Bind<IDashboardService>().To<DashboardService>()
 
             // Composition root
-            .Root<IService>("GetRoot");
+            .Root<IDashboardService>("GetDashboard");
 
         var composition = new Composition();
         using var cancellationTokenSource = new CancellationTokenSource();
 
         // Creates a composition root with the CancellationToken passed to it
-        var service = composition.GetRoot(cancellationTokenSource.Token);
-        await service.RunAsync(cancellationTokenSource.Token);
+        var dashboard = composition.GetDashboard(cancellationTokenSource.Token);
+        await dashboard.LoadAsync(cancellationTokenSource.Token);
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency
+interface IUserPreferences
 {
-    ValueTask DoSomething(CancellationToken cancellationToken);
+    ValueTask LoadAsync(CancellationToken cancellationToken);
 }
 
-class Dependency : IDependency
+class UserPreferences : IUserPreferences
 {
-    public ValueTask DoSomething(CancellationToken cancellationToken) => ValueTask.CompletedTask;
+    public ValueTask LoadAsync(CancellationToken cancellationToken) => ValueTask.CompletedTask;
 }
 
-interface IService
+interface IDashboardService
 {
-    Task RunAsync(CancellationToken cancellationToken);
+    Task LoadAsync(CancellationToken cancellationToken);
 }
 
-class Service : IService
+class DashboardService : IDashboardService
 {
-    private readonly Task<IDependency> _dependencyTask;
+    private readonly Task<IUserPreferences> _preferencesTask;
 
-    public Service(Task<IDependency> dependencyTask)
+    public DashboardService(Task<IUserPreferences> preferencesTask)
     {
-        _dependencyTask = dependencyTask;
-        // This is where the task starts
-        _dependencyTask.Start();
+        _preferencesTask = preferencesTask;
+        // The task is started manually in the constructor.
+        // This allows the loading of preferences to begin immediately in the background,
+        // while the service continues its initialization.
+        _preferencesTask.Start();
     }
 
-    public async Task RunAsync(CancellationToken cancellationToken)
+    public async Task LoadAsync(CancellationToken cancellationToken)
     {
-        var dependency = await _dependencyTask;
-        await dependency.DoSomething(cancellationToken);
+        // Wait for the preferences loading task to complete
+        var preferences = await _preferencesTask;
+        await preferences.LoadAsync(cancellationToken);
     }
 }
 // }

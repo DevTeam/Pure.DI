@@ -32,63 +32,68 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Bind<IDependency>().To<Dependency>()
-            .Bind<IService>().To<Service>()
+            .Bind<IBankGateway>().To<BankGateway>()
+            .Bind<IPaymentProcessor>().To<PaymentProcessor>()
 
-            // Composition root "MyRoot"
-            .Root<IService>("MyService")
+            // Composition root "PaymentService"
+            .Root<IPaymentProcessor>("PaymentService")
 
-            // Some kind of identifier
-            .Arg<int>("id")
+            // Argument: Connection timeout (e.g., from config)
+            .Arg<int>("timeoutSeconds")
 
-            // An argument can be tagged (e.g., tag "my service name")
-            // to be injectable by type and this tag
-            .Arg<string>("serviceName", "my service name")
-            .Arg<string>("dependencyName");
+            // Argument: API Token (using a tag to distinguish from other strings)
+            .Arg<string>("authToken", "api token")
 
-        var composition = new Composition(id: 123, serviceName: "Abc", dependencyName: "Xyz");
+            // Argument: Bank gateway address
+            .Arg<string>("gatewayUrl");
 
-        // service = new Service("Abc", new Dependency(123, "Xyz"));
-        var service = composition.MyService;
+        // Create the composition, passing real settings from "outside"
+        var composition = new Composition(
+            timeoutSeconds: 30,
+            authToken: "secret_token_123",
+            gatewayUrl: "https://api.bank.com/v1");
 
-        service.Name.ShouldBe("Abc");
-        service.Dependency.Id.ShouldBe(123);
-        service.Dependency.Name.ShouldBe("Xyz");
+        var paymentService = composition.PaymentService;
+
+        paymentService.Token.ShouldBe("secret_token_123");
+        paymentService.Gateway.Timeout.ShouldBe(30);
+        paymentService.Gateway.Url.ShouldBe("https://api.bank.com/v1");
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency
+interface IBankGateway
 {
-    int Id { get; }
+    int Timeout { get; }
 
-    string Name { get; }
+    string Url { get; }
 }
 
-class Dependency(int id, string name) : IDependency
+// Simulation of a bank gateway client
+class BankGateway(int timeoutSeconds, string gatewayUrl) : IBankGateway
 {
-    public int Id { get; } = id;
+    public int Timeout { get; } = timeoutSeconds;
 
-    public string Name { get; } = name;
+    public string Url { get; } = gatewayUrl;
 }
 
-interface IService
+interface IPaymentProcessor
 {
-    string Name { get; }
+    string Token { get; }
 
-    IDependency Dependency { get; }
+    IBankGateway Gateway { get; }
 }
 
-class Service(
-    // The tag allows to specify the injection point accurately.
-    // This is useful, for example, when the type is the same.
-    [Tag("my service name")] string name,
-    IDependency dependency) : IService
+// Payment processing service
+class PaymentProcessor(
+    // The tag allows specifying exactly which string to inject here
+    [Tag("api token")] string token,
+    IBankGateway gateway) : IPaymentProcessor
 {
-    public string Name { get; } = name;
+    public string Token { get; } = token;
 
-    public IDependency Dependency { get; } = dependency;
+    public IBankGateway Gateway { get; } = gateway;
 }
 // }

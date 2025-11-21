@@ -28,27 +28,28 @@ public class Scenario
     {
         // This hint indicates to not generate methods such as Resolve
         // Resolve = Off
-// {
+        // {
         DI.Setup(nameof(Composition))
-            .Bind().As(Lifetime.Singleton).To<Dependency>()
-            .Roots<IService>("My{type}");
+            .Bind().As(Lifetime.Singleton).To<Preferences>()
+            // Roots can be used to register all descendants of a type as roots.
+            .Roots<IWindow>("{type}");
 
         var composition = new Composition();
-        composition.MyService1.ShouldBeOfType<Service1>();
-        composition.MyService2.ShouldBeOfType<Service2>();
-// }
+        composition.MainWindow.ShouldBeOfType<MainWindow>();
+        composition.SettingsWindow.ShouldBeOfType<SettingsWindow>();
+        // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+interface IPreferences;
 
-class Dependency : IDependency;
+class Preferences : IPreferences;
 
-interface IService;
+interface IWindow;
 
-class Service1(IDependency dependency) : IService;
+class MainWindow(IPreferences preferences) : IWindow;
 
-class Service2(IDependency dependency) : IService;
+class SettingsWindow(IPreferences preferences) : IWindow;
 // }

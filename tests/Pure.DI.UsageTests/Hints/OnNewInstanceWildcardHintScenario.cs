@@ -38,44 +38,61 @@ public class Scenario
 // {
         DI.Setup(nameof(Composition))
             .Hint(OnNewInstance, "On")
-            .Hint(OnNewInstanceImplementationTypeNameWildcard, "*Dependency")
+            // Hints restrict the generation of the partial OnNewInstance method
+            // to only those types whose names match the specified wildcards.
+            // In this case, we want to track the creation of repositories and services.
+            .Hint(OnNewInstanceImplementationTypeNameWildcard, "*Repository")
             .Hint(OnNewInstanceImplementationTypeNameWildcard, "*Service")
-            .Bind().As(Lifetime.Singleton).To<Dependency>()
-            .Bind().To<Service>()
-            .Root<IService>("Root");
+            .Bind().As(Lifetime.Singleton).To<UserRepository>()
+            .Bind().To<OrderService>()
+            // This type will not be tracked because its name
+            // does not match the wildcards
+            .Bind().To<ConsoleLogger>()
+            .Root<IOrderService>("Root");
 
         var log = new List<string>();
         var composition = new Composition(log);
+
         var service1 = composition.Root;
         var service2 = composition.Root;
 
         log.ShouldBe([
-            "Dependency created",
-            "Service created",
-            "Service created"]);
+            "UserRepository created",
+            "OrderService created",
+            "OrderService created"
+        ]);
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+interface IRepository;
 
-class Dependency : IDependency
+class UserRepository : IRepository
 {
-    public override string ToString() => nameof(Dependency);
+    public override string ToString() => nameof(UserRepository);
 }
 
-interface IService
+interface ILogger;
+
+class ConsoleLogger : ILogger
 {
-    IDependency Dependency { get; }
+    public override string ToString() => nameof(ConsoleLogger);
 }
 
-class Service(IDependency dependency) : IService
+interface IOrderService
 {
-    public IDependency Dependency { get; } = dependency;
+    IRepository Repository { get; }
+}
 
-    public override string ToString() => nameof(Service);
+class OrderService(IRepository repository, ILogger logger) : IOrderService
+{
+    public IRepository Repository { get; } = repository;
+
+    public ILogger Logger { get; } = logger;
+
+    public override string ToString() => nameof(OrderService);
 }
 
 internal partial class Composition

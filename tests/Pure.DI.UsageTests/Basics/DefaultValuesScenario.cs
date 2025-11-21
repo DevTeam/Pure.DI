@@ -8,8 +8,8 @@ $f=- Default constructor arguments can be used for simple values
 $f=- The DI container will use these defaults if no explicit bindings are provided
 $f=
 $f=This example illustrates how to handle default values in a dependency injection scenario:
-$f=- **Constructor Default Argument**: The `Service` class has a constructor with a default value for the name parameter. If no value is provided, “My Service” will be used.
-$f=- **Required Property with Default**: The Dependency property is marked as required but has a default instantiation. This ensures that:
+$f=- **Constructor Default Argument**: The `SecuritySystem` class has a constructor with a default value for the name parameter. If no value is provided, "Home Guard" will be used.
+$f=- **Required Property with Default**: The `Sensor` property is marked as required but has a default instantiation. This ensures that:
 $f=  - The property must be set
 $f=  - If no explicit injection occurs, a default value will be used
 $r=Shouldly
@@ -38,39 +38,42 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Bind<IDependency>().To<Dependency>()
-            .Bind<IService>().To<Service>()
+            .Bind<ISensor>().To<MotionSensor>()
+            .Bind<ISecuritySystem>().To<SecuritySystem>()
 
             // Composition root
-            .Root<IService>("Root");
+            .Root<ISecuritySystem>("SecuritySystem");
 
         var composition = new Composition();
-        var service = composition.Root;
-        service.Dependency.ShouldBeOfType<Dependency>();
-        service.Name.ShouldBe("My Service");
+        var securitySystem = composition.SecuritySystem;
+        securitySystem.Sensor.ShouldBeOfType<MotionSensor>();
+        securitySystem.SystemName.ShouldBe("Home Guard");
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+interface ISensor;
 
-class Dependency : IDependency;
+class MotionSensor : ISensor;
 
-interface IService
+interface ISecuritySystem
 {
-    string Name { get; }
+    string SystemName { get; }
 
-    IDependency Dependency { get; }
+    ISensor Sensor { get; }
 }
 
 // If injection cannot be performed explicitly,
 // the default value will be used
-class Service(string name = "My Service") : IService
+class SecuritySystem(string systemName = "Home Guard") : ISecuritySystem
 {
-    public string Name { get; } = name;
+    public string SystemName { get; } = systemName;
 
-    public required IDependency Dependency { get; init; } = new Dependency();
+    // The 'required' modifier ensures that the property is set during initialization.
+    // The default value 'new MotionSensor()' provides a fallback
+    // if no dependency is injected.
+    public required ISensor Sensor { get; init; } = new MotionSensor();
 }
 // }

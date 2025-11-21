@@ -33,39 +33,38 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Bind<IDependency>().To<Dependency>()
-            .Bind<IService>().To<Service>()
+            .Bind<IMap>().To<Map>()
+            .Bind<INavigator>().To<Navigator>()
 
             // Composition root
-            .Root<IService>("MyService");
+            .Root<INavigator>("Navigator");
 
         var composition = new Composition();
-        var service = composition.MyService;
-        service.Dependency.ShouldBeOfType<Dependency>();
+        var navigator = composition.Navigator;
+        navigator.CurrentMap.ShouldBeOfType<Map>();
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+interface IMap;
 
-class Dependency : IDependency;
+class Map : IMap;
 
-interface IService
+interface INavigator
 {
-    IDependency? Dependency { get; }
+    IMap? CurrentMap { get; }
 }
 
-class Service : IService
+class Navigator : INavigator
 {
-    // The Dependency attribute specifies to perform an injection,
-    // the integer value in the argument specifies
-    // the ordinal of injection
+    // The Dependency attribute specifies that the container should call this method
+    // to inject the dependency.
     [Dependency]
-    public void SetDependency(IDependency dependency) =>
-        Dependency = dependency;
+    public void LoadMap(IMap map) =>
+        CurrentMap = map;
 
-    public IDependency? Dependency { get; private set; }
+    public IMap? CurrentMap { get; private set; }
 }
 // }

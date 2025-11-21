@@ -32,36 +32,37 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Bind<IDependency<TT>>(Tag.Unique).To<AbcDependency<TT>>()
-            .Bind<IDependency<TT>>(Tag.Unique).To<XyzDependency<TT>>()
-            .Bind<IService<TT>>().To<Service<TT>>()
+            .Bind<INotificationChannel<TT>>(Tag.Unique).To<EmailChannel<TT>>()
+            .Bind<INotificationChannel<TT>>(Tag.Unique).To<SmsChannel<TT>>()
+            .Bind<INotificationService<TT>>().To<NotificationService<TT>>()
 
             // Composition root
-            .Root<IService<string>>("Root");
+            .Root<INotificationService<string>>("NotificationService");
 
         var composition = new Composition();
-        var stringService = composition.Root;
-        stringService.Dependencies.Length.ShouldBe(2);
+        var notificationService = composition.NotificationService;
+        notificationService.Channels.Length.ShouldBe(2);
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency<T>;
+interface INotificationChannel<T>;
 
-class AbcDependency<T> : IDependency<T>;
+class EmailChannel<T> : INotificationChannel<T>;
 
-class XyzDependency<T> : IDependency<T>;
+class SmsChannel<T> : INotificationChannel<T>;
 
-interface IService<T>
+interface INotificationService<T>
 {
-    ImmutableArray<IDependency<T>> Dependencies { get; }
+    ImmutableArray<INotificationChannel<T>> Channels { get; }
 }
 
-class Service<T>(IEnumerable<IDependency<T>> dependencies) : IService<T>
+class NotificationService<T>(IEnumerable<INotificationChannel<T>> channels)
+    : INotificationService<T>
 {
-    public ImmutableArray<IDependency<T>> Dependencies { get; }
-        = [..dependencies];
+    public ImmutableArray<INotificationChannel<T>> Channels { get; }
+        = [..channels];
 }
 // }

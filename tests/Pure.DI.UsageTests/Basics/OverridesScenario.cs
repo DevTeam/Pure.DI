@@ -40,43 +40,45 @@ public class Scenario
         DI.Setup(nameof(Composition))
             .Bind(Tag.Red).To(_ => Color.Red)
             .Bind().As(Lifetime.Singleton).To<Clock>()
-            .Bind().To<Func<int, int, IDependency>>(ctx =>
-                (dependencyId, subId) =>
-                {
-                    // Overrides with a lambda argument
-                    ctx.Override(dependencyId);
+            // The factory accepts the widget ID and the layer index
+            .Bind().To<Func<int, int, IWidget>>(ctx =>
+                (widgetId, layerIndex) => {
+                    // Overrides the 'id' argument of the constructor with the first lambda argument
+                    ctx.Override(widgetId);
 
-                    // Overrides with tag using lambda argument
-                    ctx.Override(subId, "sub");
+                    // Overrides the 'layer' tagged argument of the constructor with the second lambda argument
+                    ctx.Override(layerIndex, "layer");
 
-                    // Overrides with some value
-                    ctx.Override($"Dep {dependencyId} {subId}");
+                    // Overrides the 'name' argument with a formatted string
+                    ctx.Override($"Widget {widgetId} on layer {layerIndex}");
 
-                    // Overrides with injected value
-                    ctx.Inject(Tag.Red, out Color red);
-                    ctx.Override(red);
+                    // Resolves the 'Color' dependency tagged with 'Red'
+                    ctx.Inject(Tag.Red, out Color color);
+                    // Overrides the 'color' argument with the resolved value
+                    ctx.Override(color);
 
-                    ctx.Inject<Dependency>(out var dependency);
-                    return dependency;
+                    // Creates the instance using the overridden values
+                    ctx.Inject<Widget>(out var widget);
+                    return widget;
                 })
-            .Bind().To<Service>()
+            .Bind().To<Dashboard>()
 
             // Composition root
-            .Root<IService>("Root");
+            .Root<IDashboard>("Dashboard");
 
         var composition = new Composition();
-        var service = composition.Root;
-        service.Dependencies.Length.ShouldBe(3);
+        var dashboard = composition.Dashboard;
+        dashboard.Widgets.Length.ShouldBe(3);
 
-        service.Dependencies[0].Id.ShouldBe(0);
-        service.Dependencies[0].SubId.ShouldBe(99);
-        service.Dependencies[0].Name.ShouldBe("Dep 0 99");
+        dashboard.Widgets[0].Id.ShouldBe(0);
+        dashboard.Widgets[0].Layer.ShouldBe(99);
+        dashboard.Widgets[0].Name.ShouldBe("Widget 0 on layer 99");
 
-        service.Dependencies[1].Id.ShouldBe(1);
-        service.Dependencies[1].Name.ShouldBe("Dep 1 99");
+        dashboard.Widgets[1].Id.ShouldBe(1);
+        dashboard.Widgets[1].Name.ShouldBe("Widget 1 on layer 99");
 
-        service.Dependencies[2].Id.ShouldBe(2);
-        service.Dependencies[2].Name.ShouldBe("Dep 2 99");
+        dashboard.Widgets[2].Id.ShouldBe(2);
+        dashboard.Widgets[2].Name.ShouldBe("Widget 2 on layer 99");
 // }
         composition.SaveClassDiagram();
     }
@@ -93,42 +95,42 @@ class Clock : IClock
     public DateTimeOffset Now => DateTimeOffset.Now;
 }
 
-interface IDependency
+interface IWidget
 {
     string Name { get; }
 
     int Id { get; }
 
-    int SubId { get; }
+    int Layer { get; }
 }
 
-class Dependency(
+class Widget(
     string name,
     IClock clock,
     int id,
-    [Tag("sub")] int subId,
-    Color red)
-    : IDependency
+    [Tag("layer")] int layer,
+    Color color)
+    : IWidget
 {
     public string Name => name;
 
     public int Id => id;
 
-    public int SubId => subId;
+    public int Layer => layer;
 }
 
-interface IService
+interface IDashboard
 {
-    ImmutableArray<IDependency> Dependencies { get; }
+    ImmutableArray<IWidget> Widgets { get; }
 }
 
-class Service(Func<int, int, IDependency> dependencyFactory): IService
+class Dashboard(Func<int, int, IWidget> widgetFactory) : IDashboard
 {
-    public ImmutableArray<IDependency> Dependencies { get; } =
+    public ImmutableArray<IWidget> Widgets { get; } =
     [
-        dependencyFactory(0, 99),
-        dependencyFactory(1, 99),
-        dependencyFactory(2, 99)
+        widgetFactory(0, 99),
+        widgetFactory(1, 99),
+        widgetFactory(2, 99)
     ];
 }
 // }

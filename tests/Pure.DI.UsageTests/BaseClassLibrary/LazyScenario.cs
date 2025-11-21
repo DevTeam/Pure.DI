@@ -27,32 +27,34 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Bind<IDependency>().To<Dependency>()
-            .Bind<IService>().To<Service>()
+            .Bind<IGraphicsEngine>().To<GraphicsEngine>()
+            .Bind<IWindow>().To<Window>()
 
             // Composition root
-            .Root<IService>("Root");
+            .Root<IWindow>("Window");
 
         var composition = new Composition();
-        var service = composition.Root;
-        service.Dependency.ShouldBe(service.Dependency);
+        var window = composition.Window;
+
+        // The graphics engine is created only when it is first accessed
+        window.Engine.ShouldBe(window.Engine);
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+interface IGraphicsEngine;
 
-class Dependency : IDependency;
+class GraphicsEngine : IGraphicsEngine;
 
-interface IService
+interface IWindow
 {
-    IDependency Dependency { get; }
+    IGraphicsEngine Engine { get; }
 }
 
-class Service(Lazy<IDependency> dependency) : IService
+class Window(Lazy<IGraphicsEngine> engine) : IWindow
 {
-    public IDependency Dependency => dependency.Value;
+    public IGraphicsEngine Engine => engine.Value;
 }
 // }

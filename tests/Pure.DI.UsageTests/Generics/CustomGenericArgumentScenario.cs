@@ -29,44 +29,46 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            // Registers custom generic argument
-            .GenericTypeArgument<TTMy>()
-            .Bind<IDependency<TTMy>>().To<Dependency<TTMy>>()
-            .Bind<IService>().To<Service>()
+            // Registers the "MyTT" interface as a custom generic type argument
+            // to be used as a marker for generic bindings
+            .GenericTypeArgument<MyTT>()
+            .Bind<ISequence<MyTT>>().To<Sequence<MyTT>>()
+            .Bind<IProgram>().To<MyApp>()
 
             // Composition root
-            .Root<IService>("Root");
+            .Root<IProgram>("Root");
 
         var composition = new Composition();
-        var service = composition.Root;
-        service.IntDependency.ShouldBeOfType<Dependency<int>>();
-        service.StringDependency.ShouldBeOfType<Dependency<string>>();
+        var program = composition.Root;
+        program.IntSequence.ShouldBeOfType<Sequence<int>>();
+        program.StringSequence.ShouldBeOfType<Sequence<string>>();
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface TTMy;
+// Defines a custom generic type argument marker
+interface MyTT;
 
-interface IDependency<T>;
+interface ISequence<T>;
 
-class Dependency<T> : IDependency<T>;
+class Sequence<T> : ISequence<T>;
 
-interface IService
+interface IProgram
 {
-    IDependency<int> IntDependency { get; }
+    ISequence<int> IntSequence { get; }
 
-    IDependency<string> StringDependency { get; }
+    ISequence<string> StringSequence { get; }
 }
 
-class Service(
-    IDependency<int> intDependency,
-    IDependency<string> stringDependency)
-    : IService
+class MyApp(
+    ISequence<int> intSequence,
+    ISequence<string> stringSequence)
+    : IProgram
 {
-    public IDependency<int> IntDependency { get; } = intDependency;
+    public ISequence<int> IntSequence { get; } = intSequence;
 
-    public IDependency<string> StringDependency { get; } = stringDependency;
+    public ISequence<string> StringSequence { get; } = stringSequence;
 }
 // }

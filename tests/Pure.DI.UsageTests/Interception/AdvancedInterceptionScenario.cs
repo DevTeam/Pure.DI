@@ -39,49 +39,51 @@ public class Scenario
 // {
         // OnDependencyInjection = On
         DI.Setup(nameof(Composition))
-            .Bind().To<Dependency>()
-            .Bind().To<Service>()
-            .Root<IService>("Root");
+            .Bind().To<DataService>()
+            .Bind().To<BusinessService>()
+            .Root<IBusinessService>("BusinessService");
 
         var log = new List<string>();
         var composition = new Composition(log);
-        var service = composition.Root;
-        service.ServiceRun();
-        service.Dependency.DependencyRun();
+        var businessService = composition.BusinessService;
+
+        // Взаимодействие с сервисами для проверки перехвата
+        businessService.Process();
+        businessService.DataService.Count();
 
         log.ShouldBe(
             ImmutableArray.Create(
-                "ServiceRun returns Abc",
-                "get_Dependency returns Castle.Proxies.IDependencyProxy",
-                "DependencyRun returns 33"));
+                "Process returns Processed",
+                "get_DataService returns Castle.Proxies.IDataServiceProxy",
+                "Count returns 55"));
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-public interface IDependency
+public interface IDataService
 {
-    int DependencyRun();
+    int Count();
 }
 
-class Dependency : IDependency
+class DataService : IDataService
 {
-    public int DependencyRun() => 33;
+    public int Count() => 55;
 }
 
-public interface IService
+public interface IBusinessService
 {
-    IDependency Dependency { get; }
+    IDataService DataService { get; }
 
-    string ServiceRun();
+    string Process();
 }
 
-class Service(IDependency dependency) : IService
+class BusinessService(IDataService dataService) : IBusinessService
 {
-    public IDependency Dependency { get; } = dependency;
-    
-    public string ServiceRun() => "Abc";
+    public IDataService DataService { get; } = dataService;
+
+    public string Process() => "Processed";
 }
 
 internal partial class Composition : IInterceptor

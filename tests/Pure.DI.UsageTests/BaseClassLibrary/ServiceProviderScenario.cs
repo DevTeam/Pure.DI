@@ -37,27 +37,31 @@ public class Scenario
     {
 // {
         var serviceProvider = new Composition();
-        var service = serviceProvider.GetRequiredService<IService>();
-        var dependency = serviceProvider.GetRequiredService<IDependency>();
-        service.Dependency.ShouldBe(dependency);
+        var orderService = serviceProvider.GetRequiredService<IOrderService>();
+        var logger = serviceProvider.GetRequiredService<ILogger>();
+
+        // Check that the singleton instance is correctly injected
+        orderService.Logger.ShouldBe(logger);
 // }
         serviceProvider.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+// Represents a dependency, e.g., a logging service
+interface ILogger;
 
-class Dependency : IDependency;
+class ConsoleLogger : ILogger;
 
-interface IService
+// Represents a service that depends on ILogger
+interface IOrderService
 {
-    IDependency Dependency { get; }
+    ILogger Logger { get; }
 }
 
-class Service(IDependency dependency) : IService
+class OrderService(ILogger logger) : IOrderService
 {
-    public IDependency Dependency { get; } = dependency;
+    public ILogger Logger { get; } = logger;
 }
 
 partial class Composition : IServiceProvider
@@ -68,9 +72,11 @@ partial class Composition : IServiceProvider
             // "object Resolve(Type type)" method in "GetService",
             // which implements the "IServiceProvider" interface
             .Hint(Hint.ObjectResolveMethodName, "GetService")
-            .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
-            .Bind<IService>().To<Service>()
-            .Root<IDependency>()
-            .Root<IService>();
+            .Bind<ILogger>().As(Lifetime.Singleton).To<ConsoleLogger>()
+            .Bind<IOrderService>().To<OrderService>()
+
+            // Roots are required for resolution via IServiceProvider
+            .Root<ILogger>()
+            .Root<IOrderService>();
 }
 // }

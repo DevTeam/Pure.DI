@@ -28,17 +28,17 @@ $f=- `System.IDisposable`
 $f=- `System.IAsyncResult`
 $f=- `System.AsyncCallback`
 $f=
-$f=For class `Dependency`, the `Bind().To<Dependency>()` binding will be equivalent to the `Bind<IDependency, IOtherDependency, Dependency>().To<Dependency>()` binding. The types `IDisposable`, `IEnumerable<string>` did not get into the binding because they are special from the list above. `DependencyBase` did not get into the binding because it is not abstract. `IDependencyBase` is not included because it is not implemented directly by class `Dependency`.
+$f=For class `OrderManager`, the `Bind().To<OrderManager>()` binding will be equivalent to the `Bind<IOrderRepository, IOrderNotification, OrderManager>().To<OrderManager>()` binding. The types `IDisposable`, `IEnumerable<string>` did not get into the binding because they are special from the list above. `ManagerBase` did not get into the binding because it is not abstract. `IManager` is not included because it is not implemented directly by class `OrderManager`.
 $f=
-$f=|   |                       |                                                 |
-$f=|---|-----------------------|-------------------------------------------------|
-$f=| ✅ | `Dependency`          | implementation type itself                      |
-$f=| ✅ | `IDependency`         | directly implements                             |
-$f=| ✅ | `IOtherDependency`    | directly implements                             |
-$f=| ❌ | `IDisposable`         | special type                                    |
-$f=| ❌ | `IEnumerable<string>` | special type                                    |
-$f=| ❌ | `DependencyBase`      | non-abstract                                    |
-$f=| ❌ | `IDependencyBase`     | is not directly implemented by class Dependency |
+$f=|    |                       |                                                   |
+$f=|----|-----------------------|---------------------------------------------------|
+$f=| ✅ | `OrderManager`        | implementation type itself                        |
+$f=| ✅ | `IOrderRepository`    | directly implements                               |
+$f=| ✅ | `IOrderNotification`  | directly implements                               |
+$f=| ❌ | `IDisposable`         | special type                                      |
+$f=| ❌ | `IEnumerable<string>` | special type                                      |
+$f=| ❌ | `ManagerBase`         | non-abstract                                      |
+$f=| ❌ | `IManager`            | is not directly implemented by class OrderManager |
 */
 
 // ReSharper disable CheckNamespace
@@ -73,51 +73,51 @@ public class Scenario
             // and if the implementation is not an abstract class or structure,
             // for all abstract but NOT special types that are directly implemented.
             // So that's the equivalent of the following:
-            // .Bind<IDependency, IOtherDependency, Dependency>()
+            // .Bind<IOrderRepository, IOrderNotification, OrderManager>()
             //   .As(Lifetime.PerBlock)
-            //   .To<Dependency>()
-            .Bind().As(Lifetime.PerBlock).To<Dependency>()
-            .Bind().To<Service>()
+            //   .To<OrderManager>()
+            .Bind().As(Lifetime.PerBlock).To<OrderManager>()
+            .Bind().To<Shop>()
 
-            // Specifies to create a property "MyService"
-            .Root<IService>("MyService");
+            // Specifies to create a property "MyShop"
+            .Root<IShop>("MyShop");
 
         var composition = new Composition();
-        var service = composition.MyService;
+        var shop = composition.MyShop;
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependencyBase;
+interface IManager;
 
-class DependencyBase : IDependencyBase;
+class ManagerBase : IManager;
 
-interface IDependency;
+interface IOrderRepository;
 
-interface IOtherDependency;
+interface IOrderNotification;
 
-class Dependency :
-    DependencyBase,
-    IDependency,
-    IOtherDependency,
+class OrderManager :
+    ManagerBase,
+    IOrderRepository,
+    IOrderNotification,
     IDisposable,
     IEnumerable<string>
 {
-    public void Dispose() { }
+    public void Dispose() {}
 
     public IEnumerator<string> GetEnumerator() =>
-        new List<string> { "abc" }.GetEnumerator();
+        new List<string> { "Order #1", "Order #2" }.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
 
-interface IService;
+interface IShop;
 
-class Service(
-    Dependency dependencyImpl,
-    IDependency dependency,
-    IOtherDependency otherDependency)
-    : IService;
+class Shop(
+    OrderManager manager,
+    IOrderRepository repository,
+    IOrderNotification notification)
+    : IShop;
 // }

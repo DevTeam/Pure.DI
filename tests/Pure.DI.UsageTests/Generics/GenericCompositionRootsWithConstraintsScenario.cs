@@ -37,56 +37,58 @@ public class Scenario
         DI.Setup(nameof(Composition))
             // This hint indicates to not generate methods such as Resolve
             .Hint(Hint.Resolve, "Off")
-            .Bind().To<Dependency<TTDisposable>>()
-            .Bind().To<Service<TTDisposable, TTS>>()
-            // Creates OtherService manually,
-            // just for the sake of example
-            .Bind("Other").To(ctx =>
-            {
-                ctx.Inject(out IDependency<TTDisposable> dependency);
-                return new OtherService<TTDisposable>(dependency);
+            .Bind().To<StreamSource<TTDisposable>>()
+            .Bind().To<DataProcessor<TTDisposable, TTS>>()
+            // Creates SpecializedDataProcessor manually,
+            // just for the sake of example.
+            // It treats 'bool' as the options type for specific boolean flags.
+            .Bind("Specialized").To(ctx => {
+                ctx.Inject(out IStreamSource<TTDisposable> source);
+                return new SpecializedDataProcessor<TTDisposable>(source);
             })
 
             // Specifies to create a regular public method
-            // to get a composition root of type Service<T, TStruct>
-            // with the name "GetMyRoot"
-            .Root<IService<TTDisposable, TTS>>("GetMyRoot")
+            // to get a composition root of type DataProcessor<T, TOptions>
+            // with the name "GetProcessor"
+            .Root<IDataProcessor<TTDisposable, TTS>>("GetProcessor")
 
             // Specifies to create a regular public method
-            // to get a composition root of type OtherService<T>
-            // with the name "GetOtherService"
-            // using the "Other" tag
-            .Root<IService<TTDisposable, bool>>("GetOtherService", "Other");
+            // to get a composition root of type SpecializedDataProcessor<T>
+            // with the name "GetSpecializedProcessor"
+            // using the "Specialized" tag
+            .Root<IDataProcessor<TTDisposable, bool>>("GetSpecializedProcessor", "Specialized");
 
         var composition = new Composition();
 
-        // service = new Service<Stream, double>(new Dependency<Stream>());
-        var service = composition.GetMyRoot<Stream, double>();
+        // Creates a processor for a Stream with 'double' as options (e.g., threshold)
+        // processor = new DataProcessor<Stream, double>(new StreamSource<Stream>());
+        var processor = composition.GetProcessor<Stream, double>();
 
-        // someOtherService = new OtherService<BinaryReader>(new Dependency<BinaryReader>());
-        var someOtherService = composition.GetOtherService<BinaryReader>();
-// }
-        service.ShouldBeOfType<Service<Stream, double>>();
-        someOtherService.ShouldBeOfType<OtherService<BinaryReader>>();
+        // Creates a specialized processor for a BinaryReader
+        // specializedProcessor = new SpecializedDataProcessor<BinaryReader>(new StreamSource<BinaryReader>());
+        var specializedProcessor = composition.GetSpecializedProcessor<BinaryReader>();
+        // }
+        processor.ShouldBeOfType<DataProcessor<Stream, double>>();
+        specializedProcessor.ShouldBeOfType<SpecializedDataProcessor<BinaryReader>>();
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency<T>
+interface IStreamSource<T>
     where T : IDisposable;
 
-class Dependency<T> : IDependency<T>
+class StreamSource<T> : IStreamSource<T>
     where T : IDisposable;
 
-interface IService<T, TStruct>
+interface IDataProcessor<T, TOptions>
     where T : IDisposable
-    where TStruct : struct;
+    where TOptions : struct;
 
-class Service<T, TStruct>(IDependency<T> dependency) : IService<T, TStruct>
+class DataProcessor<T, TOptions>(IStreamSource<T> source) : IDataProcessor<T, TOptions>
     where T : IDisposable
-    where TStruct : struct;
+    where TOptions : struct;
 
-class OtherService<T>(IDependency<T> dependency) : IService<T, bool>
+class SpecializedDataProcessor<T>(IStreamSource<T> source) : IDataProcessor<T, bool>
     where T : IDisposable;
 // }

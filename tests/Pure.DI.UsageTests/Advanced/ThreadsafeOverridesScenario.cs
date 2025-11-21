@@ -12,19 +12,17 @@ $r=Shouldly
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable UnusedMember.Global
 // ReSharper disable VariableHidesOuterVariable
-
+// ReSharper disable NotAccessedPositionalProperty.Global
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Advanced.ThreadsafeOverridesScenario;
 
 using System.Collections.Immutable;
-using System.Drawing;
 using Shouldly;
 using Xunit;
 
 // {
 //# using Pure.DI;
 //# using System.Collections.Immutable;
-//# using System.Drawing;
 // }
 
 public class Scenario
@@ -37,41 +35,46 @@ public class Scenario
         // FormatCode = On
 // {    
         DI.Setup(nameof(Composition))
-            .Bind(Tag.Red).To(_ => Color.Red)
-            .Bind().As(Lifetime.Singleton).To<Clock>()
-            .Bind().To<Func<int, int, IDependency>>(ctx =>
-                (dependencyId, subId) =>
-                {
-                    ctx.Inject(Tag.Red, out Color red);
+            .Bind("Global").To(_ => new ProcessingToken("TOKEN-123"))
+            .Bind().As(Lifetime.Singleton).To<TimeProvider>()
+            .Bind().To<Func<int, int, IOrderHandler>>(ctx =>
+                (orderId, customerId) => {
+                    // Retrieves a global processing token to be passed to the handler
+                    ctx.Inject("Global", out ProcessingToken token);
+
+                    // The factory is invoked in parallel, so we must lock
+                    // the context to safely perform overrides for the specific graph
                     lock (ctx.Lock)
                     {
-                        // Overrides with a lambda argument
-                        ctx.Override(dependencyId);
+                        // Overrides the 'int' dependency (OrderId)
+                        ctx.Override(orderId);
 
-                        // Overrides with tag using lambda argument
-                        ctx.Override(subId, "sub");
+                        // Overrides the tagged 'int' dependency (CustomerId)
+                        ctx.Override(customerId, "customer");
 
-                        // Overrides with some value
-                        ctx.Override($"Dep {dependencyId} {subId}");
+                        // Overrides the 'string' dependency (TraceId)
+                        ctx.Override($"Order:{orderId}-Cust:{customerId}");
 
-                        // Overrides with injected value
-                        ctx.Override(red);
+                        // Overrides the 'ProcessingToken' dependency with the injected value
+                        ctx.Override(token);
 
-                        ctx.Inject<Dependency>(out var dependency);
-                        return dependency;
+                        // Creates the handler with the overridden dependencies
+                        ctx.Inject<OrderHandler>(out var handler);
+                        return handler;
                     }
                 })
-            .Bind().To<Service>()
+            .Bind().To<OrderBatchProcessor>()
 
             // Composition root
-            .Root<IService>("Root");
+            .Root<IOrderBatchProcessor>("OrderProcessor");
 
         var composition = new Composition();
-        var service = composition.Root;
-        service.Dependencies.Length.ShouldBe(100);
+        var orderProcessor = composition.OrderProcessor;
+
+        orderProcessor.Handlers.Length.ShouldBe(100);
         for (var i = 0; i < 100; i++)
         {
-            service.Dependencies.Count(dep => dep.Id == i).ShouldBe(1);
+            orderProcessor.Handlers.Count(h => h.OrderId == i).ShouldBe(1);
         }
 // }
         composition.SaveClassDiagram();
@@ -79,50 +82,56 @@ public class Scenario
 }
 
 // {
-interface IClock
+record ProcessingToken(string Value);
+
+interface ITimeProvider
 {
     DateTimeOffset Now { get; }
 }
 
-class Clock : IClock
+class TimeProvider : ITimeProvider
 {
     public DateTimeOffset Now => DateTimeOffset.Now;
 }
 
-interface IDependency
+interface IOrderHandler
 {
-    string Name { get; }
+    string TraceId { get; }
 
-    int Id { get; }
+    int OrderId { get; }
 
-    int SubId { get; }
+    int CustomerId { get; }
 }
 
-class Dependency(
-    string name,
-    IClock clock,
-    int id,
-    [Tag("sub")] int subId,
-    Color red)
-    : IDependency
+class OrderHandler(
+    string traceId,
+    ITimeProvider timeProvider,
+    int orderId,
+    [Tag("customer")] int customerId,
+    ProcessingToken token)
+    : IOrderHandler
 {
-    public string Name => name;
+    public string TraceId => traceId;
 
-    public int Id => id;
+    public int OrderId => orderId;
 
-    public int SubId => subId;
+    public int CustomerId => customerId;
 }
 
-interface IService
+interface IOrderBatchProcessor
 {
-    ImmutableArray<IDependency> Dependencies { get; }
+    ImmutableArray<IOrderHandler> Handlers { get; }
 }
 
-class Service(Func<int, int, IDependency> dependencyFactory): IService
+class OrderBatchProcessor(Func<int, int, IOrderHandler> orderHandlerFactory)
+    : IOrderBatchProcessor
 {
-    public ImmutableArray<IDependency> Dependencies { get; } =
-        [
-            ..Enumerable.Range(0, 100).AsParallel().Select(i => dependencyFactory(i, 99))
-        ];
+    public ImmutableArray<IOrderHandler> Handlers { get; } =
+    [
+        // Simulates parallel processing of orders
+        ..Enumerable.Range(0, 100)
+            .AsParallel()
+            .Select(i => orderHandlerFactory(i, 99))
+    ];
 }
 // }

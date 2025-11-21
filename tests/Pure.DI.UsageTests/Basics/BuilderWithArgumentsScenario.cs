@@ -45,40 +45,40 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .RootArg<Guid>("serviceId")
-            .Bind().To<Dependency>()
-            .Builder<Service>("BuildUpService");
+            .RootArg<Guid>("id")
+            .Bind().To<TelemetrySystem>()
+            .Builder<Satellite>("Initialize");
 
         var composition = new Composition();
 
         var id = Guid.NewGuid();
-        var service = composition.BuildUpService(new Service(), id);
-        service.Id.ShouldBe(id);
-        service.Dependency.ShouldBeOfType<Dependency>();
+        var satellite = composition.Initialize(new Satellite(), id);
+        satellite.Id.ShouldBe(id);
+        satellite.Telemetry.ShouldBeOfType<TelemetrySystem>();
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+interface ITelemetrySystem;
 
-class Dependency : IDependency;
+class TelemetrySystem : ITelemetrySystem;
 
-interface IService
+interface ISatellite
 {
     Guid Id { get; }
-    
-    IDependency? Dependency { get; }
+
+    ITelemetrySystem? Telemetry { get; }
 }
 
-record Service: IService
+record Satellite : ISatellite
 {
     public Guid Id { get; private set; } = Guid.Empty;
-    
+
     // The Dependency attribute specifies to perform an injection
     [Dependency]
-    public IDependency? Dependency { get; set; }
+    public ITelemetrySystem? Telemetry { get; set; }
 
     [Dependency]
     public void SetId(Guid id) => Id = id;

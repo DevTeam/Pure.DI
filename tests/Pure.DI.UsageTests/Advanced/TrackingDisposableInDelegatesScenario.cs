@@ -27,55 +27,55 @@ public class Scenario
     {
 // {
         var composition = new Composition();
-        var root1 = composition.Root;
-        var root2 = composition.Root;
+        var transaction1 = composition.Transaction;
+        var transaction2 = composition.Transaction;
 
-        root2.Dispose();
-
-        // Checks that the disposable instances
-        // associated with root1 have been disposed of
-        root2.Dependency.IsDisposed.ShouldBeTrue();
+        transaction2.Dispose();
 
         // Checks that the disposable instances
-        // associated with root2 have not been disposed of
-        root1.Dependency.IsDisposed.ShouldBeFalse();
-
-        root1.Dispose();
+        // associated with transaction2 have been disposed of
+        transaction2.Connection.IsDisposed.ShouldBeTrue();
 
         // Checks that the disposable instances
-        // associated with root2 have been disposed of
-        root1.Dependency.IsDisposed.ShouldBeTrue();
+        // associated with transaction1 have not been disposed of
+        transaction1.Connection.IsDisposed.ShouldBeFalse();
+
+        transaction1.Dispose();
+
+        // Checks that the disposable instances
+        // associated with transaction1 have been disposed of
+        transaction1.Connection.IsDisposed.ShouldBeTrue();
 // }
         new Composition().SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency
+interface IDbConnection
 {
     bool IsDisposed { get; }
 }
 
-class Dependency : IDependency, IDisposable
+class DbConnection : IDbConnection, IDisposable
 {
     public bool IsDisposed { get; private set; }
 
     public void Dispose() => IsDisposed = true;
 }
 
-interface IService
+interface ITransaction
 {
-    public IDependency Dependency { get; }
+    IDbConnection Connection { get; }
 }
 
-class Service(Func<Owned<IDependency>> dependencyFactory)
-    : IService, IDisposable
+class Transaction(Func<Owned<IDbConnection>> connectionFactory)
+    : ITransaction, IDisposable
 {
-    private readonly Owned<IDependency> _dependency = dependencyFactory();
+    private readonly Owned<IDbConnection> _connection = connectionFactory();
 
-    public IDependency Dependency => _dependency.Value;
+    public IDbConnection Connection => _connection.Value;
 
-    public void Dispose() => _dependency.Dispose();
+    public void Dispose() => _connection.Dispose();
 }
 
 partial class Composition
@@ -86,10 +86,10 @@ partial class Composition
         // Resolve = Off
 // {
         DI.Setup()
-            .Bind().To<Dependency>()
-            .Bind().To<Service>()
+            .Bind().To<DbConnection>()
+            .Bind().To<Transaction>()
 
             // Composition root
-            .Root<Service>("Root");
+            .Root<Transaction>("Transaction");
 }
 // }

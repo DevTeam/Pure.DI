@@ -40,55 +40,53 @@ public class Scenario
         DI.Setup(nameof(Composition))
             // The `default` tag is used to resolve dependencies
             // when the tag was not specified by the consumer
-            .Bind<IDependency>("AbcTag", default).To<AbcDependency>()
-            .Bind<IDependency>("XyzTag").As(Lifetime.Singleton).To<XyzDependency>()
-            .Bind<IService>().To<Service>()
+            .Bind<IApiClient>("Public", default).To<RestApiClient>()
+            .Bind<IApiClient>("Internal").As(Lifetime.Singleton).To<InternalApiClient>()
+            .Bind<IApiFacade>().To<ApiFacade>()
 
-            // "XyzRoot" is root name, "XyzTag" is tag
-            .Root<IDependency>("XyzRoot", "XyzTag")
+            // "InternalRoot" is a root name, "Internal" is a tag
+            .Root<IApiClient>("InternalRoot", "Internal")
 
             // Specifies to create the composition root named "Root"
-            .Root<IService>("Root");
+            .Root<IApiFacade>("Api");
 
         var composition = new Composition();
-        var service = composition.Root;
-        service.Dependency1.ShouldBeOfType<AbcDependency>();
-        service.Dependency2.ShouldBeOfType<XyzDependency>();
-        service.Dependency2.ShouldBe(composition.XyzRoot);
-        service.Dependency3.ShouldBeOfType<AbcDependency>();
+        var api = composition.Api;
+        api.PublicClient.ShouldBeOfType<RestApiClient>();
+        api.InternalClient.ShouldBeOfType<InternalApiClient>();
+        api.InternalClient.ShouldBe(composition.InternalRoot);
+        api.DefaultClient.ShouldBeOfType<RestApiClient>();
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+interface IApiClient;
 
-class AbcDependency : IDependency;
+class RestApiClient : IApiClient;
 
-class XyzDependency : IDependency;
+class InternalApiClient : IApiClient;
 
-class Dependency : IDependency;
-
-interface IService
+interface IApiFacade
 {
-    IDependency Dependency1 { get; }
+    IApiClient PublicClient { get; }
 
-    IDependency Dependency2 { get; }
+    IApiClient InternalClient { get; }
 
-    IDependency Dependency3 { get; }
+    IApiClient DefaultClient { get; }
 }
 
-class Service(
-    [Tag("AbcTag")] IDependency dependency1,
-    [Tag("XyzTag")] IDependency dependency2,
-    IDependency dependency3)
-    : IService
+class ApiFacade(
+    [Tag("Public")] IApiClient publicClient,
+    [Tag("Internal")] IApiClient internalClient,
+    IApiClient defaultClient)
+    : IApiFacade
 {
-    public IDependency Dependency1 { get; } = dependency1;
+    public IApiClient PublicClient { get; } = publicClient;
 
-    public IDependency Dependency2 { get; } = dependency2;
+    public IApiClient InternalClient { get; } = internalClient;
 
-    public IDependency Dependency3 { get; } = dependency3;
+    public IApiClient DefaultClient { get; } = defaultClient;
 }
 // }

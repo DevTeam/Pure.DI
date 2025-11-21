@@ -28,46 +28,47 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Bind<IDependency>().To<AbcDependency>()
-            .Bind<IDependency>(2).To<XyzDependency>()
-            .Bind<IService>().To<Service>()
+            .Bind<IHealthCheck>().To<MemoryCheck>()
+            .Bind<IHealthCheck>("External").To<ExternalServiceCheck>()
+            .Bind<IHealthService>().To<HealthService>()
 
             // Composition root
-            .Root<IService>("Root");
+            .Root<IHealthService>("HealthService");
 
         var composition = new Composition();
-        var service = composition.Root;
-        var dependencies = await service.GetDependenciesAsync();
-        dependencies[0].ShouldBeOfType<AbcDependency>();
-        dependencies[1].ShouldBeOfType<XyzDependency>();
-// }
+        var healthService = composition.HealthService;
+        var checks = await healthService.GetChecksAsync();
+
+        checks[0].ShouldBeOfType<MemoryCheck>();
+        checks[1].ShouldBeOfType<ExternalServiceCheck>();
+        // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+interface IHealthCheck;
 
-class AbcDependency : IDependency;
+class MemoryCheck : IHealthCheck;
 
-class XyzDependency : IDependency;
+class ExternalServiceCheck : IHealthCheck;
 
-interface IService
+interface IHealthService
 {
-    Task<IReadOnlyList<IDependency>> GetDependenciesAsync();
+    Task<IReadOnlyList<IHealthCheck>> GetChecksAsync();
 }
 
-class Service(IAsyncEnumerable<IDependency> dependencies) : IService
+class HealthService(IAsyncEnumerable<IHealthCheck> checks) : IHealthService
 {
-    public async Task<IReadOnlyList<IDependency>> GetDependenciesAsync()
+    public async Task<IReadOnlyList<IHealthCheck>> GetChecksAsync()
     {
-        var deps = new List<IDependency>();
-        await foreach (var dependency in dependencies)
+        var results = new List<IHealthCheck>();
+        await foreach (var check in checks)
         {
-            deps.Add(dependency);
+            results.Add(check);
         }
 
-        return deps;
+        return results;
     }
 }
 // }

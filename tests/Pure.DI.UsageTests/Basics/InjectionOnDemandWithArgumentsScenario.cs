@@ -3,11 +3,6 @@ $v=true
 $p=3
 $d=Injections on demand with arguments
 $h=This example illustrates dependency injection with parameterized factory functions using Pure.DI, where dependencies are created with runtime-provided arguments. The scenario features a service that generates dependencies with specific IDs passed during instantiation.
-$f=Key components:
-$f=- `Dependency` class accepts an int id constructor argument, stored in its `Id` property.
-$f=- `Service` receives `Func<int, IDependency>` delegate, enabling creation of dependencies with dynamic values.
-$f=- `Service` creates two dependencies using the factory – one with ID `33`, another with ID `99`.
-$f=
 $f=Delayed dependency instantiation:
 $f=- Injection of dependencies requiring runtime parameters
 $f=- Creation of distinct instances with different configurations
@@ -38,45 +33,49 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Bind().To<Dependency>()
-            .Bind().To<Service>()
+            .Bind().To<Sensor>()
+            .Bind().To<SmartHome>()
 
             // Composition root
-            .Root<IService>("Root");
+            .Root<ISmartHome>("SmartHome");
 
         var composition = new Composition();
-        var service = composition.Root;
-        var dependencies = service.Dependencies;
-        dependencies.Count.ShouldBe(2);
-        dependencies[0].Id.ShouldBe(33);
-        dependencies[1].Id.ShouldBe(99);
+        var smartHome = composition.SmartHome;
+        var sensors = smartHome.Sensors;
+
+        sensors.Count.ShouldBe(2);
+        sensors[0].Id.ShouldBe(101);
+        sensors[1].Id.ShouldBe(102);
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency
+interface ISensor
 {
     int Id { get; }
 }
 
-class Dependency(int id) : IDependency
+class Sensor(int id) : ISensor
 {
     public int Id { get; } = id;
 }
 
-interface IService
+interface ISmartHome
 {
-    IReadOnlyList<IDependency> Dependencies { get; }
+    IReadOnlyList<ISensor> Sensors { get; }
 }
 
-class Service(Func<int, IDependency> dependencyFactoryWithArgs): IService
+class SmartHome(Func<int, ISensor> sensorFactory) : ISmartHome
 {
-    public IReadOnlyList<IDependency> Dependencies { get; } =
+    public IReadOnlyList<ISensor> Sensors { get; } =
     [
-        dependencyFactoryWithArgs(33),
-        dependencyFactoryWithArgs(99)
+        // Use the injected factory to create a sensor with ID 101 (e.g., Kitchen Temperature)
+        sensorFactory(101),
+
+        // Create another sensor with ID 102 (e.g., Living Room Humidity)
+        sensorFactory(102)
     ];
 }
 // }

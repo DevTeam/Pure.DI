@@ -25,32 +25,32 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Bind<IDependency>().To<Dependency>()
-            .Bind<IService>().To<Service>()
+            .Bind<IFileStore>().To<FileStore>()
+            .Bind<IBackupService>().To<BackupService>()
 
             // Specifies to use CancellationToken from the argument
             // when resolving a composition root
             .RootArg<CancellationToken>("cancellationToken")
 
             // Composition root
-            .Root<Task<IService>>("GetMyServiceAsync");
+            .Root<Task<IBackupService>>("GetBackupServiceAsync");
 
         var composition = new Composition();
 
         // Resolves composition roots asynchronously
-        var service = await composition.GetMyServiceAsync(CancellationToken.None);
+        var service = await composition.GetBackupServiceAsync(CancellationToken.None);
 // }
-        service.ShouldBeOfType<Service>();
+        service.ShouldBeOfType<BackupService>();
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+interface IFileStore;
 
-class Dependency : IDependency;
+class FileStore : IFileStore;
 
-interface IService;
+interface IBackupService;
 
-class Service(IDependency dependency) : IService;
+class BackupService(IFileStore fileStore) : IBackupService;
 // }

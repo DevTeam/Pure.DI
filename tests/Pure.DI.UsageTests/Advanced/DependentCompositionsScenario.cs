@@ -36,47 +36,47 @@ public class Scenario
     {
         // This hint indicates to not generate methods such as Resolve
         // Resolve = Off
-// {
+        // {
         // This setup does not generate code, but can be used as a dependency
         // and requires the use of the "DependsOn" call to add it as a dependency
-        DI.Setup("BaseComposition", Internal)
-            .Bind<IDependency>().To<Dependency>();
+        DI.Setup("Infrastructure", Internal)
+            .Bind<IDatabase>().To<SqlDatabase>();
 
         // This setup generates code and can also be used as a dependency
         DI.Setup(nameof(Composition))
-            // Uses "BaseComposition" setup
-            .DependsOn("BaseComposition")
-            .Bind<IService>().To<Service>()
-            .Root<IService>("Root");
+            // Uses "Infrastructure" setup
+            .DependsOn("Infrastructure")
+            .Bind<IUserService>().To<UserService>()
+            .Root<IUserService>("UserService");
 
         // As in the previous case, this setup generates code and can also be used as a dependency
         DI.Setup(nameof(OtherComposition))
             // Uses "Composition" setup
             .DependsOn(nameof(Composition))
-            .Root<Program>("Program");
+            .Root<Ui>("Ui");
 
         var composition = new Composition();
-        var service = composition.Root;
+        var userService = composition.UserService;
 
         var otherComposition = new OtherComposition();
-        service = otherComposition.Program.Service;
-// }
-        service.ShouldBeOfType<Service>();
+        userService = otherComposition.Ui.UserService;
+        // }
+        userService.ShouldBeOfType<UserService>();
         otherComposition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+interface IDatabase;
 
-class Dependency : IDependency;
+class SqlDatabase : IDatabase;
 
-interface IService;
+interface IUserService;
 
-class Service(IDependency dependency) : IService;
+class UserService(IDatabase database) : IUserService;
 
-partial class Program(IService service)
+partial class Ui(IUserService userService)
 {
-    public IService Service { get; } = service;
+    public IUserService UserService { get; } = userService;
 }
 // }

@@ -29,44 +29,47 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .RootArg<string>("name")
+            .RootArg<string>("userName")
             .Bind().To(_ => Guid.NewGuid())
-            .Bind().To(ctx =>
-            {
-                var dependency = new Dependency<TTS>();
-                ctx.BuildUp(dependency);
-                return dependency;
+            .Bind().To(ctx => {
+                // The "BuildUp" method injects dependencies into an existing object.
+                // This is useful when the object is created externally (e.g., by a UI framework
+                // or an ORM) or requires specific initialization before injection.
+                var context = new UserContext<TTS>();
+                ctx.BuildUp(context);
+                return context;
             })
-            .Bind().To<Service<TTS>>()
+            .Bind().To<Facade<TTS>>()
 
             // Composition root
-            .Root<IService<Guid>>("GetMyService");
+            .Root<IFacade<Guid>>("GetFacade");
 
         var composition = new Composition();
-        var service = composition.GetMyService("Some name");
-        service.Dependency.Name.ShouldBe("Some name");
-        service.Dependency.Id.ShouldNotBe(Guid.Empty);
+        var facade = composition.GetFacade("Erik");
+
+        facade.Context.UserName.ShouldBe("Erik");
+        facade.Context.Id.ShouldNotBe(Guid.Empty);
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency<out T>
-    where T: struct
+interface IUserContext<out T>
+    where T : struct
 {
-    string Name { get; }
+    string UserName { get; }
 
     T Id { get; }
 }
 
-class Dependency<T> : IDependency<T>
-    where T: struct
+class UserContext<T> : IUserContext<T>
+    where T : struct
 {
     // The Dependency attribute specifies to perform an injection
     [Dependency]
-    public string Name { get; set; } = "";
-    
+    public string UserName { get; set; } = "";
+
     public T Id { get; private set; }
 
     // The Dependency attribute specifies to perform an injection
@@ -74,12 +77,12 @@ class Dependency<T> : IDependency<T>
     public void SetId(T id) => Id = id;
 }
 
-interface IService<out T>
-    where T: struct
+interface IFacade<out T>
+    where T : struct
 {
-    IDependency<T> Dependency { get; }
+    IUserContext<T> Context { get; }
 }
 
-record Service<T>(IDependency<T> Dependency)
-    : IService<T> where T: struct;
+record Facade<T>(IUserContext<T> Context)
+    : IFacade<T> where T : struct;
 // }

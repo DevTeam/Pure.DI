@@ -29,43 +29,73 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            // Default lifetime applied to a specific type
-            .DefaultLifetime<IDependency>(Singleton, "some tag")
-            .Bind("some tag").To<Dependency>()
-            .Bind().To<Dependency>()
-            .Bind().To<Service>()
-            .Root<IService>("Root");
+            // Real-world idea:
+            // "Live" audio capture device should be shared (singleton),
+            // while a regular (untagged) audio source can be created per session (transient).
+            .DefaultLifetime<IAudioSource>(Singleton, "Live")
+
+            // Tagged binding: "Live" audio capture (shared)
+            .Bind("Live").To<LiveAudioSource>()
+
+            // Untagged binding: some other source (new instance each time)
+            .Bind().To<BufferedAudioSource>()
+
+            // A playback session uses two sources:
+            // - Live (shared, tagged)
+            // - Buffered (transient, untagged)
+            .Bind().To<PlaybackSession>()
+
+            // Composition root
+            .Root<IPlaybackSession>("PlaybackSession");
 
         var composition = new Composition();
-        var service1 = composition.Root;
-        var service2 = composition.Root;
-        service1.ShouldNotBe(service2);
-        service1.Dependency1.ShouldNotBe(service1.Dependency2);
-        service1.Dependency1.ShouldBe(service2.Dependency1);
+
+        // Two independent sessions (transient root)
+        var session1 = composition.PlaybackSession;
+        var session2 = composition.PlaybackSession;
+
+        session1.ShouldNotBe(session2);
+
+        // Within a single session:
+        // - Live source is tagged => default lifetime forces it to be shared (singleton)
+        // - Buffered source is untagged => transient => always a new instance
+        session1.LiveSource.ShouldNotBe(session1.BufferedSource);
+
+        // Between sessions:
+        // - Live source is a shared singleton (same instance)
+        // - Buffered source is transient (different instances)
+        session1.LiveSource.ShouldBe(session2.LiveSource);
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+interface IAudioSource;
 
-class Dependency : IDependency;
+// "Live" device: e.g., microphone/line-in capture.
+class LiveAudioSource : IAudioSource;
 
-interface IService
+// "Buffered" source: e.g., decoded audio chunks, per-session pipeline buffer.
+class BufferedAudioSource : IAudioSource;
+
+interface IPlaybackSession
 {
-    public IDependency Dependency1 { get; }
+    IAudioSource LiveSource { get; }
 
-    public IDependency Dependency2 { get; }
+    IAudioSource BufferedSource { get; }
 }
 
-class Service(
-    [Tag("some tag")] IDependency dependency1,
-    IDependency dependency2)
-    : IService
-{
-    public IDependency Dependency1 { get; } = dependency1;
+class PlaybackSession(
+    // Tagged dependency: should be singleton because of DefaultLifetime<IAudioSource>(..., "Live")
+    [Tag("Live")] IAudioSource liveSource,
 
-    public IDependency Dependency2 { get; } = dependency2;
+    // Untagged dependency: transient by default
+    IAudioSource bufferedSource)
+    : IPlaybackSession
+{
+    public IAudioSource LiveSource { get; } = liveSource;
+
+    public IAudioSource BufferedSource { get; } = bufferedSource;
 }
 // }

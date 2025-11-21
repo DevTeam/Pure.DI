@@ -11,6 +11,8 @@ $r=Shouldly
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable UnusedTypeParameter
 // ReSharper disable UnusedMemberInSuper.Global
+// ReSharper disable RedundantArgumentDefaultValue
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.UsageTests.Generics.GenericBuilderScenario;
 
 using Shouldly;
@@ -30,40 +32,55 @@ public class Scenario
 // {
         DI.Setup(nameof(Composition))
             .Bind(Tag.Id).To<TT>(_ => (TT)(object)Guid.NewGuid())
-            .Bind().To<Dependency<TT>>()
+            .Bind().To<Repository<TT>>()
             // Generic service builder
-            .Builder<Service<TTS, TT2>>("BuildUpGeneric");
+            // Defines a generic builder "BuildUp".
+            // This is useful when instances are created by an external framework
+            // (like a UI library or serialization) but require dependencies to be injected.
+            .Builder<ViewModel<TTS, TT2>>("BuildUp");
 
         var composition = new Composition();
-        var service = composition.BuildUpGeneric(new Service<Guid, string>());
-        service.Id.ShouldNotBe(Guid.Empty);
-        service.Dependency.ShouldBeOfType<Dependency<string>>();
+
+        // A view model instance created manually (or by a UI framework)
+        var viewModel = new ViewModel<Guid, Customer>();
+
+        // Inject dependencies (Id and Repository) into the existing instance
+        var builtViewModel = composition.BuildUp(viewModel);
+
+        builtViewModel.Id.ShouldNotBe(Guid.Empty);
+        builtViewModel.Repository.ShouldBeOfType<Repository<Customer>>();
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency<T>;
+// Domain model
+record Customer;
 
-class Dependency<T> : IDependency<T>;
+interface IRepository<T>;
 
-interface IService<out T, T2>
+class Repository<T> : IRepository<T>;
+
+interface IViewModel<out TId, TModel>
 {
-    T Id { get; }
-    
-    IDependency<T2>? Dependency { get; }
+    TId Id { get; }
+
+    IRepository<TModel>? Repository { get; }
 }
 
-record Service<T, T2>: IService<T, T2>
-    where T: struct
+// The view model is generic, allowing it to be used for various entities
+record ViewModel<TId, TModel> : IViewModel<TId, TModel>
+    where TId : struct
 {
-    public T Id { get; private set; }
-    
-    [Dependency]
-    public IDependency<T2>? Dependency { get; set; }
+    public TId Id { get; private set; }
 
+    // The dependency to be injected
     [Dependency]
-    public void SetId([Tag(Tag.Id)] T id) => Id = id;
+    public IRepository<TModel>? Repository { get; set; }
+
+    // Method injection for the ID
+    [Dependency]
+    public void SetId([Tag(Tag.Id)] TId id) => Id = id;
 }
 // }

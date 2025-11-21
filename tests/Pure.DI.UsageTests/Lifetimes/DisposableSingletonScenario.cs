@@ -32,43 +32,60 @@ public class Scenario
         DI.Setup(nameof(Composition))
             // This hint indicates to not generate methods such as Resolve
             .Hint(Hint.Resolve, "Off")
-            .Bind().As(Singleton).To<Dependency>()
-            .Bind().To<Service>()
-            .Root<IService>("Root");
 
-        IDependency dependency;
+            // A realistic example:
+            // a submarine has a shared hardware bus to onboard sensors.
+            // It should be created once and disposed when the "mission scope"
+            // (the composition instance) ends.
+            .Bind().As(Singleton).To<AcousticSensorBus>()
+            .Bind().To<SubmarineCombatSystem>()
+            .Root<ICombatSystem>("CombatSystem");
+
+        IAcousticSensorBus bus;
         using (var composition = new Composition())
         {
-            var service = composition.Root;
-            dependency = service.Dependency;
+            var combatSystem = composition.CombatSystem;
+
+            // Store the singleton instance to verify that it gets disposed
+            // when composition is disposed.
+            bus = combatSystem.SensorBus;
+
+            // In real usage you would call methods like:
+            // combatSystem.ScanForContacts();
         }
 
-        dependency.IsDisposed.ShouldBeTrue();
+        // When the mission scope ends, all disposable singletons created by it
+        // must be disposed.
+        bus.IsDisposed.ShouldBeTrue();
 // }
         new Composition().SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency
+interface IAcousticSensorBus
 {
     bool IsDisposed { get; }
 }
 
-class Dependency : IDependency, IDisposable
+// Represents a shared connection to submarine sensors (sonar, hydrophones, etc.).
+// This is a singleton because the hardware bus is typically a single shared resource,
+// and it must be cleaned up properly.
+class AcousticSensorBus : IAcousticSensorBus, IDisposable
 {
     public bool IsDisposed { get; private set; }
 
     public void Dispose() => IsDisposed = true;
 }
 
-interface IService
+interface ICombatSystem
 {
-    public IDependency Dependency { get; }
+    IAcousticSensorBus SensorBus { get; }
 }
 
-class Service(IDependency dependency) : IService
+// A "combat system" is a typical high-level service that uses shared hardware resources.
+class SubmarineCombatSystem(IAcousticSensorBus sensorBus) : ICombatSystem
 {
-    public IDependency Dependency { get; } = dependency;
+    public IAcousticSensorBus SensorBus { get; } = sensorBus;
 }
 // }

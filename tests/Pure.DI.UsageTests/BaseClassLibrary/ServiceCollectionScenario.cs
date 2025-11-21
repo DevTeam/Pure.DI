@@ -35,27 +35,27 @@ public class Scenario
         var composition = new Composition();
         var serviceCollection = composition.ServiceCollection;
         var serviceProvider = serviceCollection.BuildServiceProvider();
-        var service = serviceProvider.GetRequiredService<IService>();
-        var dependency = serviceProvider.GetRequiredKeyedService<IDependency>("Dependency Key");
-        service.Dependency.ShouldBe(dependency);
+        var thermostat = serviceProvider.GetRequiredService<IThermostat>();
+        var sensor = serviceProvider.GetRequiredKeyedService<ISensor>("LivingRoom");
+        thermostat.Sensor.ShouldBe(sensor);
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+interface ISensor;
 
-class Dependency : IDependency;
+class TemperatureSensor : ISensor;
 
-interface IService
+interface IThermostat
 {
-    IDependency Dependency { get; }
+    ISensor Sensor { get; }
 }
 
-class Service([Tag("Dependency Key")] IDependency dependency) : IService
+class Thermostat([Tag("LivingRoom")] ISensor sensor) : IThermostat
 {
-    public IDependency Dependency { get; } = dependency;
+    public ISensor Sensor { get; } = sensor;
 }
 
 partial class Composition : ServiceProviderFactory<Composition>
@@ -65,9 +65,9 @@ partial class Composition : ServiceProviderFactory<Composition>
 
     static void Setup() =>
         DI.Setup()
-            .Bind<IDependency>("Dependency Key").As(Lifetime.Singleton).To<Dependency>()
-            .Bind<IService>().To<Service>()
-            .Root<IDependency>(tag: "Dependency Key")
-            .Root<IService>();
+            .Bind<ISensor>("LivingRoom").As(Lifetime.Singleton).To<TemperatureSensor>()
+            .Bind<IThermostat>().To<Thermostat>()
+            .Root<ISensor>(tag: "LivingRoom")
+            .Root<IThermostat>();
 }
 // }

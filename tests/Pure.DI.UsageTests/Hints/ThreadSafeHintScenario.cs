@@ -34,24 +34,27 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
+            // Отключение потокобезопасности в композиции может повысить производительность.
+            // Это безопасно, если граф объектов разрешается в одном потоке,
+            // например, при запуске приложения.
             .Hint(ThreadSafe, "Off")
-            .Bind().To<Dependency>()
-            .Bind().As(Lifetime.Singleton).To<Service>()
-            .Root<IService>("Root");
+            .Bind().To<SqlDatabaseConnection>()
+            .Bind().As(Lifetime.Singleton).To<ReportGenerator>()
+            .Root<IReportGenerator>("Generator");
 
         var composition = new Composition();
-        var service = composition.Root;
+        var reportGenerator = composition.Generator;
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+interface IDatabaseConnection;
 
-class Dependency : IDependency;
+class SqlDatabaseConnection : IDatabaseConnection;
 
-interface IService;
+interface IReportGenerator;
 
-class Service(Func<IDependency> dependencyFactory) : IService;
+class ReportGenerator(Func<IDatabaseConnection> connectionFactory) : IReportGenerator;
 // }

@@ -7,7 +7,7 @@ $h=> [!TIP]
 $h=> There is no limit to the number of roots, but you should consider limiting the number of roots. Ideally, an application should have a single composition root.
 $h=
 $h=If you use classic DI containers, the composition is resolved dynamically every time you call a method similar to `T Resolve<T>()` or `object GetService(Type type)`. The root of the composition there is simply the root type of the composition of objects in memory `T` or `Type` type. There can be as many of these as you like. In the case of Pure.DI, the number of composition roots is limited because for each composition root a separate property or method is created at compile time. Therefore, each root is defined explicitly by calling the `Root(string rootName)` method.
-$f=The name of the composition root is arbitrarily chosen depending on its purpose, but should be restricted by the property naming conventions in C# since it is the same name as a property in the composition class. In reality, the _Root_ property has the form:
+$f=The name of the composition root is arbitrarily chosen depending on its purpose but should be restricted by the property naming conventions in C# since it is the same name as a property in the composition class. In reality, the _Root_ property has the form:
 $f=```c#
 $f=public IService Root
 $f={
@@ -43,60 +43,69 @@ using Xunit;
 // {
 //# using Pure.DI;
 // }
-
 public class Scenario
 {
     [Fact]
     public void Run()
     {
-// {
+        // {
         DI.Setup(nameof(Composition))
-            .Bind<IService>().To<Service>()
-            .Bind<IService>("Other").To<OtherService>()
-            .Bind<IDependency>().To<Dependency>()
+            .Bind<IInvoiceGenerator>().To<PdfInvoiceGenerator>()
+            .Bind<IInvoiceGenerator>("Online").To<HtmlInvoiceGenerator>()
+            .Bind<ILogger>().To<FileLogger>()
 
             // Specifies to create a regular composition root
-            // of type "IService" with the name "MyService"
-            .Root<IService>("MyService")
+            // of type "IInvoiceGenerator" with the name "InvoiceGenerator".
+            // This will be the main entry point for invoice generation.
+            .Root<IInvoiceGenerator>("InvoiceGenerator")
 
             // Specifies to create an anonymous composition root
-            // that is only accessible from "Resolve()" methods
-            .Root<IDependency>()
+            // that is only accessible from "Resolve()" methods.
+            // This is useful for auxiliary types or testing.
+            .Root<ILogger>()
 
             // Specifies to create a regular composition root
-            // of type "IService" with the name "MyOtherService"
-            // using the "Other" tag
-            .Root<IService>("MyOtherService", "Other");
+            // of type "IInvoiceGenerator" with the name "OnlineInvoiceGenerator"
+            // using the "Online" tag to differentiate implementations.
+            .Root<IInvoiceGenerator>("OnlineInvoiceGenerator", "Online");
 
         var composition = new Composition();
 
-        // service = new Service(new Dependency());
-        var service = composition.MyService;
+        // Resolves the default invoice generator (PDF) with all its dependencies
+        // invoiceGenerator = new PdfInvoiceGenerator(new FileLogger());
+        var invoiceGenerator = composition.InvoiceGenerator;
 
-        // someOtherService = new OtherService();
-        var someOtherService = composition.MyOtherService;
+        // Resolves the online invoice generator (HTML)
+        // onlineInvoiceGenerator = new HtmlInvoiceGenerator();
+        var onlineInvoiceGenerator = composition.OnlineInvoiceGenerator;
 
         // All and only the roots of the composition
-        // can be obtained by Resolve method
-        var dependency = composition.Resolve<IDependency>();
-        
-        // including tagged ones
-        var tagged = composition.Resolve<IService>("Other");
-// }
-        service.ShouldBeOfType<Service>();
-        tagged.ShouldBeOfType<OtherService>();
+        // can be obtained by Resolve method.
+        // Here we resolve the private root 'ILogger'.
+        var logger = composition.Resolve<ILogger>();
+
+        // We can also resolve tagged roots dynamically if needed
+        var tagged = composition.Resolve<IInvoiceGenerator>("Online");
+        // }
+        invoiceGenerator.ShouldBeOfType<PdfInvoiceGenerator>();
+        tagged.ShouldBeOfType<HtmlInvoiceGenerator>();
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+// Common logger interface used across the system
+interface ILogger;
 
-class Dependency : IDependency;
+// Concrete implementation of a logger that writes to a file
+class FileLogger : ILogger;
 
-interface IService;
+// Abstract definition of an invoice generator
+interface IInvoiceGenerator;
 
-class Service(IDependency dependency) : IService;
+// Implementation for generating PDF invoices, dependent on ILogger
+class PdfInvoiceGenerator(ILogger logger) : IInvoiceGenerator;
 
-class OtherService : IService;
+// Implementation for generating HTML invoices for online viewing
+class HtmlInvoiceGenerator : IInvoiceGenerator;
 // }

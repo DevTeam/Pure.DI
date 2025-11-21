@@ -48,55 +48,65 @@ public class Scenario
         // Resolve = Off
 // {    
         // OnDependencyInjection = On
-        // OnDependencyInjectionContractTypeNameWildcard = *IService
+        // OnDependencyInjectionContractTypeNameWildcard = *IGreeter
         DI.Setup(nameof(Composition))
-            .Bind().To<Service>()
-            .Root<IService>("Root");
+            .Bind().To<Greeter>()
+            .Root<IGreeter>("Greeter");
 
         var composition = new Composition();
-        var service = composition.Root;
-        service.GetMessage().ShouldBe("Hello World !!!");
+        var greeter = composition.Greeter;
+
+        // The greeting is modified by the interceptor
+        greeter.Greet("World").ShouldBe("Hello World !!!");
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-public interface IService
+public interface IGreeter
 {
-    string GetMessage();
+    string Greet(string name);
 }
 
-class Service : IService
+class Greeter : IGreeter
 {
-    public string GetMessage() => "Hello World";
+    public string Greet(string name) => $"Hello {name}";
 }
 
 partial class Composition : IInterceptor
 {
     private static readonly ProxyGenerator ProxyGenerator = new();
 
+    // Intercepts the instantiation of services to wrap them in a proxy
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private partial T OnDependencyInjection<T>(
         in T value,
         object? tag,
         Lifetime lifetime)
     {
+        // Proxying is only possible for reference types (interfaces, classes)
         if (typeof(T).IsValueType)
         {
             return value;
         }
 
+        // Creates a proxy that delegates calls to the 'value' object
+        // and passes them through the 'this' interceptor
         return (T)ProxyGenerator.CreateInterfaceProxyWithTargetInterface(
             typeof(T),
             value,
             this);
     }
 
+    // Logic performed when a method on the proxy is called
     public void Intercept(IInvocation invocation)
     {
+        // Executes the original method
         invocation.Proceed();
-        if (invocation.Method.Name == nameof(IService.GetMessage)
+
+        // Enhances the result of the Greet method
+        if (invocation.Method.Name == nameof(IGreeter.Greet)
             && invocation.ReturnValue is string message)
         {
             invocation.ReturnValue = $"{message} !!!";

@@ -3,7 +3,7 @@ $v=true
 $p=2
 $d=Simplified factory
 $h=This example shows how to create and initialize an instance manually in a simplified form. When you use a lambda function to specify custom instance initialization logic, each parameter of that function represents an injection of a dependency. Starting with C# 10, you can also put the `Tag(...)` attribute in front of the parameter to specify the tag of the injected dependency.
-$f=The example creates a `service` that depends on a `dependency` initialized with a specific timestamp. The `Tag` attribute allows specifying named dependencies for more complex scenarios.
+$f=The example creates a `service` that depends on a `logger` initialized with a specific file name based on the current date. The `Tag` attribute allows specifying named dependencies for more complex scenarios.
 $r=Shouldly
 */
 
@@ -13,7 +13,7 @@ $r=Shouldly
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable UnusedMember.Global
 // ReSharper disable ClassNeverInstantiated.Global
-
+// ReSharper disable UnusedParameter.Global
 namespace Pure.DI.UsageTests.Basics.SimplifiedFactoryScenario;
 
 using Shouldly;
@@ -32,58 +32,57 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Bind("now").To(_ => DateTimeOffset.Now)
-            // Injects Dependency and DateTimeOffset instances
+            .Bind("today").To(_ => DateTime.Today)
+            // Injects FileLogger and DateTime instances
             // and performs further initialization logic
-            // defined in the lambda function
-            .Bind<IDependency>().To((
-                Dependency dependency,
-                [Tag("now")] DateTimeOffset time) =>
-            {
-                dependency.Initialize(time);
-                return dependency;
+            // defined in the lambda function to set up the log file name
+            .Bind<IFileLogger>().To((
+                FileLogger logger,
+                [Tag("today")] DateTime date) => {
+                logger.Init($"app-{date:yyyy-MM-dd}.log");
+                return logger;
             })
-            .Bind().To<Service>()
+            .Bind().To<OrderProcessingService>()
 
             // Composition root
-            .Root<IService>("MyService");
+            .Root<IOrderProcessingService>("OrderService");
 
         var composition = new Composition();
-        var service = composition.MyService;
-        service.Dependency.IsInitialized.ShouldBeTrue();
+        var service = composition.OrderService;
+
+        service.Logger.FileName.ShouldBe($"app-{DateTime.Today:yyyy-MM-dd}.log");
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency
+interface IFileLogger
 {
-    DateTimeOffset Time { get; }
+    string FileName { get; }
 
-    bool IsInitialized { get; }
+    void Log(string message);
 }
 
-class Dependency : IDependency
+class FileLogger : IFileLogger
 {
-    public DateTimeOffset Time { get; private set; }
+    public string FileName { get; private set; } = "";
 
-    public bool IsInitialized { get; private set; }
+    public void Init(string fileName) => FileName = fileName;
 
-    public void Initialize(DateTimeOffset time)
+    public void Log(string message)
     {
-        Time = time;
-        IsInitialized = true;
+        // Write to file
     }
 }
 
-interface IService
+interface IOrderProcessingService
 {
-    IDependency Dependency { get; }
+    IFileLogger Logger { get; }
 }
 
-class Service(IDependency dependency) : IService
+class OrderProcessingService(IFileLogger logger) : IOrderProcessingService
 {
-    public IDependency Dependency { get; } = dependency;
+    public IFileLogger Logger { get; } = logger;
 }
 // }

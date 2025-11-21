@@ -35,11 +35,12 @@ public class Scenario
 // {
         DI.Setup(nameof(Composition))
             .Hint(Hint.ToString, "On")
-            .Bind().To<Dependency>()
-            .Bind().To<Service>()
-            .Root<IService>("MyService");
+            .Bind().To<Database>()
+            .Bind().To<UserRepository>()
+            .Root<IUserRepository>("GetUserRepository");
 
         var composition = new Composition();
+        // The ToString() method generates a class diagram in mermaid format
         string classDiagram = composition.ToString();
 // }
         composition.SaveClassDiagram();
@@ -47,11 +48,11 @@ public class Scenario
 }
 
 // {
-interface IDependency;
+interface IDatabase;
 
-class Dependency : IDependency;
+class Database : IDatabase;
 
-interface IService;
+interface IUserRepository;
 
-class Service(IDependency dependency) : IService;
+class UserRepository(IDatabase database) : IUserRepository;
 // }

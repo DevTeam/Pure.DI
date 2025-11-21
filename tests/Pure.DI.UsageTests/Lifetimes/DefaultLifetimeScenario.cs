@@ -29,44 +29,62 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            // Default Lifetime applies
-            // to all bindings until the end of the chain
-            // or the next call to the DefaultLifetime method
+            // In real AI apps, the "client" (HTTP handler, connection pool, retries, telemetry)
+            // is typically expensive and should be shared.
+            //
+            // DefaultLifetime(Singleton) makes *all* bindings in this chain singletons,
+            // until the chain ends or DefaultLifetime(...) is called again.
             .DefaultLifetime(Singleton)
-            .Bind().To<Dependency>()
-            .Bind().To<Service>()
-            .Root<IService>("Root");
+            .Bind().To<LlmGateway>()
+            .Bind().To<RagChatAssistant>()
+            .Root<IChatAssistant>("Assistant");
 
         var composition = new Composition();
-        var service1 = composition.Root;
-        var service2 = composition.Root;
-        service1.ShouldBe(service2);
-        service1.Dependency1.ShouldBe(service1.Dependency2);
-        service1.Dependency1.ShouldBe(service2.Dependency1);
+
+        // Think of these as two independent "requests" to resolve the assistant.
+        // With singleton lifetime, you get the same assistant instance each time.
+        var assistant1 = composition.Assistant;
+        var assistant2 = composition.Assistant;
+
+        assistant1.ShouldBe(assistant2);
+
+        // The assistant depends on the same gateway in two places (e.g., chat + embeddings).
+        // Because the gateway is singleton, both references are the *same instance*.
+        assistant1.ChatGateway.ShouldBe(assistant1.EmbeddingsGateway);
+
+        // And because the assistant itself is singleton, it reuses the same gateway across resolutions.
+        assistant1.ChatGateway.ShouldBe(assistant2.ChatGateway);
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+// Represents an "LLM provider gateway": HTTP client, auth, retries, rate limiting, etc.
+// NOTE: No secrets here; in real projects you'd configure credentials via secure configuration.
+interface ILlmGateway;
 
-class Dependency : IDependency;
+// Concrete gateway implementation (placeholder for "OpenAI/Anthropic/Azure/etc. client").
+class LlmGateway : ILlmGateway;
 
-interface IService
+// A chat assistant that does RAG (Retrieval-Augmented Generation).
+// It needs the gateway for:
+// - Chat completions (answer generation)
+// - Embeddings (vectorization of question/documents)
+interface IChatAssistant
 {
-    public IDependency Dependency1 { get; }
+    ILlmGateway ChatGateway { get; }
 
-    public IDependency Dependency2 { get; }
+    ILlmGateway EmbeddingsGateway { get; }
 }
 
-class Service(
-    IDependency dependency1,
-    IDependency dependency2)
-    : IService
+class RagChatAssistant(
+    ILlmGateway chatGateway,
+    ILlmGateway embeddingsGateway)
+    : IChatAssistant
 {
-    public IDependency Dependency1 { get; } = dependency1;
+    public ILlmGateway ChatGateway { get; } = chatGateway;
 
-    public IDependency Dependency2 { get; } = dependency2;
+    public ILlmGateway EmbeddingsGateway { get; } = embeddingsGateway;
 }
 // }

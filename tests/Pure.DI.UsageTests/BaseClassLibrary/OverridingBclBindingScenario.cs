@@ -28,39 +28,39 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Bind<IDependency[]>().To<IDependency[]>(_ =>
-                [new AbcDependency(), new XyzDependency(), new AbcDependency()]
+            .Bind<IMessageSender[]>().To<IMessageSender[]>(_ =>
+                [new EmailSender(), new SmsSender(), new EmailSender()]
             )
-            .Bind<IService>().To<Service>()
+            .Bind<INotificationService>().To<NotificationService>()
 
             // Composition root
-            .Root<IService>("Root");
+            .Root<INotificationService>("NotificationService");
 
         var composition = new Composition();
-        var service = composition.Root;
-        service.Dependencies.Length.ShouldBe(3);
-        service.Dependencies[0].ShouldBeOfType<AbcDependency>();
-        service.Dependencies[1].ShouldBeOfType<XyzDependency>();
-        service.Dependencies[2].ShouldBeOfType<AbcDependency>();
+        var notificationService = composition.NotificationService;
+        notificationService.Senders.Length.ShouldBe(3);
+        notificationService.Senders[0].ShouldBeOfType<EmailSender>();
+        notificationService.Senders[1].ShouldBeOfType<SmsSender>();
+        notificationService.Senders[2].ShouldBeOfType<EmailSender>();
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+interface IMessageSender;
 
-class AbcDependency : IDependency;
+class EmailSender : IMessageSender;
 
-class XyzDependency : IDependency;
+class SmsSender : IMessageSender;
 
-interface IService
+interface INotificationService
 {
-    IDependency[] Dependencies { get; }
+    IMessageSender[] Senders { get; }
 }
 
-class Service(IDependency[] dependencies) : IService
+class NotificationService(IMessageSender[] senders) : INotificationService
 {
-    public IDependency[] Dependencies { get; } = dependencies;
+    public IMessageSender[] Senders { get; } = senders;
 }
 // }

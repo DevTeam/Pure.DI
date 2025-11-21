@@ -22,10 +22,10 @@ $r=Shouldly
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable UnusedTypeParameter
-
+// ReSharper disable CheckNamespace
 #pragma warning disable CS9113 // Parameter is unread.
 
-namespace Pure.DI.UsageTests.Advanced;
+namespace Pure.DI.UsageTests.Advanced.TagOnInjectionSiteScenario;
 
 using Pure.DI;
 using Xunit;
@@ -44,67 +44,67 @@ public class Scenario
 // {
         DI.Setup(nameof(Composition))
             .Bind(
-                Tag.On("*Service.Service:dependency1"),
+                Tag.On("*UserService.UserService:localRepo"),
                 // Tag on injection site for generic type
-                Tag.On("*Consumer`1.Consumer:myDep"))
-                .To<AbcDependency>()
+                Tag.On("*UserFetcher`1.UserFetcher:repo"))
+                .To<SqlUserRepository>()
             .Bind(
                 // Combined tag
                 Tag.On(
-                    "*Service.Service:dependency2",
-                    "*Service:Dependency3"))
-                .To<XyzDependency>()
-            .Bind<IService>().To<Service>()
+                    "*UserService.UserService:cloudRepo",
+                    "*UserService:BackupRepository"))
+                .To<ApiUserRepository>()
+            .Bind<IUserService>().To<UserService>()
 
             // Specifies to create the composition root named "Root"
-            .Root<IService>("Root");
+            .Root<IUserService>("Ui");
 
         var composition = new Composition();
-        var service = composition.Root;
-        service.Dependency1.ShouldBeOfType<AbcDependency>();
-        service.Dependency2.ShouldBeOfType<XyzDependency>();
-        service.Dependency3.ShouldBeOfType<XyzDependency>();
-        service.Dependency4.ShouldBeOfType<AbcDependency>();
+        var userService = composition.Ui;
+        userService.LocalRepository.ShouldBeOfType<SqlUserRepository>();
+        userService.CloudRepository.ShouldBeOfType<ApiUserRepository>();
+        userService.BackupRepository.ShouldBeOfType<ApiUserRepository>();
+        userService.FetcherRepository.ShouldBeOfType<SqlUserRepository>();
 // }
         composition.SaveClassDiagram("TagOnInjectionSiteScenario");
     }
 }
 
 // {
-interface IDependency;
+interface IUserRepository;
 
-class AbcDependency : IDependency;
+class SqlUserRepository : IUserRepository;
 
-class XyzDependency : IDependency;
+class ApiUserRepository : IUserRepository;
 
-class Consumer<T>(IDependency myDep)
+class UserFetcher<T>(IUserRepository repo)
 {
-    public IDependency Dependency { get; } = myDep;
+    public IUserRepository Repository { get; } = repo;
 }
 
-interface IService
+interface IUserService
 {
-    IDependency Dependency1 { get; }
+    IUserRepository LocalRepository { get; }
 
-    IDependency Dependency2 { get; }
+    IUserRepository CloudRepository { get; }
 
-    IDependency Dependency3 { get; }
+    IUserRepository BackupRepository { get; }
 
-    IDependency Dependency4 { get; }
+    IUserRepository FetcherRepository { get; }
 }
 
-class Service(
-    IDependency dependency1,
-    IDependency dependency2,
-    Consumer<string> consumer)
-    : IService
+class UserService(
+    IUserRepository localRepo,
+    IUserRepository cloudRepo,
+    UserFetcher<string> fetcher)
+    : IUserService
 {
-    public IDependency Dependency1 { get; } = dependency1;
+    public IUserRepository LocalRepository { get; } = localRepo;
 
-    public IDependency Dependency2 { get; } = dependency2;
+    public IUserRepository CloudRepository { get; } = cloudRepo;
 
-    public required IDependency Dependency3 { init; get; }
+    public required IUserRepository BackupRepository { init; get; }
 
-    public IDependency Dependency4 => consumer.Dependency;
+    public IUserRepository FetcherRepository => fetcher.Repository;
 }
 // }

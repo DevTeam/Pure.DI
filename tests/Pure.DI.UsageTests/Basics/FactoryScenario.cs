@@ -37,46 +37,47 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Bind<IDependency>().To<IDependency>(ctx =>
-            {
-                // Some logic for creating an instance
-                ctx.Inject(out Dependency dependency);
-                dependency.Initialize();
-                return dependency;
+            .Bind<IDatabaseService>().To<DatabaseService>(ctx => {
+                // Some logic for creating an instance.
+                // For example, we need to manually initialize the connection.
+                ctx.Inject(out DatabaseService service);
+                service.Connect();
+                return service;
             })
-            .Bind<IService>().To<Service>()
+            .Bind<IUserRegistry>().To<UserRegistry>()
 
             // Composition root
-            .Root<IService>("MyService");
+            .Root<IUserRegistry>("Registry");
 
         var composition = new Composition();
-        var service = composition.MyService;
-        service.Dependency.IsInitialized.ShouldBeTrue();
+        var registry = composition.Registry;
+        registry.Database.IsConnected.ShouldBeTrue();
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency
+interface IDatabaseService
 {
-    bool IsInitialized { get; }
+    bool IsConnected { get; }
 }
 
-class Dependency : IDependency
+class DatabaseService : IDatabaseService
 {
-    public bool IsInitialized { get; private set; }
+    public bool IsConnected { get; private set; }
 
-    public void Initialize() => IsInitialized = true;
+    // Simulates a connection establishment that must be called explicitly
+    public void Connect() => IsConnected = true;
 }
 
-interface IService
+interface IUserRegistry
 {
-    IDependency Dependency { get; }
+    IDatabaseService Database { get; }
 }
 
-class Service(IDependency dependency) : IService
+class UserRegistry(IDatabaseService database) : IUserRegistry
 {
-    public IDependency Dependency { get; } = dependency;
+    public IDatabaseService Database { get; } = database;
 }
 // }

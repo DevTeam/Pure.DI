@@ -36,93 +36,107 @@ public class Scenario
     {
 // {
         var composition = new Composition();
-        var root1 = composition.Root;
-        var root2 = composition.Root;
-        root1.Dependency.ShouldNotBe(root2.Dependency);
-        root1.SingleDependency.ShouldBe(root2.SingleDependency);
+        var dataService1 = composition.DataService;
+        var dataService2 = composition.DataService;
 
-        root2.Dispose();
+        // The dedicated connection should be unique for each root
+        dataService1.Connection.ShouldNotBe(dataService2.Connection);
+
+        // The shared connection should be the same instance
+        dataService1.SharedConnection.ShouldBe(dataService2.SharedConnection);
+
+        dataService2.Dispose();
 
         // Checks that the disposable instances
-        // associated with root1 have been disposed of
-        root2.Dependency.IsDisposed.ShouldBeTrue();
+        // associated with dataService2 have been disposed of
+        dataService2.Connection.IsDisposed.ShouldBeTrue();
 
         // But the singleton is still not disposed of
-        root2.SingleDependency.IsDisposed.ShouldBeFalse();
+        // because it is shared and tracked by the composition
+        dataService2.SharedConnection.IsDisposed.ShouldBeFalse();
 
         // Checks that the disposable instances
-        // associated with root2 have not been disposed of
-        root1.Dependency.IsDisposed.ShouldBeFalse();
-        root1.SingleDependency.IsDisposed.ShouldBeFalse();
+        // associated with dataService1 have not been disposed of
+        dataService1.Connection.IsDisposed.ShouldBeFalse();
+        dataService1.SharedConnection.IsDisposed.ShouldBeFalse();
 
-        root1.Dispose();
+        dataService1.Dispose();
 
         // Checks that the disposable instances
-        // associated with root2 have been disposed of
-        root1.Dependency.IsDisposed.ShouldBeTrue();
+        // associated with dataService1 have been disposed of
+        dataService1.Connection.IsDisposed.ShouldBeTrue();
 
         // But the singleton is still not disposed of
-        root1.SingleDependency.IsDisposed.ShouldBeFalse();
-        
+        dataService1.SharedConnection.IsDisposed.ShouldBeFalse();
+
         composition.Dispose();
-        root1.SingleDependency.IsDisposed.ShouldBeTrue();
+
+        // The shared singleton is disposed only when the composition is disposed
+        dataService1.SharedConnection.IsDisposed.ShouldBeTrue();
 // }
         new Composition().SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency
+interface IDbConnection
 {
     bool IsDisposed { get; }
 }
 
-class Dependency : IDependency, IDisposable
+class DbConnection : IDbConnection, IDisposable
 {
     public bool IsDisposed { get; private set; }
 
     public void Dispose() => IsDisposed = true;
 }
 
-interface IService
+interface IDataService
 {
-    public IDependency Dependency { get; }
-    
-    public IDependency SingleDependency { get; }
+    public IDbConnection Connection { get; }
+
+    public IDbConnection SharedConnection { get; }
 }
 
-class Service(
-    Func<Own<IDependency>> dependencyFactory,
-    [Tag("single")] Func<Own<IDependency>> singleDependencyFactory)
-    : IService, IDisposable
+class DataService(
+    Func<Own<IDbConnection>> connectionFactory,
+    [Tag("shared")] Func<Own<IDbConnection>> sharedConnectionFactory)
+    : IDataService, IDisposable
 {
-    private readonly Own<IDependency> _dependency = dependencyFactory();
-    private readonly Own<IDependency> _singleDependency = singleDependencyFactory();
+    // Own<T> is a wrapper from Pure.DI.Abstractions that owns the value.
+    // It ensures that the value is disposed when Own<T> is disposed,
+    // but only if the value is not a singleton or externally owned.
+    private readonly Own<IDbConnection> _connection = connectionFactory();
+    private readonly Own<IDbConnection> _sharedConnection = sharedConnectionFactory();
 
-    public IDependency Dependency => _dependency.Value;
+    public IDbConnection Connection => _connection.Value;
 
-    public IDependency SingleDependency => _singleDependency.Value;
+    public IDbConnection SharedConnection => _sharedConnection.Value;
 
     public void Dispose()
     {
-        _dependency.Dispose();
-        _singleDependency.Dispose();
+        // Disposes the dedicated connection
+        _connection.Dispose();
+
+        // Notifies that we are done with the shared connection.
+        // However, since it's a singleton, the underlying instance won't be disposed here.
+        _sharedConnection.Dispose();
     }
 }
 
 partial class Composition
 {
     static void Setup() =>
-// }
+        // }
         // This hint indicates to not generate methods such as Resolve
         // Resolve = Off
-// {
+        // {
         DI.Setup()
-            .Bind().To<Dependency>()
-            .Bind("single").As(Lifetime.Singleton).To<Dependency>()
-            .Bind().To<Service>()
+            .Bind().To<DbConnection>()
+            .Bind("shared").As(Lifetime.Singleton).To<DbConnection>()
+            .Bind().To<DataService>()
 
             // Composition root
-            .Root<Service>("Root");
+            .Root<DataService>("DataService");
 }
 // }

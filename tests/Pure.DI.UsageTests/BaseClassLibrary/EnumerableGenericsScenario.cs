@@ -31,45 +31,57 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Bind<IDependency<TT>>().To<AbcDependency<TT>>()
-            .Bind<IDependency<TT>>("Xyz").To<XyzDependency<TT>>()
-            .Bind<IService<TT>>().To<Service<TT>>()
+            // Регистрируем обобщенные компоненты middleware.
+            // LoggingMiddleware<T> регистрируется как стандартная реализация.
+            .Bind<IMiddleware<TT>>().To<LoggingMiddleware<TT>>()
+            // MetricsMiddleware<T> регистрируется с тегом "Metrics".
+            .Bind<IMiddleware<TT>>("Metrics").To<MetricsMiddleware<TT>>()
+            
+            // Регистрируем сам конвейер, который будет принимать коллекцию всех middleware.
+            .Bind<IPipeline<TT>>().To<Pipeline<TT>>()
 
-            // Composition roots
-            .Root<IService<int>>("IntRoot")
-            .Root<IService<string>>("StringRoot");
+            // Корни композиции для разных типов данных (int и string)
+            .Root<IPipeline<int>>("IntPipeline")
+            .Root<IPipeline<string>>("StringPipeline");
 
         var composition = new Composition();
 
-        var intService = composition.IntRoot;
-        intService.Dependencies.Length.ShouldBe(2);
-        intService.Dependencies[0].ShouldBeOfType<AbcDependency<int>>();
-        intService.Dependencies[1].ShouldBeOfType<XyzDependency<int>>();
+        // Проверяем конвейер для обработки int
+        var intPipeline = composition.IntPipeline;
+        intPipeline.Middlewares.Length.ShouldBe(2);
+        intPipeline.Middlewares[0].ShouldBeOfType<LoggingMiddleware<int>>();
+        intPipeline.Middlewares[1].ShouldBeOfType<MetricsMiddleware<int>>();
 
-        var stringService = composition.StringRoot;
-        stringService.Dependencies.Length.ShouldBe(2);
-        stringService.Dependencies[0].ShouldBeOfType<AbcDependency<string>>();
-        stringService.Dependencies[1].ShouldBeOfType<XyzDependency<string>>();
+        // Проверяем конвейер для обработки string
+        var stringPipeline = composition.StringPipeline;
+        stringPipeline.Middlewares.Length.ShouldBe(2);
+        stringPipeline.Middlewares[0].ShouldBeOfType<LoggingMiddleware<string>>();
+        stringPipeline.Middlewares[1].ShouldBeOfType<MetricsMiddleware<string>>();
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency<T>;
+// Интерфейс для промежуточного ПО (middleware)
+interface IMiddleware<T>;
 
-class AbcDependency<T> : IDependency<T>;
+// Реализация для логирования
+class LoggingMiddleware<T> : IMiddleware<T>;
 
-class XyzDependency<T> : IDependency<T>;
+// Реализация для сбора метрик
+class MetricsMiddleware<T> : IMiddleware<T>;
 
-interface IService<T>
+// Интерфейс конвейера обработки
+interface IPipeline<T>
 {
-    ImmutableArray<IDependency<T>> Dependencies { get; }
+    ImmutableArray<IMiddleware<T>> Middlewares { get; }
 }
 
-class Service<T>(IEnumerable<IDependency<T>> dependencies) : IService<T>
+// Реализация конвейера, собирающая все доступные middleware
+class Pipeline<T>(IEnumerable<IMiddleware<T>> middlewares) : IPipeline<T>
 {
-    public ImmutableArray<IDependency<T>> Dependencies { get; }
-        = [..dependencies];
+    public ImmutableArray<IMiddleware<T>> Middlewares { get; }
+        = [..middlewares];
 }
 // }

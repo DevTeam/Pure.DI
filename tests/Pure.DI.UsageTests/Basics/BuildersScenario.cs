@@ -37,61 +37,61 @@ public class Scenario
 // {
         DI.Setup(nameof(Composition))
             .Bind().To(_ => Guid.NewGuid())
-            .Bind().To<Dependency>()
-            // Creates a builder for each type inherited from IService.
+            .Bind().To<PlutoniumBattery>()
+            // Creates a builder for each type inherited from IRobot.
             // These types must be available at this point in the code.
-            .Builders<IService>("BuildUp");
+            .Builders<IRobot>("BuildUp");
 
         var composition = new Composition();
-        
-        var service1 = composition.BuildUp(new Service1());
-        service1.Id.ShouldNotBe(Guid.Empty);
-        service1.Dependency.ShouldBeOfType<Dependency>();
 
-        var service2 = composition.BuildUp(new Service2());
-        service2.Id.ShouldBe(Guid.Empty);
-        service2.Dependency.ShouldBeOfType<Dependency>();
+        var cleaner = composition.BuildUp(new CleanerBot());
+        cleaner.Token.ShouldNotBe(Guid.Empty);
+        cleaner.Battery.ShouldBeOfType<PlutoniumBattery>();
+
+        var guard = composition.BuildUp(new GuardBot());
+        guard.Token.ShouldBe(Guid.Empty);
+        guard.Battery.ShouldBeOfType<PlutoniumBattery>();
 
         // Uses a common method to build an instance
-        IService abstractService = new Service1();
-        abstractService = composition.BuildUp(abstractService);
-        abstractService.ShouldBeOfType<Service1>();
-        abstractService.Id.ShouldNotBe(Guid.Empty);
-        abstractService.Dependency.ShouldBeOfType<Dependency>();
+        IRobot robot = new CleanerBot();
+        robot = composition.BuildUp(robot);
+        robot.ShouldBeOfType<CleanerBot>();
+        robot.Token.ShouldNotBe(Guid.Empty);
+        robot.Battery.ShouldBeOfType<PlutoniumBattery>();
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+interface IBattery;
 
-class Dependency : IDependency;
+class PlutoniumBattery : IBattery;
 
-interface IService
+interface IRobot
 {
-    Guid Id { get; }
-    
-    IDependency? Dependency { get; }
+    Guid Token { get; }
+
+    IBattery? Battery { get; }
 }
 
-record Service1: IService
+record CleanerBot : IRobot
 {
-    public Guid Id { get; private set; } = Guid.Empty;
-    
+    public Guid Token { get; private set; } = Guid.Empty;
+
     // The Dependency attribute specifies to perform an injection
     [Dependency]
-    public IDependency? Dependency { get; set; }
+    public IBattery? Battery { get; set; }
 
     [Dependency]
-    public void SetId(Guid id) => Id = id;
+    public void SetToken(Guid token) => Token = token;
 }
 
-record Service2 : IService
+record GuardBot : IRobot
 {
-    public Guid Id => Guid.Empty;
+    public Guid Token => Guid.Empty;
 
     [Dependency]
-    public IDependency? Dependency { get; set; }
+    public IBattery? Battery { get; set; }
 }
 // }

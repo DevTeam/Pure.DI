@@ -9,7 +9,7 @@ $r=Shouldly
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
 // ReSharper disable ArrangeTypeModifiers
-
+// ReSharper disable UnusedParameter.Global
 namespace Pure.DI.UsageTests.BCL.EnumerableScenario;
 
 using System.Collections.Immutable;
@@ -30,38 +30,65 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Bind<IDependency>().To<AbcDependency>()
-            .Bind<IDependency>(2).To<XyzDependency>()
-            .Bind<IService>().To<Service>()
+            .Bind<IMessageSender>().To<EmailSender>()
+            .Bind<IMessageSender>("sms").To<SmsSender>()
+            .Bind<INotificationService>().To<NotificationService>()
 
             // Composition root
-            .Root<IService>("Root");
+            .Root<INotificationService>("NotificationService");
 
         var composition = new Composition();
-        var service = composition.Root;
-        service.Dependencies.Length.ShouldBe(2);
-        service.Dependencies[0].ShouldBeOfType<AbcDependency>();
-        service.Dependencies[1].ShouldBeOfType<XyzDependency>();
+        var notificationService = composition.NotificationService;
+        notificationService.Senders.Length.ShouldBe(2);
+        notificationService.Senders[0].ShouldBeOfType<EmailSender>();
+        notificationService.Senders[1].ShouldBeOfType<SmsSender>();
+
+        notificationService.Notify("Hello World");
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
-
-class AbcDependency : IDependency;
-
-class XyzDependency : IDependency;
-
-interface IService
+interface IMessageSender
 {
-    ImmutableArray<IDependency> Dependencies { get; }
+    void Send(string message);
 }
 
-class Service(IEnumerable<IDependency> dependencies) : IService
+class EmailSender : IMessageSender
 {
-    public ImmutableArray<IDependency> Dependencies { get; }
-        = [..dependencies];
+    public void Send(string message)
+    {
+        // Sending email...
+    }
+}
+
+class SmsSender : IMessageSender
+{
+    public void Send(string message)
+    {
+        // Sending SMS...
+    }
+}
+
+interface INotificationService
+{
+    ImmutableArray<IMessageSender> Senders { get; }
+
+    void Notify(string message);
+}
+
+class NotificationService(IEnumerable<IMessageSender> senders) : INotificationService
+{
+    public ImmutableArray<IMessageSender> Senders { get; }
+        = [..senders];
+
+    public void Notify(string message)
+    {
+        foreach (var sender in Senders)
+        {
+            sender.Send(message);
+        }
+    }
 }
 // }

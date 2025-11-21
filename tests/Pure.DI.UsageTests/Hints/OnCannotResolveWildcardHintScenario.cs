@@ -17,7 +17,6 @@ $r=Shouldly
 
 namespace Pure.DI.UsageTests.Hints.OnCannotResolveWildcardHintScenario;
 #pragma warning disable CA1822
-
 using Shouldly;
 using Xunit;
 using static Hint;
@@ -38,13 +37,13 @@ public class Scenario
         // OnCannotResolveContractTypeNameWildcard = string
         DI.Setup(nameof(Composition))
             .Hint(OnCannotResolve, "On")
-            .Bind().To<Dependency>()
-            .Bind().To<Service>()
-            .Root<IService>("Root");
+            .Bind().To<DatabaseSettings>()
+            .Bind().To<DataService>()
+            .Root<IDataService>("DataService");
 
         var composition = new Composition();
-        var service = composition.Root;
-        service.Dependency.ToString().ShouldBe("My name");
+        var dataService = composition.DataService;
+        dataService.Settings.ConnectionString.ShouldBe("Server=localhost;");
 
 // }
         composition.SaveClassDiagram();
@@ -52,21 +51,24 @@ public class Scenario
 }
 
 // {
-interface IDependency;
-
-class Dependency(string name) : IDependency
+interface IDatabaseSettings
 {
-    public override string ToString() => name;
+    string ConnectionString { get; }
 }
 
-interface IService
+class DatabaseSettings(string connectionString) : IDatabaseSettings
 {
-    IDependency Dependency { get; }
+    public string ConnectionString { get; } = connectionString;
 }
 
-class Service(IDependency dependency) : IService
+interface IDataService
 {
-    public IDependency Dependency { get; } = dependency;
+    IDatabaseSettings Settings { get; }
+}
+
+class DataService(IDatabaseSettings settings) : IDataService
+{
+    public IDatabaseSettings Settings { get; } = settings;
 }
 
 partial class Composition
@@ -75,9 +77,10 @@ partial class Composition
         object? tag,
         Lifetime lifetime)
     {
+        // Emulates obtaining a configuration value
         if (typeof(T) == typeof(string))
         {
-            return (T)(object)"My name";
+            return (T)(object)"Server=localhost;";
         }
 
         throw new InvalidOperationException("Cannot resolve.");

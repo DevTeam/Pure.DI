@@ -33,62 +33,62 @@ public class Scenario
         DI.Setup(nameof(Composition))
             // This hint indicates to not generate methods such as Resolve
             .Hint(Hint.Resolve, "Off")
-            .RootArg<TT>("depArg")
-            .Bind<IDependency<TT>>().To<Dependency<TT>>()
-            .Bind<IDependency<TTS>>("value type")
-                .As(Lifetime.Singleton)
-                .To<DependencyStruct<TTS>>()
-            .Bind<IService<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>()
-                .To<Service<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>()
+            .RootArg<TT>("name")
+            .Bind<IConsumer<TT>>().To<Consumer<TT>>()
+            .Bind<IConsumer<TTS>>("struct")
+            .As(Lifetime.Singleton)
+            .To<StructConsumer<TTS>>()
+            .Bind<IWorkflow<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>()
+            .To<Workflow<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>()
 
             // Composition root
             .Root<Program<TT>>("GetRoot");
 
         var composition = new Composition();
-        var program = composition.GetRoot<string>(depArg: "some value");
-        var service = program.Service;
-        service.ShouldBeOfType<Service<string, int, List<string>, Dictionary<string, int>>>();
-        service.Dependency1.ShouldBeOfType<Dependency<string>>();
-        service.Dependency2.ShouldBeOfType<DependencyStruct<int>>();
+        var program = composition.GetRoot<string>(name: "Super Task");
+        var workflow = program.Workflow;
+        workflow.ShouldBeOfType<Workflow<string, int, List<string>, Dictionary<string, int>>>();
+        workflow.TaskConsumer.ShouldBeOfType<Consumer<string>>();
+        workflow.PriorityConsumer.ShouldBeOfType<StructConsumer<int>>();
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency<T>;
+interface IConsumer<T>;
 
-class Dependency<T>(T value) : IDependency<T>;
+class Consumer<T>(T name) : IConsumer<T>;
 
-readonly record struct DependencyStruct<T> : IDependency<T>
+readonly record struct StructConsumer<T> : IConsumer<T>
     where T : struct;
 
-interface IService<T1, T2, TList, TDictionary>
-    where T2 : struct
-    where TList : IList<T1>
-    where TDictionary : IDictionary<T1, T2>
+interface IWorkflow<TTask, TPriority, TTaskList, TTaskPriorities>
+    where TPriority : struct
+    where TTaskList : IList<TTask>
+    where TTaskPriorities : IDictionary<TTask, TPriority>
 {
-    IDependency<T1> Dependency1 { get; }
+    IConsumer<TTask> TaskConsumer { get; }
 
-    IDependency<T2> Dependency2 { get; }
+    IConsumer<TPriority> PriorityConsumer { get; }
 }
 
-class Service<T1, T2, TList, TDictionary>(
-    IDependency<T1> dependency1,
-    [Tag("value type")] IDependency<T2> dependency2)
-    : IService<T1, T2, TList, TDictionary>
-    where T2 : struct
-    where TList : IList<T1>
-    where TDictionary : IDictionary<T1, T2>
+class Workflow<TTask, TPriority, TTaskList, TTaskPriorities>(
+    IConsumer<TTask> taskConsumer,
+    [Tag("struct")] IConsumer<TPriority> priorityConsumer)
+    : IWorkflow<TTask, TPriority, TTaskList, TTaskPriorities>
+    where TPriority : struct
+    where TTaskList : IList<TTask>
+    where TTaskPriorities : IDictionary<TTask, TPriority>
 {
-    public IDependency<T1> Dependency1 { get; } = dependency1;
+    public IConsumer<TTask> TaskConsumer { get; } = taskConsumer;
 
-    public IDependency<T2> Dependency2 { get; } = dependency2;
+    public IConsumer<TPriority> PriorityConsumer { get; } = priorityConsumer;
 }
 
-class Program<T>(IService<T, int, List<T>, Dictionary<T, int>> service)
+class Program<T>(IWorkflow<T, int, List<T>, Dictionary<T, int>> workflow)
     where T : notnull
 {
-    public IService<T, int, List<T>, Dictionary<T, int>> Service { get; } = service;
+    public IWorkflow<T, int, List<T>, Dictionary<T, int>> Workflow { get; } = workflow;
 }
 // }

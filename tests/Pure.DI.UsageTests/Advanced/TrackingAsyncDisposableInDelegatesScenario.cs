@@ -27,36 +27,36 @@ public class Scenario
     {
 // {
         var composition = new Composition();
-        var root1 = composition.Root;
-        var root2 = composition.Root;
+        var queryService1 = composition.QueryService;
+        var queryService2 = composition.QueryService;
 
-        await root2.DisposeAsync();
-
-        // Checks that the disposable instances
-        // associated with root1 have been disposed of
-        root2.Dependency.IsDisposed.ShouldBeTrue();
+        await queryService2.DisposeAsync();
 
         // Checks that the disposable instances
-        // associated with root2 have not been disposed of
-        root1.Dependency.IsDisposed.ShouldBeFalse();
-
-        await root1.DisposeAsync();
+        // associated with queryService2 have been disposed of
+        queryService2.Connection.IsDisposed.ShouldBeTrue();
 
         // Checks that the disposable instances
-        // associated with root2 have been disposed of
-        root1.Dependency.IsDisposed.ShouldBeTrue();
+        // associated with queryService1 have not been disposed of
+        queryService1.Connection.IsDisposed.ShouldBeFalse();
+
+        await queryService1.DisposeAsync();
+
+        // Checks that the disposable instances
+        // associated with queryService1 have been disposed of
+        queryService1.Connection.IsDisposed.ShouldBeTrue();
 // }
         new Composition().SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency
+interface IConnection
 {
     bool IsDisposed { get; }
 }
 
-class Dependency : IDependency, IAsyncDisposable
+class DbConnection : IConnection, IAsyncDisposable
 {
     public bool IsDisposed { get; private set; }
 
@@ -67,21 +67,25 @@ class Dependency : IDependency, IAsyncDisposable
     }
 }
 
-interface IService
+interface IQueryService
 {
-    public IDependency Dependency { get; }
+    public IConnection Connection { get; }
 }
 
-class Service(Func<Owned<IDependency>> dependencyFactory)
-    : IService, IAsyncDisposable
+class QueryService(Func<Owned<IConnection>> connectionFactory)
+    : IQueryService, IAsyncDisposable
 {
-    private readonly Owned<IDependency> _dependency = dependencyFactory();
+    // The Owned<T> generic type allows you to manage the lifetime of a dependency
+    // explicitly. In this case, the QueryService creates the connection
+    // using a factory and takes ownership of it.
+    private readonly Owned<IConnection> _connection = connectionFactory();
 
-    public IDependency Dependency => _dependency.Value;
+    public IConnection Connection => _connection.Value;
 
     public ValueTask DisposeAsync()
     {
-        return _dependency.DisposeAsync();
+        // When the service is disposed, it also disposes of the connection it owns
+        return _connection.DisposeAsync();
     }
 }
 
@@ -93,10 +97,10 @@ partial class Composition
         // Resolve = Off
 // {
         DI.Setup()
-            .Bind<IDependency>().To<Dependency>()
-            .Bind().To<Service>()
+            .Bind<IConnection>().To<DbConnection>()
+            .Bind().To<QueryService>()
 
             // Composition root
-            .Root<Service>("Root");
+            .Root<QueryService>("QueryService");
 }
 // }

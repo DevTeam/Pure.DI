@@ -12,12 +12,14 @@ $r=Shouldly
 
 namespace Pure.DI.UsageTests.Lifetimes.AsyncDisposableSingletonScenario;
 
+using Shouldly;
 using Xunit;
 using static Lifetime;
 
 // {
 //# using Pure.DI;
 //# using static Pure.DI.Lifetime;
+//# using System.Threading.Tasks;
 // }
 
 public class Scenario
@@ -29,47 +31,72 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Bind().As(Singleton).To<Dependency>()
-            .Bind().To<Service>()
-            .Root<IService>("Root");
+            // A singleton resource that needs async cleanup (e.g., flushing buffers, closing connections)
+            .Bind().As(Singleton).To<AuditLogWriter>()
+            .Bind().To<CheckoutService>()
+            .Root<ICheckoutService>("CheckoutService");
 
-        IDependency dependency;
+        AuditLogWriter writer;
+
         await using (var composition = new Composition())
         {
-            var service = composition.Root;
-            dependency = service.Dependency;
+            var service = composition.CheckoutService;
+
+            // A "live" usage: do some work that writes to an audit log
+            await service.CheckoutAsync(orderId: "ORD-2025-00042");
+
+            // Keep a reference so we can assert disposal after the composition is disposed
+            writer = service.Writer;
+            writer.IsDisposed.ShouldBeFalse();
         }
 
-        dependency.IsDisposed.ShouldBeTrue();
+        // Composition disposal triggers async disposal of singleton(s)
+        writer.IsDisposed.ShouldBeTrue();
 // }
         new Composition().SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency
+interface ICheckoutService
 {
-    bool IsDisposed { get; }
+    AuditLogWriter Writer { get; }
+
+    ValueTask CheckoutAsync(string orderId);
 }
 
-class Dependency : IDependency, IAsyncDisposable
+/// <summary>
+/// Represents a singleton infrastructure component.
+/// Think: audit log writer, message producer, telemetry pipeline, DB connection, etc.
+/// It is owned by the DI container and must be disposed asynchronously.
+/// </summary>
+sealed class AuditLogWriter : IAsyncDisposable
 {
     public bool IsDisposed { get; private set; }
 
-    public ValueTask DisposeAsync()
+    public async ValueTask WriteAsync(string message)
     {
+        ObjectDisposedException.ThrowIf(IsDisposed, nameof(AuditLogWriter));
+        // Simulate I/O (writing to file / network / remote log)
+        await Task.Delay(5);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        // Simulate async cleanup: flush buffers / send remaining events / gracefully close connection
+        await Task.Delay(5);
         IsDisposed = true;
-        return ValueTask.CompletedTask;
     }
 }
 
-interface IService
+sealed class CheckoutService(AuditLogWriter writer) : ICheckoutService
 {
-    public IDependency Dependency { get; }
-}
+    public AuditLogWriter Writer { get; } = writer;
 
-class Service(IDependency dependency) : IService
-{
-    public IDependency Dependency { get; } = dependency;
+    public ValueTask CheckoutAsync(string orderId)
+    {
+        // Real-world-ish side effect: record a business event
+        return Writer.WriteAsync($"Checkout completed: {orderId}");
+    }
 }
 // }

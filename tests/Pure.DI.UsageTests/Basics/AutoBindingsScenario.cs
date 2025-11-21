@@ -31,23 +31,23 @@ public class Scenario
     {
         // This hint indicates to not generate methods such as Resolve
         // Resolve = Off
-// {        
+// {
         // Specifies to create a partial class with name "Composition"
         DI.Setup("Composition")
-            // with the root "MyService"
-            .Root<Service>("MyService");
+            // with the root "Orders"
+            .Root<OrderService>("Orders");
 
         var composition = new Composition();
 
-        // service = new Service(new Dependency())
-        var service = composition.MyService;
+        // service = new OrderService(new Database())
+        var orders = composition.Orders;
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-class Dependency;
+class Database;
 
-class Service(Dependency dependency);
+class OrderService(Database database);
 // }

@@ -34,38 +34,44 @@ public class Scenario
         // Resolve = Off
 // {
         var composition = new Composition();
-        var service = composition.Root;
+        var app = composition.App;
 // }
-        service.ShouldBeOfType<Program>();
+        app.ShouldBeOfType<App>();
     }
 }
 
 // {
-class BaseComposition
+// The base composition provides common infrastructure,
+// such as database access, that can be shared across different parts of the application.
+class Infrastructure
 {
+    // The 'Internal' kind indicates that this setup is intended
+    // to be inherited and does not produce a public API on its own.
     private static void Setup() =>
         DI.Setup(kind: Internal)
-            .Bind<IDependency>().To<Dependency>();
+            .Bind<IDatabase>().To<SqlDatabase>();
 }
 
-partial class Composition: BaseComposition
+// The main composition inherits the infrastructure configuration
+// and defines the application-specific dependencies.
+partial class Composition : Infrastructure
 {
     private void Setup() =>
         DI.Setup()
-            .Bind<IService>().To<Service>()
-            .Root<Program>(nameof(Root));
+            .Bind<IUserManager>().To<UserManager>()
+            .Root<App>(nameof(App));
 }
 
-interface IDependency;
+interface IDatabase;
 
-class Dependency : IDependency;
+class SqlDatabase : IDatabase;
 
-interface IService;
+interface IUserManager;
 
-class Service(IDependency dependency) : IService;
+class UserManager(IDatabase database) : IUserManager;
 
-partial class Program(IService service)
+partial class App(IUserManager userManager)
 {
-    public IService Service { get; } = service;
+    public IUserManager UserManager { get; } = userManager;
 }
 // }

@@ -34,52 +34,54 @@ public class Scenario
     public void Run()
     {
 // {
-        var composition = new Composition("Abc");
-        var service = composition.Root;
+        var composition = new Composition("NorthStore");
+        var orderService = composition.OrderService;
 
-        service.Name.ShouldBe("Abc_3");
-        service.Dependency1.Id.ShouldBe(1);
-        service.Dependency2.Id.ShouldBe(2);
+        // Checks that the dependencies were created correctly
+        orderService.Order1.Id.ShouldBe(1);
+        orderService.Order2.Id.ShouldBe(2);
+        // Checks that the injected string contains the store name and the generated ID
+        orderService.OrderDetails.ShouldBe("NorthStore_3");
 // }
-        service.ShouldBeOfType<Service>();
+        orderService.ShouldBeOfType<OrderService>();
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency
+interface IOrder
 {
     long Id { get; }
 }
 
-class Dependency(long id) : IDependency
+class Order(long id) : IOrder
 {
     public long Id { get; } = id;
 }
 
-class Service(
-    [Tag("name with id")] string name,
-    IDependency dependency1,
-    IDependency dependency2)
+class OrderService(
+    [Tag("Order details")] string details,
+    IOrder order1,
+    IOrder order2)
 {
-    public string Name { get; } = name;
+    public string OrderDetails { get; } = details;
 
-    public IDependency Dependency1 { get; } = dependency1;
+    public IOrder Order1 { get; } = order1;
 
-    public IDependency Dependency2 { get; } = dependency2;
+    public IOrder Order2 { get; } = order2;
 }
 
 // The partial class is also useful for specifying access modifiers to the generated class
 public partial class Composition
 {
-    private readonly string _serviceName = "";
+    private readonly string _storeName = "";
     private long _id;
 
     // Customizable constructor
-    public Composition(string serviceName)
+    public Composition(string storeName)
         : this()
     {
-        _serviceName = serviceName;
+        _storeName = storeName;
     }
 
     private long GenerateId() => Interlocked.Increment(ref _id);
@@ -92,10 +94,10 @@ public partial class Composition
         // Resolve = Off
 // {
         DI.Setup()
-            .Bind<IDependency>().To<Dependency>()
+            .Bind<IOrder>().To<Order>()
             .Bind<long>().To(_ => GenerateId())
-            .Bind<string>("name with id").To(
-                _ => $"{_serviceName}_{GenerateId()}")
-            .Root<Service>("Root", kind: Internal);
+            // Binds the string with the tag "Order details"
+            .Bind<string>("Order details").To(_ => $"{_storeName}_{GenerateId()}")
+            .Root<OrderService>("OrderService", kind: Internal);
 }
 // }

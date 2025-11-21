@@ -38,36 +38,41 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Bind().To<AbcDependency>()
-            .Bind(Tag.OnMember<Service>(nameof(Service.Dependency)))
-                .To<XyzDependency>()
-            .Bind<IService>().To<Service>()
+            .Bind().To<PayPalGateway>()
+            // Binds StripeGateway to the "Gateway" property of the "CheckoutService" class.
+            // This allows you to override the injected dependency for a specific member
+            // without changing the class definition.
+            .Bind(Tag.OnMember<CheckoutService>(nameof(CheckoutService.Gateway)))
+            .To<StripeGateway>()
+            .Bind<ICheckoutService>().To<CheckoutService>()
 
             // Specifies to create the composition root named "Root"
-            .Root<IService>("Root");
+            .Root<ICheckoutService>("CheckoutService");
 
         var composition = new Composition();
-        var service = composition.Root;
-        service.Dependency.ShouldBeOfType<XyzDependency>();
+        var checkoutService = composition.CheckoutService;
+
+        // Checks that the property was injected with the specific implementation
+        checkoutService.Gateway.ShouldBeOfType<StripeGateway>();
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+interface IPaymentGateway;
 
-class AbcDependency : IDependency;
+class PayPalGateway : IPaymentGateway;
 
-class XyzDependency : IDependency;
+class StripeGateway : IPaymentGateway;
 
-interface IService
+interface ICheckoutService
 {
-    IDependency Dependency { get; }
+    IPaymentGateway Gateway { get; }
 }
 
-class Service : IService
+class CheckoutService : ICheckoutService
 {
-    public required IDependency Dependency { init; get; }
+    public required IPaymentGateway Gateway { init; get; }
 }
 // }

@@ -26,50 +26,50 @@ public class Scenario
     {
 // {
         var composition = new Composition();
-        var root1 = composition.Root;
-        var root2 = composition.Root;
+        var orderProcessingService1 = composition.OrderProcessingService;
+        var orderProcessingService2 = composition.OrderProcessingService;
 
-        root2.Dispose();
-
-        // Checks that the disposable instances
-        // associated with root1 have been disposed of
-        root2.Value.Dependency.IsDisposed.ShouldBeTrue();
+        orderProcessingService2.Dispose();
 
         // Checks that the disposable instances
-        // associated with root2 have not been disposed of
-        root1.Value.Dependency.IsDisposed.ShouldBeFalse();
-
-        root1.Dispose();
+        // associated with orderProcessingService2 have been disposed of
+        orderProcessingService2.Value.DbConnection.IsDisposed.ShouldBeTrue();
 
         // Checks that the disposable instances
-        // associated with root2 have been disposed of
-        root1.Value.Dependency.IsDisposed.ShouldBeTrue();
+        // associated with orderProcessingService1 have not been disposed of
+        orderProcessingService1.Value.DbConnection.IsDisposed.ShouldBeFalse();
+
+        orderProcessingService1.Dispose();
+
+        // Checks that the disposable instances
+        // associated with orderProcessingService1 have been disposed of
+        orderProcessingService1.Value.DbConnection.IsDisposed.ShouldBeTrue();
 // }
         new Composition().SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency
+interface IDbConnection
 {
     bool IsDisposed { get; }
 }
 
-class Dependency : IDependency, IDisposable
+class DbConnection : IDbConnection, IDisposable
 {
     public bool IsDisposed { get; private set; }
 
     public void Dispose() => IsDisposed = true;
 }
 
-interface IService
+interface IOrderProcessingService
 {
-    public IDependency Dependency { get; }
+    public IDbConnection DbConnection { get; }
 }
 
-class Service(IDependency dependency) : IService
+class OrderProcessingService(IDbConnection dbConnection) : IOrderProcessingService
 {
-    public IDependency Dependency { get; } = dependency;
+    public IDbConnection DbConnection { get; } = dbConnection;
 }
 
 partial class Composition
@@ -80,11 +80,11 @@ partial class Composition
         // Resolve = Off
 // {
         DI.Setup()
-            .Bind().To<Dependency>()
-            .Bind().To<Service>()
+            .Bind().To<DbConnection>()
+            .Bind().To<OrderProcessingService>()
 
             // A special composition root
             // that allows to manage disposable dependencies
-            .Root<Owned<IService>>("Root");
+            .Root<Owned<IOrderProcessingService>>("OrderProcessingService");
 }
 // }

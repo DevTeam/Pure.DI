@@ -53,59 +53,57 @@ public class Scenario
 // {
         //# using static Pure.DI.Tag;
         //# using static Pure.DI.Lifetime;
-        
+
         DI.Setup(nameof(Composition))
             // The `default` tag is used to resolve dependencies
             // when the tag was not specified by the consumer
-            .Bind<IDependency>(Abc, default).To<AbcDependency>()
-            .Bind<IDependency>(Xyz).As(Singleton).To<XyzDependency>()
-            .Bind<IService>().To<Service>()
+            .Bind<IMessageSender>(Email, default).To<EmailSender>()
+            .Bind<IMessageSender>(Sms).As(Singleton).To<SmsSender>()
+            .Bind<IMessagingService>().To<MessagingService>()
 
-            // "XyzRoot" is root name, Xyz is tag
-            .Root<IDependency>("XyzRoot", Xyz)
+            // "SmsSenderRoot" is root name, Sms is tag
+            .Root<IMessageSender>("SmsSenderRoot", Sms)
 
             // Specifies to create the composition root named "Root"
-            .Root<IService>("Root");
+            .Root<IMessagingService>("MessagingService");
 
         var composition = new Composition();
-        var service = composition.Root;
-        service.Dependency1.ShouldBeOfType<AbcDependency>();
-        service.Dependency2.ShouldBeOfType<XyzDependency>();
-        service.Dependency2.ShouldBe(composition.XyzRoot);
-        service.Dependency3.ShouldBeOfType<AbcDependency>();
+        var messagingService = composition.MessagingService;
+        messagingService.EmailSender.ShouldBeOfType<EmailSender>();
+        messagingService.SmsSender.ShouldBeOfType<SmsSender>();
+        messagingService.SmsSender.ShouldBe(composition.SmsSenderRoot);
+        messagingService.DefaultSender.ShouldBeOfType<EmailSender>();
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+interface IMessageSender;
 
-class AbcDependency : IDependency;
+class EmailSender : IMessageSender;
 
-class XyzDependency : IDependency;
+class SmsSender : IMessageSender;
 
-class Dependency : IDependency;
-
-interface IService
+interface IMessagingService
 {
-    IDependency Dependency1 { get; }
+    IMessageSender EmailSender { get; }
 
-    IDependency Dependency2 { get; }
+    IMessageSender SmsSender { get; }
 
-    IDependency Dependency3 { get; }
+    IMessageSender DefaultSender { get; }
 }
 
-class Service(
-    [Tag(Abc)] IDependency dependency1,
-    [Tag(Xyz)] IDependency dependency2,
-    IDependency dependency3)
-    : IService
+class MessagingService(
+    [Tag(Email)] IMessageSender emailSender,
+    [Tag(Sms)] IMessageSender smsSender,
+    IMessageSender defaultSender)
+    : IMessagingService
 {
-    public IDependency Dependency1 { get; } = dependency1;
+    public IMessageSender EmailSender { get; } = emailSender;
 
-    public IDependency Dependency2 { get; } = dependency2;
+    public IMessageSender SmsSender { get; } = smsSender;
 
-    public IDependency Dependency3 { get; } = dependency3;
+    public IMessageSender DefaultSender { get; } = defaultSender;
 }
 // }

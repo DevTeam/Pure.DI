@@ -23,58 +23,59 @@ using static RootKinds;
 //# using Pure.DI;
 //# using static Pure.DI.RootKinds;
 // }
-
 public class Scenario
 {
     [Fact]
     public void Run()
     {
-// {
+        // {
         var composition = new Composition();
-        var service = composition.Root;
-        var otherService = composition.GetOtherService();
-        var dependency = Composition.Dependency;
-// }
-        service.ShouldBeOfType<Service>();
+        var paymentService = composition.PaymentService;
+        var cashPaymentService = composition.GetCashPaymentService();
+        var validator = Composition.Validator;
+        // }
+        paymentService.ShouldBeOfType<CardPaymentService>();
+        cashPaymentService.ShouldBeOfType<CashPaymentService>();
+        validator.ShouldBeOfType<LuhnValidator>();
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+interface ICreditCardValidator;
 
-class Dependency : IDependency;
+class LuhnValidator : ICreditCardValidator;
 
-interface IService;
+interface IPaymentService;
 
-class Service : IService
+class CardPaymentService : IPaymentService
 {
-    public Service(IDependency dependency)
+    public CardPaymentService(ICreditCardValidator validator)
     {
     }
 }
 
-class OtherService : IService;
+class CashPaymentService : IPaymentService;
 
 partial class Composition
 {
     void Setup() =>
         DI.Setup(nameof(Composition))
-            .Bind<IService>().To<Service>()
-            .Bind<IService>("Other").To<OtherService>()
-            .Bind<IDependency>().To<Dependency>()
+            .Bind<IPaymentService>().To<CardPaymentService>()
+            .Bind<IPaymentService>("Cash").To<CashPaymentService>()
+            .Bind<ICreditCardValidator>().To<LuhnValidator>()
 
-            // Creates a public root method named "GetOtherService"
-            .Root<IService>("GetOtherService", "Other", Public | Method)
+            // Creates a public root method named "GetCashPaymentService"
+            .Root<IPaymentService>("GetCashPaymentService", "Cash", Public | Method)
 
-            // Creates a private partial root method named "GetRoot"
-            .Root<IService>("GetRoot", kind: Private | Partial | Method)
+            // Creates a private partial root method named "GetCardPaymentService"
+            .Root<IPaymentService>("GetCardPaymentService", kind: Private | Partial | Method)
 
-            // Creates a internal static root named "Dependency"
-            .Root<IDependency>("Dependency", kind: Internal | Static);
+            // Creates an internal static root named "Validator"
+            .Root<ICreditCardValidator>("Validator", kind: Internal | Static);
 
-    private partial IService GetRoot();
+    private partial IPaymentService GetCardPaymentService();
 
-    public IService Root => GetRoot();
+    public IPaymentService PaymentService => GetCardPaymentService();
 }
 // }

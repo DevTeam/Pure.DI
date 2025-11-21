@@ -36,24 +36,25 @@ public class Scenario
 // {    
         DI.Setup(nameof(Composition))
             .Bind().As(Lifetime.Singleton).To<Clock>()
-            .Bind().To<Dependency>()
-            .Bind().To<Service>()
+            .Bind().To<Person>()
+            .Bind().To<Team>()
 
             // Composition root
-            .Root<IService>("Root");
+            .Root<ITeam>("Team");
 
         var composition = new Composition();
-        var service = composition.Root;
-        service.Dependencies.Length.ShouldBe(3);
+        var team = composition.Team;
 
-        service.Dependencies[0].Name.ShouldBe("Abc");
-        service.Dependencies[0].Id.ShouldBe(0);
+        team.Members.Length.ShouldBe(3);
 
-        service.Dependencies[1].Name.ShouldBe("Xyz");
-        service.Dependencies[1].Id.ShouldBe(1);
+        team.Members[0].Id.ShouldBe(10);
+        team.Members[0].Name.ShouldBe("Nik");
 
-        service.Dependencies[2].Id.ShouldBe(2);
-        service.Dependencies[2].Name.ShouldBe("");
+        team.Members[1].Id.ShouldBe(20);
+        team.Members[1].Name.ShouldBe("Mike");
+
+        team.Members[2].Id.ShouldBe(30);
+        team.Members[2].Name.ShouldBe("Jake");
 // }
         composition.SaveClassDiagram();
     }
@@ -70,31 +71,33 @@ class Clock : IClock
     public DateTimeOffset Now => DateTimeOffset.Now;
 }
 
-interface IDependency
+interface IPerson
 {
-    string Name { get; }
     int Id { get; }
+
+    string Name { get; }
 }
 
-class Dependency(string name, IClock clock, int id)
-    : IDependency
+class Person(string name, IClock clock, int id)
+    : IPerson
 {
-    public string Name => name;
     public int Id => id;
+
+    public string Name => name;
 }
 
-interface IService
+interface ITeam
 {
-    ImmutableArray<IDependency> Dependencies { get; }
+    ImmutableArray<IPerson> Members { get; }
 }
 
-class Service(Func<int, string, IDependency> dependencyFactory): IService
+class Team(Func<int, string, IPerson> personFactory) : ITeam
 {
-    public ImmutableArray<IDependency> Dependencies { get; } =
+    public ImmutableArray<IPerson> Members { get; } =
     [
-        dependencyFactory(0, "Abc"),
-        dependencyFactory(1, "Xyz"),
-        dependencyFactory(2, "")
+        personFactory(10, "Nik"),
+        personFactory(20, "Mike"),
+        personFactory(30, "Jake")
     ];
 }
 // }

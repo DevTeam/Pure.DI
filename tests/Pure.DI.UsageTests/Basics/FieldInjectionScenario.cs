@@ -32,45 +32,41 @@ public class Scenario
     {
         // This hint indicates to not generate methods such as Resolve
         // Resolve = Off
-// {
+        // {
         DI.Setup(nameof(Composition))
-            .Bind<IDependency>().To<Dependency>()
-            .Bind<IService>().To<Service>()
+            .Bind<ICoffeeMachine>().To<CoffeeMachine>()
+            .Bind<ISmartKitchen>().To<SmartKitchen>()
 
             // Composition root
-            .Root<IService>("MyService");
+            .Root<ISmartKitchen>("Kitchen");
 
         var composition = new Composition();
-        var service = composition.MyService;
-        service.Dependency.ShouldBeOfType<Dependency>();
-// }
+        var kitchen = composition.Kitchen;
+        kitchen.CoffeeMachine.ShouldBeOfType<CoffeeMachine>();
+        // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+interface ICoffeeMachine;
 
-class Dependency : IDependency;
+class CoffeeMachine : ICoffeeMachine;
 
-interface IService
+interface ISmartKitchen
 {
-    IDependency? Dependency { get; }
+    ICoffeeMachine? CoffeeMachine { get; }
 }
 
-class Service : IService
+class SmartKitchen : ISmartKitchen
 {
-    // The Dependency attribute specifies to perform an injection,
-    // the integer value in the argument specifies
-    // the ordinal of injection
-    [Dependency] public IDependency? DependencyVal;
+    // The Dependency attribute specifies to perform an injection.
+    // The container will automatically assign a value to this field
+    // when creating the SmartKitchen instance.
+    [Dependency]
+    public ICoffeeMachine? CoffeeMachineImpl;
 
-    public IDependency? Dependency
-    {
-        get
-        {
-            return DependencyVal;
-        }
-    }
+    // Expose the injected dependency through a public property
+    public ICoffeeMachine? CoffeeMachine => CoffeeMachineImpl;
 }
 // }

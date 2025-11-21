@@ -53,37 +53,40 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Bind<IDependency>().To<AbcDependency>()
-            .Bind<IDependency>(2).To<XyzDependency>()
-            .Bind<IService>().To<Service>()
+            .Bind<ISensor>().To<TemperatureSensor>()
+            .Bind<ISensor>("External").To<WindSensor>()
+            .Bind<ISensorService>().To<SensorService>()
 
             // Composition root
-            .Root<IService>("Root");
+            .Root<ISensorService>("Sensor");
 
         var composition = new Composition();
-        var service = composition.Root;
-        service.Dependencies.Length.ShouldBe(2);
-        service.Dependencies[0].ShouldBeOfType<AbcDependency>();
-        service.Dependencies[1].ShouldBeOfType<XyzDependency>();
+        var sensor = composition.Sensor;
+
+        // Checks that all bindings for the ISensor interface are injected,
+        // regardless of whether they are tagged or not.
+        sensor.Sensors.Length.ShouldBe(2);
+        sensor.Sensors[0].ShouldBeOfType<TemperatureSensor>();
+        sensor.Sensors[1].ShouldBeOfType<WindSensor>();
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+interface ISensor;
 
-class AbcDependency : IDependency;
+class TemperatureSensor : ISensor;
 
-class XyzDependency : IDependency;
+class WindSensor : ISensor;
 
-interface IService
+interface ISensorService
 {
-    IDependency[] Dependencies { get; }
+    ISensor[] Sensors { get; }
 }
 
-class Service(IDependency[] dependencies) : IService
+class SensorService(ISensor[] sensors) : ISensorService
 {
-    public IDependency[] Dependencies { get; } = dependencies;
+    public ISensor[] Sensors { get; } = sensors;
 }
 // }

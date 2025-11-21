@@ -11,6 +11,7 @@ $r=Shouldly
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable InconsistentNaming
 
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.UsageTests.Attributes.CustomGenericArgumentAttributeScenario;
 
 using Shouldly;
@@ -30,17 +31,17 @@ public class Scenario
 // {
         DI.Setup(nameof(Composition))
             // Registers custom generic argument
-            .GenericTypeArgumentAttribute<MyGenericTypeArgumentAttribute>()
-            .Bind<IDependency<TTMy>>().To<Dependency<TTMy>>()
-            .Bind<IService>().To<Service>()
+            .GenericTypeArgumentAttribute<GenericArgAttribute>()
+            .Bind<IRepository<TMy>>().To<Repository<TMy>>()
+            .Bind<IContentService>().To<ContentService>()
 
             // Composition root
-            .Root<IService>("Root");
+            .Root<IContentService>("ContentService");
 
         var composition = new Composition();
-        var service = composition.Root;
-        service.IntDependency.ShouldBeOfType<Dependency<int>>();
-        service.StringDependency.ShouldBeOfType<Dependency<string>>();
+        var service = composition.ContentService;
+        service.Posts.ShouldBeOfType<Repository<Post>>();
+        service.Comments.ShouldBeOfType<Repository<Comment>>();
 // }
         composition.SaveClassDiagram();
     }
@@ -48,29 +49,33 @@ public class Scenario
 
 // {
 [AttributeUsage(AttributeTargets.Interface | AttributeTargets.Class | AttributeTargets.Struct)]
-class MyGenericTypeArgumentAttribute : Attribute;
+class GenericArgAttribute : Attribute;
 
-[MyGenericTypeArgument]
-interface TTMy;
+[GenericArg]
+interface TMy;
 
-interface IDependency<T>;
+interface IRepository<T>;
 
-class Dependency<T> : IDependency<T>;
+class Repository<T> : IRepository<T>;
 
-interface IService
+class Post;
+
+class Comment;
+
+interface IContentService
 {
-    IDependency<int> IntDependency { get; }
+    IRepository<Post> Posts { get; }
 
-    IDependency<string> StringDependency { get; }
+    IRepository<Comment> Comments { get; }
 }
 
-class Service(
-    IDependency<int> intDependency,
-    IDependency<string> stringDependency)
-    : IService
+class ContentService(
+    IRepository<Post> posts,
+    IRepository<Comment> comments)
+    : IContentService
 {
-    public IDependency<int> IntDependency { get; } = intDependency;
+    public IRepository<Post> Posts { get; } = posts;
 
-    public IDependency<string> StringDependency { get; } = stringDependency;
+    public IRepository<Comment> Comments { get; } = comments;
 }
 // }

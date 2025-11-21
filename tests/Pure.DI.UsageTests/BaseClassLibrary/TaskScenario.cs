@@ -17,7 +17,7 @@ $r=Shouldly
 // ReSharper disable CheckNamespace
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable UnusedParameter.Global
-
+// ReSharper disable UnusedVariable
 namespace Pure.DI.UsageTests.BCL.TaskScenario;
 
 using Xunit;
@@ -39,47 +39,53 @@ public class Scenario
             // Overrides TaskScheduler.Default if necessary
             .Bind<TaskScheduler>().To(_ => TaskScheduler.Current)
             // Specifies to use CancellationToken from the composition root argument,
-            // if not specified then CancellationToken.None will be used
+            // if not specified, then CancellationToken.None will be used
             .RootArg<CancellationToken>("cancellationToken")
-            .Bind<IDependency>().To<Dependency>()
-            .Bind<IService>().To<Service>()
+            .Bind<IDataService>().To<DataService>()
+            .Bind<ICommand>().To<LoadDataCommand>()
 
             // Composition root
-            .Root<IService>("GetRoot");
+            .Root<ICommand>("GetCommand");
 
         var composition = new Composition();
         using var cancellationTokenSource = new CancellationTokenSource();
 
         // Creates a composition root with the CancellationToken passed to it
-        var service = composition.GetRoot(cancellationTokenSource.Token);
-        await service.RunAsync(cancellationTokenSource.Token);
+        var command = composition.GetCommand(cancellationTokenSource.Token);
+        await command.ExecuteAsync(cancellationTokenSource.Token);
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency
+interface IDataService
 {
-    ValueTask DoSomething(CancellationToken cancellationToken);
+    ValueTask<string[]> GetItemsAsync(CancellationToken cancellationToken);
 }
 
-class Dependency : IDependency
+class DataService : IDataService
 {
-    public ValueTask DoSomething(CancellationToken cancellationToken) => ValueTask.CompletedTask;
+    public ValueTask<string[]> GetItemsAsync(CancellationToken cancellationToken) =>
+        new(["Item1", "Item2"]);
 }
 
-interface IService
+interface ICommand
 {
-    Task RunAsync(CancellationToken cancellationToken);
+    Task ExecuteAsync(CancellationToken cancellationToken);
 }
 
-class Service(Task<IDependency> dependencyTask) : IService
+class LoadDataCommand(Task<IDataService> dataServiceTask) : ICommand
 {
-    public async Task RunAsync(CancellationToken cancellationToken)
+    public async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        var dependency = await dependencyTask;
-        await dependency.DoSomething(cancellationToken);
+        // Simulating some processing before needing the dependency
+        await Task.Delay(1, cancellationToken);
+
+        // The dependency is resolved asynchronously, so we await it here.
+        // This allows the dependency to be created in parallel with the execution of this method.
+        var dataService = await dataServiceTask;
+        var items = await dataService.GetItemsAsync(cancellationToken);
     }
 }
 // }

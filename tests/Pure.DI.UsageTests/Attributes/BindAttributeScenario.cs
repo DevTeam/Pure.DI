@@ -10,7 +10,7 @@ $f=This attribute `BindAttribute` applies to field properties and methods, to re
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedType.Global
 // ReSharper disable ArrangeTypeModifiers
-
+// ReSharper disable LocalizableElement
 namespace Pure.DI.UsageTests.Basics.BindAttributeScenario;
 
 using Xunit;
@@ -26,65 +26,62 @@ public class Scenario
     {
         // This hint indicates to not generate methods such as Resolve
         // Resolve = Off
-// {
+        // {
         DI.Setup(nameof(Composition))
-            .Bind().As(Lifetime.Singleton).To<Facade>()
-            .Bind().To<Service>()
+            .Bind().As(Lifetime.Singleton).To<DeviceFeatureProvider>()
+            .Bind().To<PhotoService>()
 
             // Composition root
-            .Root<IService>("Root");
+            .Root<IPhotoService>("PhotoService");
 
         var composition = new Composition();
-        var service = composition.Root;
-        service.DoSomething();
-// }
+        var photoService = composition.PhotoService;
+        photoService.TakePhotoWithLocation();
+        // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency
+interface IGps
 {
-    public void DoSomething();
+    void GetLocation();
 }
 
-class Dependency : IDependency
+class Gps : IGps
 {
-    public void DoSomething()
+    public void GetLocation() => Console.WriteLine("Coordinates: 123, 456");
+}
+
+interface ICamera
+{
+    void Capture();
+}
+
+class Camera : ICamera
+{
+    public void Capture() => Console.WriteLine("Photo captured");
+}
+
+class DeviceFeatureProvider
+{
+    // The [Bind] attribute specifies that the property is a source of dependency
+    [Bind] public IGps Gps { get; } = new Gps();
+
+    [Bind] public ICamera Camera { get; } = new Camera();
+}
+
+interface IPhotoService
+{
+    void TakePhotoWithLocation();
+}
+
+class PhotoService(IGps gps, Func<ICamera> cameraFactory) : IPhotoService
+{
+    public void TakePhotoWithLocation()
     {
-    }
-}
-
-interface IOtherDependency
-{
-    public void DoSomething();
-}
-
-class OtherDependency : IOtherDependency
-{
-    public void DoSomething()
-    {
-    }
-}
-
-class Facade
-{
-    [Bind] public IDependency Dependency { get; } = new Dependency();
-
-    [Bind] public IOtherDependency OtherDependency { get; } = new OtherDependency();
-}
-
-interface IService
-{
-    public void DoSomething();
-}
-
-class Service(IDependency dep, Func<IOtherDependency> otherDep) : IService
-{
-    public void DoSomething()
-    {
-        dep.DoSomething();
-        otherDep().DoSomething();
+        gps.GetLocation();
+        cameraFactory().Capture();
     }
 }
 // }

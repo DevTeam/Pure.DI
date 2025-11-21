@@ -29,59 +29,59 @@ public class Scenario
     {
         // This hint indicates to not generate methods such as Resolve
         // Resolve = Off
-// {
+        // {
         DI.Setup(nameof(Composition))
-            // Tag.Type here is the same as typeof(AbcDependency)
+            // Tag.Type here is the same as typeof(CreditCardGateway)
             // The `default` tag is used to resolve dependencies
             // when the tag was not specified by the consumer
-            .Bind<IDependency>(Tag.Type, default).To<AbcDependency>()
-            // Tag.Type here is the same as typeof(XyzDependency)
-            .Bind<IDependency>(Tag.Type).As(Lifetime.Singleton).To<XyzDependency>()
-            .Bind<IService>().To<Service>()
+            .Bind<IPaymentGateway>(Tag.Type, default).To<CreditCardGateway>()
+            // Tag.Type here is the same as typeof(PayPalGateway)
+            .Bind<IPaymentGateway>(Tag.Type).As(Lifetime.Singleton).To<PayPalGateway>()
+            .Bind<IPaymentProcessor>().To<PaymentProcessor>()
 
             // Composition root
-            .Root<IService>("Root")
+            .Root<IPaymentProcessor>("PaymentSystem")
 
-            // "XyzRoot" is root name, typeof(XyzDependency) is tag
-            .Root<IDependency>("XyzRoot", typeof(XyzDependency));
+            // "PayPalRoot" is root name, typeof(PayPalGateway) is tag
+            .Root<IPaymentGateway>("PayPalRoot", typeof(PayPalGateway));
 
         var composition = new Composition();
-        var service = composition.Root;
-        service.Dependency1.ShouldBeOfType<AbcDependency>();
-        service.Dependency2.ShouldBeOfType<XyzDependency>();
-        service.Dependency2.ShouldBe(composition.XyzRoot);
-        service.Dependency3.ShouldBeOfType<AbcDependency>();
-// }
+        var service = composition.PaymentSystem;
+        service.PrimaryGateway.ShouldBeOfType<CreditCardGateway>();
+        service.AlternativeGateway.ShouldBeOfType<PayPalGateway>();
+        service.AlternativeGateway.ShouldBe(composition.PayPalRoot);
+        service.DefaultGateway.ShouldBeOfType<CreditCardGateway>();
+        // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+interface IPaymentGateway;
 
-class AbcDependency : IDependency;
+class CreditCardGateway : IPaymentGateway;
 
-class XyzDependency : IDependency;
+class PayPalGateway : IPaymentGateway;
 
-interface IService
+interface IPaymentProcessor
 {
-    IDependency Dependency1 { get; }
+    IPaymentGateway PrimaryGateway { get; }
 
-    IDependency Dependency2 { get; }
+    IPaymentGateway AlternativeGateway { get; }
 
-    IDependency Dependency3 { get; }
+    IPaymentGateway DefaultGateway { get; }
 }
 
-class Service(
-    [Tag(typeof(AbcDependency))] IDependency dependency1,
-    [Tag(typeof(XyzDependency))] IDependency dependency2,
-    IDependency dependency3)
-    : IService
+class PaymentProcessor(
+    [Tag(typeof(CreditCardGateway))] IPaymentGateway primaryGateway,
+    [Tag(typeof(PayPalGateway))] IPaymentGateway alternativeGateway,
+    IPaymentGateway defaultGateway)
+    : IPaymentProcessor
 {
-    public IDependency Dependency1 { get; } = dependency1;
+    public IPaymentGateway PrimaryGateway { get; } = primaryGateway;
 
-    public IDependency Dependency2 { get; } = dependency2;
+    public IPaymentGateway AlternativeGateway { get; } = alternativeGateway;
 
-    public IDependency Dependency3 { get; } = dependency3;
+    public IPaymentGateway DefaultGateway { get; } = defaultGateway;
 }
 // }

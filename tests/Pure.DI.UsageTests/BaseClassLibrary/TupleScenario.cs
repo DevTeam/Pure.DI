@@ -28,36 +28,38 @@ public class Scenario
     {
         // This hint indicates to not generate methods such as Resolve
         // Resolve = Off
-// {
+        // {
         DI.Setup(nameof(Composition))
-            .Bind<IDependency>().To<Dependency>()
-            .Bind<Point>().To(_ => new Point(7, 9))
-            .Bind<IService>().To<Service>()
+            .Bind<IEngine>().To<ElectricEngine>()
+            .Bind<Coordinates>().To(_ => new Coordinates(10, 20))
+            .Bind<IVehicle>().To<Car>()
 
             // Composition root
-            .Root<IService>("Root");
+            .Root<IVehicle>("Vehicle");
 
         var composition = new Composition();
-        var root = composition.Root;
-// }
+        var vehicle = composition.Vehicle;
+        // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+interface IEngine;
 
-class Dependency : IDependency;
+class ElectricEngine : IEngine;
 
-readonly record struct Point(int X, int Y);
+readonly record struct Coordinates(int X, int Y);
 
-interface IService
+interface IVehicle
 {
-    IDependency Dependency { get; }
+    IEngine Engine { get; }
 }
 
-class Service((Point Point, IDependency Dependency) tuple) : IService
+class Car((Coordinates StartPosition, IEngine Engine) specs) : IVehicle
 {
-    public IDependency Dependency { get; } = tuple.Dependency;
+    // The tuple 'specs' groups the initialization data (like coordinates)
+    // and dependencies (like engine) into a single lightweight argument.
+    public IEngine Engine { get; } = specs.Engine;
 }
 // }

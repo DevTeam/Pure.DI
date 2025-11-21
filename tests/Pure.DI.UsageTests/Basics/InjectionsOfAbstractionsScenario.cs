@@ -34,44 +34,53 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            // Binding abstractions to their implementations
-            .Bind<IDependency>().To<Dependency>()
-            .Bind<IService>().To<Service>()
+            // Binding abstractions to their implementations:
+            // The interface IGpsSensor is bound to the implementation GpsSensor
+            .Bind<IGpsSensor>().To<GpsSensor>()
+            // The interface INavigationSystem is bound to the implementation NavigationSystem
+            .Bind<INavigationSystem>().To<NavigationSystem>()
 
             // Specifies to create a composition root
-            // of type "Program" with the name "Root"
-            .Root<Program>("Root");
+            // of type "VehicleComputer" with the name "Root"
+            .Root<VehicleComputer>("VehicleComputer");
 
         var composition = new Composition();
 
-        // var root = new Program(new Service(new Dependency()));
-        var root = composition.Root;
+        // Usage:
+        // var vehicleComputer = new VehicleComputer(new NavigationSystem(new GpsSensor()));
+        var vehicleComputer = composition.VehicleComputer;
 
-        root.Run();
+        vehicleComputer.StartTrip();
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+// The sensor abstraction
+interface IGpsSensor;
 
-class Dependency : IDependency;
+// The sensor implementation
+class GpsSensor : IGpsSensor;
 
-interface IService
+// The service abstraction
+interface INavigationSystem
 {
-    void DoSomething();
+    void Navigate();
 }
 
-class Service(IDependency dependency) : IService
+// The service implementation
+class NavigationSystem(IGpsSensor sensor) : INavigationSystem
 {
-    public void DoSomething()
+    public void Navigate()
     {
+        // Navigation logic using the sensor...
     }
 }
 
-partial class Program(IService service)
+// The consumer of the abstraction
+partial class VehicleComputer(INavigationSystem navigationSystem)
 {
-    public void Run() => service.DoSomething();
+    public void StartTrip() => navigationSystem.Navigate();
 }
 // }

@@ -29,46 +29,45 @@ public class Scenario
     {
         // This hint indicates to not generate methods such as Resolve
         // Resolve = Off
-// {
+        // {
         DI.Setup(nameof(Composition))
             // This hint indicates to not generate methods such as Resolve
             .Hint(Hint.Resolve, "Off")
-            .Bind().To<Dependency<TT>>()
-            .Bind().To<Service<TT>>()
-            // Creates OtherService manually,
+            .Bind().To<JsonFormatter<TT>>()
+            .Bind().To<FileExporter<TT>>()
+            // Creates NetworkExporter manually,
             // just for the sake of example
-            .Bind<OtherService<TT>>().To(ctx =>
-            {
-                ctx.Inject(out IDependency<TT> dependency);
-                return new OtherService<TT>(dependency);
+            .Bind<NetworkExporter<TT>>().To(ctx => {
+                ctx.Inject(out IFormatter<TT> formatter);
+                return new NetworkExporter<TT>(formatter);
             })
 
-            // Specifies to define composition roots for all types inherited from IService<TT>
+            // Specifies to define composition roots for all types inherited from IExporter<TT>
             // available at compile time at the point where the method is called
-            .Roots<IService<TT>>("GetMy{type}");
+            .Roots<IExporter<TT>>("GetMy{type}");
 
         var composition = new Composition();
 
-        // service = new Service<int>(new Dependency<int>());
-        var service = composition.GetMyService_T<int>();
+        // fileExporter = new FileExporter<int>(new JsonFormatter<int>());
+        var fileExporter = composition.GetMyFileExporter_T<int>();
 
-        // someOtherService = new OtherService<int>(new Dependency<int>());
-        var someOtherService = composition.GetMyOtherService_T<string>();
-// }
-        service.ShouldBeOfType<Service<int>>();
-        someOtherService.ShouldBeOfType<OtherService<string>>();
+        // networkExporter = new NetworkExporter<string>(new JsonFormatter<string>());
+        var networkExporter = composition.GetMyNetworkExporter_T<string>();
+        // }
+        fileExporter.ShouldBeOfType<FileExporter<int>>();
+        networkExporter.ShouldBeOfType<NetworkExporter<string>>();
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency<T>;
+interface IFormatter<T>;
 
-class Dependency<T> : IDependency<T>;
+class JsonFormatter<T> : IFormatter<T>;
 
-interface IService<T>;
+interface IExporter<T>;
 
-class Service<T>(IDependency<T> dependency) : IService<T>;
+class FileExporter<T>(IFormatter<T> formatter) : IExporter<T>;
 
-class OtherService<T>(IDependency<T> dependency) : IService<T>;
+class NetworkExporter<T>(IFormatter<T> formatter) : IExporter<T>;
 // }

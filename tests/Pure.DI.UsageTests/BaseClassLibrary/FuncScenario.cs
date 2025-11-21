@@ -31,37 +31,60 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Bind().To<Dependency>()
-            .Bind().To<Service>()
+            .Bind().As(Lifetime.Singleton).To<TicketIdGenerator>()
+            .Bind().To<Ticket>()
+            .Bind().To<QueueTerminal>()
 
             // Composition root
-            .Root<IService>("Root");
+            .Root<IQueueTerminal>("Terminal");
 
         var composition = new Composition();
-        var service = composition.Root;
-        service.Dependencies.Length.ShouldBe(3);
+        var terminal = composition.Terminal;
+
+        terminal.Tickets.Length.ShouldBe(3);
+
+        terminal.Tickets[0].Id.ShouldBe(1);
+        terminal.Tickets[1].Id.ShouldBe(2);
+        terminal.Tickets[2].Id.ShouldBe(3);
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
-
-class Dependency : IDependency;
-
-interface IService
+interface ITicketIdGenerator
 {
-    ImmutableArray<IDependency> Dependencies { get; }
+    int NextId { get; }
 }
 
-class Service(Func<IDependency> dependencyFactory): IService
+class TicketIdGenerator : ITicketIdGenerator
 {
-    public ImmutableArray<IDependency> Dependencies =>
+    public int NextId => ++field;
+}
+
+interface ITicket
+{
+    int Id { get; }
+}
+
+class Ticket(ITicketIdGenerator idGenerator) : ITicket
+{
+    public int Id { get; } = idGenerator.NextId;
+}
+
+interface IQueueTerminal
+{
+    ImmutableArray<ITicket> Tickets { get; }
+}
+
+class QueueTerminal(Func<ITicket> ticketFactory) : IQueueTerminal
+{
+    public ImmutableArray<ITicket> Tickets { get; } =
     [
-        dependencyFactory(),
-        dependencyFactory(),
-        dependencyFactory()
+        // The factory creates a new instance of the ticket each time it is called
+        ticketFactory(),
+        ticketFactory(),
+        ticketFactory()
     ];
 }
 // }

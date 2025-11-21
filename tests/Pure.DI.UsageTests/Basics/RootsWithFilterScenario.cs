@@ -30,24 +30,26 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Bind().As(Lifetime.Singleton).To<Dependency>()
-            .Roots<IService>("My{type}", filter: "*2");
+            .Bind().As(Lifetime.Singleton).To<Configuration>()
+            .Roots<INotificationService>("My{type}", filter: "*Email*");
 
         var composition = new Composition();
-        composition.MyService2.ShouldBeOfType<Service2>();
+        composition.MyEmailService.ShouldBeOfType<EmailService>();
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+interface IConfiguration;
 
-class Dependency : IDependency;
+class Configuration : IConfiguration;
 
-interface IService;
+interface INotificationService;
 
-class Service1(int dependency) : IService;
+// This service requires an API key which is not bound,
+// so it cannot be resolved and should be filtered out.
+class SmsService(string apiKey) : INotificationService;
 
-class Service2(IDependency dependency) : IService;
+class EmailService(IConfiguration config) : INotificationService;
 // }

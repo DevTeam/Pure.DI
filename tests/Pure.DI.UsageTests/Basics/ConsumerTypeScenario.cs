@@ -42,6 +42,7 @@ public class Scenario
     public void Run()
     {
         var events = new List<LogEvent>();
+        // Create a Serilog logger that writes to our list to verify the output
         var serilogLogger = new Serilog.LoggerConfiguration()
             .WriteTo.Sink(new EventSink(events))
             .CreateLogger();
@@ -50,9 +51,13 @@ public class Scenario
         var composition = new Composition(logger: serilogLogger);
         var service = composition.Root;
 // }
+        // Verify that we captured 2 log events
         events.Count.ShouldBe(2);
         foreach (var @event in events)
         {
+            // Check if the log event contains the 'SourceContext' property.
+            // This property is added by Serilog's .ForContext() method,
+            // which we use in the DI binding below.
             @event.Properties.ContainsKey("SourceContext").ShouldBeTrue();
         }
 
@@ -67,7 +72,7 @@ class Dependency : IDependency
 {
     public Dependency(Serilog.ILogger log)
     {
-        log.Information("created");
+        log.Information("Dependency created");
     }
 }
 
@@ -83,7 +88,7 @@ class Service : IService
         IDependency dependency)
     {
         Dependency = dependency;
-        log.Information("created");
+        log.Information("Service initialized");
     }
 
     public IDependency Dependency { get; }
@@ -98,12 +103,14 @@ partial class Composition
 // {
         DI.Setup(nameof(Composition))
             .Arg<Serilog.ILogger>("logger", "from arg")
-            .Bind().To(ctx =>
-            {
+            .Bind().To(ctx => {
                 ctx.Inject<Serilog.ILogger>("from arg", out var logger);
+
+                // Enriches the logger with the specific context of the consumer type.
+                // ctx.ConsumerType represents the type into which the dependency is being injected.
+                // This allows logs to be tagged with the name of the class that created them.
                 return logger.ForContext(ctx.ConsumerType);
             })
-
             .Bind().To<Dependency>()
             .Bind().To<Service>()
             .Root<IService>(nameof(Root));

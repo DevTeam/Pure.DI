@@ -30,10 +30,14 @@ public class Scenario
     public void Run()
     {
 // {
-        Composition.HasRoot(typeof(IService)).ShouldBeTrue();
-        Composition.HasRoot(typeof(IDependency), "MyDepTag").ShouldBeTrue();
+        // Check if the main user service is registered
+        Composition.HasRoot(typeof(IUserService)).ShouldBeTrue();
 
-        Composition.HasRoot(typeof(IDependency)).ShouldBeFalse();
+        // Check if the root dependency for the repository with the "Primary" tag exists
+        Composition.HasRoot(typeof(IUserRepository), "Primary").ShouldBeTrue();
+
+        // Verify that the abstract repository without a tag is NOT registered as a root
+        Composition.HasRoot(typeof(IUserRepository)).ShouldBeFalse();
         Composition.HasRoot(typeof(IComparable)).ShouldBeFalse();
 
 // }
@@ -42,42 +46,49 @@ public class Scenario
 }
 
 // {
-interface IDependency;
+// Repository interface for user data access
+interface IUserRepository;
 
-class Dependency : IDependency;
+// Concrete repository implementation (e.g., SQL Database)
+class SqlUserRepository : IUserRepository;
 
-interface IService
+// Business service interface
+interface IUserService
 {
-    IDependency Dependency { get; }
+    IUserRepository Repository { get; }
 }
 
-class Service : IService
+// Service requiring a specific repository implementation
+class UserService : IUserService
 {
-    [Tag("MyDepTag")]
-    public required IDependency Dependency { get; init; }
+    // Use the "Primary" tag to specify which database to use
+    [Tag("Primary")]
+    public required IUserRepository Repository { get; init; }
 }
 
 partial class Composition
 {
     private static readonly HashSet<(Type type, object? tag)> Roots = [];
 
-    // Check that the root can be resolved by Resolve methods
+    // The method checks if the type can be resolved without actually creating the object.
+    // Useful for diagnostics.
     internal static bool HasRoot(Type type, object? key = null) =>
         Roots.Contains((type, key));
 
     static void Setup() =>
         DI.Setup()
-            // Specifies to use the partial OnNewRoot method
-            // to register each root
+            // Specifies to use the partial OnNewRoot method to register roots
             .Hint(Hint.OnNewRoot, "On")
-            .Bind("MyDepTag").To<Dependency>()
-            .Bind().To<Service>()
 
-            // Composition roots
-            .Root<IDependency>(tag: "MyDepTag")
-            .Root<IService>("Root");
+            // Registers the repository implementation with the "Primary" tag
+            .Bind("Primary").To<SqlUserRepository>()
+            .Bind().To<UserService>()
 
-    // Adds a new root to the hash set 
+            // Defines composition roots
+            .Root<IUserRepository>(tag: "Primary")
+            .Root<IUserService>("Root");
+
+    // Adds a new root to the HashSet during code generation
     private static partial void OnNewRoot<TContract, T>(
         IResolver<Composition, TContract> resolver,
         string name,

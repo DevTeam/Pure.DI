@@ -36,61 +36,74 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Bind(Tag.On("*Service:Dependency3", "*Consumer:myDep"))
-                .To<AbcDependency>()
-            .Bind(Tag.On("*Service:dependency?"))
-                .To<XyzDependency>()
-            .Bind<IService>().To<Service>()
+            // We use wildcards to specify logic:
+            // 1. Inject TemperatureSensor into 'OutdoorSensor' property of SmartHomeSystem
+            // 2. Inject TemperatureSensor into 'sensor' argument of any ClimateControl
+            .Bind(Tag.On("*SmartHomeSystem:OutdoorSensor", "*ClimateControl:sensor"))
+            .To<TemperatureSensor>()
+
+            // Inject MotionSensor into any argument starting with 'zone' inside SmartHomeSystem
+            // This corresponds to 'zone1' and 'zone2'
+            .Bind(Tag.On("*SmartHomeSystem:zone?"))
+            .To<MotionSensor>()
+            .Bind<ISmartHomeSystem>().To<SmartHomeSystem>()
 
             // Specifies to create the composition root named "Root"
-            .Root<IService>("Root");
+            .Root<ISmartHomeSystem>("SmartHome");
 
         var composition = new Composition();
-        var service = composition.Root;
-        service.Dependency1.ShouldBeOfType<XyzDependency>();
-        service.Dependency2.ShouldBeOfType<XyzDependency>();
-        service.Dependency3.ShouldBeOfType<AbcDependency>();
-        service.Dependency4.ShouldBeOfType<AbcDependency>();
+        var smartHome = composition.SmartHome;
+
+        // Verification:
+        // Zone sensors should be MotionSensors (matched by "*SmartHomeSystem:zone?")
+        smartHome.Zone1.ShouldBeOfType<MotionSensor>();
+        smartHome.Zone2.ShouldBeOfType<MotionSensor>();
+
+        // Outdoor sensor should be TemperatureSensor (matched by "*SmartHomeSystem:OutdoorSensor")
+        smartHome.OutdoorSensor.ShouldBeOfType<TemperatureSensor>();
+
+        // Climate control sensor should be TemperatureSensor (matched by "*ClimateControl:sensor")
+        smartHome.ClimateSensor.ShouldBeOfType<TemperatureSensor>();
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+interface ISensor;
 
-class AbcDependency : IDependency;
+class TemperatureSensor : ISensor;
 
-class XyzDependency : IDependency;
+class MotionSensor : ISensor;
 
-class Consumer<T>(IDependency myDep)
+class ClimateControl<T>(ISensor sensor)
 {
-    public IDependency Dependency { get; } = myDep;
+    public ISensor Sensor { get; } = sensor;
 }
 
-interface IService
+interface ISmartHomeSystem
 {
-    IDependency Dependency1 { get; }
+    ISensor Zone1 { get; }
 
-    IDependency Dependency2 { get; }
+    ISensor Zone2 { get; }
 
-    IDependency Dependency3 { get; }
+    ISensor OutdoorSensor { get; }
 
-    IDependency Dependency4 { get; }
+    ISensor ClimateSensor { get; }
 }
 
-class Service(
-    IDependency dependency1,
-    IDependency dependency2,
-    Consumer<string> consumer)
-    : IService
+class SmartHomeSystem(
+    ISensor zone1,
+    ISensor zone2,
+    ClimateControl<string> climateControl)
+    : ISmartHomeSystem
 {
-    public IDependency Dependency1 { get; } = dependency1;
+    public ISensor Zone1 { get; } = zone1;
 
-    public IDependency Dependency2 { get; } = dependency2;
+    public ISensor Zone2 { get; } = zone2;
 
-    public required IDependency Dependency3 { init; get; }
+    public required ISensor OutdoorSensor { init; get; }
 
-    public IDependency Dependency4 => consumer.Dependency;
+    public ISensor ClimateSensor => climateControl.Sensor;
 }
 // }

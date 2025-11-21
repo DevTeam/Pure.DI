@@ -30,42 +30,46 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Arg<string>("name")
-            .Bind<IDependency>().To<Dependency>()
-            .Bind<IService>().To<Service>()
+            .Arg<string>("connectionString")
+            .Bind<IDatabase>().To<SqlDatabase>()
+            .Bind<IUserRepository>().To<UserRepository>()
 
             // Composition root
-            .Root<IService>("Root");
+            .Root<IUserRepository>("Repository");
 
-        var composition = new Composition(name: "My Service");
-        var service = composition.Root;
-        service.Dependency.ShouldBeOfType<Dependency>();
-        service.Name.ShouldBe("My Service");
+        var composition = new Composition(connectionString: "Server=.;Database=MyDb;");
+        var repository = composition.Repository;
+
+        repository.Database.ShouldBeOfType<SqlDatabase>();
+        repository.ConnectionString.ShouldBe("Server=.;Database=MyDb;");
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+interface IDatabase;
 
-class Dependency : IDependency;
+class SqlDatabase : IDatabase;
 
-interface IService
+interface IUserRepository
 {
-    string Name { get; }
+    string ConnectionString { get; }
 
-    IDependency Dependency { get; }
+    IDatabase Database { get; }
 }
 
-class Service : IService
+class UserRepository : IUserRepository
 {
-    public required string ServiceNameField;
+    // The required field will be injected automatically.
+    // In this case, it gets the value from the composition argument
+    // of type 'string'.
+    public required string ConnectionStringField;
 
-    public string Name => ServiceNameField;
+    public string ConnectionString => ConnectionStringField;
 
     // The required property will be injected automatically
-    // without additional effort
-    public required IDependency Dependency { get; init; }
+    // without additional effort.
+    public required IDatabase Database { get; init; }
 }
 // }

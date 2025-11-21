@@ -35,25 +35,33 @@ public class Scenario
 // {
         DI.Setup(nameof(Composition))
             .Hint(Resolve, "Off")
-            .Bind().To<Dependency>()
-            .Root<IDependency>("DependencyRoot")
-            .Bind().To<Service>()
-            .Root<IService>("Root");
+            .Bind().To<DatabaseService>()
+            // When the "Resolve" hint is disabled, only the regular root properties
+            // are available, so be sure to define them explicitly
+            // with the "Root<T>(...)" method.
+            .Root<IDatabaseService>("DatabaseService")
+            .Bind().To<UserService>()
+            .Root<IUserService>("UserService");
 
         var composition = new Composition();
-        var service = composition.Root;
-        var dependencyRoot = composition.DependencyRoot;
+
+        // The "Resolve" method is not generated,
+        // so we can only access the roots through properties:
+        var userService = composition.UserService;
+        var databaseService = composition.DatabaseService;
+
+        // composition.Resolve<IUserService>(); // Compile error
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+interface IDatabaseService;
 
-class Dependency : IDependency;
+class DatabaseService : IDatabaseService;
 
-interface IService;
+interface IUserService;
 
-class Service(IDependency dependency) : IService;
+class UserService(IDatabaseService database) : IUserService;
 // }

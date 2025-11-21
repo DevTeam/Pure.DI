@@ -1,7 +1,7 @@
 ﻿/*
 $v=true
 $p=14
-$d=Generic injections as required with arguments
+$d=Generic injections on demand with arguments
 $r=Shouldly
 */
 
@@ -28,45 +28,45 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Bind().To<Dependency<TT>>()
-            .Bind().To<Service<TT>>()
+            .Bind().To<Sensor<TT>>()
+            .Bind().To<SensorHub<TT>>()
 
             // Composition root
-            .Root<IService<string>>("Root");
+            .Root<ISensorHub<string>>("SensorHub");
 
         var composition = new Composition();
-        var service = composition.Root;
-        var dependencies = service.Dependencies;
-        dependencies.Count.ShouldBe(2);
-        dependencies[0].Id.ShouldBe(33);
-        dependencies[1].Id.ShouldBe(99);
+        var hub = composition.SensorHub;
+        var sensors = hub.Sensors;
+        sensors.Count.ShouldBe(2);
+        sensors[0].Id.ShouldBe(1);
+        sensors[1].Id.ShouldBe(2);
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency<out T>
+interface ISensor<out T>
 {
     int Id { get; }
 }
 
-class Dependency<T>(int id) : IDependency<T>
+class Sensor<T>(int id) : ISensor<T>
 {
     public int Id { get; } = id;
 }
 
-interface IService<out T>
+interface ISensorHub<out T>
 {
-    IReadOnlyList<IDependency<T>> Dependencies { get; }
+    IReadOnlyList<ISensor<T>> Sensors { get; }
 }
 
-class Service<T>(Func<int, IDependency<T>> dependencyFactoryWithArgs): IService<T>
+class SensorHub<T>(Func<int, ISensor<T>> sensorFactory) : ISensorHub<T>
 {
-    public IReadOnlyList<IDependency<T>> Dependencies { get; } =
+    public IReadOnlyList<ISensor<T>> Sensors { get; } =
     [
-        dependencyFactoryWithArgs(33),
-        dependencyFactoryWithArgs(99)
+        sensorFactory(1),
+        sensorFactory(2)
     ];
 }
 // }

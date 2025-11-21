@@ -29,23 +29,23 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Bind().As(Lifetime.PerResolve).To<Dependency>()
-            .Bind().To<Service>()
-            .Root<IService>("MyStaticRoot", kind: RootKinds.Static);
+            .Bind().As(Lifetime.PerResolve).To<FileSystem>()
+            .Bind().To<Configuration>()
+            .Root<IConfiguration>("GlobalConfiguration", kind: RootKinds.Static);
 
-        var root = Composition.MyStaticRoot;
-        root.ShouldBeOfType<Service>();
+        var configuration = Composition.GlobalConfiguration;
+        configuration.ShouldBeOfType<Configuration>();
 // }
         new Composition().SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+interface IFileSystem;
 
-class Dependency : IDependency;
+class FileSystem : IFileSystem;
 
-interface IService;
+interface IConfiguration;
 
-class Service(IDependency dependency) : IService;
+class Configuration(IFileSystem fileSystem) : IConfiguration;
 // }

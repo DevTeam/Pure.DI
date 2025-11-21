@@ -33,7 +33,7 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Bind<IDependency>().To<Dependency>()
+            .Bind<ILogger>().To<ConsoleLogger>()
             .Bind<IService>().To<Service>()
 
             // Composition root
@@ -41,27 +41,28 @@ public class Scenario
 
         var composition = new Composition();
         var service = composition.MyService;
-        service.Dependency.ShouldBeOfType<Dependency>();
+        service.Logger.ShouldBeOfType<ConsoleLogger>();
 // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IDependency;
+interface ILogger;
 
-class Dependency : IDependency;
+class ConsoleLogger : ILogger;
 
 interface IService
 {
-    IDependency? Dependency { get; }
+    ILogger? Logger { get; }
 }
 
 class Service : IService
 {
     // The Dependency attribute specifies to perform an injection,
     // the integer value in the argument specifies
-    // the ordinal of injection
-    [Dependency] public IDependency? Dependency { get; set; }
+    // the ordinal of injection.
+    // Usually, property injection is used for optional dependencies.
+    [Dependency] public ILogger? Logger { get; set; }
 }
 // }
