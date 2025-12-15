@@ -8,35 +8,35 @@ using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .RootArg<Guid>("serviceId")
-    .Bind().To<Dependency>()
-    .Builder<Service>("BuildUpService");
+    .RootArg<Guid>("id")
+    .Bind().To<TelemetrySystem>()
+    .Builder<Satellite>("Initialize");
 
 var composition = new Composition();
 
 var id = Guid.NewGuid();
-var service = composition.BuildUpService(new Service(), id);
-service.Id.ShouldBe(id);
-service.Dependency.ShouldBeOfType<Dependency>();
+var satellite = composition.Initialize(new Satellite(), id);
+satellite.Id.ShouldBe(id);
+satellite.Telemetry.ShouldBeOfType<TelemetrySystem>();
 
-interface IDependency;
+interface ITelemetrySystem;
 
-class Dependency : IDependency;
+class TelemetrySystem : ITelemetrySystem;
 
-interface IService
+interface ISatellite
 {
     Guid Id { get; }
 
-    IDependency? Dependency { get; }
+    ITelemetrySystem? Telemetry { get; }
 }
 
-record Service: IService
+record Satellite : ISatellite
 {
     public Guid Id { get; private set; } = Guid.Empty;
 
     // The Dependency attribute specifies to perform an injection
     [Dependency]
-    public IDependency? Dependency { get; set; }
+    public ITelemetrySystem? Telemetry { get; set; }
 
     [Dependency]
     public void SetId(Guid id) => Id = id;
@@ -113,15 +113,15 @@ partial class Composition
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public Service BuildUpService(Service buildingInstance, Guid serviceId)
+  public Satellite Initialize(Satellite buildingInstance, Guid id)
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    Service transientService;
-    Service localBuildingInstance7 = buildingInstance;
-    localBuildingInstance7.Dependency = new Dependency();
-    localBuildingInstance7.SetId(serviceId);
-    transientService = localBuildingInstance7;
-    return transientService;
+    Satellite transientSatellite;
+    Satellite localBuildingInstance7 = buildingInstance;
+    localBuildingInstance7.Telemetry = new TelemetrySystem();
+    localBuildingInstance7.SetId(id);
+    transientSatellite = localBuildingInstance7;
+    return transientSatellite;
   }
 }
 ```
@@ -137,26 +137,26 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Composition ..> Service : Service BuildUpService(Pure.DI.UsageTests.Basics.BuilderWithArgumentsScenario.Service buildingInstance, System.Guid serviceId)
-	Service o-- Guid : Argument "serviceId"
-	Service *--  Dependency : IDependency
+	TelemetrySystem --|> ITelemetrySystem
+	Composition ..> Satellite : Satellite Initialize(Pure.DI.UsageTests.Basics.BuilderWithArgumentsScenario.Satellite buildingInstance, System.Guid id)
+	Satellite o-- Guid : Argument "id"
+	Satellite *--  TelemetrySystem : ITelemetrySystem
 	namespace Pure.DI.UsageTests.Basics.BuilderWithArgumentsScenario {
 		class Composition {
 		<<partial>>
-		+Service BuildUpService(Pure.DI.UsageTests.Basics.BuilderWithArgumentsScenario.Service buildingInstance, System.Guid serviceId)
+		+Satellite Initialize(Pure.DI.UsageTests.Basics.BuilderWithArgumentsScenario.Satellite buildingInstance, System.Guid id)
 		}
-		class Dependency {
-				<<class>>
-			+Dependency()
-		}
-		class IDependency {
+		class ITelemetrySystem {
 			<<interface>>
 		}
-		class Service {
+		class Satellite {
 				<<record>>
-			+IDependency Dependency
+			+ITelemetrySystem Telemetry
 			+SetId(Guid id) : Void
+		}
+		class TelemetrySystem {
+				<<class>>
+			+TelemetrySystem()
 		}
 	}
 	namespace System {

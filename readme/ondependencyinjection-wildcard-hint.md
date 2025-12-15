@@ -11,33 +11,34 @@ using static Pure.DI.Hint;
 
 // OnDependencyInjection = On
 DI.Setup(nameof(Composition))
-    .Hint(OnDependencyInjectionContractTypeNameWildcard, "*IDependency")
-    .Hint(OnDependencyInjectionContractTypeNameWildcard, "*IService")
+    .Hint(OnDependencyInjectionContractTypeNameWildcard, "*IUserRepository")
+    .Hint(OnDependencyInjectionContractTypeNameWildcard, "*IUserService")
     .RootArg<int>("id")
-    .Bind().To<Dependency>()
-    .Bind().To<Service>()
-    .Root<IService>("GetRoot");
+    .Bind().To<UserRepository>()
+    .Bind().To<UserService>()
+    .Root<IUserService>("GetUserService");
 
 var log = new List<string>();
 var composition = new Composition(log);
-var service = composition.GetRoot(33);
+var service = composition.GetUserService(33);
 
 log.ShouldBe([
-    "Dependency injected",
-    "Service injected"]);
+    "UserRepository injected",
+    "UserService injected"
+]);
 
-interface IDependency;
+interface IUserRepository;
 
-record Dependency(int Id) : IDependency;
+record UserRepository(int Id) : IUserRepository;
 
-interface IService
+interface IUserService
 {
-    IDependency Dependency { get; }
+    IUserRepository Repository { get; }
 }
 
-class Service(IDependency dependency) : IService
+class UserService(IUserRepository repository) : IUserService
 {
-    public IDependency Dependency { get; } = dependency;
+    public IUserRepository Repository { get; } = repository;
 }
 
 partial class Composition
@@ -115,9 +116,9 @@ partial class Composition
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public IService GetRoot(int id)
+  public IUserService GetUserService(int id)
   {
-    return OnDependencyInjection<IService>(new Service(OnDependencyInjection<IDependency>(new Dependency(id), null, Lifetime.Transient)), null, Lifetime.Transient);
+    return OnDependencyInjection<IUserService>(new UserService(OnDependencyInjection<IUserRepository>(new UserRepository(id), null, Lifetime.Transient)), null, Lifetime.Transient);
   }
 
 
@@ -136,34 +137,34 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Dependency --|> IEquatableᐸDependencyᐳ
-	Service --|> IService
-	Composition ..> Service : IService GetRoot(int id)
-	Dependency o-- Int32 : Argument "id"
-	Service *--  Dependency : IDependency
+	UserRepository --|> IUserRepository
+	UserRepository --|> IEquatableᐸUserRepositoryᐳ
+	UserService --|> IUserService
+	Composition ..> UserService : IUserService GetUserService(int id)
+	UserRepository o-- Int32 : Argument "id"
+	UserService *--  UserRepository : IUserRepository
 	namespace Pure.DI.UsageTests.Hints.OnDependencyInjectionWildcardHintScenario {
 		class Composition {
 		<<partial>>
-		+IService GetRoot(int id)
+		+IUserService GetUserService(int id)
 		}
-		class Dependency {
+		class IUserRepository {
+			<<interface>>
+		}
+		class IUserService {
+			<<interface>>
+		}
+		class UserRepository {
 				<<record>>
-			+Dependency(Int32 Id)
+			+UserRepository(Int32 Id)
 		}
-		class IDependency {
-			<<interface>>
-		}
-		class IService {
-			<<interface>>
-		}
-		class Service {
+		class UserService {
 				<<class>>
-			+Service(IDependency dependency)
+			+UserService(IUserRepository repository)
 		}
 	}
 	namespace System {
-		class IEquatableᐸDependencyᐳ {
+		class IEquatableᐸUserRepositoryᐳ {
 			<<interface>>
 		}
 		class Int32 {

@@ -13,72 +13,86 @@ using Pure.DI.Abstractions;
 using Pure.DI;
 
 var composition = new Composition();
-var root1 = composition.Root;
-var root2 = composition.Root;
-root1.Dependency.ShouldNotBe(root2.Dependency);
-root1.SingleDependency.ShouldBe(root2.SingleDependency);
+var dataService1 = composition.DataService;
+var dataService2 = composition.DataService;
 
-root2.Dispose();
+// The dedicated connection should be unique for each root
+dataService1.Connection.ShouldNotBe(dataService2.Connection);
+
+// The shared connection should be the same instance
+dataService1.SharedConnection.ShouldBe(dataService2.SharedConnection);
+
+dataService2.Dispose();
 
 // Checks that the disposable instances
-// associated with root1 have been disposed of
-root2.Dependency.IsDisposed.ShouldBeTrue();
+// associated with dataService2 have been disposed of
+dataService2.Connection.IsDisposed.ShouldBeTrue();
 
 // But the singleton is still not disposed of
-root2.SingleDependency.IsDisposed.ShouldBeFalse();
+// because it is shared and tracked by the composition
+dataService2.SharedConnection.IsDisposed.ShouldBeFalse();
 
 // Checks that the disposable instances
-// associated with root2 have not been disposed of
-root1.Dependency.IsDisposed.ShouldBeFalse();
-root1.SingleDependency.IsDisposed.ShouldBeFalse();
+// associated with dataService1 have not been disposed of
+dataService1.Connection.IsDisposed.ShouldBeFalse();
+dataService1.SharedConnection.IsDisposed.ShouldBeFalse();
 
-root1.Dispose();
+dataService1.Dispose();
 
 // Checks that the disposable instances
-// associated with root2 have been disposed of
-root1.Dependency.IsDisposed.ShouldBeTrue();
+// associated with dataService1 have been disposed of
+dataService1.Connection.IsDisposed.ShouldBeTrue();
 
 // But the singleton is still not disposed of
-root1.SingleDependency.IsDisposed.ShouldBeFalse();
-        
+dataService1.SharedConnection.IsDisposed.ShouldBeFalse();
+
 composition.Dispose();
-root1.SingleDependency.IsDisposed.ShouldBeTrue();
 
-interface IDependency
+// The shared singleton is disposed only when the composition is disposed
+dataService1.SharedConnection.IsDisposed.ShouldBeTrue();
+
+interface IDbConnection
 {
     bool IsDisposed { get; }
 }
 
-class Dependency : IDependency, IDisposable
+class DbConnection : IDbConnection, IDisposable
 {
     public bool IsDisposed { get; private set; }
 
     public void Dispose() => IsDisposed = true;
 }
 
-interface IService
+interface IDataService
 {
-    public IDependency Dependency { get; }
+    public IDbConnection Connection { get; }
 
-    public IDependency SingleDependency { get; }
+    public IDbConnection SharedConnection { get; }
 }
 
-class Service(
-    Func<Own<IDependency>> dependencyFactory,
-    [Tag("single")] Func<Own<IDependency>> singleDependencyFactory)
-    : IService, IDisposable
+class DataService(
+    Func<Own<IDbConnection>> connectionFactory,
+    [Tag("shared")] Func<Own<IDbConnection>> sharedConnectionFactory)
+    : IDataService, IDisposable
 {
-    private readonly Own<IDependency> _dependency = dependencyFactory();
-    private readonly Own<IDependency> _singleDependency = singleDependencyFactory();
+    // Own<T> is a wrapper from Pure.DI.Abstractions that owns the value.
+    // It ensures that the value is disposed when Own<T> is disposed,
+    // but only if the value is not a singleton or externally owned.
+    private readonly Own<IDbConnection> _connection = connectionFactory();
+    private readonly Own<IDbConnection> _sharedConnection = sharedConnectionFactory();
 
-    public IDependency Dependency => _dependency.Value;
+    public IDbConnection Connection => _connection.Value;
 
-    public IDependency SingleDependency => _singleDependency.Value;
+    public IDbConnection SharedConnection => _sharedConnection.Value;
 
     public void Dispose()
     {
-        _dependency.Dispose();
-        _singleDependency.Dispose();
+        // Disposes the dedicated connection
+        _connection.Dispose();
+
+        // Notifies that we are done with the shared connection.
+        // However, since it's a singleton, the underlying instance won't be disposed here.
+        _sharedConnection.Dispose();
     }
 }
 
@@ -87,12 +101,12 @@ partial class Composition
     static void Setup() =>
 
         DI.Setup()
-            .Bind().To<Dependency>()
-            .Bind("single").As(Lifetime.Singleton).To<Dependency>()
-            .Bind().To<Service>()
+            .Bind().To<DbConnection>()
+            .Bind("shared").As(Lifetime.Singleton).To<DbConnection>()
+            .Bind().To<DataService>()
 
             // Composition root
-            .Root<Service>("Root");
+            .Root<DataService>("DataService");
 }
 ```
 
@@ -143,7 +157,7 @@ partial class Composition: IDisposable
   private object[] _disposables;
   private int _disposeIndex;
 
-  private Dependency? _singletonDependency52;
+  private DbConnection? _singletonDbConnection52;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -164,62 +178,62 @@ partial class Composition: IDisposable
     _disposables = parentScope._disposables;
   }
 
-  public Service Root
+  public DataService DataService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       var perBlockOwn3 = new Abstractions.Own();
-      Func<Abstractions.Own<IDependency>> transientFunc1 = new Func<Abstractions.Own<IDependency>>(
+      Func<Abstractions.Own<IDbConnection>> transientFunc1 = new Func<Abstractions.Own<IDbConnection>>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        Abstractions.Own<IDependency> transientOwn4;
+        Abstractions.Own<IDbConnection> transientOwn4;
         // Creates the owner of an instance
         Abstractions.Own localOwn = perBlockOwn3;
-        var transientDependency5 = new Dependency();
+        var transientDbConnection5 = new DbConnection();
         lock (_lock)
         {
-          perBlockOwn3.Add(transientDependency5);
+          perBlockOwn3.Add(transientDbConnection5);
         }
 
-        IDependency localValue8 = transientDependency5;
-        transientOwn4 = new Abstractions.Own<IDependency>(localValue8, localOwn);
+        IDbConnection localValue8 = transientDbConnection5;
+        transientOwn4 = new Abstractions.Own<IDbConnection>(localValue8, localOwn);
         lock (_lock)
         {
           perBlockOwn3.Add(transientOwn4);
         }
 
-        Abstractions.Own<IDependency> localValue7 = transientOwn4;
+        Abstractions.Own<IDbConnection> localValue7 = transientOwn4;
         return localValue7;
       });
       var perBlockOwn6 = new Abstractions.Own();
-      Func<Abstractions.Own<IDependency>> transientFunc2 = new Func<Abstractions.Own<IDependency>>(
+      Func<Abstractions.Own<IDbConnection>> transientFunc2 = new Func<Abstractions.Own<IDbConnection>>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        Abstractions.Own<IDependency> transientOwn7;
+        Abstractions.Own<IDbConnection> transientOwn7;
         // Creates the owner of an instance
         Abstractions.Own localOwn1 = perBlockOwn6;
-        if (_root._singletonDependency52 is null)
+        if (_root._singletonDbConnection52 is null)
           lock (_lock)
-            if (_root._singletonDependency52 is null)
+            if (_root._singletonDbConnection52 is null)
             {
-              _root._singletonDependency52 = new Dependency();
-              _root._disposables[_root._disposeIndex++] = _root._singletonDependency52;
+              _root._singletonDbConnection52 = new DbConnection();
+              _root._disposables[_root._disposeIndex++] = _root._singletonDbConnection52;
             }
 
-        IDependency localValue10 = _root._singletonDependency52;
-        transientOwn7 = new Abstractions.Own<IDependency>(localValue10, localOwn1);
+        IDbConnection localValue10 = _root._singletonDbConnection52;
+        transientOwn7 = new Abstractions.Own<IDbConnection>(localValue10, localOwn1);
         lock (_lock)
         {
           perBlockOwn6.Add(transientOwn7);
         }
 
-        Abstractions.Own<IDependency> localValue9 = transientOwn7;
+        Abstractions.Own<IDbConnection> localValue9 = transientOwn7;
         return localValue9;
       });
-      return new Service(transientFunc1, transientFunc2);
+      return new DataService(transientFunc1, transientFunc2);
     }
   }
 
@@ -233,7 +247,7 @@ partial class Composition: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _singletonDependency52 = null;
+      _singletonDbConnection52 = null;
     }
 
     while (disposeIndex-- > 0)
@@ -270,47 +284,47 @@ Class diagram:
 ---
 classDiagram
 	Composition --|> IDisposable
-	Dependency --|> IDependency
-	Service --|> IService
-	Composition ..> Service : Service Root
-	Service o-- "PerBlock" FuncᐸOwnᐸIDependencyᐳᐳ : FuncᐸOwnᐸIDependencyᐳᐳ
-	Service o-- "PerBlock" FuncᐸOwnᐸIDependencyᐳᐳ : "single"  FuncᐸOwnᐸIDependencyᐳᐳ
-	FuncᐸOwnᐸIDependencyᐳᐳ o-- "PerBlock" OwnᐸIDependencyᐳ : OwnᐸIDependencyᐳ
-	FuncᐸOwnᐸIDependencyᐳᐳ o-- "PerBlock" OwnᐸIDependencyᐳ : "single"  OwnᐸIDependencyᐳ
-	OwnᐸIDependencyᐳ *--  Dependency : IDependency
-	OwnᐸIDependencyᐳ o-- "PerBlock" Own : Own
-	OwnᐸIDependencyᐳ o-- "Singleton" Dependency : "single"  IDependency
-	OwnᐸIDependencyᐳ o-- "PerBlock" Own : Own
+	DbConnection --|> IDbConnection
+	DataService --|> IDataService
+	Composition ..> DataService : DataService DataService
+	DataService o-- "PerBlock" FuncᐸOwnᐸIDbConnectionᐳᐳ : FuncᐸOwnᐸIDbConnectionᐳᐳ
+	DataService o-- "PerBlock" FuncᐸOwnᐸIDbConnectionᐳᐳ : "shared"  FuncᐸOwnᐸIDbConnectionᐳᐳ
+	FuncᐸOwnᐸIDbConnectionᐳᐳ o-- "PerBlock" OwnᐸIDbConnectionᐳ : OwnᐸIDbConnectionᐳ
+	FuncᐸOwnᐸIDbConnectionᐳᐳ o-- "PerBlock" OwnᐸIDbConnectionᐳ : "shared"  OwnᐸIDbConnectionᐳ
+	OwnᐸIDbConnectionᐳ *--  DbConnection : IDbConnection
+	OwnᐸIDbConnectionᐳ o-- "PerBlock" Own : Own
+	OwnᐸIDbConnectionᐳ o-- "Singleton" DbConnection : "shared"  IDbConnection
+	OwnᐸIDbConnectionᐳ o-- "PerBlock" Own : Own
 	namespace Pure.DI.Abstractions {
 		class Own {
 				<<class>>
 		}
-		class OwnᐸIDependencyᐳ {
+		class OwnᐸIDbConnectionᐳ {
 				<<struct>>
 		}
 	}
 	namespace Pure.DI.UsageTests.Advanced.TrackingDisposableWithAbstractionsScenario {
 		class Composition {
 		<<partial>>
-		+Service Root
+		+DataService DataService
 		}
-		class Dependency {
+		class DataService {
 				<<class>>
-			+Dependency()
+			+DataService(FuncᐸOwnᐸIDbConnectionᐳᐳ connectionFactory, FuncᐸOwnᐸIDbConnectionᐳᐳ sharedConnectionFactory)
 		}
-		class IDependency {
+		class DbConnection {
+				<<class>>
+			+DbConnection()
+		}
+		class IDataService {
 			<<interface>>
 		}
-		class IService {
+		class IDbConnection {
 			<<interface>>
-		}
-		class Service {
-				<<class>>
-			+Service(FuncᐸOwnᐸIDependencyᐳᐳ dependencyFactory, FuncᐸOwnᐸIDependencyᐳᐳ singleDependencyFactory)
 		}
 	}
 	namespace System {
-		class FuncᐸOwnᐸIDependencyᐳᐳ {
+		class FuncᐸOwnᐸIDbConnectionᐳᐳ {
 				<<delegate>>
 		}
 		class IDisposable {

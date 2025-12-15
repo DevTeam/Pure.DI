@@ -8,38 +8,42 @@ using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Arg<string>("name")
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>()
+    .Arg<string>("connectionString")
+    .Bind<IDatabase>().To<SqlDatabase>()
+    .Bind<IUserRepository>().To<UserRepository>()
 
     // Composition root
-    .Root<IService>("Root");
+    .Root<IUserRepository>("Repository");
 
-var composition = new Composition(name: "My Service");
-var service = composition.Root;
-service.Dependency.ShouldBeOfType<Dependency>();
-service.Name.ShouldBe("My Service");
+var composition = new Composition(connectionString: "Server=.;Database=MyDb;");
+var repository = composition.Repository;
 
-interface IDependency;
+repository.Database.ShouldBeOfType<SqlDatabase>();
+repository.ConnectionString.ShouldBe("Server=.;Database=MyDb;");
 
-class Dependency : IDependency;
+interface IDatabase;
 
-interface IService
+class SqlDatabase : IDatabase;
+
+interface IUserRepository
 {
-    string Name { get; }
+    string ConnectionString { get; }
 
-    IDependency Dependency { get; }
+    IDatabase Database { get; }
 }
 
-class Service : IService
+class UserRepository : IUserRepository
 {
-    public required string ServiceNameField;
+    // The required field will be injected automatically.
+    // In this case, it gets the value from the composition argument
+    // of type 'string'.
+    public required string ConnectionStringField;
 
-    public string Name => ServiceNameField;
+    public string ConnectionString => ConnectionStringField;
 
     // The required property will be injected automatically
-    // without additional effort
-    public required IDependency Dependency { get; init; }
+    // without additional effort.
+    public required IDatabase Database { get; init; }
 }
 ```
 
@@ -83,12 +87,12 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private readonly string _argName;
+  private readonly string _argConnectionString;
 
   [OrdinalAttribute(128)]
-  public Composition(string name)
+  public Composition(string connectionString)
   {
-    _argName = name ?? throw new ArgumentNullException(nameof(name));
+    _argConnectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
 #if NET9_0_OR_GREATER
     _lock = new Lock();
 #else
@@ -98,19 +102,19 @@ partial class Composition
 
   internal Composition(Composition parentScope)
   {
-    _argName = parentScope._argName;
+    _argConnectionString = parentScope._argConnectionString;
     _lock = parentScope._lock;
   }
 
-  public IService Root
+  public IUserRepository Repository
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new Service()
+      return new UserRepository()
       {
-        ServiceNameField = _argName,
-        Dependency = new Dependency()
+        ConnectionStringField = _argConnectionString,
+        Database = new SqlDatabase()
       };
     }
   }
@@ -128,31 +132,31 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Service --|> IService
-	Composition ..> Service : IService Root
-	Service o-- String : Argument "name"
-	Service *--  Dependency : IDependency
+	SqlDatabase --|> IDatabase
+	UserRepository --|> IUserRepository
+	Composition ..> UserRepository : IUserRepository Repository
+	UserRepository o-- String : Argument "connectionString"
+	UserRepository *--  SqlDatabase : IDatabase
 	namespace Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario {
 		class Composition {
 		<<partial>>
-		+IService Root
+		+IUserRepository Repository
 		}
-		class Dependency {
-				<<class>>
-			+Dependency()
-		}
-		class IDependency {
+		class IDatabase {
 			<<interface>>
 		}
-		class IService {
+		class IUserRepository {
 			<<interface>>
 		}
-		class Service {
+		class SqlDatabase {
 				<<class>>
-			+Service()
-			+String ServiceNameField
-			+IDependency Dependency
+			+SqlDatabase()
+		}
+		class UserRepository {
+				<<class>>
+			+UserRepository()
+			+String ConnectionStringField
+			+IDatabase Database
 		}
 	}
 	namespace System {

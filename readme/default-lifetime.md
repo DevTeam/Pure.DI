@@ -9,40 +9,58 @@ using Pure.DI;
 using static Pure.DI.Lifetime;
 
 DI.Setup(nameof(Composition))
-    // Default Lifetime applies
-    // to all bindings until the end of the chain
-    // or the next call to the DefaultLifetime method
+    // In real AI apps, the "client" (HTTP handler, connection pool, retries, telemetry)
+    // is typically expensive and should be shared.
+    //
+    // DefaultLifetime(Singleton) makes *all* bindings in this chain singletons,
+    // until the chain ends or DefaultLifetime(...) is called again.
     .DefaultLifetime(Singleton)
-    .Bind().To<Dependency>()
-    .Bind().To<Service>()
-    .Root<IService>("Root");
+    .Bind().To<LlmGateway>()
+    .Bind().To<RagChatAssistant>()
+    .Root<IChatAssistant>("Assistant");
 
 var composition = new Composition();
-var service1 = composition.Root;
-var service2 = composition.Root;
-service1.ShouldBe(service2);
-service1.Dependency1.ShouldBe(service1.Dependency2);
-service1.Dependency1.ShouldBe(service2.Dependency1);
 
-interface IDependency;
+// Think of these as two independent "requests" to resolve the assistant.
+// With singleton lifetime, you get the same assistant instance each time.
+var assistant1 = composition.Assistant;
+var assistant2 = composition.Assistant;
 
-class Dependency : IDependency;
+assistant1.ShouldBe(assistant2);
 
-interface IService
+// The assistant depends on the same gateway in two places (e.g., chat + embeddings).
+// Because the gateway is singleton, both references are the *same instance*.
+assistant1.ChatGateway.ShouldBe(assistant1.EmbeddingsGateway);
+
+// And because the assistant itself is singleton, it reuses the same gateway across resolutions.
+assistant1.ChatGateway.ShouldBe(assistant2.ChatGateway);
+
+// Represents an "LLM provider gateway": HTTP client, auth, retries, rate limiting, etc.
+// NOTE: No secrets here; in real projects you'd configure credentials via secure configuration.
+interface ILlmGateway;
+
+// Concrete gateway implementation (placeholder for "OpenAI/Anthropic/Azure/etc. client").
+class LlmGateway : ILlmGateway;
+
+// A chat assistant that does RAG (Retrieval-Augmented Generation).
+// It needs the gateway for:
+// - Chat completions (answer generation)
+// - Embeddings (vectorization of question/documents)
+interface IChatAssistant
 {
-    public IDependency Dependency1 { get; }
+    ILlmGateway ChatGateway { get; }
 
-    public IDependency Dependency2 { get; }
+    ILlmGateway EmbeddingsGateway { get; }
 }
 
-class Service(
-    IDependency dependency1,
-    IDependency dependency2)
-    : IService
+class RagChatAssistant(
+    ILlmGateway chatGateway,
+    ILlmGateway embeddingsGateway)
+    : IChatAssistant
 {
-    public IDependency Dependency1 { get; } = dependency1;
+    public ILlmGateway ChatGateway { get; } = chatGateway;
 
-    public IDependency Dependency2 { get; } = dependency2;
+    public ILlmGateway EmbeddingsGateway { get; } = embeddingsGateway;
 }
 ```
 
@@ -85,8 +103,8 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private Service? _singletonService52;
-  private Dependency? _singletonDependency51;
+  private RagChatAssistant? _singletonRagChatAssistant52;
+  private LlmGateway? _singletonLlmGateway51;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -105,28 +123,28 @@ partial class Composition
     _lock = parentScope._lock;
   }
 
-  public IService Root
+  public IChatAssistant Assistant
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonService52 is null)
+      if (_root._singletonRagChatAssistant52 is null)
         lock (_lock)
-          if (_root._singletonService52 is null)
+          if (_root._singletonRagChatAssistant52 is null)
           {
-            EnsureDependencyExists();
-            _root._singletonService52 = new Service(_root._singletonDependency51, _root._singletonDependency51);
+            EnsureLlmGatewayExists();
+            _root._singletonRagChatAssistant52 = new RagChatAssistant(_root._singletonLlmGateway51, _root._singletonLlmGateway51);
           }
 
-      return _root._singletonService52;
+      return _root._singletonRagChatAssistant52;
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      void EnsureDependencyExists()
+      void EnsureLlmGatewayExists()
       {
-        if (_root._singletonDependency51 is null)
+        if (_root._singletonLlmGateway51 is null)
           lock (_lock)
-            if (_root._singletonDependency51 is null)
+            if (_root._singletonLlmGateway51 is null)
             {
-              _root._singletonDependency51 = new Dependency();
+              _root._singletonLlmGateway51 = new LlmGateway();
             }
       }
     }
@@ -145,28 +163,28 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Service --|> IService
-	Composition ..> Service : IService Root
-	Service o-- "2 Singleton instances" Dependency : IDependency
+	LlmGateway --|> ILlmGateway
+	RagChatAssistant --|> IChatAssistant
+	Composition ..> RagChatAssistant : IChatAssistant Assistant
+	RagChatAssistant o-- "2 Singleton instances" LlmGateway : ILlmGateway
 	namespace Pure.DI.UsageTests.Lifetimes.DefaultLifetimeScenario {
 		class Composition {
 		<<partial>>
-		+IService Root
+		+IChatAssistant Assistant
 		}
-		class Dependency {
-				<<class>>
-			+Dependency()
-		}
-		class IDependency {
+		class IChatAssistant {
 			<<interface>>
 		}
-		class IService {
+		class ILlmGateway {
 			<<interface>>
 		}
-		class Service {
+		class LlmGateway {
 				<<class>>
-			+Service(IDependency dependency1, IDependency dependency2)
+			+LlmGateway()
+		}
+		class RagChatAssistant {
+				<<class>>
+			+RagChatAssistant(ILlmGateway chatGateway, ILlmGateway embeddingsGateway)
 		}
 	}
 ```

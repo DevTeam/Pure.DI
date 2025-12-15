@@ -12,43 +12,45 @@ using System.Drawing;
 DI.Setup(nameof(Composition))
     .Bind(Tag.Red).To(_ => Color.Red)
     .Bind().As(Lifetime.Singleton).To<Clock>()
-    .Bind().To<Func<int, int, IDependency>>(ctx =>
-        (dependencyId, subId) =>
-        {
-            // Overrides with a lambda argument
-            ctx.Override(dependencyId);
+    // The factory accepts the widget ID and the layer index
+    .Bind().To<Func<int, int, IWidget>>(ctx =>
+        (widgetId, layerIndex) => {
+            // Overrides the 'id' argument of the constructor with the first lambda argument
+            ctx.Override(widgetId);
 
-            // Overrides with tag using lambda argument
-            ctx.Override(subId, "sub");
+            // Overrides the 'layer' tagged argument of the constructor with the second lambda argument
+            ctx.Override(layerIndex, "layer");
 
-            // Overrides with some value
-            ctx.Override($"Dep {dependencyId} {subId}");
+            // Overrides the 'name' argument with a formatted string
+            ctx.Override($"Widget {widgetId} on layer {layerIndex}");
 
-            // Overrides with injected value
-            ctx.Inject(Tag.Red, out Color red);
-            ctx.Override(red);
+            // Resolves the 'Color' dependency tagged with 'Red'
+            ctx.Inject(Tag.Red, out Color color);
+            // Overrides the 'color' argument with the resolved value
+            ctx.Override(color);
 
-            ctx.Inject<Dependency>(out var dependency);
-            return dependency;
+            // Creates the instance using the overridden values
+            ctx.Inject<Widget>(out var widget);
+            return widget;
         })
-    .Bind().To<Service>()
+    .Bind().To<Dashboard>()
 
     // Composition root
-    .Root<IService>("Root");
+    .Root<IDashboard>("Dashboard");
 
 var composition = new Composition();
-var service = composition.Root;
-service.Dependencies.Length.ShouldBe(3);
+var dashboard = composition.Dashboard;
+dashboard.Widgets.Length.ShouldBe(3);
 
-service.Dependencies[0].Id.ShouldBe(0);
-service.Dependencies[0].SubId.ShouldBe(99);
-service.Dependencies[0].Name.ShouldBe("Dep 0 99");
+dashboard.Widgets[0].Id.ShouldBe(0);
+dashboard.Widgets[0].Layer.ShouldBe(99);
+dashboard.Widgets[0].Name.ShouldBe("Widget 0 on layer 99");
 
-service.Dependencies[1].Id.ShouldBe(1);
-service.Dependencies[1].Name.ShouldBe("Dep 1 99");
+dashboard.Widgets[1].Id.ShouldBe(1);
+dashboard.Widgets[1].Name.ShouldBe("Widget 1 on layer 99");
 
-service.Dependencies[2].Id.ShouldBe(2);
-service.Dependencies[2].Name.ShouldBe("Dep 2 99");
+dashboard.Widgets[2].Id.ShouldBe(2);
+dashboard.Widgets[2].Name.ShouldBe("Widget 2 on layer 99");
 
 interface IClock
 {
@@ -60,42 +62,42 @@ class Clock : IClock
     public DateTimeOffset Now => DateTimeOffset.Now;
 }
 
-interface IDependency
+interface IWidget
 {
     string Name { get; }
 
     int Id { get; }
 
-    int SubId { get; }
+    int Layer { get; }
 }
 
-class Dependency(
+class Widget(
     string name,
     IClock clock,
     int id,
-    [Tag("sub")] int subId,
-    Color red)
-    : IDependency
+    [Tag("layer")] int layer,
+    Color color)
+    : IWidget
 {
     public string Name => name;
 
     public int Id => id;
 
-    public int SubId => subId;
+    public int Layer => layer;
 }
 
-interface IService
+interface IDashboard
 {
-    ImmutableArray<IDependency> Dependencies { get; }
+    ImmutableArray<IWidget> Widgets { get; }
 }
 
-class Service(Func<int, int, IDependency> dependencyFactory): IService
+class Dashboard(Func<int, int, IWidget> widgetFactory) : IDashboard
 {
-    public ImmutableArray<IDependency> Dependencies { get; } =
+    public ImmutableArray<IWidget> Widgets { get; } =
     [
-        dependencyFactory(0, 99),
-        dependencyFactory(1, 99),
-        dependencyFactory(2, 99)
+        widgetFactory(0, 99),
+        widgetFactory(1, 99),
+        widgetFactory(2, 99)
     ];
 }
 ```
@@ -158,25 +160,27 @@ partial class Composition
     _lock = parentScope._lock;
   }
 
-  public IService Root
+  public IDashboard Dashboard
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<int, int, IDependency> transientFunc1 =
+      Func<int, int, IWidget> transientFunc1 =
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      (localDependencyId1, localSubId1) =>
+      (localWidgetId, localLayerIndex) =>
       {
-        // Overrides with a lambda argument
-        // Overrides with tag using lambda argument
-        // Overrides with some value
-        // Overrides with injected value
-        int overriddenInt32 = localDependencyId1;
-        int overriddenInt321 = localSubId1;
-        string overriddenString2 = $"Dep {localDependencyId1} {localSubId1}";
+        // Overrides the 'id' argument of the constructor with the first lambda argument
+        // Overrides the 'layer' tagged argument of the constructor with the second lambda argument
+        // Overrides the 'name' argument with a formatted string
+        // Resolves the 'Color' dependency tagged with 'Red'
+        int overriddenInt32 = localWidgetId;
+        int overriddenInt324 = localLayerIndex;
+        string overriddenString2 = $"Widget {localWidgetId} on layer {localLayerIndex}";
         Drawing.Color transientColor2 = Color.Red;
-        Drawing.Color localRed1 = transientColor2;
-        Drawing.Color overriddenColor3 = localRed1;
+        Drawing.Color localColor = transientColor2;
+        // Overrides the 'color' argument with the resolved value
+        // Creates the instance using the overridden values
+        Drawing.Color overriddenColor5 = localColor;
         if (_root._singletonClock52 is null)
           lock (_lock)
             if (_root._singletonClock52 is null)
@@ -184,10 +188,10 @@ partial class Composition
               _root._singletonClock52 = new Clock();
             }
 
-        Dependency localDependency4 = new Dependency(overriddenString2, _root._singletonClock52, overriddenInt32, overriddenInt321, overriddenColor3);
-        return localDependency4;
+        Widget localWidget = new Widget(overriddenString2, _root._singletonClock52, overriddenInt32, overriddenInt324, overriddenColor5);
+        return localWidget;
       };
-      return new Service(transientFunc1);
+      return new Dashboard(transientFunc1);
     }
   }
 }
@@ -204,38 +208,38 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService
-	Composition ..> Service : IService Root
-	FuncᐸInt32ˏInt32ˏIDependencyᐳ *--  Color : "Red"  Color
-	FuncᐸInt32ˏInt32ˏIDependencyᐳ *--  Dependency : Dependency
-	Service *--  FuncᐸInt32ˏInt32ˏIDependencyᐳ : FuncᐸInt32ˏInt32ˏIDependencyᐳ
-	Dependency o-- "Singleton" Clock : IClock
-	Dependency *--  Int32 : Int32
-	Dependency *--  Int32 : "sub"  Int32
-	Dependency *--  String : String
-	Dependency *--  Color : Color
+	Dashboard --|> IDashboard
+	Composition ..> Dashboard : IDashboard Dashboard
+	FuncᐸInt32ˏInt32ˏIWidgetᐳ *--  Color : "Red"  Color
+	FuncᐸInt32ˏInt32ˏIWidgetᐳ *--  Widget : Widget
+	Dashboard *--  FuncᐸInt32ˏInt32ˏIWidgetᐳ : FuncᐸInt32ˏInt32ˏIWidgetᐳ
+	Widget o-- "Singleton" Clock : IClock
+	Widget *--  Int32 : Int32
+	Widget *--  Int32 : "layer"  Int32
+	Widget *--  String : String
+	Widget *--  Color : Color
 	namespace Pure.DI.UsageTests.Basics.OverridesScenario {
 		class Clock {
 			<<class>>
 		}
 		class Composition {
 		<<partial>>
-		+IService Root
+		+IDashboard Dashboard
 		}
-		class Dependency {
+		class Dashboard {
 				<<class>>
-			+Dependency(String name, IClock clock, Int32 id, Int32 subId, Color red)
+			+Dashboard(FuncᐸInt32ˏInt32ˏIWidgetᐳ widgetFactory)
 		}
-		class IService {
+		class IDashboard {
 			<<interface>>
 		}
-		class Service {
+		class Widget {
 				<<class>>
-			+Service(FuncᐸInt32ˏInt32ˏIDependencyᐳ dependencyFactory)
+			+Widget(String name, IClock clock, Int32 id, Int32 layer, Color color)
 		}
 	}
 	namespace System {
-		class FuncᐸInt32ˏInt32ˏIDependencyᐳ {
+		class FuncᐸInt32ˏInt32ˏIWidgetᐳ {
 				<<delegate>>
 		}
 		class Int32 {

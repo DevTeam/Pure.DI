@@ -9,46 +9,48 @@ using Pure.DI;
 using static Pure.DI.RootKinds;
 using System.Diagnostics;
 
-var composition = new Composition("Abc");
-var service = composition.Root;
+var composition = new Composition("NorthStore");
+var orderService = composition.OrderService;
 
-service.Name.ShouldBe("Abc_3");
-service.Dependency1.Id.ShouldBe(1);
-service.Dependency2.Id.ShouldBe(2);
+// Checks that the dependencies were created correctly
+orderService.Order1.Id.ShouldBe(1);
+orderService.Order2.Id.ShouldBe(2);
+// Checks that the injected string contains the store name and the generated ID
+orderService.OrderDetails.ShouldBe("NorthStore_3");
 
-interface IDependency
+interface IOrder
 {
     long Id { get; }
 }
 
-class Dependency(long id) : IDependency
+class Order(long id) : IOrder
 {
     public long Id { get; } = id;
 }
 
-class Service(
-    [Tag("name with id")] string name,
-    IDependency dependency1,
-    IDependency dependency2)
+class OrderService(
+    [Tag("Order details")] string details,
+    IOrder order1,
+    IOrder order2)
 {
-    public string Name { get; } = name;
+    public string OrderDetails { get; } = details;
 
-    public IDependency Dependency1 { get; } = dependency1;
+    public IOrder Order1 { get; } = order1;
 
-    public IDependency Dependency2 { get; } = dependency2;
+    public IOrder Order2 { get; } = order2;
 }
 
 // The partial class is also useful for specifying access modifiers to the generated class
 public partial class Composition
 {
-    private readonly string _serviceName = "";
+    private readonly string _storeName = "";
     private long _id;
 
     // Customizable constructor
-    public Composition(string serviceName)
+    public Composition(string storeName)
         : this()
     {
-        _serviceName = serviceName;
+        _storeName = storeName;
     }
 
     private long GenerateId() => Interlocked.Increment(ref _id);
@@ -58,11 +60,11 @@ public partial class Composition
     void Setup() =>
 
         DI.Setup()
-            .Bind<IDependency>().To<Dependency>()
+            .Bind<IOrder>().To<Order>()
             .Bind<long>().To(_ => GenerateId())
-            .Bind<string>("name with id").To(
-                _ => $"{_serviceName}_{GenerateId()}")
-            .Root<Service>("Root", kind: Internal);
+            // Binds the string with the tag "Order details"
+            .Bind<string>("Order details").To(_ => $"{_storeName}_{GenerateId()}")
+            .Root<OrderService>("OrderService", kind: Internal);
 }
 ```
 
@@ -109,15 +111,15 @@ partial class Composition
   {
   }
 
-  internal Service Root
+  internal OrderService OrderService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       long transientInt644 = GenerateId();
       long transientInt645 = GenerateId();
-      string transientString1 = $"{_serviceName}_{GenerateId()}";
-      return new Service(transientString1, new Dependency(transientInt644), new Dependency(transientInt645));
+      string transientString1 = $"{_storeName}_{GenerateId()}";
+      return new OrderService(transientString1, new Order(transientInt644), new Order(transientInt645));
     }
   }
 }
@@ -134,26 +136,26 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Composition ..> Service : Service Root
-	Dependency *--  Int64 : Int64
-	Service *-- "2 " Dependency : IDependency
-	Service *--  String : "name with id"  String
+	Order --|> IOrder
+	Composition ..> OrderService : OrderService OrderService
+	Order *--  Int64 : Int64
+	OrderService *-- "2 " Order : IOrder
+	OrderService *--  String : "Order details"  String
 	namespace Pure.DI.UsageTests.Advanced.PartialClassScenario {
 		class Composition {
 		<<partial>>
-		~Service Root
+		~OrderService OrderService
 		}
-		class Dependency {
-				<<class>>
-			+Dependency(Int64 id)
-		}
-		class IDependency {
+		class IOrder {
 			<<interface>>
 		}
-		class Service {
+		class Order {
 				<<class>>
-			+Service(String name, IDependency dependency1, IDependency dependency2)
+			+Order(Int64 id)
+		}
+		class OrderService {
+				<<class>>
+			+OrderService(String details, IOrder order1, IOrder order2)
 		}
 	}
 	namespace System {

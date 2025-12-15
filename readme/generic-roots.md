@@ -7,37 +7,36 @@ using Pure.DI;
 DI.Setup(nameof(Composition))
     // This hint indicates to not generate methods such as Resolve
     .Hint(Hint.Resolve, "Off")
-    .Bind().To<Dependency<TT>>()
-    .Bind().To<Service<TT>>()
-    // Creates OtherService manually,
+    .Bind().To<JsonFormatter<TT>>()
+    .Bind().To<FileExporter<TT>>()
+    // Creates NetworkExporter manually,
     // just for the sake of example
-    .Bind<OtherService<TT>>().To(ctx =>
-    {
-        ctx.Inject(out IDependency<TT> dependency);
-        return new OtherService<TT>(dependency);
+    .Bind<NetworkExporter<TT>>().To(ctx => {
+        ctx.Inject(out IFormatter<TT> formatter);
+        return new NetworkExporter<TT>(formatter);
     })
 
-    // Specifies to define composition roots for all types inherited from IService<TT>
+    // Specifies to define composition roots for all types inherited from IExporter<TT>
     // available at compile time at the point where the method is called
-    .Roots<IService<TT>>("GetMy{type}");
+    .Roots<IExporter<TT>>("GetMy{type}");
 
 var composition = new Composition();
 
-// service = new Service<int>(new Dependency<int>());
-var service = composition.GetMyService_T<int>();
+// fileExporter = new FileExporter<int>(new JsonFormatter<int>());
+var fileExporter = composition.GetMyFileExporter_T<int>();
 
-// someOtherService = new OtherService<int>(new Dependency<int>());
-var someOtherService = composition.GetMyOtherService_T<string>();
+// networkExporter = new NetworkExporter<string>(new JsonFormatter<string>());
+var networkExporter = composition.GetMyNetworkExporter_T<string>();
 
-interface IDependency<T>;
+interface IFormatter<T>;
 
-class Dependency<T> : IDependency<T>;
+class JsonFormatter<T> : IFormatter<T>;
 
-interface IService<T>;
+interface IExporter<T>;
 
-class Service<T>(IDependency<T> dependency) : IService<T>;
+class FileExporter<T>(IFormatter<T> formatter) : IExporter<T>;
 
-class OtherService<T>(IDependency<T> dependency) : IService<T>;
+class NetworkExporter<T>(IFormatter<T> formatter) : IExporter<T>;
 ```
 
 <details>
@@ -80,18 +79,18 @@ partial class Composition
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public OtherService<T1> GetMyOtherService_T<T1>()
+  public NetworkExporter<T1> GetMyNetworkExporter_T<T1>()
   {
-    OtherService<T1> transientOtherService;
-    IDependency<T1> localDependency10 = new Dependency<T1>();
-    transientOtherService = new OtherService<T1>(localDependency10);
-    return transientOtherService;
+    NetworkExporter<T1> transientNetworkExporter;
+    IFormatter<T1> localFormatter = new JsonFormatter<T1>();
+    transientNetworkExporter = new NetworkExporter<T1>(localFormatter);
+    return transientNetworkExporter;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public Service<T1> GetMyService_T<T1>()
+  public FileExporter<T1> GetMyFileExporter_T<T1>()
   {
-    return new Service<T1>(new Dependency<T1>());
+    return new FileExporter<T1>(new JsonFormatter<T1>());
   }
 }
 ```
@@ -107,34 +106,34 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	ServiceᐸT1ᐳ --|> IServiceᐸT1ᐳ
-	DependencyᐸT1ᐳ --|> IDependencyᐸT1ᐳ
-	Composition ..> OtherServiceᐸT1ᐳ : OtherServiceᐸT1ᐳ GetMyOtherService_TᐸT1ᐳ()
-	Composition ..> ServiceᐸT1ᐳ : ServiceᐸT1ᐳ GetMyService_TᐸT1ᐳ()
-	OtherServiceᐸT1ᐳ *--  DependencyᐸT1ᐳ : IDependencyᐸT1ᐳ
-	ServiceᐸT1ᐳ *--  DependencyᐸT1ᐳ : IDependencyᐸT1ᐳ
+	FileExporterᐸT1ᐳ --|> IExporterᐸT1ᐳ
+	JsonFormatterᐸT1ᐳ --|> IFormatterᐸT1ᐳ
+	Composition ..> NetworkExporterᐸT1ᐳ : NetworkExporterᐸT1ᐳ GetMyNetworkExporter_TᐸT1ᐳ()
+	Composition ..> FileExporterᐸT1ᐳ : FileExporterᐸT1ᐳ GetMyFileExporter_TᐸT1ᐳ()
+	NetworkExporterᐸT1ᐳ *--  JsonFormatterᐸT1ᐳ : IFormatterᐸT1ᐳ
+	FileExporterᐸT1ᐳ *--  JsonFormatterᐸT1ᐳ : IFormatterᐸT1ᐳ
 	namespace Pure.DI.UsageTests.Generics.GenericsRootsScenario {
 		class Composition {
 		<<partial>>
-		+OtherServiceᐸT1ᐳ GetMyOtherService_TᐸT1ᐳ()
-		+ServiceᐸT1ᐳ GetMyService_TᐸT1ᐳ()
+		+FileExporterᐸT1ᐳ GetMyFileExporter_TᐸT1ᐳ()
+		+NetworkExporterᐸT1ᐳ GetMyNetworkExporter_TᐸT1ᐳ()
 		}
-		class DependencyᐸT1ᐳ {
+		class FileExporterᐸT1ᐳ {
 				<<class>>
-			+Dependency()
+			+FileExporter(IFormatterᐸT1ᐳ formatter)
 		}
-		class IDependencyᐸT1ᐳ {
+		class IExporterᐸT1ᐳ {
 			<<interface>>
 		}
-		class IServiceᐸT1ᐳ {
+		class IFormatterᐸT1ᐳ {
 			<<interface>>
 		}
-		class OtherServiceᐸT1ᐳ {
+		class JsonFormatterᐸT1ᐳ {
 				<<class>>
+			+JsonFormatter()
 		}
-		class ServiceᐸT1ᐳ {
+		class NetworkExporterᐸT1ᐳ {
 				<<class>>
-			+Service(IDependencyᐸT1ᐳ dependency)
 		}
 	}
 ```

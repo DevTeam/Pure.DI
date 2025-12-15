@@ -10,51 +10,49 @@ using Pure.DI;
 DI.Setup(nameof(Composition))
     // The `default` tag is used to resolve dependencies
     // when the tag was not specified by the consumer
-    .Bind<IDependency>("AbcTag", default).To<AbcDependency>()
-    .Bind<IDependency>("XyzTag").As(Lifetime.Singleton).To<XyzDependency>()
-    .Bind<IService>().To<Service>()
+    .Bind<IApiClient>("Public", default).To<RestApiClient>()
+    .Bind<IApiClient>("Internal").As(Lifetime.Singleton).To<InternalApiClient>()
+    .Bind<IApiFacade>().To<ApiFacade>()
 
-    // "XyzRoot" is root name, "XyzTag" is tag
-    .Root<IDependency>("XyzRoot", "XyzTag")
+    // "InternalRoot" is a root name, "Internal" is a tag
+    .Root<IApiClient>("InternalRoot", "Internal")
 
     // Specifies to create the composition root named "Root"
-    .Root<IService>("Root");
+    .Root<IApiFacade>("Api");
 
 var composition = new Composition();
-var service = composition.Root;
-service.Dependency1.ShouldBeOfType<AbcDependency>();
-service.Dependency2.ShouldBeOfType<XyzDependency>();
-service.Dependency2.ShouldBe(composition.XyzRoot);
-service.Dependency3.ShouldBeOfType<AbcDependency>();
+var api = composition.Api;
+api.PublicClient.ShouldBeOfType<RestApiClient>();
+api.InternalClient.ShouldBeOfType<InternalApiClient>();
+api.InternalClient.ShouldBe(composition.InternalRoot);
+api.DefaultClient.ShouldBeOfType<RestApiClient>();
 
-interface IDependency;
+interface IApiClient;
 
-class AbcDependency : IDependency;
+class RestApiClient : IApiClient;
 
-class XyzDependency : IDependency;
+class InternalApiClient : IApiClient;
 
-class Dependency : IDependency;
-
-interface IService
+interface IApiFacade
 {
-    IDependency Dependency1 { get; }
+    IApiClient PublicClient { get; }
 
-    IDependency Dependency2 { get; }
+    IApiClient InternalClient { get; }
 
-    IDependency Dependency3 { get; }
+    IApiClient DefaultClient { get; }
 }
 
-class Service(
-    [Tag("AbcTag")] IDependency dependency1,
-    [Tag("XyzTag")] IDependency dependency2,
-    IDependency dependency3)
-    : IService
+class ApiFacade(
+    [Tag("Public")] IApiClient publicClient,
+    [Tag("Internal")] IApiClient internalClient,
+    IApiClient defaultClient)
+    : IApiFacade
 {
-    public IDependency Dependency1 { get; } = dependency1;
+    public IApiClient PublicClient { get; } = publicClient;
 
-    public IDependency Dependency2 { get; } = dependency2;
+    public IApiClient InternalClient { get; } = internalClient;
 
-    public IDependency Dependency3 { get; } = dependency3;
+    public IApiClient DefaultClient { get; } = defaultClient;
 }
 ```
 
@@ -105,7 +103,7 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private XyzDependency? _singletonXyzDependency52;
+  private InternalApiClient? _singletonInternalApiClient52;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -124,41 +122,41 @@ partial class Composition
     _lock = parentScope._lock;
   }
 
-  public IDependency XyzRoot
+  public IApiClient InternalRoot
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      EnsureXyzDependencyXyzTagExists();
-      return _root._singletonXyzDependency52;
+      EnsureInternalApiClientInternalExists();
+      return _root._singletonInternalApiClient52;
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      void EnsureXyzDependencyXyzTagExists()
+      void EnsureInternalApiClientInternalExists()
       {
-        if (_root._singletonXyzDependency52 is null)
+        if (_root._singletonInternalApiClient52 is null)
           lock (_lock)
-            if (_root._singletonXyzDependency52 is null)
+            if (_root._singletonInternalApiClient52 is null)
             {
-              _root._singletonXyzDependency52 = new XyzDependency();
+              _root._singletonInternalApiClient52 = new InternalApiClient();
             }
       }
     }
   }
 
-  public IService Root
+  public IApiFacade Api
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      EnsureXyzDependencyXyzTagExists();
-      return new Service(new AbcDependency(), _root._singletonXyzDependency52, new AbcDependency());
+      EnsureInternalApiClientInternalExists();
+      return new ApiFacade(new RestApiClient(), _root._singletonInternalApiClient52, new RestApiClient());
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      void EnsureXyzDependencyXyzTagExists()
+      void EnsureInternalApiClientInternalExists()
       {
-        if (_root._singletonXyzDependency52 is null)
+        if (_root._singletonInternalApiClient52 is null)
           lock (_lock)
-            if (_root._singletonXyzDependency52 is null)
+            if (_root._singletonInternalApiClient52 is null)
             {
-              _root._singletonXyzDependency52 = new XyzDependency();
+              _root._singletonInternalApiClient52 = new InternalApiClient();
             }
       }
     }
@@ -177,38 +175,38 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	AbcDependency --|> IDependency : "AbcTag" 
-	AbcDependency --|> IDependency
-	XyzDependency --|> IDependency : "XyzTag" 
-	Service --|> IService
-	Composition ..> Service : IService Root
-	Composition ..> XyzDependency : IDependency XyzRoot
-	Service *--  AbcDependency : "AbcTag"  IDependency
-	Service *--  AbcDependency : IDependency
-	Service o-- "Singleton" XyzDependency : "XyzTag"  IDependency
+	RestApiClient --|> IApiClient : "Public" 
+	RestApiClient --|> IApiClient
+	InternalApiClient --|> IApiClient : "Internal" 
+	ApiFacade --|> IApiFacade
+	Composition ..> ApiFacade : IApiFacade Api
+	Composition ..> InternalApiClient : IApiClient InternalRoot
+	ApiFacade *--  RestApiClient : "Public"  IApiClient
+	ApiFacade *--  RestApiClient : IApiClient
+	ApiFacade o-- "Singleton" InternalApiClient : "Internal"  IApiClient
 	namespace Pure.DI.UsageTests.Basics.TagsScenario {
-		class AbcDependency {
+		class ApiFacade {
 				<<class>>
-			+AbcDependency()
+			+ApiFacade(IApiClient publicClient, IApiClient internalClient, IApiClient defaultClient)
 		}
 		class Composition {
 		<<partial>>
-		+IService Root
-		+IDependency XyzRoot
+		+IApiFacade Api
+		+IApiClient InternalRoot
 		}
-		class IDependency {
+		class IApiClient {
 			<<interface>>
 		}
-		class IService {
+		class IApiFacade {
 			<<interface>>
 		}
-		class Service {
+		class InternalApiClient {
 				<<class>>
-			+Service(IDependency dependency1, IDependency dependency2, IDependency dependency3)
+			+InternalApiClient()
 		}
-		class XyzDependency {
+		class RestApiClient {
 				<<class>>
-			+XyzDependency()
+			+RestApiClient()
 		}
 	}
 ```

@@ -7,39 +7,44 @@ The setting code for one Composition can be located in several methods and/or in
 using Pure.DI;
 
 var composition = new Composition();
-var service = composition.Root;
+var commenter = composition.Commenter;
 
-interface IDependency;
+// Infrastructure interface for retrieving comments (e.g., from a database)
+interface IComments;
 
-class Dependency : IDependency;
+class Comments : IComments;
 
-interface IService;
+// Domain service for handling class comments
+interface IClassCommenter;
 
-class Service(IDependency dependency) : IService;
+class ClassCommenter(IComments comments) : IClassCommenter;
 
 partial class Composition
 {
 
-    // This method will not be called in runtime
-    static void Setup1() =>
+    // Infrastructure layer setup.
+    // This method isolates the configuration of databases or external services.
+    static void SetupInfrastructure() =>
         DI.Setup()
-            .Bind<IDependency>().To<Dependency>();
+            .Bind<IComments>().To<Comments>();
 }
 
 partial class Composition
 {
-    // This method will not be called in runtime
-    static void Setup2() =>
+    // Domain logic layer setup.
+    // Here we bind domain services.
+    static void SetupDomain() =>
         DI.Setup()
-            .Bind<IService>().To<Service>();
+            .Bind<IClassCommenter>().To<ClassCommenter>();
 }
 
 partial class Composition
 {
-    // This method will not be called in runtime
-    private static void Setup3() =>
+    // Public API setup (Composition Roots).
+    // Determines which objects can be retrieved directly from the container.
+    private static void SetupApi() =>
         DI.Setup()
-            .Root<IService>("Root");
+            .Root<IClassCommenter>("Commenter");
 }
 ```
 
@@ -82,12 +87,12 @@ partial class Composition
   {
   }
 
-  public IService Root
+  public IClassCommenter Commenter
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new Service(new Dependency());
+      return new ClassCommenter(new Comments());
     }
   }
 
@@ -157,13 +162,13 @@ partial class Composition
   static Composition()
   {
     var valResolver_0000 = new Resolver_0000();
-    Resolver<IService>.Value = valResolver_0000;
+    Resolver<IClassCommenter>.Value = valResolver_0000;
     _buckets = Buckets<IResolver<Composition, object>>.Create(
       1,
       out _bucketSize,
       new Pair<IResolver<Composition, object>>[1]
       {
-         new Pair<IResolver<Composition, object>>(typeof(IService), valResolver_0000)
+         new Pair<IResolver<Composition, object>>(typeof(IClassCommenter), valResolver_0000)
       });
   }
 
@@ -185,19 +190,19 @@ partial class Composition
     }
   }
 
-  private sealed class Resolver_0000: Resolver<IService>
+  private sealed class Resolver_0000: Resolver<IClassCommenter>
   {
-    public override IService Resolve(Composition composition)
+    public override IClassCommenter Resolve(Composition composition)
     {
-      return composition.Root;
+      return composition.Commenter;
     }
 
-    public override IService ResolveByTag(Composition composition, object tag)
+    public override IClassCommenter ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
         case null:
-          return composition.Root;
+          return composition.Commenter;
 
         default:
           return base.ResolveByTag(composition, tag);
@@ -218,32 +223,32 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Service --|> IService
-	Composition ..> Service : IService Root
-	Service *--  Dependency : IDependency
+	Comments --|> IComments
+	ClassCommenter --|> IClassCommenter
+	Composition ..> ClassCommenter : IClassCommenter Commenter
+	ClassCommenter *--  Comments : IComments
 	namespace Pure.DI.UsageTests.Advanced.SeveralPartialClassesScenario {
+		class ClassCommenter {
+				<<class>>
+			+ClassCommenter(IComments comments)
+		}
+		class Comments {
+				<<class>>
+			+Comments()
+		}
 		class Composition {
 		<<partial>>
-		+IService Root
+		+IClassCommenter Commenter
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
 		}
-		class Dependency {
-				<<class>>
-			+Dependency()
-		}
-		class IDependency {
+		class IClassCommenter {
 			<<interface>>
 		}
-		class IService {
+		class IComments {
 			<<interface>>
-		}
-		class Service {
-				<<class>>
-			+Service(IDependency dependency)
 		}
 	}
 ```

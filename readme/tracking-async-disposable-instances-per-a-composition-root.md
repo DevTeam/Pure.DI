@@ -6,31 +6,32 @@ using Shouldly;
 using Pure.DI;
 
 var composition = new Composition();
-var root1 = composition.Root;
-var root2 = composition.Root;
+// Creates two independent roots (queries), each with its own dependency graph
+var query1 = composition.Query;
+var query2 = composition.Query;
 
-await root2.DisposeAsync();
+// Disposes of the second query
+await query2.DisposeAsync();
 
-// Checks that the disposable instances
-// associated with root1 have been disposed of
-root2.Value.Dependency.IsDisposed.ShouldBeTrue();
+// Checks that the connection associated with the second query has been closed
+query2.Value.Connection.IsDisposed.ShouldBeTrue();
 
-// Checks that the disposable instances
-// associated with root2 have not been disposed of
-root1.Value.Dependency.IsDisposed.ShouldBeFalse();
+// At the same time, the connection of the first query remains active
+query1.Value.Connection.IsDisposed.ShouldBeFalse();
 
-await root1.DisposeAsync();
+// Disposes of the first query
+await query1.DisposeAsync();
 
-// Checks that the disposable instances
-// associated with root2 have been disposed of
-root1.Value.Dependency.IsDisposed.ShouldBeTrue();
+// Now the first connection is also closed
+query1.Value.Connection.IsDisposed.ShouldBeTrue();
 
-interface IDependency
+// Interface for a resource requiring asynchronous disposal (e.g., DB)
+interface IDbConnection
 {
     bool IsDisposed { get; }
 }
 
-class Dependency : IDependency, IAsyncDisposable
+class DbConnection : IDbConnection, IAsyncDisposable
 {
     public bool IsDisposed { get; private set; }
 
@@ -41,14 +42,14 @@ class Dependency : IDependency, IAsyncDisposable
     }
 }
 
-interface IService
+interface IQuery
 {
-    public IDependency Dependency { get; }
+    public IDbConnection Connection { get; }
 }
 
-class Service(IDependency dependency) : IService
+class Query(IDbConnection connection) : IQuery
 {
-    public IDependency Dependency { get; } = dependency;
+    public IDbConnection Connection { get; } = connection;
 }
 
 partial class Composition
@@ -56,12 +57,12 @@ partial class Composition
     static void Setup() =>
 
         DI.Setup()
-            .Bind().To<Dependency>()
-            .Bind().To<Service>()
+            .Bind().To<DbConnection>()
+            .Bind().To<Query>()
 
-            // A special composition root
-            // that allows to manage disposable dependencies
-            .Root<Owned<IService>>("Root");
+            // A special composition root 'Owned' that allows
+            // managing the lifetime of IQuery and its dependencies
+            .Root<Owned<IQuery>>("Query");
 }
 ```
 
@@ -118,13 +119,13 @@ partial class Composition
     _lock = parentScope._lock;
   }
 
-  public Owned<IService> Root
+  public Owned<IQuery> Query
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       var perBlockOwned1 = new Owned();
-      Owned<IService> transientOwned;
+      Owned<IQuery> transientOwned;
       // Creates the owner of an instance
       Owned transientOwned2;
       Owned localOwned3 = perBlockOwned1;
@@ -135,14 +136,14 @@ partial class Composition
       }
 
       IOwned localOwned2 = transientOwned2;
-      var transientDependency4 = new Dependency();
+      var transientDbConnection4 = new DbConnection();
       lock (_lock)
       {
-        perBlockOwned1.Add(transientDependency4);
+        perBlockOwned1.Add(transientDbConnection4);
       }
 
-      IService localValue3 = new Service(transientDependency4);
-      transientOwned = new Owned<IService>(localValue3, localOwned2);
+      IQuery localValue3 = new Query(transientDbConnection4);
+      transientOwned = new Owned<IQuery>(localValue3, localOwned2);
       lock (_lock)
       {
         perBlockOwned1.Add(transientOwned);
@@ -166,13 +167,13 @@ Class diagram:
 ---
 classDiagram
 	Owned --|> IOwned
-	Dependency --|> IDependency
-	Dependency --|> IAsyncDisposable
-	Service --|> IService
-	Composition ..> OwnedᐸIServiceᐳ : OwnedᐸIServiceᐳ Root
-	Service *--  Dependency : IDependency
-	OwnedᐸIServiceᐳ *--  Owned : IOwned
-	OwnedᐸIServiceᐳ *--  Service : IService
+	DbConnection --|> IDbConnection
+	DbConnection --|> IAsyncDisposable
+	Query --|> IQuery
+	Composition ..> OwnedᐸIQueryᐳ : OwnedᐸIQueryᐳ Query
+	Query *--  DbConnection : IDbConnection
+	OwnedᐸIQueryᐳ *--  Owned : IOwned
+	OwnedᐸIQueryᐳ *--  Query : IQuery
 	namespace Pure.DI {
 		class IOwned {
 			<<interface>>
@@ -180,28 +181,28 @@ classDiagram
 		class Owned {
 				<<class>>
 		}
-		class OwnedᐸIServiceᐳ {
+		class OwnedᐸIQueryᐳ {
 				<<struct>>
 		}
 	}
 	namespace Pure.DI.UsageTests.Advanced.TrackingAsyncDisposableScenario {
 		class Composition {
 		<<partial>>
-		+OwnedᐸIServiceᐳ Root
+		+OwnedᐸIQueryᐳ Query
 		}
-		class Dependency {
+		class DbConnection {
 				<<class>>
-			+Dependency()
+			+DbConnection()
 		}
-		class IDependency {
+		class IDbConnection {
 			<<interface>>
 		}
-		class IService {
+		class IQuery {
 			<<interface>>
 		}
-		class Service {
+		class Query {
 				<<class>>
-			+Service(IDependency dependency)
+			+Query(IDbConnection connection)
 		}
 	}
 	namespace System {

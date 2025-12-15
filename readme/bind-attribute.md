@@ -7,58 +7,55 @@
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Bind().As(Lifetime.Singleton).To<Facade>()
-    .Bind().To<Service>()
+    .Bind().As(Lifetime.Singleton).To<DeviceFeatureProvider>()
+    .Bind().To<PhotoService>()
 
     // Composition root
-    .Root<IService>("Root");
+    .Root<IPhotoService>("PhotoService");
 
 var composition = new Composition();
-var service = composition.Root;
-service.DoSomething();
+var photoService = composition.PhotoService;
+photoService.TakePhotoWithLocation();
 
-interface IDependency
+interface IGps
 {
-    public void DoSomething();
+    void GetLocation();
 }
 
-class Dependency : IDependency
+class Gps : IGps
 {
-    public void DoSomething()
+    public void GetLocation() => Console.WriteLine("Coordinates: 123, 456");
+}
+
+interface ICamera
+{
+    void Capture();
+}
+
+class Camera : ICamera
+{
+    public void Capture() => Console.WriteLine("Photo captured");
+}
+
+class DeviceFeatureProvider
+{
+    // The [Bind] attribute specifies that the property is a source of dependency
+    [Bind] public IGps Gps { get; } = new Gps();
+
+    [Bind] public ICamera Camera { get; } = new Camera();
+}
+
+interface IPhotoService
+{
+    void TakePhotoWithLocation();
+}
+
+class PhotoService(IGps gps, Func<ICamera> cameraFactory) : IPhotoService
+{
+    public void TakePhotoWithLocation()
     {
-    }
-}
-
-interface IOtherDependency
-{
-    public void DoSomething();
-}
-
-class OtherDependency : IOtherDependency
-{
-    public void DoSomething()
-    {
-    }
-}
-
-class Facade
-{
-    [Bind] public IDependency Dependency { get; } = new Dependency();
-
-    [Bind] public IOtherDependency OtherDependency { get; } = new OtherDependency();
-}
-
-interface IService
-{
-    public void DoSomething();
-}
-
-class Service(IDependency dep, Func<IOtherDependency> otherDep) : IService
-{
-    public void DoSomething()
-    {
-        dep.DoSomething();
-        otherDep().DoSomething();
+        gps.GetLocation();
+        cameraFactory().Capture();
     }
 }
 ```
@@ -102,7 +99,7 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private Facade? _singletonFacade51;
+  private DeviceFeatureProvider? _singletonDeviceFeatureProvider51;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -121,35 +118,35 @@ partial class Composition
     _lock = parentScope._lock;
   }
 
-  public IService Root
+  public IPhotoService PhotoService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      IDependency transientIDependency1;
-      EnsureFacadeExists();
-      Facade localInstance_1182D1277 = _root._singletonFacade51;
-      transientIDependency1 = localInstance_1182D1277.Dependency;
-      Func<IOtherDependency> transientFunc2 = new Func<IOtherDependency>(
+      IGps transientIGps1;
+      EnsureDeviceFeatureProviderExists();
+      DeviceFeatureProvider localInstance_1182D1277 = _root._singletonDeviceFeatureProvider51;
+      transientIGps1 = localInstance_1182D1277.Gps;
+      Func<ICamera> transientFunc2 = new Func<ICamera>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        IOtherDependency transientIOtherDependency4;
-        EnsureFacadeExists();
-        Facade localInstance_1182D1278 = _root._singletonFacade51;
-        transientIOtherDependency4 = localInstance_1182D1278.OtherDependency;
-        IOtherDependency localValue16 = transientIOtherDependency4;
+        ICamera transientICamera4;
+        EnsureDeviceFeatureProviderExists();
+        DeviceFeatureProvider localInstance_1182D1278 = _root._singletonDeviceFeatureProvider51;
+        transientICamera4 = localInstance_1182D1278.Camera;
+        ICamera localValue16 = transientICamera4;
         return localValue16;
       });
-      return new Service(transientIDependency1, transientFunc2);
+      return new PhotoService(transientIGps1, transientFunc2);
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      void EnsureFacadeExists()
+      void EnsureDeviceFeatureProviderExists()
       {
-        if (_root._singletonFacade51 is null)
+        if (_root._singletonDeviceFeatureProvider51 is null)
           lock (_lock)
-            if (_root._singletonFacade51 is null)
+            if (_root._singletonDeviceFeatureProvider51 is null)
             {
-              _root._singletonFacade51 = new Facade();
+              _root._singletonDeviceFeatureProvider51 = new DeviceFeatureProvider();
             }
       }
     }
@@ -168,38 +165,38 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService
-	Composition ..> Service : IService Root
-	Service *--  IDependency : IDependency
-	Service o-- "PerBlock" FuncᐸIOtherDependencyᐳ : FuncᐸIOtherDependencyᐳ
-	IOtherDependency o-- "Singleton" Facade : Facade
-	IDependency o-- "Singleton" Facade : Facade
-	FuncᐸIOtherDependencyᐳ *--  IOtherDependency : IOtherDependency
+	PhotoService --|> IPhotoService
+	Composition ..> PhotoService : IPhotoService PhotoService
+	PhotoService *--  IGps : IGps
+	PhotoService o-- "PerBlock" FuncᐸICameraᐳ : FuncᐸICameraᐳ
+	ICamera o-- "Singleton" DeviceFeatureProvider : DeviceFeatureProvider
+	IGps o-- "Singleton" DeviceFeatureProvider : DeviceFeatureProvider
+	FuncᐸICameraᐳ *--  ICamera : ICamera
 	namespace Pure.DI.UsageTests.Basics.BindAttributeScenario {
 		class Composition {
 		<<partial>>
-		+IService Root
+		+IPhotoService PhotoService
 		}
-		class Facade {
+		class DeviceFeatureProvider {
 				<<class>>
-			+Facade()
+			+DeviceFeatureProvider()
 		}
-		class IDependency {
+		class ICamera {
 				<<interface>>
 		}
-		class IOtherDependency {
+		class IGps {
 				<<interface>>
 		}
-		class IService {
+		class IPhotoService {
 			<<interface>>
 		}
-		class Service {
+		class PhotoService {
 				<<class>>
-			+Service(IDependency dep, FuncᐸIOtherDependencyᐳ otherDep)
+			+PhotoService(IGps gps, FuncᐸICameraᐳ cameraFactory)
 		}
 	}
 	namespace System {
-		class FuncᐸIOtherDependencyᐳ {
+		class FuncᐸICameraᐳ {
 				<<delegate>>
 		}
 	}

@@ -11,39 +11,56 @@ using static Pure.DI.Hint;
 
 DI.Setup(nameof(Composition))
     .Hint(OnNewInstance, "On")
-    .Hint(OnNewInstanceImplementationTypeNameWildcard, "*Dependency")
+    // Hints restrict the generation of the partial OnNewInstance method
+    // to only those types whose names match the specified wildcards.
+    // In this case, we want to track the creation of repositories and services.
+    .Hint(OnNewInstanceImplementationTypeNameWildcard, "*Repository")
     .Hint(OnNewInstanceImplementationTypeNameWildcard, "*Service")
-    .Bind().As(Lifetime.Singleton).To<Dependency>()
-    .Bind().To<Service>()
-    .Root<IService>("Root");
+    .Bind().As(Lifetime.Singleton).To<UserRepository>()
+    .Bind().To<OrderService>()
+    // This type will not be tracked because its name
+    // does not match the wildcards
+    .Bind().To<ConsoleLogger>()
+    .Root<IOrderService>("Root");
 
 var log = new List<string>();
 var composition = new Composition(log);
+
 var service1 = composition.Root;
 var service2 = composition.Root;
 
 log.ShouldBe([
-    "Dependency created",
-    "Service created",
-    "Service created"]);
+    "UserRepository created",
+    "OrderService created",
+    "OrderService created"
+]);
 
-interface IDependency;
+interface IRepository;
 
-class Dependency : IDependency
+class UserRepository : IRepository
 {
-    public override string ToString() => nameof(Dependency);
+    public override string ToString() => nameof(UserRepository);
 }
 
-interface IService
+interface ILogger;
+
+class ConsoleLogger : ILogger
 {
-    IDependency Dependency { get; }
+    public override string ToString() => nameof(ConsoleLogger);
 }
 
-class Service(IDependency dependency) : IService
+interface IOrderService
 {
-    public IDependency Dependency { get; } = dependency;
+    IRepository Repository { get; }
+}
 
-    public override string ToString() => nameof(Service);
+class OrderService(IRepository repository, ILogger logger) : IOrderService
+{
+    public IRepository Repository { get; } = repository;
+
+    public ILogger Logger { get; } = logger;
+
+    public override string ToString() => nameof(OrderService);
 }
 
 internal partial class Composition
@@ -103,7 +120,7 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private Dependency? _singletonDependency51;
+  private UserRepository? _singletonUserRepository51;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -122,25 +139,25 @@ partial class Composition
     _lock = parentScope._lock;
   }
 
-  public IService Root
+  public IOrderService Root
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonDependency51 is null)
+      if (_root._singletonUserRepository51 is null)
         lock (_lock)
-          if (_root._singletonDependency51 is null)
+          if (_root._singletonUserRepository51 is null)
           {
-            Dependency _singletonDependency51Temp;
-            _singletonDependency51Temp = new Dependency();
-            OnNewInstance<Dependency>(ref _singletonDependency51Temp, null, Lifetime.Singleton);
+            UserRepository _singletonUserRepository51Temp;
+            _singletonUserRepository51Temp = new UserRepository();
+            OnNewInstance<UserRepository>(ref _singletonUserRepository51Temp, null, Lifetime.Singleton);
             Thread.MemoryBarrier();
-            _root._singletonDependency51 = _singletonDependency51Temp;
+            _root._singletonUserRepository51 = _singletonUserRepository51Temp;
           }
 
-      var transientService = new Service(_root._singletonDependency51);
-      OnNewInstance<Service>(ref transientService, null, Lifetime.Transient);
-      return transientService;
+      var transientOrderService = new OrderService(_root._singletonUserRepository51, new ConsoleLogger());
+      OnNewInstance<OrderService>(ref transientOrderService, null, Lifetime.Transient);
+      return transientOrderService;
     }
   }
 
@@ -160,28 +177,37 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Service --|> IService
-	Composition ..> Service : IService Root
-	Service o-- "Singleton" Dependency : IDependency
+	UserRepository --|> IRepository
+	OrderService --|> IOrderService
+	ConsoleLogger --|> ILogger
+	Composition ..> OrderService : IOrderService Root
+	OrderService o-- "Singleton" UserRepository : IRepository
+	OrderService *--  ConsoleLogger : ILogger
 	namespace Pure.DI.UsageTests.Hints.OnNewInstanceWildcardHintScenario {
 		class Composition {
 		<<partial>>
-		+IService Root
+		+IOrderService Root
 		}
-		class Dependency {
+		class ConsoleLogger {
 				<<class>>
-			+Dependency()
+			+ConsoleLogger()
 		}
-		class IDependency {
+		class ILogger {
 			<<interface>>
 		}
-		class IService {
+		class IOrderService {
 			<<interface>>
 		}
-		class Service {
+		class IRepository {
+			<<interface>>
+		}
+		class OrderService {
 				<<class>>
-			+Service(IDependency dependency)
+			+OrderService(IRepository repository, ILogger logger)
+		}
+		class UserRepository {
+				<<class>>
+			+UserRepository()
 		}
 	}
 ```

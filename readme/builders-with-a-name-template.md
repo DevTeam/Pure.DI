@@ -9,59 +9,59 @@ using Pure.DI;
 
 DI.Setup(nameof(Composition))
     .Bind().To(_ => Guid.NewGuid())
-    .Bind().To<Dependency>()
+    .Bind().To<WiFi>()
     // Creates a builder based on the name template
-    // for each type inherited from IService.
+    // for each type inherited from IDevice.
     // These types must be available at this point in the code.
-    .Builders<IService>("BuildUp{type}");
+    .Builders<IDevice>("Install{type}");
 
 var composition = new Composition();
-        
-var service1 = composition.BuildUpService1(new Service1());
-service1.Id.ShouldNotBe(Guid.Empty);
-service1.Dependency.ShouldBeOfType<Dependency>();
 
-var service2 = composition.BuildUpService2(new Service2());
-service2.Id.ShouldBe(Guid.Empty);
-service2.Dependency.ShouldBeOfType<Dependency>();
+var webcam = composition.InstallWebcam(new Webcam());
+webcam.Id.ShouldNotBe(Guid.Empty);
+webcam.Network.ShouldBeOfType<WiFi>();
+
+var thermostat = composition.InstallThermostat(new Thermostat());
+thermostat.Id.ShouldBe(Guid.Empty);
+thermostat.Network.ShouldBeOfType<WiFi>();
 
 // Uses a common method to build an instance
-IService abstractService = new Service1();
-abstractService = composition.BuildUpIService(abstractService);
-abstractService.ShouldBeOfType<Service1>();
-abstractService.Id.ShouldNotBe(Guid.Empty);
-abstractService.Dependency.ShouldBeOfType<Dependency>();
+IDevice device = new Webcam();
+device = composition.InstallIDevice(device);
+device.ShouldBeOfType<Webcam>();
+device.Id.ShouldNotBe(Guid.Empty);
+device.Network.ShouldBeOfType<WiFi>();
 
-interface IDependency;
+interface INetwork;
 
-class Dependency : IDependency;
+class WiFi : INetwork;
 
-interface IService
+interface IDevice
 {
     Guid Id { get; }
 
-    IDependency? Dependency { get; }
+    INetwork? Network { get; }
 }
 
-record Service1: IService
+record Webcam : IDevice
 {
     public Guid Id { get; private set; } = Guid.Empty;
 
     // The Dependency attribute specifies to perform an injection
     [Dependency]
-    public IDependency? Dependency { get; set; }
+    public INetwork? Network { get; set; }
 
     [Dependency]
     public void SetId(Guid id) => Id = id;
 }
 
-record Service2 : IService
+record Thermostat : IDevice
 {
     public Guid Id => Guid.Empty;
 
     // The Dependency attribute specifies to perform an injection
     [Dependency]
-    public IDependency? Dependency { get; set; }
+    public INetwork? Network { get; set; }
 }
 ```
 
@@ -121,58 +121,58 @@ partial class Composition
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public Service1 BuildUpService1(Service1 buildingInstance)
+  public Webcam InstallWebcam(Webcam buildingInstance)
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    Service1 transientService15;
-    Service1 localBuildingInstance6 = buildingInstance;
+    Webcam transientWebcam5;
+    Webcam localBuildingInstance6 = buildingInstance;
     Guid transientGuid8 = Guid.NewGuid();
-    localBuildingInstance6.Dependency = new Dependency();
+    localBuildingInstance6.Network = new WiFi();
     localBuildingInstance6.SetId(transientGuid8);
-    transientService15 = localBuildingInstance6;
-    return transientService15;
+    transientWebcam5 = localBuildingInstance6;
+    return transientWebcam5;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public Service2 BuildUpService2(Service2 buildingInstance)
+  public Thermostat InstallThermostat(Thermostat buildingInstance)
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    Service2 transientService22;
-    Service2 localBuildingInstance5 = buildingInstance;
-    localBuildingInstance5.Dependency = new Dependency();
-    transientService22 = localBuildingInstance5;
-    return transientService22;
+    Thermostat transientThermostat2;
+    Thermostat localBuildingInstance5 = buildingInstance;
+    localBuildingInstance5.Network = new WiFi();
+    transientThermostat2 = localBuildingInstance5;
+    return transientThermostat2;
   }
 
   #pragma warning disable CS0162
   [MethodImpl(MethodImplOptions.NoInlining)]
-  public IService BuildUpIService(IService buildingInstance)
+  public IDevice InstallIDevice(IDevice buildingInstance)
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    IService transientIService;
-    IService localBuildingInstance4 = buildingInstance;
+    IDevice transientIDevice;
+    IDevice localBuildingInstance4 = buildingInstance;
     switch (localBuildingInstance4)
     {
-      case Service1 localService11:
+      case Webcam localWebcam:
       {
-        transientIService = BuildUpService1(localService11);
-        goto transientIServiceFinish;
+        transientIDevice = InstallWebcam(localWebcam);
+        goto transientIDeviceFinish;
       }
 
-      case Service2 localService21:
+      case Thermostat localThermostat:
       {
-        transientIService = BuildUpService2(localService21);
-        goto transientIServiceFinish;
+        transientIDevice = InstallThermostat(localThermostat);
+        goto transientIDeviceFinish;
       }
 
       default:
         throw new ArgumentException($"Unable to build an instance of typeof type {localBuildingInstance4.GetType()}.", "buildingInstance");
     }
 
-    transientIService = localBuildingInstance4;
-    transientIServiceFinish:
+    transientIDevice = localBuildingInstance4;
+    transientIDeviceFinish:
       ;
-    return transientIService;
+    return transientIDevice;
   }
   #pragma warning restore CS0162
 }
@@ -189,38 +189,38 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Composition ..> IService : IService BuildUpIService(Pure.DI.UsageTests.Basics.BuildersWithNameTemplateScenario.IService buildingInstance)
-	Composition ..> Service2 : Service2 BuildUpService2(Pure.DI.UsageTests.Basics.BuildersWithNameTemplateScenario.Service2 buildingInstance)
-	Composition ..> Service1 : Service1 BuildUpService1(Pure.DI.UsageTests.Basics.BuildersWithNameTemplateScenario.Service1 buildingInstance)
-	Service1 *--  Guid : Guid
-	Service1 *--  Dependency : IDependency
-	Service2 *--  Dependency : IDependency
+	WiFi --|> INetwork
+	Composition ..> IDevice : IDevice InstallIDevice(Pure.DI.UsageTests.Basics.BuildersWithNameTemplateScenario.IDevice buildingInstance)
+	Composition ..> Thermostat : Thermostat InstallThermostat(Pure.DI.UsageTests.Basics.BuildersWithNameTemplateScenario.Thermostat buildingInstance)
+	Composition ..> Webcam : Webcam InstallWebcam(Pure.DI.UsageTests.Basics.BuildersWithNameTemplateScenario.Webcam buildingInstance)
+	Webcam *--  Guid : Guid
+	Webcam *--  WiFi : INetwork
+	Thermostat *--  WiFi : INetwork
 	namespace Pure.DI.UsageTests.Basics.BuildersWithNameTemplateScenario {
 		class Composition {
 		<<partial>>
-		+IService BuildUpIService(Pure.DI.UsageTests.Basics.BuildersWithNameTemplateScenario.IService buildingInstance)
-		+Service1 BuildUpService1(Pure.DI.UsageTests.Basics.BuildersWithNameTemplateScenario.Service1 buildingInstance)
-		+Service2 BuildUpService2(Pure.DI.UsageTests.Basics.BuildersWithNameTemplateScenario.Service2 buildingInstance)
+		+IDevice InstallIDevice(Pure.DI.UsageTests.Basics.BuildersWithNameTemplateScenario.IDevice buildingInstance)
+		+Thermostat InstallThermostat(Pure.DI.UsageTests.Basics.BuildersWithNameTemplateScenario.Thermostat buildingInstance)
+		+Webcam InstallWebcam(Pure.DI.UsageTests.Basics.BuildersWithNameTemplateScenario.Webcam buildingInstance)
 		}
-		class Dependency {
-				<<class>>
-			+Dependency()
-		}
-		class IDependency {
-			<<interface>>
-		}
-		class IService {
+		class IDevice {
 				<<interface>>
 		}
-		class Service1 {
+		class INetwork {
+			<<interface>>
+		}
+		class Thermostat {
 				<<record>>
-			+IDependency Dependency
+			+INetwork Network
+		}
+		class Webcam {
+				<<record>>
+			+INetwork Network
 			+SetId(Guid id) : Void
 		}
-		class Service2 {
-				<<record>>
-			+IDependency Dependency
+		class WiFi {
+				<<class>>
+			+WiFi()
 		}
 	}
 	namespace System {

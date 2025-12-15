@@ -2,33 +2,37 @@
 
 
 ```c#
+using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .RootArg<TT>("someArg")
-    .Bind<IService<TT>>().To<Service<TT>>()
+    .RootArg<TT>("model")
+    .Bind<IPresenter<TT>>().To<Presenter<TT>>()
 
     // Composition root
-    .Root<IService<TT>>("GetMyService");
+    .Root<IPresenter<TT>>("GetPresenter");
 
 var composition = new Composition();
-IService<int> service = composition.GetMyService<int>(someArg: 33);
 
-interface IService<out T>
+// The "model" argument is passed to the composition root
+// and then injected into the "Presenter" class
+var presenter = composition.GetPresenter<string>(model: "Hello World");
+
+presenter.Model.ShouldBe("Hello World");
+
+interface IPresenter<out T>
 {
-    T? Dependency { get; }
+    T? Model { get; }
 }
 
-class Service<T> : IService<T>
+class Presenter<T> : IPresenter<T>
 {
-    // The Dependency attribute specifies to perform an injection,
-    // the integer value in the argument specifies
-    // the ordinal of injection
+    // The Dependency attribute specifies to perform an injection
     [Dependency]
-    public void SetDependency(T dependency) =>
-        Dependency = dependency;
+    public void Present(T model) =>
+        Model = model;
 
-    public T? Dependency { get; private set; }
+    public T? Model { get; private set; }
 }
 ```
 
@@ -43,10 +47,12 @@ dotnet --list-sdk
 ```bash
 dotnet new console -n Sample
 ```
-- Add reference to NuGet package
+- Add references to NuGet packages
   - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 ```bash
 dotnet add package Pure.DI
+dotnet add package Shouldly
 ```
 - Copy the example code into the _Program.cs_ file
 
@@ -84,12 +90,12 @@ partial class Composition
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public IService<T1> GetMyService<T1>(T1 someArg)
+  public IPresenter<T1> GetPresenter<T1>(T1 model)
   {
-    if (someArg is null) throw new ArgumentNullException(nameof(someArg));
-    var transientService = new Service<T1>();
-    transientService.SetDependency(someArg);
-    return transientService;
+    if (model is null) throw new ArgumentNullException(nameof(model));
+    var transientPresenter = new Presenter<T1>();
+    transientPresenter.Present(model);
+    return transientPresenter;
   }
 }
 ```
@@ -105,21 +111,21 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	ServiceᐸT1ᐳ --|> IServiceᐸT1ᐳ
-	Composition ..> ServiceᐸT1ᐳ : IServiceᐸT1ᐳ GetMyServiceᐸT1ᐳ(T1 someArg)
-	ServiceᐸT1ᐳ o-- T1 : Argument "someArg"
+	PresenterᐸT1ᐳ --|> IPresenterᐸT1ᐳ
+	Composition ..> PresenterᐸT1ᐳ : IPresenterᐸT1ᐳ GetPresenterᐸT1ᐳ(T1 model)
+	PresenterᐸT1ᐳ o-- T1 : Argument "model"
 	namespace Pure.DI.UsageTests.Generics.GenericRootArgScenario {
 		class Composition {
 		<<partial>>
-		+IServiceᐸT1ᐳ GetMyServiceᐸT1ᐳ(T1 someArg)
+		+IPresenterᐸT1ᐳ GetPresenterᐸT1ᐳ(T1 model)
 		}
-		class IServiceᐸT1ᐳ {
+		class IPresenterᐸT1ᐳ {
 			<<interface>>
 		}
-		class ServiceᐸT1ᐳ {
+		class PresenterᐸT1ᐳ {
 				<<class>>
-			+Service()
-			+SetDependency(T1 dependency) : Void
+			+Presenter()
+			+Present(T1 model) : Void
 		}
 	}
 ```

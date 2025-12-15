@@ -6,20 +6,20 @@ using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Bind().As(Lifetime.PerResolve).To<Dependency>()
-    .Bind().To<Service>()
-    .Root<IService>("MyStaticRoot", kind: RootKinds.Static);
+    .Bind().As(Lifetime.PerResolve).To<FileSystem>()
+    .Bind().To<Configuration>()
+    .Root<IConfiguration>("GlobalConfiguration", kind: RootKinds.Static);
 
-var root = Composition.MyStaticRoot;
-root.ShouldBeOfType<Service>();
+var configuration = Composition.GlobalConfiguration;
+configuration.ShouldBeOfType<Configuration>();
 
-interface IDependency;
+interface IFileSystem;
 
-class Dependency : IDependency;
+class FileSystem : IFileSystem;
 
-interface IService;
+interface IConfiguration;
 
-class Service(IDependency dependency) : IService;
+class Configuration(IFileSystem fileSystem) : IConfiguration;
 ```
 
 <details>
@@ -63,12 +63,12 @@ partial class Composition
   {
   }
 
-  public static IService MyStaticRoot
+  public static IConfiguration GlobalConfiguration
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new Service(new Dependency());
+      return new Configuration(new FileSystem());
     }
   }
 }
@@ -85,28 +85,28 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Service --|> IService
-	Composition ..> Service : IService MyStaticRoot
-	Service o-- "PerResolve" Dependency : IDependency
+	FileSystem --|> IFileSystem
+	Configuration --|> IConfiguration
+	Composition ..> Configuration : IConfiguration GlobalConfiguration
+	Configuration o-- "PerResolve" FileSystem : IFileSystem
 	namespace Pure.DI.UsageTests.Basics.StaticRootScenario {
 		class Composition {
 		<<partial>>
-		+IService MyStaticRoot
+		+IConfiguration GlobalConfiguration
 		}
-		class Dependency {
+		class Configuration {
 				<<class>>
-			+Dependency()
+			+Configuration(IFileSystem fileSystem)
 		}
-		class IDependency {
+		class FileSystem {
+				<<class>>
+			+FileSystem()
+		}
+		class IConfiguration {
 			<<interface>>
 		}
-		class IService {
+		class IFileSystem {
 			<<interface>>
-		}
-		class Service {
-				<<class>>
-			+Service(IDependency dependency)
 		}
 	}
 ```

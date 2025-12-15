@@ -11,37 +11,47 @@ using Pure.DI;
 
 using var composition = new Composition();
 
+// Creates the first scope (e.g., for a web request)
 using var scope1 = composition.CreateScope();
-var service1 = scope1.ServiceProvider.GetRequiredService<IService>();
-var dependency1 = composition.GetRequiredService<IDependency>();
-service1.Dependency.ShouldBe(dependency1);
-service1.ShouldBe(scope1.ServiceProvider.GetRequiredService<IService>());
+var session1 = scope1.ServiceProvider.GetRequiredService<ISession>();
+var config1 = composition.GetRequiredService<IConfiguration>();
 
+// The session must use the global configuration
+session1.Configuration.ShouldBe(config1);
+
+// Within the same scope, the session instance must be the same
+session1.ShouldBe(scope1.ServiceProvider.GetRequiredService<ISession>());
+
+// Creates the second scope
 using var scope2 = composition.CreateScope();
-var service2 = scope2.ServiceProvider.GetRequiredService<IService>();
-var dependency2 = composition.GetRequiredService<IDependency>();
-service2.Dependency.ShouldBe(dependency2);
-service2.ShouldBe(scope2.ServiceProvider.GetRequiredService<IService>());
+var session2 = scope2.ServiceProvider.GetRequiredService<ISession>();
+var config2 = composition.GetRequiredService<IConfiguration>();
 
-service1.ShouldNotBe(service2);
-dependency1.ShouldBe(dependency2);
+session2.Configuration.ShouldBe(config2);
+session2.ShouldBe(scope2.ServiceProvider.GetRequiredService<ISession>());
 
-interface IDependency;
+// Sessions in different scopes are different instances
+session1.ShouldNotBe(session2);
 
-class Dependency : IDependency;
+// Configuration is a singleton, so it's the same instance
+config1.ShouldBe(config2);
 
-interface IService : IDisposable
+// Represents a global configuration (Singleton)
+interface IConfiguration;
+
+class Configuration : IConfiguration;
+
+// Represents a user session (Scoped)
+interface ISession : IDisposable
 {
-    IDependency Dependency { get; }
+    IConfiguration Configuration { get; }
 }
 
-class Service(IDependency dependency) : IService
+class Session(IConfiguration configuration) : ISession
 {
-    public IDependency Dependency { get; } = dependency;
+    public IConfiguration Configuration { get; } = configuration;
 
-    public void Dispose()
-    {
-    }
+    public void Dispose() {}
 }
 
 partial class Composition
@@ -60,12 +70,12 @@ partial class Composition
             // "object Resolve(Type type, object tag)" method in "GetRequiredKeyedService",
             // which implements the "IKeyedServiceProvider" interface
             .Hint(Hint.ObjectResolveByTagMethodName, "GetRequiredKeyedService")
-            .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
-            .Bind<IService>().As(Lifetime.Scoped).To<Service>()
+            .Bind<IConfiguration>().As(Lifetime.Singleton).To<Configuration>()
+            .Bind<ISession>().As(Lifetime.Scoped).To<Session>()
 
             // Composition roots
-            .Root<IDependency>()
-            .Root<IService>();
+            .Root<IConfiguration>()
+            .Root<ISession>();
 
     public IServiceProvider ServiceProvider => this;
 
@@ -119,8 +129,8 @@ partial class Composition: IDisposable
   private object[] _disposables;
   private int _disposeIndex;
 
-  private Service? _scopedService52;
-  private Dependency? _singletonDependency51;
+  private Session? _scopedSession52;
+  private Configuration? _singletonConfiguration51;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -141,49 +151,49 @@ partial class Composition: IDisposable
     _disposables = new object[1];
   }
 
-  private IDependency Root2
+  private IConfiguration Root2
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      EnsureDependencyExists();
-      return _root._singletonDependency51;
+      EnsureConfigurationExists();
+      return _root._singletonConfiguration51;
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      void EnsureDependencyExists()
+      void EnsureConfigurationExists()
       {
-        if (_root._singletonDependency51 is null)
+        if (_root._singletonConfiguration51 is null)
           lock (_lock)
-            if (_root._singletonDependency51 is null)
+            if (_root._singletonConfiguration51 is null)
             {
-              _root._singletonDependency51 = new Dependency();
+              _root._singletonConfiguration51 = new Configuration();
             }
       }
     }
   }
 
-  private IService Root1
+  private ISession Root1
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_scopedService52 is null)
+      if (_scopedSession52 is null)
         lock (_lock)
-          if (_scopedService52 is null)
+          if (_scopedSession52 is null)
           {
-            EnsureDependencyExists();
-            _scopedService52 = new Service(_root._singletonDependency51);
-            _disposables[_disposeIndex++] = _scopedService52;
+            EnsureConfigurationExists();
+            _scopedSession52 = new Session(_root._singletonConfiguration51);
+            _disposables[_disposeIndex++] = _scopedSession52;
           }
 
-      return _scopedService52;
+      return _scopedSession52;
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      void EnsureDependencyExists()
+      void EnsureConfigurationExists()
       {
-        if (_root._singletonDependency51 is null)
+        if (_root._singletonConfiguration51 is null)
           lock (_lock)
-            if (_root._singletonDependency51 is null)
+            if (_root._singletonConfiguration51 is null)
             {
-              _root._singletonDependency51 = new Dependency();
+              _root._singletonConfiguration51 = new Configuration();
             }
       }
     }
@@ -259,8 +269,8 @@ partial class Composition: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _scopedService52 = null;
-      _singletonDependency51 = null;
+      _scopedSession52 = null;
+      _singletonConfiguration51 = null;
     }
 
     while (disposeIndex-- > 0)
@@ -289,16 +299,16 @@ partial class Composition: IDisposable
   static Composition()
   {
     var valResolver_0000 = new Resolver_0000();
-    Resolver<IDependency>.Value = valResolver_0000;
+    Resolver<IConfiguration>.Value = valResolver_0000;
     var valResolver_0001 = new Resolver_0001();
-    Resolver<IService>.Value = valResolver_0001;
+    Resolver<ISession>.Value = valResolver_0001;
     _buckets = Buckets<IResolver<Composition, object>>.Create(
       4,
       out _bucketSize,
       new Pair<IResolver<Composition, object>>[2]
       {
-         new Pair<IResolver<Composition, object>>(typeof(IDependency), valResolver_0000)
-        ,new Pair<IResolver<Composition, object>>(typeof(IService), valResolver_0001)
+         new Pair<IResolver<Composition, object>>(typeof(IConfiguration), valResolver_0000)
+        ,new Pair<IResolver<Composition, object>>(typeof(ISession), valResolver_0001)
       });
   }
 
@@ -320,14 +330,14 @@ partial class Composition: IDisposable
     }
   }
 
-  private sealed class Resolver_0000: Resolver<IDependency>
+  private sealed class Resolver_0000: Resolver<IConfiguration>
   {
-    public override IDependency Resolve(Composition composition)
+    public override IConfiguration Resolve(Composition composition)
     {
       return composition.Root2;
     }
 
-    public override IDependency ResolveByTag(Composition composition, object tag)
+    public override IConfiguration ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
@@ -340,14 +350,14 @@ partial class Composition: IDisposable
     }
   }
 
-  private sealed class Resolver_0001: Resolver<IService>
+  private sealed class Resolver_0001: Resolver<ISession>
   {
-    public override IService Resolve(Composition composition)
+    public override ISession Resolve(Composition composition)
     {
       return composition.Root1;
     }
 
-    public override IService ResolveByTag(Composition composition, object tag)
+    public override ISession ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
@@ -374,34 +384,34 @@ Class diagram:
 ---
 classDiagram
 	Composition --|> IDisposable
-	Dependency --|> IDependency
-	Service --|> IService
-	Composition ..> Service : IService _
-	Composition ..> Dependency : IDependency _
-	Service o-- "Singleton" Dependency : IDependency
+	Configuration --|> IConfiguration
+	Session --|> ISession
+	Composition ..> Session : ISession _
+	Composition ..> Configuration : IConfiguration _
+	Session o-- "Singleton" Configuration : IConfiguration
 	namespace Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario {
 		class Composition {
 		<<partial>>
-		-IDependency _
-		-IService _
+		-IConfiguration _
+		-ISession _
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
 		+ object GetService(Type type)
 		+ object GetRequiredKeyedService(Type type, object? tag)
 		}
-		class Dependency {
+		class Configuration {
 				<<class>>
-			+Dependency()
+			+Configuration()
 		}
-		class IDependency {
+		class IConfiguration {
 			<<interface>>
 		}
-		class IService {
+		class ISession {
 			<<interface>>
 		}
-		class Service {
+		class Session {
 				<<class>>
-			+Service(IDependency dependency)
+			+Session(IConfiguration configuration)
 		}
 	}
 	namespace System {

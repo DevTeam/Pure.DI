@@ -2,36 +2,52 @@
 
 
 ```c#
+using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .RootArg<MyData<TT>>("complexArg")
-    .Bind<IService<TT2>>().To<Service<TT2>>()
+    // Defines a generic root argument 'config' of type SourceConfig<T>.
+    // This allows passing specific configuration when resolving ISource<T>.
+    .RootArg<SourceConfig<TT>>("config")
+    .Bind<ISource<TT2>>().To<Source<TT2>>()
 
-    // Composition root
-    .Root<IService<TT3>>("GetMyService");
+    // Composition root that creates a source for a specific type.
+    // The 'GetSource' method will accept 'SourceConfig<T>' as an argument.
+    .Root<ISource<TT3>>("GetSource");
 
 var composition = new Composition();
-IService<int> service = composition.GetMyService<int>(
-    new MyData<int>(33, "Just contains an integer value 33"));
 
-record MyData<T>(T Value, string Description);
+// Resolve a source for 'int', passing specific configuration
+var source = composition.GetSource<int>(
+    new SourceConfig<int>(33, "IntSource"));
 
-interface IService<out T>
+source.Value.ShouldBe(33);
+source.Name.ShouldBe("IntSource");
+
+// Represents configuration for a data source, including a default value
+record SourceConfig<T>(T DefaultValue, string SourceName);
+
+interface ISource<out T>
 {
-    T? Val { get; }
+    T? Value { get; }
+    string Name { get; }
 }
 
-class Service<T> : IService<T>
+class Source<T> : ISource<T>
 {
-    // The Dependency attribute specifies to perform an injection,
-    // the integer value in the argument specifies
-    // the ordinal of injection
+    // The Dependency attribute specifies to perform an injection.
+    // We use method injection to initialize the source with configuration
+    // passed from the composition root.
     [Dependency]
-    public void SetDependency(MyData<T> data) =>
-        Val = data.Value;
+    public void Initialize(SourceConfig<T> config)
+    {
+        Value = config.DefaultValue;
+        Name = config.SourceName;
+    }
 
-    public T? Val { get; private set; }
+    public T? Value { get; private set; }
+
+    public string Name { get; private set; } = "";
 }
 ```
 
@@ -46,10 +62,12 @@ dotnet --list-sdk
 ```bash
 dotnet new console -n Sample
 ```
-- Add reference to NuGet package
+- Add references to NuGet packages
   - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 ```bash
 dotnet add package Pure.DI
+dotnet add package Shouldly
 ```
 - Copy the example code into the _Program.cs_ file
 
@@ -87,12 +105,12 @@ partial class Composition
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public IService<T> GetMyService<T>(MyData<T> complexArg)
+  public ISource<T> GetSource<T>(SourceConfig<T> config)
   {
-    if (complexArg is null) throw new ArgumentNullException(nameof(complexArg));
-    var transientService = new Service<T>();
-    transientService.SetDependency(complexArg);
-    return transientService;
+    if (config is null) throw new ArgumentNullException(nameof(config));
+    var transientSource = new Source<T>();
+    transientSource.Initialize(config);
+    return transientSource;
   }
 }
 ```
@@ -108,24 +126,24 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	ServiceᐸTᐳ --|> IServiceᐸTᐳ
-	Composition ..> ServiceᐸTᐳ : IServiceᐸTᐳ GetMyServiceᐸTᐳ(Pure.DI.UsageTests.Generics.ComplexGenericRootArgScenario.MyData<T> complexArg)
-	ServiceᐸTᐳ o-- MyDataᐸTᐳ : Argument "complexArg"
+	SourceᐸTᐳ --|> ISourceᐸTᐳ
+	Composition ..> SourceᐸTᐳ : ISourceᐸTᐳ GetSourceᐸTᐳ(Pure.DI.UsageTests.Generics.ComplexGenericRootArgScenario.SourceConfig<T> config)
+	SourceᐸTᐳ o-- SourceConfigᐸTᐳ : Argument "config"
 	namespace Pure.DI.UsageTests.Generics.ComplexGenericRootArgScenario {
 		class Composition {
 		<<partial>>
-		+IServiceᐸTᐳ GetMyServiceᐸTᐳ(Pure.DI.UsageTests.Generics.ComplexGenericRootArgScenario.MyData<T> complexArg)
+		+ISourceᐸTᐳ GetSourceᐸTᐳ(Pure.DI.UsageTests.Generics.ComplexGenericRootArgScenario.SourceConfig<T> config)
 		}
-		class IServiceᐸTᐳ {
+		class ISourceᐸTᐳ {
 			<<interface>>
 		}
-		class MyDataᐸTᐳ {
+		class SourceConfigᐸTᐳ {
 				<<record>>
 		}
-		class ServiceᐸTᐳ {
+		class SourceᐸTᐳ {
 				<<class>>
-			+Service()
-			+SetDependency(MyDataᐸTᐳ data) : Void
+			+Source()
+			+Initialize(SourceConfigᐸTᐳ config) : Void
 		}
 	}
 ```

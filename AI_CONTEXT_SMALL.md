@@ -11,17 +11,17 @@ using Pure.DI;
 
 // Specifies to create a partial class with name "Composition"
 DI.Setup("Composition")
-    // with the root "MyService"
-    .Root<Service>("MyService");
+    // with the root "Orders"
+    .Root<OrderService>("Orders");
 
 var composition = new Composition();
 
-// service = new Service(new Dependency())
-var service = composition.MyService;
+// service = new OrderService(new Database())
+var orders = composition.Orders;
 
-class Dependency;
+class Database;
 
-class Service(Dependency dependency);
+class OrderService(Database database);
 ```
 
 To run the above code, the following NuGet package must be added:
@@ -40,40 +40,49 @@ This example demonstrates the recommended approach of using abstractions instead
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    // Binding abstractions to their implementations
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>()
+    // Binding abstractions to their implementations:
+    // The interface IGpsSensor is bound to the implementation GpsSensor
+    .Bind<IGpsSensor>().To<GpsSensor>()
+    // The interface INavigationSystem is bound to the implementation NavigationSystem
+    .Bind<INavigationSystem>().To<NavigationSystem>()
 
     // Specifies to create a composition root
-    // of type "Program" with the name "Root"
-    .Root<Program>("Root");
+    // of type "VehicleComputer" with the name "VehicleComputer"
+    .Root<VehicleComputer>("VehicleComputer");
 
 var composition = new Composition();
 
-// var root = new Program(new Service(new Dependency()));
-var root = composition.Root;
+// Usage:
+// var vehicleComputer = new VehicleComputer(new NavigationSystem(new GpsSensor()));
+var vehicleComputer = composition.VehicleComputer;
 
-root.Run();
+vehicleComputer.StartTrip();
 
-interface IDependency;
+// The sensor abstraction
+interface IGpsSensor;
 
-class Dependency : IDependency;
+// The sensor implementation
+class GpsSensor : IGpsSensor;
 
-interface IService
+// The service abstraction
+interface INavigationSystem
 {
-    void DoSomething();
+    void Navigate();
 }
 
-class Service(IDependency dependency) : IService
+// The service implementation
+class NavigationSystem(IGpsSensor sensor) : INavigationSystem
 {
-    public void DoSomething()
+    public void Navigate()
     {
+        // Navigation logic using the sensor...
     }
 }
 
-partial class Program(IService service)
+// The consumer of the abstraction
+partial class VehicleComputer(INavigationSystem navigationSystem)
 {
-    public void Run() => service.DoSomething();
+    public void StartTrip() => navigationSystem.Navigate();
 }
 ```
 
@@ -97,53 +106,63 @@ If you use classic DI containers, the composition is resolved dynamically every 
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Bind<IService>().To<Service>()
-    .Bind<IService>("Other").To<OtherService>()
-    .Bind<IDependency>().To<Dependency>()
+    .Bind<IInvoiceGenerator>().To<PdfInvoiceGenerator>()
+    .Bind<IInvoiceGenerator>("Online").To<HtmlInvoiceGenerator>()
+    .Bind<ILogger>().To<FileLogger>()
 
     // Specifies to create a regular composition root
-    // of type "IService" with the name "MyService"
-    .Root<IService>("MyService")
+    // of type "IInvoiceGenerator" with the name "InvoiceGenerator".
+    // This will be the main entry point for invoice generation.
+    .Root<IInvoiceGenerator>("InvoiceGenerator")
 
     // Specifies to create an anonymous composition root
-    // that is only accessible from "Resolve()" methods
-    .Root<IDependency>()
+    // that is only accessible from "Resolve()" methods.
+    // This is useful for auxiliary types or testing.
+    .Root<ILogger>()
 
     // Specifies to create a regular composition root
-    // of type "IService" with the name "MyOtherService"
-    // using the "Other" tag
-    .Root<IService>("MyOtherService", "Other");
+    // of type "IInvoiceGenerator" with the name "OnlineInvoiceGenerator"
+    // using the "Online" tag to differentiate implementations.
+    .Root<IInvoiceGenerator>("OnlineInvoiceGenerator", "Online");
 
 var composition = new Composition();
 
-// service = new Service(new Dependency());
-var service = composition.MyService;
+// Resolves the default invoice generator (PDF) with all its dependencies
+// invoiceGenerator = new PdfInvoiceGenerator(new FileLogger());
+var invoiceGenerator = composition.InvoiceGenerator;
 
-// someOtherService = new OtherService();
-var someOtherService = composition.MyOtherService;
+// Resolves the online invoice generator (HTML)
+// onlineInvoiceGenerator = new HtmlInvoiceGenerator();
+var onlineInvoiceGenerator = composition.OnlineInvoiceGenerator;
 
 // All and only the roots of the composition
-// can be obtained by Resolve method
-var dependency = composition.Resolve<IDependency>();
-        
-// including tagged ones
-var tagged = composition.Resolve<IService>("Other");
+// can be obtained by Resolve method.
+// Here we resolve the private root 'ILogger'.
+var logger = composition.Resolve<ILogger>();
 
-interface IDependency;
+// We can also resolve tagged roots dynamically if needed
+var tagged = composition.Resolve<IInvoiceGenerator>("Online");
 
-class Dependency : IDependency;
+// Common logger interface used across the system
+interface ILogger;
 
-interface IService;
+// Concrete implementation of a logger that writes to a file
+class FileLogger : ILogger;
 
-class Service(IDependency dependency) : IService;
+// Abstract definition of an invoice generator
+interface IInvoiceGenerator;
 
-class OtherService : IService;
+// Implementation for generating PDF invoices, dependent on ILogger
+class PdfInvoiceGenerator(ILogger logger) : IInvoiceGenerator;
+
+// Implementation for generating HTML invoices for online viewing
+class HtmlInvoiceGenerator : IInvoiceGenerator;
 ```
 
 To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
 
-The name of the composition root is arbitrarily chosen depending on its purpose, but should be restricted by the property naming conventions in C# since it is the same name as a property in the composition class. In reality, the _Root_ property has the form:
+The name of the composition root is arbitrarily chosen depending on its purpose but should be restricted by the property naming conventions in C# since it is the same name as a property in the composition class. In reality, the _Root_ property has the form:
 ```c#
 public IService Root
 {
@@ -170,40 +189,40 @@ This example shows how to resolve the roots of a composition using `Resolve` met
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>()
-    .Bind<IService>("My Tag").To<OtherService>()
+    .Bind<IDevice>().To<Device>()
+    .Bind<ISensor>().To<TemperatureSensor>()
+    .Bind<ISensor>("Humidity").To<HumiditySensor>()
 
     // Specifies to create a private root
     // that is only accessible from _Resolve_ methods
-    .Root<IService>()
+    .Root<ISensor>()
 
-    // Specifies to create a public root named _OtherService_
-    // using the "My Tag" tag
-    .Root<IService>("OtherService", "My Tag");
+    // Specifies to create a public root named _HumiditySensor_
+    // using the "Humidity" tag
+    .Root<ISensor>("HumiditySensor", "Humidity");
 
 var composition = new Composition();
 
 // The next 3 lines of code do the same thing:
-var service1 = composition.Resolve<IService>();
-var service2 = composition.Resolve(typeof(IService));
-var service3 = composition.Resolve(typeof(IService), null);
+var sensor1 = composition.Resolve<ISensor>();
+var sensor2 = composition.Resolve(typeof(ISensor));
+var sensor3 = composition.Resolve(typeof(ISensor), null);
 
-// Resolve by "My Tag" tag
+// Resolve by "Humidity" tag
 // The next 3 lines of code do the same thing too:
-var otherService1 = composition.Resolve<IService>("My Tag");
-var otherService2 = composition.Resolve(typeof(IService), "My Tag");
-var otherService3 = composition.OtherService; // Gets the composition through the public root
+var humiditySensor1 = composition.Resolve<ISensor>("Humidity");
+var humiditySensor2 = composition.Resolve(typeof(ISensor), "Humidity");
+var humiditySensor3 = composition.HumiditySensor; // Gets the composition through the public root
 
-interface IDependency;
+interface IDevice;
 
-class Dependency : IDependency;
+class Device : IDevice;
 
-interface IService;
+interface ISensor;
 
-class Service(IDependency dependency) : IService;
+class TemperatureSensor(IDevice device) : ISensor;
 
-class OtherService : IService;
+class HumiditySensor : ISensor;
 ```
 
 To run the above code, the following NuGet package must be added:
@@ -228,48 +247,48 @@ DI.Setup(nameof(Composition))
     // and if the implementation is not an abstract class or structure,
     // for all abstract but NOT special types that are directly implemented.
     // So that's the equivalent of the following:
-    // .Bind<IDependency, IOtherDependency, Dependency>()
+    // .Bind<IOrderRepository, IOrderNotification, OrderManager>()
     //   .As(Lifetime.PerBlock)
-    //   .To<Dependency>()
-    .Bind().As(Lifetime.PerBlock).To<Dependency>()
-    .Bind().To<Service>()
+    //   .To<OrderManager>()
+    .Bind().As(Lifetime.PerBlock).To<OrderManager>()
+    .Bind().To<Shop>()
 
-    // Specifies to create a property "MyService"
-    .Root<IService>("MyService");
+    // Specifies to create a property "MyShop"
+    .Root<IShop>("MyShop");
 
 var composition = new Composition();
-var service = composition.MyService;
+var shop = composition.MyShop;
 
-interface IDependencyBase;
+interface IManager;
 
-class DependencyBase : IDependencyBase;
+class ManagerBase : IManager;
 
-interface IDependency;
+interface IOrderRepository;
 
-interface IOtherDependency;
+interface IOrderNotification;
 
-class Dependency :
-    DependencyBase,
-    IDependency,
-    IOtherDependency,
+class OrderManager :
+    ManagerBase,
+    IOrderRepository,
+    IOrderNotification,
     IDisposable,
     IEnumerable<string>
 {
-    public void Dispose() { }
+    public void Dispose() {}
 
     public IEnumerator<string> GetEnumerator() =>
-        new List<string> { "abc" }.GetEnumerator();
+        new List<string> { "Order #1", "Order #2" }.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
 
-interface IService;
+interface IShop;
 
-class Service(
-    Dependency dependencyImpl,
-    IDependency dependency,
-    IOtherDependency otherDependency)
-    : IService;
+class Shop(
+    OrderManager manager,
+    IOrderRepository repository,
+    IOrderNotification notification)
+    : IShop;
 ```
 
 To run the above code, the following NuGet package must be added:
@@ -300,17 +319,17 @@ Special types will not be added to bindings:
 - `System.IAsyncResult`
 - `System.AsyncCallback`
 
-For class `Dependency`, the `Bind().To<Dependency>()` binding will be equivalent to the `Bind<IDependency, IOtherDependency, Dependency>().To<Dependency>()` binding. The types `IDisposable`, `IEnumerable<string>` did not get into the binding because they are special from the list above. `DependencyBase` did not get into the binding because it is not abstract. `IDependencyBase` is not included because it is not implemented directly by class `Dependency`.
+For class `OrderManager`, the `Bind().To<OrderManager>()` binding will be equivalent to the `Bind<IOrderRepository, IOrderNotification, OrderManager>().To<OrderManager>()` binding. The types `IDisposable`, `IEnumerable<string>` did not get into the binding because they are special from the list above. `ManagerBase` did not get into the binding because it is not abstract. `IManager` is not included because it is not implemented directly by class `OrderManager`.
 
-|   |                       |                                                 |
-|---|-----------------------|-------------------------------------------------|
-| ✅ | `Dependency`          | implementation type itself                      |
-| ✅ | `IDependency`         | directly implements                             |
-| ✅ | `IOtherDependency`    | directly implements                             |
-| ❌ | `IDisposable`         | special type                                    |
-| ❌ | `IEnumerable<string>` | special type                                    |
-| ❌ | `DependencyBase`      | non-abstract                                    |
-| ❌ | `IDependencyBase`     | is not directly implemented by class Dependency |
+|    |                       |                                                   |
+|----|-----------------------|---------------------------------------------------|
+| ✅ | `OrderManager`        | implementation type itself                        |
+| ✅ | `IOrderRepository`    | directly implements                               |
+| ✅ | `IOrderNotification`  | directly implements                               |
+| ❌ | `IDisposable`         | special type                                      |
+| ❌ | `IEnumerable<string>` | special type                                      |
+| ❌ | `ManagerBase`         | non-abstract                                      |
+| ❌ | `IManager`            | is not directly implemented by class OrderManager |
 
 ## Factory
 
@@ -321,42 +340,43 @@ using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Bind<IDependency>().To<IDependency>(ctx =>
-    {
-        // Some logic for creating an instance
-        ctx.Inject(out Dependency dependency);
-        dependency.Initialize();
-        return dependency;
+    .Bind<IDatabaseService>().To<DatabaseService>(ctx => {
+        // Some logic for creating an instance.
+        // For example, we need to manually initialize the connection.
+        ctx.Inject(out DatabaseService service);
+        service.Connect();
+        return service;
     })
-    .Bind<IService>().To<Service>()
+    .Bind<IUserRegistry>().To<UserRegistry>()
 
     // Composition root
-    .Root<IService>("MyService");
+    .Root<IUserRegistry>("Registry");
 
 var composition = new Composition();
-var service = composition.MyService;
-service.Dependency.IsInitialized.ShouldBeTrue();
+var registry = composition.Registry;
+registry.Database.IsConnected.ShouldBeTrue();
 
-interface IDependency
+interface IDatabaseService
 {
-    bool IsInitialized { get; }
+    bool IsConnected { get; }
 }
 
-class Dependency : IDependency
+class DatabaseService : IDatabaseService
 {
-    public bool IsInitialized { get; private set; }
+    public bool IsConnected { get; private set; }
 
-    public void Initialize() => IsInitialized = true;
+    // Simulates a connection establishment that must be called explicitly
+    public void Connect() => IsConnected = true;
 }
 
-interface IService
+interface IUserRegistry
 {
-    IDependency Dependency { get; }
+    IDatabaseService Database { get; }
 }
 
-class Service(IDependency dependency) : IService
+class UserRegistry(IDatabaseService database) : IUserRegistry
 {
-    public IDependency Dependency { get; } = dependency;
+    public IDatabaseService Database { get; } = database;
 }
 ```
 
@@ -381,54 +401,53 @@ using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Bind("now").To(_ => DateTimeOffset.Now)
-    // Injects Dependency and DateTimeOffset instances
+    .Bind("today").To(_ => DateTime.Today)
+    // Injects FileLogger and DateTime instances
     // and performs further initialization logic
-    // defined in the lambda function
-    .Bind<IDependency>().To((
-        Dependency dependency,
-        [Tag("now")] DateTimeOffset time) =>
-    {
-        dependency.Initialize(time);
-        return dependency;
+    // defined in the lambda function to set up the log file name
+    .Bind<IFileLogger>().To((
+        FileLogger logger,
+        [Tag("today")] DateTime date) => {
+        logger.Init($"app-{date:yyyy-MM-dd}.log");
+        return logger;
     })
-    .Bind().To<Service>()
+    .Bind().To<OrderProcessingService>()
 
     // Composition root
-    .Root<IService>("MyService");
+    .Root<IOrderProcessingService>("OrderService");
 
 var composition = new Composition();
-var service = composition.MyService;
-service.Dependency.IsInitialized.ShouldBeTrue();
+var service = composition.OrderService;
 
-interface IDependency
+service.Logger.FileName.ShouldBe($"app-{DateTime.Today:yyyy-MM-dd}.log");
+
+interface IFileLogger
 {
-    DateTimeOffset Time { get; }
+    string FileName { get; }
 
-    bool IsInitialized { get; }
+    void Log(string message);
 }
 
-class Dependency : IDependency
+class FileLogger : IFileLogger
 {
-    public DateTimeOffset Time { get; private set; }
+    public string FileName { get; private set; } = "";
 
-    public bool IsInitialized { get; private set; }
+    public void Init(string fileName) => FileName = fileName;
 
-    public void Initialize(DateTimeOffset time)
+    public void Log(string message)
     {
-        Time = time;
-        IsInitialized = true;
+        // Write to file
     }
 }
 
-interface IService
+interface IOrderProcessingService
 {
-    IDependency Dependency { get; }
+    IFileLogger Logger { get; }
 }
 
-class Service(IDependency dependency) : IService
+class OrderProcessingService(IFileLogger logger) : IOrderProcessingService
 {
-    public IDependency Dependency { get; } = dependency;
+    public IFileLogger Logger { get; } = logger;
 }
 ```
 
@@ -436,11 +455,11 @@ To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
-The example creates a `service` that depends on a `dependency` initialized with a specific timestamp. The `Tag` attribute allows specifying named dependencies for more complex scenarios.
+The example creates a `service` that depends on a `logger` initialized with a specific file name based on the current date. The `Tag` attribute allows specifying named dependencies for more complex scenarios.
 
 ## Injection on demand
 
-This example demonstrates using dependency injection with Pure.DI to dynamically create dependencies as needed via a factory function. The code defines a service (`Service`) that requires multiple instances of a dependency (`Dependency`). Instead of injecting pre-created instances, the service receives a `Func<IDependency>` factory delegate, allowing it to generate dependencies on demand.
+This example demonstrates using dependency injection with Pure.DI to dynamically create dependencies as needed via a factory function. The code defines a service (`GameLevel`) that requires multiple instances of a dependency (`Enemy`). Instead of injecting pre-created instances, the service receives a `Func<IEnemy>` factory delegate, allowing it to generate entities on demand.
 
 ```c#
 using Shouldly;
@@ -448,31 +467,37 @@ using Pure.DI;
 using System.Collections.Generic;
 
 DI.Setup(nameof(Composition))
-    .Bind().To<Dependency>()
-    .Bind().To<Service>()
+    .Bind().To<Enemy>()
+    .Bind().To<GameLevel>()
 
     // Composition root
-    .Root<IService>("Root");
+    .Root<IGameLevel>("GameLevel");
 
 var composition = new Composition();
-var service = composition.Root;
-service.Dependencies.Count.ShouldBe(2);
+var gameLevel = composition.GameLevel;
 
-interface IDependency;
+// Verifies that two distinct enemies have been spawned
+gameLevel.Enemies.Count.ShouldBe(2);
 
-class Dependency : IDependency;
+// Represents a game entity that acts as an enemy
+interface IEnemy;
 
-interface IService
+class Enemy : IEnemy;
+
+// Represents a game level that manages entities
+interface IGameLevel
 {
-    IReadOnlyList<IDependency> Dependencies { get; }
+    IReadOnlyList<IEnemy> Enemies { get; }
 }
 
-class Service(Func<IDependency> dependencyFactory): IService
+class GameLevel(Func<IEnemy> enemySpawner) : IGameLevel
 {
-    public IReadOnlyList<IDependency> Dependencies { get; } =
+    // The factory acts as a "spawner" to create new enemy instances on demand.
+    // Calling 'enemySpawner()' creates a fresh instance of Enemy each time.
+    public IReadOnlyList<IEnemy> Enemies { get; } =
     [
-        dependencyFactory(),
-        dependencyFactory()
+        enemySpawner(),
+        enemySpawner()
     ];
 }
 ```
@@ -482,11 +507,11 @@ To run the above code, the following NuGet packages must be added:
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 Key elements:
-- `Dependency` is bound to the `IDependency` interface, and `Service` is bound to `IService`.
-- The `Service` constructor accepts `Func<IDependency>`, enabling deferred creation of dependencies.
-- The `Service` calls the factory twice, resulting in two distinct `Dependency` instances stored in its `Dependencies` collection.
+- `Enemy` is bound to the `IEnemy` interface, and `GameLevel` is bound to `IGameLevel`.
+- The `GameLevel` constructor accepts `Func<IEnemy>`, enabling deferred creation of entities.
+- The `GameLevel` calls the factory twice, resulting in two distinct `Enemy` instances stored in its `Enemies` collection.
 
-This approach showcases how factories can control dependency lifetime and instance creation timing in a DI container. The Pure.DI configuration ensures the factory resolves new `IDependency` instances each time it's invoked, achieving "injections as required" functionality.
+This approach showcases how factories can control dependency lifetime and instance creation timing in a DI container. The Pure.DI configuration ensures the factory resolves new `IEnemy` instances each time it's invoked, achieving "injections as required" functionality.
 
 ## Injections on demand with arguments
 
@@ -498,40 +523,44 @@ using Pure.DI;
 using System.Collections.Generic;
 
 DI.Setup(nameof(Composition))
-    .Bind().To<Dependency>()
-    .Bind().To<Service>()
+    .Bind().To<Sensor>()
+    .Bind().To<SmartHome>()
 
     // Composition root
-    .Root<IService>("Root");
+    .Root<ISmartHome>("SmartHome");
 
 var composition = new Composition();
-var service = composition.Root;
-var dependencies = service.Dependencies;
-dependencies.Count.ShouldBe(2);
-dependencies[0].Id.ShouldBe(33);
-dependencies[1].Id.ShouldBe(99);
+var smartHome = composition.SmartHome;
+var sensors = smartHome.Sensors;
 
-interface IDependency
+sensors.Count.ShouldBe(2);
+sensors[0].Id.ShouldBe(101);
+sensors[1].Id.ShouldBe(102);
+
+interface ISensor
 {
     int Id { get; }
 }
 
-class Dependency(int id) : IDependency
+class Sensor(int id) : ISensor
 {
     public int Id { get; } = id;
 }
 
-interface IService
+interface ISmartHome
 {
-    IReadOnlyList<IDependency> Dependencies { get; }
+    IReadOnlyList<ISensor> Sensors { get; }
 }
 
-class Service(Func<int, IDependency> dependencyFactoryWithArgs): IService
+class SmartHome(Func<int, ISensor> sensorFactory) : ISmartHome
 {
-    public IReadOnlyList<IDependency> Dependencies { get; } =
+    public IReadOnlyList<ISensor> Sensors { get; } =
     [
-        dependencyFactoryWithArgs(33),
-        dependencyFactoryWithArgs(99)
+        // Use the injected factory to create a sensor with ID 101 (e.g., Kitchen Temperature)
+        sensorFactory(101),
+
+        // Create another sensor with ID 102 (e.g., Living Room Humidity)
+        sensorFactory(102)
     ];
 }
 ```
@@ -539,11 +568,6 @@ class Service(Func<int, IDependency> dependencyFactoryWithArgs): IService
 To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
-
-Key components:
-- `Dependency` class accepts an int id constructor argument, stored in its `Id` property.
-- `Service` receives `Func<int, IDependency>` delegate, enabling creation of dependencies with dynamic values.
-- `Service` creates two dependencies using the factory – one with ID `33`, another with ID `99`.
 
 Delayed dependency instantiation:
 - Injection of dependencies requiring runtime parameters
@@ -560,35 +584,39 @@ using Pure.DI;
 using static Pure.DI.Lifetime;
 
 DI.Setup(nameof(Composition))
-    .Bind().As(Transient).To<Dependency>()
-    .Bind().To<Service>()
-    .Root<IService>("Root");
+    .Bind().As(Transient).To<Buffer>()
+    .Bind().To<BatchProcessor>()
+    .Root<IBatchProcessor>("Processor");
 
 var composition = new Composition();
-var service1 = composition.Root;
-var service2 = composition.Root;
-service1.Dependency1.ShouldNotBe(service1.Dependency2);
-service2.Dependency1.ShouldNotBe(service1.Dependency1);
+var processor = composition.Processor;
 
-interface IDependency;
+// Verify that input and output buffers are different instances.
+// This is critical for the batch processor to avoid data corruption
+// during reading. The Transient lifetime ensures a new instance
+// is created for each dependency injection.
+processor.Input.ShouldNotBe(processor.Output);
 
-class Dependency : IDependency;
+// Represents a memory buffer that should be unique for each operation
+interface IBuffer;
 
-interface IService
+class Buffer : IBuffer;
+
+interface IBatchProcessor
 {
-    public IDependency Dependency1 { get; }
+    public IBuffer Input { get; }
 
-    public IDependency Dependency2 { get; }
+    public IBuffer Output { get; }
 }
 
-class Service(
-    IDependency dependency1,
-    IDependency dependency2)
-    : IService
+class BatchProcessor(
+    IBuffer input,
+    IBuffer output)
+    : IBatchProcessor
 {
-    public IDependency Dependency1 { get; } = dependency1;
+    public IBuffer Input { get; } = input;
 
-    public IDependency Dependency2 { get; } = dependency2;
+    public IBuffer Output { get; } = output;
 }
 ```
 
@@ -614,38 +642,69 @@ The _Singleton_ lifetime ensures that there will be a single instance of the dep
 ```c#
 using Shouldly;
 using Pure.DI;
+using System.Diagnostics.CodeAnalysis;
 using static Pure.DI.Lifetime;
 
 DI.Setup(nameof(Composition))
-    .Bind().As(Singleton).To<Dependency>()
-    .Bind().To<Service>()
-    .Root<IService>("Root");
+    // Bind the cache as Singleton to share it across all services
+    .Bind().As(Singleton).To<Cache>()
+    // Bind the order service as Transient (default) for per-request instances
+    .Bind().To<OrderService>()
+    .Root<IOrderService>("OrderService");
 
 var composition = new Composition();
-var service1 = composition.Root;
-var service2 = composition.Root;
-service1.Dependency1.ShouldBe(service1.Dependency2);
-service2.Dependency1.ShouldBe(service1.Dependency1);
+var orderService1 = composition.OrderService; // First order service instance
+var orderService2 = composition.OrderService; // Second order service instance
 
-interface IDependency;
+// Verify that both services share the same cache instance (Singleton behavior)
+orderService1.Cache.ShouldBe(orderService2.Cache);
+// Simulate real-world usage: add data to cache via one service and check via another
+orderService1.AddToCache("Order123", "Processed");
+orderService2.GetFromCache("Order123").ShouldBe("Processed");
 
-class Dependency : IDependency;
-
-interface IService
+// Interface for a shared cache (e.g., for storing order statuses)
+interface ICache
 {
-    public IDependency Dependency1 { get; }
+    void Add(string key, string value);
 
-    public IDependency Dependency2 { get; }
+    bool TryGet(string key, [MaybeNullWhen(false)] out string value);
 }
 
-class Service(
-    IDependency dependency1,
-    IDependency dependency2)
-    : IService
+// Implementation of a simple in-memory cache (must be thread-safe in real apps)
+class Cache : ICache
 {
-    public IDependency Dependency1 { get; } = dependency1;
+    private readonly Dictionary<string, string> _data = new();
 
-    public IDependency Dependency2 { get; } = dependency2;
+    public void Add(string key, string value) =>
+        _data[key] = value;
+
+    public bool TryGet(string key, [MaybeNullWhen(false)] out string value) =>
+        _data.TryGetValue(key, out value);
+}
+
+// Interface for order processing service
+interface IOrderService
+{
+    ICache Cache { get; }
+
+    void AddToCache(string orderId, string status);
+
+    string GetFromCache(string orderId);
+}
+
+// Order service that uses the shared cache
+class OrderService(ICache cache) : IOrderService
+{
+    // The cache is injected and shared (Singleton)
+    public ICache Cache { get; } = cache;
+
+    // Real-world method: add order status to cache
+    public void AddToCache(string orderId, string status) =>
+        Cache.Add(orderId, status);
+
+    // Real-world method: retrieve order status from cache
+    public string GetFromCache(string orderId) =>
+        Cache.TryGet(orderId, out var status) ? status : "unknown";
 }
 ```
 
@@ -677,38 +736,65 @@ using Pure.DI;
 using static Pure.DI.Lifetime;
 
 DI.Setup(nameof(Composition))
-    .Bind().As(PerResolve).To<Dependency>()
-    .Bind().As(Singleton).To<(IDependency dep3, IDependency dep4)>()
+    // PerResolve = one "planning session" per root access.
+    // Imagine: each time you ask for a plan, you get a fresh context.
+    .Bind().As(PerResolve).To<RoutePlanningSession>()
+
+    // Singleton = created once per Composition instance.
+    // Here it intentionally captures session when it's created the first time
+    // (this is a realistic pitfall: singleton accidentally holds request-scoped state).
+    .Bind().As(Singleton).To<(IRoutePlanningSession s3, IRoutePlanningSession s4)>()
 
     // Composition root
-    .Root<Service>("Root");
+    .Root<TrainTripPlanner>("Planner");
 
 var composition = new Composition();
 
-var service1 = composition.Root;
-service1.Dep1.ShouldBe(service1.Dep2);
-service1.Dep3.ShouldBe(service1.Dep4);
-service1.Dep1.ShouldBe(service1.Dep3);
+// First "user request": plan a trip now
+var plan1 = composition.Planner;
 
-var service2 = composition.Root;
-service2.Dep1.ShouldNotBe(service1.Dep1);
+// In the same request, PerResolve dependencies are the same instance:
+plan1.SessionForOutbound.ShouldBe(plan1.SessionForReturn);
 
-interface IDependency;
+// Tuple is Singleton, so both entries are the same captured instance:
+plan1.CapturedSessionA.ShouldBe(plan1.CapturedSessionB);
 
-class Dependency : IDependency;
+// Because the singleton tuple was created during the first request,
+// it captured THAT request's PerResolve session:
+plan1.SessionForOutbound.ShouldBe(plan1.CapturedSessionA);
 
-class Service(
-    IDependency dep1,
-    IDependency dep2,
-    (IDependency dep3, IDependency dep4) deps)
+// Second "user request": plan another trip (new root access)
+var plan2 = composition.Planner;
+
+// New request => new PerResolve session:
+plan2.SessionForOutbound.ShouldNotBe(plan1.SessionForOutbound);
+
+// But the singleton still holds the old captured session from the first request:
+plan2.CapturedSessionA.ShouldBe(plan1.CapturedSessionA);
+plan2.SessionForOutbound.ShouldNotBe(plan2.CapturedSessionA);
+
+// A request-scoped context: e.g., contains "now", locale, pricing rules version,
+// feature flags, etc. You typically want a new one per route planning request.
+interface IRoutePlanningSession;
+
+class RoutePlanningSession : IRoutePlanningSession;
+
+// A service that plans a train trip.
+// It asks for two session instances to demonstrate PerResolve:
+// both should be the same within a single request.
+class TrainTripPlanner(
+    IRoutePlanningSession sessionForOutbound,
+    IRoutePlanningSession sessionForReturn,
+    (IRoutePlanningSession capturedA, IRoutePlanningSession capturedB) capturedSessions)
 {
-    public IDependency Dep1 { get; } = dep1;
+    public IRoutePlanningSession SessionForOutbound { get; } = sessionForOutbound;
 
-    public IDependency Dep2 { get; } = dep2;
+    public IRoutePlanningSession SessionForReturn { get; } = sessionForReturn;
 
-    public IDependency Dep3 { get; } = deps.dep3;
+    // These come from a singleton tuple — effectively "global cached" instances.
+    public IRoutePlanningSession CapturedSessionA { get; } = capturedSessions.capturedA;
 
-    public IDependency Dep4 { get; } = deps.dep4;
+    public IRoutePlanningSession CapturedSessionB { get; } = capturedSessions.capturedB;
 }
 ```
 
@@ -727,38 +813,60 @@ using Pure.DI;
 using static Pure.DI.Lifetime;
 
 DI.Setup(nameof(Composition))
-    .Bind().As(PerBlock).To<Dependency>()
-    .Bind().As(Singleton).To<(IDependency dep3, IDependency dep4)>()
+    // Bind DatabaseConnection with PerBlock lifetime:
+    // Ensures a single connection per composition root (e.g., per user request),
+    // but a new one for each new root - useful for batch operations without full singleton overhead.
+    .Bind().As(PerBlock).To<DatabaseConnection>()
+    // Bind a tuple of two connections as Singleton:
+    // This shares the same connection globally, simulating a cached or shared resource.
+    .Bind().As(Singleton).To<(IDatabaseConnection conn3, IDatabaseConnection conn4)>()
 
-    // Composition root
-    .Root<Service>("Root");
+    // Composition root - represents the main service entry point.
+    .Root<OrderRepository>("Repository");
 
 var composition = new Composition();
 
-var service1 = composition.Root;
-service1.Dep1.ShouldBe(service1.Dep2);
-service1.Dep3.ShouldBe(service1.Dep4);
-service1.Dep1.ShouldBe(service1.Dep3);
+// Simulate the first user request or batch operation
+var repository1 = composition.Repository;
+repository1.ProcessOrder("ORD-2025-54546");
 
-var service2 = composition.Root;
-service2.Dep1.ShouldNotBe(service1.Dep1);
+// Check that within one repository (one block), connections are shared for consistency
+repository1.PrimaryConnection.ShouldBe(repository1.SecondaryConnection);
+repository1.OtherConnection.ShouldBe(repository1.FallbackConnection);
+repository1.PrimaryConnection.ShouldBe(repository1.OtherConnection);
 
-interface IDependency;
+// Simulate the second user request or batch - should have a new PerBlock connection
+var repository2 = composition.Repository;
+repository2.PrimaryConnection.ShouldNotBe(repository1.PrimaryConnection);
 
-class Dependency : IDependency;
+// Interface for database connection - in a real world, this could handle SQL queries
+interface IDatabaseConnection;
 
-class Service(
-    IDependency dep1,
-    IDependency dep2,
-    (IDependency dep3, IDependency dep4) deps)
+// Implementation of database connection - transient-like but controlled by lifetime
+class DatabaseConnection : IDatabaseConnection;
+
+// Repository for handling orders, injecting multiple connections for demonstration
+// In real-world, this could process orders in a batch, sharing connection within the batch
+class OrderRepository(
+    IDatabaseConnection primaryConnection,
+    IDatabaseConnection secondaryConnection,
+    (IDatabaseConnection otherConnection, IDatabaseConnection fallbackConnection) additionalConnections)
 {
-    public IDependency Dep1 { get; } = dep1;
+    // Public properties for connections - in practice, these would be private and used in methods
+    public IDatabaseConnection PrimaryConnection { get; } = primaryConnection;
 
-    public IDependency Dep2 { get; } = dep2;
+    public IDatabaseConnection SecondaryConnection { get; } = secondaryConnection;
 
-    public IDependency Dep3 { get; } = deps.dep3;
+    public IDatabaseConnection OtherConnection { get; } = additionalConnections.otherConnection;
 
-    public IDependency Dep4 { get; } = deps.dep4;
+    public IDatabaseConnection FallbackConnection { get; } = additionalConnections.fallbackConnection;
+
+    // Example real-world method: Process an order using the shared connection
+    public void ProcessOrder(string orderId)
+    {
+        // Use PrimaryConnection to query database, e.g.,
+        // "SELECT * FROM Orders WHERE Id = @orderId"
+    }
 }
 ```
 
@@ -777,61 +885,75 @@ using Pure.DI;
 using static Pure.DI.Lifetime;
 
 var composition = new Composition();
-var program = composition.ProgramRoot;
+var app = composition.AppRoot;
 
-// Creates session #1
-var session1 = program.CreateSession();
-var dependency1 = session1.SessionRoot.Dependency;
-var dependency12 = session1.SessionRoot.Dependency;
+// Real-world analogy:
+// each HTTP request (or message consumer handling) creates its own scope.
+// Scoped services live exactly as long as the request is being processed.
 
-// Checks the identity of scoped instances in the same session
-dependency1.ShouldBe(dependency12);
+// Request #1
+var request1 = app.CreateRequestScope();
+var checkout1 = request1.RequestRoot;
 
-// Creates session #2
-var session2 = program.CreateSession();
-var dependency2 = session2.SessionRoot.Dependency;
+var ctx11 = checkout1.Context;
+var ctx12 = checkout1.Context;
 
-// Checks that the scoped instances are not identical in different sessions
-dependency1.ShouldNotBe(dependency2);
+// Same request => same scoped instance
+ctx11.ShouldBe(ctx12);
 
-// Disposes of session #1
-session1.Dispose();
-// Checks that the scoped instance is finalized
-dependency1.IsDisposed.ShouldBeTrue();
+// Request #2
+var request2 = app.CreateRequestScope();
+var checkout2 = request2.RequestRoot;
 
-// Disposes of session #2
-session2.Dispose();
-// Checks that the scoped instance is finalized
-dependency2.IsDisposed.ShouldBeTrue();
+var ctx2 = checkout2.Context;
 
-interface IDependency
+// Different request => different scoped instance
+ctx11.ShouldNotBe(ctx2);
+
+// End of Request #1 => scoped instance is disposed
+request1.Dispose();
+ctx11.IsDisposed.ShouldBeTrue();
+
+// End of Request #2 => scoped instance is disposed
+request2.Dispose();
+ctx2.IsDisposed.ShouldBeTrue();
+
+interface IRequestContext
 {
+    Guid CorrelationId { get; }
+
     bool IsDisposed { get; }
 }
 
-class Dependency : IDependency, IDisposable
+// Typically: DbContext / UnitOfWork / RequestTelemetry / Activity, etc.
+sealed class RequestContext : IRequestContext, IDisposable
 {
+    public Guid CorrelationId { get; } = Guid.NewGuid();
+
     public bool IsDisposed { get; private set; }
 
     public void Dispose() => IsDisposed = true;
 }
 
-interface IService
+interface ICheckoutService
 {
-    IDependency Dependency { get; }
+    IRequestContext Context { get; }
 }
 
-class Service(IDependency dependency) : IService
+// "Controller/service" that participates in request processing.
+// It depends on a scoped context (per-request resource).
+sealed class CheckoutService(IRequestContext context) : ICheckoutService
 {
-    public IDependency Dependency => dependency;
+    public IRequestContext Context => context;
 }
 
-// Implements a session
-class Session(Composition parent) : Composition(parent);
+// Implements a request scope (per-request container)
+sealed class RequestScope(Composition parent) : Composition(parent);
 
-partial class Program(Func<Session> sessionFactory)
+partial class App(Func<RequestScope> requestScopeFactory)
 {
-    public Session CreateSession() => sessionFactory();
+    // In a web app this would roughly map to: "create scope for request"
+    public RequestScope CreateRequestScope() => requestScopeFactory();
 }
 
 partial class Composition
@@ -839,14 +961,17 @@ partial class Composition
     static void Setup() =>
 
         DI.Setup()
-            .Bind().As(Scoped).To<Dependency>()
-            .Bind().To<Service>()
+            // Per-request lifetime
+            .Bind().As(Scoped).To<RequestContext>()
 
-            // Session composition root
-            .Root<IService>("SessionRoot")
+            // Regular service that consumes scoped context
+            .Bind().To<CheckoutService>()
 
-            // Composition root
-            .Root<Program>("ProgramRoot");
+            // "Request root" (what your controller/handler resolves)
+            .Root<ICheckoutService>("RequestRoot")
+
+            // "Application root" (what creates request scopes)
+            .Root<App>("AppRoot");
 }
 ```
 

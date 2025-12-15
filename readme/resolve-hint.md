@@ -10,22 +10,30 @@ using static Pure.DI.Hint;
 
 DI.Setup(nameof(Composition))
     .Hint(Resolve, "Off")
-    .Bind().To<Dependency>()
-    .Root<IDependency>("DependencyRoot")
-    .Bind().To<Service>()
-    .Root<IService>("Root");
+    .Bind().To<DatabaseService>()
+    // When the "Resolve" hint is disabled, only the regular root properties
+    // are available, so be sure to define them explicitly
+    // with the "Root<T>(...)" method.
+    .Root<IDatabaseService>("DatabaseService")
+    .Bind().To<UserService>()
+    .Root<IUserService>("UserService");
 
 var composition = new Composition();
-var service = composition.Root;
-var dependencyRoot = composition.DependencyRoot;
 
-interface IDependency;
+// The "Resolve" method is not generated,
+// so we can only access the roots through properties:
+var userService = composition.UserService;
+var databaseService = composition.DatabaseService;
 
-class Dependency : IDependency;
+// composition.Resolve<IUserService>(); // Compile error
 
-interface IService;
+interface IDatabaseService;
 
-class Service(IDependency dependency) : IService;
+class DatabaseService : IDatabaseService;
+
+interface IUserService;
+
+class UserService(IDatabaseService database) : IUserService;
 ```
 
 <details>
@@ -69,21 +77,21 @@ partial class Composition
   {
   }
 
-  public IDependency DependencyRoot
+  public IDatabaseService DatabaseService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new Dependency();
+      return new DatabaseService();
     }
   }
 
-  public IService Root
+  public IUserService UserService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new Service(new Dependency());
+      return new UserService(new DatabaseService());
     }
   }
 }
@@ -100,30 +108,30 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Service --|> IService
-	Composition ..> Service : IService Root
-	Composition ..> Dependency : IDependency DependencyRoot
-	Service *--  Dependency : IDependency
+	DatabaseService --|> IDatabaseService
+	UserService --|> IUserService
+	Composition ..> UserService : IUserService UserService
+	Composition ..> DatabaseService : IDatabaseService DatabaseService
+	UserService *--  DatabaseService : IDatabaseService
 	namespace Pure.DI.UsageTests.Hints.ResolveHintScenario {
 		class Composition {
 		<<partial>>
-		+IDependency DependencyRoot
-		+IService Root
+		+IDatabaseService DatabaseService
+		+IUserService UserService
 		}
-		class Dependency {
+		class DatabaseService {
 				<<class>>
-			+Dependency()
+			+DatabaseService()
 		}
-		class IDependency {
+		class IDatabaseService {
 			<<interface>>
 		}
-		class IService {
+		class IUserService {
 			<<interface>>
 		}
-		class Service {
+		class UserService {
 				<<class>>
-			+Service(IDependency dependency)
+			+UserService(IDatabaseService database)
 		}
 	}
 ```

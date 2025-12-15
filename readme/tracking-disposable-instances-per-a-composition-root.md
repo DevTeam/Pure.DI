@@ -6,45 +6,45 @@ using Shouldly;
 using Pure.DI;
 
 var composition = new Composition();
-var root1 = composition.Root;
-var root2 = composition.Root;
+var orderProcessingService1 = composition.OrderProcessingService;
+var orderProcessingService2 = composition.OrderProcessingService;
 
-root2.Dispose();
-
-// Checks that the disposable instances
-// associated with root1 have been disposed of
-root2.Value.Dependency.IsDisposed.ShouldBeTrue();
+orderProcessingService2.Dispose();
 
 // Checks that the disposable instances
-// associated with root2 have not been disposed of
-root1.Value.Dependency.IsDisposed.ShouldBeFalse();
-
-root1.Dispose();
+// associated with orderProcessingService2 have been disposed of
+orderProcessingService2.Value.DbConnection.IsDisposed.ShouldBeTrue();
 
 // Checks that the disposable instances
-// associated with root2 have been disposed of
-root1.Value.Dependency.IsDisposed.ShouldBeTrue();
+// associated with orderProcessingService1 have not been disposed of
+orderProcessingService1.Value.DbConnection.IsDisposed.ShouldBeFalse();
 
-interface IDependency
+orderProcessingService1.Dispose();
+
+// Checks that the disposable instances
+// associated with orderProcessingService1 have been disposed of
+orderProcessingService1.Value.DbConnection.IsDisposed.ShouldBeTrue();
+
+interface IDbConnection
 {
     bool IsDisposed { get; }
 }
 
-class Dependency : IDependency, IDisposable
+class DbConnection : IDbConnection, IDisposable
 {
     public bool IsDisposed { get; private set; }
 
     public void Dispose() => IsDisposed = true;
 }
 
-interface IService
+interface IOrderProcessingService
 {
-    public IDependency Dependency { get; }
+    public IDbConnection DbConnection { get; }
 }
 
-class Service(IDependency dependency) : IService
+class OrderProcessingService(IDbConnection dbConnection) : IOrderProcessingService
 {
-    public IDependency Dependency { get; } = dependency;
+    public IDbConnection DbConnection { get; } = dbConnection;
 }
 
 partial class Composition
@@ -52,12 +52,12 @@ partial class Composition
     static void Setup() =>
 
         DI.Setup()
-            .Bind().To<Dependency>()
-            .Bind().To<Service>()
+            .Bind().To<DbConnection>()
+            .Bind().To<OrderProcessingService>()
 
             // A special composition root
             // that allows to manage disposable dependencies
-            .Root<Owned<IService>>("Root");
+            .Root<Owned<IOrderProcessingService>>("OrderProcessingService");
 }
 ```
 
@@ -114,13 +114,13 @@ partial class Composition
     _lock = parentScope._lock;
   }
 
-  public Owned<IService> Root
+  public Owned<IOrderProcessingService> OrderProcessingService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       var perBlockOwned1 = new Owned();
-      Owned<IService> transientOwned;
+      Owned<IOrderProcessingService> transientOwned;
       // Creates the owner of an instance
       Owned transientOwned2;
       Owned localOwned7 = perBlockOwned1;
@@ -131,14 +131,14 @@ partial class Composition
       }
 
       IOwned localOwned6 = transientOwned2;
-      var transientDependency4 = new Dependency();
+      var transientDbConnection4 = new DbConnection();
       lock (_lock)
       {
-        perBlockOwned1.Add(transientDependency4);
+        perBlockOwned1.Add(transientDbConnection4);
       }
 
-      IService localValue6 = new Service(transientDependency4);
-      transientOwned = new Owned<IService>(localValue6, localOwned6);
+      IOrderProcessingService localValue6 = new OrderProcessingService(transientDbConnection4);
+      transientOwned = new Owned<IOrderProcessingService>(localValue6, localOwned6);
       lock (_lock)
       {
         perBlockOwned1.Add(transientOwned);
@@ -162,12 +162,12 @@ Class diagram:
 ---
 classDiagram
 	Owned --|> IOwned
-	Dependency --|> IDependency
-	Service --|> IService
-	Composition ..> OwnedᐸIServiceᐳ : OwnedᐸIServiceᐳ Root
-	Service *--  Dependency : IDependency
-	OwnedᐸIServiceᐳ *--  Owned : IOwned
-	OwnedᐸIServiceᐳ *--  Service : IService
+	DbConnection --|> IDbConnection
+	OrderProcessingService --|> IOrderProcessingService
+	Composition ..> OwnedᐸIOrderProcessingServiceᐳ : OwnedᐸIOrderProcessingServiceᐳ OrderProcessingService
+	OrderProcessingService *--  DbConnection : IDbConnection
+	OwnedᐸIOrderProcessingServiceᐳ *--  Owned : IOwned
+	OwnedᐸIOrderProcessingServiceᐳ *--  OrderProcessingService : IOrderProcessingService
 	namespace Pure.DI {
 		class IOwned {
 			<<interface>>
@@ -175,28 +175,28 @@ classDiagram
 		class Owned {
 				<<class>>
 		}
-		class OwnedᐸIServiceᐳ {
+		class OwnedᐸIOrderProcessingServiceᐳ {
 				<<struct>>
 		}
 	}
 	namespace Pure.DI.UsageTests.Advanced.TrackingDisposableScenario {
 		class Composition {
 		<<partial>>
-		+OwnedᐸIServiceᐳ Root
+		+OwnedᐸIOrderProcessingServiceᐳ OrderProcessingService
 		}
-		class Dependency {
+		class DbConnection {
 				<<class>>
-			+Dependency()
+			+DbConnection()
 		}
-		class IDependency {
+		class IDbConnection {
 			<<interface>>
 		}
-		class IService {
+		class IOrderProcessingService {
 			<<interface>>
 		}
-		class Service {
+		class OrderProcessingService {
 				<<class>>
-			+Service(IDependency dependency)
+			+OrderProcessingService(IDbConnection dbConnection)
 		}
 	}
 ```

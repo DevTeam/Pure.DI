@@ -9,27 +9,27 @@ using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Bind("base").To<Service>()
-    .Bind().To<GreetingService>()
-    .Root<IService>("Root");
+    .Bind("base").To<TextWidget>()
+    .Bind().To<BoxWidget>()
+    .Root<IWidget>("Widget");
 
 var composition = new Composition();
-var service = composition.Root;
-service.GetMessage().ShouldBe("Hello World !!!");
+var widget = composition.Widget;
+widget.Render().ShouldBe("[ Hello World ]");
 
-interface IService
+interface IWidget
 {
-    string GetMessage();
+    string Render();
 }
 
-class Service : IService
+class TextWidget : IWidget
 {
-    public string GetMessage() => "Hello World";
+    public string Render() => "Hello World";
 }
 
-class GreetingService([Tag("base")] IService baseService) : IService
+class BoxWidget([Tag("base")] IWidget baseWidget) : IWidget
 {
-    public string GetMessage() => $"{baseService.GetMessage()} !!!";
+    public string Render() => $"[ {baseWidget.Render()} ]";
 }
 ```
 
@@ -60,7 +60,7 @@ dotnet run
 
 </details>
 
-Here an instance of the _Service_ type, labeled _"base"_, is injected in the decorator _DecoratorService_. You can use any tag that semantically reflects the feature of the abstraction being embedded. The tag can be a constant, a type, or a value of an enumerated type.
+Here an instance of the _TextWidget_ type, labeled _"base"_, is injected in the decorator _BoxWidget_. You can use any tag that semantically reflects the feature of the abstraction being embedded. The tag can be a constant, a type, or a value of an enumerated type.
 
 The following partial class will be generated:
 
@@ -76,12 +76,12 @@ partial class Composition
   {
   }
 
-  public IService Root
+  public IWidget Widget
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new GreetingService(new Service());
+      return new BoxWidget(new TextWidget());
     }
   }
 }
@@ -98,25 +98,25 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService : "base" 
-	GreetingService --|> IService
-	Composition ..> GreetingService : IService Root
-	GreetingService *--  Service : "base"  IService
+	TextWidget --|> IWidget : "base" 
+	BoxWidget --|> IWidget
+	Composition ..> BoxWidget : IWidget Widget
+	BoxWidget *--  TextWidget : "base"  IWidget
 	namespace Pure.DI.UsageTests.Interception.DecoratorScenario {
+		class BoxWidget {
+				<<class>>
+			+BoxWidget(IWidget baseWidget)
+		}
 		class Composition {
 		<<partial>>
-		+IService Root
+		+IWidget Widget
 		}
-		class GreetingService {
-				<<class>>
-			+GreetingService(IService baseService)
-		}
-		class IService {
+		class IWidget {
 			<<interface>>
 		}
-		class Service {
+		class TextWidget {
 				<<class>>
-			+Service()
+			+TextWidget()
 		}
 	}
 ```

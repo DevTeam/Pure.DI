@@ -9,47 +9,62 @@ using Shouldly;
 using Pure.DI;
 using static Pure.DI.Hint;
 
+// The "OnCannotResolveContractTypeNameRegularExpression" hint defines a regular expression
+// to filter the full type name of unresolved dependencies.
+// In this case, we want to manually handle only "string" types.
 // OnCannotResolveContractTypeNameRegularExpression = string
 DI.Setup(nameof(Composition))
     .Hint(OnCannotResolve, "On")
-    .Bind().To<Dependency>()
-    .Bind().To<Service>()
-    .Root<IService>("Root");
+    .Bind().To<DatabaseAccess>()
+    .Bind().To<BusinessService>()
+    .Root<IBusinessService>("BusinessService");
 
 var composition = new Composition();
-var service = composition.Root;
-service.Dependency.ToString().ShouldBe("My name");
+var businessService = composition.BusinessService;
+
+// Check that the connection string was successfully injected via OnCannotResolve
+businessService.DatabaseAccess.ConnectionString.ShouldBe("Server=localhost;Database=MyDb;");
 
 
-interface IDependency;
-
-class Dependency(string name) : IDependency
+interface IDatabaseAccess
 {
-    public override string ToString() => name;
+    string ConnectionString { get; }
 }
 
-interface IService
+// A service requiring a connection string.
+// The connection string is a primitive type 'string' that is not bound in the DI setup.
+// It will be resolved via the 'OnCannotResolve' fallback method.
+class DatabaseAccess(string connectionString) : IDatabaseAccess
 {
-    IDependency Dependency { get; }
+    public string ConnectionString { get; } = connectionString;
 }
 
-class Service(IDependency dependency) : IService
+interface IBusinessService
 {
-    public IDependency Dependency { get; } = dependency;
+    IDatabaseAccess DatabaseAccess { get; }
+}
+
+class BusinessService(IDatabaseAccess databaseAccess) : IBusinessService
+{
+    public IDatabaseAccess DatabaseAccess { get; } = databaseAccess;
 }
 
 partial class Composition
 {
+    // This method is called when a dependency cannot be resolved by the standard DI container.
+    // It serves as a fallback mechanism.
     private partial T OnCannotResolve<T>(
         object? tag,
         Lifetime lifetime)
     {
+        // Check if the requested type is a string (according to the hint filter)
         if (typeof(T) == typeof(string))
         {
-            return (T)(object)"My name";
+            // Provide the configuration value (e.g., loaded from a file)
+            return (T)(object)"Server=localhost;Database=MyDb;";
         }
 
-        throw new InvalidOperationException("Cannot resolve.");
+        throw new InvalidOperationException("Cannot resolve " + typeof(T));
     }
 }
 ```
@@ -98,12 +113,12 @@ partial class Composition
   {
   }
 
-  public IService Root
+  public IBusinessService BusinessService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new Service(new Dependency(OnCannotResolve<string>(null, Lifetime.Transient)));
+      return new BusinessService(new DatabaseAccess(OnCannotResolve<string>(null, Lifetime.Transient)));
     }
   }
 
@@ -123,29 +138,29 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Service --|> IService
-	Composition ..> Service : IService Root
-	Dependency *--  String : String
-	Service *--  Dependency : IDependency
+	DatabaseAccess --|> IDatabaseAccess
+	BusinessService --|> IBusinessService
+	Composition ..> BusinessService : IBusinessService BusinessService
+	DatabaseAccess *--  String : String
+	BusinessService *--  DatabaseAccess : IDatabaseAccess
 	namespace Pure.DI.UsageTests.Hints.OnCannotResolveRegularExpressionHintScenario {
+		class BusinessService {
+				<<class>>
+			+BusinessService(IDatabaseAccess databaseAccess)
+		}
 		class Composition {
 		<<partial>>
-		+IService Root
+		+IBusinessService BusinessService
 		}
-		class Dependency {
+		class DatabaseAccess {
 				<<class>>
-			+Dependency(String name)
+			+DatabaseAccess(String connectionString)
 		}
-		class IDependency {
+		class IBusinessService {
 			<<interface>>
 		}
-		class IService {
+		class IDatabaseAccess {
 			<<interface>>
-		}
-		class Service {
-				<<class>>
-			+Service(IDependency dependency)
 		}
 	}
 	namespace System {

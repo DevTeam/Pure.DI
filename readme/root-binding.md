@@ -8,22 +8,27 @@ using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Bind().As(Lifetime.Singleton).To<Dependency>()
-    .RootBind<IService>("MyRoot").To<Service>();
-// It's the same as:
-//  .Bind<IService>().To<Service>()
-//  .Root<IService>("MyRoot")
+    .Bind().As(Lifetime.Singleton).To<DbConnection>()
+    // RootBind allows you to define a binding and a composition root
+    // simultaneously. This is useful for creating public entry points
+    // for your application components while keeping the configuration concise.
+    .RootBind<IOrderService>("OrderService").To<OrderService>();
+
+// The line above is functionally equivalent to:
+//  .Bind<IOrderService>().To<OrderService>()
+//  .Root<IOrderService>("OrderService")
 
 var composition = new Composition();
-composition.MyRoot.ShouldBeOfType<Service>();
+var orderService = composition.OrderService;
+orderService.ShouldBeOfType<OrderService>();
 
-interface IDependency;
+interface IDbConnection;
 
-class Dependency : IDependency;
+class DbConnection : IDbConnection;
 
-interface IService;
+interface IOrderService;
 
-class Service(IDependency dependency) : IService;
+class OrderService(IDbConnection connection) : IOrderService;
 ```
 
 <details>
@@ -65,7 +70,7 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private Dependency? _singletonDependency51;
+  private DbConnection? _singletonDbConnection51;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -84,19 +89,19 @@ partial class Composition
     _lock = parentScope._lock;
   }
 
-  public IService MyRoot
+  public IOrderService OrderService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonDependency51 is null)
+      if (_root._singletonDbConnection51 is null)
         lock (_lock)
-          if (_root._singletonDependency51 is null)
+          if (_root._singletonDbConnection51 is null)
           {
-            _root._singletonDependency51 = new Dependency();
+            _root._singletonDbConnection51 = new DbConnection();
           }
 
-      return new Service(_root._singletonDependency51);
+      return new OrderService(_root._singletonDbConnection51);
     }
   }
 }
@@ -113,28 +118,28 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Service --|> IService
-	Composition ..> Service : IService MyRoot
-	Service o-- "Singleton" Dependency : IDependency
+	DbConnection --|> IDbConnection
+	OrderService --|> IOrderService
+	Composition ..> OrderService : IOrderService OrderService
+	OrderService o-- "Singleton" DbConnection : IDbConnection
 	namespace Pure.DI.UsageTests.Basics.RootBindScenario {
 		class Composition {
 		<<partial>>
-		+IService MyRoot
+		+IOrderService OrderService
 		}
-		class Dependency {
+		class DbConnection {
 				<<class>>
-			+Dependency()
+			+DbConnection()
 		}
-		class IDependency {
+		class IDbConnection {
 			<<interface>>
 		}
-		class IService {
+		class IOrderService {
 			<<interface>>
 		}
-		class Service {
+		class OrderService {
 				<<class>>
-			+Service(IDependency dependency)
+			+OrderService(IDbConnection connection)
 		}
 	}
 ```

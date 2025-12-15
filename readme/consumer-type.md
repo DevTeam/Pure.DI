@@ -20,7 +20,7 @@ class Dependency : IDependency
 {
     public Dependency(Serilog.ILogger log)
     {
-        log.Information("created");
+        log.Information("Dependency created");
     }
 }
 
@@ -36,7 +36,7 @@ class Service : IService
         IDependency dependency)
     {
         Dependency = dependency;
-        log.Information("created");
+        log.Information("Service initialized");
     }
 
     public IDependency Dependency { get; }
@@ -48,12 +48,14 @@ partial class Composition
 
         DI.Setup(nameof(Composition))
             .Arg<Serilog.ILogger>("logger", "from arg")
-            .Bind().To(ctx =>
-            {
+            .Bind().To(ctx => {
                 ctx.Inject<Serilog.ILogger>("from arg", out var logger);
+
+                // Enriches the logger with the specific context of the consumer type.
+                // ctx.ConsumerType represents the type into which the dependency is being injected.
+                // This allows logs to be tagged with the name of the class that created them.
                 return logger.ForContext(ctx.ConsumerType);
             })
-
             .Bind().To<Dependency>()
             .Bind().To<Service>()
             .Root<IService>(nameof(Root));
@@ -128,9 +130,15 @@ partial class Composition
     {
       Serilog.ILogger transientILogger3;
       Serilog.ILogger localLogger2 = _argLogger;
+      // Enriches the logger with the specific context of the consumer type.
+      // ctx.ConsumerType represents the type into which the dependency is being injected.
+      // This allows logs to be tagged with the name of the class that created them.
       transientILogger3 = localLogger2.ForContext(typeof(Dependency));
       Serilog.ILogger transientILogger1;
       Serilog.ILogger localLogger3 = _argLogger;
+      // Enriches the logger with the specific context of the consumer type.
+      // ctx.ConsumerType represents the type into which the dependency is being injected.
+      // This allows logs to be tagged with the name of the class that created them.
       transientILogger1 = localLogger3.ForContext(typeof(Service));
       return new Service(transientILogger1, new Dependency(transientILogger3));
     }

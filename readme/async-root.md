@@ -5,28 +5,28 @@
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>()
+    .Bind<IFileStore>().To<FileStore>()
+    .Bind<IBackupService>().To<BackupService>()
 
     // Specifies to use CancellationToken from the argument
     // when resolving a composition root
     .RootArg<CancellationToken>("cancellationToken")
 
     // Composition root
-    .Root<Task<IService>>("GetMyServiceAsync");
+    .Root<Task<IBackupService>>("GetBackupServiceAsync");
 
 var composition = new Composition();
 
 // Resolves composition roots asynchronously
-var service = await composition.GetMyServiceAsync(CancellationToken.None);
+var service = await composition.GetBackupServiceAsync(CancellationToken.None);
 
-interface IDependency;
+interface IFileStore;
 
-class Dependency : IDependency;
+class FileStore : IFileStore;
 
-interface IService;
+interface IBackupService;
 
-class Service(IDependency dependency) : IService;
+class BackupService(IFileStore fileStore) : IBackupService;
 ```
 
 <details>
@@ -81,20 +81,20 @@ partial class Composition
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public Task<IService> GetMyServiceAsync(CancellationToken cancellationToken)
+  public Task<IBackupService> GetBackupServiceAsync(CancellationToken cancellationToken)
   {
-    Task<IService> transientTask;
+    Task<IBackupService> transientTask;
     // Injects an instance factory
-    Func<IService> transientFunc1 = new Func<IService>(
+    Func<IBackupService> transientFunc1 = new Func<IBackupService>(
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     () =>
     {
-      IService localValue15 = new Service(new Dependency());
+      IBackupService localValue15 = new BackupService(new FileStore());
       return localValue15;
     });
-    Func<IService> localFactory = transientFunc1;
+    Func<IBackupService> localFactory = transientFunc1;
     // Injects a task factory creating and scheduling task objects
-    TaskFactory<IService> transientTaskFactory2;
+    TaskFactory<IBackupService> transientTaskFactory2;
     CancellationToken localCancellationToken = cancellationToken;
     TaskCreationOptions transientTaskCreationOptions6 = TaskCreationOptions.None;
     TaskCreationOptions localTaskCreationOptions = transientTaskCreationOptions6;
@@ -102,8 +102,8 @@ partial class Composition
     TaskContinuationOptions localTaskContinuationOptions = transientTaskContinuationOptions7;
     TaskScheduler transientTaskScheduler8 = TaskScheduler.Default;
     TaskScheduler localTaskScheduler = transientTaskScheduler8;
-    transientTaskFactory2 = new TaskFactory<IService>(localCancellationToken, localTaskCreationOptions, localTaskContinuationOptions, localTaskScheduler);
-    TaskFactory<IService> localTaskFactory = transientTaskFactory2;
+    transientTaskFactory2 = new TaskFactory<IBackupService>(localCancellationToken, localTaskCreationOptions, localTaskContinuationOptions, localTaskScheduler);
+    TaskFactory<IBackupService> localTaskFactory = transientTaskFactory2;
     // Creates and starts a task using the instance factory
     transientTask = localTaskFactory.StartNew(localFactory);
     return transientTask;
@@ -122,39 +122,39 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Service --|> IService
-	Composition ..> TaskᐸIServiceᐳ : TaskᐸIServiceᐳ GetMyServiceAsync(System.Threading.CancellationToken cancellationToken)
-	Service *--  Dependency : IDependency
-	TaskᐸIServiceᐳ o-- "PerBlock" FuncᐸIServiceᐳ : FuncᐸIServiceᐳ
-	TaskᐸIServiceᐳ o-- "PerBlock" TaskFactoryᐸIServiceᐳ : TaskFactoryᐸIServiceᐳ
-	FuncᐸIServiceᐳ *--  Service : IService
-	TaskFactoryᐸIServiceᐳ *--  TaskScheduler : TaskScheduler
-	TaskFactoryᐸIServiceᐳ *--  TaskCreationOptions : TaskCreationOptions
-	TaskFactoryᐸIServiceᐳ *--  TaskContinuationOptions : TaskContinuationOptions
-	TaskFactoryᐸIServiceᐳ o-- CancellationToken : Argument "cancellationToken"
+	FileStore --|> IFileStore
+	BackupService --|> IBackupService
+	Composition ..> TaskᐸIBackupServiceᐳ : TaskᐸIBackupServiceᐳ GetBackupServiceAsync(System.Threading.CancellationToken cancellationToken)
+	BackupService *--  FileStore : IFileStore
+	TaskᐸIBackupServiceᐳ o-- "PerBlock" FuncᐸIBackupServiceᐳ : FuncᐸIBackupServiceᐳ
+	TaskᐸIBackupServiceᐳ o-- "PerBlock" TaskFactoryᐸIBackupServiceᐳ : TaskFactoryᐸIBackupServiceᐳ
+	FuncᐸIBackupServiceᐳ *--  BackupService : IBackupService
+	TaskFactoryᐸIBackupServiceᐳ *--  TaskScheduler : TaskScheduler
+	TaskFactoryᐸIBackupServiceᐳ *--  TaskCreationOptions : TaskCreationOptions
+	TaskFactoryᐸIBackupServiceᐳ *--  TaskContinuationOptions : TaskContinuationOptions
+	TaskFactoryᐸIBackupServiceᐳ o-- CancellationToken : Argument "cancellationToken"
 	namespace Pure.DI.UsageTests.Basics.AsyncRootScenario {
+		class BackupService {
+				<<class>>
+			+BackupService(IFileStore fileStore)
+		}
 		class Composition {
 		<<partial>>
-		+TaskᐸIServiceᐳ GetMyServiceAsync(System.Threading.CancellationToken cancellationToken)
+		+TaskᐸIBackupServiceᐳ GetBackupServiceAsync(System.Threading.CancellationToken cancellationToken)
 		}
-		class Dependency {
+		class FileStore {
 				<<class>>
-			+Dependency()
+			+FileStore()
 		}
-		class IDependency {
+		class IBackupService {
 			<<interface>>
 		}
-		class IService {
+		class IFileStore {
 			<<interface>>
-		}
-		class Service {
-				<<class>>
-			+Service(IDependency dependency)
 		}
 	}
 	namespace System {
-		class FuncᐸIServiceᐳ {
+		class FuncᐸIBackupServiceᐳ {
 				<<delegate>>
 		}
 	}
@@ -170,13 +170,13 @@ classDiagram
 		class TaskCreationOptions {
 				<<enum>>
 		}
-		class TaskFactoryᐸIServiceᐳ {
+		class TaskFactoryᐸIBackupServiceᐳ {
 				<<class>>
 		}
 		class TaskScheduler {
 				<<abstract>>
 		}
-		class TaskᐸIServiceᐳ {
+		class TaskᐸIBackupServiceᐳ {
 				<<class>>
 		}
 	}

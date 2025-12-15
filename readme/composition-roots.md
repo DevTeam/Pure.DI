@@ -11,47 +11,57 @@ If you use classic DI containers, the composition is resolved dynamically every 
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Bind<IService>().To<Service>()
-    .Bind<IService>("Other").To<OtherService>()
-    .Bind<IDependency>().To<Dependency>()
+    .Bind<IInvoiceGenerator>().To<PdfInvoiceGenerator>()
+    .Bind<IInvoiceGenerator>("Online").To<HtmlInvoiceGenerator>()
+    .Bind<ILogger>().To<FileLogger>()
 
     // Specifies to create a regular composition root
-    // of type "IService" with the name "MyService"
-    .Root<IService>("MyService")
+    // of type "IInvoiceGenerator" with the name "InvoiceGenerator".
+    // This will be the main entry point for invoice generation.
+    .Root<IInvoiceGenerator>("InvoiceGenerator")
 
     // Specifies to create an anonymous composition root
-    // that is only accessible from "Resolve()" methods
-    .Root<IDependency>()
+    // that is only accessible from "Resolve()" methods.
+    // This is useful for auxiliary types or testing.
+    .Root<ILogger>()
 
     // Specifies to create a regular composition root
-    // of type "IService" with the name "MyOtherService"
-    // using the "Other" tag
-    .Root<IService>("MyOtherService", "Other");
+    // of type "IInvoiceGenerator" with the name "OnlineInvoiceGenerator"
+    // using the "Online" tag to differentiate implementations.
+    .Root<IInvoiceGenerator>("OnlineInvoiceGenerator", "Online");
 
 var composition = new Composition();
 
-// service = new Service(new Dependency());
-var service = composition.MyService;
+// Resolves the default invoice generator (PDF) with all its dependencies
+// invoiceGenerator = new PdfInvoiceGenerator(new FileLogger());
+var invoiceGenerator = composition.InvoiceGenerator;
 
-// someOtherService = new OtherService();
-var someOtherService = composition.MyOtherService;
+// Resolves the online invoice generator (HTML)
+// onlineInvoiceGenerator = new HtmlInvoiceGenerator();
+var onlineInvoiceGenerator = composition.OnlineInvoiceGenerator;
 
 // All and only the roots of the composition
-// can be obtained by Resolve method
-var dependency = composition.Resolve<IDependency>();
-        
-// including tagged ones
-var tagged = composition.Resolve<IService>("Other");
+// can be obtained by Resolve method.
+// Here we resolve the private root 'ILogger'.
+var logger = composition.Resolve<ILogger>();
 
-interface IDependency;
+// We can also resolve tagged roots dynamically if needed
+var tagged = composition.Resolve<IInvoiceGenerator>("Online");
 
-class Dependency : IDependency;
+// Common logger interface used across the system
+interface ILogger;
 
-interface IService;
+// Concrete implementation of a logger that writes to a file
+class FileLogger : ILogger;
 
-class Service(IDependency dependency) : IService;
+// Abstract definition of an invoice generator
+interface IInvoiceGenerator;
 
-class OtherService : IService;
+// Implementation for generating PDF invoices, dependent on ILogger
+class PdfInvoiceGenerator(ILogger logger) : IInvoiceGenerator;
+
+// Implementation for generating HTML invoices for online viewing
+class HtmlInvoiceGenerator : IInvoiceGenerator;
 ```
 
 <details>
@@ -79,7 +89,7 @@ dotnet run
 
 </details>
 
-The name of the composition root is arbitrarily chosen depending on its purpose, but should be restricted by the property naming conventions in C# since it is the same name as a property in the composition class. In reality, the _Root_ property has the form:
+The name of the composition root is arbitrarily chosen depending on its purpose but should be restricted by the property naming conventions in C# since it is the same name as a property in the composition class. In reality, the _Root_ property has the form:
 ```c#
 public IService Root
 {
@@ -112,30 +122,30 @@ partial class Composition
   {
   }
 
-  public IService MyService
+  public IInvoiceGenerator InvoiceGenerator
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new Service(new Dependency());
+      return new PdfInvoiceGenerator(new FileLogger());
     }
   }
 
-  public IService MyOtherService
+  public IInvoiceGenerator OnlineInvoiceGenerator
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new OtherService();
+      return new HtmlInvoiceGenerator();
     }
   }
 
-  private IDependency Root2
+  private ILogger Root2
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new Dependency();
+      return new FileLogger();
     }
   }
 
@@ -205,16 +215,16 @@ partial class Composition
   static Composition()
   {
     var valResolver_0000 = new Resolver_0000();
-    Resolver<IService>.Value = valResolver_0000;
+    Resolver<IInvoiceGenerator>.Value = valResolver_0000;
     var valResolver_0001 = new Resolver_0001();
-    Resolver<IDependency>.Value = valResolver_0001;
+    Resolver<ILogger>.Value = valResolver_0001;
     _buckets = Buckets<IResolver<Composition, object>>.Create(
       4,
       out _bucketSize,
       new Pair<IResolver<Composition, object>>[2]
       {
-         new Pair<IResolver<Composition, object>>(typeof(IService), valResolver_0000)
-        ,new Pair<IResolver<Composition, object>>(typeof(IDependency), valResolver_0001)
+         new Pair<IResolver<Composition, object>>(typeof(IInvoiceGenerator), valResolver_0000)
+        ,new Pair<IResolver<Composition, object>>(typeof(ILogger), valResolver_0001)
       });
   }
 
@@ -236,22 +246,22 @@ partial class Composition
     }
   }
 
-  private sealed class Resolver_0000: Resolver<IService>
+  private sealed class Resolver_0000: Resolver<IInvoiceGenerator>
   {
-    public override IService Resolve(Composition composition)
+    public override IInvoiceGenerator Resolve(Composition composition)
     {
-      return composition.MyService;
+      return composition.InvoiceGenerator;
     }
 
-    public override IService ResolveByTag(Composition composition, object tag)
+    public override IInvoiceGenerator ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
-        case "Other":
-          return composition.MyOtherService;
+        case "Online":
+          return composition.OnlineInvoiceGenerator;
 
         case null:
-          return composition.MyService;
+          return composition.InvoiceGenerator;
 
         default:
           return base.ResolveByTag(composition, tag);
@@ -259,14 +269,14 @@ partial class Composition
     }
   }
 
-  private sealed class Resolver_0001: Resolver<IDependency>
+  private sealed class Resolver_0001: Resolver<ILogger>
   {
-    public override IDependency Resolve(Composition composition)
+    public override ILogger Resolve(Composition composition)
     {
       return composition.Root2;
     }
 
-    public override IDependency ResolveByTag(Composition composition, object tag)
+    public override ILogger ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
@@ -292,41 +302,41 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService
-	OtherService --|> IService : "Other" 
-	Dependency --|> IDependency
-	Composition ..> OtherService : IService MyOtherService
-	Composition ..> Dependency : IDependency _
-	Composition ..> Service : IService MyService
-	Service *--  Dependency : IDependency
+	PdfInvoiceGenerator --|> IInvoiceGenerator
+	HtmlInvoiceGenerator --|> IInvoiceGenerator : "Online" 
+	FileLogger --|> ILogger
+	Composition ..> HtmlInvoiceGenerator : IInvoiceGenerator OnlineInvoiceGenerator
+	Composition ..> FileLogger : ILogger _
+	Composition ..> PdfInvoiceGenerator : IInvoiceGenerator InvoiceGenerator
+	PdfInvoiceGenerator *--  FileLogger : ILogger
 	namespace Pure.DI.UsageTests.Basics.CompositionRootsScenario {
 		class Composition {
 		<<partial>>
-		+IService MyOtherService
-		+IService MyService
-		-IDependency _
+		+IInvoiceGenerator InvoiceGenerator
+		+IInvoiceGenerator OnlineInvoiceGenerator
+		-ILogger _
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
 		}
-		class Dependency {
+		class FileLogger {
 				<<class>>
-			+Dependency()
+			+FileLogger()
 		}
-		class IDependency {
+		class HtmlInvoiceGenerator {
+				<<class>>
+			+HtmlInvoiceGenerator()
+		}
+		class IInvoiceGenerator {
 			<<interface>>
 		}
-		class IService {
+		class ILogger {
 			<<interface>>
 		}
-		class OtherService {
+		class PdfInvoiceGenerator {
 				<<class>>
-			+OtherService()
-		}
-		class Service {
-				<<class>>
-			+Service(IDependency dependency)
+			+PdfInvoiceGenerator(ILogger logger)
 		}
 	}
 ```

@@ -8,24 +8,25 @@ using System.Collections.Immutable;
 
 DI.Setup(nameof(Composition))
     .Bind().As(Lifetime.Singleton).To<Clock>()
-    .Bind().To<Dependency>()
-    .Bind().To<Service>()
+    .Bind().To<Person>()
+    .Bind().To<Team>()
 
     // Composition root
-    .Root<IService>("Root");
+    .Root<ITeam>("Team");
 
 var composition = new Composition();
-var service = composition.Root;
-service.Dependencies.Length.ShouldBe(3);
+var team = composition.Team;
 
-service.Dependencies[0].Name.ShouldBe("Abc");
-service.Dependencies[0].Id.ShouldBe(0);
+team.Members.Length.ShouldBe(3);
 
-service.Dependencies[1].Name.ShouldBe("Xyz");
-service.Dependencies[1].Id.ShouldBe(1);
+team.Members[0].Id.ShouldBe(10);
+team.Members[0].Name.ShouldBe("Nik");
 
-service.Dependencies[2].Id.ShouldBe(2);
-service.Dependencies[2].Name.ShouldBe("");
+team.Members[1].Id.ShouldBe(20);
+team.Members[1].Name.ShouldBe("Mike");
+
+team.Members[2].Id.ShouldBe(30);
+team.Members[2].Name.ShouldBe("Jake");
 
 interface IClock
 {
@@ -37,31 +38,33 @@ class Clock : IClock
     public DateTimeOffset Now => DateTimeOffset.Now;
 }
 
-interface IDependency
+interface IPerson
 {
-    string Name { get; }
     int Id { get; }
+
+    string Name { get; }
 }
 
-class Dependency(string name, IClock clock, int id)
-    : IDependency
+class Person(string name, IClock clock, int id)
+    : IPerson
 {
-    public string Name => name;
     public int Id => id;
+
+    public string Name => name;
 }
 
-interface IService
+interface ITeam
 {
-    ImmutableArray<IDependency> Dependencies { get; }
+    ImmutableArray<IPerson> Members { get; }
 }
 
-class Service(Func<int, string, IDependency> dependencyFactory): IService
+class Team(Func<int, string, IPerson> personFactory) : ITeam
 {
-    public ImmutableArray<IDependency> Dependencies { get; } =
+    public ImmutableArray<IPerson> Members { get; } =
     [
-        dependencyFactory(0, "Abc"),
-        dependencyFactory(1, "Xyz"),
-        dependencyFactory(2, "")
+        personFactory(10, "Nik"),
+        personFactory(20, "Mike"),
+        personFactory(30, "Jake")
     ];
 }
 ```
@@ -124,18 +127,18 @@ partial class Composition
     _lock = parentScope._lock;
   }
 
-  public IService Root
+  public ITeam Team
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<int, string, IDependency> transientFunc1;
-      Func<int, string, IDependency> localFactory2 = new Func<int, string, IDependency>((int localArg16, string localArg25) =>
+      Func<int, string, IPerson> transientFunc1;
+      Func<int, string, IPerson> localFactory2 = new Func<int, string, IPerson>((int localArg13, string localArg2) =>
       {
         lock (_lock)
         {
-          int overriddenInt32 = localArg16;
-          string overriddenString2 = localArg25;
+          int overriddenInt32 = localArg13;
+          string overriddenString2 = localArg2;
           if (_root._singletonClock51 is null)
             lock (_lock)
               if (_root._singletonClock51 is null)
@@ -143,12 +146,12 @@ partial class Composition
                 _root._singletonClock51 = new Clock();
               }
 
-          IDependency localValue20 = new Dependency(overriddenString2, _root._singletonClock51, overriddenInt32);
+          IPerson localValue20 = new Person(overriddenString2, _root._singletonClock51, overriddenInt32);
           return localValue20;
         }
       });
       transientFunc1 = localFactory2;
-      return new Service(transientFunc1);
+      return new Team(transientFunc1);
     }
   }
 }
@@ -165,39 +168,39 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Service --|> IService
-	Composition ..> Service : IService Root
-	Dependency o-- "Singleton" Clock : IClock
-	Dependency *--  Int32 : Int32
-	Dependency *--  String : String
-	Service o-- "PerBlock" FuncᐸInt32ˏStringˏIDependencyᐳ : FuncᐸInt32ˏStringˏIDependencyᐳ
-	FuncᐸInt32ˏStringˏIDependencyᐳ *--  Dependency : IDependency
+	Person --|> IPerson
+	Team --|> ITeam
+	Composition ..> Team : ITeam Team
+	Person o-- "Singleton" Clock : IClock
+	Person *--  Int32 : Int32
+	Person *--  String : String
+	Team o-- "PerBlock" FuncᐸInt32ˏStringˏIPersonᐳ : FuncᐸInt32ˏStringˏIPersonᐳ
+	FuncᐸInt32ˏStringˏIPersonᐳ *--  Person : IPerson
 	namespace Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario {
 		class Clock {
 			<<class>>
 		}
 		class Composition {
 		<<partial>>
-		+IService Root
+		+ITeam Team
 		}
-		class Dependency {
-				<<class>>
-			+Dependency(String name, IClock clock, Int32 id)
-		}
-		class IDependency {
+		class IPerson {
 			<<interface>>
 		}
-		class IService {
+		class ITeam {
 			<<interface>>
 		}
-		class Service {
+		class Person {
 				<<class>>
-			+Service(FuncᐸInt32ˏStringˏIDependencyᐳ dependencyFactory)
+			+Person(String name, IClock clock, Int32 id)
+		}
+		class Team {
+				<<class>>
+			+Team(FuncᐸInt32ˏStringˏIPersonᐳ personFactory)
 		}
 	}
 	namespace System {
-		class FuncᐸInt32ˏStringˏIDependencyᐳ {
+		class FuncᐸInt32ˏStringˏIPersonᐳ {
 				<<delegate>>
 		}
 		class Int32 {

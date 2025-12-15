@@ -8,35 +8,34 @@ using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>()
+    .Bind<IMap>().To<Map>()
+    .Bind<INavigator>().To<Navigator>()
 
     // Composition root
-    .Root<IService>("MyService");
+    .Root<INavigator>("Navigator");
 
 var composition = new Composition();
-var service = composition.MyService;
-service.Dependency.ShouldBeOfType<Dependency>();
+var navigator = composition.Navigator;
+navigator.CurrentMap.ShouldBeOfType<Map>();
 
-interface IDependency;
+interface IMap;
 
-class Dependency : IDependency;
+class Map : IMap;
 
-interface IService
+interface INavigator
 {
-    IDependency? Dependency { get; }
+    IMap? CurrentMap { get; }
 }
 
-class Service : IService
+class Navigator : INavigator
 {
-    // The Dependency attribute specifies to perform an injection,
-    // the integer value in the argument specifies
-    // the ordinal of injection
+    // The Dependency attribute specifies that the container should call this method
+    // to inject the dependency.
     [Dependency]
-    public void SetDependency(IDependency dependency) =>
-        Dependency = dependency;
+    public void LoadMap(IMap map) =>
+        CurrentMap = map;
 
-    public IDependency? Dependency { get; private set; }
+    public IMap? CurrentMap { get; private set; }
 }
 ```
 
@@ -86,14 +85,14 @@ partial class Composition
   {
   }
 
-  public IService MyService
+  public INavigator Navigator
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var transientService = new Service();
-      transientService.SetDependency(new Dependency());
-      return transientService;
+      var transientNavigator = new Navigator();
+      transientNavigator.LoadMap(new Map());
+      return transientNavigator;
     }
   }
 }
@@ -110,29 +109,29 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Service --|> IService
-	Composition ..> Service : IService MyService
-	Service *--  Dependency : IDependency
+	Map --|> IMap
+	Navigator --|> INavigator
+	Composition ..> Navigator : INavigator Navigator
+	Navigator *--  Map : IMap
 	namespace Pure.DI.UsageTests.Basics.MethodInjectionScenario {
 		class Composition {
 		<<partial>>
-		+IService MyService
+		+INavigator Navigator
 		}
-		class Dependency {
-				<<class>>
-			+Dependency()
-		}
-		class IDependency {
+		class IMap {
 			<<interface>>
 		}
-		class IService {
+		class INavigator {
 			<<interface>>
 		}
-		class Service {
+		class Map {
 				<<class>>
-			+Service()
-			+SetDependency(IDependency dependency) : Void
+			+Map()
+		}
+		class Navigator {
+				<<class>>
+			+Navigator()
+			+LoadMap(IMap map) : Void
 		}
 	}
 ```

@@ -9,32 +9,33 @@ using Pure.DI;
 using System.Collections.Immutable;
 
 DI.Setup(nameof(Composition))
-    .Bind<IDependency<TT>>(Tag.Unique).To<AbcDependency<TT>>()
-    .Bind<IDependency<TT>>(Tag.Unique).To<XyzDependency<TT>>()
-    .Bind<IService<TT>>().To<Service<TT>>()
+    .Bind<INotificationChannel<TT>>(Tag.Unique).To<EmailChannel<TT>>()
+    .Bind<INotificationChannel<TT>>(Tag.Unique).To<SmsChannel<TT>>()
+    .Bind<INotificationService<TT>>().To<NotificationService<TT>>()
 
     // Composition root
-    .Root<IService<string>>("Root");
+    .Root<INotificationService<string>>("NotificationService");
 
 var composition = new Composition();
-var stringService = composition.Root;
-stringService.Dependencies.Length.ShouldBe(2);
+var notificationService = composition.NotificationService;
+notificationService.Channels.Length.ShouldBe(2);
 
-interface IDependency<T>;
+interface INotificationChannel<T>;
 
-class AbcDependency<T> : IDependency<T>;
+class EmailChannel<T> : INotificationChannel<T>;
 
-class XyzDependency<T> : IDependency<T>;
+class SmsChannel<T> : INotificationChannel<T>;
 
-interface IService<T>
+interface INotificationService<T>
 {
-    ImmutableArray<IDependency<T>> Dependencies { get; }
+    ImmutableArray<INotificationChannel<T>> Channels { get; }
 }
 
-class Service<T>(IEnumerable<IDependency<T>> dependencies) : IService<T>
+class NotificationService<T>(IEnumerable<INotificationChannel<T>> channels)
+    : INotificationService<T>
 {
-    public ImmutableArray<IDependency<T>> Dependencies { get; }
-        = [..dependencies];
+    public ImmutableArray<INotificationChannel<T>> Channels { get; }
+        = [..channels];
 }
 ```
 
@@ -79,19 +80,19 @@ partial class Composition
   {
   }
 
-  public IService<string> Root
+  public INotificationService<string> NotificationService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      IEnumerable<IDependency<string>> EnumerationOf_transientIEnumerable1()
+      IEnumerable<INotificationChannel<string>> EnumerationOf_transientIEnumerable1()
       {
-        yield return new AbcDependency<string>();
-        yield return new XyzDependency<string>();
+        yield return new EmailChannel<string>();
+        yield return new SmsChannel<string>();
       }
 
-      return new Service<string>(EnumerationOf_transientIEnumerable1());
+      return new NotificationService<string>(EnumerationOf_transientIEnumerable1());
     }
   }
 }
@@ -108,39 +109,39 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	ServiceᐸStringᐳ --|> IServiceᐸStringᐳ
-	AbcDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : "Unique tag #0" 
-	XyzDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : "Unique tag #1" 
-	Composition ..> ServiceᐸStringᐳ : IServiceᐸStringᐳ Root
-	ServiceᐸStringᐳ o-- "PerBlock" IEnumerableᐸIDependencyᐸStringᐳᐳ : IEnumerableᐸIDependencyᐸStringᐳᐳ
-	IEnumerableᐸIDependencyᐸStringᐳᐳ *--  AbcDependencyᐸStringᐳ : "Unique tag #0"  IDependencyᐸStringᐳ
-	IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : "Unique tag #1"  IDependencyᐸStringᐳ
+	NotificationServiceᐸStringᐳ --|> INotificationServiceᐸStringᐳ
+	EmailChannelᐸStringᐳ --|> INotificationChannelᐸStringᐳ : "Unique tag #0" 
+	SmsChannelᐸStringᐳ --|> INotificationChannelᐸStringᐳ : "Unique tag #1" 
+	Composition ..> NotificationServiceᐸStringᐳ : INotificationServiceᐸStringᐳ NotificationService
+	NotificationServiceᐸStringᐳ o-- "PerBlock" IEnumerableᐸINotificationChannelᐸStringᐳᐳ : IEnumerableᐸINotificationChannelᐸStringᐳᐳ
+	IEnumerableᐸINotificationChannelᐸStringᐳᐳ *--  EmailChannelᐸStringᐳ : "Unique tag #0"  INotificationChannelᐸStringᐳ
+	IEnumerableᐸINotificationChannelᐸStringᐳᐳ *--  SmsChannelᐸStringᐳ : "Unique tag #1"  INotificationChannelᐸStringᐳ
 	namespace Pure.DI.UsageTests.Advanced.TagUniqueScenario {
-		class AbcDependencyᐸStringᐳ {
-				<<class>>
-			+AbcDependency()
-		}
 		class Composition {
 		<<partial>>
-		+IServiceᐸStringᐳ Root
+		+INotificationServiceᐸStringᐳ NotificationService
 		}
-		class IDependencyᐸStringᐳ {
+		class EmailChannelᐸStringᐳ {
+				<<class>>
+			+EmailChannel()
+		}
+		class INotificationChannelᐸStringᐳ {
 			<<interface>>
 		}
-		class IServiceᐸStringᐳ {
+		class INotificationServiceᐸStringᐳ {
 			<<interface>>
 		}
-		class ServiceᐸStringᐳ {
+		class NotificationServiceᐸStringᐳ {
 				<<class>>
-			+Service(IEnumerableᐸIDependencyᐸStringᐳᐳ dependencies)
+			+NotificationService(IEnumerableᐸINotificationChannelᐸStringᐳᐳ channels)
 		}
-		class XyzDependencyᐸStringᐳ {
+		class SmsChannelᐸStringᐳ {
 				<<class>>
-			+XyzDependency()
+			+SmsChannel()
 		}
 	}
 	namespace System.Collections.Generic {
-		class IEnumerableᐸIDependencyᐸStringᐳᐳ {
+		class IEnumerableᐸINotificationChannelᐸStringᐳᐳ {
 				<<interface>>
 		}
 	}

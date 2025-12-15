@@ -9,32 +9,55 @@ using Pure.DI;
 using System.Collections.Immutable;
 
 DI.Setup(nameof(Composition))
-    .Bind().To<Dependency>()
-    .Bind().To<Service>()
+    .Bind().As(Lifetime.Singleton).To<TicketIdGenerator>()
+    .Bind().To<Ticket>()
+    .Bind().To<QueueTerminal>()
 
     // Composition root
-    .Root<IService>("Root");
+    .Root<IQueueTerminal>("Terminal");
 
 var composition = new Composition();
-var service = composition.Root;
-service.Dependencies.Length.ShouldBe(3);
+var terminal = composition.Terminal;
 
-interface IDependency;
+terminal.Tickets.Length.ShouldBe(3);
 
-class Dependency : IDependency;
+terminal.Tickets[0].Id.ShouldBe(1);
+terminal.Tickets[1].Id.ShouldBe(2);
+terminal.Tickets[2].Id.ShouldBe(3);
 
-interface IService
+interface ITicketIdGenerator
 {
-    ImmutableArray<IDependency> Dependencies { get; }
+    int NextId { get; }
 }
 
-class Service(Func<IDependency> dependencyFactory): IService
+class TicketIdGenerator : ITicketIdGenerator
 {
-    public ImmutableArray<IDependency> Dependencies =>
+    public int NextId => ++field;
+}
+
+interface ITicket
+{
+    int Id { get; }
+}
+
+class Ticket(ITicketIdGenerator idGenerator) : ITicket
+{
+    public int Id { get; } = idGenerator.NextId;
+}
+
+interface IQueueTerminal
+{
+    ImmutableArray<ITicket> Tickets { get; }
+}
+
+class QueueTerminal(Func<ITicket> ticketFactory) : IQueueTerminal
+{
+    public ImmutableArray<ITicket> Tickets { get; } =
     [
-        dependencyFactory(),
-        dependencyFactory(),
-        dependencyFactory()
+        // The factory creates a new instance of the ticket each time it is called
+        ticketFactory(),
+        ticketFactory(),
+        ticketFactory()
     ];
 }
 ```
@@ -73,28 +96,52 @@ The following partial class will be generated:
 ```c#
 partial class Composition
 {
+  private readonly Composition _root;
+#if NET9_0_OR_GREATER
+  private readonly Lock _lock;
+#else
+  private readonly Object _lock;
+#endif
+
+  private TicketIdGenerator? _singletonTicketIdGenerator51;
+
   [OrdinalAttribute(256)]
   public Composition()
   {
+    _root = this;
+#if NET9_0_OR_GREATER
+    _lock = new Lock();
+#else
+    _lock = new Object();
+#endif
   }
 
   internal Composition(Composition parentScope)
   {
+    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
+    _lock = parentScope._lock;
   }
 
-  public IService Root
+  public IQueueTerminal Terminal
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<IDependency> transientFunc1 = new Func<IDependency>(
+      Func<ITicket> transientFunc1 = new Func<ITicket>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        IDependency localValue19 = new Dependency();
+        if (_root._singletonTicketIdGenerator51 is null)
+          lock (_lock)
+            if (_root._singletonTicketIdGenerator51 is null)
+            {
+              _root._singletonTicketIdGenerator51 = new TicketIdGenerator();
+            }
+
+        ITicket localValue19 = new Ticket(_root._singletonTicketIdGenerator51);
         return localValue19;
       });
-      return new Service(transientFunc1);
+      return new QueueTerminal(transientFunc1);
     }
   }
 }
@@ -111,33 +158,42 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Service --|> IService
-	Composition ..> Service : IService Root
-	Service o-- "PerBlock" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
-	FuncᐸIDependencyᐳ *--  Dependency : IDependency
+	TicketIdGenerator --|> ITicketIdGenerator
+	Ticket --|> ITicket
+	QueueTerminal --|> IQueueTerminal
+	Composition ..> QueueTerminal : IQueueTerminal Terminal
+	Ticket o-- "Singleton" TicketIdGenerator : ITicketIdGenerator
+	QueueTerminal o-- "PerBlock" FuncᐸITicketᐳ : FuncᐸITicketᐳ
+	FuncᐸITicketᐳ *--  Ticket : ITicket
 	namespace Pure.DI.UsageTests.BCL.FuncScenario {
 		class Composition {
 		<<partial>>
-		+IService Root
+		+IQueueTerminal Terminal
 		}
-		class Dependency {
-				<<class>>
-			+Dependency()
-		}
-		class IDependency {
+		class IQueueTerminal {
 			<<interface>>
 		}
-		class IService {
+		class ITicket {
 			<<interface>>
 		}
-		class Service {
+		class ITicketIdGenerator {
+			<<interface>>
+		}
+		class QueueTerminal {
 				<<class>>
-			+Service(FuncᐸIDependencyᐳ dependencyFactory)
+			+QueueTerminal(FuncᐸITicketᐳ ticketFactory)
+		}
+		class Ticket {
+				<<class>>
+			+Ticket(ITicketIdGenerator idGenerator)
+		}
+		class TicketIdGenerator {
+				<<class>>
+			+TicketIdGenerator()
 		}
 	}
 	namespace System {
-		class FuncᐸIDependencyᐳ {
+		class FuncᐸITicketᐳ {
 				<<delegate>>
 		}
 	}

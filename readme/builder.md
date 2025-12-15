@@ -9,33 +9,36 @@ using Pure.DI;
 
 DI.Setup(nameof(Composition))
     .Bind().To(_ => Guid.NewGuid())
-    .Bind().To<Dependency>()
-    .Builder<Service>("BuildUpService");
+    .Bind().To<PhotonBlaster>()
+    .Builder<Player>("Equip");
 
 var composition = new Composition();
-        
-var service = composition.BuildUpService(new Service());
-service.Id.ShouldNotBe(Guid.Empty);
-service.Dependency.ShouldBeOfType<Dependency>();
 
-interface IDependency;
+// The Game Engine instantiates the Player entity,
+// so we need to inject dependencies into the existing instance.
+var player = composition.Equip(new Player());
 
-class Dependency : IDependency;
+player.Id.ShouldNotBe(Guid.Empty);
+player.Weapon.ShouldBeOfType<PhotonBlaster>();
 
-interface IService
+interface IWeapon;
+
+class PhotonBlaster : IWeapon;
+
+interface IGameEntity
 {
     Guid Id { get; }
 
-    IDependency? Dependency { get; }
+    IWeapon? Weapon { get; }
 }
 
-record Service: IService
+record Player : IGameEntity
 {
     public Guid Id { get; private set; } = Guid.Empty;
 
     // The Dependency attribute specifies to perform an injection
     [Dependency]
-    public IDependency? Dependency { get; set; }
+    public IWeapon? Weapon { get; set; }
 
     [Dependency]
     public void SetId(Guid id) => Id = id;
@@ -112,16 +115,16 @@ partial class Composition
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public Service BuildUpService(Service buildingInstance)
+  public Player Equip(Player buildingInstance)
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    Service transientService;
-    Service localBuildingInstance = buildingInstance;
+    Player transientPlayer;
+    Player localBuildingInstance = buildingInstance;
     Guid transientGuid3 = Guid.NewGuid();
-    localBuildingInstance.Dependency = new Dependency();
+    localBuildingInstance.Weapon = new PhotonBlaster();
     localBuildingInstance.SetId(transientGuid3);
-    transientService = localBuildingInstance;
-    return transientService;
+    transientPlayer = localBuildingInstance;
+    return transientPlayer;
   }
 }
 ```
@@ -137,25 +140,25 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Composition ..> Service : Service BuildUpService(Pure.DI.UsageTests.Basics.BuilderScenario.Service buildingInstance)
-	Service *--  Guid : Guid
-	Service *--  Dependency : IDependency
+	PhotonBlaster --|> IWeapon
+	Composition ..> Player : Player Equip(Pure.DI.UsageTests.Basics.BuilderScenario.Player buildingInstance)
+	Player *--  Guid : Guid
+	Player *--  PhotonBlaster : IWeapon
 	namespace Pure.DI.UsageTests.Basics.BuilderScenario {
 		class Composition {
 		<<partial>>
-		+Service BuildUpService(Pure.DI.UsageTests.Basics.BuilderScenario.Service buildingInstance)
+		+Player Equip(Pure.DI.UsageTests.Basics.BuilderScenario.Player buildingInstance)
 		}
-		class Dependency {
-				<<class>>
-			+Dependency()
-		}
-		class IDependency {
+		class IWeapon {
 			<<interface>>
 		}
-		class Service {
+		class PhotonBlaster {
+				<<class>>
+			+PhotonBlaster()
+		}
+		class Player {
 				<<record>>
-			+IDependency Dependency
+			+IWeapon Weapon
 			+SetId(Guid id) : Void
 		}
 	}

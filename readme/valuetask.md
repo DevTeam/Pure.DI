@@ -5,37 +5,39 @@
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>()
+    .Bind<IConnection>().To<CloudConnection>()
+    .Bind<IDataProcessor>().To<DataProcessor>()
 
     // Composition root
-    .Root<IService>("Root");
+    .Root<IDataProcessor>("DataProcessor");
 
 var composition = new Composition();
-var service = composition.Root;
-await service.RunAsync();
+var processor = composition.DataProcessor;
+await processor.ProcessDataAsync();
 
-interface IDependency
+interface IConnection
 {
-    ValueTask DoSomething();
+    ValueTask<bool> PingAsync();
 }
 
-class Dependency : IDependency
+class CloudConnection : IConnection
 {
-    public ValueTask DoSomething() => ValueTask.CompletedTask;
+    public ValueTask<bool> PingAsync() => ValueTask.FromResult(true);
 }
 
-interface IService
+interface IDataProcessor
 {
-    ValueTask RunAsync();
+    ValueTask ProcessDataAsync();
 }
 
-class Service(ValueTask<IDependency> dependencyTask) : IService
+class DataProcessor(ValueTask<IConnection> connectionTask) : IDataProcessor
 {
-    public async ValueTask RunAsync()
+    public async ValueTask ProcessDataAsync()
     {
-        var dependency = await dependencyTask;
-        await dependency.DoSomething();
+        // The connection is resolved asynchronously, allowing potential
+        // non-blocking initialization or resource allocation.
+        var connection = await connectionTask;
+        await connection.PingAsync();
     }
 }
 ```
@@ -79,16 +81,16 @@ partial class Composition
   {
   }
 
-  public IService Root
+  public IDataProcessor DataProcessor
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      ValueTask<IDependency> transientValueTask1;
-      IDependency localValue25 = new Dependency();
+      ValueTask<IConnection> transientValueTask1;
+      IConnection localValue25 = new CloudConnection();
       // Initializes a new instance of the ValueTask class using the supplied instance
-      transientValueTask1 = new ValueTask<IDependency>(localValue25);
-      return new Service(transientValueTask1);
+      transientValueTask1 = new ValueTask<IConnection>(localValue25);
+      return new DataProcessor(transientValueTask1);
     }
   }
 }
@@ -105,33 +107,33 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Service --|> IService
-	Composition ..> Service : IService Root
-	Service *--  ValueTaskᐸIDependencyᐳ : ValueTaskᐸIDependencyᐳ
-	ValueTaskᐸIDependencyᐳ *--  Dependency : IDependency
+	CloudConnection --|> IConnection
+	DataProcessor --|> IDataProcessor
+	Composition ..> DataProcessor : IDataProcessor DataProcessor
+	DataProcessor *--  ValueTaskᐸIConnectionᐳ : ValueTaskᐸIConnectionᐳ
+	ValueTaskᐸIConnectionᐳ *--  CloudConnection : IConnection
 	namespace Pure.DI.UsageTests.BCL.ValueTaskScenario {
+		class CloudConnection {
+				<<class>>
+			+CloudConnection()
+		}
 		class Composition {
 		<<partial>>
-		+IService Root
+		+IDataProcessor DataProcessor
 		}
-		class Dependency {
+		class DataProcessor {
 				<<class>>
-			+Dependency()
+			+DataProcessor(ValueTaskᐸIConnectionᐳ connectionTask)
 		}
-		class IDependency {
+		class IConnection {
 			<<interface>>
 		}
-		class IService {
+		class IDataProcessor {
 			<<interface>>
-		}
-		class Service {
-				<<class>>
-			+Service(ValueTaskᐸIDependencyᐳ dependencyTask)
 		}
 	}
 	namespace System.Threading.Tasks {
-		class ValueTaskᐸIDependencyᐳ {
+		class ValueTaskᐸIConnectionᐳ {
 				<<struct>>
 		}
 	}

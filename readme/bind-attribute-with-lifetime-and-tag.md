@@ -5,42 +5,43 @@
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Bind().As(Lifetime.Singleton).To<Facade>()
-    .Bind().To<Service>()
+    .Bind().As(Lifetime.Singleton).To<GraphicsAdapter>()
+    .Bind().To<RayTracer>()
 
     // Composition root
-    .Root<IService>("Root");
+    .Root<IRenderer>("Renderer");
 
 var composition = new Composition();
-var service = composition.Root;
-service.DoSomething();
+var renderer = composition.Renderer;
+renderer.Render();
 
-interface IDependency
+interface IGpu
 {
-    public void DoSomething();
+    void RenderFrame();
 }
 
-class Dependency : IDependency
+class DiscreteGpu : IGpu
 {
-    public void DoSomething()
-    {
-    }
+    public void RenderFrame() => Console.WriteLine("Rendering with Discrete GPU");
 }
 
-class Facade
+class GraphicsAdapter
 {
-    [Bind(lifetime: Lifetime.Singleton, tags: ["my tag"])]
-    public IDependency Dependency { get; } = new Dependency();
+    // Binds the property to the container with the specified
+    // lifetime and tag. This allows the "HighPerformance" GPU
+    // to be injected into other components.
+    [Bind(lifetime: Lifetime.Singleton, tags: ["HighPerformance"])]
+    public IGpu HighPerfGpu { get; } = new DiscreteGpu();
 }
 
-interface IService
+interface IRenderer
 {
-    public void DoSomething();
+    void Render();
 }
 
-class Service([Tag("my tag")] IDependency dep) : IService
+class RayTracer([Tag("HighPerformance")] IGpu gpu) : IRenderer
 {
-    public void DoSomething() => dep.DoSomething();
+    public void Render() => gpu.RenderFrame();
 }
 ```
 
@@ -81,8 +82,8 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private IDependency? _singletonIDependency2147483217;
-  private Facade? _singletonFacade51;
+  private IGpu? _singletonIGpu2147483214;
+  private GraphicsAdapter? _singletonGraphicsAdapter51;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -101,25 +102,25 @@ partial class Composition
     _lock = parentScope._lock;
   }
 
-  public IService Root
+  public IRenderer Renderer
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonIDependency2147483217 is null)
+      if (_root._singletonIGpu2147483214 is null)
         lock (_lock)
-          if (_root._singletonIDependency2147483217 is null)
+          if (_root._singletonIGpu2147483214 is null)
           {
-            if (_root._singletonFacade51 is null)
+            if (_root._singletonGraphicsAdapter51 is null)
             {
-              _root._singletonFacade51 = new Facade();
+              _root._singletonGraphicsAdapter51 = new GraphicsAdapter();
             }
 
-            Facade localInstance_1182D1279 = _root._singletonFacade51;
-            _root._singletonIDependency2147483217 = localInstance_1182D1279.Dependency;
+            GraphicsAdapter localInstance_1182D1279 = _root._singletonGraphicsAdapter51;
+            _root._singletonIGpu2147483214 = localInstance_1182D1279.HighPerfGpu;
           }
 
-      return new Service(_root._singletonIDependency2147483217);
+      return new RayTracer(_root._singletonIGpu2147483214);
     }
   }
 }
@@ -136,28 +137,28 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService
-	Composition ..> Service : IService Root
-	Service o-- "Singleton" IDependency : "my tag"  IDependency
-	IDependency o-- "Singleton" Facade : Facade
+	RayTracer --|> IRenderer
+	Composition ..> RayTracer : IRenderer Renderer
+	RayTracer o-- "Singleton" IGpu : "HighPerformance"  IGpu
+	IGpu o-- "Singleton" GraphicsAdapter : GraphicsAdapter
 	namespace Pure.DI.UsageTests.Basics.BindAttributeWithLifetimeAndTagScenario {
 		class Composition {
 		<<partial>>
-		+IService Root
+		+IRenderer Renderer
 		}
-		class Facade {
+		class GraphicsAdapter {
 				<<class>>
-			+Facade()
+			+GraphicsAdapter()
 		}
-		class IDependency {
+		class IGpu {
 				<<interface>>
 		}
-		class IService {
+		class IRenderer {
 			<<interface>>
 		}
-		class Service {
+		class RayTracer {
 				<<class>>
-			+Service(IDependency dep)
+			+RayTracer(IGpu gpu)
 		}
 	}
 ```

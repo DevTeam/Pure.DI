@@ -8,41 +8,42 @@ using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Bind<IDependency>().To<AbcDependency>()
-    .Bind<IDependency>(2).To<XyzDependency>()
-    .Bind<IService>().To<Service>()
+    .Bind<IHealthCheck>().To<MemoryCheck>()
+    .Bind<IHealthCheck>("External").To<ExternalServiceCheck>()
+    .Bind<IHealthService>().To<HealthService>()
 
     // Composition root
-    .Root<IService>("Root");
+    .Root<IHealthService>("HealthService");
 
 var composition = new Composition();
-var service = composition.Root;
-var dependencies = await service.GetDependenciesAsync();
-dependencies[0].ShouldBeOfType<AbcDependency>();
-dependencies[1].ShouldBeOfType<XyzDependency>();
+var healthService = composition.HealthService;
+var checks = await healthService.GetChecksAsync();
 
-interface IDependency;
+checks[0].ShouldBeOfType<MemoryCheck>();
+checks[1].ShouldBeOfType<ExternalServiceCheck>();
 
-class AbcDependency : IDependency;
+interface IHealthCheck;
 
-class XyzDependency : IDependency;
+class MemoryCheck : IHealthCheck;
 
-interface IService
+class ExternalServiceCheck : IHealthCheck;
+
+interface IHealthService
 {
-    Task<IReadOnlyList<IDependency>> GetDependenciesAsync();
+    Task<IReadOnlyList<IHealthCheck>> GetChecksAsync();
 }
 
-class Service(IAsyncEnumerable<IDependency> dependencies) : IService
+class HealthService(IAsyncEnumerable<IHealthCheck> checks) : IHealthService
 {
-    public async Task<IReadOnlyList<IDependency>> GetDependenciesAsync()
+    public async Task<IReadOnlyList<IHealthCheck>> GetChecksAsync()
     {
-        var deps = new List<IDependency>();
-        await foreach (var dependency in dependencies)
+        var results = new List<IHealthCheck>();
+        await foreach (var check in checks)
         {
-            deps.Add(dependency);
+            results.Add(check);
         }
 
-        return deps;
+        return results;
     }
 }
 ```
@@ -88,20 +89,20 @@ partial class Composition
   {
   }
 
-  public IService Root
+  public IHealthService HealthService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      async IAsyncEnumerable<IDependency> EnumerationOf_transientIAsyncEnumerable1()
+      async IAsyncEnumerable<IHealthCheck> EnumerationOf_transientIAsyncEnumerable1()
       {
-        yield return new AbcDependency();
-        yield return new XyzDependency();
+        yield return new MemoryCheck();
+        yield return new ExternalServiceCheck();
         await Task.CompletedTask;
       }
 
-      return new Service(EnumerationOf_transientIAsyncEnumerable1());
+      return new HealthService(EnumerationOf_transientIAsyncEnumerable1());
     }
   }
 }
@@ -118,39 +119,39 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	AbcDependency --|> IDependency
-	XyzDependency --|> IDependency : 2 
-	Service --|> IService
-	Composition ..> Service : IService Root
-	Service *--  IAsyncEnumerableᐸIDependencyᐳ : IAsyncEnumerableᐸIDependencyᐳ
-	IAsyncEnumerableᐸIDependencyᐳ *--  AbcDependency : IDependency
-	IAsyncEnumerableᐸIDependencyᐳ *--  XyzDependency : 2  IDependency
+	MemoryCheck --|> IHealthCheck
+	ExternalServiceCheck --|> IHealthCheck : "External" 
+	HealthService --|> IHealthService
+	Composition ..> HealthService : IHealthService HealthService
+	HealthService *--  IAsyncEnumerableᐸIHealthCheckᐳ : IAsyncEnumerableᐸIHealthCheckᐳ
+	IAsyncEnumerableᐸIHealthCheckᐳ *--  MemoryCheck : IHealthCheck
+	IAsyncEnumerableᐸIHealthCheckᐳ *--  ExternalServiceCheck : "External"  IHealthCheck
 	namespace Pure.DI.UsageTests.BCL.AsyncEnumerableScenario {
-		class AbcDependency {
-				<<class>>
-			+AbcDependency()
-		}
 		class Composition {
 		<<partial>>
-		+IService Root
+		+IHealthService HealthService
 		}
-		class IDependency {
+		class ExternalServiceCheck {
+				<<class>>
+			+ExternalServiceCheck()
+		}
+		class HealthService {
+				<<class>>
+			+HealthService(IAsyncEnumerableᐸIHealthCheckᐳ checks)
+		}
+		class IHealthCheck {
 			<<interface>>
 		}
-		class IService {
+		class IHealthService {
 			<<interface>>
 		}
-		class Service {
+		class MemoryCheck {
 				<<class>>
-			+Service(IAsyncEnumerableᐸIDependencyᐳ dependencies)
-		}
-		class XyzDependency {
-				<<class>>
-			+XyzDependency()
+			+MemoryCheck()
 		}
 	}
 	namespace System.Collections.Generic {
-		class IAsyncEnumerableᐸIDependencyᐳ {
+		class IAsyncEnumerableᐸIHealthCheckᐳ {
 				<<interface>>
 		}
 	}

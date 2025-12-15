@@ -7,41 +7,53 @@ using Pure.DI;
 using System.Collections.Immutable;
 
 DI.Setup(nameof(Composition))
-    .Bind<IDependency<TT>>().To<AbcDependency<TT>>()
-    .Bind<IDependency<TT>>("Xyz").To<XyzDependency<TT>>()
-    .Bind<IService<TT>>().To<Service<TT>>()
+    // Регистрируем обобщенные компоненты middleware.
+    // LoggingMiddleware<T> регистрируется как стандартная реализация.
+    .Bind<IMiddleware<TT>>().To<LoggingMiddleware<TT>>()
+    // MetricsMiddleware<T> регистрируется с тегом "Metrics".
+    .Bind<IMiddleware<TT>>("Metrics").To<MetricsMiddleware<TT>>()
 
-    // Composition roots
-    .Root<IService<int>>("IntRoot")
-    .Root<IService<string>>("StringRoot");
+    // Регистрируем сам конвейер, который будет принимать коллекцию всех middleware.
+    .Bind<IPipeline<TT>>().To<Pipeline<TT>>()
+
+    // Корни композиции для разных типов данных (int и string)
+    .Root<IPipeline<int>>("IntPipeline")
+    .Root<IPipeline<string>>("StringPipeline");
 
 var composition = new Composition();
 
-var intService = composition.IntRoot;
-intService.Dependencies.Length.ShouldBe(2);
-intService.Dependencies[0].ShouldBeOfType<AbcDependency<int>>();
-intService.Dependencies[1].ShouldBeOfType<XyzDependency<int>>();
+// Проверяем конвейер для обработки int
+var intPipeline = composition.IntPipeline;
+intPipeline.Middlewares.Length.ShouldBe(2);
+intPipeline.Middlewares[0].ShouldBeOfType<LoggingMiddleware<int>>();
+intPipeline.Middlewares[1].ShouldBeOfType<MetricsMiddleware<int>>();
 
-var stringService = composition.StringRoot;
-stringService.Dependencies.Length.ShouldBe(2);
-stringService.Dependencies[0].ShouldBeOfType<AbcDependency<string>>();
-stringService.Dependencies[1].ShouldBeOfType<XyzDependency<string>>();
+// Проверяем конвейер для обработки string
+var stringPipeline = composition.StringPipeline;
+stringPipeline.Middlewares.Length.ShouldBe(2);
+stringPipeline.Middlewares[0].ShouldBeOfType<LoggingMiddleware<string>>();
+stringPipeline.Middlewares[1].ShouldBeOfType<MetricsMiddleware<string>>();
 
-interface IDependency<T>;
+// Интерфейс для промежуточного ПО (middleware)
+interface IMiddleware<T>;
 
-class AbcDependency<T> : IDependency<T>;
+// Реализация для логирования
+class LoggingMiddleware<T> : IMiddleware<T>;
 
-class XyzDependency<T> : IDependency<T>;
+// Реализация для сбора метрик
+class MetricsMiddleware<T> : IMiddleware<T>;
 
-interface IService<T>
+// Интерфейс конвейера обработки
+interface IPipeline<T>
 {
-    ImmutableArray<IDependency<T>> Dependencies { get; }
+    ImmutableArray<IMiddleware<T>> Middlewares { get; }
 }
 
-class Service<T>(IEnumerable<IDependency<T>> dependencies) : IService<T>
+// Реализация конвейера, собирающая все доступные middleware
+class Pipeline<T>(IEnumerable<IMiddleware<T>> middlewares) : IPipeline<T>
 {
-    public ImmutableArray<IDependency<T>> Dependencies { get; }
-        = [..dependencies];
+    public ImmutableArray<IMiddleware<T>> Middlewares { get; }
+        = [..middlewares];
 }
 ```
 
@@ -86,35 +98,35 @@ partial class Composition
   {
   }
 
-  public IService<string> StringRoot
+  public IPipeline<string> StringPipeline
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      IEnumerable<IDependency<string>> EnumerationOf_transientIEnumerable1()
+      IEnumerable<IMiddleware<string>> EnumerationOf_transientIEnumerable1()
       {
-        yield return new AbcDependency<string>();
-        yield return new XyzDependency<string>();
+        yield return new LoggingMiddleware<string>();
+        yield return new MetricsMiddleware<string>();
       }
 
-      return new Service<string>(EnumerationOf_transientIEnumerable1());
+      return new Pipeline<string>(EnumerationOf_transientIEnumerable1());
     }
   }
 
-  public IService<int> IntRoot
+  public IPipeline<int> IntPipeline
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      IEnumerable<IDependency<int>> EnumerationOf_transientIEnumerable5()
+      IEnumerable<IMiddleware<int>> EnumerationOf_transientIEnumerable5()
       {
-        yield return new AbcDependency<int>();
-        yield return new XyzDependency<int>();
+        yield return new LoggingMiddleware<int>();
+        yield return new MetricsMiddleware<int>();
       }
 
-      return new Service<int>(EnumerationOf_transientIEnumerable5());
+      return new Pipeline<int>(EnumerationOf_transientIEnumerable5());
     }
   }
 }
@@ -131,68 +143,68 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	ServiceᐸStringᐳ --|> IServiceᐸStringᐳ
-	ServiceᐸInt32ᐳ --|> IServiceᐸInt32ᐳ
-	AbcDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ
-	XyzDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : "Xyz" 
-	AbcDependencyᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ
-	XyzDependencyᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ : "Xyz" 
-	Composition ..> ServiceᐸStringᐳ : IServiceᐸStringᐳ StringRoot
-	Composition ..> ServiceᐸInt32ᐳ : IServiceᐸInt32ᐳ IntRoot
-	ServiceᐸStringᐳ o-- "PerBlock" IEnumerableᐸIDependencyᐸStringᐳᐳ : IEnumerableᐸIDependencyᐸStringᐳᐳ
-	ServiceᐸInt32ᐳ o-- "PerBlock" IEnumerableᐸIDependencyᐸInt32ᐳᐳ : IEnumerableᐸIDependencyᐸInt32ᐳᐳ
-	IEnumerableᐸIDependencyᐸStringᐳᐳ *--  AbcDependencyᐸStringᐳ : IDependencyᐸStringᐳ
-	IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : "Xyz"  IDependencyᐸStringᐳ
-	IEnumerableᐸIDependencyᐸInt32ᐳᐳ *--  AbcDependencyᐸInt32ᐳ : IDependencyᐸInt32ᐳ
-	IEnumerableᐸIDependencyᐸInt32ᐳᐳ *--  XyzDependencyᐸInt32ᐳ : "Xyz"  IDependencyᐸInt32ᐳ
+	PipelineᐸStringᐳ --|> IPipelineᐸStringᐳ
+	PipelineᐸInt32ᐳ --|> IPipelineᐸInt32ᐳ
+	LoggingMiddlewareᐸStringᐳ --|> IMiddlewareᐸStringᐳ
+	MetricsMiddlewareᐸStringᐳ --|> IMiddlewareᐸStringᐳ : "Metrics" 
+	LoggingMiddlewareᐸInt32ᐳ --|> IMiddlewareᐸInt32ᐳ
+	MetricsMiddlewareᐸInt32ᐳ --|> IMiddlewareᐸInt32ᐳ : "Metrics" 
+	Composition ..> PipelineᐸStringᐳ : IPipelineᐸStringᐳ StringPipeline
+	Composition ..> PipelineᐸInt32ᐳ : IPipelineᐸInt32ᐳ IntPipeline
+	PipelineᐸStringᐳ o-- "PerBlock" IEnumerableᐸIMiddlewareᐸStringᐳᐳ : IEnumerableᐸIMiddlewareᐸStringᐳᐳ
+	PipelineᐸInt32ᐳ o-- "PerBlock" IEnumerableᐸIMiddlewareᐸInt32ᐳᐳ : IEnumerableᐸIMiddlewareᐸInt32ᐳᐳ
+	IEnumerableᐸIMiddlewareᐸStringᐳᐳ *--  LoggingMiddlewareᐸStringᐳ : IMiddlewareᐸStringᐳ
+	IEnumerableᐸIMiddlewareᐸStringᐳᐳ *--  MetricsMiddlewareᐸStringᐳ : "Metrics"  IMiddlewareᐸStringᐳ
+	IEnumerableᐸIMiddlewareᐸInt32ᐳᐳ *--  LoggingMiddlewareᐸInt32ᐳ : IMiddlewareᐸInt32ᐳ
+	IEnumerableᐸIMiddlewareᐸInt32ᐳᐳ *--  MetricsMiddlewareᐸInt32ᐳ : "Metrics"  IMiddlewareᐸInt32ᐳ
 	namespace Pure.DI.UsageTests.BCL.EnumerableGenericsScenario {
-		class AbcDependencyᐸInt32ᐳ {
-				<<class>>
-			+AbcDependency()
-		}
-		class AbcDependencyᐸStringᐳ {
-				<<class>>
-			+AbcDependency()
-		}
 		class Composition {
 		<<partial>>
-		+IServiceᐸInt32ᐳ IntRoot
-		+IServiceᐸStringᐳ StringRoot
+		+IPipelineᐸInt32ᐳ IntPipeline
+		+IPipelineᐸStringᐳ StringPipeline
 		}
-		class IDependencyᐸInt32ᐳ {
+		class IMiddlewareᐸInt32ᐳ {
 			<<interface>>
 		}
-		class IDependencyᐸStringᐳ {
+		class IMiddlewareᐸStringᐳ {
 			<<interface>>
 		}
-		class IServiceᐸInt32ᐳ {
+		class IPipelineᐸInt32ᐳ {
 			<<interface>>
 		}
-		class IServiceᐸStringᐳ {
+		class IPipelineᐸStringᐳ {
 			<<interface>>
 		}
-		class ServiceᐸInt32ᐳ {
+		class LoggingMiddlewareᐸInt32ᐳ {
 				<<class>>
-			+Service(IEnumerableᐸIDependencyᐸInt32ᐳᐳ dependencies)
+			+LoggingMiddleware()
 		}
-		class ServiceᐸStringᐳ {
+		class LoggingMiddlewareᐸStringᐳ {
 				<<class>>
-			+Service(IEnumerableᐸIDependencyᐸStringᐳᐳ dependencies)
+			+LoggingMiddleware()
 		}
-		class XyzDependencyᐸInt32ᐳ {
+		class MetricsMiddlewareᐸInt32ᐳ {
 				<<class>>
-			+XyzDependency()
+			+MetricsMiddleware()
 		}
-		class XyzDependencyᐸStringᐳ {
+		class MetricsMiddlewareᐸStringᐳ {
 				<<class>>
-			+XyzDependency()
+			+MetricsMiddleware()
+		}
+		class PipelineᐸInt32ᐳ {
+				<<class>>
+			+Pipeline(IEnumerableᐸIMiddlewareᐸInt32ᐳᐳ middlewares)
+		}
+		class PipelineᐸStringᐳ {
+				<<class>>
+			+Pipeline(IEnumerableᐸIMiddlewareᐸStringᐳᐳ middlewares)
 		}
 	}
 	namespace System.Collections.Generic {
-		class IEnumerableᐸIDependencyᐸInt32ᐳᐳ {
+		class IEnumerableᐸIMiddlewareᐸInt32ᐳᐳ {
 				<<interface>>
 		}
-		class IEnumerableᐸIDependencyᐸStringᐳᐳ {
+		class IEnumerableᐸIMiddlewareᐸStringᐳᐳ {
 				<<interface>>
 		}
 	}

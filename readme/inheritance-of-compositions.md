@@ -6,34 +6,40 @@ using Pure.DI;
 using static Pure.DI.CompositionKind;
 
 var composition = new Composition();
-var service = composition.Root;
+var app = composition.App;
 
-class BaseComposition
+// The base composition provides common infrastructure,
+// such as database access, that can be shared across different parts of the application.
+class Infrastructure
 {
+    // The 'Internal' kind indicates that this setup is intended
+    // to be inherited and does not produce a public API on its own.
     private static void Setup() =>
         DI.Setup(kind: Internal)
-            .Bind<IDependency>().To<Dependency>();
+            .Bind<IDatabase>().To<SqlDatabase>();
 }
 
-partial class Composition: BaseComposition
+// The main composition inherits the infrastructure configuration
+// and defines the application-specific dependencies.
+partial class Composition : Infrastructure
 {
     private void Setup() =>
         DI.Setup()
-            .Bind<IService>().To<Service>()
-            .Root<Program>(nameof(Root));
+            .Bind<IUserManager>().To<UserManager>()
+            .Root<App>(nameof(App));
 }
 
-interface IDependency;
+interface IDatabase;
 
-class Dependency : IDependency;
+class SqlDatabase : IDatabase;
 
-interface IService;
+interface IUserManager;
 
-class Service(IDependency dependency) : IService;
+class UserManager(IDatabase database) : IUserManager;
 
-partial class Program(IService service)
+partial class App(IUserManager userManager)
 {
-    public IService Service { get; } = service;
+    public IUserManager UserManager { get; } = userManager;
 }
 ```
 
@@ -76,12 +82,12 @@ partial class Composition
   {
   }
 
-  public Program Root
+  public App App
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new Program(new Service(new Dependency()));
+      return new App(new UserManager(new SqlDatabase()));
     }
   }
 
@@ -151,13 +157,13 @@ partial class Composition
   static Composition()
   {
     var valResolver_0000 = new Resolver_0000();
-    Resolver<Program>.Value = valResolver_0000;
+    Resolver<App>.Value = valResolver_0000;
     _buckets = Buckets<IResolver<Composition, object>>.Create(
       1,
       out _bucketSize,
       new Pair<IResolver<Composition, object>>[1]
       {
-         new Pair<IResolver<Composition, object>>(typeof(Program), valResolver_0000)
+         new Pair<IResolver<Composition, object>>(typeof(App), valResolver_0000)
       });
   }
 
@@ -179,19 +185,19 @@ partial class Composition
     }
   }
 
-  private sealed class Resolver_0000: Resolver<Program>
+  private sealed class Resolver_0000: Resolver<App>
   {
-    public override Program Resolve(Composition composition)
+    public override App Resolve(Composition composition)
     {
-      return composition.Root;
+      return composition.App;
     }
 
-    public override Program ResolveByTag(Composition composition, object tag)
+    public override App ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
         case null:
-          return composition.Root;
+          return composition.App;
 
         default:
           return base.ResolveByTag(composition, tag);

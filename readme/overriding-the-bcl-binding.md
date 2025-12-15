@@ -8,35 +8,35 @@ using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Bind<IDependency[]>().To<IDependency[]>(_ =>
-        [new AbcDependency(), new XyzDependency(), new AbcDependency()]
+    .Bind<IMessageSender[]>().To<IMessageSender[]>(_ =>
+        [new EmailSender(), new SmsSender(), new EmailSender()]
     )
-    .Bind<IService>().To<Service>()
+    .Bind<INotificationService>().To<NotificationService>()
 
     // Composition root
-    .Root<IService>("Root");
+    .Root<INotificationService>("NotificationService");
 
 var composition = new Composition();
-var service = composition.Root;
-service.Dependencies.Length.ShouldBe(3);
-service.Dependencies[0].ShouldBeOfType<AbcDependency>();
-service.Dependencies[1].ShouldBeOfType<XyzDependency>();
-service.Dependencies[2].ShouldBeOfType<AbcDependency>();
+var notificationService = composition.NotificationService;
+notificationService.Senders.Length.ShouldBe(3);
+notificationService.Senders[0].ShouldBeOfType<EmailSender>();
+notificationService.Senders[1].ShouldBeOfType<SmsSender>();
+notificationService.Senders[2].ShouldBeOfType<EmailSender>();
 
-interface IDependency;
+interface IMessageSender;
 
-class AbcDependency : IDependency;
+class EmailSender : IMessageSender;
 
-class XyzDependency : IDependency;
+class SmsSender : IMessageSender;
 
-interface IService
+interface INotificationService
 {
-    IDependency[] Dependencies { get; }
+    IMessageSender[] Senders { get; }
 }
 
-class Service(IDependency[] dependencies) : IService
+class NotificationService(IMessageSender[] senders) : INotificationService
 {
-    public IDependency[] Dependencies { get; } = dependencies;
+    public IMessageSender[] Senders { get; } = senders;
 }
 ```
 
@@ -81,13 +81,13 @@ partial class Composition
   {
   }
 
-  public IService Root
+  public INotificationService NotificationService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      IDependency[] transient1 = [new AbcDependency(), new XyzDependency(), new AbcDependency()];
-      return new Service(transient1);
+      IMessageSender[] transient1 = [new EmailSender(), new SmsSender(), new EmailSender()];
+      return new NotificationService(transient1);
     }
   }
 }
@@ -104,23 +104,23 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService
-	Composition ..> Service : IService Root
-	Service *--  ArrayᐸIDependencyᐳ : ArrayᐸIDependencyᐳ
-	class ArrayᐸIDependencyᐳ {
+	NotificationService --|> INotificationService
+	Composition ..> NotificationService : INotificationService NotificationService
+	NotificationService *--  ArrayᐸIMessageSenderᐳ : ArrayᐸIMessageSenderᐳ
+	class ArrayᐸIMessageSenderᐳ {
 			<<array>>
 	}
 	namespace Pure.DI.UsageTests.BCL.OverridingBclBindingScenario {
 		class Composition {
 		<<partial>>
-		+IService Root
+		+INotificationService NotificationService
 		}
-		class IService {
+		class INotificationService {
 			<<interface>>
 		}
-		class Service {
+		class NotificationService {
 				<<class>>
-			+Service(ArrayᐸIDependencyᐳ dependencies)
+			+NotificationService(ArrayᐸIMessageSenderᐳ senders)
 		}
 	}
 ```

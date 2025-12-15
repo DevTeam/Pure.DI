@@ -9,37 +9,54 @@ using Pure.DI;
 using static Pure.DI.Lifetime;
 
 DI.Setup(nameof(Composition))
-    .Accumulate<IAccumulating, MyAccumulator>(Transient, Singleton)
-    .Bind<IDependency>().As(PerBlock).To<AbcDependency>()
-    .Bind<IDependency>(Tag.Type).To<AbcDependency>()
-    .Bind<IDependency>(Tag.Type).As(Singleton).To<XyzDependency>()
-    .Bind<IService>().To<Service>()
-    .Root<(IService service, MyAccumulator accumulator)>("Root");
+    // Accumulates all instances implementing ITelemetrySource
+    // into a collection of type TelemetryRegistry.
+    // The accumulation applies to Transient and Singleton lifetimes.
+    .Accumulate<ITelemetrySource, TelemetryRegistry>(Transient, Singleton)
+
+    // Infrastructure bindings
+    .Bind<IDataSource>().As(PerBlock).To<SqlDataSource>()
+    .Bind<IDataSource>(Tag.Type).To<SqlDataSource>()
+    .Bind<IDataSource>(Tag.Type).As(Singleton).To<NetworkDataSource>()
+    .Bind<IDashboard>().To<Dashboard>()
+
+    // Composition root
+    .Root<(IDashboard dashboard, TelemetryRegistry registry)>("Root");
 
 var composition = new Composition();
-var (service, accumulator) = composition.Root;
-accumulator.Count.ShouldBe(3);
-accumulator[0].ShouldBeOfType<XyzDependency>();
-accumulator[1].ShouldBeOfType<AbcDependency>();
-accumulator[2].ShouldBeOfType<Service>();
+var (dashboard, registry) = composition.Root;
 
-interface IAccumulating;
+// Checks that all telemetry sources have been collected
+registry.Count.ShouldBe(3);
+// The order of accumulation depends on the order of object creation in the graph
+registry[0].ShouldBeOfType<NetworkDataSource>();
+registry[1].ShouldBeOfType<SqlDataSource>();
+registry[2].ShouldBeOfType<Dashboard>();
 
-class MyAccumulator : List<IAccumulating>;
+// Represents a component that produces telemetry data
+interface ITelemetrySource;
 
-interface IDependency;
+// Accumulator for collecting all telemetry sources in the object graph
+class TelemetryRegistry : List<ITelemetrySource>;
 
-class AbcDependency : IDependency, IAccumulating;
+// Abstract data source interface
+interface IDataSource;
 
-class XyzDependency : IDependency, IAccumulating;
+// SQL database implementation acting as a telemetry source
+class SqlDataSource : IDataSource, ITelemetrySource;
 
-interface IService;
+// Network data source implementation acting as a telemetry source
+class NetworkDataSource : IDataSource, ITelemetrySource;
 
-class Service(
-    [Tag(typeof(AbcDependency))] IDependency dependency1,
-    [Tag(typeof(XyzDependency))] IDependency dependency2,
-    IDependency dependency3)
-    : IService, IAccumulating;
+// Dashboard interface
+interface IDashboard;
+
+// Dashboard implementation aggregating data from sources
+class Dashboard(
+    [Tag(typeof(SqlDataSource))] IDataSource primaryDb,
+    [Tag(typeof(NetworkDataSource))] IDataSource externalApi,
+    IDataSource fallbackDb)
+    : IDashboard, ITelemetrySource;
 ```
 
 <details>
@@ -81,7 +98,7 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private XyzDependency? _singletonXyzDependency53;
+  private NetworkDataSource? _singletonNetworkDataSource53;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -100,36 +117,36 @@ partial class Composition
     _lock = parentScope._lock;
   }
 
-  public (IService service, MyAccumulator accumulator) Root
+  public (IDashboard dashboard, TelemetryRegistry registry) Root
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var perBlockMyAccumulator1 = new MyAccumulator();
-      if (_root._singletonXyzDependency53 is null)
+      var perBlockTelemetryRegistry1 = new TelemetryRegistry();
+      if (_root._singletonNetworkDataSource53 is null)
         lock (_lock)
-          if (_root._singletonXyzDependency53 is null)
+          if (_root._singletonNetworkDataSource53 is null)
           {
-            XyzDependency _singletonXyzDependency53Temp;
-            _singletonXyzDependency53Temp = new XyzDependency();
-            perBlockMyAccumulator1.Add(_singletonXyzDependency53Temp);
+            NetworkDataSource _singletonNetworkDataSource53Temp;
+            _singletonNetworkDataSource53Temp = new NetworkDataSource();
+            perBlockTelemetryRegistry1.Add(_singletonNetworkDataSource53Temp);
             Thread.MemoryBarrier();
-            _root._singletonXyzDependency53 = _singletonXyzDependency53Temp;
+            _root._singletonNetworkDataSource53 = _singletonNetworkDataSource53Temp;
           }
 
-      var transientAbcDependency3 = new AbcDependency();
+      var transientSqlDataSource3 = new SqlDataSource();
       lock (_lock)
       {
-        perBlockMyAccumulator1.Add(transientAbcDependency3);
+        perBlockTelemetryRegistry1.Add(transientSqlDataSource3);
       }
 
-      var transientService2 = new Service(transientAbcDependency3, _root._singletonXyzDependency53, new AbcDependency());
+      var transientDashboard2 = new Dashboard(transientSqlDataSource3, _root._singletonNetworkDataSource53, new SqlDataSource());
       lock (_lock)
       {
-        perBlockMyAccumulator1.Add(transientService2);
+        perBlockTelemetryRegistry1.Add(transientDashboard2);
       }
 
-      return (transientService2, perBlockMyAccumulator1);
+      return (transientDashboard2, perBlockTelemetryRegistry1);
     }
   }
 }
@@ -146,46 +163,46 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	AbcDependency --|> IDependency : typeof(Pure.DI.UsageTests.Advanced.AccumulatorScenario.AbcDependency) 
-	XyzDependency --|> IDependency : typeof(Pure.DI.UsageTests.Advanced.AccumulatorScenario.XyzDependency) 
-	Service --|> IService
-	Composition ..> ValueTupleᐸIServiceˏMyAccumulatorᐳ : ValueTupleᐸIServiceˏMyAccumulatorᐳ Root
-	Service o-- "PerBlock" AbcDependency : IDependency
-	Service *--  AbcDependency : typeof(Pure.DI.UsageTests.Advanced.AccumulatorScenario.AbcDependency)  IDependency
-	Service o-- "Singleton" XyzDependency : typeof(Pure.DI.UsageTests.Advanced.AccumulatorScenario.XyzDependency)  IDependency
-	ValueTupleᐸIServiceˏMyAccumulatorᐳ *--  Service : IService
-	ValueTupleᐸIServiceˏMyAccumulatorᐳ o-- "PerBlock" MyAccumulator : MyAccumulator
+	SqlDataSource --|> IDataSource : typeof(Pure.DI.UsageTests.Advanced.AccumulatorScenario.SqlDataSource) 
+	NetworkDataSource --|> IDataSource : typeof(Pure.DI.UsageTests.Advanced.AccumulatorScenario.NetworkDataSource) 
+	Dashboard --|> IDashboard
+	Composition ..> ValueTupleᐸIDashboardˏTelemetryRegistryᐳ : ValueTupleᐸIDashboardˏTelemetryRegistryᐳ Root
+	Dashboard o-- "PerBlock" SqlDataSource : IDataSource
+	Dashboard *--  SqlDataSource : typeof(Pure.DI.UsageTests.Advanced.AccumulatorScenario.SqlDataSource)  IDataSource
+	Dashboard o-- "Singleton" NetworkDataSource : typeof(Pure.DI.UsageTests.Advanced.AccumulatorScenario.NetworkDataSource)  IDataSource
+	ValueTupleᐸIDashboardˏTelemetryRegistryᐳ *--  Dashboard : IDashboard
+	ValueTupleᐸIDashboardˏTelemetryRegistryᐳ o-- "PerBlock" TelemetryRegistry : TelemetryRegistry
 	namespace Pure.DI.UsageTests.Advanced.AccumulatorScenario {
-		class AbcDependency {
-				<<class>>
-			+AbcDependency()
-		}
 		class Composition {
 		<<partial>>
-		+ValueTupleᐸIServiceˏMyAccumulatorᐳ Root
+		+ValueTupleᐸIDashboardˏTelemetryRegistryᐳ Root
 		}
-		class IDependency {
+		class Dashboard {
+				<<class>>
+			+Dashboard(IDataSource primaryDb, IDataSource externalApi, IDataSource fallbackDb)
+		}
+		class IDashboard {
 			<<interface>>
 		}
-		class IService {
+		class IDataSource {
 			<<interface>>
 		}
-		class MyAccumulator {
+		class NetworkDataSource {
 				<<class>>
+			+NetworkDataSource()
 		}
-		class Service {
+		class SqlDataSource {
 				<<class>>
-			+Service(IDependency dependency1, IDependency dependency2, IDependency dependency3)
+			+SqlDataSource()
 		}
-		class XyzDependency {
+		class TelemetryRegistry {
 				<<class>>
-			+XyzDependency()
 		}
 	}
 	namespace System {
-		class ValueTupleᐸIServiceˏMyAccumulatorᐳ {
+		class ValueTupleᐸIDashboardˏTelemetryRegistryᐳ {
 				<<struct>>
-			+ValueTuple(IService item1, MyAccumulator item2)
+			+ValueTuple(IDashboard item1, TelemetryRegistry item2)
 		}
 	}
 ```

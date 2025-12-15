@@ -27,55 +27,53 @@ using Pure.DI;
 
 using static Pure.DI.Tag;
 using static Pure.DI.Lifetime;
-        
+
 DI.Setup(nameof(Composition))
     // The `default` tag is used to resolve dependencies
     // when the tag was not specified by the consumer
-    .Bind<IDependency>(Abc, default).To<AbcDependency>()
-    .Bind<IDependency>(Xyz).As(Singleton).To<XyzDependency>()
-    .Bind<IService>().To<Service>()
+    .Bind<IMessageSender>(Email, default).To<EmailSender>()
+    .Bind<IMessageSender>(Sms).As(Singleton).To<SmsSender>()
+    .Bind<IMessagingService>().To<MessagingService>()
 
-    // "XyzRoot" is root name, Xyz is tag
-    .Root<IDependency>("XyzRoot", Xyz)
+    // "SmsSenderRoot" is root name, Sms is tag
+    .Root<IMessageSender>("SmsSenderRoot", Sms)
 
     // Specifies to create the composition root named "Root"
-    .Root<IService>("Root");
+    .Root<IMessagingService>("MessagingService");
 
 var composition = new Composition();
-var service = composition.Root;
-service.Dependency1.ShouldBeOfType<AbcDependency>();
-service.Dependency2.ShouldBeOfType<XyzDependency>();
-service.Dependency2.ShouldBe(composition.XyzRoot);
-service.Dependency3.ShouldBeOfType<AbcDependency>();
+var messagingService = composition.MessagingService;
+messagingService.EmailSender.ShouldBeOfType<EmailSender>();
+messagingService.SmsSender.ShouldBeOfType<SmsSender>();
+messagingService.SmsSender.ShouldBe(composition.SmsSenderRoot);
+messagingService.DefaultSender.ShouldBeOfType<EmailSender>();
 
-interface IDependency;
+interface IMessageSender;
 
-class AbcDependency : IDependency;
+class EmailSender : IMessageSender;
 
-class XyzDependency : IDependency;
+class SmsSender : IMessageSender;
 
-class Dependency : IDependency;
-
-interface IService
+interface IMessagingService
 {
-    IDependency Dependency1 { get; }
+    IMessageSender EmailSender { get; }
 
-    IDependency Dependency2 { get; }
+    IMessageSender SmsSender { get; }
 
-    IDependency Dependency3 { get; }
+    IMessageSender DefaultSender { get; }
 }
 
-class Service(
-    [Tag(Abc)] IDependency dependency1,
-    [Tag(Xyz)] IDependency dependency2,
-    IDependency dependency3)
-    : IService
+class MessagingService(
+    [Tag(Email)] IMessageSender emailSender,
+    [Tag(Sms)] IMessageSender smsSender,
+    IMessageSender defaultSender)
+    : IMessagingService
 {
-    public IDependency Dependency1 { get; } = dependency1;
+    public IMessageSender EmailSender { get; } = emailSender;
 
-    public IDependency Dependency2 { get; } = dependency2;
+    public IMessageSender SmsSender { get; } = smsSender;
 
-    public IDependency Dependency3 { get; } = dependency3;
+    public IMessageSender DefaultSender { get; } = defaultSender;
 }
 ```
 
@@ -118,7 +116,7 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private XyzDependency? _singletonXyzDependency52;
+  private SmsSender? _singletonSmsSender52;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -137,41 +135,41 @@ partial class Composition
     _lock = parentScope._lock;
   }
 
-  public IDependency XyzRoot
+  public IMessageSender SmsSenderRoot
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      EnsureXyzDependencyXyzExists();
-      return _root._singletonXyzDependency52;
+      EnsureSmsSenderSmsExists();
+      return _root._singletonSmsSender52;
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      void EnsureXyzDependencyXyzExists()
+      void EnsureSmsSenderSmsExists()
       {
-        if (_root._singletonXyzDependency52 is null)
+        if (_root._singletonSmsSender52 is null)
           lock (_lock)
-            if (_root._singletonXyzDependency52 is null)
+            if (_root._singletonSmsSender52 is null)
             {
-              _root._singletonXyzDependency52 = new XyzDependency();
+              _root._singletonSmsSender52 = new SmsSender();
             }
       }
     }
   }
 
-  public IService Root
+  public IMessagingService MessagingService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      EnsureXyzDependencyXyzExists();
-      return new Service(new AbcDependency(), _root._singletonXyzDependency52, new AbcDependency());
+      EnsureSmsSenderSmsExists();
+      return new MessagingService(new EmailSender(), _root._singletonSmsSender52, new EmailSender());
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      void EnsureXyzDependencyXyzExists()
+      void EnsureSmsSenderSmsExists()
       {
-        if (_root._singletonXyzDependency52 is null)
+        if (_root._singletonSmsSender52 is null)
           lock (_lock)
-            if (_root._singletonXyzDependency52 is null)
+            if (_root._singletonSmsSender52 is null)
             {
-              _root._singletonXyzDependency52 = new XyzDependency();
+              _root._singletonSmsSender52 = new SmsSender();
             }
       }
     }
@@ -190,38 +188,38 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	AbcDependency --|> IDependency : "Abc" 
-	AbcDependency --|> IDependency
-	XyzDependency --|> IDependency : "Xyz" 
-	Service --|> IService
-	Composition ..> Service : IService Root
-	Composition ..> XyzDependency : IDependency XyzRoot
-	Service *--  AbcDependency : "Abc"  IDependency
-	Service *--  AbcDependency : IDependency
-	Service o-- "Singleton" XyzDependency : "Xyz"  IDependency
+	EmailSender --|> IMessageSender : "Email" 
+	EmailSender --|> IMessageSender
+	SmsSender --|> IMessageSender : "Sms" 
+	MessagingService --|> IMessagingService
+	Composition ..> MessagingService : IMessagingService MessagingService
+	Composition ..> SmsSender : IMessageSender SmsSenderRoot
+	MessagingService *--  EmailSender : "Email"  IMessageSender
+	MessagingService *--  EmailSender : IMessageSender
+	MessagingService o-- "Singleton" SmsSender : "Sms"  IMessageSender
 	namespace Pure.DI.UsageTests.Basics.SmartTagsScenario {
-		class AbcDependency {
-				<<class>>
-			+AbcDependency()
-		}
 		class Composition {
 		<<partial>>
-		+IService Root
-		+IDependency XyzRoot
+		+IMessagingService MessagingService
+		+IMessageSender SmsSenderRoot
 		}
-		class IDependency {
+		class EmailSender {
+				<<class>>
+			+EmailSender()
+		}
+		class IMessageSender {
 			<<interface>>
 		}
-		class IService {
+		class IMessagingService {
 			<<interface>>
 		}
-		class Service {
+		class MessagingService {
 				<<class>>
-			+Service(IDependency dependency1, IDependency dependency2, IDependency dependency3)
+			+MessagingService(IMessageSender emailSender, IMessageSender smsSender, IMessageSender defaultSender)
 		}
-		class XyzDependency {
+		class SmsSender {
 				<<class>>
-			+XyzDependency()
+			+SmsSender()
 		}
 	}
 ```

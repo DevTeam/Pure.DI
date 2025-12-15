@@ -6,28 +6,30 @@ using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>()
+    .Bind<IGraphicsEngine>().To<GraphicsEngine>()
+    .Bind<IWindow>().To<Window>()
 
     // Composition root
-    .Root<IService>("Root");
+    .Root<IWindow>("Window");
 
 var composition = new Composition();
-var service = composition.Root;
-service.Dependency.ShouldBe(service.Dependency);
+var window = composition.Window;
 
-interface IDependency;
+// The graphics engine is created only when it is first accessed
+window.Engine.ShouldBe(window.Engine);
 
-class Dependency : IDependency;
+interface IGraphicsEngine;
 
-interface IService
+class GraphicsEngine : IGraphicsEngine;
+
+interface IWindow
 {
-    IDependency Dependency { get; }
+    IGraphicsEngine Engine { get; }
 }
 
-class Service(Lazy<IDependency> dependency) : IService
+class Window(Lazy<IGraphicsEngine> engine) : IWindow
 {
-    public IDependency Dependency => dependency.Value;
+    public IGraphicsEngine Engine => engine.Value;
 }
 ```
 
@@ -72,24 +74,24 @@ partial class Composition
   {
   }
 
-  public IService Root
+  public IWindow Window
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Lazy<IDependency> transientLazy1;
+      Lazy<IGraphicsEngine> transientLazy1;
       // Injects an instance factory
-      Func<IDependency> transientFunc2 = new Func<IDependency>(
+      Func<IGraphicsEngine> transientFunc2 = new Func<IGraphicsEngine>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        IDependency localValue22 = new Dependency();
+        IGraphicsEngine localValue22 = new GraphicsEngine();
         return localValue22;
       });
-      Func<IDependency> localFactory3 = transientFunc2;
+      Func<IGraphicsEngine> localFactory3 = transientFunc2;
       // Creates an instance that supports lazy initialization
-      transientLazy1 = new Lazy<IDependency>(localFactory3, true);
-      return new Service(transientLazy1);
+      transientLazy1 = new Lazy<IGraphicsEngine>(localFactory3, true);
+      return new Window(transientLazy1);
     }
   }
 }
@@ -106,37 +108,37 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Service --|> IService
-	Composition ..> Service : IService Root
-	Service *--  LazyᐸIDependencyᐳ : LazyᐸIDependencyᐳ
-	LazyᐸIDependencyᐳ o-- "PerBlock" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
-	FuncᐸIDependencyᐳ *--  Dependency : IDependency
+	GraphicsEngine --|> IGraphicsEngine
+	Window --|> IWindow
+	Composition ..> Window : IWindow Window
+	Window *--  LazyᐸIGraphicsEngineᐳ : LazyᐸIGraphicsEngineᐳ
+	LazyᐸIGraphicsEngineᐳ o-- "PerBlock" FuncᐸIGraphicsEngineᐳ : FuncᐸIGraphicsEngineᐳ
+	FuncᐸIGraphicsEngineᐳ *--  GraphicsEngine : IGraphicsEngine
 	namespace Pure.DI.UsageTests.BCL.LazyScenario {
 		class Composition {
 		<<partial>>
-		+IService Root
+		+IWindow Window
 		}
-		class Dependency {
+		class GraphicsEngine {
 				<<class>>
-			+Dependency()
+			+GraphicsEngine()
 		}
-		class IDependency {
+		class IGraphicsEngine {
 			<<interface>>
 		}
-		class IService {
+		class IWindow {
 			<<interface>>
 		}
-		class Service {
+		class Window {
 				<<class>>
-			+Service(LazyᐸIDependencyᐳ dependency)
+			+Window(LazyᐸIGraphicsEngineᐳ engine)
 		}
 	}
 	namespace System {
-		class FuncᐸIDependencyᐳ {
+		class FuncᐸIGraphicsEngineᐳ {
 				<<delegate>>
 		}
-		class LazyᐸIDependencyᐳ {
+		class LazyᐸIGraphicsEngineᐳ {
 				<<class>>
 		}
 	}

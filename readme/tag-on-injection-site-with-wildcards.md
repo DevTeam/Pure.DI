@@ -8,57 +8,70 @@ using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Bind(Tag.On("*Service:Dependency3", "*Consumer:myDep"))
-        .To<AbcDependency>()
-    .Bind(Tag.On("*Service:dependency?"))
-        .To<XyzDependency>()
-    .Bind<IService>().To<Service>()
+    // We use wildcards to specify logic:
+    // 1. Inject TemperatureSensor into 'OutdoorSensor' property of SmartHomeSystem
+    // 2. Inject TemperatureSensor into 'sensor' argument of any ClimateControl
+    .Bind(Tag.On("*SmartHomeSystem:OutdoorSensor", "*ClimateControl:sensor"))
+    .To<TemperatureSensor>()
+
+    // Inject MotionSensor into any argument starting with 'zone' inside SmartHomeSystem
+    // This corresponds to 'zone1' and 'zone2'
+    .Bind(Tag.On("*SmartHomeSystem:zone?"))
+    .To<MotionSensor>()
+    .Bind<ISmartHomeSystem>().To<SmartHomeSystem>()
 
     // Specifies to create the composition root named "Root"
-    .Root<IService>("Root");
+    .Root<ISmartHomeSystem>("SmartHome");
 
 var composition = new Composition();
-var service = composition.Root;
-service.Dependency1.ShouldBeOfType<XyzDependency>();
-service.Dependency2.ShouldBeOfType<XyzDependency>();
-service.Dependency3.ShouldBeOfType<AbcDependency>();
-service.Dependency4.ShouldBeOfType<AbcDependency>();
+var smartHome = composition.SmartHome;
 
-interface IDependency;
+// Verification:
+// Zone sensors should be MotionSensors (matched by "*SmartHomeSystem:zone?")
+smartHome.Zone1.ShouldBeOfType<MotionSensor>();
+smartHome.Zone2.ShouldBeOfType<MotionSensor>();
 
-class AbcDependency : IDependency;
+// Outdoor sensor should be TemperatureSensor (matched by "*SmartHomeSystem:OutdoorSensor")
+smartHome.OutdoorSensor.ShouldBeOfType<TemperatureSensor>();
 
-class XyzDependency : IDependency;
+// Climate control sensor should be TemperatureSensor (matched by "*ClimateControl:sensor")
+smartHome.ClimateSensor.ShouldBeOfType<TemperatureSensor>();
 
-class Consumer<T>(IDependency myDep)
+interface ISensor;
+
+class TemperatureSensor : ISensor;
+
+class MotionSensor : ISensor;
+
+class ClimateControl<T>(ISensor sensor)
 {
-    public IDependency Dependency { get; } = myDep;
+    public ISensor Sensor { get; } = sensor;
 }
 
-interface IService
+interface ISmartHomeSystem
 {
-    IDependency Dependency1 { get; }
+    ISensor Zone1 { get; }
 
-    IDependency Dependency2 { get; }
+    ISensor Zone2 { get; }
 
-    IDependency Dependency3 { get; }
+    ISensor OutdoorSensor { get; }
 
-    IDependency Dependency4 { get; }
+    ISensor ClimateSensor { get; }
 }
 
-class Service(
-    IDependency dependency1,
-    IDependency dependency2,
-    Consumer<string> consumer)
-    : IService
+class SmartHomeSystem(
+    ISensor zone1,
+    ISensor zone2,
+    ClimateControl<string> climateControl)
+    : ISmartHomeSystem
 {
-    public IDependency Dependency1 { get; } = dependency1;
+    public ISensor Zone1 { get; } = zone1;
 
-    public IDependency Dependency2 { get; } = dependency2;
+    public ISensor Zone2 { get; } = zone2;
 
-    public required IDependency Dependency3 { init; get; }
+    public required ISensor OutdoorSensor { init; get; }
 
-    public IDependency Dependency4 => consumer.Dependency;
+    public ISensor ClimateSensor => climateControl.Sensor;
 }
 ```
 
@@ -106,14 +119,14 @@ partial class Composition
   {
   }
 
-  public IService Root
+  public ISmartHomeSystem SmartHome
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new Service(new XyzDependency(), new XyzDependency(), new Consumer<string>(new AbcDependency()))
+      return new SmartHomeSystem(new MotionSensor(), new MotionSensor(), new ClimateControl<string>(new TemperatureSensor()))
       {
-        Dependency3 = new AbcDependency()
+        OutdoorSensor = new TemperatureSensor()
       };
     }
   }
@@ -131,41 +144,41 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	AbcDependency --|> IDependency
-	XyzDependency --|> IDependency
-	Service --|> IService
-	Composition ..> Service : IService Root
-	Service *--  AbcDependency : IDependency
-	Service *-- "2 " XyzDependency : IDependency
-	Service *--  ConsumerᐸStringᐳ : ConsumerᐸStringᐳ
-	ConsumerᐸStringᐳ *--  AbcDependency : IDependency
+	TemperatureSensor --|> ISensor
+	MotionSensor --|> ISensor
+	SmartHomeSystem --|> ISmartHomeSystem
+	Composition ..> SmartHomeSystem : ISmartHomeSystem SmartHome
+	SmartHomeSystem *--  TemperatureSensor : ISensor
+	SmartHomeSystem *-- "2 " MotionSensor : ISensor
+	SmartHomeSystem *--  ClimateControlᐸStringᐳ : ClimateControlᐸStringᐳ
+	ClimateControlᐸStringᐳ *--  TemperatureSensor : ISensor
 	namespace Pure.DI.UsageTests.Advanced.TagOnInjectionSiteWithWildcardsScenario {
-		class AbcDependency {
+		class ClimateControlᐸStringᐳ {
 				<<class>>
-			+AbcDependency()
+			+ClimateControl(ISensor sensor)
 		}
 		class Composition {
 		<<partial>>
-		+IService Root
+		+ISmartHomeSystem SmartHome
 		}
-		class ConsumerᐸStringᐳ {
-				<<class>>
-			+Consumer(IDependency myDep)
-		}
-		class IDependency {
+		class ISensor {
 			<<interface>>
 		}
-		class IService {
+		class ISmartHomeSystem {
 			<<interface>>
 		}
-		class Service {
+		class MotionSensor {
 				<<class>>
-			+Service(IDependency dependency1, IDependency dependency2, ConsumerᐸStringᐳ consumer)
-			+IDependency Dependency3
+			+MotionSensor()
 		}
-		class XyzDependency {
+		class SmartHomeSystem {
 				<<class>>
-			+XyzDependency()
+			+SmartHomeSystem(ISensor zone1, ISensor zone2, ClimateControlᐸStringᐳ climateControl)
+			+ISensor OutdoorSensor
+		}
+		class TemperatureSensor {
+				<<class>>
+			+TemperatureSensor()
 		}
 	}
 ```

@@ -6,43 +6,48 @@ using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Bind().As(Lifetime.Singleton).To<Facade>()
-    .Bind().To<Service>()
+    .Bind().As(Lifetime.Singleton).To<CommentsFactory>()
+    .Bind().To<ArticleService>()
 
     // Composition root
-    .Root<IService>("Root");
+    .Root<IArticleService>("ArticleService");
 
 var composition = new Composition();
-var service = composition.Root;
-service.DoSomething();
+var articleService = composition.ArticleService;
+articleService.DisplayComments();
 
-interface IDependency<T>
+interface IComments<T>
 {
-    public void DoSomething();
+    void Load();
 }
 
-class Dependency<T> : IDependency<T>
+class Comments<T> : IComments<T>
 {
-    public void DoSomething()
+    public void Load()
     {
     }
 }
 
-class Facade
+class CommentsFactory
 {
-    [Bind(typeof(IDependency<TT>))]
-    public IDependency<T> GetDependency<T>() => new Dependency<T>();
+    // The 'TT' type marker in the attribute indicates that this method
+    // can produce 'IComments<T>' for any generic type 'T'.
+    // This allows the factory to handle all requests for IComments<T>.
+    [Bind(typeof(IComments<TT>))]
+    public IComments<T> Create<T>() => new Comments<T>();
 }
 
-interface IService
+interface IArticleService
 {
-    public void DoSomething();
+    void DisplayComments();
 }
 
-class Service(IDependency<int> dep) : IService
+class ArticleService(IComments<Article> comments) : IArticleService
 {
-    public void DoSomething() => dep.DoSomething();
+    public void DisplayComments() => comments.Load();
 }
+
+class Article;
 ```
 
 <details>
@@ -84,7 +89,7 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private Facade? _singletonFacade51;
+  private CommentsFactory? _singletonCommentsFactory51;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -103,22 +108,22 @@ partial class Composition
     _lock = parentScope._lock;
   }
 
-  public IService Root
+  public IArticleService ArticleService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      IDependency<int> transientIDependency1;
-      if (_root._singletonFacade51 is null)
+      IComments<Article> transientIComments1;
+      if (_root._singletonCommentsFactory51 is null)
         lock (_lock)
-          if (_root._singletonFacade51 is null)
+          if (_root._singletonCommentsFactory51 is null)
           {
-            _root._singletonFacade51 = new Facade();
+            _root._singletonCommentsFactory51 = new CommentsFactory();
           }
 
-      Facade localInstance_1182D1276 = _root._singletonFacade51;
-      transientIDependency1 = localInstance_1182D1276.GetDependency<int>();
-      return new Service(transientIDependency1);
+      CommentsFactory localInstance_1182D1276 = _root._singletonCommentsFactory51;
+      transientIComments1 = localInstance_1182D1276.Create<Article>();
+      return new ArticleService(transientIComments1);
     }
   }
 }
@@ -135,28 +140,28 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService
-	Composition ..> Service : IService Root
-	Service *--  IDependencyᐸInt32ᐳ : IDependencyᐸInt32ᐳ
-	IDependencyᐸInt32ᐳ o-- "Singleton" Facade : Facade
+	ArticleService --|> IArticleService
+	Composition ..> ArticleService : IArticleService ArticleService
+	ArticleService *--  ICommentsᐸArticleᐳ : ICommentsᐸArticleᐳ
+	ICommentsᐸArticleᐳ o-- "Singleton" CommentsFactory : CommentsFactory
 	namespace Pure.DI.UsageTests.Basics.BindAttributeForGenericTypeScenario {
+		class ArticleService {
+				<<class>>
+			+ArticleService(ICommentsᐸArticleᐳ comments)
+		}
+		class CommentsFactory {
+				<<class>>
+			+CommentsFactory()
+		}
 		class Composition {
 		<<partial>>
-		+IService Root
+		+IArticleService ArticleService
 		}
-		class Facade {
-				<<class>>
-			+Facade()
-		}
-		class IDependencyᐸInt32ᐳ {
-				<<interface>>
-		}
-		class IService {
+		class IArticleService {
 			<<interface>>
 		}
-		class Service {
-				<<class>>
-			+Service(IDependencyᐸInt32ᐳ dep)
+		class ICommentsᐸArticleᐳ {
+				<<interface>>
 		}
 	}
 ```

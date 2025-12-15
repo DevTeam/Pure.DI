@@ -6,72 +6,86 @@ using Shouldly;
 using Pure.DI;
 
 var composition = new Composition();
-var root1 = composition.Root;
-var root2 = composition.Root;
-root1.Dependency.ShouldNotBe(root2.Dependency);
-root1.SingleDependency.ShouldBe(root2.SingleDependency);
+var queryHandler1 = composition.QueryHandler;
+var queryHandler2 = composition.QueryHandler;
 
-root2.Dispose();
+// The exclusive connection is created for each handler
+queryHandler1.ExclusiveConnection.ShouldNotBe(queryHandler2.ExclusiveConnection);
 
-// Checks that the disposable instances
-// associated with root1 have been disposed of
-root2.Dependency.IsDisposed.ShouldBeTrue();
+// The shared connection is the same for all handlers
+queryHandler1.SharedConnection.ShouldBe(queryHandler2.SharedConnection);
 
-// But the singleton is still not disposed of
-root2.SingleDependency.IsDisposed.ShouldBeFalse();
+// Disposing the second handler
+queryHandler2.Dispose();
 
-// Checks that the disposable instances
-// associated with root2 have not been disposed of
-root1.Dependency.IsDisposed.ShouldBeFalse();
-root1.SingleDependency.IsDisposed.ShouldBeFalse();
+// Checks that the exclusive connection
+// associated with queryHandler2 has been disposed of
+queryHandler2.ExclusiveConnection.IsDisposed.ShouldBeTrue();
 
-root1.Dispose();
+// But the shared connection is still alive (not disposed)
+// because it is a Singleton and shared with other consumers
+queryHandler2.SharedConnection.IsDisposed.ShouldBeFalse();
 
-// Checks that the disposable instances
-// associated with root2 have been disposed of
-root1.Dependency.IsDisposed.ShouldBeTrue();
+// Checks that the connections associated with root1
+// are not affected by queryHandler2 disposal
+queryHandler1.ExclusiveConnection.IsDisposed.ShouldBeFalse();
+queryHandler1.SharedConnection.IsDisposed.ShouldBeFalse();
 
-// But the singleton is still not disposed of
-root1.SingleDependency.IsDisposed.ShouldBeFalse();
-        
+// Disposing the first handler
+queryHandler1.Dispose();
+
+// Its exclusive connection is now disposed
+queryHandler1.ExclusiveConnection.IsDisposed.ShouldBeTrue();
+
+// The shared connection is STILL alive
+queryHandler1.SharedConnection.IsDisposed.ShouldBeFalse();
+
+// Disposing the composition root container
+// This should dispose all Singletons
 composition.Dispose();
-root1.SingleDependency.IsDisposed.ShouldBeTrue();
 
-interface IDependency
+// Now the shared connection is disposed
+queryHandler1.SharedConnection.IsDisposed.ShouldBeTrue();
+
+interface IConnection
 {
     bool IsDisposed { get; }
 }
 
-class Dependency : IDependency, IDisposable
+class Connection : IConnection, IDisposable
 {
     public bool IsDisposed { get; private set; }
 
     public void Dispose() => IsDisposed = true;
 }
 
-interface IService
+interface IQueryHandler
 {
-    public IDependency Dependency { get; }
+    public IConnection ExclusiveConnection { get; }
 
-    public IDependency SingleDependency { get; }
+    public IConnection SharedConnection { get; }
 }
 
-class Service(
-    Func<Owned<IDependency>> dependencyFactory,
-    [Tag("single")] Func<Owned<IDependency>> singleDependencyFactory)
-    : IService, IDisposable
+class QueryHandler(
+    Func<Owned<IConnection>> connectionFactory,
+    [Tag("Shared")] Func<Owned<IConnection>> sharedConnectionFactory)
+    : IQueryHandler, IDisposable
 {
-    private readonly Owned<IDependency> _dependency = dependencyFactory();
-    private readonly Owned<IDependency> _singleDependency = singleDependencyFactory();
+    private readonly Owned<IConnection> _exclusiveConnection = connectionFactory();
+    private readonly Owned<IConnection> _sharedConnection = sharedConnectionFactory();
 
-    public IDependency Dependency => _dependency.Value;
+    public IConnection ExclusiveConnection => _exclusiveConnection.Value;
 
-    public IDependency SingleDependency => _singleDependency.Value;
+    public IConnection SharedConnection => _sharedConnection.Value;
 
     public void Dispose()
     {
-        _dependency.Dispose();
-        _singleDependency.Dispose();
+        // Disposes the owned instances.
+        // For the exclusive connection (Transient), this disposes the actual connection.
+        // For the shared connection (Singleton), this just releases the ownership
+        // but does NOT dispose the underlying singleton instance until the container is disposed.
+        _exclusiveConnection.Dispose();
+        _sharedConnection.Dispose();
     }
 }
 
@@ -80,12 +94,12 @@ partial class Composition
     static void Setup() =>
 
         DI.Setup()
-            .Bind().To<Dependency>()
-            .Bind("single").As(Lifetime.Singleton).To<Dependency>()
-            .Bind().To<Service>()
+            .Bind().To<Connection>()
+            .Bind("Shared").As(Lifetime.Singleton).To<Connection>()
+            .Bind().To<QueryHandler>()
 
             // Composition root
-            .Root<Service>("Root");
+            .Root<QueryHandler>("QueryHandler");
 }
 ```
 
@@ -130,7 +144,7 @@ partial class Composition: IDisposable
   private object[] _disposables;
   private int _disposeIndex;
 
-  private Dependency? _singletonDependency52;
+  private Connection? _singletonConnection52;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -151,17 +165,17 @@ partial class Composition: IDisposable
     _disposables = parentScope._disposables;
   }
 
-  public Service Root
+  public QueryHandler QueryHandler
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       var perBlockOwned3 = new Owned();
-      Func<Owned<IDependency>> transientFunc1 = new Func<Owned<IDependency>>(
+      Func<Owned<IConnection>> transientFunc1 = new Func<Owned<IConnection>>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        Owned<IDependency> transientOwned4;
+        Owned<IConnection> transientOwned4;
         // Creates the owner of an instance
         Owned transientOwned5;
         Owned localOwned9 = perBlockOwned3;
@@ -172,28 +186,28 @@ partial class Composition: IDisposable
         }
 
         IOwned localOwned8 = transientOwned5;
-        var transientDependency6 = new Dependency();
+        var transientConnection6 = new Connection();
         lock (_lock)
         {
-          perBlockOwned3.Add(transientDependency6);
+          perBlockOwned3.Add(transientConnection6);
         }
 
-        IDependency localValue12 = transientDependency6;
-        transientOwned4 = new Owned<IDependency>(localValue12, localOwned8);
+        IConnection localValue12 = transientConnection6;
+        transientOwned4 = new Owned<IConnection>(localValue12, localOwned8);
         lock (_lock)
         {
           perBlockOwned3.Add(transientOwned4);
         }
 
-        Owned<IDependency> localValue11 = transientOwned4;
+        Owned<IConnection> localValue11 = transientOwned4;
         return localValue11;
       });
       var perBlockOwned7 = new Owned();
-      Func<Owned<IDependency>> transientFunc2 = new Func<Owned<IDependency>>(
+      Func<Owned<IConnection>> transientFunc2 = new Func<Owned<IConnection>>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        Owned<IDependency> transientOwned8;
+        Owned<IConnection> transientOwned8;
         // Creates the owner of an instance
         Owned transientOwned9;
         Owned localOwned11 = perBlockOwned7;
@@ -204,25 +218,25 @@ partial class Composition: IDisposable
         }
 
         IOwned localOwned10 = transientOwned9;
-        if (_root._singletonDependency52 is null)
+        if (_root._singletonConnection52 is null)
           lock (_lock)
-            if (_root._singletonDependency52 is null)
+            if (_root._singletonConnection52 is null)
             {
-              _root._singletonDependency52 = new Dependency();
-              _root._disposables[_root._disposeIndex++] = _root._singletonDependency52;
+              _root._singletonConnection52 = new Connection();
+              _root._disposables[_root._disposeIndex++] = _root._singletonConnection52;
             }
 
-        IDependency localValue14 = _root._singletonDependency52;
-        transientOwned8 = new Owned<IDependency>(localValue14, localOwned10);
+        IConnection localValue14 = _root._singletonConnection52;
+        transientOwned8 = new Owned<IConnection>(localValue14, localOwned10);
         lock (_lock)
         {
           perBlockOwned7.Add(transientOwned8);
         }
 
-        Owned<IDependency> localValue13 = transientOwned8;
+        Owned<IConnection> localValue13 = transientOwned8;
         return localValue13;
       });
-      return new Service(transientFunc1, transientFunc2);
+      return new QueryHandler(transientFunc1, transientFunc2);
     }
   }
 
@@ -236,7 +250,7 @@ partial class Composition: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _singletonDependency52 = null;
+      _singletonConnection52 = null;
     }
 
     while (disposeIndex-- > 0)
@@ -274,17 +288,17 @@ Class diagram:
 classDiagram
 	Composition --|> IDisposable
 	Owned --|> IOwned
-	Dependency --|> IDependency
-	Service --|> IService
-	Composition ..> Service : Service Root
-	Service o-- "PerBlock" FuncᐸOwnedᐸIDependencyᐳᐳ : FuncᐸOwnedᐸIDependencyᐳᐳ
-	Service o-- "PerBlock" FuncᐸOwnedᐸIDependencyᐳᐳ : "single"  FuncᐸOwnedᐸIDependencyᐳᐳ
-	FuncᐸOwnedᐸIDependencyᐳᐳ o-- "PerBlock" OwnedᐸIDependencyᐳ : OwnedᐸIDependencyᐳ
-	FuncᐸOwnedᐸIDependencyᐳᐳ o-- "PerBlock" OwnedᐸIDependencyᐳ : "single"  OwnedᐸIDependencyᐳ
-	OwnedᐸIDependencyᐳ *--  Owned : IOwned
-	OwnedᐸIDependencyᐳ *--  Dependency : IDependency
-	OwnedᐸIDependencyᐳ *--  Owned : IOwned
-	OwnedᐸIDependencyᐳ o-- "Singleton" Dependency : "single"  IDependency
+	Connection --|> IConnection
+	QueryHandler --|> IQueryHandler
+	Composition ..> QueryHandler : QueryHandler QueryHandler
+	QueryHandler o-- "PerBlock" FuncᐸOwnedᐸIConnectionᐳᐳ : FuncᐸOwnedᐸIConnectionᐳᐳ
+	QueryHandler o-- "PerBlock" FuncᐸOwnedᐸIConnectionᐳᐳ : "Shared"  FuncᐸOwnedᐸIConnectionᐳᐳ
+	FuncᐸOwnedᐸIConnectionᐳᐳ o-- "PerBlock" OwnedᐸIConnectionᐳ : OwnedᐸIConnectionᐳ
+	FuncᐸOwnedᐸIConnectionᐳᐳ o-- "PerBlock" OwnedᐸIConnectionᐳ : "Shared"  OwnedᐸIConnectionᐳ
+	OwnedᐸIConnectionᐳ *--  Owned : IOwned
+	OwnedᐸIConnectionᐳ *--  Connection : IConnection
+	OwnedᐸIConnectionᐳ *--  Owned : IOwned
+	OwnedᐸIConnectionᐳ o-- "Singleton" Connection : "Shared"  IConnection
 	namespace Pure.DI {
 		class IOwned {
 			<<interface>>
@@ -292,32 +306,32 @@ classDiagram
 		class Owned {
 				<<class>>
 		}
-		class OwnedᐸIDependencyᐳ {
+		class OwnedᐸIConnectionᐳ {
 				<<struct>>
 		}
 	}
 	namespace Pure.DI.UsageTests.Advanced.TrackingDisposableWithDifferentLifetimesScenario {
 		class Composition {
 		<<partial>>
-		+Service Root
+		+QueryHandler QueryHandler
 		}
-		class Dependency {
+		class Connection {
 				<<class>>
-			+Dependency()
+			+Connection()
 		}
-		class IDependency {
+		class IConnection {
 			<<interface>>
 		}
-		class IService {
+		class IQueryHandler {
 			<<interface>>
 		}
-		class Service {
+		class QueryHandler {
 				<<class>>
-			+Service(FuncᐸOwnedᐸIDependencyᐳᐳ dependencyFactory, FuncᐸOwnedᐸIDependencyᐳᐳ singleDependencyFactory)
+			+QueryHandler(FuncᐸOwnedᐸIConnectionᐳᐳ connectionFactory, FuncᐸOwnedᐸIConnectionᐳᐳ sharedConnectionFactory)
 		}
 	}
 	namespace System {
-		class FuncᐸOwnedᐸIDependencyᐳᐳ {
+		class FuncᐸOwnedᐸIConnectionᐳᐳ {
 				<<delegate>>
 		}
 		class IDisposable {

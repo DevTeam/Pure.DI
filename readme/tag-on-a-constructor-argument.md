@@ -8,46 +8,46 @@ using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Bind(Tag.OnConstructorArg<Service>("dependency1"))
-        .To<AbcDependency>()
-    .Bind(Tag.OnConstructorArg<Consumer<TT>>("myDep"))
-        .To<XyzDependency>()
-    .Bind<IService>().To<Service>()
+    .Bind(Tag.OnConstructorArg<DataReplicator>("sourceStream"))
+        .To<FileStream>()
+    .Bind(Tag.OnConstructorArg<StreamProcessor<TT>>("stream"))
+        .To<NetworkStream>()
+    .Bind<IDataReplicator>().To<DataReplicator>()
 
     // Specifies to create the composition root named "Root"
-    .Root<IService>("Root");
+    .Root<IDataReplicator>("Replicator");
 
 var composition = new Composition();
-var service = composition.Root;
-service.Dependency1.ShouldBeOfType<AbcDependency>();
-service.Dependency2.ShouldBeOfType<XyzDependency>();
+var replicator = composition.Replicator;
+replicator.SourceStream.ShouldBeOfType<FileStream>();
+replicator.TargetStream.ShouldBeOfType<NetworkStream>();
 
-interface IDependency;
+interface IStream;
 
-class AbcDependency : IDependency;
+class FileStream : IStream;
 
-class XyzDependency : IDependency;
+class NetworkStream : IStream;
 
-class Consumer<T>(IDependency myDep)
+class StreamProcessor<T>(IStream stream)
 {
-    public IDependency Dependency { get; } = myDep;
+    public IStream Stream { get; } = stream;
 }
 
-interface IService
+interface IDataReplicator
 {
-    IDependency Dependency1 { get; }
+    IStream SourceStream { get; }
 
-    IDependency Dependency2 { get; }
+    IStream TargetStream { get; }
 }
 
-class Service(
-    IDependency dependency1,
-    Consumer<string> consumer)
-    : IService
+class DataReplicator(
+    IStream sourceStream,
+    StreamProcessor<string> processor)
+    : IDataReplicator
 {
-    public IDependency Dependency1 { get; } = dependency1;
+    public IStream SourceStream { get; } = sourceStream;
 
-    public IDependency Dependency2 => consumer.Dependency;
+    public IStream TargetStream => processor.Stream;
 }
 ```
 
@@ -95,12 +95,12 @@ partial class Composition
   {
   }
 
-  public IService Root
+  public IDataReplicator Replicator
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new Service(new AbcDependency(), new Consumer<string>(new XyzDependency()));
+      return new DataReplicator(new FileStream(), new StreamProcessor<string>(new NetworkStream()));
     }
   }
 }
@@ -117,39 +117,39 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	AbcDependency --|> IDependency
-	XyzDependency --|> IDependency
-	Service --|> IService
-	Composition ..> Service : IService Root
-	Service *--  AbcDependency : IDependency
-	Service *--  ConsumerᐸStringᐳ : ConsumerᐸStringᐳ
-	ConsumerᐸStringᐳ *--  XyzDependency : IDependency
+	FileStream --|> IStream
+	NetworkStream --|> IStream
+	DataReplicator --|> IDataReplicator
+	Composition ..> DataReplicator : IDataReplicator Replicator
+	DataReplicator *--  FileStream : IStream
+	DataReplicator *--  StreamProcessorᐸStringᐳ : StreamProcessorᐸStringᐳ
+	StreamProcessorᐸStringᐳ *--  NetworkStream : IStream
 	namespace Pure.DI.UsageTests.Advanced.TagOnConstructorArgScenario {
-		class AbcDependency {
-				<<class>>
-			+AbcDependency()
-		}
 		class Composition {
 		<<partial>>
-		+IService Root
+		+IDataReplicator Replicator
 		}
-		class ConsumerᐸStringᐳ {
+		class DataReplicator {
 				<<class>>
-			+Consumer(IDependency myDep)
+			+DataReplicator(IStream sourceStream, StreamProcessorᐸStringᐳ processor)
 		}
-		class IDependency {
+		class FileStream {
+				<<class>>
+			+FileStream()
+		}
+		class IDataReplicator {
 			<<interface>>
 		}
-		class IService {
+		class IStream {
 			<<interface>>
 		}
-		class Service {
+		class NetworkStream {
 				<<class>>
-			+Service(IDependency dependency1, ConsumerᐸStringᐳ consumer)
+			+NetworkStream()
 		}
-		class XyzDependency {
+		class StreamProcessorᐸStringᐳ {
 				<<class>>
-			+XyzDependency()
+			+StreamProcessor(IStream stream)
 		}
 	}
 ```

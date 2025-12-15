@@ -7,40 +7,40 @@ This example shows how to resolve the roots of a composition using `Resolve` met
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>()
-    .Bind<IService>("My Tag").To<OtherService>()
+    .Bind<IDevice>().To<Device>()
+    .Bind<ISensor>().To<TemperatureSensor>()
+    .Bind<ISensor>("Humidity").To<HumiditySensor>()
 
     // Specifies to create a private root
     // that is only accessible from _Resolve_ methods
-    .Root<IService>()
+    .Root<ISensor>()
 
-    // Specifies to create a public root named _OtherService_
-    // using the "My Tag" tag
-    .Root<IService>("OtherService", "My Tag");
+    // Specifies to create a public root named _HumiditySensor_
+    // using the "Humidity" tag
+    .Root<ISensor>("HumiditySensor", "Humidity");
 
 var composition = new Composition();
 
 // The next 3 lines of code do the same thing:
-var service1 = composition.Resolve<IService>();
-var service2 = composition.Resolve(typeof(IService));
-var service3 = composition.Resolve(typeof(IService), null);
+var sensor1 = composition.Resolve<ISensor>();
+var sensor2 = composition.Resolve(typeof(ISensor));
+var sensor3 = composition.Resolve(typeof(ISensor), null);
 
-// Resolve by "My Tag" tag
+// Resolve by "Humidity" tag
 // The next 3 lines of code do the same thing too:
-var otherService1 = composition.Resolve<IService>("My Tag");
-var otherService2 = composition.Resolve(typeof(IService), "My Tag");
-var otherService3 = composition.OtherService; // Gets the composition through the public root
+var humiditySensor1 = composition.Resolve<ISensor>("Humidity");
+var humiditySensor2 = composition.Resolve(typeof(ISensor), "Humidity");
+var humiditySensor3 = composition.HumiditySensor; // Gets the composition through the public root
 
-interface IDependency;
+interface IDevice;
 
-class Dependency : IDependency;
+class Device : IDevice;
 
-interface IService;
+interface ISensor;
 
-class Service(IDependency dependency) : IService;
+class TemperatureSensor(IDevice device) : ISensor;
 
-class OtherService : IService;
+class HumiditySensor : ISensor;
 ```
 
 <details>
@@ -87,21 +87,21 @@ partial class Composition
   {
   }
 
-  public IService OtherService
+  public ISensor HumiditySensor
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new OtherService();
+      return new HumiditySensor();
     }
   }
 
-  private IService Root2
+  private ISensor Root2
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new Service(new Dependency());
+      return new TemperatureSensor(new Device());
     }
   }
 
@@ -171,13 +171,13 @@ partial class Composition
   static Composition()
   {
     var valResolver_0000 = new Resolver_0000();
-    Resolver<IService>.Value = valResolver_0000;
+    Resolver<ISensor>.Value = valResolver_0000;
     _buckets = Buckets<IResolver<Composition, object>>.Create(
       1,
       out _bucketSize,
       new Pair<IResolver<Composition, object>>[1]
       {
-         new Pair<IResolver<Composition, object>>(typeof(IService), valResolver_0000)
+         new Pair<IResolver<Composition, object>>(typeof(ISensor), valResolver_0000)
       });
   }
 
@@ -199,19 +199,19 @@ partial class Composition
     }
   }
 
-  private sealed class Resolver_0000: Resolver<IService>
+  private sealed class Resolver_0000: Resolver<ISensor>
   {
-    public override IService Resolve(Composition composition)
+    public override ISensor Resolve(Composition composition)
     {
       return composition.Root2;
     }
 
-    public override IService ResolveByTag(Composition composition, object tag)
+    public override ISensor ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
-        case "My Tag":
-          return composition.OtherService;
+        case "Humidity":
+          return composition.HumiditySensor;
 
         case null:
           return composition.Root2;
@@ -235,39 +235,39 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Service --|> IService
-	OtherService --|> IService : "My Tag" 
-	Composition ..> OtherService : IService OtherService
-	Composition ..> Service : IService _
-	Service *--  Dependency : IDependency
+	Device --|> IDevice
+	TemperatureSensor --|> ISensor
+	HumiditySensor --|> ISensor : "Humidity" 
+	Composition ..> HumiditySensor : ISensor HumiditySensor
+	Composition ..> TemperatureSensor : ISensor _
+	TemperatureSensor *--  Device : IDevice
 	namespace Pure.DI.UsageTests.Basics.ResolveMethodsScenario {
 		class Composition {
 		<<partial>>
-		+IService OtherService
-		-IService _
+		+ISensor HumiditySensor
+		-ISensor _
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
 		}
-		class Dependency {
+		class Device {
 				<<class>>
-			+Dependency()
+			+Device()
 		}
-		class IDependency {
+		class HumiditySensor {
+				<<class>>
+			+HumiditySensor()
+		}
+		class IDevice {
 			<<interface>>
 		}
-		class IService {
+		class ISensor {
 			<<interface>>
 		}
-		class OtherService {
+		class TemperatureSensor {
 				<<class>>
-			+OtherService()
-		}
-		class Service {
-				<<class>>
-			+Service(IDependency dependency)
+			+TemperatureSensor(IDevice device)
 		}
 	}
 ```

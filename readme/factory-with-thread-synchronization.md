@@ -8,46 +8,46 @@ using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Bind<IDependency>().To<IDependency>(ctx =>
-    {
-        // Some instance initialization logic that requires
-        // synchronization of the overall composition flow
+    .Bind<IMessageBus>().To<IMessageBus>(ctx => {
+        // Initialization logic requiring synchronization
+        // of the overall composition flow.
+        // For example, connecting to a message broker.
         lock (ctx.Lock)
         {
-            ctx.Inject(out Dependency dependency);
-            dependency.Initialize();
-            return dependency;
+            ctx.Inject(out MessageBus bus);
+            bus.Connect();
+            return bus;
         }
     })
-    .Bind<IService>().To<Service>()
+    .Bind<INotificationService>().To<NotificationService>()
 
     // Composition root
-    .Root<IService>("MyService");
+    .Root<INotificationService>("NotificationService");
 
 var composition = new Composition();
-var service = composition.MyService;
-service.Dependency.IsInitialized.ShouldBeTrue();
+var service = composition.NotificationService;
+service.Bus.IsConnected.ShouldBeTrue();
 
-interface IDependency
+interface IMessageBus
 {
-    bool IsInitialized { get; }
+    bool IsConnected { get; }
 }
 
-class Dependency : IDependency
+class MessageBus : IMessageBus
 {
-    public bool IsInitialized { get; private set; }
+    public bool IsConnected { get; private set; }
 
-    public void Initialize() => IsInitialized = true;
+    public void Connect() => IsConnected = true;
 }
 
-interface IService
+interface INotificationService
 {
-    IDependency Dependency { get; }
+    IMessageBus Bus { get; }
 }
 
-class Service(IDependency dependency) : IService
+class NotificationService(IMessageBus bus) : INotificationService
 {
-    public IDependency Dependency { get; } = dependency;
+    public IMessageBus Bus { get; } = bus;
 }
 ```
 
@@ -104,27 +104,28 @@ partial class Composition
     _lock = parentScope._lock;
   }
 
-  public IService MyService
+  public INotificationService NotificationService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      IDependency transientIDependency1;
-      // Some instance initialization logic that requires
-      // synchronization of the overall composition flow
+      IMessageBus transientIMessageBus1;
+      // Initialization logic requiring synchronization
+      // of the overall composition flow.
+      // For example, connecting to a message broker.
       lock (_lock)
       {
-        Dependency localDependency = new Dependency();
-        localDependency.Initialize();
+        MessageBus localBus = new MessageBus();
+        localBus.Connect();
         {
-          transientIDependency1 = localDependency;
-          goto transientIDependency1Finish;
+          transientIMessageBus1 = localBus;
+          goto transientIMessageBus1Finish;
         }
       }
 
-      transientIDependency1Finish:
+      transientIMessageBus1Finish:
         ;
-      return new Service(transientIDependency1);
+      return new NotificationService(transientIMessageBus1);
     }
   }
 }
@@ -141,28 +142,28 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService
-	Composition ..> Service : IService MyService
-	IDependency *--  Dependency : Dependency
-	Service *--  IDependency : IDependency
+	NotificationService --|> INotificationService
+	Composition ..> NotificationService : INotificationService NotificationService
+	IMessageBus *--  MessageBus : MessageBus
+	NotificationService *--  IMessageBus : IMessageBus
 	namespace Pure.DI.UsageTests.Advanced.FactoryWithThreadSynchronizationScenario {
 		class Composition {
 		<<partial>>
-		+IService MyService
+		+INotificationService NotificationService
 		}
-		class Dependency {
-				<<class>>
-			+Dependency()
-		}
-		class IDependency {
+		class IMessageBus {
 				<<interface>>
 		}
-		class IService {
+		class INotificationService {
 			<<interface>>
 		}
-		class Service {
+		class MessageBus {
 				<<class>>
-			+Service(IDependency dependency)
+			+MessageBus()
+		}
+		class NotificationService {
+				<<class>>
+			+NotificationService(IMessageBus bus)
 		}
 	}
 ```

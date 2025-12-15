@@ -9,61 +9,75 @@ using Pure.DI;
 using static Pure.DI.Lifetime;
 
 var composition = new Composition();
-var program = composition.ProgramRoot;
+var app = composition.AppRoot;
 
-// Creates session #1
-var session1 = program.CreateSession();
-var dependency1 = session1.SessionRoot.Dependency;
-var dependency12 = session1.SessionRoot.Dependency;
+// Real-world analogy:
+// each HTTP request (or message consumer handling) creates its own scope.
+// Scoped services live exactly as long as the request is being processed.
 
-// Checks the identity of scoped instances in the same session
-dependency1.ShouldBe(dependency12);
+// Request #1
+var request1 = app.CreateRequestScope();
+var checkout1 = request1.RequestRoot;
 
-// Creates session #2
-var session2 = program.CreateSession();
-var dependency2 = session2.SessionRoot.Dependency;
+var ctx11 = checkout1.Context;
+var ctx12 = checkout1.Context;
 
-// Checks that the scoped instances are not identical in different sessions
-dependency1.ShouldNotBe(dependency2);
+// Same request => same scoped instance
+ctx11.ShouldBe(ctx12);
 
-// Disposes of session #1
-session1.Dispose();
-// Checks that the scoped instance is finalized
-dependency1.IsDisposed.ShouldBeTrue();
+// Request #2
+var request2 = app.CreateRequestScope();
+var checkout2 = request2.RequestRoot;
 
-// Disposes of session #2
-session2.Dispose();
-// Checks that the scoped instance is finalized
-dependency2.IsDisposed.ShouldBeTrue();
+var ctx2 = checkout2.Context;
 
-interface IDependency
+// Different request => different scoped instance
+ctx11.ShouldNotBe(ctx2);
+
+// End of Request #1 => scoped instance is disposed
+request1.Dispose();
+ctx11.IsDisposed.ShouldBeTrue();
+
+// End of Request #2 => scoped instance is disposed
+request2.Dispose();
+ctx2.IsDisposed.ShouldBeTrue();
+
+interface IRequestContext
 {
+    Guid CorrelationId { get; }
+
     bool IsDisposed { get; }
 }
 
-class Dependency : IDependency, IDisposable
+// Typically: DbContext / UnitOfWork / RequestTelemetry / Activity, etc.
+sealed class RequestContext : IRequestContext, IDisposable
 {
+    public Guid CorrelationId { get; } = Guid.NewGuid();
+
     public bool IsDisposed { get; private set; }
 
     public void Dispose() => IsDisposed = true;
 }
 
-interface IService
+interface ICheckoutService
 {
-    IDependency Dependency { get; }
+    IRequestContext Context { get; }
 }
 
-class Service(IDependency dependency) : IService
+// "Controller/service" that participates in request processing.
+// It depends on a scoped context (per-request resource).
+sealed class CheckoutService(IRequestContext context) : ICheckoutService
 {
-    public IDependency Dependency => dependency;
+    public IRequestContext Context => context;
 }
 
-// Implements a session
-class Session(Composition parent) : Composition(parent);
+// Implements a request scope (per-request container)
+sealed class RequestScope(Composition parent) : Composition(parent);
 
-partial class Program(Func<Session> sessionFactory)
+partial class App(Func<RequestScope> requestScopeFactory)
 {
-    public Session CreateSession() => sessionFactory();
+    // In a web app this would roughly map to: "create scope for request"
+    public RequestScope CreateRequestScope() => requestScopeFactory();
 }
 
 partial class Composition
@@ -71,14 +85,17 @@ partial class Composition
     static void Setup() =>
 
         DI.Setup()
-            .Bind().As(Scoped).To<Dependency>()
-            .Bind().To<Service>()
+            // Per-request lifetime
+            .Bind().As(Scoped).To<RequestContext>()
 
-            // Session composition root
-            .Root<IService>("SessionRoot")
+            // Regular service that consumes scoped context
+            .Bind().To<CheckoutService>()
 
-            // Composition root
-            .Root<Program>("ProgramRoot");
+            // "Request root" (what your controller/handler resolves)
+            .Root<ICheckoutService>("RequestRoot")
+
+            // "Application root" (what creates request scopes)
+            .Root<App>("AppRoot");
 }
 ```
 
@@ -123,7 +140,7 @@ partial class Composition: IDisposable
   private object[] _disposables;
   private int _disposeIndex;
 
-  private Dependency? _scopedDependency51;
+  private RequestContext? _scopedRequestContext51;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -144,36 +161,36 @@ partial class Composition: IDisposable
     _disposables = new object[1];
   }
 
-  public IService SessionRoot
+  public ICheckoutService RequestRoot
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_scopedDependency51 is null)
+      if (_scopedRequestContext51 is null)
         lock (_lock)
-          if (_scopedDependency51 is null)
+          if (_scopedRequestContext51 is null)
           {
-            _scopedDependency51 = new Dependency();
-            _disposables[_disposeIndex++] = _scopedDependency51;
+            _scopedRequestContext51 = new RequestContext();
+            _disposables[_disposeIndex++] = _scopedRequestContext51;
           }
 
-      return new Service(_scopedDependency51);
+      return new CheckoutService(_scopedRequestContext51);
     }
   }
 
-  public Program ProgramRoot
+  public App AppRoot
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<Session> transientFunc1 = new Func<Session>(
+      Func<RequestScope> transientFunc1 = new Func<RequestScope>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        Session localValue33 = new Session(this);
+        RequestScope localValue33 = new RequestScope(this);
         return localValue33;
       });
-      return new Program(transientFunc1);
+      return new App(transientFunc1);
     }
   }
 
@@ -187,7 +204,7 @@ partial class Composition: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _scopedDependency51 = null;
+      _scopedRequestContext51 = null;
     }
 
     while (disposeIndex-- > 0)
@@ -224,45 +241,45 @@ Class diagram:
 ---
 classDiagram
 	Composition --|> IDisposable
-	Dependency --|> IDependency
-	Service --|> IService
-	Composition ..> Program : Program ProgramRoot
-	Composition ..> Service : IService SessionRoot
-	Service o-- "Scoped" Dependency : IDependency
-	Program o-- "PerBlock" FuncᐸSessionᐳ : FuncᐸSessionᐳ
-	Session *--  Composition : Composition
-	FuncᐸSessionᐳ *--  Session : Session
+	RequestContext --|> IRequestContext
+	CheckoutService --|> ICheckoutService
+	Composition ..> App : App AppRoot
+	Composition ..> CheckoutService : ICheckoutService RequestRoot
+	CheckoutService o-- "Scoped" RequestContext : IRequestContext
+	App o-- "PerBlock" FuncᐸRequestScopeᐳ : FuncᐸRequestScopeᐳ
+	RequestScope *--  Composition : Composition
+	FuncᐸRequestScopeᐳ *--  RequestScope : RequestScope
 	namespace Pure.DI.UsageTests.Lifetimes.ScopeScenario {
+		class App {
+				<<class>>
+			+App(FuncᐸRequestScopeᐳ requestScopeFactory)
+		}
+		class CheckoutService {
+				<<class>>
+			+CheckoutService(IRequestContext context)
+		}
 		class Composition {
 		<<partial>>
-		+Program ProgramRoot
-		+IService SessionRoot
+		+App AppRoot
+		+ICheckoutService RequestRoot
 		}
-		class Dependency {
-				<<class>>
-			+Dependency()
-		}
-		class IDependency {
+		class ICheckoutService {
 			<<interface>>
 		}
-		class IService {
+		class IRequestContext {
 			<<interface>>
 		}
-		class Program {
+		class RequestContext {
 				<<class>>
-			+Program(FuncᐸSessionᐳ sessionFactory)
+			+RequestContext()
 		}
-		class Service {
+		class RequestScope {
 				<<class>>
-			+Service(IDependency dependency)
-		}
-		class Session {
-				<<class>>
-			+Session(Composition parent)
+			+RequestScope(Composition parent)
 		}
 	}
 	namespace System {
-		class FuncᐸSessionᐳ {
+		class FuncᐸRequestScopeᐳ {
 				<<delegate>>
 		}
 		class IDisposable {

@@ -9,20 +9,21 @@ using Pure.DI;
 
 DI.Setup(nameof(Composition))
     .Hint(Hint.ToString, "On")
-    .Bind().To<Dependency>()
-    .Bind().To<Service>()
-    .Root<IService>("MyService");
+    .Bind().To<Database>()
+    .Bind().To<UserRepository>()
+    .Root<IUserRepository>("GetUserRepository");
 
 var composition = new Composition();
+// The ToString() method generates a class diagram in mermaid format
 string classDiagram = composition.ToString();
 
-interface IDependency;
+interface IDatabase;
 
-class Dependency : IDependency;
+class Database : IDatabase;
 
-interface IService;
+interface IUserRepository;
 
-class Service(IDependency dependency) : IService;
+class UserRepository(IDatabase database) : IUserRepository;
 ```
 
 <details>
@@ -67,12 +68,12 @@ partial class Composition
   {
   }
 
-  public IService MyService
+  public IUserRepository GetUserRepository
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new Service(new Dependency());
+      return new UserRepository(new Database());
     }
   }
 }
@@ -89,28 +90,28 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Service --|> IService
-	Composition ..> Service : IService MyService
-	Service *--  Dependency : IDependency
+	Database --|> IDatabase
+	UserRepository --|> IUserRepository
+	Composition ..> UserRepository : IUserRepository GetUserRepository
+	UserRepository *--  Database : IDatabase
 	namespace Pure.DI.UsageTests.Hints.ToStringHintScenario {
 		class Composition {
 		<<partial>>
-		+IService MyService
+		+IUserRepository GetUserRepository
 		}
-		class Dependency {
+		class Database {
 				<<class>>
-			+Dependency()
+			+Database()
 		}
-		class IDependency {
+		class IDatabase {
 			<<interface>>
 		}
-		class IService {
+		class IUserRepository {
 			<<interface>>
 		}
-		class Service {
+		class UserRepository {
 				<<class>>
-			+Service(IDependency dependency)
+			+UserRepository(IDatabase database)
 		}
 	}
 ```

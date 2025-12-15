@@ -9,39 +9,69 @@ using Pure.DI;
 using static Pure.DI.Lifetime;
 
 DI.Setup(nameof(Composition))
-    // Default lifetime applied to a specific type
-    .DefaultLifetime<IDependency>(Singleton, "some tag")
-    .Bind("some tag").To<Dependency>()
-    .Bind().To<Dependency>()
-    .Bind().To<Service>()
-    .Root<IService>("Root");
+    // Real-world idea:
+    // "Live" audio capture device should be shared (singleton),
+    // while a regular (untagged) audio source can be created per session (transient).
+    .DefaultLifetime<IAudioSource>(Singleton, "Live")
+
+    // Tagged binding: "Live" audio capture (shared)
+    .Bind("Live").To<LiveAudioSource>()
+
+    // Untagged binding: some other source (new instance each time)
+    .Bind().To<BufferedAudioSource>()
+
+    // A playback session uses two sources:
+    // - Live (shared, tagged)
+    // - Buffered (transient, untagged)
+    .Bind().To<PlaybackSession>()
+
+    // Composition root
+    .Root<IPlaybackSession>("PlaybackSession");
 
 var composition = new Composition();
-var service1 = composition.Root;
-var service2 = composition.Root;
-service1.ShouldNotBe(service2);
-service1.Dependency1.ShouldNotBe(service1.Dependency2);
-service1.Dependency1.ShouldBe(service2.Dependency1);
 
-interface IDependency;
+// Two independent sessions (transient root)
+var session1 = composition.PlaybackSession;
+var session2 = composition.PlaybackSession;
 
-class Dependency : IDependency;
+session1.ShouldNotBe(session2);
 
-interface IService
+// Within a single session:
+// - Live source is tagged => default lifetime forces it to be shared (singleton)
+// - Buffered source is untagged => transient => always a new instance
+session1.LiveSource.ShouldNotBe(session1.BufferedSource);
+
+// Between sessions:
+// - Live source is a shared singleton (same instance)
+// - Buffered source is transient (different instances)
+session1.LiveSource.ShouldBe(session2.LiveSource);
+
+interface IAudioSource;
+
+// "Live" device: e.g., microphone/line-in capture.
+class LiveAudioSource : IAudioSource;
+
+// "Buffered" source: e.g., decoded audio chunks, per-session pipeline buffer.
+class BufferedAudioSource : IAudioSource;
+
+interface IPlaybackSession
 {
-    public IDependency Dependency1 { get; }
+    IAudioSource LiveSource { get; }
 
-    public IDependency Dependency2 { get; }
+    IAudioSource BufferedSource { get; }
 }
 
-class Service(
-    [Tag("some tag")] IDependency dependency1,
-    IDependency dependency2)
-    : IService
-{
-    public IDependency Dependency1 { get; } = dependency1;
+class PlaybackSession(
+    // Tagged dependency: should be singleton because of DefaultLifetime<IAudioSource>(..., "Live")
+    [Tag("Live")] IAudioSource liveSource,
 
-    public IDependency Dependency2 { get; } = dependency2;
+    // Untagged dependency: transient by default
+    IAudioSource bufferedSource)
+    : IPlaybackSession
+{
+    public IAudioSource LiveSource { get; } = liveSource;
+
+    public IAudioSource BufferedSource { get; } = bufferedSource;
 }
 ```
 
@@ -84,8 +114,8 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private Dependency? _singletonDependency51;
-  private Dependency? _singletonDependency52;
+  private LiveAudioSource? _singletonLiveAudioSource51;
+  private BufferedAudioSource? _singletonBufferedAudioSource52;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -104,26 +134,26 @@ partial class Composition
     _lock = parentScope._lock;
   }
 
-  public IService Root
+  public IPlaybackSession PlaybackSession
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonDependency51 is null)
+      if (_root._singletonLiveAudioSource51 is null)
         lock (_lock)
-          if (_root._singletonDependency51 is null)
+          if (_root._singletonLiveAudioSource51 is null)
           {
-            _root._singletonDependency51 = new Dependency();
+            _root._singletonLiveAudioSource51 = new LiveAudioSource();
           }
 
-      if (_root._singletonDependency52 is null)
+      if (_root._singletonBufferedAudioSource52 is null)
         lock (_lock)
-          if (_root._singletonDependency52 is null)
+          if (_root._singletonBufferedAudioSource52 is null)
           {
-            _root._singletonDependency52 = new Dependency();
+            _root._singletonBufferedAudioSource52 = new BufferedAudioSource();
           }
 
-      return new Service(_root._singletonDependency51, _root._singletonDependency52);
+      return new PlaybackSession(_root._singletonLiveAudioSource51, _root._singletonBufferedAudioSource52);
     }
   }
 }
@@ -140,29 +170,34 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency : "some tag" 
-	Service --|> IService
-	Composition ..> Service : IService Root
-	Service o-- "Singleton" Dependency : "some tag"  IDependency
-	Service o-- "Singleton" Dependency : IDependency
+	LiveAudioSource --|> IAudioSource : "Live" 
+	BufferedAudioSource --|> IAudioSource
+	PlaybackSession --|> IPlaybackSession
+	Composition ..> PlaybackSession : IPlaybackSession PlaybackSession
+	PlaybackSession o-- "Singleton" LiveAudioSource : "Live"  IAudioSource
+	PlaybackSession o-- "Singleton" BufferedAudioSource : IAudioSource
 	namespace Pure.DI.UsageTests.Lifetimes.DefaultLifetimeForTypeAndTagScenario {
+		class BufferedAudioSource {
+				<<class>>
+			+BufferedAudioSource()
+		}
 		class Composition {
 		<<partial>>
-		+IService Root
+		+IPlaybackSession PlaybackSession
 		}
-		class Dependency {
-				<<class>>
-			+Dependency()
-		}
-		class IDependency {
+		class IAudioSource {
 			<<interface>>
 		}
-		class IService {
+		class IPlaybackSession {
 			<<interface>>
 		}
-		class Service {
+		class LiveAudioSource {
 				<<class>>
-			+Service(IDependency dependency1, IDependency dependency2)
+			+LiveAudioSource()
+		}
+		class PlaybackSession {
+				<<class>>
+			+PlaybackSession(IAudioSource liveSource, IAudioSource bufferedSource)
 		}
 	}
 ```

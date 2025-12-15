@@ -41,7 +41,7 @@ public class Scenario
             .Bind<INavigationSystem>().To<NavigationSystem>()
 
             // Specifies to create a composition root
-            // of type "VehicleComputer" with the name "Root"
+            // of type "VehicleComputer" with the name "VehicleComputer"
             .Root<VehicleComputer>("VehicleComputer");
 
         var composition = new Composition();

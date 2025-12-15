@@ -7,36 +7,51 @@ using Pure.DI;
 
 DI.Setup(nameof(Composition))
     .Bind(Tag.Id).To<TT>(_ => (TT)(object)Guid.NewGuid())
-    .Bind().To<Dependency<TT>>()
+    .Bind().To<Repository<TT>>()
     // Generic service builder
-    .Builder<Service<TTS, TT2>>("BuildUpGeneric");
+    // Defines a generic builder "BuildUp".
+    // This is useful when instances are created by an external framework
+    // (like a UI library or serialization) but require dependencies to be injected.
+    .Builder<ViewModel<TTS, TT2>>("BuildUp");
 
 var composition = new Composition();
-var service = composition.BuildUpGeneric(new Service<Guid, string>());
-service.Id.ShouldNotBe(Guid.Empty);
-service.Dependency.ShouldBeOfType<Dependency<string>>();
 
-interface IDependency<T>;
+// A view model instance created manually (or by a UI framework)
+var viewModel = new ViewModel<Guid, Customer>();
 
-class Dependency<T> : IDependency<T>;
+// Inject dependencies (Id and Repository) into the existing instance
+var builtViewModel = composition.BuildUp(viewModel);
 
-interface IService<out T, T2>
+builtViewModel.Id.ShouldNotBe(Guid.Empty);
+builtViewModel.Repository.ShouldBeOfType<Repository<Customer>>();
+
+// Domain model
+record Customer;
+
+interface IRepository<T>;
+
+class Repository<T> : IRepository<T>;
+
+interface IViewModel<out TId, TModel>
 {
-    T Id { get; }
+    TId Id { get; }
 
-    IDependency<T2>? Dependency { get; }
+    IRepository<TModel>? Repository { get; }
 }
 
-record Service<T, T2>: IService<T, T2>
-    where T: struct
+// The view model is generic, allowing it to be used for various entities
+record ViewModel<TId, TModel> : IViewModel<TId, TModel>
+    where TId : struct
 {
-    public T Id { get; private set; }
+    public TId Id { get; private set; }
 
+    // The dependency to be injected
     [Dependency]
-    public IDependency<T2>? Dependency { get; set; }
+    public IRepository<TModel>? Repository { get; set; }
 
+    // Method injection for the ID
     [Dependency]
-    public void SetId([Tag(Tag.Id)] T id) => Id = id;
+    public void SetId([Tag(Tag.Id)] TId id) => Id = id;
 }
 ```
 
@@ -94,17 +109,17 @@ partial class Composition
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public Service<T3, T4> BuildUpGeneric<T3, T4>(Service<T3, T4> buildingInstance)
+  public ViewModel<T3, T4> BuildUp<T3, T4>(ViewModel<T3, T4> buildingInstance)
     where T3: struct
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    Service<T3, T4> transientService;
-    Service<T3, T4> localBuildingInstance8 = buildingInstance;
+    ViewModel<T3, T4> transientViewModel;
+    ViewModel<T3, T4> localBuildingInstance8 = buildingInstance;
     T3 transientTTS3 = (T3)(object)Guid.NewGuid();
-    localBuildingInstance8.Dependency = new Dependency<T4>();
+    localBuildingInstance8.Repository = new Repository<T4>();
     localBuildingInstance8.SetId(transientTTS3);
-    transientService = localBuildingInstance8;
-    return transientService;
+    transientViewModel = localBuildingInstance8;
+    return transientViewModel;
   }
 }
 ```
@@ -120,25 +135,25 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	DependencyᐸT4ᐳ --|> IDependencyᐸT4ᐳ
-	Composition ..> ServiceᐸT3ˏT4ᐳ : ServiceᐸT3ˏT4ᐳ BuildUpGenericᐸT3ˏT4ᐳ(Pure.DI.UsageTests.Generics.GenericBuilderScenario.Service<T3, T4> buildingInstance)
-	ServiceᐸT3ˏT4ᐳ *--  DependencyᐸT4ᐳ : IDependencyᐸT4ᐳ
-	ServiceᐸT3ˏT4ᐳ *--  T3 : "Id"  T3
+	RepositoryᐸT4ᐳ --|> IRepositoryᐸT4ᐳ
+	Composition ..> ViewModelᐸT3ˏT4ᐳ : ViewModelᐸT3ˏT4ᐳ BuildUpᐸT3ˏT4ᐳ(Pure.DI.UsageTests.Generics.GenericBuilderScenario.ViewModel<T3, T4> buildingInstance)
+	ViewModelᐸT3ˏT4ᐳ *--  RepositoryᐸT4ᐳ : IRepositoryᐸT4ᐳ
+	ViewModelᐸT3ˏT4ᐳ *--  T3 : "Id"  T3
 	namespace Pure.DI.UsageTests.Generics.GenericBuilderScenario {
 		class Composition {
 		<<partial>>
-		+ServiceᐸT3ˏT4ᐳ BuildUpGenericᐸT3ˏT4ᐳ(Pure.DI.UsageTests.Generics.GenericBuilderScenario.Service<T3, T4> buildingInstance)
+		+ViewModelᐸT3ˏT4ᐳ BuildUpᐸT3ˏT4ᐳ(Pure.DI.UsageTests.Generics.GenericBuilderScenario.ViewModel<T3, T4> buildingInstance)
 		}
-		class DependencyᐸT4ᐳ {
-				<<class>>
-			+Dependency()
-		}
-		class IDependencyᐸT4ᐳ {
+		class IRepositoryᐸT4ᐳ {
 			<<interface>>
 		}
-		class ServiceᐸT3ˏT4ᐳ {
+		class RepositoryᐸT4ᐳ {
+				<<class>>
+			+Repository()
+		}
+		class ViewModelᐸT3ˏT4ᐳ {
 				<<record>>
-			+IDependencyᐸT4ᐳ Dependency
+			+IRepositoryᐸT4ᐳ Repository
 			+SetId(T3 id) : Void
 		}
 	}

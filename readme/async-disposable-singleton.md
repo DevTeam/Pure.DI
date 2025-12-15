@@ -7,45 +7,71 @@ If at least one of these objects implements the `IAsyncDisposable` interface, th
 using Shouldly;
 using Pure.DI;
 using static Pure.DI.Lifetime;
+using System.Threading.Tasks;
 
 DI.Setup(nameof(Composition))
-    .Bind().As(Singleton).To<Dependency>()
-    .Bind().To<Service>()
-    .Root<IService>("Root");
+    // A singleton resource that needs async cleanup (e.g., flushing buffers, closing connections)
+    .Bind().As(Singleton).To<AuditLogWriter>()
+    .Bind().To<CheckoutService>()
+    .Root<ICheckoutService>("CheckoutService");
 
-IDependency dependency;
+AuditLogWriter writer;
+
 await using (var composition = new Composition())
 {
-    var service = composition.Root;
-    dependency = service.Dependency;
+    var service = composition.CheckoutService;
+
+    // A "live" usage: do some work that writes to an audit log
+    await service.CheckoutAsync(orderId: "ORD-2025-00042");
+
+    // Keep a reference so we can assert disposal after the composition is disposed
+    writer = service.Writer;
+    writer.IsDisposed.ShouldBeFalse();
 }
 
-dependency.IsDisposed.ShouldBeTrue();
+// Composition disposal triggers async disposal of singleton(s)
+writer.IsDisposed.ShouldBeTrue();
 
-interface IDependency
+interface ICheckoutService
 {
-    bool IsDisposed { get; }
+    AuditLogWriter Writer { get; }
+
+    ValueTask CheckoutAsync(string orderId);
 }
 
-class Dependency : IDependency, IAsyncDisposable
+/// <summary>
+/// Represents a singleton infrastructure component.
+/// Think: audit log writer, message producer, telemetry pipeline, DB connection, etc.
+/// It is owned by the DI container and must be disposed asynchronously.
+/// </summary>
+sealed class AuditLogWriter : IAsyncDisposable
 {
     public bool IsDisposed { get; private set; }
 
-    public ValueTask DisposeAsync()
+    public async ValueTask WriteAsync(string message)
     {
+        ObjectDisposedException.ThrowIf(IsDisposed, nameof(AuditLogWriter));
+        // Simulate I/O (writing to file / network / remote log)
+        await Task.Delay(5);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        // Simulate async cleanup: flush buffers / send remaining events / gracefully close connection
+        await Task.Delay(5);
         IsDisposed = true;
-        return ValueTask.CompletedTask;
     }
 }
 
-interface IService
+sealed class CheckoutService(AuditLogWriter writer) : ICheckoutService
 {
-    public IDependency Dependency { get; }
-}
+    public AuditLogWriter Writer { get; } = writer;
 
-class Service(IDependency dependency) : IService
-{
-    public IDependency Dependency { get; } = dependency;
+    public ValueTask CheckoutAsync(string orderId)
+    {
+        // Real-world-ish side effect: record a business event
+        return Writer.WriteAsync($"Checkout completed: {orderId}");
+    }
 }
 ```
 
@@ -90,7 +116,7 @@ partial class Composition: IDisposable, IAsyncDisposable
   private object[] _disposables;
   private int _disposeIndex;
 
-  private Dependency? _singletonDependency51;
+  private AuditLogWriter? _singletonAuditLogWriter51;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -111,20 +137,20 @@ partial class Composition: IDisposable, IAsyncDisposable
     _disposables = parentScope._disposables;
   }
 
-  public IService Root
+  public ICheckoutService CheckoutService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonDependency51 is null)
+      if (_root._singletonAuditLogWriter51 is null)
         lock (_lock)
-          if (_root._singletonDependency51 is null)
+          if (_root._singletonAuditLogWriter51 is null)
           {
-            _root._singletonDependency51 = new Dependency();
-            _root._disposables[_root._disposeIndex++] = _root._singletonDependency51;
+            _root._singletonAuditLogWriter51 = new AuditLogWriter();
+            _root._disposables[_root._disposeIndex++] = _root._singletonAuditLogWriter51;
           }
 
-      return new Service(_root._singletonDependency51);
+      return new CheckoutService(_root._singletonAuditLogWriter51);
     }
   }
 
@@ -138,7 +164,7 @@ partial class Composition: IDisposable, IAsyncDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _singletonDependency51 = null;
+      _singletonAuditLogWriter51 = null;
     }
 
     while (disposeIndex-- > 0)
@@ -174,7 +200,7 @@ partial class Composition: IDisposable, IAsyncDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _singletonDependency51 = null;
+      _singletonAuditLogWriter51 = null;
     }
 
     while (disposeIndex-- > 0)
@@ -212,29 +238,25 @@ Class diagram:
 classDiagram
 	Composition --|> IDisposable
 	Composition --|> IAsyncDisposable
-	Dependency --|> IDependency
-	Dependency --|> IAsyncDisposable
-	Service --|> IService
-	Composition ..> Service : IService Root
-	Service o-- "Singleton" Dependency : IDependency
+	AuditLogWriter --|> IAsyncDisposable
+	CheckoutService --|> ICheckoutService
+	Composition ..> CheckoutService : ICheckoutService CheckoutService
+	CheckoutService o-- "Singleton" AuditLogWriter : AuditLogWriter
 	namespace Pure.DI.UsageTests.Lifetimes.AsyncDisposableSingletonScenario {
+		class AuditLogWriter {
+				<<class>>
+			+AuditLogWriter()
+		}
+		class CheckoutService {
+				<<class>>
+			+CheckoutService(AuditLogWriter writer)
+		}
 		class Composition {
 		<<partial>>
-		+IService Root
+		+ICheckoutService CheckoutService
 		}
-		class Dependency {
-				<<class>>
-			+Dependency()
-		}
-		class IDependency {
+		class ICheckoutService {
 			<<interface>>
-		}
-		class IService {
-			<<interface>>
-		}
-		class Service {
-				<<class>>
-			+Service(IDependency dependency)
 		}
 	}
 	namespace System {

@@ -6,49 +6,56 @@ using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Bind<IDependency>(Tag.Any).To(ctx => new Dependency(ctx.Tag))
-    .Bind<IService>().To<Service>()
+    // Binds IQueue to the Queue implementation.
+    // Tag.Any creates a binding that matches any tag (including null),
+    // allowing the specific tag value to be used within the factory (ctx.Tag).
+    .Bind<IQueue>(Tag.Any).To(ctx => new Queue(ctx.Tag))
+    .Bind<IQueueService>().To<QueueService>()
 
     // Composition root
-    .Root<IService>("Root")
+    .Root<IQueueService>("QueueService")
 
-    // Root by Tag.Any
-    .Root<IDependency>("OtherDependency", "Other");
+    // Root by Tag.Any: Resolves IQueue with the tag "Audit"
+    .Root<IQueue>("AuditQueue", "Audit");
 
 var composition = new Composition();
-var service = composition.Root;
-service.Dependency1.Key.ShouldBe("Abc");
-service.Dependency2.Key.ShouldBe(123);
-service.Dependency3.Key.ShouldBeNull();
-composition.OtherDependency.Key.ShouldBe("Other");
+var queueService = composition.QueueService;
 
-interface IDependency
+queueService.WorkItemsQueue.Id.ShouldBe("WorkItems");
+queueService.PartitionQueue.Id.ShouldBe(42);
+queueService.DefaultQueue.Id.ShouldBeNull();
+composition.AuditQueue.Id.ShouldBe("Audit");
+
+interface IQueue
 {
-    object? Key { get; }
+    object? Id { get; }
 }
 
-record Dependency(object? Key) : IDependency;
+record Queue(object? Id) : IQueue;
 
-interface IService
+interface IQueueService
 {
-    IDependency Dependency1 { get; }
+    IQueue WorkItemsQueue { get; }
 
-    IDependency Dependency2 { get; }
+    IQueue PartitionQueue { get; }
 
-    IDependency Dependency3 { get; }
+    IQueue DefaultQueue { get; }
 }
 
-class Service(
-    [Tag("Abc")] IDependency dependencyAbc,
-    [Tag(123)] Func<IDependency> dependency123Factory,
-    IDependency dependency)
-    : IService
+class QueueService(
+    // Injects IQueue tagged with "WorkItems"
+    [Tag("WorkItems")] IQueue workItemsQueue,
+    // Injects IQueue tagged with integer 42
+    [Tag(42)] Func<IQueue> partitionQueueFactory,
+    // Injects IQueue with the default (null) tag
+    IQueue defaultQueue)
+    : IQueueService
 {
-    public IDependency Dependency1 { get; } = dependencyAbc;
+    public IQueue WorkItemsQueue { get; } = workItemsQueue;
 
-    public IDependency Dependency2 { get; } = dependency123Factory();
+    public IQueue PartitionQueue { get; } = partitionQueueFactory();
 
-    public IDependency Dependency3 { get; } = dependency;
+    public IQueue DefaultQueue { get; } = defaultQueue;
 }
 ```
 
@@ -93,32 +100,32 @@ partial class Composition
   {
   }
 
-  public IDependency OtherDependency
+  public IQueue AuditQueue
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Dependency transientDependency = new Dependency("Other");
-      return transientDependency;
+      Queue transientQueue = new Queue("Audit");
+      return transientQueue;
     }
   }
 
-  public IService Root
+  public IQueueService QueueService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Dependency transientDependency2 = new Dependency("Abc");
-      Dependency transientDependency4 = new Dependency(null);
-      Func<IDependency> transientFunc3 = new Func<IDependency>(
+      Queue transientQueue2 = new Queue("WorkItems");
+      Queue transientQueue4 = new Queue(null);
+      Func<IQueue> transientFunc3 = new Func<IQueue>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        Dependency transientDependency5 = new Dependency(123);
-        IDependency localValue = transientDependency5;
+        Queue transientQueue5 = new Queue(42);
+        IQueue localValue = transientQueue5;
         return localValue;
       });
-      return new Service(transientDependency2, transientFunc3, transientDependency4);
+      return new QueueService(transientQueue2, transientFunc3, transientQueue4);
     }
   }
 }
@@ -135,36 +142,36 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Service --|> IService
-	Composition ..> Dependency : IDependency OtherDependency
-	Composition ..> Service : IService Root
-	Service *--  Dependency : "Abc"  IDependency
-	Service *--  Dependency : IDependency
-	Service o-- "PerBlock" FuncᐸIDependencyᐳ : 123  FuncᐸIDependencyᐳ
-	FuncᐸIDependencyᐳ *--  Dependency : 123  IDependency
+	Queue --|> IQueue
+	QueueService --|> IQueueService
+	Composition ..> Queue : IQueue AuditQueue
+	Composition ..> QueueService : IQueueService QueueService
+	QueueService *--  Queue : "WorkItems"  IQueue
+	QueueService *--  Queue : IQueue
+	QueueService o-- "PerBlock" FuncᐸIQueueᐳ : 42  FuncᐸIQueueᐳ
+	FuncᐸIQueueᐳ *--  Queue : 42  IQueue
 	namespace Pure.DI.UsageTests.Advanced.TagAnyScenario {
 		class Composition {
 		<<partial>>
-		+IDependency OtherDependency
-		+IService Root
+		+IQueue AuditQueue
+		+IQueueService QueueService
 		}
-		class Dependency {
+		class IQueue {
+			<<interface>>
+		}
+		class IQueueService {
+			<<interface>>
+		}
+		class Queue {
 				<<record>>
 		}
-		class IDependency {
-			<<interface>>
-		}
-		class IService {
-			<<interface>>
-		}
-		class Service {
+		class QueueService {
 				<<class>>
-			+Service(IDependency dependencyAbc, FuncᐸIDependencyᐳ dependency123Factory, IDependency dependency)
+			+QueueService(IQueue workItemsQueue, FuncᐸIQueueᐳ partitionQueueFactory, IQueue defaultQueue)
 		}
 	}
 	namespace System {
-		class FuncᐸIDependencyᐳ {
+		class FuncᐸIQueueᐳ {
 				<<delegate>>
 		}
 	}

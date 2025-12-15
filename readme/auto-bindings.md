@@ -8,17 +8,17 @@ using Pure.DI;
 
 // Specifies to create a partial class with name "Composition"
 DI.Setup("Composition")
-    // with the root "MyService"
-    .Root<Service>("MyService");
+    // with the root "Orders"
+    .Root<OrderService>("Orders");
 
 var composition = new Composition();
 
-// service = new Service(new Dependency())
-var service = composition.MyService;
+// service = new OrderService(new Database())
+var orders = composition.Orders;
 
-class Dependency;
+class Database;
 
-class Service(Dependency dependency);
+class OrderService(Database database);
 ```
 
 <details>
@@ -65,12 +65,12 @@ partial class Composition
   {
   }
 
-  public Service MyService
+  public OrderService Orders
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new Service(new Dependency());
+      return new OrderService(new Database());
     }
   }
 }
@@ -87,20 +87,20 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Composition ..> Service : Service MyService
-	Service *--  Dependency : Dependency
+	Composition ..> OrderService : OrderService Orders
+	OrderService *--  Database : Database
 	namespace Pure.DI.UsageTests.Basics.AutoBindingsScenario {
 		class Composition {
 		<<partial>>
-		+Service MyService
+		+OrderService Orders
 		}
-		class Dependency {
+		class Database {
 				<<class>>
-			+Dependency()
+			+Database()
 		}
-		class Service {
+		class OrderService {
 				<<class>>
-			+Service(Dependency dependency)
+			+OrderService(Database database)
 		}
 	}
 ```

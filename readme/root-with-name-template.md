@@ -2,17 +2,31 @@
 
 
 ```c#
+using Shouldly;
 using Pure.DI;
 
 DI.Setup("Composition")
-    .Root<Service>("My{type}");
+    // The name template "My{type}" specifies that the root property name
+    // will be formed by adding the prefix "My" to the type name "ApiClient".
+    .Root<ApiClient>("My{type}");
 
 var composition = new Composition();
-var service = composition.MyService;
 
-class Dependency;
+// The property name is "MyApiClient" instead of "ApiClient"
+// thanks to the name template "My{type}"
+var apiClient = composition.MyApiClient;
 
-class Service(Dependency dependency);
+apiClient.GetProfile().ShouldBe("Content from https://example.com/profile");
+
+class NetworkClient
+{
+    public string Get(string uri) => $"Content from {uri}";
+}
+
+class ApiClient(NetworkClient client)
+{
+    public string GetProfile() => client.Get("https://example.com/profile");
+}
 ```
 
 <details>
@@ -26,10 +40,12 @@ dotnet --list-sdk
 ```bash
 dotnet new console -n Sample
 ```
-- Add reference to NuGet package
+- Add references to NuGet packages
   - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 ```bash
 dotnet add package Pure.DI
+dotnet add package Shouldly
 ```
 - Copy the example code into the _Program.cs_ file
 
@@ -54,12 +70,12 @@ partial class Composition
   {
   }
 
-  public Service MyService
+  public ApiClient MyApiClient
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new Service(new Dependency());
+      return new ApiClient(new NetworkClient());
     }
   }
 }
@@ -76,20 +92,20 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Composition ..> Service : Service MyService
-	Service *--  Dependency : Dependency
+	Composition ..> ApiClient : ApiClient MyApiClient
+	ApiClient *--  NetworkClient : NetworkClient
 	namespace Pure.DI.UsageTests.Advanced.RootWithNameTemplateScenario {
+		class ApiClient {
+				<<class>>
+			+ApiClient(NetworkClient client)
+		}
 		class Composition {
 		<<partial>>
-		+Service MyService
+		+ApiClient MyApiClient
 		}
-		class Dependency {
+		class NetworkClient {
 				<<class>>
-			+Dependency()
-		}
-		class Service {
-				<<class>>
-			+Service(Dependency dependency)
+			+NetworkClient()
 		}
 	}
 ```

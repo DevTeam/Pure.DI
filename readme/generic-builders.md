@@ -7,57 +7,69 @@ using Pure.DI;
 
 DI.Setup(nameof(Composition))
     .Bind(Tag.Id).To<TT>(_ => (TT)(object)Guid.NewGuid())
-    .Bind().To<Dependency<TT>>()
-    // Generic service builder
-    .Builders<IService<TT, TT2>>("BuildUpGeneric");
+    .Bind().To<MessageTracker<TT>>()
+    // Generic builder to inject dependencies into existing messages
+    .Builders<IMessage<TT, TT2>>("BuildUp");
 
 var composition = new Composition();
 
-var service1 = composition.BuildUpGeneric(new Service1<Guid, string>());
-service1.Id.ShouldNotBe(Guid.Empty);
-service1.Dependency.ShouldBeOfType<Dependency<string>>();
+// A Query is created (e.g. by API controller), ID is missing
+var query = new QueryMessage<Guid, string>();
 
-var service2 = composition.BuildUpGeneric(new Service2<Guid, int>());
-service2.Id.ShouldBe(Guid.Empty);
-service2.Dependency.ShouldBeOfType<Dependency<int>>();
+// Composition injects dependencies and generates an ID
+var queryWithDeps = composition.BuildUp(query);
 
-// Uses a common method to build an instance
-IService<Guid, Uri> abstractService = new Service1<Guid, Uri>();
-abstractService = composition.BuildUpGeneric(abstractService);
-abstractService.ShouldBeOfType<Service1<Guid, Uri>>();
-abstractService.Id.ShouldNotBe(Guid.Empty);
-abstractService.Dependency.ShouldBeOfType<Dependency<Uri>>();
+queryWithDeps.Id.ShouldNotBe(Guid.Empty);
+queryWithDeps.Tracker.ShouldBeOfType<MessageTracker<string>>();
 
-interface IDependency<T>;
+// A Command is created, usually with a specific ID
+var command = new CommandMessage<Guid, int>();
 
-class Dependency<T> : IDependency<T>;
+// Composition injects dependencies only
+var commandWithDeps = composition.BuildUp(command);
 
-interface IService<out T, T2>
+commandWithDeps.Id.ShouldBe(Guid.Empty);
+commandWithDeps.Tracker.ShouldBeOfType<MessageTracker<int>>();
+
+// Works with abstract types/interfaces too
+var queryMessage = new QueryMessage<Guid, double>();
+queryMessage = composition.BuildUp(queryMessage);
+
+queryMessage.ShouldBeOfType<QueryMessage<Guid, double>>();
+queryMessage.Id.ShouldNotBe(Guid.Empty);
+queryMessage.Tracker.ShouldBeOfType<MessageTracker<double>>();
+
+interface IMessageTracker<T>;
+
+class MessageTracker<T> : IMessageTracker<T>;
+
+interface IMessage<out TId, TContent>
 {
-    T Id { get; }
+    TId Id { get; }
 
-    IDependency<T2>? Dependency { get; }
+    IMessageTracker<TContent>? Tracker { get; }
 }
 
-record Service1<T, T2>: IService<T, T2>
-    where T: struct
+record QueryMessage<TId, TContent> : IMessage<TId, TContent>
+    where TId : struct
 {
-    public T Id { get; private set; }
+    public TId Id { get; private set; }
 
     [Dependency]
-    public IDependency<T2>? Dependency { get; set; }
+    public IMessageTracker<TContent>? Tracker { get; set; }
 
+    // Injects a new ID
     [Dependency]
-    public void SetId([Tag(Tag.Id)] T id) => Id = id;
+    public void SetId([Tag(Tag.Id)] TId id) => Id = id;
 }
 
-record Service2<T, T2>: IService<T, T2>
-    where T: struct
+record CommandMessage<TId, TContent> : IMessage<TId, TContent>
+    where TId : struct
 {
-    public T Id { get; }
+    public TId Id { get; }
 
     [Dependency]
-    public IDependency<T2>? Dependency { get; set; }
+    public IMessageTracker<TContent>? Tracker { get; set; }
 }
 ```
 
@@ -116,61 +128,61 @@ partial class Composition
 
   #pragma warning disable CS0162
   [MethodImpl(MethodImplOptions.NoInlining)]
-  public IService<T1, T4> BuildUpGeneric<T1, T4>(IService<T1, T4> buildingInstance)
+  public IMessage<T1, T4> BuildUp<T1, T4>(IMessage<T1, T4> buildingInstance)
     where T1: struct
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    IService<T1, T4> transientIService;
-    IService<T1, T4> localBuildingInstance9 = buildingInstance;
+    IMessage<T1, T4> transientIMessage;
+    IMessage<T1, T4> localBuildingInstance9 = buildingInstance;
     switch (localBuildingInstance9)
     {
-      case Service1<T1, T4> localService1_TT_TT2:
+      case QueryMessage<T1, T4> localQueryMessage_TT_TT2:
       {
-        transientIService = BuildUpGeneric(localService1_TT_TT2);
-        goto transientIServiceFinish;
+        transientIMessage = BuildUp(localQueryMessage_TT_TT2);
+        goto transientIMessageFinish;
       }
 
-      case Service2<T1, T4> localService2_TT_TT2:
+      case CommandMessage<T1, T4> localCommandMessage_TT_TT2:
       {
-        transientIService = BuildUpGeneric(localService2_TT_TT2);
-        goto transientIServiceFinish;
+        transientIMessage = BuildUp(localCommandMessage_TT_TT2);
+        goto transientIMessageFinish;
       }
 
       default:
         throw new ArgumentException($"Unable to build an instance of typeof type {localBuildingInstance9.GetType()}.", "buildingInstance");
     }
 
-    transientIService = localBuildingInstance9;
-    transientIServiceFinish:
+    transientIMessage = localBuildingInstance9;
+    transientIMessageFinish:
       ;
-    return transientIService;
+    return transientIMessage;
   }
   #pragma warning restore CS0162
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public Service2<T1, T4> BuildUpGeneric<T1, T4>(Service2<T1, T4> buildingInstance)
+  public CommandMessage<T1, T4> BuildUp<T1, T4>(CommandMessage<T1, T4> buildingInstance)
     where T1: struct
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    Service2<T1, T4> transientService22;
-    Service2<T1, T4> localBuildingInstance10 = buildingInstance;
-    localBuildingInstance10.Dependency = new Dependency<T4>();
-    transientService22 = localBuildingInstance10;
-    return transientService22;
+    CommandMessage<T1, T4> transientCommandMessage2;
+    CommandMessage<T1, T4> localBuildingInstance10 = buildingInstance;
+    localBuildingInstance10.Tracker = new MessageTracker<T4>();
+    transientCommandMessage2 = localBuildingInstance10;
+    return transientCommandMessage2;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public Service1<T1, T4> BuildUpGeneric<T1, T4>(Service1<T1, T4> buildingInstance)
+  public QueryMessage<T1, T4> BuildUp<T1, T4>(QueryMessage<T1, T4> buildingInstance)
     where T1: struct
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    Service1<T1, T4> transientService15;
-    Service1<T1, T4> localBuildingInstance11 = buildingInstance;
+    QueryMessage<T1, T4> transientQueryMessage5;
+    QueryMessage<T1, T4> localBuildingInstance11 = buildingInstance;
     T1 transientTT8 = (T1)(object)Guid.NewGuid();
-    localBuildingInstance11.Dependency = new Dependency<T4>();
+    localBuildingInstance11.Tracker = new MessageTracker<T4>();
     localBuildingInstance11.SetId(transientTT8);
-    transientService15 = localBuildingInstance11;
-    return transientService15;
+    transientQueryMessage5 = localBuildingInstance11;
+    return transientQueryMessage5;
   }
 }
 ```
@@ -186,38 +198,38 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	DependencyᐸT4ᐳ --|> IDependencyᐸT4ᐳ
-	Composition ..> IServiceᐸT1ˏT4ᐳ : IServiceᐸT1ˏT4ᐳ BuildUpGenericᐸT1ˏT4ᐳ(Pure.DI.UsageTests.Generics.GenericBuildersScenario.IService<T1, T4> buildingInstance)
-	Composition ..> Service2ᐸT1ˏT4ᐳ : Service2ᐸT1ˏT4ᐳ BuildUpGenericᐸT1ˏT4ᐳ(Pure.DI.UsageTests.Generics.GenericBuildersScenario.Service2<T1, T4> buildingInstance)
-	Composition ..> Service1ᐸT1ˏT4ᐳ : Service1ᐸT1ˏT4ᐳ BuildUpGenericᐸT1ˏT4ᐳ(Pure.DI.UsageTests.Generics.GenericBuildersScenario.Service1<T1, T4> buildingInstance)
-	Service2ᐸT1ˏT4ᐳ *--  DependencyᐸT4ᐳ : IDependencyᐸT4ᐳ
-	Service1ᐸT1ˏT4ᐳ *--  DependencyᐸT4ᐳ : IDependencyᐸT4ᐳ
-	Service1ᐸT1ˏT4ᐳ *--  T1 : "Id"  T1
+	MessageTrackerᐸT4ᐳ --|> IMessageTrackerᐸT4ᐳ
+	Composition ..> IMessageᐸT1ˏT4ᐳ : IMessageᐸT1ˏT4ᐳ BuildUpᐸT1ˏT4ᐳ(Pure.DI.UsageTests.Generics.GenericBuildersScenario.IMessage<T1, T4> buildingInstance)
+	Composition ..> CommandMessageᐸT1ˏT4ᐳ : CommandMessageᐸT1ˏT4ᐳ BuildUpᐸT1ˏT4ᐳ(Pure.DI.UsageTests.Generics.GenericBuildersScenario.CommandMessage<T1, T4> buildingInstance)
+	Composition ..> QueryMessageᐸT1ˏT4ᐳ : QueryMessageᐸT1ˏT4ᐳ BuildUpᐸT1ˏT4ᐳ(Pure.DI.UsageTests.Generics.GenericBuildersScenario.QueryMessage<T1, T4> buildingInstance)
+	CommandMessageᐸT1ˏT4ᐳ *--  MessageTrackerᐸT4ᐳ : IMessageTrackerᐸT4ᐳ
+	QueryMessageᐸT1ˏT4ᐳ *--  MessageTrackerᐸT4ᐳ : IMessageTrackerᐸT4ᐳ
+	QueryMessageᐸT1ˏT4ᐳ *--  T1 : "Id"  T1
 	namespace Pure.DI.UsageTests.Generics.GenericBuildersScenario {
+		class CommandMessageᐸT1ˏT4ᐳ {
+				<<record>>
+			+IMessageTrackerᐸT4ᐳ Tracker
+		}
 		class Composition {
 		<<partial>>
-		+IServiceᐸT1ˏT4ᐳ BuildUpGenericᐸT1ˏT4ᐳ(Pure.DI.UsageTests.Generics.GenericBuildersScenario.IService<T1, T4> buildingInstance)
-		+Service2ᐸT1ˏT4ᐳ BuildUpGenericᐸT1ˏT4ᐳ(Pure.DI.UsageTests.Generics.GenericBuildersScenario.Service2<T1, T4> buildingInstance)
-		+Service1ᐸT1ˏT4ᐳ BuildUpGenericᐸT1ˏT4ᐳ(Pure.DI.UsageTests.Generics.GenericBuildersScenario.Service1<T1, T4> buildingInstance)
+		+IMessageᐸT1ˏT4ᐳ BuildUpᐸT1ˏT4ᐳ(Pure.DI.UsageTests.Generics.GenericBuildersScenario.IMessage<T1, T4> buildingInstance)
+		+CommandMessageᐸT1ˏT4ᐳ BuildUpᐸT1ˏT4ᐳ(Pure.DI.UsageTests.Generics.GenericBuildersScenario.CommandMessage<T1, T4> buildingInstance)
+		+QueryMessageᐸT1ˏT4ᐳ BuildUpᐸT1ˏT4ᐳ(Pure.DI.UsageTests.Generics.GenericBuildersScenario.QueryMessage<T1, T4> buildingInstance)
 		}
-		class DependencyᐸT4ᐳ {
-				<<class>>
-			+Dependency()
-		}
-		class IDependencyᐸT4ᐳ {
+		class IMessageTrackerᐸT4ᐳ {
 			<<interface>>
 		}
-		class IServiceᐸT1ˏT4ᐳ {
+		class IMessageᐸT1ˏT4ᐳ {
 				<<interface>>
 		}
-		class Service1ᐸT1ˏT4ᐳ {
-				<<record>>
-			+IDependencyᐸT4ᐳ Dependency
-			+SetId(T1 id) : Void
+		class MessageTrackerᐸT4ᐳ {
+				<<class>>
+			+MessageTracker()
 		}
-		class Service2ᐸT1ˏT4ᐳ {
+		class QueryMessageᐸT1ˏT4ᐳ {
 				<<record>>
-			+IDependencyᐸT4ᐳ Dependency
+			+IMessageTrackerᐸT4ᐳ Tracker
+			+SetId(T1 id) : Void
 		}
 	}
 ```

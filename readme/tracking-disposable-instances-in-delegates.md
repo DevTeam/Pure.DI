@@ -6,50 +6,50 @@ using Shouldly;
 using Pure.DI;
 
 var composition = new Composition();
-var root1 = composition.Root;
-var root2 = composition.Root;
+var transaction1 = composition.Transaction;
+var transaction2 = composition.Transaction;
 
-root2.Dispose();
-
-// Checks that the disposable instances
-// associated with root1 have been disposed of
-root2.Dependency.IsDisposed.ShouldBeTrue();
+transaction2.Dispose();
 
 // Checks that the disposable instances
-// associated with root2 have not been disposed of
-root1.Dependency.IsDisposed.ShouldBeFalse();
-
-root1.Dispose();
+// associated with transaction2 have been disposed of
+transaction2.Connection.IsDisposed.ShouldBeTrue();
 
 // Checks that the disposable instances
-// associated with root2 have been disposed of
-root1.Dependency.IsDisposed.ShouldBeTrue();
+// associated with transaction1 have not been disposed of
+transaction1.Connection.IsDisposed.ShouldBeFalse();
 
-interface IDependency
+transaction1.Dispose();
+
+// Checks that the disposable instances
+// associated with transaction1 have been disposed of
+transaction1.Connection.IsDisposed.ShouldBeTrue();
+
+interface IDbConnection
 {
     bool IsDisposed { get; }
 }
 
-class Dependency : IDependency, IDisposable
+class DbConnection : IDbConnection, IDisposable
 {
     public bool IsDisposed { get; private set; }
 
     public void Dispose() => IsDisposed = true;
 }
 
-interface IService
+interface ITransaction
 {
-    public IDependency Dependency { get; }
+    IDbConnection Connection { get; }
 }
 
-class Service(Func<Owned<IDependency>> dependencyFactory)
-    : IService, IDisposable
+class Transaction(Func<Owned<IDbConnection>> connectionFactory)
+    : ITransaction, IDisposable
 {
-    private readonly Owned<IDependency> _dependency = dependencyFactory();
+    private readonly Owned<IDbConnection> _connection = connectionFactory();
 
-    public IDependency Dependency => _dependency.Value;
+    public IDbConnection Connection => _connection.Value;
 
-    public void Dispose() => _dependency.Dispose();
+    public void Dispose() => _connection.Dispose();
 }
 
 partial class Composition
@@ -57,11 +57,11 @@ partial class Composition
     static void Setup() =>
 
         DI.Setup()
-            .Bind().To<Dependency>()
-            .Bind().To<Service>()
+            .Bind().To<DbConnection>()
+            .Bind().To<Transaction>()
 
             // Composition root
-            .Root<Service>("Root");
+            .Root<Transaction>("Transaction");
 }
 ```
 
@@ -118,17 +118,17 @@ partial class Composition
     _lock = parentScope._lock;
   }
 
-  public Service Root
+  public Transaction Transaction
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       var perBlockOwned2 = new Owned();
-      Func<Owned<IDependency>> transientFunc1 = new Func<Owned<IDependency>>(
+      Func<Owned<IDbConnection>> transientFunc1 = new Func<Owned<IDbConnection>>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        Owned<IDependency> transientOwned3;
+        Owned<IDbConnection> transientOwned3;
         // Creates the owner of an instance
         Owned transientOwned4;
         Owned localOwned5 = perBlockOwned2;
@@ -139,23 +139,23 @@ partial class Composition
         }
 
         IOwned localOwned4 = transientOwned4;
-        var transientDependency5 = new Dependency();
+        var transientDbConnection5 = new DbConnection();
         lock (_lock)
         {
-          perBlockOwned2.Add(transientDependency5);
+          perBlockOwned2.Add(transientDbConnection5);
         }
 
-        IDependency localValue5 = transientDependency5;
-        transientOwned3 = new Owned<IDependency>(localValue5, localOwned4);
+        IDbConnection localValue5 = transientDbConnection5;
+        transientOwned3 = new Owned<IDbConnection>(localValue5, localOwned4);
         lock (_lock)
         {
           perBlockOwned2.Add(transientOwned3);
         }
 
-        Owned<IDependency> localValue4 = transientOwned3;
+        Owned<IDbConnection> localValue4 = transientOwned3;
         return localValue4;
       });
-      return new Service(transientFunc1);
+      return new Transaction(transientFunc1);
     }
   }
 }
@@ -173,13 +173,13 @@ Class diagram:
 ---
 classDiagram
 	Owned --|> IOwned
-	Dependency --|> IDependency
-	Service --|> IService
-	Composition ..> Service : Service Root
-	Service o-- "PerBlock" FuncᐸOwnedᐸIDependencyᐳᐳ : FuncᐸOwnedᐸIDependencyᐳᐳ
-	FuncᐸOwnedᐸIDependencyᐳᐳ o-- "PerBlock" OwnedᐸIDependencyᐳ : OwnedᐸIDependencyᐳ
-	OwnedᐸIDependencyᐳ *--  Owned : IOwned
-	OwnedᐸIDependencyᐳ *--  Dependency : IDependency
+	DbConnection --|> IDbConnection
+	Transaction --|> ITransaction
+	Composition ..> Transaction : Transaction Transaction
+	Transaction o-- "PerBlock" FuncᐸOwnedᐸIDbConnectionᐳᐳ : FuncᐸOwnedᐸIDbConnectionᐳᐳ
+	FuncᐸOwnedᐸIDbConnectionᐳᐳ o-- "PerBlock" OwnedᐸIDbConnectionᐳ : OwnedᐸIDbConnectionᐳ
+	OwnedᐸIDbConnectionᐳ *--  Owned : IOwned
+	OwnedᐸIDbConnectionᐳ *--  DbConnection : IDbConnection
 	namespace Pure.DI {
 		class IOwned {
 			<<interface>>
@@ -187,32 +187,32 @@ classDiagram
 		class Owned {
 				<<class>>
 		}
-		class OwnedᐸIDependencyᐳ {
+		class OwnedᐸIDbConnectionᐳ {
 				<<struct>>
 		}
 	}
 	namespace Pure.DI.UsageTests.Advanced.TrackingDisposableInDelegatesScenario {
 		class Composition {
 		<<partial>>
-		+Service Root
+		+Transaction Transaction
 		}
-		class Dependency {
+		class DbConnection {
 				<<class>>
-			+Dependency()
+			+DbConnection()
 		}
-		class IDependency {
+		class IDbConnection {
 			<<interface>>
 		}
-		class IService {
+		class ITransaction {
 			<<interface>>
 		}
-		class Service {
+		class Transaction {
 				<<class>>
-			+Service(FuncᐸOwnedᐸIDependencyᐳᐳ dependencyFactory)
+			+Transaction(FuncᐸOwnedᐸIDbConnectionᐳᐳ connectionFactory)
 		}
 	}
 	namespace System {
-		class FuncᐸOwnedᐸIDependencyᐳᐳ {
+		class FuncᐸOwnedᐸIDbConnectionᐳᐳ {
 				<<delegate>>
 		}
 	}

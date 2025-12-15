@@ -9,38 +9,65 @@ using Pure.DI;
 using static Pure.DI.Lifetime;
 
 DI.Setup(nameof(Composition))
-    .Bind().As(PerResolve).To<Dependency>()
-    .Bind().As(Singleton).To<(IDependency dep3, IDependency dep4)>()
+    // PerResolve = one "planning session" per root access.
+    // Imagine: each time you ask for a plan, you get a fresh context.
+    .Bind().As(PerResolve).To<RoutePlanningSession>()
+
+    // Singleton = created once per Composition instance.
+    // Here it intentionally captures session when it's created the first time
+    // (this is a realistic pitfall: singleton accidentally holds request-scoped state).
+    .Bind().As(Singleton).To<(IRoutePlanningSession s3, IRoutePlanningSession s4)>()
 
     // Composition root
-    .Root<Service>("Root");
+    .Root<TrainTripPlanner>("Planner");
 
 var composition = new Composition();
 
-var service1 = composition.Root;
-service1.Dep1.ShouldBe(service1.Dep2);
-service1.Dep3.ShouldBe(service1.Dep4);
-service1.Dep1.ShouldBe(service1.Dep3);
+// First "user request": plan a trip now
+var plan1 = composition.Planner;
 
-var service2 = composition.Root;
-service2.Dep1.ShouldNotBe(service1.Dep1);
+// In the same request, PerResolve dependencies are the same instance:
+plan1.SessionForOutbound.ShouldBe(plan1.SessionForReturn);
 
-interface IDependency;
+// Tuple is Singleton, so both entries are the same captured instance:
+plan1.CapturedSessionA.ShouldBe(plan1.CapturedSessionB);
 
-class Dependency : IDependency;
+// Because the singleton tuple was created during the first request,
+// it captured THAT request's PerResolve session:
+plan1.SessionForOutbound.ShouldBe(plan1.CapturedSessionA);
 
-class Service(
-    IDependency dep1,
-    IDependency dep2,
-    (IDependency dep3, IDependency dep4) deps)
+// Second "user request": plan another trip (new root access)
+var plan2 = composition.Planner;
+
+// New request => new PerResolve session:
+plan2.SessionForOutbound.ShouldNotBe(plan1.SessionForOutbound);
+
+// But the singleton still holds the old captured session from the first request:
+plan2.CapturedSessionA.ShouldBe(plan1.CapturedSessionA);
+plan2.SessionForOutbound.ShouldNotBe(plan2.CapturedSessionA);
+
+// A request-scoped context: e.g., contains "now", locale, pricing rules version,
+// feature flags, etc. You typically want a new one per route planning request.
+interface IRoutePlanningSession;
+
+class RoutePlanningSession : IRoutePlanningSession;
+
+// A service that plans a train trip.
+// It asks for two session instances to demonstrate PerResolve:
+// both should be the same within a single request.
+class TrainTripPlanner(
+    IRoutePlanningSession sessionForOutbound,
+    IRoutePlanningSession sessionForReturn,
+    (IRoutePlanningSession capturedA, IRoutePlanningSession capturedB) capturedSessions)
 {
-    public IDependency Dep1 { get; } = dep1;
+    public IRoutePlanningSession SessionForOutbound { get; } = sessionForOutbound;
 
-    public IDependency Dep2 { get; } = dep2;
+    public IRoutePlanningSession SessionForReturn { get; } = sessionForReturn;
 
-    public IDependency Dep3 { get; } = deps.dep3;
+    // These come from a singleton tuple — effectively "global cached" instances.
+    public IRoutePlanningSession CapturedSessionA { get; } = capturedSessions.capturedA;
 
-    public IDependency Dep4 { get; } = deps.dep4;
+    public IRoutePlanningSession CapturedSessionB { get; } = capturedSessions.capturedB;
 }
 ```
 
@@ -83,8 +110,8 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private (IDependency dep3, IDependency dep4) _singletonValueTuple52;
-  private bool _singletonValueTuple52Created;
+  private (IRoutePlanningSession s3, IRoutePlanningSession s4) _singletonValueTuple54;
+  private bool _singletonValueTuple54Created;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -103,31 +130,31 @@ partial class Composition
     _lock = parentScope._lock;
   }
 
-  public Service Root
+  public TrainTripPlanner Planner
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var perResolveDependency1 = default(Dependency);
-      if (!_root._singletonValueTuple52Created)
+      var perResolveRoutePlanningSession1 = default(RoutePlanningSession);
+      if (!_root._singletonValueTuple54Created)
         lock (_lock)
-          if (!_root._singletonValueTuple52Created)
+          if (!_root._singletonValueTuple54Created)
           {
-            EnsureDependencyExists();
-            _root._singletonValueTuple52 = (perResolveDependency1, perResolveDependency1);
+            EnsureRoutePlanningSessionExists();
+            _root._singletonValueTuple54 = (perResolveRoutePlanningSession1, perResolveRoutePlanningSession1);
             Thread.MemoryBarrier();
-            _root._singletonValueTuple52Created = true;
+            _root._singletonValueTuple54Created = true;
           }
 
-      return new Service(perResolveDependency1, perResolveDependency1, _root._singletonValueTuple52);
+      return new TrainTripPlanner(perResolveRoutePlanningSession1, perResolveRoutePlanningSession1, _root._singletonValueTuple54);
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      void EnsureDependencyExists()
+      void EnsureRoutePlanningSessionExists()
       {
-        if (perResolveDependency1 is null)
+        if (perResolveRoutePlanningSession1 is null)
           lock (_lock)
-            if (perResolveDependency1 is null)
+            if (perResolveRoutePlanningSession1 is null)
             {
-              perResolveDependency1 = new Dependency();
+              perResolveRoutePlanningSession1 = new RoutePlanningSession();
             }
       }
     }
@@ -146,32 +173,32 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Composition ..> Service : Service Root
-	ValueTupleᐸIDependencyˏIDependencyᐳ o-- "2 PerResolve instances" Dependency : IDependency
-	Service o-- "2 PerResolve instances" Dependency : IDependency
-	Service o-- "Singleton" ValueTupleᐸIDependencyˏIDependencyᐳ : ValueTupleᐸIDependencyˏIDependencyᐳ
+	RoutePlanningSession --|> IRoutePlanningSession
+	Composition ..> TrainTripPlanner : TrainTripPlanner Planner
+	TrainTripPlanner o-- "2 PerResolve instances" RoutePlanningSession : IRoutePlanningSession
+	TrainTripPlanner o-- "Singleton" ValueTupleᐸIRoutePlanningSessionˏIRoutePlanningSessionᐳ : ValueTupleᐸIRoutePlanningSessionˏIRoutePlanningSessionᐳ
+	ValueTupleᐸIRoutePlanningSessionˏIRoutePlanningSessionᐳ o-- "2 PerResolve instances" RoutePlanningSession : IRoutePlanningSession
 	namespace Pure.DI.UsageTests.Lifetimes.PerResolveScenario {
 		class Composition {
 		<<partial>>
-		+Service Root
+		+TrainTripPlanner Planner
 		}
-		class Dependency {
-				<<class>>
-			+Dependency()
-		}
-		class IDependency {
+		class IRoutePlanningSession {
 			<<interface>>
 		}
-		class Service {
+		class RoutePlanningSession {
 				<<class>>
-			+Service(IDependency dep1, IDependency dep2, ValueTupleᐸIDependencyˏIDependencyᐳ deps)
+			+RoutePlanningSession()
+		}
+		class TrainTripPlanner {
+				<<class>>
+			+TrainTripPlanner(IRoutePlanningSession sessionForOutbound, IRoutePlanningSession sessionForReturn, ValueTupleᐸIRoutePlanningSessionˏIRoutePlanningSessionᐳ capturedSessions)
 		}
 	}
 	namespace System {
-		class ValueTupleᐸIDependencyˏIDependencyᐳ {
+		class ValueTupleᐸIRoutePlanningSessionˏIRoutePlanningSessionᐳ {
 				<<struct>>
-			+ValueTuple(IDependency item1, IDependency item2)
+			+ValueTuple(IRoutePlanningSession item1, IRoutePlanningSession item2)
 		}
 	}
 ```

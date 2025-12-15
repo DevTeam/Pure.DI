@@ -8,32 +8,37 @@ using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Bind().To<AbcDependency>()
-    .Bind(Tag.OnMember<Service>(nameof(Service.Dependency)))
-        .To<XyzDependency>()
-    .Bind<IService>().To<Service>()
+    .Bind().To<PayPalGateway>()
+    // Binds StripeGateway to the "Gateway" property of the "CheckoutService" class.
+    // This allows you to override the injected dependency for a specific member
+    // without changing the class definition.
+    .Bind(Tag.OnMember<CheckoutService>(nameof(CheckoutService.Gateway)))
+    .To<StripeGateway>()
+    .Bind<ICheckoutService>().To<CheckoutService>()
 
     // Specifies to create the composition root named "Root"
-    .Root<IService>("Root");
+    .Root<ICheckoutService>("CheckoutService");
 
 var composition = new Composition();
-var service = composition.Root;
-service.Dependency.ShouldBeOfType<XyzDependency>();
+var checkoutService = composition.CheckoutService;
 
-interface IDependency;
+// Checks that the property was injected with the specific implementation
+checkoutService.Gateway.ShouldBeOfType<StripeGateway>();
 
-class AbcDependency : IDependency;
+interface IPaymentGateway;
 
-class XyzDependency : IDependency;
+class PayPalGateway : IPaymentGateway;
 
-interface IService
+class StripeGateway : IPaymentGateway;
+
+interface ICheckoutService
 {
-    IDependency Dependency { get; }
+    IPaymentGateway Gateway { get; }
 }
 
-class Service : IService
+class CheckoutService : ICheckoutService
 {
-    public required IDependency Dependency { init; get; }
+    public required IPaymentGateway Gateway { init; get; }
 }
 ```
 
@@ -81,14 +86,14 @@ partial class Composition
   {
   }
 
-  public IService Root
+  public ICheckoutService CheckoutService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new Service()
+      return new CheckoutService()
       {
-        Dependency = new XyzDependency()
+        Gateway = new StripeGateway()
       };
     }
   }
@@ -106,29 +111,29 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	XyzDependency --|> IDependency
-	Service --|> IService
-	Composition ..> Service : IService Root
-	Service *--  XyzDependency : IDependency
+	StripeGateway --|> IPaymentGateway
+	CheckoutService --|> ICheckoutService
+	Composition ..> CheckoutService : ICheckoutService CheckoutService
+	CheckoutService *--  StripeGateway : IPaymentGateway
 	namespace Pure.DI.UsageTests.Advanced.TagOnMemberScenario {
+		class CheckoutService {
+				<<class>>
+			+CheckoutService()
+			+IPaymentGateway Gateway
+		}
 		class Composition {
 		<<partial>>
-		+IService Root
+		+ICheckoutService CheckoutService
 		}
-		class IDependency {
+		class ICheckoutService {
 			<<interface>>
 		}
-		class IService {
+		class IPaymentGateway {
 			<<interface>>
 		}
-		class Service {
+		class StripeGateway {
 				<<class>>
-			+Service()
-			+IDependency Dependency
-		}
-		class XyzDependency {
-				<<class>>
-			+XyzDependency()
+			+StripeGateway()
 		}
 	}
 ```

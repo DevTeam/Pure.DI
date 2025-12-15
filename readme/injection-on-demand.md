@@ -1,6 +1,6 @@
 #### Injection on demand
 
-This example demonstrates using dependency injection with Pure.DI to dynamically create dependencies as needed via a factory function. The code defines a service (`Service`) that requires multiple instances of a dependency (`Dependency`). Instead of injecting pre-created instances, the service receives a `Func<IDependency>` factory delegate, allowing it to generate dependencies on demand.
+This example demonstrates using dependency injection with Pure.DI to dynamically create dependencies as needed via a factory function. The code defines a service (`GameLevel`) that requires multiple instances of a dependency (`Enemy`). Instead of injecting pre-created instances, the service receives a `Func<IEnemy>` factory delegate, allowing it to generate entities on demand.
 
 
 ```c#
@@ -9,31 +9,37 @@ using Pure.DI;
 using System.Collections.Generic;
 
 DI.Setup(nameof(Composition))
-    .Bind().To<Dependency>()
-    .Bind().To<Service>()
+    .Bind().To<Enemy>()
+    .Bind().To<GameLevel>()
 
     // Composition root
-    .Root<IService>("Root");
+    .Root<IGameLevel>("GameLevel");
 
 var composition = new Composition();
-var service = composition.Root;
-service.Dependencies.Count.ShouldBe(2);
+var gameLevel = composition.GameLevel;
 
-interface IDependency;
+// Verifies that two distinct enemies have been spawned
+gameLevel.Enemies.Count.ShouldBe(2);
 
-class Dependency : IDependency;
+// Represents a game entity that acts as an enemy
+interface IEnemy;
 
-interface IService
+class Enemy : IEnemy;
+
+// Represents a game level that manages entities
+interface IGameLevel
 {
-    IReadOnlyList<IDependency> Dependencies { get; }
+    IReadOnlyList<IEnemy> Enemies { get; }
 }
 
-class Service(Func<IDependency> dependencyFactory): IService
+class GameLevel(Func<IEnemy> enemySpawner) : IGameLevel
 {
-    public IReadOnlyList<IDependency> Dependencies { get; } =
+    // The factory acts as a "spawner" to create new enemy instances on demand.
+    // Calling 'enemySpawner()' creates a fresh instance of Enemy each time.
+    public IReadOnlyList<IEnemy> Enemies { get; } =
     [
-        dependencyFactory(),
-        dependencyFactory()
+        enemySpawner(),
+        enemySpawner()
     ];
 }
 ```
@@ -66,11 +72,11 @@ dotnet run
 </details>
 
 Key elements:
-- `Dependency` is bound to the `IDependency` interface, and `Service` is bound to `IService`.
-- The `Service` constructor accepts `Func<IDependency>`, enabling deferred creation of dependencies.
-- The `Service` calls the factory twice, resulting in two distinct `Dependency` instances stored in its `Dependencies` collection.
+- `Enemy` is bound to the `IEnemy` interface, and `GameLevel` is bound to `IGameLevel`.
+- The `GameLevel` constructor accepts `Func<IEnemy>`, enabling deferred creation of entities.
+- The `GameLevel` calls the factory twice, resulting in two distinct `Enemy` instances stored in its `Enemies` collection.
 
-This approach showcases how factories can control dependency lifetime and instance creation timing in a DI container. The Pure.DI configuration ensures the factory resolves new `IDependency` instances each time it's invoked, achieving "injections as required" functionality.
+This approach showcases how factories can control dependency lifetime and instance creation timing in a DI container. The Pure.DI configuration ensures the factory resolves new `IEnemy` instances each time it's invoked, achieving "injections as required" functionality.
 
 The following partial class will be generated:
 
@@ -86,19 +92,19 @@ partial class Composition
   {
   }
 
-  public IService Root
+  public IGameLevel GameLevel
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<IDependency> transientFunc1 = new Func<IDependency>(
+      Func<IEnemy> transientFunc1 = new Func<IEnemy>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        IDependency localValue17 = new Dependency();
+        IEnemy localValue17 = new Enemy();
         return localValue17;
       });
-      return new Service(transientFunc1);
+      return new GameLevel(transientFunc1);
     }
   }
 }
@@ -115,33 +121,33 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Service --|> IService
-	Composition ..> Service : IService Root
-	Service o-- "PerBlock" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
-	FuncᐸIDependencyᐳ *--  Dependency : IDependency
+	Enemy --|> IEnemy
+	GameLevel --|> IGameLevel
+	Composition ..> GameLevel : IGameLevel GameLevel
+	GameLevel o-- "PerBlock" FuncᐸIEnemyᐳ : FuncᐸIEnemyᐳ
+	FuncᐸIEnemyᐳ *--  Enemy : IEnemy
 	namespace Pure.DI.UsageTests.Basics.InjectionOnDemandScenario {
 		class Composition {
 		<<partial>>
-		+IService Root
+		+IGameLevel GameLevel
 		}
-		class Dependency {
+		class Enemy {
 				<<class>>
-			+Dependency()
+			+Enemy()
 		}
-		class IDependency {
+		class GameLevel {
+				<<class>>
+			+GameLevel(FuncᐸIEnemyᐳ enemySpawner)
+		}
+		class IEnemy {
 			<<interface>>
 		}
-		class IService {
+		class IGameLevel {
 			<<interface>>
-		}
-		class Service {
-				<<class>>
-			+Service(FuncᐸIDependencyᐳ dependencyFactory)
 		}
 	}
 	namespace System {
-		class FuncᐸIDependencyᐳ {
+		class FuncᐸIEnemyᐳ {
 				<<delegate>>
 		}
 	}

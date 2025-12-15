@@ -7,30 +7,32 @@ The tuples feature provides concise syntax to group multiple data elements in a 
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<Point>().To(_ => new Point(7, 9))
-    .Bind<IService>().To<Service>()
+    .Bind<IEngine>().To<ElectricEngine>()
+    .Bind<Coordinates>().To(_ => new Coordinates(10, 20))
+    .Bind<IVehicle>().To<Car>()
 
     // Composition root
-    .Root<IService>("Root");
+    .Root<IVehicle>("Vehicle");
 
 var composition = new Composition();
-var root = composition.Root;
+var vehicle = composition.Vehicle;
 
-interface IDependency;
+interface IEngine;
 
-class Dependency : IDependency;
+class ElectricEngine : IEngine;
 
-readonly record struct Point(int X, int Y);
+readonly record struct Coordinates(int X, int Y);
 
-interface IService
+interface IVehicle
 {
-    IDependency Dependency { get; }
+    IEngine Engine { get; }
 }
 
-class Service((Point Point, IDependency Dependency) tuple) : IService
+class Car((Coordinates StartPosition, IEngine Engine) specs) : IVehicle
 {
-    public IDependency Dependency { get; } = tuple.Dependency;
+    // The tuple 'specs' groups the initialization data (like coordinates)
+    // and dependencies (like engine) into a single lightweight argument.
+    public IEngine Engine { get; } = specs.Engine;
 }
 ```
 
@@ -73,13 +75,13 @@ partial class Composition
   {
   }
 
-  public IService Root
+  public IVehicle Vehicle
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Point transientPoint2 = new Point(7, 9);
-      return new Service((transientPoint2, new Dependency()));
+      Coordinates transientCoordinates2 = new Coordinates(10, 20);
+      return new Car((transientCoordinates2, new ElectricEngine()));
     }
   }
 }
@@ -96,39 +98,39 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Service --|> IService
-	Composition ..> Service : IService Root
-	Service *--  ValueTupleᐸPointˏIDependencyᐳ : ValueTupleᐸPointˏIDependencyᐳ
-	ValueTupleᐸPointˏIDependencyᐳ *--  Dependency : IDependency
-	ValueTupleᐸPointˏIDependencyᐳ *--  Point : Point
+	ElectricEngine --|> IEngine
+	Car --|> IVehicle
+	Composition ..> Car : IVehicle Vehicle
+	Car *--  ValueTupleᐸCoordinatesˏIEngineᐳ : ValueTupleᐸCoordinatesˏIEngineᐳ
+	ValueTupleᐸCoordinatesˏIEngineᐳ *--  ElectricEngine : IEngine
+	ValueTupleᐸCoordinatesˏIEngineᐳ *--  Coordinates : Coordinates
 	namespace Pure.DI.UsageTests.BCL.TupleScenario {
+		class Car {
+				<<class>>
+			+Car(ValueTupleᐸCoordinatesˏIEngineᐳ specs)
+		}
 		class Composition {
 		<<partial>>
-		+IService Root
+		+IVehicle Vehicle
 		}
-		class Dependency {
-				<<class>>
-			+Dependency()
-		}
-		class IDependency {
-			<<interface>>
-		}
-		class IService {
-			<<interface>>
-		}
-		class Point {
+		class Coordinates {
 				<<struct>>
 		}
-		class Service {
+		class ElectricEngine {
 				<<class>>
-			+Service(ValueTupleᐸPointˏIDependencyᐳ tuple)
+			+ElectricEngine()
+		}
+		class IEngine {
+			<<interface>>
+		}
+		class IVehicle {
+			<<interface>>
 		}
 	}
 	namespace System {
-		class ValueTupleᐸPointˏIDependencyᐳ {
+		class ValueTupleᐸCoordinatesˏIEngineᐳ {
 				<<struct>>
-			+ValueTuple(Point item1, IDependency item2)
+			+ValueTuple(Coordinates item1, IEngine item2)
 		}
 	}
 ```

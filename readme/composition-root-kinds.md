@@ -6,45 +6,45 @@ using Pure.DI;
 using static Pure.DI.RootKinds;
 
 var composition = new Composition();
-var service = composition.Root;
-var otherService = composition.GetOtherService();
-var dependency = Composition.Dependency;
+var paymentService = composition.PaymentService;
+var cashPaymentService = composition.GetCashPaymentService();
+var validator = Composition.Validator;
 
-interface IDependency;
+interface ICreditCardValidator;
 
-class Dependency : IDependency;
+class LuhnValidator : ICreditCardValidator;
 
-interface IService;
+interface IPaymentService;
 
-class Service : IService
+class CardPaymentService : IPaymentService
 {
-    public Service(IDependency dependency)
+    public CardPaymentService(ICreditCardValidator validator)
     {
     }
 }
 
-class OtherService : IService;
+class CashPaymentService : IPaymentService;
 
 partial class Composition
 {
     void Setup() =>
         DI.Setup(nameof(Composition))
-            .Bind<IService>().To<Service>()
-            .Bind<IService>("Other").To<OtherService>()
-            .Bind<IDependency>().To<Dependency>()
+            .Bind<IPaymentService>().To<CardPaymentService>()
+            .Bind<IPaymentService>("Cash").To<CashPaymentService>()
+            .Bind<ICreditCardValidator>().To<LuhnValidator>()
 
-            // Creates a public root method named "GetOtherService"
-            .Root<IService>("GetOtherService", "Other", Public | Method)
+            // Creates a public root method named "GetCashPaymentService"
+            .Root<IPaymentService>("GetCashPaymentService", "Cash", Public | Method)
 
-            // Creates a private partial root method named "GetRoot"
-            .Root<IService>("GetRoot", kind: Private | Partial | Method)
+            // Creates a private partial root method named "GetCardPaymentService"
+            .Root<IPaymentService>("GetCardPaymentService", kind: Private | Partial | Method)
 
-            // Creates a internal static root named "Dependency"
-            .Root<IDependency>("Dependency", kind: Internal | Static);
+            // Creates an internal static root named "Validator"
+            .Root<ICreditCardValidator>("Validator", kind: Internal | Static);
 
-    private partial IService GetRoot();
+    private partial IPaymentService GetCardPaymentService();
 
-    public IService Root => GetRoot();
+    public IPaymentService PaymentService => GetCardPaymentService();
 }
 ```
 
@@ -88,23 +88,23 @@ partial class Composition
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  private partial IService GetRoot()
+  private partial IPaymentService GetCardPaymentService()
   {
-    return new Service(new Dependency());
+    return new CardPaymentService(new LuhnValidator());
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public IService GetOtherService()
+  public IPaymentService GetCashPaymentService()
   {
-    return new OtherService();
+    return new CashPaymentService();
   }
 
-  internal static IDependency Dependency
+  internal static ICreditCardValidator Validator
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new Dependency();
+      return new LuhnValidator();
     }
   }
 
@@ -174,16 +174,16 @@ partial class Composition
   static Composition()
   {
     var valResolver_0000 = new Resolver_0000();
-    Resolver<IService>.Value = valResolver_0000;
+    Resolver<IPaymentService>.Value = valResolver_0000;
     var valResolver_0001 = new Resolver_0001();
-    Resolver<IDependency>.Value = valResolver_0001;
+    Resolver<ICreditCardValidator>.Value = valResolver_0001;
     _buckets = Buckets<IResolver<Composition, object>>.Create(
       4,
       out _bucketSize,
       new Pair<IResolver<Composition, object>>[2]
       {
-         new Pair<IResolver<Composition, object>>(typeof(IService), valResolver_0000)
-        ,new Pair<IResolver<Composition, object>>(typeof(IDependency), valResolver_0001)
+         new Pair<IResolver<Composition, object>>(typeof(IPaymentService), valResolver_0000)
+        ,new Pair<IResolver<Composition, object>>(typeof(ICreditCardValidator), valResolver_0001)
       });
   }
 
@@ -205,22 +205,22 @@ partial class Composition
     }
   }
 
-  private sealed class Resolver_0000: Resolver<IService>
+  private sealed class Resolver_0000: Resolver<IPaymentService>
   {
-    public override IService Resolve(Composition composition)
+    public override IPaymentService Resolve(Composition composition)
     {
-      return composition.GetRoot();
+      return composition.GetCardPaymentService();
     }
 
-    public override IService ResolveByTag(Composition composition, object tag)
+    public override IPaymentService ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
-        case "Other":
-          return composition.GetOtherService();
+        case "Cash":
+          return composition.GetCashPaymentService();
 
         case null:
-          return composition.GetRoot();
+          return composition.GetCardPaymentService();
 
         default:
           return base.ResolveByTag(composition, tag);
@@ -228,19 +228,19 @@ partial class Composition
     }
   }
 
-  private sealed class Resolver_0001: Resolver<IDependency>
+  private sealed class Resolver_0001: Resolver<ICreditCardValidator>
   {
-    public override IDependency Resolve(Composition composition)
+    public override ICreditCardValidator Resolve(Composition composition)
     {
-      return Composition.Dependency;
+      return Composition.Validator;
     }
 
-    public override IDependency ResolveByTag(Composition composition, object tag)
+    public override ICreditCardValidator ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
         case null:
-          return Composition.Dependency;
+          return Composition.Validator;
 
         default:
           return base.ResolveByTag(composition, tag);
@@ -261,41 +261,41 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService
-	OtherService --|> IService : "Other" 
-	Dependency --|> IDependency
-	Composition ..> Dependency : IDependency Dependency
-	Composition ..> Service : IService GetRoot()
-	Composition ..> OtherService : IService GetOtherService()
-	Service *--  Dependency : IDependency
+	CardPaymentService --|> IPaymentService
+	CashPaymentService --|> IPaymentService : "Cash" 
+	LuhnValidator --|> ICreditCardValidator
+	Composition ..> LuhnValidator : ICreditCardValidator Validator
+	Composition ..> CardPaymentService : IPaymentService GetCardPaymentService()
+	Composition ..> CashPaymentService : IPaymentService GetCashPaymentService()
+	CardPaymentService *--  LuhnValidator : ICreditCardValidator
 	namespace Pure.DI.UsageTests.Advanced.CompositionRootKindsScenario {
+		class CardPaymentService {
+				<<class>>
+			+CardPaymentService(ICreditCardValidator validator)
+		}
+		class CashPaymentService {
+				<<class>>
+			+CashPaymentService()
+		}
 		class Composition {
 		<<partial>>
-		~IDependency Dependency
-		+IService GetOtherService()
-		-IService GetRoot()
+		-IPaymentService GetCardPaymentService()
+		+IPaymentService GetCashPaymentService()
+		~ICreditCardValidator Validator
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
 		}
-		class Dependency {
-				<<class>>
-			+Dependency()
-		}
-		class IDependency {
+		class ICreditCardValidator {
 			<<interface>>
 		}
-		class IService {
+		class IPaymentService {
 			<<interface>>
 		}
-		class OtherService {
+		class LuhnValidator {
 				<<class>>
-			+OtherService()
-		}
-		class Service {
-				<<class>>
-			+Service(IDependency dependency)
+			+LuhnValidator()
 		}
 	}
 ```

@@ -10,14 +10,13 @@ using Pure.DI;
 DI.Setup(nameof(Composition))
     // This hint indicates to not generate methods such as Resolve
     .Hint(Hint.Resolve, "Off")
-    .Bind().To<Dependency<TTDisposable>>()
-    .Bind().To<Service<TTDisposable, TTS>>()
-    // Creates OtherService manually,
+    .Bind().To<ConnectionProvider<TTDisposable>>()
+    .Bind().To<DataQuery<TTDisposable, TTS>>()
+    // Creates StatusQuery manually,
     // just for the sake of example
-    .Bind("Other").To(ctx =>
-    {
-        ctx.Inject(out IDependency<TTDisposable> dependency);
-        return new OtherService<TTDisposable>(dependency);
+    .Bind("Status").To(ctx => {
+        ctx.Inject(out IConnectionProvider<TTDisposable> connectionProvider);
+        return new StatusQuery<TTDisposable>(connectionProvider);
     })
 
     // Specifies to use CancellationToken from the argument
@@ -25,38 +24,40 @@ DI.Setup(nameof(Composition))
     .RootArg<CancellationToken>("cancellationToken")
 
     // Specifies to create a regular public method
-    // to get a composition root of type Task<Service<T, TStruct>>
-    // with the name "GetMyRootAsync"
-    .Root<Task<IService<TTDisposable, TTS>>>("GetMyRootAsync")
+    // to get a composition root of type Task<DataQuery<T, TStruct>>
+    // with the name "GetDataQueryAsync"
+    .Root<Task<IQuery<TTDisposable, TTS>>>("GetDataQueryAsync")
 
     // Specifies to create a regular public method
-    // to get a composition root of type Task<OtherService<T>>
-    // with the name "GetOtherServiceAsync"
-    // using the "Other" tag
-    .Root<Task<IService<TTDisposable, bool>>>("GetOtherServiceAsync", "Other");
+    // to get a composition root of type Task<StatusQuery<T>>
+    // with the name "GetStatusQueryAsync"
+    // using the "Status" tag
+    .Root<Task<IQuery<TTDisposable, bool>>>("GetStatusQueryAsync", "Status");
 
 var composition = new Composition();
 
 // Resolves composition roots asynchronously
-var service = await composition.GetMyRootAsync<Stream, double>(CancellationToken.None);
-var someOtherService = await composition.GetOtherServiceAsync<BinaryReader>(CancellationToken.None);
+var query = await composition.GetDataQueryAsync<Stream, double>(CancellationToken.None);
+var status = await composition.GetStatusQueryAsync<BinaryReader>(CancellationToken.None);
 
-interface IDependency<T>
+interface IConnectionProvider<T>
     where T : IDisposable;
 
-class Dependency<T> : IDependency<T>
+class ConnectionProvider<T> : IConnectionProvider<T>
     where T : IDisposable;
 
-interface IService<T, TStruct>
-    where T : IDisposable
-    where TStruct : struct;
+interface IQuery<TConnection, TResult>
+    where TConnection : IDisposable
+    where TResult : struct;
 
-class Service<T, TStruct>(IDependency<T> dependency) : IService<T, TStruct>
-    where T : IDisposable
-    where TStruct : struct;
+class DataQuery<TConnection, TResult>(IConnectionProvider<TConnection> connectionProvider)
+    : IQuery<TConnection, TResult>
+    where TConnection : IDisposable
+    where TResult : struct;
 
-class OtherService<T>(IDependency<T> dependency) : IService<T, bool>
-    where T : IDisposable;
+class StatusQuery<TConnection>(IConnectionProvider<TConnection> connectionProvider)
+    : IQuery<TConnection, bool>
+    where TConnection : IDisposable;
 ```
 
 <details>
@@ -114,24 +115,24 @@ partial class Composition
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public Task<IService<T2, bool>> GetOtherServiceAsync<T2>(CancellationToken cancellationToken)
+  public Task<IQuery<T2, bool>> GetStatusQueryAsync<T2>(CancellationToken cancellationToken)
     where T2: IDisposable
   {
-    Task<IService<T2, bool>> transientTask;
+    Task<IQuery<T2, bool>> transientTask;
     // Injects an instance factory
-    Func<IService<T2, bool>> transientFunc1 = new Func<IService<T2, bool>>(
+    Func<IQuery<T2, bool>> transientFunc1 = new Func<IQuery<T2, bool>>(
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     () =>
     {
-      OtherService<T2> transientOtherService3;
-      IDependency<T2> localDependency6 = new Dependency<T2>();
-      transientOtherService3 = new OtherService<T2>(localDependency6);
-      IService<T2, bool> localValue26 = transientOtherService3;
+      StatusQuery<T2> transientStatusQuery3;
+      IConnectionProvider<T2> localConnectionProvider = new ConnectionProvider<T2>();
+      transientStatusQuery3 = new StatusQuery<T2>(localConnectionProvider);
+      IQuery<T2, bool> localValue26 = transientStatusQuery3;
       return localValue26;
     });
-    Func<IService<T2, bool>> localFactory6 = transientFunc1;
+    Func<IQuery<T2, bool>> localFactory6 = transientFunc1;
     // Injects a task factory creating and scheduling task objects
-    TaskFactory<IService<T2, bool>> transientTaskFactory2;
+    TaskFactory<IQuery<T2, bool>> transientTaskFactory2;
     CancellationToken localCancellationToken3 = cancellationToken;
     TaskCreationOptions transientTaskCreationOptions6 = TaskCreationOptions.None;
     TaskCreationOptions localTaskCreationOptions2 = transientTaskCreationOptions6;
@@ -139,30 +140,30 @@ partial class Composition
     TaskContinuationOptions localTaskContinuationOptions2 = transientTaskContinuationOptions7;
     TaskScheduler transientTaskScheduler8 = TaskScheduler.Default;
     TaskScheduler localTaskScheduler2 = transientTaskScheduler8;
-    transientTaskFactory2 = new TaskFactory<IService<T2, bool>>(localCancellationToken3, localTaskCreationOptions2, localTaskContinuationOptions2, localTaskScheduler2);
-    TaskFactory<IService<T2, bool>> localTaskFactory2 = transientTaskFactory2;
+    transientTaskFactory2 = new TaskFactory<IQuery<T2, bool>>(localCancellationToken3, localTaskCreationOptions2, localTaskContinuationOptions2, localTaskScheduler2);
+    TaskFactory<IQuery<T2, bool>> localTaskFactory2 = transientTaskFactory2;
     // Creates and starts a task using the instance factory
     transientTask = localTaskFactory2.StartNew(localFactory6);
     return transientTask;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public Task<IService<T2, T3>> GetMyRootAsync<T2, T3>(CancellationToken cancellationToken)
+  public Task<IQuery<T2, T3>> GetDataQueryAsync<T2, T3>(CancellationToken cancellationToken)
     where T2: IDisposable
     where T3: struct
   {
-    Task<IService<T2, T3>> transientTask9;
+    Task<IQuery<T2, T3>> transientTask9;
     // Injects an instance factory
-    Func<IService<T2, T3>> transientFunc10 = new Func<IService<T2, T3>>(
+    Func<IQuery<T2, T3>> transientFunc10 = new Func<IQuery<T2, T3>>(
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     () =>
     {
-      IService<T2, T3> localValue27 = new Service<T2, T3>(new Dependency<T2>());
+      IQuery<T2, T3> localValue27 = new DataQuery<T2, T3>(new ConnectionProvider<T2>());
       return localValue27;
     });
-    Func<IService<T2, T3>> localFactory7 = transientFunc10;
+    Func<IQuery<T2, T3>> localFactory7 = transientFunc10;
     // Injects a task factory creating and scheduling task objects
-    TaskFactory<IService<T2, T3>> transientTaskFactory11;
+    TaskFactory<IQuery<T2, T3>> transientTaskFactory11;
     CancellationToken localCancellationToken4 = cancellationToken;
     TaskCreationOptions transientTaskCreationOptions15 = TaskCreationOptions.None;
     TaskCreationOptions localTaskCreationOptions3 = transientTaskCreationOptions15;
@@ -170,8 +171,8 @@ partial class Composition
     TaskContinuationOptions localTaskContinuationOptions3 = transientTaskContinuationOptions16;
     TaskScheduler transientTaskScheduler17 = TaskScheduler.Default;
     TaskScheduler localTaskScheduler3 = transientTaskScheduler17;
-    transientTaskFactory11 = new TaskFactory<IService<T2, T3>>(localCancellationToken4, localTaskCreationOptions3, localTaskContinuationOptions3, localTaskScheduler3);
-    TaskFactory<IService<T2, T3>> localTaskFactory3 = transientTaskFactory11;
+    transientTaskFactory11 = new TaskFactory<IQuery<T2, T3>>(localCancellationToken4, localTaskCreationOptions3, localTaskContinuationOptions3, localTaskScheduler3);
+    TaskFactory<IQuery<T2, T3>> localTaskFactory3 = transientTaskFactory11;
     // Creates and starts a task using the instance factory
     transientTask9 = localTaskFactory3.StartNew(localFactory7);
     return transientTask9;
@@ -190,58 +191,58 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	OtherServiceᐸT2ᐳ --|> IServiceᐸT2ˏBooleanᐳ : "Other" 
-	ServiceᐸT2ˏT3ᐳ --|> IServiceᐸT2ˏT3ᐳ
-	DependencyᐸT2ᐳ --|> IDependencyᐸT2ᐳ
-	Composition ..> TaskᐸIServiceᐸT2ˏT3ᐳᐳ : TaskᐸIServiceᐸT2ˏT3ᐳᐳ GetMyRootAsyncᐸT2ˏT3ᐳ(System.Threading.CancellationToken cancellationToken)
-	TaskᐸIServiceᐸT2ˏBooleanᐳᐳ o-- "PerBlock" FuncᐸIServiceᐸT2ˏBooleanᐳᐳ : "Other"  FuncᐸIServiceᐸT2ˏBooleanᐳᐳ
-	TaskᐸIServiceᐸT2ˏBooleanᐳᐳ o-- "PerBlock" TaskFactoryᐸIServiceᐸT2ˏBooleanᐳᐳ : TaskFactoryᐸIServiceᐸT2ˏBooleanᐳᐳ
-	TaskᐸIServiceᐸT2ˏT3ᐳᐳ o-- "PerBlock" FuncᐸIServiceᐸT2ˏT3ᐳᐳ : FuncᐸIServiceᐸT2ˏT3ᐳᐳ
-	TaskᐸIServiceᐸT2ˏT3ᐳᐳ o-- "PerBlock" TaskFactoryᐸIServiceᐸT2ˏT3ᐳᐳ : TaskFactoryᐸIServiceᐸT2ˏT3ᐳᐳ
-	FuncᐸIServiceᐸT2ˏBooleanᐳᐳ *--  OtherServiceᐸT2ᐳ : "Other"  IServiceᐸT2ˏBooleanᐳ
-	TaskFactoryᐸIServiceᐸT2ˏBooleanᐳᐳ *--  TaskScheduler : TaskScheduler
-	TaskFactoryᐸIServiceᐸT2ˏBooleanᐳᐳ *--  TaskCreationOptions : TaskCreationOptions
-	TaskFactoryᐸIServiceᐸT2ˏBooleanᐳᐳ *--  TaskContinuationOptions : TaskContinuationOptions
-	TaskFactoryᐸIServiceᐸT2ˏBooleanᐳᐳ o-- CancellationToken : Argument "cancellationToken"
-	FuncᐸIServiceᐸT2ˏT3ᐳᐳ *--  ServiceᐸT2ˏT3ᐳ : IServiceᐸT2ˏT3ᐳ
-	TaskFactoryᐸIServiceᐸT2ˏT3ᐳᐳ *--  TaskScheduler : TaskScheduler
-	TaskFactoryᐸIServiceᐸT2ˏT3ᐳᐳ *--  TaskCreationOptions : TaskCreationOptions
-	TaskFactoryᐸIServiceᐸT2ˏT3ᐳᐳ *--  TaskContinuationOptions : TaskContinuationOptions
-	TaskFactoryᐸIServiceᐸT2ˏT3ᐳᐳ o-- CancellationToken : Argument "cancellationToken"
-	OtherServiceᐸT2ᐳ *--  DependencyᐸT2ᐳ : IDependencyᐸT2ᐳ
-	ServiceᐸT2ˏT3ᐳ *--  DependencyᐸT2ᐳ : IDependencyᐸT2ᐳ
+	StatusQueryᐸT2ᐳ --|> IQueryᐸT2ˏBooleanᐳ : "Status" 
+	DataQueryᐸT2ˏT3ᐳ --|> IQueryᐸT2ˏT3ᐳ
+	ConnectionProviderᐸT2ᐳ --|> IConnectionProviderᐸT2ᐳ
+	Composition ..> TaskᐸIQueryᐸT2ˏT3ᐳᐳ : TaskᐸIQueryᐸT2ˏT3ᐳᐳ GetDataQueryAsyncᐸT2ˏT3ᐳ(System.Threading.CancellationToken cancellationToken)
+	TaskᐸIQueryᐸT2ˏBooleanᐳᐳ o-- "PerBlock" FuncᐸIQueryᐸT2ˏBooleanᐳᐳ : "Status"  FuncᐸIQueryᐸT2ˏBooleanᐳᐳ
+	TaskᐸIQueryᐸT2ˏBooleanᐳᐳ o-- "PerBlock" TaskFactoryᐸIQueryᐸT2ˏBooleanᐳᐳ : TaskFactoryᐸIQueryᐸT2ˏBooleanᐳᐳ
+	TaskᐸIQueryᐸT2ˏT3ᐳᐳ o-- "PerBlock" FuncᐸIQueryᐸT2ˏT3ᐳᐳ : FuncᐸIQueryᐸT2ˏT3ᐳᐳ
+	TaskᐸIQueryᐸT2ˏT3ᐳᐳ o-- "PerBlock" TaskFactoryᐸIQueryᐸT2ˏT3ᐳᐳ : TaskFactoryᐸIQueryᐸT2ˏT3ᐳᐳ
+	FuncᐸIQueryᐸT2ˏBooleanᐳᐳ *--  StatusQueryᐸT2ᐳ : "Status"  IQueryᐸT2ˏBooleanᐳ
+	TaskFactoryᐸIQueryᐸT2ˏBooleanᐳᐳ *--  TaskScheduler : TaskScheduler
+	TaskFactoryᐸIQueryᐸT2ˏBooleanᐳᐳ *--  TaskCreationOptions : TaskCreationOptions
+	TaskFactoryᐸIQueryᐸT2ˏBooleanᐳᐳ *--  TaskContinuationOptions : TaskContinuationOptions
+	TaskFactoryᐸIQueryᐸT2ˏBooleanᐳᐳ o-- CancellationToken : Argument "cancellationToken"
+	FuncᐸIQueryᐸT2ˏT3ᐳᐳ *--  DataQueryᐸT2ˏT3ᐳ : IQueryᐸT2ˏT3ᐳ
+	TaskFactoryᐸIQueryᐸT2ˏT3ᐳᐳ *--  TaskScheduler : TaskScheduler
+	TaskFactoryᐸIQueryᐸT2ˏT3ᐳᐳ *--  TaskCreationOptions : TaskCreationOptions
+	TaskFactoryᐸIQueryᐸT2ˏT3ᐳᐳ *--  TaskContinuationOptions : TaskContinuationOptions
+	TaskFactoryᐸIQueryᐸT2ˏT3ᐳᐳ o-- CancellationToken : Argument "cancellationToken"
+	StatusQueryᐸT2ᐳ *--  ConnectionProviderᐸT2ᐳ : IConnectionProviderᐸT2ᐳ
+	DataQueryᐸT2ˏT3ᐳ *--  ConnectionProviderᐸT2ᐳ : IConnectionProviderᐸT2ᐳ
 	namespace Pure.DI.UsageTests.Generics.GenericAsyncCompositionRootsWithConstraintsScenario {
 		class Composition {
 		<<partial>>
-		+TaskᐸIServiceᐸT2ˏT3ᐳᐳ GetMyRootAsyncᐸT2ˏT3ᐳ(System.Threading.CancellationToken cancellationToken)
-		+TaskᐸIServiceᐸT2ˏBooleanᐳᐳ GetOtherServiceAsyncᐸT2ᐳ(System.Threading.CancellationToken cancellationToken)
+		+TaskᐸIQueryᐸT2ˏT3ᐳᐳ GetDataQueryAsyncᐸT2ˏT3ᐳ(System.Threading.CancellationToken cancellationToken)
+		+TaskᐸIQueryᐸT2ˏBooleanᐳᐳ GetStatusQueryAsyncᐸT2ᐳ(System.Threading.CancellationToken cancellationToken)
 		}
-		class DependencyᐸT2ᐳ {
+		class ConnectionProviderᐸT2ᐳ {
 				<<class>>
-			+Dependency()
+			+ConnectionProvider()
 		}
-		class IDependencyᐸT2ᐳ {
+		class DataQueryᐸT2ˏT3ᐳ {
+				<<class>>
+			+DataQuery(IConnectionProviderᐸT2ᐳ connectionProvider)
+		}
+		class IConnectionProviderᐸT2ᐳ {
 			<<interface>>
 		}
-		class IServiceᐸT2ˏBooleanᐳ {
+		class IQueryᐸT2ˏBooleanᐳ {
 			<<interface>>
 		}
-		class IServiceᐸT2ˏT3ᐳ {
+		class IQueryᐸT2ˏT3ᐳ {
 			<<interface>>
 		}
-		class OtherServiceᐸT2ᐳ {
+		class StatusQueryᐸT2ᐳ {
 				<<class>>
-		}
-		class ServiceᐸT2ˏT3ᐳ {
-				<<class>>
-			+Service(IDependencyᐸT2ᐳ dependency)
 		}
 	}
 	namespace System {
-		class FuncᐸIServiceᐸT2ˏBooleanᐳᐳ {
+		class FuncᐸIQueryᐸT2ˏBooleanᐳᐳ {
 				<<delegate>>
 		}
-		class FuncᐸIServiceᐸT2ˏT3ᐳᐳ {
+		class FuncᐸIQueryᐸT2ˏT3ᐳᐳ {
 				<<delegate>>
 		}
 	}
@@ -257,19 +258,19 @@ classDiagram
 		class TaskCreationOptions {
 				<<enum>>
 		}
-		class TaskFactoryᐸIServiceᐸT2ˏBooleanᐳᐳ {
+		class TaskFactoryᐸIQueryᐸT2ˏBooleanᐳᐳ {
 				<<class>>
 		}
-		class TaskFactoryᐸIServiceᐸT2ˏT3ᐳᐳ {
+		class TaskFactoryᐸIQueryᐸT2ˏT3ᐳᐳ {
 				<<class>>
 		}
 		class TaskScheduler {
 				<<abstract>>
 		}
-		class TaskᐸIServiceᐸT2ˏBooleanᐳᐳ {
+		class TaskᐸIQueryᐸT2ˏBooleanᐳᐳ {
 				<<class>>
 		}
-		class TaskᐸIServiceᐸT2ˏT3ᐳᐳ {
+		class TaskᐸIQueryᐸT2ˏT3ᐳᐳ {
 				<<class>>
 		}
 	}

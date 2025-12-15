@@ -19,42 +19,48 @@ DI.Setup(nameof(Composition))
     // Overrides TaskScheduler.Default if necessary
     .Bind<TaskScheduler>().To(_ => TaskScheduler.Current)
     // Specifies to use CancellationToken from the composition root argument,
-    // if not specified then CancellationToken.None will be used
+    // if not specified, then CancellationToken.None will be used
     .RootArg<CancellationToken>("cancellationToken")
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>()
+    .Bind<IDataService>().To<DataService>()
+    .Bind<ICommand>().To<LoadDataCommand>()
 
     // Composition root
-    .Root<IService>("GetRoot");
+    .Root<ICommand>("GetCommand");
 
 var composition = new Composition();
 using var cancellationTokenSource = new CancellationTokenSource();
 
 // Creates a composition root with the CancellationToken passed to it
-var service = composition.GetRoot(cancellationTokenSource.Token);
-await service.RunAsync(cancellationTokenSource.Token);
+var command = composition.GetCommand(cancellationTokenSource.Token);
+await command.ExecuteAsync(cancellationTokenSource.Token);
 
-interface IDependency
+interface IDataService
 {
-    ValueTask DoSomething(CancellationToken cancellationToken);
+    ValueTask<string[]> GetItemsAsync(CancellationToken cancellationToken);
 }
 
-class Dependency : IDependency
+class DataService : IDataService
 {
-    public ValueTask DoSomething(CancellationToken cancellationToken) => ValueTask.CompletedTask;
+    public ValueTask<string[]> GetItemsAsync(CancellationToken cancellationToken) =>
+        new(["Item1", "Item2"]);
 }
 
-interface IService
+interface ICommand
 {
-    Task RunAsync(CancellationToken cancellationToken);
+    Task ExecuteAsync(CancellationToken cancellationToken);
 }
 
-class Service(Task<IDependency> dependencyTask) : IService
+class LoadDataCommand(Task<IDataService> dataServiceTask) : ICommand
 {
-    public async Task RunAsync(CancellationToken cancellationToken)
+    public async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        var dependency = await dependencyTask;
-        await dependency.DoSomething(cancellationToken);
+        // Simulating some processing before needing the dependency
+        await Task.Delay(1, cancellationToken);
+
+        // The dependency is resolved asynchronously, so we await it here.
+        // This allows the dependency to be created in parallel with the execution of this method.
+        var dataService = await dataServiceTask;
+        var items = await dataService.GetItemsAsync(cancellationToken);
     }
 }
 ```
@@ -113,20 +119,20 @@ partial class Composition
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public IService GetRoot(CancellationToken cancellationToken)
+  public ICommand GetCommand(CancellationToken cancellationToken)
   {
-    Task<IDependency> transientTask1;
+    Task<IDataService> transientTask1;
     // Injects an instance factory
-    Func<IDependency> transientFunc2 = new Func<IDependency>(
+    Func<IDataService> transientFunc2 = new Func<IDataService>(
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     () =>
     {
-      IDependency localValue24 = new Dependency();
+      IDataService localValue24 = new DataService();
       return localValue24;
     });
-    Func<IDependency> localFactory5 = transientFunc2;
+    Func<IDataService> localFactory5 = transientFunc2;
     // Injects a task factory creating and scheduling task objects
-    TaskFactory<IDependency> transientTaskFactory3;
+    TaskFactory<IDataService> transientTaskFactory3;
     CancellationToken localCancellationToken2 = cancellationToken;
     TaskCreationOptions transientTaskCreationOptions6 = TaskCreationOptions.None;
     TaskCreationOptions localTaskCreationOptions1 = transientTaskCreationOptions6;
@@ -134,11 +140,11 @@ partial class Composition
     TaskContinuationOptions localTaskContinuationOptions1 = transientTaskContinuationOptions7;
     TaskScheduler transientTaskScheduler8 = TaskScheduler.Current;
     TaskScheduler localTaskScheduler1 = transientTaskScheduler8;
-    transientTaskFactory3 = new TaskFactory<IDependency>(localCancellationToken2, localTaskCreationOptions1, localTaskContinuationOptions1, localTaskScheduler1);
-    TaskFactory<IDependency> localTaskFactory1 = transientTaskFactory3;
+    transientTaskFactory3 = new TaskFactory<IDataService>(localCancellationToken2, localTaskCreationOptions1, localTaskContinuationOptions1, localTaskScheduler1);
+    TaskFactory<IDataService> localTaskFactory1 = transientTaskFactory3;
     // Creates and starts a task using the instance factory
     transientTask1 = localTaskFactory1.StartNew(localFactory5);
-    return new Service(transientTask1);
+    return new LoadDataCommand(transientTask1);
   }
 }
 ```
@@ -154,39 +160,39 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Service --|> IService
-	Composition ..> Service : IService GetRoot(System.Threading.CancellationToken cancellationToken)
-	Service *--  TaskᐸIDependencyᐳ : TaskᐸIDependencyᐳ
-	TaskᐸIDependencyᐳ o-- "PerBlock" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
-	TaskᐸIDependencyᐳ o-- "PerBlock" TaskFactoryᐸIDependencyᐳ : TaskFactoryᐸIDependencyᐳ
-	FuncᐸIDependencyᐳ *--  Dependency : IDependency
-	TaskFactoryᐸIDependencyᐳ *--  TaskCreationOptions : TaskCreationOptions
-	TaskFactoryᐸIDependencyᐳ *--  TaskContinuationOptions : TaskContinuationOptions
-	TaskFactoryᐸIDependencyᐳ *--  TaskScheduler : TaskScheduler
-	TaskFactoryᐸIDependencyᐳ o-- CancellationToken : Argument "cancellationToken"
+	DataService --|> IDataService
+	LoadDataCommand --|> ICommand
+	Composition ..> LoadDataCommand : ICommand GetCommand(System.Threading.CancellationToken cancellationToken)
+	LoadDataCommand *--  TaskᐸIDataServiceᐳ : TaskᐸIDataServiceᐳ
+	TaskᐸIDataServiceᐳ o-- "PerBlock" FuncᐸIDataServiceᐳ : FuncᐸIDataServiceᐳ
+	TaskᐸIDataServiceᐳ o-- "PerBlock" TaskFactoryᐸIDataServiceᐳ : TaskFactoryᐸIDataServiceᐳ
+	FuncᐸIDataServiceᐳ *--  DataService : IDataService
+	TaskFactoryᐸIDataServiceᐳ *--  TaskCreationOptions : TaskCreationOptions
+	TaskFactoryᐸIDataServiceᐳ *--  TaskContinuationOptions : TaskContinuationOptions
+	TaskFactoryᐸIDataServiceᐳ *--  TaskScheduler : TaskScheduler
+	TaskFactoryᐸIDataServiceᐳ o-- CancellationToken : Argument "cancellationToken"
 	namespace Pure.DI.UsageTests.BCL.TaskScenario {
 		class Composition {
 		<<partial>>
-		+IService GetRoot(System.Threading.CancellationToken cancellationToken)
+		+ICommand GetCommand(System.Threading.CancellationToken cancellationToken)
 		}
-		class Dependency {
+		class DataService {
 				<<class>>
-			+Dependency()
+			+DataService()
 		}
-		class IDependency {
+		class ICommand {
 			<<interface>>
 		}
-		class IService {
+		class IDataService {
 			<<interface>>
 		}
-		class Service {
+		class LoadDataCommand {
 				<<class>>
-			+Service(TaskᐸIDependencyᐳ dependencyTask)
+			+LoadDataCommand(TaskᐸIDataServiceᐳ dataServiceTask)
 		}
 	}
 	namespace System {
-		class FuncᐸIDependencyᐳ {
+		class FuncᐸIDataServiceᐳ {
 				<<delegate>>
 		}
 	}
@@ -202,13 +208,13 @@ classDiagram
 		class TaskCreationOptions {
 				<<enum>>
 		}
-		class TaskFactoryᐸIDependencyᐳ {
+		class TaskFactoryᐸIDataServiceᐳ {
 				<<class>>
 		}
 		class TaskScheduler {
 				<<abstract>>
 		}
-		class TaskᐸIDependencyᐳ {
+		class TaskᐸIDataServiceᐳ {
 				<<class>>
 		}
 	}

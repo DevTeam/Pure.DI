@@ -12,22 +12,22 @@ using Pure.DI;
 var composition = new Composition();
 var serviceCollection = composition.ServiceCollection;
 var serviceProvider = serviceCollection.BuildServiceProvider();
-var service = serviceProvider.GetRequiredService<IService>();
-var dependency = serviceProvider.GetRequiredKeyedService<IDependency>("Dependency Key");
-service.Dependency.ShouldBe(dependency);
+var thermostat = serviceProvider.GetRequiredService<IThermostat>();
+var sensor = serviceProvider.GetRequiredKeyedService<ISensor>("LivingRoom");
+thermostat.Sensor.ShouldBe(sensor);
 
-interface IDependency;
+interface ISensor;
 
-class Dependency : IDependency;
+class TemperatureSensor : ISensor;
 
-interface IService
+interface IThermostat
 {
-    IDependency Dependency { get; }
+    ISensor Sensor { get; }
 }
 
-class Service([Tag("Dependency Key")] IDependency dependency) : IService
+class Thermostat([Tag("LivingRoom")] ISensor sensor) : IThermostat
 {
-    public IDependency Dependency { get; } = dependency;
+    public ISensor Sensor { get; } = sensor;
 }
 
 partial class Composition : ServiceProviderFactory<Composition>
@@ -37,10 +37,10 @@ partial class Composition : ServiceProviderFactory<Composition>
 
     static void Setup() =>
         DI.Setup()
-            .Bind<IDependency>("Dependency Key").As(Lifetime.Singleton).To<Dependency>()
-            .Bind<IService>().To<Service>()
-            .Root<IDependency>(tag: "Dependency Key")
-            .Root<IService>();
+            .Bind<ISensor>("LivingRoom").As(Lifetime.Singleton).To<TemperatureSensor>()
+            .Bind<IThermostat>().To<Thermostat>()
+            .Root<ISensor>(tag: "LivingRoom")
+            .Root<IThermostat>();
 }
 ```
 
@@ -87,7 +87,7 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private Dependency? _singletonDependency51;
+  private TemperatureSensor? _singletonTemperatureSensor51;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -106,41 +106,41 @@ partial class Composition
     _lock = parentScope._lock;
   }
 
-  private IDependency Root2
+  private ISensor Root2
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      EnsureDependencyDependencyKeyExists();
-      return _root._singletonDependency51;
+      EnsureTemperatureSensorLivingRoomExists();
+      return _root._singletonTemperatureSensor51;
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      void EnsureDependencyDependencyKeyExists()
+      void EnsureTemperatureSensorLivingRoomExists()
       {
-        if (_root._singletonDependency51 is null)
+        if (_root._singletonTemperatureSensor51 is null)
           lock (_lock)
-            if (_root._singletonDependency51 is null)
+            if (_root._singletonTemperatureSensor51 is null)
             {
-              _root._singletonDependency51 = new Dependency();
+              _root._singletonTemperatureSensor51 = new TemperatureSensor();
             }
       }
     }
   }
 
-  private IService Root1
+  private IThermostat Root1
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      EnsureDependencyDependencyKeyExists();
-      return new Service(_root._singletonDependency51);
+      EnsureTemperatureSensorLivingRoomExists();
+      return new Thermostat(_root._singletonTemperatureSensor51);
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      void EnsureDependencyDependencyKeyExists()
+      void EnsureTemperatureSensorLivingRoomExists()
       {
-        if (_root._singletonDependency51 is null)
+        if (_root._singletonTemperatureSensor51 is null)
           lock (_lock)
-            if (_root._singletonDependency51 is null)
+            if (_root._singletonTemperatureSensor51 is null)
             {
-              _root._singletonDependency51 = new Dependency();
+              _root._singletonTemperatureSensor51 = new TemperatureSensor();
             }
       }
     }
@@ -212,18 +212,18 @@ partial class Composition
   static Composition()
   {
     var valResolver_0000 = new Resolver_0000();
-    OnNewRoot<IDependency, Dependency>(valResolver_0000, "Root2", "Dependency Key", Lifetime.Singleton);
-    Resolver<IDependency>.Value = valResolver_0000;
+    OnNewRoot<ISensor, TemperatureSensor>(valResolver_0000, "Root2", "LivingRoom", Lifetime.Singleton);
+    Resolver<ISensor>.Value = valResolver_0000;
     var valResolver_0001 = new Resolver_0001();
-    OnNewRoot<IService, Service>(valResolver_0001, "Root1", null, Lifetime.Transient);
-    Resolver<IService>.Value = valResolver_0001;
+    OnNewRoot<IThermostat, Thermostat>(valResolver_0001, "Root1", null, Lifetime.Transient);
+    Resolver<IThermostat>.Value = valResolver_0001;
     _buckets = Buckets<IResolver<Composition, object>>.Create(
       4,
       out _bucketSize,
       new Pair<IResolver<Composition, object>>[2]
       {
-         new Pair<IResolver<Composition, object>>(typeof(IDependency), valResolver_0000)
-        ,new Pair<IResolver<Composition, object>>(typeof(IService), valResolver_0001)
+         new Pair<IResolver<Composition, object>>(typeof(ISensor), valResolver_0000)
+        ,new Pair<IResolver<Composition, object>>(typeof(IThermostat), valResolver_0001)
       });
   }
 
@@ -245,18 +245,18 @@ partial class Composition
     }
   }
 
-  private sealed class Resolver_0000: Resolver<IDependency>
+  private sealed class Resolver_0000: Resolver<ISensor>
   {
-    public override IDependency Resolve(Composition composition)
+    public override ISensor Resolve(Composition composition)
     {
       return base.Resolve(composition);
     }
 
-    public override IDependency ResolveByTag(Composition composition, object tag)
+    public override ISensor ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
-        case "Dependency Key":
+        case "LivingRoom":
           return composition.Root2;
 
         default:
@@ -265,14 +265,14 @@ partial class Composition
     }
   }
 
-  private sealed class Resolver_0001: Resolver<IService>
+  private sealed class Resolver_0001: Resolver<IThermostat>
   {
-    public override IService Resolve(Composition composition)
+    public override IThermostat Resolve(Composition composition)
     {
       return composition.Root1;
     }
 
-    public override IService ResolveByTag(Composition composition, object tag)
+    public override IThermostat ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
@@ -298,34 +298,34 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency : "Dependency Key" 
-	Service --|> IService
-	Composition ..> Service : IService _
-	Composition ..> Dependency : IDependency _
-	Service o-- "Singleton" Dependency : "Dependency Key"  IDependency
+	TemperatureSensor --|> ISensor : "LivingRoom" 
+	Thermostat --|> IThermostat
+	Composition ..> Thermostat : IThermostat _
+	Composition ..> TemperatureSensor : ISensor _
+	Thermostat o-- "Singleton" TemperatureSensor : "LivingRoom"  ISensor
 	namespace Pure.DI.UsageTests.BCL.ServiceCollectionScenario {
 		class Composition {
 		<<partial>>
-		-IDependency _
-		-IService _
+		-ISensor _
+		-IThermostat _
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
 		}
-		class Dependency {
-				<<class>>
-			+Dependency()
-		}
-		class IDependency {
+		class ISensor {
 			<<interface>>
 		}
-		class IService {
+		class IThermostat {
 			<<interface>>
 		}
-		class Service {
+		class TemperatureSensor {
 				<<class>>
-			+Service(IDependency dependency)
+			+TemperatureSensor()
+		}
+		class Thermostat {
+				<<class>>
+			+Thermostat(ISensor sensor)
 		}
 	}
 ```

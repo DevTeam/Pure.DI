@@ -8,54 +8,53 @@ using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Bind("now").To(_ => DateTimeOffset.Now)
-    // Injects Dependency and DateTimeOffset instances
+    .Bind("today").To(_ => DateTime.Today)
+    // Injects FileLogger and DateTime instances
     // and performs further initialization logic
-    // defined in the lambda function
-    .Bind<IDependency>().To((
-        Dependency dependency,
-        [Tag("now")] DateTimeOffset time) =>
-    {
-        dependency.Initialize(time);
-        return dependency;
+    // defined in the lambda function to set up the log file name
+    .Bind<IFileLogger>().To((
+        FileLogger logger,
+        [Tag("today")] DateTime date) => {
+        logger.Init($"app-{date:yyyy-MM-dd}.log");
+        return logger;
     })
-    .Bind().To<Service>()
+    .Bind().To<OrderProcessingService>()
 
     // Composition root
-    .Root<IService>("MyService");
+    .Root<IOrderProcessingService>("OrderService");
 
 var composition = new Composition();
-var service = composition.MyService;
-service.Dependency.IsInitialized.ShouldBeTrue();
+var service = composition.OrderService;
 
-interface IDependency
+service.Logger.FileName.ShouldBe($"app-{DateTime.Today:yyyy-MM-dd}.log");
+
+interface IFileLogger
 {
-    DateTimeOffset Time { get; }
+    string FileName { get; }
 
-    bool IsInitialized { get; }
+    void Log(string message);
 }
 
-class Dependency : IDependency
+class FileLogger : IFileLogger
 {
-    public DateTimeOffset Time { get; private set; }
+    public string FileName { get; private set; } = "";
 
-    public bool IsInitialized { get; private set; }
+    public void Init(string fileName) => FileName = fileName;
 
-    public void Initialize(DateTimeOffset time)
+    public void Log(string message)
     {
-        Time = time;
-        IsInitialized = true;
+        // Write to file
     }
 }
 
-interface IService
+interface IOrderProcessingService
 {
-    IDependency Dependency { get; }
+    IFileLogger Logger { get; }
 }
 
-class Service(IDependency dependency) : IService
+class OrderProcessingService(IFileLogger logger) : IOrderProcessingService
 {
-    public IDependency Dependency { get; } = dependency;
+    public IFileLogger Logger { get; } = logger;
 }
 ```
 
@@ -86,7 +85,7 @@ dotnet run
 
 </details>
 
-The example creates a `service` that depends on a `dependency` initialized with a specific timestamp. The `Tag` attribute allows specifying named dependencies for more complex scenarios.
+The example creates a `service` that depends on a `logger` initialized with a specific file name based on the current date. The `Tag` attribute allows specifying named dependencies for more complex scenarios.
 
 The following partial class will be generated:
 
@@ -102,18 +101,18 @@ partial class Composition
   {
   }
 
-  public IService MyService
+  public IOrderProcessingService OrderService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Dependency transientDependency1;
-      Dependency localDependency5 = new Dependency();
-      DateTimeOffset transientDateTimeOffset3 = DateTimeOffset.Now;
-      DateTimeOffset localTime = transientDateTimeOffset3;
-      localDependency5.Initialize(localTime);
-      transientDependency1 = localDependency5;
-      return new Service(transientDependency1);
+      FileLogger transientFileLogger1;
+      FileLogger localLogger4 = new FileLogger();
+      DateTime transientDateTime3 = DateTime.Today;
+      DateTime localDate = transientDateTime3;
+      localLogger4.Init($"app-{localDate:yyyy-MM-dd}.log");
+      transientFileLogger1 = localLogger4;
+      return new OrderProcessingService(transientFileLogger1);
     }
   }
 }
@@ -130,32 +129,32 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Service --|> IService
-	Composition ..> Service : IService MyService
-	Dependency *--  DateTimeOffset : "now"  DateTimeOffset
-	Service *--  Dependency : IDependency
+	FileLogger --|> IFileLogger
+	OrderProcessingService --|> IOrderProcessingService
+	Composition ..> OrderProcessingService : IOrderProcessingService OrderService
+	FileLogger *--  DateTime : "today"  DateTime
+	OrderProcessingService *--  FileLogger : IFileLogger
 	namespace Pure.DI.UsageTests.Basics.SimplifiedFactoryScenario {
 		class Composition {
 		<<partial>>
-		+IService MyService
+		+IOrderProcessingService OrderService
 		}
-		class Dependency {
+		class FileLogger {
 				<<class>>
 		}
-		class IDependency {
+		class IFileLogger {
 			<<interface>>
 		}
-		class IService {
+		class IOrderProcessingService {
 			<<interface>>
 		}
-		class Service {
+		class OrderProcessingService {
 				<<class>>
-			+Service(IDependency dependency)
+			+OrderProcessingService(IFileLogger logger)
 		}
 	}
 	namespace System {
-		class DateTimeOffset {
+		class DateTime {
 				<<struct>>
 		}
 	}

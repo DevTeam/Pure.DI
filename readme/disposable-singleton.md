@@ -11,39 +11,56 @@ using static Pure.DI.Lifetime;
 DI.Setup(nameof(Composition))
     // This hint indicates to not generate methods such as Resolve
     .Hint(Hint.Resolve, "Off")
-    .Bind().As(Singleton).To<Dependency>()
-    .Bind().To<Service>()
-    .Root<IService>("Root");
 
-IDependency dependency;
+    // A realistic example:
+    // a submarine has a shared hardware bus to onboard sensors.
+    // It should be created once and disposed when the "mission scope"
+    // (the composition instance) ends.
+    .Bind().As(Singleton).To<AcousticSensorBus>()
+    .Bind().To<SubmarineCombatSystem>()
+    .Root<ICombatSystem>("CombatSystem");
+
+IAcousticSensorBus bus;
 using (var composition = new Composition())
 {
-    var service = composition.Root;
-    dependency = service.Dependency;
+    var combatSystem = composition.CombatSystem;
+
+    // Store the singleton instance to verify that it gets disposed
+    // when composition is disposed.
+    bus = combatSystem.SensorBus;
+
+    // In real usage you would call methods like:
+    // combatSystem.ScanForContacts();
 }
 
-dependency.IsDisposed.ShouldBeTrue();
+// When the mission scope ends, all disposable singletons created by it
+// must be disposed.
+bus.IsDisposed.ShouldBeTrue();
 
-interface IDependency
+interface IAcousticSensorBus
 {
     bool IsDisposed { get; }
 }
 
-class Dependency : IDependency, IDisposable
+// Represents a shared connection to submarine sensors (sonar, hydrophones, etc.).
+// This is a singleton because the hardware bus is typically a single shared resource,
+// and it must be cleaned up properly.
+class AcousticSensorBus : IAcousticSensorBus, IDisposable
 {
     public bool IsDisposed { get; private set; }
 
     public void Dispose() => IsDisposed = true;
 }
 
-interface IService
+interface ICombatSystem
 {
-    public IDependency Dependency { get; }
+    IAcousticSensorBus SensorBus { get; }
 }
 
-class Service(IDependency dependency) : IService
+// A "combat system" is a typical high-level service that uses shared hardware resources.
+class SubmarineCombatSystem(IAcousticSensorBus sensorBus) : ICombatSystem
 {
-    public IDependency Dependency { get; } = dependency;
+    public IAcousticSensorBus SensorBus { get; } = sensorBus;
 }
 ```
 
@@ -90,7 +107,7 @@ partial class Composition: IDisposable
   private object[] _disposables;
   private int _disposeIndex;
 
-  private Dependency? _singletonDependency51;
+  private AcousticSensorBus? _singletonAcousticSensorBus51;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -111,20 +128,20 @@ partial class Composition: IDisposable
     _disposables = parentScope._disposables;
   }
 
-  public IService Root
+  public ICombatSystem CombatSystem
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonDependency51 is null)
+      if (_root._singletonAcousticSensorBus51 is null)
         lock (_lock)
-          if (_root._singletonDependency51 is null)
+          if (_root._singletonAcousticSensorBus51 is null)
           {
-            _root._singletonDependency51 = new Dependency();
-            _root._disposables[_root._disposeIndex++] = _root._singletonDependency51;
+            _root._singletonAcousticSensorBus51 = new AcousticSensorBus();
+            _root._disposables[_root._disposeIndex++] = _root._singletonAcousticSensorBus51;
           }
 
-      return new Service(_root._singletonDependency51);
+      return new SubmarineCombatSystem(_root._singletonAcousticSensorBus51);
     }
   }
 
@@ -138,7 +155,7 @@ partial class Composition: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _singletonDependency51 = null;
+      _singletonAcousticSensorBus51 = null;
     }
 
     while (disposeIndex-- > 0)
@@ -175,28 +192,28 @@ Class diagram:
 ---
 classDiagram
 	Composition --|> IDisposable
-	Dependency --|> IDependency
-	Service --|> IService
-	Composition ..> Service : IService Root
-	Service o-- "Singleton" Dependency : IDependency
+	AcousticSensorBus --|> IAcousticSensorBus
+	SubmarineCombatSystem --|> ICombatSystem
+	Composition ..> SubmarineCombatSystem : ICombatSystem CombatSystem
+	SubmarineCombatSystem o-- "Singleton" AcousticSensorBus : IAcousticSensorBus
 	namespace Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario {
+		class AcousticSensorBus {
+				<<class>>
+			+AcousticSensorBus()
+		}
 		class Composition {
 		<<partial>>
-		+IService Root
+		+ICombatSystem CombatSystem
 		}
-		class Dependency {
-				<<class>>
-			+Dependency()
-		}
-		class IDependency {
+		class IAcousticSensorBus {
 			<<interface>>
 		}
-		class IService {
+		class ICombatSystem {
 			<<interface>>
 		}
-		class Service {
+		class SubmarineCombatSystem {
 				<<class>>
-			+Service(IDependency dependency)
+			+SubmarineCombatSystem(IAcousticSensorBus sensorBus)
 		}
 	}
 	namespace System {

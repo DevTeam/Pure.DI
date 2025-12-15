@@ -7,22 +7,35 @@ using Microsoft.Extensions.DependencyInjection;
 using Pure.DI;
 
 var serviceProvider = new Composition();
-var service = serviceProvider.GetRequiredKeyedService<IService>("Service Key");
-var dependency = serviceProvider.GetRequiredKeyedService<IDependency>("Dependency Key");
-service.Dependency.ShouldBe(dependency);
 
-interface IDependency;
+// Resolve the order service by key "Online".
+// This service expects a dependency with the key "PayPal".
+var orderService = serviceProvider.GetRequiredKeyedService<IOrderService>("Online");
 
-class Dependency : IDependency;
+// Resolve the payment gateway by key "PayPal" to verify the correct injection
+var paymentGateway = serviceProvider.GetRequiredKeyedService<IPaymentGateway>("PayPal");
 
-interface IService
+// Check that the expected gateway instance was injected into the order service
+orderService.PaymentGateway.ShouldBe(paymentGateway);
+
+// Payment gateway interface
+interface IPaymentGateway;
+
+// Payment gateway implementation (e.g., PayPal)
+class PayPalGateway : IPaymentGateway;
+
+// Order service interface
+interface IOrderService
 {
-    IDependency Dependency { get; }
+    IPaymentGateway PaymentGateway { get; }
 }
 
-class Service([Tag("Dependency Key")] IDependency dependency) : IService
+// Implementation of the service for online orders.
+// The [Tag("PayPal")] attribute indicates that an implementation
+// of IPaymentGateway registered with the key "PayPal" should be injected.
+class OnlineOrderService([Tag("PayPal")] IPaymentGateway paymentGateway) : IOrderService
 {
-    public IDependency Dependency { get; } = dependency;
+    public IPaymentGateway PaymentGateway { get; } = paymentGateway;
 }
 
 partial class Composition : IKeyedServiceProvider
@@ -37,10 +50,16 @@ partial class Composition : IKeyedServiceProvider
             // "object Resolve(Type type, object tag)" method in "GetRequiredKeyedService",
             // which implements the "IKeyedServiceProvider" interface
             .Hint(Hint.ObjectResolveByTagMethodName, "GetRequiredKeyedService")
-            .Bind<IDependency>("Dependency Key").As(Lifetime.Singleton).To<Dependency>()
-            .Bind<IService>("Service Key").To<Service>()
-            .Root<IDependency>(tag: "Dependency Key")
-            .Root<IService>(tag: "Service Key");
+
+            // Register PayPalGateway as a singleton with the key "PayPal"
+            .Bind<IPaymentGateway>("PayPal").As(Lifetime.Singleton).To<PayPalGateway>()
+
+            // Register OnlineOrderService with the key "Online"
+            .Bind<IOrderService>("Online").To<OnlineOrderService>()
+
+            // Composition roots available by keys
+            .Root<IPaymentGateway>(tag: "PayPal")
+            .Root<IOrderService>(tag: "Online");
 
     public object GetKeyedService(Type serviceType, object? serviceKey) =>
         GetRequiredKeyedService(serviceType, serviceKey);
@@ -88,7 +107,7 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private Dependency? _singletonDependency51;
+  private PayPalGateway? _singletonPayPalGateway51;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -107,41 +126,41 @@ partial class Composition
     _lock = parentScope._lock;
   }
 
-  private IDependency Root2
+  private IPaymentGateway Root2
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      EnsureDependencyDependencyKeyExists();
-      return _root._singletonDependency51;
+      EnsurePayPalGatewayPayPalExists();
+      return _root._singletonPayPalGateway51;
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      void EnsureDependencyDependencyKeyExists()
+      void EnsurePayPalGatewayPayPalExists()
       {
-        if (_root._singletonDependency51 is null)
+        if (_root._singletonPayPalGateway51 is null)
           lock (_lock)
-            if (_root._singletonDependency51 is null)
+            if (_root._singletonPayPalGateway51 is null)
             {
-              _root._singletonDependency51 = new Dependency();
+              _root._singletonPayPalGateway51 = new PayPalGateway();
             }
       }
     }
   }
 
-  private IService Root1
+  private IOrderService Root1
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      EnsureDependencyDependencyKeyExists();
-      return new Service(_root._singletonDependency51);
+      EnsurePayPalGatewayPayPalExists();
+      return new OnlineOrderService(_root._singletonPayPalGateway51);
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      void EnsureDependencyDependencyKeyExists()
+      void EnsurePayPalGatewayPayPalExists()
       {
-        if (_root._singletonDependency51 is null)
+        if (_root._singletonPayPalGateway51 is null)
           lock (_lock)
-            if (_root._singletonDependency51 is null)
+            if (_root._singletonPayPalGateway51 is null)
             {
-              _root._singletonDependency51 = new Dependency();
+              _root._singletonPayPalGateway51 = new PayPalGateway();
             }
       }
     }
@@ -213,16 +232,16 @@ partial class Composition
   static Composition()
   {
     var valResolver_0000 = new Resolver_0000();
-    Resolver<IDependency>.Value = valResolver_0000;
+    Resolver<IPaymentGateway>.Value = valResolver_0000;
     var valResolver_0001 = new Resolver_0001();
-    Resolver<IService>.Value = valResolver_0001;
+    Resolver<IOrderService>.Value = valResolver_0001;
     _buckets = Buckets<IResolver<Composition, object>>.Create(
       4,
       out _bucketSize,
       new Pair<IResolver<Composition, object>>[2]
       {
-         new Pair<IResolver<Composition, object>>(typeof(IDependency), valResolver_0000)
-        ,new Pair<IResolver<Composition, object>>(typeof(IService), valResolver_0001)
+         new Pair<IResolver<Composition, object>>(typeof(IPaymentGateway), valResolver_0000)
+        ,new Pair<IResolver<Composition, object>>(typeof(IOrderService), valResolver_0001)
       });
   }
 
@@ -244,18 +263,18 @@ partial class Composition
     }
   }
 
-  private sealed class Resolver_0000: Resolver<IDependency>
+  private sealed class Resolver_0000: Resolver<IPaymentGateway>
   {
-    public override IDependency Resolve(Composition composition)
+    public override IPaymentGateway Resolve(Composition composition)
     {
       return base.Resolve(composition);
     }
 
-    public override IDependency ResolveByTag(Composition composition, object tag)
+    public override IPaymentGateway ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
-        case "Dependency Key":
+        case "PayPal":
           return composition.Root2;
 
         default:
@@ -264,18 +283,18 @@ partial class Composition
     }
   }
 
-  private sealed class Resolver_0001: Resolver<IService>
+  private sealed class Resolver_0001: Resolver<IOrderService>
   {
-    public override IService Resolve(Composition composition)
+    public override IOrderService Resolve(Composition composition)
     {
       return base.Resolve(composition);
     }
 
-    public override IService ResolveByTag(Composition composition, object tag)
+    public override IOrderService ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
-        case "Service Key":
+        case "Online":
           return composition.Root1;
 
         default:
@@ -297,34 +316,34 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency : "Dependency Key" 
-	Service --|> IService : "Service Key" 
-	Composition ..> Service : IService _
-	Composition ..> Dependency : IDependency _
-	Service o-- "Singleton" Dependency : "Dependency Key"  IDependency
+	PayPalGateway --|> IPaymentGateway : "PayPal" 
+	OnlineOrderService --|> IOrderService : "Online" 
+	Composition ..> OnlineOrderService : IOrderService _
+	Composition ..> PayPalGateway : IPaymentGateway _
+	OnlineOrderService o-- "Singleton" PayPalGateway : "PayPal"  IPaymentGateway
 	namespace Pure.DI.UsageTests.BCL.KeyedServiceProviderScenario {
 		class Composition {
 		<<partial>>
-		-IDependency _
-		-IService _
+		-IPaymentGateway _
+		-IOrderService _
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
 		+ object GetService(Type type)
 		+ object GetRequiredKeyedService(Type type, object? tag)
 		}
-		class Dependency {
-				<<class>>
-			+Dependency()
-		}
-		class IDependency {
+		class IOrderService {
 			<<interface>>
 		}
-		class IService {
+		class IPaymentGateway {
 			<<interface>>
 		}
-		class Service {
+		class OnlineOrderService {
 				<<class>>
-			+Service(IDependency dependency)
+			+OnlineOrderService(IPaymentGateway paymentGateway)
+		}
+		class PayPalGateway {
+				<<class>>
+			+PayPalGateway()
 		}
 	}
 ```

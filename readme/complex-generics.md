@@ -10,58 +10,58 @@ using Pure.DI;
 DI.Setup(nameof(Composition))
     // This hint indicates to not generate methods such as Resolve
     .Hint(Hint.Resolve, "Off")
-    .RootArg<TT>("depArg")
-    .Bind<IDependency<TT>>().To<Dependency<TT>>()
-    .Bind<IDependency<TTS>>("value type")
-        .As(Lifetime.Singleton)
-        .To<DependencyStruct<TTS>>()
-    .Bind<IService<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>()
-        .To<Service<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>()
+    .RootArg<TT>("name")
+    .Bind<IConsumer<TT>>().To<Consumer<TT>>()
+    .Bind<IConsumer<TTS>>("struct")
+    .As(Lifetime.Singleton)
+    .To<StructConsumer<TTS>>()
+    .Bind<IWorkflow<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>()
+    .To<Workflow<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>()
 
     // Composition root
     .Root<Program<TT>>("GetRoot");
 
 var composition = new Composition();
-var program = composition.GetRoot<string>(depArg: "some value");
-var service = program.Service;
-service.ShouldBeOfType<Service<string, int, List<string>, Dictionary<string, int>>>();
-service.Dependency1.ShouldBeOfType<Dependency<string>>();
-service.Dependency2.ShouldBeOfType<DependencyStruct<int>>();
+var program = composition.GetRoot<string>(name: "Super Task");
+var workflow = program.Workflow;
+workflow.ShouldBeOfType<Workflow<string, int, List<string>, Dictionary<string, int>>>();
+workflow.TaskConsumer.ShouldBeOfType<Consumer<string>>();
+workflow.PriorityConsumer.ShouldBeOfType<StructConsumer<int>>();
 
-interface IDependency<T>;
+interface IConsumer<T>;
 
-class Dependency<T>(T value) : IDependency<T>;
+class Consumer<T>(T name) : IConsumer<T>;
 
-readonly record struct DependencyStruct<T> : IDependency<T>
+readonly record struct StructConsumer<T> : IConsumer<T>
     where T : struct;
 
-interface IService<T1, T2, TList, TDictionary>
-    where T2 : struct
-    where TList : IList<T1>
-    where TDictionary : IDictionary<T1, T2>
+interface IWorkflow<TTask, TPriority, TTaskList, TTaskPriorities>
+    where TPriority : struct
+    where TTaskList : IList<TTask>
+    where TTaskPriorities : IDictionary<TTask, TPriority>
 {
-    IDependency<T1> Dependency1 { get; }
+    IConsumer<TTask> TaskConsumer { get; }
 
-    IDependency<T2> Dependency2 { get; }
+    IConsumer<TPriority> PriorityConsumer { get; }
 }
 
-class Service<T1, T2, TList, TDictionary>(
-    IDependency<T1> dependency1,
-    [Tag("value type")] IDependency<T2> dependency2)
-    : IService<T1, T2, TList, TDictionary>
-    where T2 : struct
-    where TList : IList<T1>
-    where TDictionary : IDictionary<T1, T2>
+class Workflow<TTask, TPriority, TTaskList, TTaskPriorities>(
+    IConsumer<TTask> taskConsumer,
+    [Tag("struct")] IConsumer<TPriority> priorityConsumer)
+    : IWorkflow<TTask, TPriority, TTaskList, TTaskPriorities>
+    where TPriority : struct
+    where TTaskList : IList<TTask>
+    where TTaskPriorities : IDictionary<TTask, TPriority>
 {
-    public IDependency<T1> Dependency1 { get; } = dependency1;
+    public IConsumer<TTask> TaskConsumer { get; } = taskConsumer;
 
-    public IDependency<T2> Dependency2 { get; } = dependency2;
+    public IConsumer<TPriority> PriorityConsumer { get; } = priorityConsumer;
 }
 
-class Program<T>(IService<T, int, List<T>, Dictionary<T, int>> service)
+class Program<T>(IWorkflow<T, int, List<T>, Dictionary<T, int>> workflow)
     where T : notnull
 {
-    public IService<T, int, List<T>, Dictionary<T, int>> Service { get; } = service;
+    public IWorkflow<T, int, List<T>, Dictionary<T, int>> Workflow { get; } = workflow;
 }
 ```
 
@@ -106,8 +106,8 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private DependencyStruct<int> _singletonDependencyStruct59;
-  private bool _singletonDependencyStruct59Created;
+  private StructConsumer<int> _singletonStructConsumer59;
+  private bool _singletonStructConsumer59Created;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -127,20 +127,20 @@ partial class Composition
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public Program<T1> GetRoot<T1>(T1 depArg)
+  public Program<T1> GetRoot<T1>(T1 name)
     where T1: notnull
   {
-    if (depArg is null) throw new ArgumentNullException(nameof(depArg));
-    if (!_root._singletonDependencyStruct59Created)
+    if (name is null) throw new ArgumentNullException(nameof(name));
+    if (!_root._singletonStructConsumer59Created)
       lock (_lock)
-        if (!_root._singletonDependencyStruct59Created)
+        if (!_root._singletonStructConsumer59Created)
         {
-          _root._singletonDependencyStruct59 = new DependencyStruct<int>();
+          _root._singletonStructConsumer59 = new StructConsumer<int>();
           Thread.MemoryBarrier();
-          _root._singletonDependencyStruct59Created = true;
+          _root._singletonStructConsumer59Created = true;
         }
 
-    return new Program<T1>(new Service<T1, int, List<T1>, Dictionary<T1, int>>(new Dependency<T1>(depArg), _root._singletonDependencyStruct59));
+    return new Program<T1>(new Workflow<T1, int, List<T1>, Dictionary<T1, int>>(new Consumer<T1>(name), _root._singletonStructConsumer59));
   }
 }
 ```
@@ -156,43 +156,43 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	ServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ --|> IServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ
-	DependencyᐸT1ᐳ --|> IDependencyᐸT1ᐳ
-	DependencyStructᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ : "value type" 
-	Composition ..> ProgramᐸT1ᐳ : ProgramᐸT1ᐳ GetRootᐸT1ᐳ(T1 depArg)
-	ProgramᐸT1ᐳ *--  ServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ : IServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ
-	ServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ *--  DependencyᐸT1ᐳ : IDependencyᐸT1ᐳ
-	ServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ o-- "Singleton" DependencyStructᐸInt32ᐳ : "value type"  IDependencyᐸInt32ᐳ
-	DependencyᐸT1ᐳ o-- T1 : Argument "depArg"
+	WorkflowᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ --|> IWorkflowᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ
+	ConsumerᐸT1ᐳ --|> IConsumerᐸT1ᐳ
+	StructConsumerᐸInt32ᐳ --|> IConsumerᐸInt32ᐳ : "struct" 
+	Composition ..> ProgramᐸT1ᐳ : ProgramᐸT1ᐳ GetRootᐸT1ᐳ(T1 name)
+	ProgramᐸT1ᐳ *--  WorkflowᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ : IWorkflowᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ
+	WorkflowᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ *--  ConsumerᐸT1ᐳ : IConsumerᐸT1ᐳ
+	WorkflowᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ o-- "Singleton" StructConsumerᐸInt32ᐳ : "struct"  IConsumerᐸInt32ᐳ
+	ConsumerᐸT1ᐳ o-- T1 : Argument "name"
 	namespace Pure.DI.UsageTests.Generics.ComplexGenericsScenario {
 		class Composition {
 		<<partial>>
-		+ProgramᐸT1ᐳ GetRootᐸT1ᐳ(T1 depArg)
+		+ProgramᐸT1ᐳ GetRootᐸT1ᐳ(T1 name)
 		}
-		class DependencyStructᐸInt32ᐳ {
-				<<struct>>
-			+DependencyStruct()
-		}
-		class DependencyᐸT1ᐳ {
+		class ConsumerᐸT1ᐳ {
 				<<class>>
-			+Dependency(T1 value)
+			+Consumer(T1 name)
 		}
-		class IDependencyᐸInt32ᐳ {
+		class IConsumerᐸInt32ᐳ {
 			<<interface>>
 		}
-		class IDependencyᐸT1ᐳ {
+		class IConsumerᐸT1ᐳ {
 			<<interface>>
 		}
-		class IServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ {
+		class IWorkflowᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ {
 			<<interface>>
 		}
 		class ProgramᐸT1ᐳ {
 				<<class>>
-			+Program(IServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ service)
+			+Program(IWorkflowᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ workflow)
 		}
-		class ServiceᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ {
+		class StructConsumerᐸInt32ᐳ {
+				<<struct>>
+			+StructConsumer()
+		}
+		class WorkflowᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ {
 				<<class>>
-			+Service(IDependencyᐸT1ᐳ dependency1, IDependencyᐸInt32ᐳ dependency2)
+			+Workflow(IConsumerᐸT1ᐳ taskConsumer, IConsumerᐸInt32ᐳ priorityConsumer)
 		}
 	}
 ```

@@ -8,36 +8,39 @@ using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Bind().To<AbcDependency>()
-    .Bind(Tag.OnMethodArg<Service>(nameof(Service.Initialize), "dep"))
-        .To<XyzDependency>()
-    .Bind<IService>().To<Service>()
+    .Bind().To<TemperatureSensor>()
+    // Binds specifically to the argument "sensor" of the "Calibrate" method
+    // in the "WeatherStation" class
+    .Bind(Tag.OnMethodArg<WeatherStation>(nameof(WeatherStation.Calibrate), "sensor"))
+    .To<HumiditySensor>()
+    .Bind<IWeatherStation>().To<WeatherStation>()
 
-    // Specifies to create the composition root named "Root"
-    .Root<IService>("Root");
+    // Specifies to create the composition root named "Station"
+    .Root<IWeatherStation>("Station");
 
 var composition = new Composition();
-var service = composition.Root;
-service.Dependency.ShouldBeOfType<XyzDependency>();
+var station = composition.Station;
+station.Sensor.ShouldBeOfType<HumiditySensor>();
 
-interface IDependency;
+interface ISensor;
 
-class AbcDependency : IDependency;
+class TemperatureSensor : ISensor;
 
-class XyzDependency : IDependency;
+class HumiditySensor : ISensor;
 
-interface IService
+interface IWeatherStation
 {
-    IDependency? Dependency { get; }
+    ISensor? Sensor { get; }
 }
 
-class Service : IService
+class WeatherStation : IWeatherStation
 {
+    // The [Dependency] attribute is used to mark the method for injection
     [Dependency]
-    public void Initialize(IDependency dep) =>
-        Dependency = dep;
+    public void Calibrate(ISensor sensor) =>
+        Sensor = sensor;
 
-    public IDependency? Dependency { get; private set; }
+    public ISensor? Sensor { get; private set; }
 }
 ```
 
@@ -85,14 +88,14 @@ partial class Composition
   {
   }
 
-  public IService Root
+  public IWeatherStation Station
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var transientService = new Service();
-      transientService.Initialize(new XyzDependency());
-      return transientService;
+      var transientWeatherStation = new WeatherStation();
+      transientWeatherStation.Calibrate(new HumiditySensor());
+      return transientWeatherStation;
     }
   }
 }
@@ -109,29 +112,29 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	XyzDependency --|> IDependency
-	Service --|> IService
-	Composition ..> Service : IService Root
-	Service *--  XyzDependency : IDependency
+	HumiditySensor --|> ISensor
+	WeatherStation --|> IWeatherStation
+	Composition ..> WeatherStation : IWeatherStation Station
+	WeatherStation *--  HumiditySensor : ISensor
 	namespace Pure.DI.UsageTests.Advanced.TagOnMethodArgScenario {
 		class Composition {
 		<<partial>>
-		+IService Root
+		+IWeatherStation Station
 		}
-		class IDependency {
+		class HumiditySensor {
+				<<class>>
+			+HumiditySensor()
+		}
+		class ISensor {
 			<<interface>>
 		}
-		class IService {
+		class IWeatherStation {
 			<<interface>>
 		}
-		class Service {
+		class WeatherStation {
 				<<class>>
-			+Service()
-			+Initialize(IDependency dep) : Void
-		}
-		class XyzDependency {
-				<<class>>
-			+XyzDependency()
+			+WeatherStation()
+			+Calibrate(ISensor sensor) : Void
 		}
 	}
 ```

@@ -12,34 +12,34 @@ using Serilog.Core;
 
 Serilog.ILogger serilogLogger = new Serilog.LoggerConfiguration().CreateLogger();
 var composition = new Composition(logger: serilogLogger);
-var service = composition.Root;
+var orderProcessing = composition.OrderProcessing;
 
-interface IDependency;
+interface IPaymentGateway;
 
-class Dependency : IDependency
+class PaymentGateway : IPaymentGateway
 {
-    public Dependency(Serilog.ILogger log)
+    public PaymentGateway(Serilog.ILogger log)
     {
-        log.Information("created");
+        log.Information("Payment gateway initialized");
     }
 }
 
-interface IService
+interface IOrderProcessing
 {
-    IDependency Dependency { get; }
+    IPaymentGateway PaymentGateway { get; }
 }
 
-class Service : IService
+class OrderProcessing : IOrderProcessing
 {
-    public Service(
+    public OrderProcessing(
         Serilog.ILogger log,
-        IDependency dependency)
+        IPaymentGateway paymentGateway)
     {
-        Dependency = dependency;
-        log.Information("created");
+        PaymentGateway = paymentGateway;
+        log.Information("Order processing initialized");
     }
 
-    public IDependency Dependency { get; }
+    public IPaymentGateway PaymentGateway { get; }
 }
 
 partial class Composition
@@ -48,15 +48,16 @@ partial class Composition
 
         DI.Setup(nameof(Composition))
             .Arg<Serilog.ILogger>("logger", "from arg")
-            .Bind().To(ctx =>
-            {
+            .Bind().To(ctx => {
                 ctx.Inject<Serilog.ILogger>("from arg", out var logger);
+
+                // Using ConsumerTypes to get the type of the consumer.
+                // This allows us to create a logger with a context specific to the consuming class.
                 return logger.ForContext(ctx.ConsumerTypes[0]);
             })
-
-            .Bind().To<Dependency>()
-            .Bind().To<Service>()
-            .Root<IService>(nameof(Root));
+            .Bind().To<PaymentGateway>()
+            .Bind().To<OrderProcessing>()
+            .Root<IOrderProcessing>(nameof(OrderProcessing));
 }
 ```
 
@@ -121,18 +122,22 @@ partial class Composition
     _lock = parentScope._lock;
   }
 
-  public IService Root
+  public IOrderProcessing OrderProcessing
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       Serilog.ILogger transientILogger3;
       Serilog.ILogger localLogger = _argLogger;
-      transientILogger3 = localLogger.ForContext(new Type[3] { typeof(Dependency), typeof(Service), typeof(Composition) }[0]);
+      // Using ConsumerTypes to get the type of the consumer.
+      // This allows us to create a logger with a context specific to the consuming class.
+      transientILogger3 = localLogger.ForContext(new Type[3] { typeof(PaymentGateway), typeof(OrderProcessing), typeof(Composition) }[0]);
       Serilog.ILogger transientILogger1;
       Serilog.ILogger localLogger1 = _argLogger;
-      transientILogger1 = localLogger1.ForContext(new Type[2] { typeof(Service), typeof(Composition) }[0]);
-      return new Service(transientILogger1, new Dependency(transientILogger3));
+      // Using ConsumerTypes to get the type of the consumer.
+      // This allows us to create a logger with a context specific to the consuming class.
+      transientILogger1 = localLogger1.ForContext(new Type[2] { typeof(OrderProcessing), typeof(Composition) }[0]);
+      return new OrderProcessing(transientILogger1, new PaymentGateway(transientILogger3));
     }
   }
 }
@@ -149,31 +154,31 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Service --|> IService
-	Composition ..> Service : IService Root
+	PaymentGateway --|> IPaymentGateway
+	OrderProcessing --|> IOrderProcessing
+	Composition ..> OrderProcessing : IOrderProcessing OrderProcessing
 	ILogger o-- ILogger : "from arg"  Argument "logger"
-	Dependency *--  ILogger : ILogger
-	Service *--  ILogger : ILogger
-	Service *--  Dependency : IDependency
+	PaymentGateway *--  ILogger : ILogger
+	OrderProcessing *--  ILogger : ILogger
+	OrderProcessing *--  PaymentGateway : IPaymentGateway
 	namespace Pure.DI.UsageTests.Advanced.ConsumerTypesScenario {
 		class Composition {
 		<<partial>>
-		+IService Root
+		+IOrderProcessing OrderProcessing
 		}
-		class Dependency {
-				<<class>>
-			+Dependency(ILogger log)
-		}
-		class IDependency {
+		class IOrderProcessing {
 			<<interface>>
 		}
-		class IService {
+		class IPaymentGateway {
 			<<interface>>
 		}
-		class Service {
+		class OrderProcessing {
 				<<class>>
-			+Service(ILogger log, IDependency dependency)
+			+OrderProcessing(ILogger log, IPaymentGateway paymentGateway)
+		}
+		class PaymentGateway {
+				<<class>>
+			+PaymentGateway(ILogger log)
 		}
 	}
 	namespace Serilog {

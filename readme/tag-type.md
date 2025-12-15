@@ -8,53 +8,53 @@ using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    // Tag.Type here is the same as typeof(AbcDependency)
+    // Tag.Type here is the same as typeof(CreditCardGateway)
     // The `default` tag is used to resolve dependencies
     // when the tag was not specified by the consumer
-    .Bind<IDependency>(Tag.Type, default).To<AbcDependency>()
-    // Tag.Type here is the same as typeof(XyzDependency)
-    .Bind<IDependency>(Tag.Type).As(Lifetime.Singleton).To<XyzDependency>()
-    .Bind<IService>().To<Service>()
+    .Bind<IPaymentGateway>(Tag.Type, default).To<CreditCardGateway>()
+    // Tag.Type here is the same as typeof(PayPalGateway)
+    .Bind<IPaymentGateway>(Tag.Type).As(Lifetime.Singleton).To<PayPalGateway>()
+    .Bind<IPaymentProcessor>().To<PaymentProcessor>()
 
     // Composition root
-    .Root<IService>("Root")
+    .Root<IPaymentProcessor>("PaymentSystem")
 
-    // "XyzRoot" is root name, typeof(XyzDependency) is tag
-    .Root<IDependency>("XyzRoot", typeof(XyzDependency));
+    // "PayPalRoot" is root name, typeof(PayPalGateway) is tag
+    .Root<IPaymentGateway>("PayPalRoot", typeof(PayPalGateway));
 
 var composition = new Composition();
-var service = composition.Root;
-service.Dependency1.ShouldBeOfType<AbcDependency>();
-service.Dependency2.ShouldBeOfType<XyzDependency>();
-service.Dependency2.ShouldBe(composition.XyzRoot);
-service.Dependency3.ShouldBeOfType<AbcDependency>();
+var service = composition.PaymentSystem;
+service.PrimaryGateway.ShouldBeOfType<CreditCardGateway>();
+service.AlternativeGateway.ShouldBeOfType<PayPalGateway>();
+service.AlternativeGateway.ShouldBe(composition.PayPalRoot);
+service.DefaultGateway.ShouldBeOfType<CreditCardGateway>();
 
-interface IDependency;
+interface IPaymentGateway;
 
-class AbcDependency : IDependency;
+class CreditCardGateway : IPaymentGateway;
 
-class XyzDependency : IDependency;
+class PayPalGateway : IPaymentGateway;
 
-interface IService
+interface IPaymentProcessor
 {
-    IDependency Dependency1 { get; }
+    IPaymentGateway PrimaryGateway { get; }
 
-    IDependency Dependency2 { get; }
+    IPaymentGateway AlternativeGateway { get; }
 
-    IDependency Dependency3 { get; }
+    IPaymentGateway DefaultGateway { get; }
 }
 
-class Service(
-    [Tag(typeof(AbcDependency))] IDependency dependency1,
-    [Tag(typeof(XyzDependency))] IDependency dependency2,
-    IDependency dependency3)
-    : IService
+class PaymentProcessor(
+    [Tag(typeof(CreditCardGateway))] IPaymentGateway primaryGateway,
+    [Tag(typeof(PayPalGateway))] IPaymentGateway alternativeGateway,
+    IPaymentGateway defaultGateway)
+    : IPaymentProcessor
 {
-    public IDependency Dependency1 { get; } = dependency1;
+    public IPaymentGateway PrimaryGateway { get; } = primaryGateway;
 
-    public IDependency Dependency2 { get; } = dependency2;
+    public IPaymentGateway AlternativeGateway { get; } = alternativeGateway;
 
-    public IDependency Dependency3 { get; } = dependency3;
+    public IPaymentGateway DefaultGateway { get; } = defaultGateway;
 }
 ```
 
@@ -97,7 +97,7 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private XyzDependency? _singletonXyzDependency52;
+  private PayPalGateway? _singletonPayPalGateway52;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -116,41 +116,41 @@ partial class Composition
     _lock = parentScope._lock;
   }
 
-  public IDependency XyzRoot
+  public IPaymentGateway PayPalRoot
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      EnsureXyzDependencyPureDIUsageTestsAdvancedTagTypeScenarioXyzDependencyExists();
-      return _root._singletonXyzDependency52;
+      EnsurePayPalGatewayPureDIUsageTestsAdvancedTagTypeScenarioPayPalGatewayExists();
+      return _root._singletonPayPalGateway52;
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      void EnsureXyzDependencyPureDIUsageTestsAdvancedTagTypeScenarioXyzDependencyExists()
+      void EnsurePayPalGatewayPureDIUsageTestsAdvancedTagTypeScenarioPayPalGatewayExists()
       {
-        if (_root._singletonXyzDependency52 is null)
+        if (_root._singletonPayPalGateway52 is null)
           lock (_lock)
-            if (_root._singletonXyzDependency52 is null)
+            if (_root._singletonPayPalGateway52 is null)
             {
-              _root._singletonXyzDependency52 = new XyzDependency();
+              _root._singletonPayPalGateway52 = new PayPalGateway();
             }
       }
     }
   }
 
-  public IService Root
+  public IPaymentProcessor PaymentSystem
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      EnsureXyzDependencyPureDIUsageTestsAdvancedTagTypeScenarioXyzDependencyExists();
-      return new Service(new AbcDependency(), _root._singletonXyzDependency52, new AbcDependency());
+      EnsurePayPalGatewayPureDIUsageTestsAdvancedTagTypeScenarioPayPalGatewayExists();
+      return new PaymentProcessor(new CreditCardGateway(), _root._singletonPayPalGateway52, new CreditCardGateway());
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      void EnsureXyzDependencyPureDIUsageTestsAdvancedTagTypeScenarioXyzDependencyExists()
+      void EnsurePayPalGatewayPureDIUsageTestsAdvancedTagTypeScenarioPayPalGatewayExists()
       {
-        if (_root._singletonXyzDependency52 is null)
+        if (_root._singletonPayPalGateway52 is null)
           lock (_lock)
-            if (_root._singletonXyzDependency52 is null)
+            if (_root._singletonPayPalGateway52 is null)
             {
-              _root._singletonXyzDependency52 = new XyzDependency();
+              _root._singletonPayPalGateway52 = new PayPalGateway();
             }
       }
     }
@@ -169,38 +169,38 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	AbcDependency --|> IDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.AbcDependency) 
-	AbcDependency --|> IDependency
-	XyzDependency --|> IDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.XyzDependency) 
-	Service --|> IService
-	Composition ..> XyzDependency : IDependency XyzRoot
-	Composition ..> Service : IService Root
-	Service *--  AbcDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.AbcDependency)  IDependency
-	Service *--  AbcDependency : IDependency
-	Service o-- "Singleton" XyzDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.XyzDependency)  IDependency
+	CreditCardGateway --|> IPaymentGateway : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.CreditCardGateway) 
+	CreditCardGateway --|> IPaymentGateway
+	PayPalGateway --|> IPaymentGateway : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.PayPalGateway) 
+	PaymentProcessor --|> IPaymentProcessor
+	Composition ..> PayPalGateway : IPaymentGateway PayPalRoot
+	Composition ..> PaymentProcessor : IPaymentProcessor PaymentSystem
+	PaymentProcessor *--  CreditCardGateway : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.CreditCardGateway)  IPaymentGateway
+	PaymentProcessor *--  CreditCardGateway : IPaymentGateway
+	PaymentProcessor o-- "Singleton" PayPalGateway : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.PayPalGateway)  IPaymentGateway
 	namespace Pure.DI.UsageTests.Advanced.TagTypeScenario {
-		class AbcDependency {
-				<<class>>
-			+AbcDependency()
-		}
 		class Composition {
 		<<partial>>
-		+IService Root
-		+IDependency XyzRoot
+		+IPaymentProcessor PaymentSystem
+		+IPaymentGateway PayPalRoot
 		}
-		class IDependency {
+		class CreditCardGateway {
+				<<class>>
+			+CreditCardGateway()
+		}
+		class IPaymentGateway {
 			<<interface>>
 		}
-		class IService {
+		class IPaymentProcessor {
 			<<interface>>
 		}
-		class Service {
+		class PaymentProcessor {
 				<<class>>
-			+Service(IDependency dependency1, IDependency dependency2, IDependency dependency3)
+			+PaymentProcessor(IPaymentGateway primaryGateway, IPaymentGateway alternativeGateway, IPaymentGateway defaultGateway)
 		}
-		class XyzDependency {
+		class PayPalGateway {
 				<<class>>
-			+XyzDependency()
+			+PayPalGateway()
 		}
 	}
 ```

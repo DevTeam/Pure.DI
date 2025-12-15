@@ -11,59 +11,64 @@ using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>()
+    .Bind<IBankGateway>().To<BankGateway>()
+    .Bind<IPaymentProcessor>().To<PaymentProcessor>()
 
-    // Composition root "MyRoot"
-    .Root<IService>("MyService")
+    // Composition root "PaymentService"
+    .Root<IPaymentProcessor>("PaymentService")
 
-    // Some kind of identifier
-    .Arg<int>("id")
+    // Argument: Connection timeout (e.g., from config)
+    .Arg<int>("timeoutSeconds")
 
-    // An argument can be tagged (e.g., tag "my service name")
-    // to be injectable by type and this tag
-    .Arg<string>("serviceName", "my service name")
-    .Arg<string>("dependencyName");
+    // Argument: API Token (using a tag to distinguish from other strings)
+    .Arg<string>("authToken", "api token")
 
-var composition = new Composition(id: 123, serviceName: "Abc", dependencyName: "Xyz");
+    // Argument: Bank gateway address
+    .Arg<string>("gatewayUrl");
 
-// service = new Service("Abc", new Dependency(123, "Xyz"));
-var service = composition.MyService;
+// Create the composition, passing real settings from "outside"
+var composition = new Composition(
+    timeoutSeconds: 30,
+    authToken: "secret_token_123",
+    gatewayUrl: "https://api.bank.com/v1");
 
-service.Name.ShouldBe("Abc");
-service.Dependency.Id.ShouldBe(123);
-service.Dependency.Name.ShouldBe("Xyz");
+var paymentService = composition.PaymentService;
 
-interface IDependency
+paymentService.Token.ShouldBe("secret_token_123");
+paymentService.Gateway.Timeout.ShouldBe(30);
+paymentService.Gateway.Url.ShouldBe("https://api.bank.com/v1");
+
+interface IBankGateway
 {
-    int Id { get; }
+    int Timeout { get; }
 
-    string Name { get; }
+    string Url { get; }
 }
 
-class Dependency(int id, string name) : IDependency
+// Simulation of a bank gateway client
+class BankGateway(int timeoutSeconds, string gatewayUrl) : IBankGateway
 {
-    public int Id { get; } = id;
+    public int Timeout { get; } = timeoutSeconds;
 
-    public string Name { get; } = name;
+    public string Url { get; } = gatewayUrl;
 }
 
-interface IService
+interface IPaymentProcessor
 {
-    string Name { get; }
+    string Token { get; }
 
-    IDependency Dependency { get; }
+    IBankGateway Gateway { get; }
 }
 
-class Service(
-    // The tag allows to specify the injection point accurately.
-    // This is useful, for example, when the type is the same.
-    [Tag("my service name")] string name,
-    IDependency dependency) : IService
+// Payment processing service
+class PaymentProcessor(
+    // The tag allows specifying exactly which string to inject here
+    [Tag("api token")] string token,
+    IBankGateway gateway) : IPaymentProcessor
 {
-    public string Name { get; } = name;
+    public string Token { get; } = token;
 
-    public IDependency Dependency { get; } = dependency;
+    public IBankGateway Gateway { get; } = gateway;
 }
 ```
 
@@ -105,16 +110,16 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private readonly int _argId;
-  private readonly string _argServiceName;
-  private readonly string _argDependencyName;
+  private readonly int _argTimeoutSeconds;
+  private readonly string _argAuthToken;
+  private readonly string _argGatewayUrl;
 
   [OrdinalAttribute(128)]
-  public Composition(int id, string serviceName, string dependencyName)
+  public Composition(int timeoutSeconds, string authToken, string gatewayUrl)
   {
-    _argId = id;
-    _argServiceName = serviceName ?? throw new ArgumentNullException(nameof(serviceName));
-    _argDependencyName = dependencyName ?? throw new ArgumentNullException(nameof(dependencyName));
+    _argTimeoutSeconds = timeoutSeconds;
+    _argAuthToken = authToken ?? throw new ArgumentNullException(nameof(authToken));
+    _argGatewayUrl = gatewayUrl ?? throw new ArgumentNullException(nameof(gatewayUrl));
 #if NET9_0_OR_GREATER
     _lock = new Lock();
 #else
@@ -124,18 +129,18 @@ partial class Composition
 
   internal Composition(Composition parentScope)
   {
-    _argId = parentScope._argId;
-    _argServiceName = parentScope._argServiceName;
-    _argDependencyName = parentScope._argDependencyName;
+    _argTimeoutSeconds = parentScope._argTimeoutSeconds;
+    _argAuthToken = parentScope._argAuthToken;
+    _argGatewayUrl = parentScope._argGatewayUrl;
     _lock = parentScope._lock;
   }
 
-  public IService MyService
+  public IPaymentProcessor PaymentService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new Service(_argServiceName, new Dependency(_argId, _argDependencyName));
+      return new PaymentProcessor(_argAuthToken, new BankGateway(_argTimeoutSeconds, _argGatewayUrl));
     }
   }
 }
@@ -152,31 +157,31 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Service --|> IService
-	Composition ..> Service : IService MyService
-	Dependency o-- Int32 : Argument "id"
-	Dependency o-- String : Argument "dependencyName"
-	Service *--  Dependency : IDependency
-	Service o-- String : "my service name"  Argument "serviceName"
+	BankGateway --|> IBankGateway
+	PaymentProcessor --|> IPaymentProcessor
+	Composition ..> PaymentProcessor : IPaymentProcessor PaymentService
+	BankGateway o-- Int32 : Argument "timeoutSeconds"
+	BankGateway o-- String : Argument "gatewayUrl"
+	PaymentProcessor *--  BankGateway : IBankGateway
+	PaymentProcessor o-- String : "api token"  Argument "authToken"
 	namespace Pure.DI.UsageTests.Basics.ClassArgumentsScenario {
+		class BankGateway {
+				<<class>>
+			+BankGateway(Int32 timeoutSeconds, String gatewayUrl)
+		}
 		class Composition {
 		<<partial>>
-		+IService MyService
+		+IPaymentProcessor PaymentService
 		}
-		class Dependency {
-				<<class>>
-			+Dependency(Int32 id, String name)
-		}
-		class IDependency {
+		class IBankGateway {
 			<<interface>>
 		}
-		class IService {
+		class IPaymentProcessor {
 			<<interface>>
 		}
-		class Service {
+		class PaymentProcessor {
 				<<class>>
-			+Service(String name, IDependency dependency)
+			+PaymentProcessor(String token, IBankGateway gateway)
 		}
 	}
 	namespace System {

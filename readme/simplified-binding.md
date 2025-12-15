@@ -13,48 +13,48 @@ DI.Setup(nameof(Composition))
     // and if the implementation is not an abstract class or structure,
     // for all abstract but NOT special types that are directly implemented.
     // So that's the equivalent of the following:
-    // .Bind<IDependency, IOtherDependency, Dependency>()
+    // .Bind<IOrderRepository, IOrderNotification, OrderManager>()
     //   .As(Lifetime.PerBlock)
-    //   .To<Dependency>()
-    .Bind().As(Lifetime.PerBlock).To<Dependency>()
-    .Bind().To<Service>()
+    //   .To<OrderManager>()
+    .Bind().As(Lifetime.PerBlock).To<OrderManager>()
+    .Bind().To<Shop>()
 
-    // Specifies to create a property "MyService"
-    .Root<IService>("MyService");
+    // Specifies to create a property "MyShop"
+    .Root<IShop>("MyShop");
 
 var composition = new Composition();
-var service = composition.MyService;
+var shop = composition.MyShop;
 
-interface IDependencyBase;
+interface IManager;
 
-class DependencyBase : IDependencyBase;
+class ManagerBase : IManager;
 
-interface IDependency;
+interface IOrderRepository;
 
-interface IOtherDependency;
+interface IOrderNotification;
 
-class Dependency :
-    DependencyBase,
-    IDependency,
-    IOtherDependency,
+class OrderManager :
+    ManagerBase,
+    IOrderRepository,
+    IOrderNotification,
     IDisposable,
     IEnumerable<string>
 {
-    public void Dispose() { }
+    public void Dispose() {}
 
     public IEnumerator<string> GetEnumerator() =>
-        new List<string> { "abc" }.GetEnumerator();
+        new List<string> { "Order #1", "Order #2" }.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
 
-interface IService;
+interface IShop;
 
-class Service(
-    Dependency dependencyImpl,
-    IDependency dependency,
-    IOtherDependency otherDependency)
-    : IService;
+class Shop(
+    OrderManager manager,
+    IOrderRepository repository,
+    IOrderNotification notification)
+    : IShop;
 ```
 
 <details>
@@ -107,17 +107,17 @@ Special types will not be added to bindings:
 - `System.IAsyncResult`
 - `System.AsyncCallback`
 
-For class `Dependency`, the `Bind().To<Dependency>()` binding will be equivalent to the `Bind<IDependency, IOtherDependency, Dependency>().To<Dependency>()` binding. The types `IDisposable`, `IEnumerable<string>` did not get into the binding because they are special from the list above. `DependencyBase` did not get into the binding because it is not abstract. `IDependencyBase` is not included because it is not implemented directly by class `Dependency`.
+For class `OrderManager`, the `Bind().To<OrderManager>()` binding will be equivalent to the `Bind<IOrderRepository, IOrderNotification, OrderManager>().To<OrderManager>()` binding. The types `IDisposable`, `IEnumerable<string>` did not get into the binding because they are special from the list above. `ManagerBase` did not get into the binding because it is not abstract. `IManager` is not included because it is not implemented directly by class `OrderManager`.
 
-|   |                       |                                                 |
-|---|-----------------------|-------------------------------------------------|
-| ✅ | `Dependency`          | implementation type itself                      |
-| ✅ | `IDependency`         | directly implements                             |
-| ✅ | `IOtherDependency`    | directly implements                             |
-| ❌ | `IDisposable`         | special type                                    |
-| ❌ | `IEnumerable<string>` | special type                                    |
-| ❌ | `DependencyBase`      | non-abstract                                    |
-| ❌ | `IDependencyBase`     | is not directly implemented by class Dependency |
+|    |                       |                                                   |
+|----|-----------------------|---------------------------------------------------|
+| ✅ | `OrderManager`        | implementation type itself                        |
+| ✅ | `IOrderRepository`    | directly implements                               |
+| ✅ | `IOrderNotification`  | directly implements                               |
+| ❌ | `IDisposable`         | special type                                      |
+| ❌ | `IEnumerable<string>` | special type                                      |
+| ❌ | `ManagerBase`         | non-abstract                                      |
+| ❌ | `IManager`            | is not directly implemented by class OrderManager |
 
 The following partial class will be generated:
 
@@ -133,13 +133,13 @@ partial class Composition
   {
   }
 
-  public IService MyService
+  public IShop MyShop
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var perBlockDependency1 = new Dependency();
-      return new Service(perBlockDependency1, perBlockDependency1, perBlockDependency1);
+      var perBlockOrderManager1 = new OrderManager();
+      return new Shop(perBlockOrderManager1, perBlockOrderManager1, perBlockOrderManager1);
     }
   }
 }
@@ -156,35 +156,35 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Dependency --|> IOtherDependency
-	Dependency --|> IEnumerableᐸStringᐳ
-	Service --|> IService
-	Composition ..> Service : IService MyService
-	Service o-- "PerBlock" Dependency : Dependency
-	Service o-- "PerBlock" Dependency : IDependency
-	Service o-- "PerBlock" Dependency : IOtherDependency
+	OrderManager --|> IOrderRepository
+	OrderManager --|> IOrderNotification
+	OrderManager --|> IEnumerableᐸStringᐳ
+	Shop --|> IShop
+	Composition ..> Shop : IShop MyShop
+	Shop o-- "PerBlock" OrderManager : OrderManager
+	Shop o-- "PerBlock" OrderManager : IOrderRepository
+	Shop o-- "PerBlock" OrderManager : IOrderNotification
 	namespace Pure.DI.UsageTests.Basics.SimplifiedBindingScenario {
 		class Composition {
 		<<partial>>
-		+IService MyService
+		+IShop MyShop
 		}
-		class Dependency {
+		class IOrderNotification {
+			<<interface>>
+		}
+		class IOrderRepository {
+			<<interface>>
+		}
+		class IShop {
+			<<interface>>
+		}
+		class OrderManager {
 				<<class>>
-			+Dependency()
+			+OrderManager()
 		}
-		class IDependency {
-			<<interface>>
-		}
-		class IOtherDependency {
-			<<interface>>
-		}
-		class IService {
-			<<interface>>
-		}
-		class Service {
+		class Shop {
 				<<class>>
-			+Service(Dependency dependencyImpl, IDependency dependency, IOtherDependency otherDependency)
+			+Shop(OrderManager manager, IOrderRepository repository, IOrderNotification notification)
 		}
 	}
 	namespace System.Collections.Generic {

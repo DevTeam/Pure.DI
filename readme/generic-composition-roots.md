@@ -11,44 +11,43 @@ using Pure.DI;
 DI.Setup(nameof(Composition))
     // This hint indicates to not generate methods such as Resolve
     .Hint(Hint.Resolve, "Off")
-    .Bind().To<Dependency<TT>>()
-    .Bind().To<Service<TT>>()
-    // Creates OtherService manually,
+    .Bind().To<Repository<TT>>()
+    .Bind().To<CreateCommandHandler<TT>>()
+    // Creates UpdateCommandHandler manually,
     // just for the sake of example
-    .Bind("Other").To(ctx =>
-    {
-        ctx.Inject(out IDependency<TT> dependency);
-        return new OtherService<TT>(dependency);
+    .Bind("Update").To(ctx => {
+        ctx.Inject(out IRepository<TT> repository);
+        return new UpdateCommandHandler<TT>(repository);
     })
 
     // Specifies to create a regular public method
-    // to get a composition root of type Service<T>
-    // with the name "GetMyRoot"
-    .Root<IService<TT>>("GetMyRoot")
+    // to get a composition root of type ICommandHandler<T>
+    // with the name "GetCreateCommandHandler"
+    .Root<ICommandHandler<TT>>("GetCreateCommandHandler")
 
     // Specifies to create a regular public method
-    // to get a composition root of type OtherService<T>
-    // with the name "GetOtherService"
-    // using the "Other" tag
-    .Root<IService<TT>>("GetOtherService", "Other");
+    // to get a composition root of type ICommandHandler<T>
+    // with the name "GetUpdateCommandHandler"
+    // using the "Update" tag
+    .Root<ICommandHandler<TT>>("GetUpdateCommandHandler", "Update");
 
 var composition = new Composition();
 
-// service = new Service<int>(new Dependency<int>());
-var service = composition.GetMyRoot<int>();
+// createHandler = new CreateCommandHandler<int>(new Repository<int>());
+var createHandler = composition.GetCreateCommandHandler<int>();
 
-// someOtherService = new OtherService<int>(new Dependency<int>());
-var someOtherService = composition.GetOtherService<string>();
+// updateHandler = new UpdateCommandHandler<string>(new Repository<string>());
+var updateHandler = composition.GetUpdateCommandHandler<string>();
 
-interface IDependency<T>;
+interface IRepository<T>;
 
-class Dependency<T> : IDependency<T>;
+class Repository<T> : IRepository<T>;
 
-interface IService<T>;
+interface ICommandHandler<T>;
 
-class Service<T>(IDependency<T> dependency) : IService<T>;
+class CreateCommandHandler<T>(IRepository<T> repository) : ICommandHandler<T>;
 
-class OtherService<T>(IDependency<T> dependency) : IService<T>;
+class UpdateCommandHandler<T>(IRepository<T> repository) : ICommandHandler<T>;
 ```
 
 <details>
@@ -94,18 +93,18 @@ partial class Composition
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public IService<T1> GetOtherService<T1>()
+  public ICommandHandler<T1> GetUpdateCommandHandler<T1>()
   {
-    OtherService<T1> transientOtherService;
-    IDependency<T1> localDependency9 = new Dependency<T1>();
-    transientOtherService = new OtherService<T1>(localDependency9);
-    return transientOtherService;
+    UpdateCommandHandler<T1> transientUpdateCommandHandler;
+    IRepository<T1> localRepository = new Repository<T1>();
+    transientUpdateCommandHandler = new UpdateCommandHandler<T1>(localRepository);
+    return transientUpdateCommandHandler;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public IService<T1> GetMyRoot<T1>()
+  public ICommandHandler<T1> GetCreateCommandHandler<T1>()
   {
-    return new Service<T1>(new Dependency<T1>());
+    return new CreateCommandHandler<T1>(new Repository<T1>());
   }
 }
 ```
@@ -121,35 +120,35 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	OtherServiceᐸT1ᐳ --|> IServiceᐸT1ᐳ : "Other" 
-	ServiceᐸT1ᐳ --|> IServiceᐸT1ᐳ
-	DependencyᐸT1ᐳ --|> IDependencyᐸT1ᐳ
-	Composition ..> OtherServiceᐸT1ᐳ : IServiceᐸT1ᐳ GetOtherServiceᐸT1ᐳ()
-	Composition ..> ServiceᐸT1ᐳ : IServiceᐸT1ᐳ GetMyRootᐸT1ᐳ()
-	OtherServiceᐸT1ᐳ *--  DependencyᐸT1ᐳ : IDependencyᐸT1ᐳ
-	ServiceᐸT1ᐳ *--  DependencyᐸT1ᐳ : IDependencyᐸT1ᐳ
+	UpdateCommandHandlerᐸT1ᐳ --|> ICommandHandlerᐸT1ᐳ : "Update" 
+	CreateCommandHandlerᐸT1ᐳ --|> ICommandHandlerᐸT1ᐳ
+	RepositoryᐸT1ᐳ --|> IRepositoryᐸT1ᐳ
+	Composition ..> UpdateCommandHandlerᐸT1ᐳ : ICommandHandlerᐸT1ᐳ GetUpdateCommandHandlerᐸT1ᐳ()
+	Composition ..> CreateCommandHandlerᐸT1ᐳ : ICommandHandlerᐸT1ᐳ GetCreateCommandHandlerᐸT1ᐳ()
+	UpdateCommandHandlerᐸT1ᐳ *--  RepositoryᐸT1ᐳ : IRepositoryᐸT1ᐳ
+	CreateCommandHandlerᐸT1ᐳ *--  RepositoryᐸT1ᐳ : IRepositoryᐸT1ᐳ
 	namespace Pure.DI.UsageTests.Generics.GenericsCompositionRootsScenario {
 		class Composition {
 		<<partial>>
-		+IServiceᐸT1ᐳ GetMyRootᐸT1ᐳ()
-		+IServiceᐸT1ᐳ GetOtherServiceᐸT1ᐳ()
+		+ICommandHandlerᐸT1ᐳ GetCreateCommandHandlerᐸT1ᐳ()
+		+ICommandHandlerᐸT1ᐳ GetUpdateCommandHandlerᐸT1ᐳ()
 		}
-		class DependencyᐸT1ᐳ {
+		class CreateCommandHandlerᐸT1ᐳ {
 				<<class>>
-			+Dependency()
+			+CreateCommandHandler(IRepositoryᐸT1ᐳ repository)
 		}
-		class IDependencyᐸT1ᐳ {
+		class ICommandHandlerᐸT1ᐳ {
 			<<interface>>
 		}
-		class IServiceᐸT1ᐳ {
+		class IRepositoryᐸT1ᐳ {
 			<<interface>>
 		}
-		class OtherServiceᐸT1ᐳ {
+		class RepositoryᐸT1ᐳ {
 				<<class>>
+			+Repository()
 		}
-		class ServiceᐸT1ᐳ {
+		class UpdateCommandHandlerᐸT1ᐳ {
 				<<class>>
-			+Service(IDependencyᐸT1ᐳ dependency)
 		}
 	}
 ```

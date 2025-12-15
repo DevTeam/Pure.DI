@@ -10,58 +10,60 @@ DI.Setup(nameof(Composition))
     // Overrides the default binding that performs an auto-start of a task
     // when it is created. This binding will simply create the task.
     // The start will be handled by the consumer.
-    .Bind<Task<TT>>().To(ctx =>
-    {
+    .Bind<Task<TT>>().To(ctx => {
         ctx.Inject(ctx.Tag, out Func<TT> factory);
         ctx.Inject(out CancellationToken cancellationToken);
         return new Task<TT>(factory, cancellationToken);
     })
     // Specifies to use CancellationToken from the composition root argument,
-    // if not specified then CancellationToken.None will be used
+    // if not specified, then CancellationToken.None will be used
     .RootArg<CancellationToken>("cancellationToken")
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>()
+    .Bind<IUserPreferences>().To<UserPreferences>()
+    .Bind<IDashboardService>().To<DashboardService>()
 
     // Composition root
-    .Root<IService>("GetRoot");
+    .Root<IDashboardService>("GetDashboard");
 
 var composition = new Composition();
 using var cancellationTokenSource = new CancellationTokenSource();
 
 // Creates a composition root with the CancellationToken passed to it
-var service = composition.GetRoot(cancellationTokenSource.Token);
-await service.RunAsync(cancellationTokenSource.Token);
+var dashboard = composition.GetDashboard(cancellationTokenSource.Token);
+await dashboard.LoadAsync(cancellationTokenSource.Token);
 
-interface IDependency
+interface IUserPreferences
 {
-    ValueTask DoSomething(CancellationToken cancellationToken);
+    ValueTask LoadAsync(CancellationToken cancellationToken);
 }
 
-class Dependency : IDependency
+class UserPreferences : IUserPreferences
 {
-    public ValueTask DoSomething(CancellationToken cancellationToken) => ValueTask.CompletedTask;
+    public ValueTask LoadAsync(CancellationToken cancellationToken) => ValueTask.CompletedTask;
 }
 
-interface IService
+interface IDashboardService
 {
-    Task RunAsync(CancellationToken cancellationToken);
+    Task LoadAsync(CancellationToken cancellationToken);
 }
 
-class Service : IService
+class DashboardService : IDashboardService
 {
-    private readonly Task<IDependency> _dependencyTask;
+    private readonly Task<IUserPreferences> _preferencesTask;
 
-    public Service(Task<IDependency> dependencyTask)
+    public DashboardService(Task<IUserPreferences> preferencesTask)
     {
-        _dependencyTask = dependencyTask;
-        // This is where the task starts
-        _dependencyTask.Start();
+        _preferencesTask = preferencesTask;
+        // The task is started manually in the constructor.
+        // This allows the loading of preferences to begin immediately in the background,
+        // while the service continues its initialization.
+        _preferencesTask.Start();
     }
 
-    public async Task RunAsync(CancellationToken cancellationToken)
+    public async Task LoadAsync(CancellationToken cancellationToken)
     {
-        var dependency = await _dependencyTask;
-        await dependency.DoSomething(cancellationToken);
+        // Wait for the preferences loading task to complete
+        var preferences = await _preferencesTask;
+        await preferences.LoadAsync(cancellationToken);
     }
 }
 ```
@@ -121,20 +123,20 @@ partial class Composition
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public IService GetRoot(CancellationToken cancellationToken)
+  public IDashboardService GetDashboard(CancellationToken cancellationToken)
   {
-    Task<IDependency> transientTask1;
-    Func<IDependency> transientFunc2 = new Func<IDependency>(
+    Task<IUserPreferences> transientTask1;
+    Func<IUserPreferences> transientFunc2 = new Func<IUserPreferences>(
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     () =>
     {
-      IDependency localValue23 = new Dependency();
+      IUserPreferences localValue23 = new UserPreferences();
       return localValue23;
     });
-    Func<IDependency> localFactory4 = transientFunc2;
+    Func<IUserPreferences> localFactory4 = transientFunc2;
     CancellationToken localCancellationToken1 = cancellationToken;
-    transientTask1 = new Task<IDependency>(localFactory4, localCancellationToken1);
-    return new Service(transientTask1);
+    transientTask1 = new Task<IUserPreferences>(localFactory4, localCancellationToken1);
+    return new DashboardService(transientTask1);
   }
 }
 ```
@@ -150,35 +152,35 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Service --|> IService
-	Composition ..> Service : IService GetRoot(System.Threading.CancellationToken cancellationToken)
-	Service *--  TaskᐸIDependencyᐳ : TaskᐸIDependencyᐳ
-	TaskᐸIDependencyᐳ o-- CancellationToken : Argument "cancellationToken"
-	TaskᐸIDependencyᐳ o-- "PerBlock" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
-	FuncᐸIDependencyᐳ *--  Dependency : IDependency
+	UserPreferences --|> IUserPreferences
+	DashboardService --|> IDashboardService
+	Composition ..> DashboardService : IDashboardService GetDashboard(System.Threading.CancellationToken cancellationToken)
+	DashboardService *--  TaskᐸIUserPreferencesᐳ : TaskᐸIUserPreferencesᐳ
+	TaskᐸIUserPreferencesᐳ o-- CancellationToken : Argument "cancellationToken"
+	TaskᐸIUserPreferencesᐳ o-- "PerBlock" FuncᐸIUserPreferencesᐳ : FuncᐸIUserPreferencesᐳ
+	FuncᐸIUserPreferencesᐳ *--  UserPreferences : IUserPreferences
 	namespace Pure.DI.UsageTests.BCL.ManualTaskScenario {
 		class Composition {
 		<<partial>>
-		+IService GetRoot(System.Threading.CancellationToken cancellationToken)
+		+IDashboardService GetDashboard(System.Threading.CancellationToken cancellationToken)
 		}
-		class Dependency {
+		class DashboardService {
 				<<class>>
-			+Dependency()
+			+DashboardService(TaskᐸIUserPreferencesᐳ preferencesTask)
 		}
-		class IDependency {
+		class IDashboardService {
 			<<interface>>
 		}
-		class IService {
+		class IUserPreferences {
 			<<interface>>
 		}
-		class Service {
+		class UserPreferences {
 				<<class>>
-			+Service(TaskᐸIDependencyᐳ dependencyTask)
+			+UserPreferences()
 		}
 	}
 	namespace System {
-		class FuncᐸIDependencyᐳ {
+		class FuncᐸIUserPreferencesᐳ {
 				<<delegate>>
 		}
 	}
@@ -188,7 +190,7 @@ classDiagram
 		}
 	}
 	namespace System.Threading.Tasks {
-		class TaskᐸIDependencyᐳ {
+		class TaskᐸIUserPreferencesᐳ {
 				<<class>>
 		}
 	}

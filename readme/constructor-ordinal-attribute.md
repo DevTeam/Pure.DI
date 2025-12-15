@@ -8,39 +8,48 @@ using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Arg<string>("serviceName")
-    .Bind().To<Dependency>()
-    .Bind().To<Service>()
+    .Arg<string>("connectionString")
+    .Bind().To<Configuration>()
+    .Bind().To<SqlDatabaseClient>()
 
     // Composition root
-    .Root<IService>("Root");
+    .Root<IDatabaseClient>("Client");
 
-var composition = new Composition(serviceName: "Xyz");
-var service = composition.Root;
-service.ToString().ShouldBe("Xyz");
+var composition = new Composition(connectionString: "Server=.;Database=MyDb;");
+var client = composition.Client;
 
-interface IDependency;
+// The client was created using the connection string constructor (Ordinal 0)
+// even though the configuration constructor (Ordinal 1) was also possible.
+client.ConnectionString.ShouldBe("Server=.;Database=MyDb;");
 
-class Dependency : IDependency;
+interface IConfiguration;
 
-interface IService;
+class Configuration : IConfiguration;
 
-class Service : IService
+interface IDatabaseClient
 {
-    private readonly string _name;
+    string ConnectionString { get; }
+}
 
+class SqlDatabaseClient : IDatabaseClient
+{
     // The integer value in the argument specifies
-    // the ordinal of injection
-    [Ordinal(1)]
-    public Service(IDependency dependency) =>
-        _name = "with dependency";
-
+    // the ordinal of injection.
+    // The DI container will try to use this constructor first (Ordinal 0).
     [Ordinal(0)]
-    internal Service(string name) => _name = name;
+    internal SqlDatabaseClient(string connectionString) =>
+        ConnectionString = connectionString;
 
-    public Service() => _name = "default";
+    // If the first constructor cannot be used (e.g. connectionString is missing),
+    // the DI container will try to use this one (Ordinal 1).
+    [Ordinal(1)]
+    public SqlDatabaseClient(IConfiguration configuration) =>
+        ConnectionString = "Server=.;Database=DefaultDb;";
 
-    public override string ToString() => _name;
+    public SqlDatabaseClient() =>
+        ConnectionString = "InMemory";
+
+    public string ConnectionString { get; }
 }
 ```
 
@@ -84,12 +93,12 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private readonly string _argServiceName;
+  private readonly string _argConnectionString;
 
   [OrdinalAttribute(128)]
-  public Composition(string serviceName)
+  public Composition(string connectionString)
   {
-    _argServiceName = serviceName ?? throw new ArgumentNullException(nameof(serviceName));
+    _argConnectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
 #if NET9_0_OR_GREATER
     _lock = new Lock();
 #else
@@ -99,16 +108,16 @@ partial class Composition
 
   internal Composition(Composition parentScope)
   {
-    _argServiceName = parentScope._argServiceName;
+    _argConnectionString = parentScope._argConnectionString;
     _lock = parentScope._lock;
   }
 
-  public IService Root
+  public IDatabaseClient Client
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new Service(_argServiceName);
+      return new SqlDatabaseClient(_argConnectionString);
     }
   }
 }
@@ -125,20 +134,20 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService
-	Composition ..> Service : IService Root
-	Service o-- String : Argument "serviceName"
+	SqlDatabaseClient --|> IDatabaseClient
+	Composition ..> SqlDatabaseClient : IDatabaseClient Client
+	SqlDatabaseClient o-- String : Argument "connectionString"
 	namespace Pure.DI.UsageTests.Attributes.ConstructorOrdinalAttributeScenario {
 		class Composition {
 		<<partial>>
-		+IService Root
+		+IDatabaseClient Client
 		}
-		class IService {
+		class IDatabaseClient {
 			<<interface>>
 		}
-		class Service {
+		class SqlDatabaseClient {
 				<<class>>
-			~Service(String name)
+			~SqlDatabaseClient(String connectionString)
 		}
 	}
 	namespace System {

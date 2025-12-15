@@ -8,41 +8,39 @@ using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Bind("Abc").To<AbcDependency>()
-    .Bind("Xyz").To<XyzDependency>()
-    .Bind().To<Service>()
+    .Bind("Fast").To<FastRenderer>()
+    .Bind("Quality").To<QualityRenderer>()
+    .Bind().To<PageRenderer>()
 
     // Composition root
-    .Root<IService>("Root");
+    .Root<IPageRenderer>("Renderer");
 
 var composition = new Composition();
-var service = composition.Root;
-service.Dependency1.ShouldBeOfType<AbcDependency>();
-service.Dependency2.ShouldBeOfType<XyzDependency>();
+var pageRenderer = composition.Renderer;
+pageRenderer.FastRenderer.ShouldBeOfType<FastRenderer>();
+pageRenderer.QualityRenderer.ShouldBeOfType<QualityRenderer>();
 
-interface IDependency;
+interface IRenderer;
 
-class AbcDependency : IDependency;
+class FastRenderer : IRenderer;
 
-class XyzDependency : IDependency;
+class QualityRenderer : IRenderer;
 
-class Dependency : IDependency;
-
-interface IService
+interface IPageRenderer
 {
-    IDependency Dependency1 { get; }
+    IRenderer FastRenderer { get; }
 
-    IDependency Dependency2 { get; }
+    IRenderer QualityRenderer { get; }
 }
 
-class Service(
-    [Tag("Abc")] IDependency dependency1,
-    [Tag("Xyz")] IDependency dependency2)
-    : IService
+class PageRenderer(
+    [Tag("Fast")] IRenderer fastRenderer,
+    [Tag("Quality")] IRenderer qualityRenderer)
+    : IPageRenderer
 {
-    public IDependency Dependency1 { get; } = dependency1;
+    public IRenderer FastRenderer { get; } = fastRenderer;
 
-    public IDependency Dependency2 { get; } = dependency2;
+    public IRenderer QualityRenderer { get; } = qualityRenderer;
 }
 ```
 
@@ -89,12 +87,12 @@ partial class Composition
   {
   }
 
-  public IService Root
+  public IPageRenderer Renderer
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new Service(new AbcDependency(), new XyzDependency());
+      return new PageRenderer(new FastRenderer(), new QualityRenderer());
     }
   }
 }
@@ -111,34 +109,34 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	AbcDependency --|> IDependency : "Abc" 
-	XyzDependency --|> IDependency : "Xyz" 
-	Service --|> IService
-	Composition ..> Service : IService Root
-	Service *--  AbcDependency : "Abc"  IDependency
-	Service *--  XyzDependency : "Xyz"  IDependency
+	FastRenderer --|> IRenderer : "Fast" 
+	QualityRenderer --|> IRenderer : "Quality" 
+	PageRenderer --|> IPageRenderer
+	Composition ..> PageRenderer : IPageRenderer Renderer
+	PageRenderer *--  FastRenderer : "Fast"  IRenderer
+	PageRenderer *--  QualityRenderer : "Quality"  IRenderer
 	namespace Pure.DI.UsageTests.Basics.TagAttributeScenario {
-		class AbcDependency {
-				<<class>>
-			+AbcDependency()
-		}
 		class Composition {
 		<<partial>>
-		+IService Root
+		+IPageRenderer Renderer
 		}
-		class IDependency {
+		class FastRenderer {
+				<<class>>
+			+FastRenderer()
+		}
+		class IPageRenderer {
 			<<interface>>
 		}
-		class IService {
+		class IRenderer {
 			<<interface>>
 		}
-		class Service {
+		class PageRenderer {
 				<<class>>
-			+Service(IDependency dependency1, IDependency dependency2)
+			+PageRenderer(IRenderer fastRenderer, IRenderer qualityRenderer)
 		}
-		class XyzDependency {
+		class QualityRenderer {
 				<<class>>
-			+XyzDependency()
+			+QualityRenderer()
 		}
 	}
 ```

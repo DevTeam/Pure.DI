@@ -6,40 +6,42 @@ using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    // Registers custom generic argument
-    .GenericTypeArgument<TTMy>()
-    .Bind<IDependency<TTMy>>().To<Dependency<TTMy>>()
-    .Bind<IService>().To<Service>()
+    // Registers the "MyTT" interface as a custom generic type argument
+    // to be used as a marker for generic bindings
+    .GenericTypeArgument<MyTT>()
+    .Bind<ISequence<MyTT>>().To<Sequence<MyTT>>()
+    .Bind<IProgram>().To<MyApp>()
 
     // Composition root
-    .Root<IService>("Root");
+    .Root<IProgram>("Root");
 
 var composition = new Composition();
-var service = composition.Root;
-service.IntDependency.ShouldBeOfType<Dependency<int>>();
-service.StringDependency.ShouldBeOfType<Dependency<string>>();
+var program = composition.Root;
+program.IntSequence.ShouldBeOfType<Sequence<int>>();
+program.StringSequence.ShouldBeOfType<Sequence<string>>();
 
-interface TTMy;
+// Defines a custom generic type argument marker
+interface MyTT;
 
-interface IDependency<T>;
+interface ISequence<T>;
 
-class Dependency<T> : IDependency<T>;
+class Sequence<T> : ISequence<T>;
 
-interface IService
+interface IProgram
 {
-    IDependency<int> IntDependency { get; }
+    ISequence<int> IntSequence { get; }
 
-    IDependency<string> StringDependency { get; }
+    ISequence<string> StringSequence { get; }
 }
 
-class Service(
-    IDependency<int> intDependency,
-    IDependency<string> stringDependency)
-    : IService
+class MyApp(
+    ISequence<int> intSequence,
+    ISequence<string> stringSequence)
+    : IProgram
 {
-    public IDependency<int> IntDependency { get; } = intDependency;
+    public ISequence<int> IntSequence { get; } = intSequence;
 
-    public IDependency<string> StringDependency { get; } = stringDependency;
+    public ISequence<string> StringSequence { get; } = stringSequence;
 }
 ```
 
@@ -84,12 +86,12 @@ partial class Composition
   {
   }
 
-  public IService Root
+  public IProgram Root
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new Service(new Dependency<int>(), new Dependency<string>());
+      return new MyApp(new Sequence<int>(), new Sequence<string>());
     }
   }
 }
@@ -106,37 +108,37 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService
-	DependencyᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ
-	DependencyᐸStringᐳ --|> IDependencyᐸStringᐳ
-	Composition ..> Service : IService Root
-	Service *--  DependencyᐸInt32ᐳ : IDependencyᐸInt32ᐳ
-	Service *--  DependencyᐸStringᐳ : IDependencyᐸStringᐳ
+	MyApp --|> IProgram
+	SequenceᐸInt32ᐳ --|> ISequenceᐸInt32ᐳ
+	SequenceᐸStringᐳ --|> ISequenceᐸStringᐳ
+	Composition ..> MyApp : IProgram Root
+	MyApp *--  SequenceᐸInt32ᐳ : ISequenceᐸInt32ᐳ
+	MyApp *--  SequenceᐸStringᐳ : ISequenceᐸStringᐳ
 	namespace Pure.DI.UsageTests.Generics.CustomGenericArgumentScenario {
 		class Composition {
 		<<partial>>
-		+IService Root
+		+IProgram Root
 		}
-		class DependencyᐸInt32ᐳ {
-				<<class>>
-			+Dependency()
-		}
-		class DependencyᐸStringᐳ {
-				<<class>>
-			+Dependency()
-		}
-		class IDependencyᐸInt32ᐳ {
+		class IProgram {
 			<<interface>>
 		}
-		class IDependencyᐸStringᐳ {
+		class ISequenceᐸInt32ᐳ {
 			<<interface>>
 		}
-		class IService {
+		class ISequenceᐸStringᐳ {
 			<<interface>>
 		}
-		class Service {
+		class MyApp {
 				<<class>>
-			+Service(IDependencyᐸInt32ᐳ intDependency, IDependencyᐸStringᐳ stringDependency)
+			+MyApp(ISequenceᐸInt32ᐳ intSequence, ISequenceᐸStringᐳ stringSequence)
+		}
+		class SequenceᐸInt32ᐳ {
+				<<class>>
+			+Sequence()
+		}
+		class SequenceᐸStringᐳ {
+				<<class>>
+			+Sequence()
 		}
 	}
 ```

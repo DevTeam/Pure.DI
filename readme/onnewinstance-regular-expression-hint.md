@@ -12,37 +12,35 @@ using static Pure.DI.Hint;
 DI.Setup(nameof(Composition))
     .Hint(OnNewInstance, "On")
     .Hint(OnNewInstanceLifetimeRegularExpression, "(Singleton|PerBlock)")
-    .Bind().As(Lifetime.Singleton).To<Dependency>()
-    .Bind().As(Lifetime.PerBlock).To<Service>()
-    .Root<IService>("Root");
+    .Bind().As(Lifetime.Singleton).To<GlobalCache>()
+    .Bind().As(Lifetime.PerBlock).To<OrderProcessor>()
+    .Root<IOrderProcessor>("OrderProcessor");
 
 var log = new List<string>();
 var composition = new Composition(log);
-var service1 = composition.Root;
-var service2 = composition.Root;
+
+// Create the OrderProcessor twice
+var processor1 = composition.OrderProcessor;
+var processor2 = composition.OrderProcessor;
 
 log.ShouldBe([
-    "Dependency created",
-    "Service created",
-    "Service created"]);
+    "GlobalCache created",
+    "OrderProcessor created",
+    "OrderProcessor created"
+]);
 
-interface IDependency;
+interface IGlobalCache;
 
-class Dependency : IDependency
+class GlobalCache : IGlobalCache;
+
+interface IOrderProcessor
 {
-    public override string ToString() => nameof(Dependency);
+    IGlobalCache Cache { get; }
 }
 
-interface IService
+class OrderProcessor(IGlobalCache cache) : IOrderProcessor
 {
-    IDependency Dependency { get; }
-}
-
-class Service(IDependency dependency) : IService
-{
-    public IDependency Dependency { get; } = dependency;
-
-    public override string ToString() => nameof(Service);
+    public IGlobalCache Cache { get; } = cache;
 }
 
 internal partial class Composition
@@ -102,7 +100,7 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private Dependency? _singletonDependency51;
+  private GlobalCache? _singletonGlobalCache51;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -121,25 +119,25 @@ partial class Composition
     _lock = parentScope._lock;
   }
 
-  public IService Root
+  public IOrderProcessor OrderProcessor
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonDependency51 is null)
+      if (_root._singletonGlobalCache51 is null)
         lock (_lock)
-          if (_root._singletonDependency51 is null)
+          if (_root._singletonGlobalCache51 is null)
           {
-            Dependency _singletonDependency51Temp;
-            _singletonDependency51Temp = new Dependency();
-            OnNewInstance<Dependency>(ref _singletonDependency51Temp, null, Lifetime.Singleton);
+            GlobalCache _singletonGlobalCache51Temp;
+            _singletonGlobalCache51Temp = new GlobalCache();
+            OnNewInstance<GlobalCache>(ref _singletonGlobalCache51Temp, null, Lifetime.Singleton);
             Thread.MemoryBarrier();
-            _root._singletonDependency51 = _singletonDependency51Temp;
+            _root._singletonGlobalCache51 = _singletonGlobalCache51Temp;
           }
 
-      var transientService = new Service(_root._singletonDependency51);
-      OnNewInstance<Service>(ref transientService, null, Lifetime.PerBlock);
-      return transientService;
+      var transientOrderProcessor = new OrderProcessor(_root._singletonGlobalCache51);
+      OnNewInstance<OrderProcessor>(ref transientOrderProcessor, null, Lifetime.PerBlock);
+      return transientOrderProcessor;
     }
   }
 
@@ -159,28 +157,28 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Service --|> IService
-	Composition ..> Service : IService Root
-	Service o-- "Singleton" Dependency : IDependency
+	GlobalCache --|> IGlobalCache
+	OrderProcessor --|> IOrderProcessor
+	Composition ..> OrderProcessor : IOrderProcessor OrderProcessor
+	OrderProcessor o-- "Singleton" GlobalCache : IGlobalCache
 	namespace Pure.DI.UsageTests.Hints.OnNewInstanceRegularExpressionHintScenario {
 		class Composition {
 		<<partial>>
-		+IService Root
+		+IOrderProcessor OrderProcessor
 		}
-		class Dependency {
+		class GlobalCache {
 				<<class>>
-			+Dependency()
+			+GlobalCache()
 		}
-		class IDependency {
+		class IGlobalCache {
 			<<interface>>
 		}
-		class IService {
+		class IOrderProcessor {
 			<<interface>>
 		}
-		class Service {
+		class OrderProcessor {
 				<<class>>
-			+Service(IDependency dependency)
+			+OrderProcessor(IGlobalCache cache)
 		}
 	}
 ```

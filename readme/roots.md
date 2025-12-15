@@ -8,22 +8,23 @@ using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Bind().As(Lifetime.Singleton).To<Dependency>()
-    .Roots<IService>("My{type}");
+    .Bind().As(Lifetime.Singleton).To<Preferences>()
+    // Roots can be used to register all descendants of a type as roots.
+    .Roots<IWindow>("{type}");
 
 var composition = new Composition();
-composition.MyService1.ShouldBeOfType<Service1>();
-composition.MyService2.ShouldBeOfType<Service2>();
+composition.MainWindow.ShouldBeOfType<MainWindow>();
+composition.SettingsWindow.ShouldBeOfType<SettingsWindow>();
 
-interface IDependency;
+interface IPreferences;
 
-class Dependency : IDependency;
+class Preferences : IPreferences;
 
-interface IService;
+interface IWindow;
 
-class Service1(IDependency dependency) : IService;
+class MainWindow(IPreferences preferences) : IWindow;
 
-class Service2(IDependency dependency) : IService;
+class SettingsWindow(IPreferences preferences) : IWindow;
 ```
 
 <details>
@@ -65,7 +66,7 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private Dependency? _singletonDependency51;
+  private Preferences? _singletonPreferences51;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -84,41 +85,41 @@ partial class Composition
     _lock = parentScope._lock;
   }
 
-  public Service2 MyService2
+  public SettingsWindow SettingsWindow
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      EnsureDependencyExists();
-      return new Service2(_root._singletonDependency51);
+      EnsurePreferencesExists();
+      return new SettingsWindow(_root._singletonPreferences51);
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      void EnsureDependencyExists()
+      void EnsurePreferencesExists()
       {
-        if (_root._singletonDependency51 is null)
+        if (_root._singletonPreferences51 is null)
           lock (_lock)
-            if (_root._singletonDependency51 is null)
+            if (_root._singletonPreferences51 is null)
             {
-              _root._singletonDependency51 = new Dependency();
+              _root._singletonPreferences51 = new Preferences();
             }
       }
     }
   }
 
-  public Service1 MyService1
+  public MainWindow MainWindow
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      EnsureDependencyExists();
-      return new Service1(_root._singletonDependency51);
+      EnsurePreferencesExists();
+      return new MainWindow(_root._singletonPreferences51);
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      void EnsureDependencyExists()
+      void EnsurePreferencesExists()
       {
-        if (_root._singletonDependency51 is null)
+        if (_root._singletonPreferences51 is null)
           lock (_lock)
-            if (_root._singletonDependency51 is null)
+            if (_root._singletonPreferences51 is null)
             {
-              _root._singletonDependency51 = new Dependency();
+              _root._singletonPreferences51 = new Preferences();
             }
       }
     }
@@ -137,31 +138,31 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Composition ..> Service2 : Service2 MyService2
-	Composition ..> Service1 : Service1 MyService1
-	Service2 o-- "Singleton" Dependency : IDependency
-	Service1 o-- "Singleton" Dependency : IDependency
+	Preferences --|> IPreferences
+	Composition ..> SettingsWindow : SettingsWindow SettingsWindow
+	Composition ..> MainWindow : MainWindow MainWindow
+	SettingsWindow o-- "Singleton" Preferences : IPreferences
+	MainWindow o-- "Singleton" Preferences : IPreferences
 	namespace Pure.DI.UsageTests.Basics.RootsScenario {
 		class Composition {
 		<<partial>>
-		+Service1 MyService1
-		+Service2 MyService2
+		+MainWindow MainWindow
+		+SettingsWindow SettingsWindow
 		}
-		class Dependency {
-				<<class>>
-			+Dependency()
-		}
-		class IDependency {
+		class IPreferences {
 			<<interface>>
 		}
-		class Service1 {
+		class MainWindow {
 				<<class>>
-			+Service1(IDependency dependency)
+			+MainWindow(IPreferences preferences)
 		}
-		class Service2 {
+		class Preferences {
 				<<class>>
-			+Service2(IDependency dependency)
+			+Preferences()
+		}
+		class SettingsWindow {
+				<<class>>
+			+SettingsWindow(IPreferences preferences)
 		}
 	}
 ```

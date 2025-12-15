@@ -12,30 +12,33 @@ using static Pure.DI.Hint;
 // OnCannotResolveContractTypeNameWildcard = string
 DI.Setup(nameof(Composition))
     .Hint(OnCannotResolve, "On")
-    .Bind().To<Dependency>()
-    .Bind().To<Service>()
-    .Root<IService>("Root");
+    .Bind().To<DatabaseSettings>()
+    .Bind().To<DataService>()
+    .Root<IDataService>("DataService");
 
 var composition = new Composition();
-var service = composition.Root;
-service.Dependency.ToString().ShouldBe("My name");
+var dataService = composition.DataService;
+dataService.Settings.ConnectionString.ShouldBe("Server=localhost;");
 
 
-interface IDependency;
-
-class Dependency(string name) : IDependency
+interface IDatabaseSettings
 {
-    public override string ToString() => name;
+    string ConnectionString { get; }
 }
 
-interface IService
+class DatabaseSettings(string connectionString) : IDatabaseSettings
 {
-    IDependency Dependency { get; }
+    public string ConnectionString { get; } = connectionString;
 }
 
-class Service(IDependency dependency) : IService
+interface IDataService
 {
-    public IDependency Dependency { get; } = dependency;
+    IDatabaseSettings Settings { get; }
+}
+
+class DataService(IDatabaseSettings settings) : IDataService
+{
+    public IDatabaseSettings Settings { get; } = settings;
 }
 
 partial class Composition
@@ -44,9 +47,10 @@ partial class Composition
         object? tag,
         Lifetime lifetime)
     {
+        // Emulates obtaining a configuration value
         if (typeof(T) == typeof(string))
         {
-            return (T)(object)"My name";
+            return (T)(object)"Server=localhost;";
         }
 
         throw new InvalidOperationException("Cannot resolve.");
@@ -98,12 +102,12 @@ partial class Composition
   {
   }
 
-  public IService Root
+  public IDataService DataService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new Service(new Dependency(OnCannotResolve<string>(null, Lifetime.Transient)));
+      return new DataService(new DatabaseSettings(OnCannotResolve<string>(null, Lifetime.Transient)));
     }
   }
 
@@ -123,29 +127,29 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Service --|> IService
-	Composition ..> Service : IService Root
-	Dependency *--  String : String
-	Service *--  Dependency : IDependency
+	DatabaseSettings --|> IDatabaseSettings
+	DataService --|> IDataService
+	Composition ..> DataService : IDataService DataService
+	DatabaseSettings *--  String : String
+	DataService *--  DatabaseSettings : IDatabaseSettings
 	namespace Pure.DI.UsageTests.Hints.OnCannotResolveWildcardHintScenario {
 		class Composition {
 		<<partial>>
-		+IService Root
+		+IDataService DataService
 		}
-		class Dependency {
+		class DatabaseSettings {
 				<<class>>
-			+Dependency(String name)
+			+DatabaseSettings(String connectionString)
 		}
-		class IDependency {
+		class DataService {
+				<<class>>
+			+DataService(IDatabaseSettings settings)
+		}
+		class IDatabaseSettings {
 			<<interface>>
 		}
-		class IService {
+		class IDataService {
 			<<interface>>
-		}
-		class Service {
-				<<class>>
-			+Service(IDependency dependency)
 		}
 	}
 	namespace System {

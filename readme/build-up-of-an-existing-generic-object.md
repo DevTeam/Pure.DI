@@ -8,38 +8,41 @@ using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .RootArg<string>("name")
+    .RootArg<string>("userName")
     .Bind().To(_ => Guid.NewGuid())
-    .Bind().To(ctx =>
-    {
-        var dependency = new Dependency<TTS>();
-        ctx.BuildUp(dependency);
-        return dependency;
+    .Bind().To(ctx => {
+        // The "BuildUp" method injects dependencies into an existing object.
+        // This is useful when the object is created externally (e.g., by a UI framework
+        // or an ORM) or requires specific initialization before injection.
+        var context = new UserContext<TTS>();
+        ctx.BuildUp(context);
+        return context;
     })
-    .Bind().To<Service<TTS>>()
+    .Bind().To<Facade<TTS>>()
 
     // Composition root
-    .Root<IService<Guid>>("GetMyService");
+    .Root<IFacade<Guid>>("GetFacade");
 
 var composition = new Composition();
-var service = composition.GetMyService("Some name");
-service.Dependency.Name.ShouldBe("Some name");
-service.Dependency.Id.ShouldNotBe(Guid.Empty);
+var facade = composition.GetFacade("Erik");
 
-interface IDependency<out T>
-    where T: struct
+facade.Context.UserName.ShouldBe("Erik");
+facade.Context.Id.ShouldNotBe(Guid.Empty);
+
+interface IUserContext<out T>
+    where T : struct
 {
-    string Name { get; }
+    string UserName { get; }
 
     T Id { get; }
 }
 
-class Dependency<T> : IDependency<T>
-    where T: struct
+class UserContext<T> : IUserContext<T>
+    where T : struct
 {
     // The Dependency attribute specifies to perform an injection
     [Dependency]
-    public string Name { get; set; } = "";
+    public string UserName { get; set; } = "";
 
     public T Id { get; private set; }
 
@@ -48,14 +51,14 @@ class Dependency<T> : IDependency<T>
     public void SetId(T id) => Id = id;
 }
 
-interface IService<out T>
-    where T: struct
+interface IFacade<out T>
+    where T : struct
 {
-    IDependency<T> Dependency { get; }
+    IUserContext<T> Context { get; }
 }
 
-record Service<T>(IDependency<T> Dependency)
-    : IService<T> where T: struct;
+record Facade<T>(IUserContext<T> Context)
+    : IFacade<T> where T : struct;
 ```
 
 <details>
@@ -112,16 +115,19 @@ partial class Composition
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public IService<Guid> GetMyService(string name)
+  public IFacade<Guid> GetFacade(string userName)
   {
-    if (name is null) throw new ArgumentNullException(nameof(name));
-    Dependency<Guid> transientDependency1;
-    Dependency<Guid> localDependency7 = new Dependency<Guid>();
+    if (userName is null) throw new ArgumentNullException(nameof(userName));
+    UserContext<Guid> transientUserContext1;
+    // The "BuildUp" method injects dependencies into an existing object.
+    // This is useful when the object is created externally (e.g., by a UI framework
+    // or an ORM) or requires specific initialization before injection.
+    UserContext<Guid> localContext = new UserContext<Guid>();
     Guid transientGuid3 = Guid.NewGuid();
-    localDependency7.Name = name;
-    localDependency7.SetId(transientGuid3);
-    transientDependency1 = localDependency7;
-    return new Service<Guid>(transientDependency1);
+    localContext.UserName = userName;
+    localContext.SetId(transientGuid3);
+    transientUserContext1 = localContext;
+    return new Facade<Guid>(transientUserContext1);
   }
 }
 ```
@@ -137,39 +143,39 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	ServiceᐸGuidᐳ --|> IServiceᐸGuidᐳ
-	ServiceᐸGuidᐳ --|> IEquatableᐸServiceᐸGuidᐳᐳ
-	DependencyᐸGuidᐳ --|> IDependencyᐸGuidᐳ
-	Composition ..> ServiceᐸGuidᐳ : IServiceᐸGuidᐳ GetMyService(string name)
-	ServiceᐸGuidᐳ *--  DependencyᐸGuidᐳ : IDependencyᐸGuidᐳ
-	DependencyᐸGuidᐳ o-- String : Argument "name"
-	DependencyᐸGuidᐳ *--  Guid : Guid
+	FacadeᐸGuidᐳ --|> IFacadeᐸGuidᐳ
+	FacadeᐸGuidᐳ --|> IEquatableᐸFacadeᐸGuidᐳᐳ
+	UserContextᐸGuidᐳ --|> IUserContextᐸGuidᐳ
+	Composition ..> FacadeᐸGuidᐳ : IFacadeᐸGuidᐳ GetFacade(string userName)
+	FacadeᐸGuidᐳ *--  UserContextᐸGuidᐳ : IUserContextᐸGuidᐳ
+	UserContextᐸGuidᐳ o-- String : Argument "userName"
+	UserContextᐸGuidᐳ *--  Guid : Guid
 	namespace Pure.DI.UsageTests.Generics.GenericBuildUpScenario {
 		class Composition {
 		<<partial>>
-		+IServiceᐸGuidᐳ GetMyService(string name)
+		+IFacadeᐸGuidᐳ GetFacade(string userName)
 		}
-		class DependencyᐸGuidᐳ {
-				<<class>>
-			+String Name
-			+SetId(Guid id) : Void
-		}
-		class IDependencyᐸGuidᐳ {
-			<<interface>>
-		}
-		class IServiceᐸGuidᐳ {
-			<<interface>>
-		}
-		class ServiceᐸGuidᐳ {
+		class FacadeᐸGuidᐳ {
 				<<record>>
-			+Service(IDependencyᐸGuidᐳ Dependency)
+			+Facade(IUserContextᐸGuidᐳ Context)
+		}
+		class IFacadeᐸGuidᐳ {
+			<<interface>>
+		}
+		class IUserContextᐸGuidᐳ {
+			<<interface>>
+		}
+		class UserContextᐸGuidᐳ {
+				<<class>>
+			+String UserName
+			+SetId(Guid id) : Void
 		}
 	}
 	namespace System {
 		class Guid {
 				<<struct>>
 		}
-		class IEquatableᐸServiceᐸGuidᐳᐳ {
+		class IEquatableᐸFacadeᐸGuidᐳᐳ {
 			<<interface>>
 		}
 		class String {

@@ -9,38 +9,60 @@ using Pure.DI;
 using static Pure.DI.Lifetime;
 
 DI.Setup(nameof(Composition))
-    .Bind().As(PerBlock).To<Dependency>()
-    .Bind().As(Singleton).To<(IDependency dep3, IDependency dep4)>()
+    // Bind DatabaseConnection with PerBlock lifetime:
+    // Ensures a single connection per composition root (e.g., per user request),
+    // but a new one for each new root - useful for batch operations without full singleton overhead.
+    .Bind().As(PerBlock).To<DatabaseConnection>()
+    // Bind a tuple of two connections as Singleton:
+    // This shares the same connection globally, simulating a cached or shared resource.
+    .Bind().As(Singleton).To<(IDatabaseConnection conn3, IDatabaseConnection conn4)>()
 
-    // Composition root
-    .Root<Service>("Root");
+    // Composition root - represents the main service entry point.
+    .Root<OrderRepository>("Repository");
 
 var composition = new Composition();
 
-var service1 = composition.Root;
-service1.Dep1.ShouldBe(service1.Dep2);
-service1.Dep3.ShouldBe(service1.Dep4);
-service1.Dep1.ShouldBe(service1.Dep3);
+// Simulate the first user request or batch operation
+var repository1 = composition.Repository;
+repository1.ProcessOrder("ORD-2025-54546");
 
-var service2 = composition.Root;
-service2.Dep1.ShouldNotBe(service1.Dep1);
+// Check that within one repository (one block), connections are shared for consistency
+repository1.PrimaryConnection.ShouldBe(repository1.SecondaryConnection);
+repository1.OtherConnection.ShouldBe(repository1.FallbackConnection);
+repository1.PrimaryConnection.ShouldBe(repository1.OtherConnection);
 
-interface IDependency;
+// Simulate the second user request or batch - should have a new PerBlock connection
+var repository2 = composition.Repository;
+repository2.PrimaryConnection.ShouldNotBe(repository1.PrimaryConnection);
 
-class Dependency : IDependency;
+// Interface for database connection - in a real world, this could handle SQL queries
+interface IDatabaseConnection;
 
-class Service(
-    IDependency dep1,
-    IDependency dep2,
-    (IDependency dep3, IDependency dep4) deps)
+// Implementation of database connection - transient-like but controlled by lifetime
+class DatabaseConnection : IDatabaseConnection;
+
+// Repository for handling orders, injecting multiple connections for demonstration
+// In real-world, this could process orders in a batch, sharing connection within the batch
+class OrderRepository(
+    IDatabaseConnection primaryConnection,
+    IDatabaseConnection secondaryConnection,
+    (IDatabaseConnection otherConnection, IDatabaseConnection fallbackConnection) additionalConnections)
 {
-    public IDependency Dep1 { get; } = dep1;
+    // Public properties for connections - in practice, these would be private and used in methods
+    public IDatabaseConnection PrimaryConnection { get; } = primaryConnection;
 
-    public IDependency Dep2 { get; } = dep2;
+    public IDatabaseConnection SecondaryConnection { get; } = secondaryConnection;
 
-    public IDependency Dep3 { get; } = deps.dep3;
+    public IDatabaseConnection OtherConnection { get; } = additionalConnections.otherConnection;
 
-    public IDependency Dep4 { get; } = deps.dep4;
+    public IDatabaseConnection FallbackConnection { get; } = additionalConnections.fallbackConnection;
+
+    // Example real-world method: Process an order using the shared connection
+    public void ProcessOrder(string orderId)
+    {
+        // Use PrimaryConnection to query database, e.g.,
+        // "SELECT * FROM Orders WHERE Id = @orderId"
+    }
 }
 ```
 
@@ -83,8 +105,8 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private (IDependency dep3, IDependency dep4) _singletonValueTuple52;
-  private bool _singletonValueTuple52Created;
+  private (IDatabaseConnection conn3, IDatabaseConnection conn4) _singletonValueTuple54;
+  private bool _singletonValueTuple54Created;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -103,22 +125,22 @@ partial class Composition
     _lock = parentScope._lock;
   }
 
-  public Service Root
+  public OrderRepository Repository
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var perBlockDependency1 = new Dependency();
-      if (!_root._singletonValueTuple52Created)
+      var perBlockDatabaseConnection1 = new DatabaseConnection();
+      if (!_root._singletonValueTuple54Created)
         lock (_lock)
-          if (!_root._singletonValueTuple52Created)
+          if (!_root._singletonValueTuple54Created)
           {
-            _root._singletonValueTuple52 = (perBlockDependency1, perBlockDependency1);
+            _root._singletonValueTuple54 = (perBlockDatabaseConnection1, perBlockDatabaseConnection1);
             Thread.MemoryBarrier();
-            _root._singletonValueTuple52Created = true;
+            _root._singletonValueTuple54Created = true;
           }
 
-      return new Service(perBlockDependency1, perBlockDependency1, _root._singletonValueTuple52);
+      return new OrderRepository(perBlockDatabaseConnection1, perBlockDatabaseConnection1, _root._singletonValueTuple54);
     }
   }
 }
@@ -135,32 +157,32 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Composition ..> Service : Service Root
-	ValueTupleᐸIDependencyˏIDependencyᐳ o-- "2 PerBlock instances" Dependency : IDependency
-	Service o-- "2 PerBlock instances" Dependency : IDependency
-	Service o-- "Singleton" ValueTupleᐸIDependencyˏIDependencyᐳ : ValueTupleᐸIDependencyˏIDependencyᐳ
+	DatabaseConnection --|> IDatabaseConnection
+	Composition ..> OrderRepository : OrderRepository Repository
+	OrderRepository o-- "2 PerBlock instances" DatabaseConnection : IDatabaseConnection
+	OrderRepository o-- "Singleton" ValueTupleᐸIDatabaseConnectionˏIDatabaseConnectionᐳ : ValueTupleᐸIDatabaseConnectionˏIDatabaseConnectionᐳ
+	ValueTupleᐸIDatabaseConnectionˏIDatabaseConnectionᐳ o-- "2 PerBlock instances" DatabaseConnection : IDatabaseConnection
 	namespace Pure.DI.UsageTests.Lifetimes.PerBlockScenario {
 		class Composition {
 		<<partial>>
-		+Service Root
+		+OrderRepository Repository
 		}
-		class Dependency {
+		class DatabaseConnection {
 				<<class>>
-			+Dependency()
+			+DatabaseConnection()
 		}
-		class IDependency {
+		class IDatabaseConnection {
 			<<interface>>
 		}
-		class Service {
+		class OrderRepository {
 				<<class>>
-			+Service(IDependency dep1, IDependency dep2, ValueTupleᐸIDependencyˏIDependencyᐳ deps)
+			+OrderRepository(IDatabaseConnection primaryConnection, IDatabaseConnection secondaryConnection, ValueTupleᐸIDatabaseConnectionˏIDatabaseConnectionᐳ additionalConnections)
 		}
 	}
 	namespace System {
-		class ValueTupleᐸIDependencyˏIDependencyᐳ {
+		class ValueTupleᐸIDatabaseConnectionˏIDatabaseConnectionᐳ {
 				<<struct>>
-			+ValueTuple(IDependency item1, IDependency item2)
+			+ValueTuple(IDatabaseConnection item1, IDatabaseConnection item2)
 		}
 	}
 ```

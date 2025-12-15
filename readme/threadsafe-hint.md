@@ -9,21 +9,24 @@ using Pure.DI;
 using static Pure.DI.Hint;
 
 DI.Setup(nameof(Composition))
+    // Отключение потокобезопасности в композиции может повысить производительность.
+    // Это безопасно, если граф объектов разрешается в одном потоке,
+    // например, при запуске приложения.
     .Hint(ThreadSafe, "Off")
-    .Bind().To<Dependency>()
-    .Bind().As(Lifetime.Singleton).To<Service>()
-    .Root<IService>("Root");
+    .Bind().To<SqlDatabaseConnection>()
+    .Bind().As(Lifetime.Singleton).To<ReportGenerator>()
+    .Root<IReportGenerator>("Generator");
 
 var composition = new Composition();
-var service = composition.Root;
+var reportGenerator = composition.Generator;
 
-interface IDependency;
+interface IDatabaseConnection;
 
-class Dependency : IDependency;
+class SqlDatabaseConnection : IDatabaseConnection;
 
-interface IService;
+interface IReportGenerator;
 
-class Service(Func<IDependency> dependencyFactory) : IService;
+class ReportGenerator(Func<IDatabaseConnection> connectionFactory) : IReportGenerator;
 ```
 
 <details>
@@ -60,7 +63,7 @@ partial class Composition
 {
   private readonly Composition _root;
 
-  private Service? _singletonService52;
+  private ReportGenerator? _singletonReportGenerator52;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -73,24 +76,24 @@ partial class Composition
     _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
   }
 
-  public IService Root
+  public IReportGenerator Generator
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonService52 is null)
+      if (_root._singletonReportGenerator52 is null)
       {
-        Func<IDependency> transientFunc1 = new Func<IDependency>(
+        Func<IDatabaseConnection> transientFunc1 = new Func<IDatabaseConnection>(
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         () =>
         {
-          IDependency localValue30 = new Dependency();
+          IDatabaseConnection localValue30 = new SqlDatabaseConnection();
           return localValue30;
         });
-        _root._singletonService52 = new Service(transientFunc1);
+        _root._singletonReportGenerator52 = new ReportGenerator(transientFunc1);
       }
 
-      return _root._singletonService52;
+      return _root._singletonReportGenerator52;
     }
   }
 }
@@ -107,33 +110,33 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Service --|> IService
-	Composition ..> Service : IService Root
-	Service o-- "PerBlock" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
-	FuncᐸIDependencyᐳ *--  Dependency : IDependency
+	SqlDatabaseConnection --|> IDatabaseConnection
+	ReportGenerator --|> IReportGenerator
+	Composition ..> ReportGenerator : IReportGenerator Generator
+	ReportGenerator o-- "PerBlock" FuncᐸIDatabaseConnectionᐳ : FuncᐸIDatabaseConnectionᐳ
+	FuncᐸIDatabaseConnectionᐳ *--  SqlDatabaseConnection : IDatabaseConnection
 	namespace Pure.DI.UsageTests.Hints.ThreadSafeHintScenario {
 		class Composition {
 		<<partial>>
-		+IService Root
+		+IReportGenerator Generator
 		}
-		class Dependency {
-				<<class>>
-			+Dependency()
-		}
-		class IDependency {
+		class IDatabaseConnection {
 			<<interface>>
 		}
-		class IService {
+		class IReportGenerator {
 			<<interface>>
 		}
-		class Service {
+		class ReportGenerator {
 				<<class>>
-			+Service(FuncᐸIDependencyᐳ dependencyFactory)
+			+ReportGenerator(FuncᐸIDatabaseConnectionᐳ connectionFactory)
+		}
+		class SqlDatabaseConnection {
+				<<class>>
+			+SqlDatabaseConnection()
 		}
 	}
 	namespace System {
-		class FuncᐸIDependencyᐳ {
+		class FuncᐸIDatabaseConnectionᐳ {
 				<<delegate>>
 		}
 	}

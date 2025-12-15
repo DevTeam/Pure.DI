@@ -9,57 +9,57 @@ using Pure.DI;
 
 DI.Setup(nameof(Composition))
     .Bind().To(_ => Guid.NewGuid())
-    .Bind().To<Dependency>()
-    // Creates a builder for each type inherited from IService.
+    .Bind().To<PlutoniumBattery>()
+    // Creates a builder for each type inherited from IRobot.
     // These types must be available at this point in the code.
-    .Builders<IService>("BuildUp");
+    .Builders<IRobot>("BuildUp");
 
 var composition = new Composition();
-        
-var service1 = composition.BuildUp(new Service1());
-service1.Id.ShouldNotBe(Guid.Empty);
-service1.Dependency.ShouldBeOfType<Dependency>();
 
-var service2 = composition.BuildUp(new Service2());
-service2.Id.ShouldBe(Guid.Empty);
-service2.Dependency.ShouldBeOfType<Dependency>();
+var cleaner = composition.BuildUp(new CleanerBot());
+cleaner.Token.ShouldNotBe(Guid.Empty);
+cleaner.Battery.ShouldBeOfType<PlutoniumBattery>();
+
+var guard = composition.BuildUp(new GuardBot());
+guard.Token.ShouldBe(Guid.Empty);
+guard.Battery.ShouldBeOfType<PlutoniumBattery>();
 
 // Uses a common method to build an instance
-IService abstractService = new Service1();
-abstractService = composition.BuildUp(abstractService);
-abstractService.ShouldBeOfType<Service1>();
-abstractService.Id.ShouldNotBe(Guid.Empty);
-abstractService.Dependency.ShouldBeOfType<Dependency>();
+IRobot robot = new CleanerBot();
+robot = composition.BuildUp(robot);
+robot.ShouldBeOfType<CleanerBot>();
+robot.Token.ShouldNotBe(Guid.Empty);
+robot.Battery.ShouldBeOfType<PlutoniumBattery>();
 
-interface IDependency;
+interface IBattery;
 
-class Dependency : IDependency;
+class PlutoniumBattery : IBattery;
 
-interface IService
+interface IRobot
 {
-    Guid Id { get; }
+    Guid Token { get; }
 
-    IDependency? Dependency { get; }
+    IBattery? Battery { get; }
 }
 
-record Service1: IService
+record CleanerBot : IRobot
 {
-    public Guid Id { get; private set; } = Guid.Empty;
+    public Guid Token { get; private set; } = Guid.Empty;
 
     // The Dependency attribute specifies to perform an injection
     [Dependency]
-    public IDependency? Dependency { get; set; }
+    public IBattery? Battery { get; set; }
 
     [Dependency]
-    public void SetId(Guid id) => Id = id;
+    public void SetToken(Guid token) => Token = token;
 }
 
-record Service2 : IService
+record GuardBot : IRobot
 {
-    public Guid Id => Guid.Empty;
+    public Guid Token => Guid.Empty;
 
     [Dependency]
-    public IDependency? Dependency { get; set; }
+    public IBattery? Battery { get; set; }
 }
 ```
 
@@ -121,58 +121,58 @@ partial class Composition
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public Service1 BuildUp(Service1 buildingInstance)
+  public CleanerBot BuildUp(CleanerBot buildingInstance)
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    Service1 transientService15;
-    Service1 localBuildingInstance3 = buildingInstance;
+    CleanerBot transientCleanerBot5;
+    CleanerBot localBuildingInstance3 = buildingInstance;
     Guid transientGuid8 = Guid.NewGuid();
-    localBuildingInstance3.Dependency = new Dependency();
-    localBuildingInstance3.SetId(transientGuid8);
-    transientService15 = localBuildingInstance3;
-    return transientService15;
+    localBuildingInstance3.Battery = new PlutoniumBattery();
+    localBuildingInstance3.SetToken(transientGuid8);
+    transientCleanerBot5 = localBuildingInstance3;
+    return transientCleanerBot5;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public Service2 BuildUp(Service2 buildingInstance)
+  public GuardBot BuildUp(GuardBot buildingInstance)
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    Service2 transientService22;
-    Service2 localBuildingInstance2 = buildingInstance;
-    localBuildingInstance2.Dependency = new Dependency();
-    transientService22 = localBuildingInstance2;
-    return transientService22;
+    GuardBot transientGuardBot2;
+    GuardBot localBuildingInstance2 = buildingInstance;
+    localBuildingInstance2.Battery = new PlutoniumBattery();
+    transientGuardBot2 = localBuildingInstance2;
+    return transientGuardBot2;
   }
 
   #pragma warning disable CS0162
   [MethodImpl(MethodImplOptions.NoInlining)]
-  public IService BuildUp(IService buildingInstance)
+  public IRobot BuildUp(IRobot buildingInstance)
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    IService transientIService;
-    IService localBuildingInstance1 = buildingInstance;
+    IRobot transientIRobot;
+    IRobot localBuildingInstance1 = buildingInstance;
     switch (localBuildingInstance1)
     {
-      case Service1 localService1:
+      case CleanerBot localCleanerBot:
       {
-        transientIService = BuildUp(localService1);
-        goto transientIServiceFinish;
+        transientIRobot = BuildUp(localCleanerBot);
+        goto transientIRobotFinish;
       }
 
-      case Service2 localService2:
+      case GuardBot localGuardBot:
       {
-        transientIService = BuildUp(localService2);
-        goto transientIServiceFinish;
+        transientIRobot = BuildUp(localGuardBot);
+        goto transientIRobotFinish;
       }
 
       default:
         throw new ArgumentException($"Unable to build an instance of typeof type {localBuildingInstance1.GetType()}.", "buildingInstance");
     }
 
-    transientIService = localBuildingInstance1;
-    transientIServiceFinish:
+    transientIRobot = localBuildingInstance1;
+    transientIRobotFinish:
       ;
-    return transientIService;
+    return transientIRobot;
   }
   #pragma warning restore CS0162
 }
@@ -189,38 +189,38 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Composition ..> IService : IService BuildUp(Pure.DI.UsageTests.Basics.BuildersScenario.IService buildingInstance)
-	Composition ..> Service2 : Service2 BuildUp(Pure.DI.UsageTests.Basics.BuildersScenario.Service2 buildingInstance)
-	Composition ..> Service1 : Service1 BuildUp(Pure.DI.UsageTests.Basics.BuildersScenario.Service1 buildingInstance)
-	Service1 *--  Guid : Guid
-	Service1 *--  Dependency : IDependency
-	Service2 *--  Dependency : IDependency
+	PlutoniumBattery --|> IBattery
+	Composition ..> IRobot : IRobot BuildUp(Pure.DI.UsageTests.Basics.BuildersScenario.IRobot buildingInstance)
+	Composition ..> GuardBot : GuardBot BuildUp(Pure.DI.UsageTests.Basics.BuildersScenario.GuardBot buildingInstance)
+	Composition ..> CleanerBot : CleanerBot BuildUp(Pure.DI.UsageTests.Basics.BuildersScenario.CleanerBot buildingInstance)
+	CleanerBot *--  Guid : Guid
+	CleanerBot *--  PlutoniumBattery : IBattery
+	GuardBot *--  PlutoniumBattery : IBattery
 	namespace Pure.DI.UsageTests.Basics.BuildersScenario {
+		class CleanerBot {
+				<<record>>
+			+IBattery Battery
+			+SetToken(Guid token) : Void
+		}
 		class Composition {
 		<<partial>>
-		+Service1 BuildUp(Pure.DI.UsageTests.Basics.BuildersScenario.Service1 buildingInstance)
-		+Service2 BuildUp(Pure.DI.UsageTests.Basics.BuildersScenario.Service2 buildingInstance)
-		+IService BuildUp(Pure.DI.UsageTests.Basics.BuildersScenario.IService buildingInstance)
+		+CleanerBot BuildUp(Pure.DI.UsageTests.Basics.BuildersScenario.CleanerBot buildingInstance)
+		+GuardBot BuildUp(Pure.DI.UsageTests.Basics.BuildersScenario.GuardBot buildingInstance)
+		+IRobot BuildUp(Pure.DI.UsageTests.Basics.BuildersScenario.IRobot buildingInstance)
 		}
-		class Dependency {
-				<<class>>
-			+Dependency()
+		class GuardBot {
+				<<record>>
+			+IBattery Battery
 		}
-		class IDependency {
+		class IBattery {
 			<<interface>>
 		}
-		class IService {
+		class IRobot {
 				<<interface>>
 		}
-		class Service1 {
-				<<record>>
-			+IDependency Dependency
-			+SetId(Guid id) : Void
-		}
-		class Service2 {
-				<<record>>
-			+IDependency Dependency
+		class PlutoniumBattery {
+				<<class>>
+			+PlutoniumBattery()
 		}
 	}
 	namespace System {

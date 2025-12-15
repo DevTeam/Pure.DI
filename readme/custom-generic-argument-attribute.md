@@ -7,43 +7,47 @@ using Pure.DI;
 
 DI.Setup(nameof(Composition))
     // Registers custom generic argument
-    .GenericTypeArgumentAttribute<MyGenericTypeArgumentAttribute>()
-    .Bind<IDependency<TTMy>>().To<Dependency<TTMy>>()
-    .Bind<IService>().To<Service>()
+    .GenericTypeArgumentAttribute<GenericArgAttribute>()
+    .Bind<IRepository<TMy>>().To<Repository<TMy>>()
+    .Bind<IContentService>().To<ContentService>()
 
     // Composition root
-    .Root<IService>("Root");
+    .Root<IContentService>("ContentService");
 
 var composition = new Composition();
-var service = composition.Root;
-service.IntDependency.ShouldBeOfType<Dependency<int>>();
-service.StringDependency.ShouldBeOfType<Dependency<string>>();
+var service = composition.ContentService;
+service.Posts.ShouldBeOfType<Repository<Post>>();
+service.Comments.ShouldBeOfType<Repository<Comment>>();
 
 [AttributeUsage(AttributeTargets.Interface | AttributeTargets.Class | AttributeTargets.Struct)]
-class MyGenericTypeArgumentAttribute : Attribute;
+class GenericArgAttribute : Attribute;
 
-[MyGenericTypeArgument]
-interface TTMy;
+[GenericArg]
+interface TMy;
 
-interface IDependency<T>;
+interface IRepository<T>;
 
-class Dependency<T> : IDependency<T>;
+class Repository<T> : IRepository<T>;
 
-interface IService
+class Post;
+
+class Comment;
+
+interface IContentService
 {
-    IDependency<int> IntDependency { get; }
+    IRepository<Post> Posts { get; }
 
-    IDependency<string> StringDependency { get; }
+    IRepository<Comment> Comments { get; }
 }
 
-class Service(
-    IDependency<int> intDependency,
-    IDependency<string> stringDependency)
-    : IService
+class ContentService(
+    IRepository<Post> posts,
+    IRepository<Comment> comments)
+    : IContentService
 {
-    public IDependency<int> IntDependency { get; } = intDependency;
+    public IRepository<Post> Posts { get; } = posts;
 
-    public IDependency<string> StringDependency { get; } = stringDependency;
+    public IRepository<Comment> Comments { get; } = comments;
 }
 ```
 
@@ -88,12 +92,12 @@ partial class Composition
   {
   }
 
-  public IService Root
+  public IContentService ContentService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new Service(new Dependency<int>(), new Dependency<string>());
+      return new ContentService(new Repository<Post>(), new Repository<Comment>());
     }
   }
 }
@@ -110,37 +114,37 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService
-	DependencyᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ
-	DependencyᐸStringᐳ --|> IDependencyᐸStringᐳ
-	Composition ..> Service : IService Root
-	Service *--  DependencyᐸInt32ᐳ : IDependencyᐸInt32ᐳ
-	Service *--  DependencyᐸStringᐳ : IDependencyᐸStringᐳ
+	ContentService --|> IContentService
+	RepositoryᐸPostᐳ --|> IRepositoryᐸPostᐳ
+	RepositoryᐸCommentᐳ --|> IRepositoryᐸCommentᐳ
+	Composition ..> ContentService : IContentService ContentService
+	ContentService *--  RepositoryᐸPostᐳ : IRepositoryᐸPostᐳ
+	ContentService *--  RepositoryᐸCommentᐳ : IRepositoryᐸCommentᐳ
 	namespace Pure.DI.UsageTests.Attributes.CustomGenericArgumentAttributeScenario {
 		class Composition {
 		<<partial>>
-		+IService Root
+		+IContentService ContentService
 		}
-		class DependencyᐸInt32ᐳ {
+		class ContentService {
 				<<class>>
-			+Dependency()
+			+ContentService(IRepositoryᐸPostᐳ posts, IRepositoryᐸCommentᐳ comments)
 		}
-		class DependencyᐸStringᐳ {
-				<<class>>
-			+Dependency()
-		}
-		class IDependencyᐸInt32ᐳ {
+		class IContentService {
 			<<interface>>
 		}
-		class IDependencyᐸStringᐳ {
+		class IRepositoryᐸCommentᐳ {
 			<<interface>>
 		}
-		class IService {
+		class IRepositoryᐸPostᐳ {
 			<<interface>>
 		}
-		class Service {
+		class RepositoryᐸCommentᐳ {
 				<<class>>
-			+Service(IDependencyᐸInt32ᐳ intDependency, IDependencyᐸStringᐳ stringDependency)
+			+Repository()
+		}
+		class RepositoryᐸPostᐳ {
+				<<class>>
+			+Repository()
 		}
 	}
 ```

@@ -9,34 +9,61 @@ using Pure.DI;
 using System.Collections.Immutable;
 
 DI.Setup(nameof(Composition))
-    .Bind<IDependency>().To<AbcDependency>()
-    .Bind<IDependency>(2).To<XyzDependency>()
-    .Bind<IService>().To<Service>()
+    .Bind<IMessageSender>().To<EmailSender>()
+    .Bind<IMessageSender>("sms").To<SmsSender>()
+    .Bind<INotificationService>().To<NotificationService>()
 
     // Composition root
-    .Root<IService>("Root");
+    .Root<INotificationService>("NotificationService");
 
 var composition = new Composition();
-var service = composition.Root;
-service.Dependencies.Length.ShouldBe(2);
-service.Dependencies[0].ShouldBeOfType<AbcDependency>();
-service.Dependencies[1].ShouldBeOfType<XyzDependency>();
+var notificationService = composition.NotificationService;
+notificationService.Senders.Length.ShouldBe(2);
+notificationService.Senders[0].ShouldBeOfType<EmailSender>();
+notificationService.Senders[1].ShouldBeOfType<SmsSender>();
 
-interface IDependency;
+notificationService.Notify("Hello World");
 
-class AbcDependency : IDependency;
-
-class XyzDependency : IDependency;
-
-interface IService
+interface IMessageSender
 {
-    ImmutableArray<IDependency> Dependencies { get; }
+    void Send(string message);
 }
 
-class Service(IEnumerable<IDependency> dependencies) : IService
+class EmailSender : IMessageSender
 {
-    public ImmutableArray<IDependency> Dependencies { get; }
-        = [..dependencies];
+    public void Send(string message)
+    {
+        // Sending email...
+    }
+}
+
+class SmsSender : IMessageSender
+{
+    public void Send(string message)
+    {
+        // Sending SMS...
+    }
+}
+
+interface INotificationService
+{
+    ImmutableArray<IMessageSender> Senders { get; }
+
+    void Notify(string message);
+}
+
+class NotificationService(IEnumerable<IMessageSender> senders) : INotificationService
+{
+    public ImmutableArray<IMessageSender> Senders { get; }
+        = [..senders];
+
+    public void Notify(string message)
+    {
+        foreach (var sender in Senders)
+        {
+            sender.Send(message);
+        }
+    }
 }
 ```
 
@@ -81,19 +108,19 @@ partial class Composition
   {
   }
 
-  public IService Root
+  public INotificationService NotificationService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      IEnumerable<IDependency> EnumerationOf_transientIEnumerable1()
+      IEnumerable<IMessageSender> EnumerationOf_transientIEnumerable1()
       {
-        yield return new AbcDependency();
-        yield return new XyzDependency();
+        yield return new EmailSender();
+        yield return new SmsSender();
       }
 
-      return new Service(EnumerationOf_transientIEnumerable1());
+      return new NotificationService(EnumerationOf_transientIEnumerable1());
     }
   }
 }
@@ -110,39 +137,39 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	AbcDependency --|> IDependency
-	XyzDependency --|> IDependency : 2 
-	Service --|> IService
-	Composition ..> Service : IService Root
-	Service o-- "PerBlock" IEnumerableᐸIDependencyᐳ : IEnumerableᐸIDependencyᐳ
-	IEnumerableᐸIDependencyᐳ *--  AbcDependency : IDependency
-	IEnumerableᐸIDependencyᐳ *--  XyzDependency : 2  IDependency
+	EmailSender --|> IMessageSender
+	SmsSender --|> IMessageSender : "sms" 
+	NotificationService --|> INotificationService
+	Composition ..> NotificationService : INotificationService NotificationService
+	NotificationService o-- "PerBlock" IEnumerableᐸIMessageSenderᐳ : IEnumerableᐸIMessageSenderᐳ
+	IEnumerableᐸIMessageSenderᐳ *--  EmailSender : IMessageSender
+	IEnumerableᐸIMessageSenderᐳ *--  SmsSender : "sms"  IMessageSender
 	namespace Pure.DI.UsageTests.BCL.EnumerableScenario {
-		class AbcDependency {
-				<<class>>
-			+AbcDependency()
-		}
 		class Composition {
 		<<partial>>
-		+IService Root
+		+INotificationService NotificationService
 		}
-		class IDependency {
+		class EmailSender {
+				<<class>>
+			+EmailSender()
+		}
+		class IMessageSender {
 			<<interface>>
 		}
-		class IService {
+		class INotificationService {
 			<<interface>>
 		}
-		class Service {
+		class NotificationService {
 				<<class>>
-			+Service(IEnumerableᐸIDependencyᐳ dependencies)
+			+NotificationService(IEnumerableᐸIMessageSenderᐳ senders)
 		}
-		class XyzDependency {
+		class SmsSender {
 				<<class>>
-			+XyzDependency()
+			+SmsSender()
 		}
 	}
 	namespace System.Collections.Generic {
-		class IEnumerableᐸIDependencyᐳ {
+		class IEnumerableᐸIMessageSenderᐳ {
 				<<interface>>
 		}
 	}

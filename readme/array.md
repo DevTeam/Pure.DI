@@ -8,33 +8,36 @@ using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Bind<IDependency>().To<AbcDependency>()
-    .Bind<IDependency>(2).To<XyzDependency>()
-    .Bind<IService>().To<Service>()
+    .Bind<ISensor>().To<TemperatureSensor>()
+    .Bind<ISensor>("External").To<WindSensor>()
+    .Bind<ISensorService>().To<SensorService>()
 
     // Composition root
-    .Root<IService>("Root");
+    .Root<ISensorService>("Sensor");
 
 var composition = new Composition();
-var service = composition.Root;
-service.Dependencies.Length.ShouldBe(2);
-service.Dependencies[0].ShouldBeOfType<AbcDependency>();
-service.Dependencies[1].ShouldBeOfType<XyzDependency>();
+var sensor = composition.Sensor;
 
-interface IDependency;
+// Checks that all bindings for the ISensor interface are injected,
+// regardless of whether they are tagged or not.
+sensor.Sensors.Length.ShouldBe(2);
+sensor.Sensors[0].ShouldBeOfType<TemperatureSensor>();
+sensor.Sensors[1].ShouldBeOfType<WindSensor>();
 
-class AbcDependency : IDependency;
+interface ISensor;
 
-class XyzDependency : IDependency;
+class TemperatureSensor : ISensor;
 
-interface IService
+class WindSensor : ISensor;
+
+interface ISensorService
 {
-    IDependency[] Dependencies { get; }
+    ISensor[] Sensors { get; }
 }
 
-class Service(IDependency[] dependencies) : IService
+class SensorService(ISensor[] sensors) : ISensorService
 {
-    public IDependency[] Dependencies { get; } = dependencies;
+    public ISensor[] Sensors { get; } = sensors;
 }
 ```
 
@@ -105,12 +108,12 @@ partial class Composition
   {
   }
 
-  public IService Root
+  public ISensorService Sensor
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new Service(new IDependency[2] { new AbcDependency(), new XyzDependency() });
+      return new SensorService(new ISensor[2] { new TemperatureSensor(), new WindSensor() });
     }
   }
 }
@@ -127,38 +130,38 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	AbcDependency --|> IDependency
-	XyzDependency --|> IDependency : 2 
-	Service --|> IService
-	Composition ..> Service : IService Root
-	Service *--  ArrayᐸIDependencyᐳ : ArrayᐸIDependencyᐳ
-	ArrayᐸIDependencyᐳ *--  AbcDependency : IDependency
-	ArrayᐸIDependencyᐳ *--  XyzDependency : 2  IDependency
-	class ArrayᐸIDependencyᐳ {
+	TemperatureSensor --|> ISensor
+	WindSensor --|> ISensor : "External" 
+	SensorService --|> ISensorService
+	Composition ..> SensorService : ISensorService Sensor
+	SensorService *--  ArrayᐸISensorᐳ : ArrayᐸISensorᐳ
+	ArrayᐸISensorᐳ *--  TemperatureSensor : ISensor
+	ArrayᐸISensorᐳ *--  WindSensor : "External"  ISensor
+	class ArrayᐸISensorᐳ {
 			<<array>>
 	}
 	namespace Pure.DI.UsageTests.BCL.ArrayScenario {
-		class AbcDependency {
-				<<class>>
-			+AbcDependency()
-		}
 		class Composition {
 		<<partial>>
-		+IService Root
+		+ISensorService Sensor
 		}
-		class IDependency {
+		class ISensor {
 			<<interface>>
 		}
-		class IService {
+		class ISensorService {
 			<<interface>>
 		}
-		class Service {
+		class SensorService {
 				<<class>>
-			+Service(ArrayᐸIDependencyᐳ dependencies)
+			+SensorService(ArrayᐸISensorᐳ sensors)
 		}
-		class XyzDependency {
+		class TemperatureSensor {
 				<<class>>
-			+XyzDependency()
+			+TemperatureSensor()
+		}
+		class WindSensor {
+				<<class>>
+			+WindSensor()
 		}
 	}
 ```

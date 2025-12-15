@@ -5,34 +5,40 @@
 using Shouldly;
 using Pure.DI;
 using System.Collections.Immutable;
+using Shouldly;
 
 DI.Setup(nameof(Composition))
-    .Bind<IDependency>("my tag").To<Dependency>()
-    .Bind<IService>().To<Service>()
+    .Bind<IDbConnection>("postgres").To<NpgsqlConnection>()
+    .Bind<IConnectionPool>().To<ConnectionPool>()
 
     // Composition root
-    .Root<IService>("Root");
+    .Root<IConnectionPool>("ConnectionPool");
 
 var composition = new Composition();
-var service = composition.Root;
-service.Dependencies.Length.ShouldBe(3);
+var pool = composition.ConnectionPool;
 
-interface IDependency;
+// Check that the pool has created 3 connections
+pool.Connections.Length.ShouldBe(3);
+pool.Connections[0].ShouldBeOfType<NpgsqlConnection>();
 
-class Dependency : IDependency;
+interface IDbConnection;
 
-interface IService
+// Specific implementation for PostgreSQL
+class NpgsqlConnection : IDbConnection;
+
+interface IConnectionPool
 {
-    ImmutableArray<IDependency> Dependencies { get; }
+    ImmutableArray<IDbConnection> Connections { get; }
 }
 
-class Service([Tag("my tag")] Func<IDependency> dependencyFactory): IService
+class ConnectionPool([Tag("postgres")] Func<IDbConnection> connectionFactory) : IConnectionPool
 {
-    public ImmutableArray<IDependency> Dependencies { get; } =
+    public ImmutableArray<IDbConnection> Connections { get; } =
     [
-        dependencyFactory(),
-        dependencyFactory(),
-        dependencyFactory()
+        // Use the factory to create distinct connection instances
+        connectionFactory(),
+        connectionFactory(),
+        connectionFactory()
     ];
 }
 ```
@@ -78,19 +84,19 @@ partial class Composition
   {
   }
 
-  public IService Root
+  public IConnectionPool ConnectionPool
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<IDependency> transientFunc1 = new Func<IDependency>(
+      Func<IDbConnection> transientFunc1 = new Func<IDbConnection>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        IDependency localValue21 = new Dependency();
+        IDbConnection localValue21 = new NpgsqlConnection();
         return localValue21;
       });
-      return new Service(transientFunc1);
+      return new ConnectionPool(transientFunc1);
     }
   }
 }
@@ -107,33 +113,33 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency : "my tag" 
-	Service --|> IService
-	Composition ..> Service : IService Root
-	Service o-- "PerBlock" FuncᐸIDependencyᐳ : "my tag"  FuncᐸIDependencyᐳ
-	FuncᐸIDependencyᐳ *--  Dependency : "my tag"  IDependency
+	NpgsqlConnection --|> IDbConnection : "postgres" 
+	ConnectionPool --|> IConnectionPool
+	Composition ..> ConnectionPool : IConnectionPool ConnectionPool
+	ConnectionPool o-- "PerBlock" FuncᐸIDbConnectionᐳ : "postgres"  FuncᐸIDbConnectionᐳ
+	FuncᐸIDbConnectionᐳ *--  NpgsqlConnection : "postgres"  IDbConnection
 	namespace Pure.DI.UsageTests.BCL.FuncWithTagScenario {
 		class Composition {
 		<<partial>>
-		+IService Root
+		+IConnectionPool ConnectionPool
 		}
-		class Dependency {
+		class ConnectionPool {
 				<<class>>
-			+Dependency()
+			+ConnectionPool(FuncᐸIDbConnectionᐳ connectionFactory)
 		}
-		class IDependency {
+		class IConnectionPool {
 			<<interface>>
 		}
-		class IService {
+		class IDbConnection {
 			<<interface>>
 		}
-		class Service {
+		class NpgsqlConnection {
 				<<class>>
-			+Service(FuncᐸIDependencyᐳ dependencyFactory)
+			+NpgsqlConnection()
 		}
 	}
 	namespace System {
-		class FuncᐸIDependencyᐳ {
+		class FuncᐸIDbConnectionᐳ {
 				<<delegate>>
 		}
 	}

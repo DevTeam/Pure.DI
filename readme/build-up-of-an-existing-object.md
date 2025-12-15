@@ -10,30 +10,31 @@ using Pure.DI;
 DI.Setup(nameof(Composition))
     .RootArg<string>("name")
     .Bind().To(_ => Guid.NewGuid())
-    .Bind().To(ctx =>
-    {
-        var dependency = new Dependency();
-        ctx.BuildUp(dependency);
-        return dependency;
+    .Bind().To(ctx => {
+        var person = new Person();
+        // Injects dependencies into an existing object
+        ctx.BuildUp(person);
+        return person;
     })
-    .Bind().To<Service>()
+    .Bind().To<Greeter>()
 
     // Composition root
-    .Root<IService>("GetMyService");
+    .Root<IGreeter>("GetGreeter");
 
 var composition = new Composition();
-var service = composition.GetMyService("Some name");
-service.Dependency.Name.ShouldBe("Some name");
-service.Dependency.Id.ShouldNotBe(Guid.Empty);
+var greeter = composition.GetGreeter("Nik");
 
-interface IDependency
+greeter.Person.Name.ShouldBe("Nik");
+greeter.Person.Id.ShouldNotBe(Guid.Empty);
+
+interface IPerson
 {
     string Name { get; }
 
     Guid Id { get; }
 }
 
-class Dependency : IDependency
+class Person : IPerson
 {
     // The Dependency attribute specifies to perform an injection and its order
     [Dependency] public string Name { get; set; } = "";
@@ -44,12 +45,12 @@ class Dependency : IDependency
     [Dependency] public void SetId(Guid id) => Id = id;
 }
 
-interface IService
+interface IGreeter
 {
-    IDependency Dependency { get; }
+    IPerson Person { get; }
 }
 
-record Service(IDependency Dependency) : IService;
+record Greeter(IPerson Person) : IGreeter;
 ```
 
 <details>
@@ -110,16 +111,17 @@ partial class Composition
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public IService GetMyService(string name)
+  public IGreeter GetGreeter(string name)
   {
     if (name is null) throw new ArgumentNullException(nameof(name));
-    Dependency transientDependency1;
-    var localDependency2 = new Dependency();
+    Person transientPerson1;
+    var localPerson = new Person();
+    // Injects dependencies into an existing object
     Guid transientGuid3 = Guid.NewGuid();
-    localDependency2.Name = name;
-    localDependency2.SetId(transientGuid3);
-    transientDependency1 = localDependency2;
-    return new Service(transientDependency1);
+    localPerson.Name = name;
+    localPerson.SetId(transientGuid3);
+    transientPerson1 = localPerson;
+    return new Greeter(transientPerson1);
   }
 }
 ```
@@ -135,39 +137,39 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Service --|> IService
-	Service --|> IEquatableᐸServiceᐳ
-	Composition ..> Service : IService GetMyService(string name)
-	Dependency o-- String : Argument "name"
-	Dependency *--  Guid : Guid
-	Service *--  Dependency : IDependency
+	Person --|> IPerson
+	Greeter --|> IGreeter
+	Greeter --|> IEquatableᐸGreeterᐳ
+	Composition ..> Greeter : IGreeter GetGreeter(string name)
+	Person o-- String : Argument "name"
+	Person *--  Guid : Guid
+	Greeter *--  Person : IPerson
 	namespace Pure.DI.UsageTests.Basics.BuildUpScenario {
 		class Composition {
 		<<partial>>
-		+IService GetMyService(string name)
+		+IGreeter GetGreeter(string name)
 		}
-		class Dependency {
+		class Greeter {
+				<<record>>
+			+Greeter(IPerson Person)
+		}
+		class IGreeter {
+			<<interface>>
+		}
+		class IPerson {
+			<<interface>>
+		}
+		class Person {
 				<<class>>
 			+String Name
 			+SetId(Guid id) : Void
-		}
-		class IDependency {
-			<<interface>>
-		}
-		class IService {
-			<<interface>>
-		}
-		class Service {
-				<<record>>
-			+Service(IDependency Dependency)
 		}
 	}
 	namespace System {
 		class Guid {
 				<<struct>>
 		}
-		class IEquatableᐸServiceᐳ {
+		class IEquatableᐸGreeterᐳ {
 			<<interface>>
 		}
 		class String {

@@ -9,40 +9,44 @@ using Pure.DI;
 using System.Collections.Generic;
 
 DI.Setup(nameof(Composition))
-    .Bind().To<Dependency>()
-    .Bind().To<Service>()
+    .Bind().To<Sensor>()
+    .Bind().To<SmartHome>()
 
     // Composition root
-    .Root<IService>("Root");
+    .Root<ISmartHome>("SmartHome");
 
 var composition = new Composition();
-var service = composition.Root;
-var dependencies = service.Dependencies;
-dependencies.Count.ShouldBe(2);
-dependencies[0].Id.ShouldBe(33);
-dependencies[1].Id.ShouldBe(99);
+var smartHome = composition.SmartHome;
+var sensors = smartHome.Sensors;
 
-interface IDependency
+sensors.Count.ShouldBe(2);
+sensors[0].Id.ShouldBe(101);
+sensors[1].Id.ShouldBe(102);
+
+interface ISensor
 {
     int Id { get; }
 }
 
-class Dependency(int id) : IDependency
+class Sensor(int id) : ISensor
 {
     public int Id { get; } = id;
 }
 
-interface IService
+interface ISmartHome
 {
-    IReadOnlyList<IDependency> Dependencies { get; }
+    IReadOnlyList<ISensor> Sensors { get; }
 }
 
-class Service(Func<int, IDependency> dependencyFactoryWithArgs): IService
+class SmartHome(Func<int, ISensor> sensorFactory) : ISmartHome
 {
-    public IReadOnlyList<IDependency> Dependencies { get; } =
+    public IReadOnlyList<ISensor> Sensors { get; } =
     [
-        dependencyFactoryWithArgs(33),
-        dependencyFactoryWithArgs(99)
+        // Use the injected factory to create a sensor with ID 101 (e.g., Kitchen Temperature)
+        sensorFactory(101),
+
+        // Create another sensor with ID 102 (e.g., Living Room Humidity)
+        sensorFactory(102)
     ];
 }
 ```
@@ -73,11 +77,6 @@ dotnet run
 ```
 
 </details>
-
-Key components:
-- `Dependency` class accepts an int id constructor argument, stored in its `Id` property.
-- `Service` receives `Func<int, IDependency>` delegate, enabling creation of dependencies with dynamic values.
-- `Service` creates two dependencies using the factory – one with ID `33`, another with ID `99`.
 
 Delayed dependency instantiation:
 - Injection of dependencies requiring runtime parameters
@@ -110,23 +109,23 @@ partial class Composition
     _lock = parentScope._lock;
   }
 
-  public IService Root
+  public ISmartHome SmartHome
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<int, IDependency> transientFunc1;
-      Func<int, IDependency> localFactory1 = new Func<int, IDependency>((int localArg15) =>
+      Func<int, ISensor> transientFunc1;
+      Func<int, ISensor> localFactory1 = new Func<int, ISensor>((int localArg1) =>
       {
         lock (_lock)
         {
-          int overriddenInt32 = localArg15;
-          IDependency localValue18 = new Dependency(overriddenInt32);
+          int overriddenInt32 = localArg1;
+          ISensor localValue18 = new Sensor(overriddenInt32);
           return localValue18;
         }
       });
       transientFunc1 = localFactory1;
-      return new Service(transientFunc1);
+      return new SmartHome(transientFunc1);
     }
   }
 }
@@ -143,34 +142,34 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Service --|> IService
-	Composition ..> Service : IService Root
-	Dependency *--  Int32 : Int32
-	Service o-- "PerBlock" FuncᐸInt32ˏIDependencyᐳ : FuncᐸInt32ˏIDependencyᐳ
-	FuncᐸInt32ˏIDependencyᐳ *--  Dependency : IDependency
+	Sensor --|> ISensor
+	SmartHome --|> ISmartHome
+	Composition ..> SmartHome : ISmartHome SmartHome
+	Sensor *--  Int32 : Int32
+	SmartHome o-- "PerBlock" FuncᐸInt32ˏISensorᐳ : FuncᐸInt32ˏISensorᐳ
+	FuncᐸInt32ˏISensorᐳ *--  Sensor : ISensor
 	namespace Pure.DI.UsageTests.Basics.InjectionOnDemandWithArgumentsScenario {
 		class Composition {
 		<<partial>>
-		+IService Root
+		+ISmartHome SmartHome
 		}
-		class Dependency {
-				<<class>>
-			+Dependency(Int32 id)
-		}
-		class IDependency {
+		class ISensor {
 			<<interface>>
 		}
-		class IService {
+		class ISmartHome {
 			<<interface>>
 		}
-		class Service {
+		class Sensor {
 				<<class>>
-			+Service(FuncᐸInt32ˏIDependencyᐳ dependencyFactoryWithArgs)
+			+Sensor(Int32 id)
+		}
+		class SmartHome {
+				<<class>>
+			+SmartHome(FuncᐸInt32ˏISensorᐳ sensorFactory)
 		}
 	}
 	namespace System {
-		class FuncᐸInt32ˏIDependencyᐳ {
+		class FuncᐸInt32ˏISensorᐳ {
 				<<delegate>>
 		}
 		class Int32 {

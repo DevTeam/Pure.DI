@@ -12,39 +12,39 @@ using static Pure.DI.CompositionKind;
 
 // This setup does not generate code, but can be used as a dependency
 // and requires the use of the "DependsOn" call to add it as a dependency
-DI.Setup("BaseComposition", Internal)
-    .Bind<IDependency>().To<Dependency>();
+DI.Setup("Infrastructure", Internal)
+    .Bind<IDatabase>().To<SqlDatabase>();
 
 // This setup generates code and can also be used as a dependency
 DI.Setup(nameof(Composition))
-    // Uses "BaseComposition" setup
-    .DependsOn("BaseComposition")
-    .Bind<IService>().To<Service>()
-    .Root<IService>("Root");
+    // Uses "Infrastructure" setup
+    .DependsOn("Infrastructure")
+    .Bind<IUserService>().To<UserService>()
+    .Root<IUserService>("UserService");
 
 // As in the previous case, this setup generates code and can also be used as a dependency
 DI.Setup(nameof(OtherComposition))
     // Uses "Composition" setup
     .DependsOn(nameof(Composition))
-    .Root<Program>("Program");
+    .Root<Ui>("Ui");
 
 var composition = new Composition();
-var service = composition.Root;
+var userService = composition.UserService;
 
 var otherComposition = new OtherComposition();
-service = otherComposition.Program.Service;
+userService = otherComposition.Ui.UserService;
 
-interface IDependency;
+interface IDatabase;
 
-class Dependency : IDependency;
+class SqlDatabase : IDatabase;
 
-interface IService;
+interface IUserService;
 
-class Service(IDependency dependency) : IService;
+class UserService(IDatabase database) : IUserService;
 
-partial class Program(IService service)
+partial class Ui(IUserService userService)
 {
-    public IService Service { get; } = service;
+    public IUserService UserService { get; } = userService;
 }
 ```
 
@@ -87,12 +87,12 @@ partial class Composition
   {
   }
 
-  public IService Root
+  public IUserService UserService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new Service(new Dependency());
+      return new UserService(new SqlDatabase());
     }
   }
 }
@@ -111,21 +111,21 @@ partial class OtherComposition
   {
   }
 
-  public IService Root
+  public IUserService UserService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new Service(new Dependency());
+      return new UserService(new SqlDatabase());
     }
   }
 
-  public Program Program
+  public Ui Ui
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new Program(new Service(new Dependency()));
+      return new Ui(new UserService(new SqlDatabase()));
     }
   }
 }
@@ -142,35 +142,35 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Service --|> IService
-	Dependency --|> IDependency
-	OtherComposition ..> Program : Program Program
-	OtherComposition ..> Service : IService Root
-	Service *--  Dependency : IDependency
-	Program *--  Service : IService
+	UserService --|> IUserService
+	SqlDatabase --|> IDatabase
+	OtherComposition ..> Ui : Ui Ui
+	OtherComposition ..> UserService : IUserService UserService
+	UserService *--  SqlDatabase : IDatabase
+	Ui *--  UserService : IUserService
 	namespace Pure.DI.UsageTests.Advanced.DependentCompositionsScenario {
-		class Dependency {
-				<<class>>
-			+Dependency()
-		}
-		class IDependency {
+		class IDatabase {
 			<<interface>>
 		}
-		class IService {
+		class IUserService {
 			<<interface>>
 		}
 		class OtherComposition {
 		<<partial>>
-		+Program Program
-		+IService Root
+		+Ui Ui
+		+IUserService UserService
 		}
-		class Program {
+		class SqlDatabase {
 				<<class>>
-			+Program(IService service)
+			+SqlDatabase()
 		}
-		class Service {
+		class Ui {
 				<<class>>
-			+Service(IDependency dependency)
+			+Ui(IUserService userService)
+		}
+		class UserService {
+				<<class>>
+			+UserService(IDatabase database)
 		}
 	}
 ```

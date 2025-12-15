@@ -7,40 +7,49 @@ This example demonstrates the recommended approach of using abstractions instead
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    // Binding abstractions to their implementations
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>()
+    // Binding abstractions to their implementations:
+    // The interface IGpsSensor is bound to the implementation GpsSensor
+    .Bind<IGpsSensor>().To<GpsSensor>()
+    // The interface INavigationSystem is bound to the implementation NavigationSystem
+    .Bind<INavigationSystem>().To<NavigationSystem>()
 
     // Specifies to create a composition root
-    // of type "Program" with the name "Root"
-    .Root<Program>("Root");
+    // of type "VehicleComputer" with the name "VehicleComputer"
+    .Root<VehicleComputer>("VehicleComputer");
 
 var composition = new Composition();
 
-// var root = new Program(new Service(new Dependency()));
-var root = composition.Root;
+// Usage:
+// var vehicleComputer = new VehicleComputer(new NavigationSystem(new GpsSensor()));
+var vehicleComputer = composition.VehicleComputer;
 
-root.Run();
+vehicleComputer.StartTrip();
 
-interface IDependency;
+// The sensor abstraction
+interface IGpsSensor;
 
-class Dependency : IDependency;
+// The sensor implementation
+class GpsSensor : IGpsSensor;
 
-interface IService
+// The service abstraction
+interface INavigationSystem
 {
-    void DoSomething();
+    void Navigate();
 }
 
-class Service(IDependency dependency) : IService
+// The service implementation
+class NavigationSystem(IGpsSensor sensor) : INavigationSystem
 {
-    public void DoSomething()
+    public void Navigate()
     {
+        // Navigation logic using the sensor...
     }
 }
 
-partial class Program(IService service)
+// The consumer of the abstraction
+partial class VehicleComputer(INavigationSystem navigationSystem)
 {
-    public void Run() => service.DoSomething();
+    public void StartTrip() => navigationSystem.Navigate();
 }
 ```
 
@@ -88,12 +97,12 @@ partial class Composition
   {
   }
 
-  public Program Root
+  public VehicleComputer VehicleComputer
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new Program(new Service(new Dependency()));
+      return new VehicleComputer(new NavigationSystem(new GpsSensor()));
     }
   }
 }
@@ -110,33 +119,33 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Service --|> IService
-	Composition ..> Program : Program Root
-	Service *--  Dependency : IDependency
-	Program *--  Service : IService
+	GpsSensor --|> IGpsSensor
+	NavigationSystem --|> INavigationSystem
+	Composition ..> VehicleComputer : VehicleComputer VehicleComputer
+	NavigationSystem *--  GpsSensor : IGpsSensor
+	VehicleComputer *--  NavigationSystem : INavigationSystem
 	namespace Pure.DI.UsageTests.Basics.InjectionsOfAbstractionsScenario {
 		class Composition {
 		<<partial>>
-		+Program Root
+		+VehicleComputer VehicleComputer
 		}
-		class Dependency {
+		class GpsSensor {
 				<<class>>
-			+Dependency()
+			+GpsSensor()
 		}
-		class IDependency {
+		class IGpsSensor {
 			<<interface>>
 		}
-		class IService {
+		class INavigationSystem {
 			<<interface>>
 		}
-		class Program {
+		class NavigationSystem {
 				<<class>>
-			+Program(IService service)
+			+NavigationSystem(IGpsSensor sensor)
 		}
-		class Service {
+		class VehicleComputer {
 				<<class>>
-			+Service(IDependency dependency)
+			+VehicleComputer(INavigationSystem navigationSystem)
 		}
 	}
 ```

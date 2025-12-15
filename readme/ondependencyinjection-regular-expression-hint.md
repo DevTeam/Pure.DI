@@ -11,33 +11,41 @@ using static Pure.DI.Hint;
 
 // OnDependencyInjection = On
 DI.Setup(nameof(Composition))
-    .Hint(OnDependencyInjectionContractTypeNameRegularExpression, "(.*IDependency|int)$")
-    .RootArg<int>("id")
-    .Bind().To<Dependency>()
-    .Bind().To<Service>()
-    .Root<IService>("GetRoot");
+    // Filters types by regular expression to control which types trigger the OnDependencyInjection method.
+    // In this case, we want to intercept the injection of any "Gateway" (like IPaymentGateway)
+    // and integer configuration values.
+    .Hint(OnDependencyInjectionContractTypeNameRegularExpression, "(.*Gateway|int)$")
+    .RootArg<int>("maxAttempts")
+    .Bind().To<PayPalGateway>()
+    .Bind().To<PaymentService>()
+    .Root<IPaymentService>("GetPaymentService");
 
 var log = new List<string>();
 var composition = new Composition(log);
-var service = composition.GetRoot(33);
+
+// Resolving the root service triggers the injection chain.
+// 1. int maxAttempts is injected into PayPalGateway.
+// 2. PayPalGateway is injected into PaymentService.
+// PaymentService itself is not logged because "IPaymentService" does not match the regex.
+var service = composition.GetPaymentService(3);
 
 log.ShouldBe([
     "Int32 injected",
-    "Dependency injected"
+    "PayPalGateway injected"
 ]);
 
-interface IDependency;
+interface IPaymentGateway;
 
-record Dependency(int Id) : IDependency;
+record PayPalGateway(int MaxAttempts) : IPaymentGateway;
 
-interface IService
+interface IPaymentService
 {
-    IDependency Dependency { get; }
+    IPaymentGateway Gateway { get; }
 }
 
-class Service(IDependency dependency) : IService
+class PaymentService(IPaymentGateway gateway) : IPaymentService
 {
-    public IDependency Dependency { get; } = dependency;
+    public IPaymentGateway Gateway { get; } = gateway;
 }
 
 partial class Composition
@@ -52,6 +60,7 @@ partial class Composition
         object? tag,
         Lifetime lifetime)
     {
+        // Logs the actual runtime type of the injected instance
         _log.Add($"{value?.GetType().Name} injected");
         return value;
     }
@@ -115,9 +124,9 @@ partial class Composition
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public IService GetRoot(int id)
+  public IPaymentService GetPaymentService(int maxAttempts)
   {
-    return new Service(OnDependencyInjection<IDependency>(new Dependency(OnDependencyInjection<int>(id, null, Lifetime.Transient)), null, Lifetime.Transient));
+    return new PaymentService(OnDependencyInjection<IPaymentGateway>(new PayPalGateway(OnDependencyInjection<int>(maxAttempts, null, Lifetime.Transient)), null, Lifetime.Transient));
   }
 
 
@@ -136,34 +145,34 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Dependency --|> IEquatableᐸDependencyᐳ
-	Service --|> IService
-	Composition ..> Service : IService GetRoot(int id)
-	Dependency o-- Int32 : Argument "id"
-	Service *--  Dependency : IDependency
+	PayPalGateway --|> IPaymentGateway
+	PayPalGateway --|> IEquatableᐸPayPalGatewayᐳ
+	PaymentService --|> IPaymentService
+	Composition ..> PaymentService : IPaymentService GetPaymentService(int maxAttempts)
+	PayPalGateway o-- Int32 : Argument "maxAttempts"
+	PaymentService *--  PayPalGateway : IPaymentGateway
 	namespace Pure.DI.UsageTests.Hints.OnDependencyInjectionRegularExpressionHintScenario {
 		class Composition {
 		<<partial>>
-		+IService GetRoot(int id)
+		+IPaymentService GetPaymentService(int maxAttempts)
 		}
-		class Dependency {
-				<<record>>
-			+Dependency(Int32 Id)
-		}
-		class IDependency {
+		class IPaymentGateway {
 			<<interface>>
 		}
-		class IService {
+		class IPaymentService {
 			<<interface>>
 		}
-		class Service {
+		class PaymentService {
 				<<class>>
-			+Service(IDependency dependency)
+			+PaymentService(IPaymentGateway gateway)
+		}
+		class PayPalGateway {
+				<<record>>
+			+PayPalGateway(Int32 MaxAttempts)
 		}
 	}
 	namespace System {
-		class IEquatableᐸDependencyᐳ {
+		class IEquatableᐸPayPalGatewayᐳ {
 			<<interface>>
 		}
 		class Int32 {

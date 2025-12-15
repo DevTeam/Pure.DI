@@ -3972,15 +3972,6 @@ Atomically generated smart tag with value "Override".
 </blockquote></details>
 
 
-<details><summary>Field Overrider</summary><blockquote>
-
-Atomically generated smart tag with value "Overrider".
-            It's used for:
-            
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Overrider) -- _GraphOverrider_ as _PerBlock_
-</blockquote></details>
-
-
 <details><summary>Field SpecialBinding</summary><blockquote>
 
 Atomically generated smart tag with value "SpecialBinding".
@@ -3996,6 +3987,15 @@ Atomically generated smart tag with value "CompositionClass".
             It's used for:
             
             class _Generator__CodeBuilder_ <-- _IBuilder{TData, T}_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field Overrider</summary><blockquote>
+
+Atomically generated smart tag with value "Overrider".
+            It's used for:
+            
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Overrider) -- _GraphOverrider_ as _PerBlock_
 </blockquote></details>
 
 
@@ -5463,7 +5463,6 @@ Creates an attribute instance.
 - [PerResolve](readme/perresolve.md)
 - [PerBlock](readme/perblock.md)
 - [Scope](readme/scope.md)
-- [Auto scoped](readme/auto-scoped.md)
 - [Default lifetime](readme/default-lifetime.md)
 - [Default lifetime for a type](readme/default-lifetime-for-a-type.md)
 - [Default lifetime for a type and a tag](readme/default-lifetime-for-a-type-and-a-tag.md)
@@ -5503,8 +5502,8 @@ Creates an attribute instance.
 - [Generic builder](readme/generic-builder.md)
 - [Generic builders](readme/generic-builders.md)
 - [Generic roots](readme/generic-roots.md)
-- [Generic injections as required](readme/generic-injections-as-required.md)
-- [Generic injections as required with arguments](readme/generic-injections-as-required-with-arguments.md)
+- [Generic injections on demand](readme/generic-injections-on-demand.md)
+- [Generic injections on demand with arguments](readme/generic-injections-on-demand-with-arguments.md)
 ### Attributes
 - [Constructor ordinal attribute](readme/constructor-ordinal-attribute.md)
 - [Dependency attribute](readme/dependency-attribute.md)
@@ -6392,9 +6391,9 @@ Contextual AI needs to understand the situation it’s in. This means knowing de
 
 | AI Context file | Size | Tokens |
 | --------------- | ---- | ------ |
-| [AI_CONTEXT_SMALL.md](AI_CONTEXT_SMALL.md) | 28KB | 7K |
-| [AI_CONTEXT_MEDIUM.md](AI_CONTEXT_MEDIUM.md) | 123KB | 31K |
-| [AI_CONTEXT_LARGE.md](AI_CONTEXT_LARGE.md) | 411KB | 105K |
+| [AI_CONTEXT_SMALL.md](AI_CONTEXT_SMALL.md) | 35KB | 9K |
+| [AI_CONTEXT_MEDIUM.md](AI_CONTEXT_MEDIUM.md) | 144KB | 37K |
+| [AI_CONTEXT_LARGE.md](AI_CONTEXT_LARGE.md) | 449KB | 115K |
 ## How to contribute to Pure.DI
 
 Thank you for your interest in contributing to the Pure.DI project! First of all, if you are going to make a big change or feature, please open a problem first. That way, we can coordinate and understand if the change you're going to work on fits with current priorities and if we can commit to reviewing and merging it within a reasonable timeframe. We don't want you to waste a lot of your valuable time on something that may not align with what we want for Pure.DI.

@@ -13,22 +13,26 @@ using Microsoft.Extensions.DependencyInjection;
 using Pure.DI;
 
 var serviceProvider = new Composition();
-var service = serviceProvider.GetRequiredService<IService>();
-var dependency = serviceProvider.GetRequiredService<IDependency>();
-service.Dependency.ShouldBe(dependency);
+var orderService = serviceProvider.GetRequiredService<IOrderService>();
+var logger = serviceProvider.GetRequiredService<ILogger>();
 
-interface IDependency;
+// Check that the singleton instance is correctly injected
+orderService.Logger.ShouldBe(logger);
 
-class Dependency : IDependency;
+// Represents a dependency, e.g., a logging service
+interface ILogger;
 
-interface IService
+class ConsoleLogger : ILogger;
+
+// Represents a service that depends on ILogger
+interface IOrderService
 {
-    IDependency Dependency { get; }
+    ILogger Logger { get; }
 }
 
-class Service(IDependency dependency) : IService
+class OrderService(ILogger logger) : IOrderService
 {
-    public IDependency Dependency { get; } = dependency;
+    public ILogger Logger { get; } = logger;
 }
 
 partial class Composition : IServiceProvider
@@ -39,10 +43,12 @@ partial class Composition : IServiceProvider
             // "object Resolve(Type type)" method in "GetService",
             // which implements the "IServiceProvider" interface
             .Hint(Hint.ObjectResolveMethodName, "GetService")
-            .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
-            .Bind<IService>().To<Service>()
-            .Root<IDependency>()
-            .Root<IService>();
+            .Bind<ILogger>().As(Lifetime.Singleton).To<ConsoleLogger>()
+            .Bind<IOrderService>().To<OrderService>()
+
+            // Roots are required for resolution via IServiceProvider
+            .Root<ILogger>()
+            .Root<IOrderService>();
 }
 ```
 
@@ -91,7 +97,7 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private Dependency? _singletonDependency51;
+  private ConsoleLogger? _singletonConsoleLogger51;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -110,41 +116,41 @@ partial class Composition
     _lock = parentScope._lock;
   }
 
-  private IDependency Root2
+  private ILogger Root2
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      EnsureDependencyExists();
-      return _root._singletonDependency51;
+      EnsureConsoleLoggerExists();
+      return _root._singletonConsoleLogger51;
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      void EnsureDependencyExists()
+      void EnsureConsoleLoggerExists()
       {
-        if (_root._singletonDependency51 is null)
+        if (_root._singletonConsoleLogger51 is null)
           lock (_lock)
-            if (_root._singletonDependency51 is null)
+            if (_root._singletonConsoleLogger51 is null)
             {
-              _root._singletonDependency51 = new Dependency();
+              _root._singletonConsoleLogger51 = new ConsoleLogger();
             }
       }
     }
   }
 
-  private IService Root1
+  private IOrderService Root1
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      EnsureDependencyExists();
-      return new Service(_root._singletonDependency51);
+      EnsureConsoleLoggerExists();
+      return new OrderService(_root._singletonConsoleLogger51);
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      void EnsureDependencyExists()
+      void EnsureConsoleLoggerExists()
       {
-        if (_root._singletonDependency51 is null)
+        if (_root._singletonConsoleLogger51 is null)
           lock (_lock)
-            if (_root._singletonDependency51 is null)
+            if (_root._singletonConsoleLogger51 is null)
             {
-              _root._singletonDependency51 = new Dependency();
+              _root._singletonConsoleLogger51 = new ConsoleLogger();
             }
       }
     }
@@ -216,16 +222,16 @@ partial class Composition
   static Composition()
   {
     var valResolver_0000 = new Resolver_0000();
-    Resolver<IDependency>.Value = valResolver_0000;
+    Resolver<ILogger>.Value = valResolver_0000;
     var valResolver_0001 = new Resolver_0001();
-    Resolver<IService>.Value = valResolver_0001;
+    Resolver<IOrderService>.Value = valResolver_0001;
     _buckets = Buckets<IResolver<Composition, object>>.Create(
       4,
       out _bucketSize,
       new Pair<IResolver<Composition, object>>[2]
       {
-         new Pair<IResolver<Composition, object>>(typeof(IDependency), valResolver_0000)
-        ,new Pair<IResolver<Composition, object>>(typeof(IService), valResolver_0001)
+         new Pair<IResolver<Composition, object>>(typeof(ILogger), valResolver_0000)
+        ,new Pair<IResolver<Composition, object>>(typeof(IOrderService), valResolver_0001)
       });
   }
 
@@ -247,14 +253,14 @@ partial class Composition
     }
   }
 
-  private sealed class Resolver_0000: Resolver<IDependency>
+  private sealed class Resolver_0000: Resolver<ILogger>
   {
-    public override IDependency Resolve(Composition composition)
+    public override ILogger Resolve(Composition composition)
     {
       return composition.Root2;
     }
 
-    public override IDependency ResolveByTag(Composition composition, object tag)
+    public override ILogger ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
@@ -267,14 +273,14 @@ partial class Composition
     }
   }
 
-  private sealed class Resolver_0001: Resolver<IService>
+  private sealed class Resolver_0001: Resolver<IOrderService>
   {
-    public override IService Resolve(Composition composition)
+    public override IOrderService Resolve(Composition composition)
     {
       return composition.Root1;
     }
 
-    public override IService ResolveByTag(Composition composition, object tag)
+    public override IOrderService ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
@@ -300,34 +306,34 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
-	Service --|> IService
-	Composition ..> Service : IService _
-	Composition ..> Dependency : IDependency _
-	Service o-- "Singleton" Dependency : IDependency
+	ConsoleLogger --|> ILogger
+	OrderService --|> IOrderService
+	Composition ..> OrderService : IOrderService _
+	Composition ..> ConsoleLogger : ILogger _
+	OrderService o-- "Singleton" ConsoleLogger : ILogger
 	namespace Pure.DI.UsageTests.BCL.ServiceProviderScenario {
 		class Composition {
 		<<partial>>
-		-IDependency _
-		-IService _
+		-ILogger _
+		-IOrderService _
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
 		+ object GetService(Type type)
 		+ object Resolve(Type type, object? tag)
 		}
-		class Dependency {
+		class ConsoleLogger {
 				<<class>>
-			+Dependency()
+			+ConsoleLogger()
 		}
-		class IDependency {
+		class ILogger {
 			<<interface>>
 		}
-		class IService {
+		class IOrderService {
 			<<interface>>
 		}
-		class Service {
+		class OrderService {
 				<<class>>
-			+Service(IDependency dependency)
+			+OrderService(ILogger logger)
 		}
 	}
 ```

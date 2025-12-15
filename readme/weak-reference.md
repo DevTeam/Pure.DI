@@ -5,25 +5,28 @@
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Bind<IDependency>().To<Dependency>()
+    .Bind<ILargeCache>().To<LargeCache>()
     .Bind<IService>().To<Service>()
 
     // Composition root
-    .Root<IService>("Root");
+    .Root<IService>("MyService");
 
 var composition = new Composition();
-var service = composition.Root;
+var service = composition.MyService;
 
-interface IDependency;
+// Represents a large memory object (e.g., a cache of images or large datasets)
+interface ILargeCache;
 
-class Dependency : IDependency;
+class LargeCache : ILargeCache;
 
 interface IService;
 
-class Service(WeakReference<IDependency> dependency) : IService
+class Service(WeakReference<ILargeCache> cache) : IService
 {
-    public IDependency? Dependency =>
-        dependency.TryGetTarget(out var value)
+    public ILargeCache? Cache =>
+        // Tries to retrieve the target object from the WeakReference.
+        // If the object has been collected by the GC, it returns null.
+        cache.TryGetTarget(out var value)
             ? value
             : null;
 }
@@ -68,12 +71,12 @@ partial class Composition
   {
   }
 
-  public IService Root
+  public IService MyService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new Service(new WeakReference<IDependency>(new Dependency()));
+      return new Service(new WeakReference<ILargeCache>(new LargeCache()));
     }
   }
 }
@@ -90,35 +93,35 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Dependency --|> IDependency
+	LargeCache --|> ILargeCache
 	Service --|> IService
-	Composition ..> Service : IService Root
-	Service *--  WeakReferenceᐸIDependencyᐳ : WeakReferenceᐸIDependencyᐳ
-	WeakReferenceᐸIDependencyᐳ *--  Dependency : IDependency
+	Composition ..> Service : IService MyService
+	Service *--  WeakReferenceᐸILargeCacheᐳ : WeakReferenceᐸILargeCacheᐳ
+	WeakReferenceᐸILargeCacheᐳ *--  LargeCache : ILargeCache
 	namespace Pure.DI.UsageTests.BCL.WeakReferenceScenario {
 		class Composition {
 		<<partial>>
-		+IService Root
+		+IService MyService
 		}
-		class Dependency {
-				<<class>>
-			+Dependency()
-		}
-		class IDependency {
+		class ILargeCache {
 			<<interface>>
 		}
 		class IService {
 			<<interface>>
 		}
+		class LargeCache {
+				<<class>>
+			+LargeCache()
+		}
 		class Service {
 				<<class>>
-			+Service(WeakReferenceᐸIDependencyᐳ dependency)
+			+Service(WeakReferenceᐸILargeCacheᐳ cache)
 		}
 	}
 	namespace System {
-		class WeakReferenceᐸIDependencyᐳ {
+		class WeakReferenceᐸILargeCacheᐳ {
 				<<class>>
-			+WeakReference(IDependency target)
+			+WeakReference(ILargeCache target)
 		}
 	}
 ```
