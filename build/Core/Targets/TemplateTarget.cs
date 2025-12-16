@@ -28,42 +28,57 @@ class TemplateTarget(
             Path.Combine(templatesPath, "Pure.DI.Template.ConsoleApp", jsonConfigPath)
         };
 
-        foreach (var jsonFile in jsonConfigs)
+        await UpdateJsonFileWithVersion(jsonConfigs, "$(version)", packageVersionStr, cancellationToken);
+
+        try
+        {
+            var props = new[]
+            {
+                ("configuration", settings.Configuration),
+                ("version", packageVersionStr)
+            };
+
+            var projectDirectory = Path.Combine("src", ProjectName);
+            var packagesDirectory = env.GetPath(PathType.PackagesDirectory);
+            await new DotNetPack()
+                .WithProject(Path.Combine(projectDirectory, $"{ProjectName}.csproj"))
+                .WithProps(props)
+                .WithOutput(packagesDirectory)
+                .BuildAsync(cancellationToken: cancellationToken).EnsureSuccess();
+
+            var targetPackage = Path.Combine(packagesDirectory, $"{ProjectName}.{packageVersion}.nupkg");
+            artifactsWriter.PublishArtifact($"{targetPackage} => .");
+
+            if (string.IsNullOrWhiteSpace(settings.NuGetKey))
+            {
+                Warning($"The NuGet key was not specified, the package {targetPackage} will not be pushed.");
+                return new Package(targetPackage, false, packageVersion);
+            }
+
+            await new DotNetNuGetPush()
+                .WithPackage(targetPackage)
+                .WithSource("https://api.nuget.org/v3/index.json")
+                .WithApiKey(settings.NuGetKey)
+                .BuildAsync(cancellationToken: cancellationToken).EnsureSuccess();
+
+            return new Package(targetPackage, true, packageVersion);
+        }
+        finally
+        {
+            await UpdateJsonFileWithVersion(jsonConfigs, packageVersionStr, "$(version)", cancellationToken);
+        }
+    }
+
+    private static async Task UpdateJsonFileWithVersion(
+        IEnumerable<string> jsonFiles,
+        string targetStr,
+        string packageVersionStr, CancellationToken cancellationToken)
+    {
+        foreach (var jsonFile in jsonFiles)
         {
             var content = await File.ReadAllTextAsync(jsonFile, cancellationToken);
-            content = content.Replace("$(version)", packageVersionStr);
+            content = content.Replace(targetStr, packageVersionStr);
             await File.WriteAllTextAsync(jsonFile, content, cancellationToken);
         }
-
-        var props = new[]
-        {
-            ("configuration", settings.Configuration),
-            ("version", packageVersionStr)
-        };
-
-        var projectDirectory = Path.Combine("src", ProjectName);
-        var packagesDirectory = env.GetPath(PathType.PackagesDirectory);
-        await new DotNetPack()
-            .WithProject(Path.Combine(projectDirectory, $"{ProjectName}.csproj"))
-            .WithProps(props)
-            .WithOutput(packagesDirectory)
-            .BuildAsync(cancellationToken: cancellationToken).EnsureSuccess();
-
-        var targetPackage = Path.Combine(packagesDirectory, $"{ProjectName}.{packageVersion}.nupkg");
-        artifactsWriter.PublishArtifact($"{targetPackage} => .");
-
-        if (string.IsNullOrWhiteSpace(settings.NuGetKey))
-        {
-            Warning($"The NuGet key was not specified, the package {targetPackage} will not be pushed.");
-            return new Package(targetPackage, false, packageVersion);
-        }
-
-        await new DotNetNuGetPush()
-            .WithPackage(targetPackage)
-            .WithSource("https://api.nuget.org/v3/index.json")
-            .WithApiKey(settings.NuGetKey)
-            .BuildAsync(cancellationToken: cancellationToken).EnsureSuccess();
-
-        return new Package(targetPackage, true, packageVersion);
     }
 }

@@ -16,7 +16,7 @@ class InstallTemplateTarget(
         var package = await templateTarget.RunAsync(cancellationToken);
         await new DotNetNewUninstall()
             .WithPackage(TemplateTarget.ProjectName)
-            .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
+            .RunAsync(cancellationToken: cancellationToken);
 
         await new DotNetNewInstall()
             .WithPackage($"{TemplateTarget.ProjectName}::{package.Version}")

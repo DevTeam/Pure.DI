@@ -1,3 +1,4 @@
+// See https://github.com/DevTeam/Pure.DI for more information
 var composition = new $(CompositionName)();
 return composition.Root.Run(args);
 

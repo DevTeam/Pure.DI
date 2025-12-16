@@ -7,7 +7,7 @@
     "Pure.DI",
     "CSharpCodeGenerator"
   ],
-  "precedence": "3000",
+  "precedence": 3000,
   "tags": {
     "language": "C#",
     "type": "project"
@@ -24,7 +24,7 @@
       "datatype": "string",
       "description": "The name of the composition class.",
       "defaultValue": "Composition",
-      "FileRename": "_CompositionName_",
+      "fileRename": "_CompositionName_",
       "replaces": "$(CompositionName)"
     },
     "framework": {
