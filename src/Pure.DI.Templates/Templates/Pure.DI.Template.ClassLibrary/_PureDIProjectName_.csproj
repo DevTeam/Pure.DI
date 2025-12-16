@@ -17,6 +17,7 @@
             <Pack>true</Pack>
             <PackagePath>contentFiles/cs/any/_PureDIProjectName_</PackagePath>
         </Compile>
+        <Content Include=".junie/guidelines.md" />
     </ItemGroup>
 
 </Project>

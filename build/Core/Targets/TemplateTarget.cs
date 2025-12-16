@@ -8,7 +8,8 @@ class TemplateTarget(
     Commands commands,
     Versions versions,
     Env env,
-    ITeamCityArtifactsWriter artifactsWriter)
+    ITeamCityArtifactsWriter artifactsWriter,
+    [Tag(typeof(AIContextTarget))] ITarget<AIContext> aiContextTarget)
     : IInitializable, ITarget<Package>
 {
     public const string ProjectName = "Pure.DI.Templates";
@@ -21,12 +22,35 @@ class TemplateTarget(
         var packageVersion = versions.GetNext(new NuGetRestoreSettings("Pure.DI"), Settings.VersionRange, 0);
         var packageVersionStr = packageVersion.ToString();
         var templatesPath = Path.Combine("src", ProjectName, "Templates");
-        var jsonConfigPath = Path.Combine(".template.config", "template.json");
-        var jsonConfigs = new[]
+
+        string[] templateProjects = [
+            Path.Combine(templatesPath, "Pure.DI.Template.ClassLibrary"),
+            Path.Combine(templatesPath, "Pure.DI.Template.ConsoleApp")
+        ];
+
+        // Update .junie/guidelines.md
+        var aiContext = await aiContextTarget.RunAsync(cancellationToken);
+        if (aiContext.Files.MaxBy(i => i.SizeKB) is {} aiCotext)
         {
-            Path.Combine(templatesPath, "Pure.DI.Template.ClassLibrary", jsonConfigPath),
-            Path.Combine(templatesPath, "Pure.DI.Template.ConsoleApp", jsonConfigPath)
-        };
+            foreach (var templateProjectPath in templateProjects)
+            {
+                var juniePath = Path.Combine(templateProjectPath, ".junie");
+                var guidelines = Path.Combine(juniePath, "guidelines.md");
+                if (!Directory.Exists(juniePath))
+                {
+                    Directory.CreateDirectory(juniePath);
+                }
+
+                File.Copy(aiCotext.FileName, guidelines, true);
+            }
+        }
+        else
+        {
+            Warning("The AI guidelines was not updated in templates.");
+        }
+
+        var jsonConfigPath = Path.Combine(".template.config", "template.json");
+        var jsonConfigs = templateProjects.Select(templateProjectPath => Path.Combine(templateProjectPath, jsonConfigPath)).ToList();
 
         await UpdateJsonFileWithVersion(jsonConfigs, "$(version)", packageVersionStr, cancellationToken);
 

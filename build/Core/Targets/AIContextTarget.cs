@@ -138,7 +138,7 @@ class AIContextTarget(
 
         var sizeBytes = new FileInfo(fileName).Length;
         var sizeKTokens = sizeBytes / AITokenSizeBytes / 1000;
-        if (sizeKTokens >= (long)size)
+        if (sizeKTokens > (long)size)
         {
             Error($"{size} {Path.GetFileName(fileName)} has {sizeKTokens}K/{(long)size}K tokens.");
         }
