@@ -108,7 +108,7 @@ class ReadmeTarget(
         await writer.WriteLineAsync();
         await writer.WriteLineAsync("## AI Context");
         await writer.WriteLineAsync();
-        await writer.WriteLineAsync("Contextual AI needs to understand the situation it’s in. This means knowing details like API, usage scenarios, etc. This helps the AI give more relevant and personalized responses. So Markdown docs below can be useful if you or your team rely on an AI assistant to write code using Pure.DI:");
+        await writer.WriteLineAsync("AI needs to understand the situation it’s in (context). This means knowing details like API, usage scenarios, etc. This helps the AI give more relevant and personalized responses. So Markdown docs below can be useful if you or your team rely on an AI assistant to write code using Pure.DI:");
         await writer.WriteLineAsync();
         await writer.WriteLineAsync("| AI Context file | Size | Tokens |");
         await writer.WriteLineAsync("| --------------- | ---- | ------ |");
@@ -118,6 +118,9 @@ class ReadmeTarget(
             var fileName = Path.GetFileName(aiContextFile.FileName);
             await writer.WriteLineAsync($"| [{fileName}]({fileName}) | {aiContextFile.SizeKB}KB | {aiContextFile.SizeKTokens}K |");
         }
+
+        await writer.WriteLineAsync();
+        await writer.WriteLineAsync("For use with JetBrains Rider and Junie, please refer to [these instructions](https://www.jetbrains.com/help/junie/customize-guidelines.html). For example, you can copy any `AI_CONTEXT_size.md` file into your project (where Pure.DI is used) as a `.junie/guidelines.md` file.");
     }
 
     private async Task AddContributingAsync(StreamWriter writer)
