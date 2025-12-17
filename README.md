@@ -3954,6 +3954,42 @@ Atomically generated smart tag with value "VarName".
 </blockquote></details>
 
 
+<details><summary>Field Overrider</summary><blockquote>
+
+Atomically generated smart tag with value "Overrider".
+            It's used for:
+            
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Overrider) -- _GraphOverrider_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field Cleaner</summary><blockquote>
+
+Atomically generated smart tag with value "Cleaner".
+            It's used for:
+            
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field UniqueTag</summary><blockquote>
+
+Atomically generated smart tag with value "UniqueTag".
+            It's used for:
+            
+            class _Generator__ApiInvocationProcessor_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve__BindingBuilder_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
+<details><summary>Field Override</summary><blockquote>
+
+Atomically generated smart tag with value "Override".
+            It's used for:
+            
+            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
 <details><summary>Field SpecialBinding</summary><blockquote>
 
 Atomically generated smart tag with value "SpecialBinding".
@@ -3969,42 +4005,6 @@ Atomically generated smart tag with value "CompositionClass".
             It's used for:
             
             class _Generator__CodeBuilder_ <-- _IBuilder{TData, T}_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
-</blockquote></details>
-
-
-<details><summary>Field UniqueTag</summary><blockquote>
-
-Atomically generated smart tag with value "UniqueTag".
-            It's used for:
-            
-            class _Generator__ApiInvocationProcessor_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve__BindingBuilder_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve_
-</blockquote></details>
-
-
-<details><summary>Field Overrider</summary><blockquote>
-
-Atomically generated smart tag with value "Overrider".
-            It's used for:
-            
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Overrider) -- _GraphOverrider_ as _PerBlock_
-</blockquote></details>
-
-
-<details><summary>Field Override</summary><blockquote>
-
-Atomically generated smart tag with value "Override".
-            It's used for:
-            
-            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
-</blockquote></details>
-
-
-<details><summary>Field Cleaner</summary><blockquote>
-
-Atomically generated smart tag with value "Cleaner".
-            It's used for:
-            
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
 </blockquote></details>
 
 
@@ -6389,13 +6389,13 @@ alt="DotNext Pure.DI" width="640" border="10"/></a>
 
 AI needs to understand the situation it’s in (context). This means knowing details like API, usage scenarios, etc. This helps the AI give more relevant and personalized responses. So Markdown docs below can be useful if you or your team rely on an AI assistant to write code using Pure.DI:
 
-| AI Context file | Size | Tokens |
+| AI context file | Size | Tokens |
 | --------------- | ---- | ------ |
-| [AI_CONTEXT_SMALL.md](AI_CONTEXT_SMALL.md) | 33KB | 8K |
-| [AI_CONTEXT_MEDIUM.md](AI_CONTEXT_MEDIUM.md) | 119KB | 30K |
-| [AI_CONTEXT_LARGE.md](AI_CONTEXT_LARGE.md) | 449KB | 115K |
+| [AGENTS_SMALL.md](AGENTS_SMALL.md) | 33KB | 8K |
+| [AGENTS_MEDIUM.md](AGENTS_MEDIUM.md) | 119KB | 30K |
+| [AGENTS.md](AGENTS.md) | 449KB | 115K |
 
-For use with JetBrains Rider and Junie, please refer to [these instructions](https://www.jetbrains.com/help/junie/customize-guidelines.html). For example, you can copy any `AI_CONTEXT_size.md` file into your project (where Pure.DI is used) as a `.junie/guidelines.md` file.
+For different IDEs, you can use the _AGENTS.md_ file as is by simply copying it to the root directory. For use with _JetBrains Rider_ and _Junie_, please refer to [these instructions](https://www.jetbrains.com/help/junie/customize-guidelines.html). For example, you can copy any _AGENTS.md_ file into your project (using _Pure.DI_) as _.junie/guidelines.md._
 ## How to contribute to Pure.DI
 
 Thank you for your interest in contributing to the Pure.DI project! First of all, if you are going to make a big change or feature, please open a problem first. That way, we can coordinate and understand if the change you're going to work on fits with current priorities and if we can commit to reviewing and merging it within a reasonable timeframe. We don't want you to waste a lot of your valuable time on something that may not align with what we want for Pure.DI.

@@ -21,7 +21,7 @@ class AIContextTarget(
 {
     private const long AITokenSizeBytes = 4;
     private const string ReadmeDir = "readme";
-    private const string AiContextReadmeFileTemplate = "AI_CONTEXT_{0}.md";
+    private const string AiContextReadmeFileName = "AGENTS";
 
     public Task InitializeAsync(CancellationToken cancellationToken) => commands.RegisterAsync(
         this, "Generate AI context", "ai");
@@ -31,7 +31,7 @@ class AIContextTarget(
         var examples = await createExamplesTarget.RunAsync(cancellationToken);
         var aiContextFileTasks = Enum.GetValues<AIContextSize>()
             .Select(size => CreateAiContextFile(
-                string.Format(AiContextReadmeFileTemplate, size.ToString().ToUpperInvariant()),
+                $"{AiContextReadmeFileName}{(size == AIContextSize.Large ? "" : "_" + size.ToString().ToUpperInvariant())}.md",
                 examples,
                 size,
                 cancellationToken));

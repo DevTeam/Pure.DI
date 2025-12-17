@@ -59,7 +59,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "readme", "readme", "{24E44980-FC88-4DA1-A2D2-C45296AF7D63}"
 	ProjectSection(SolutionItems) = preProject
 		readme\ReadmeTemplate.md = readme\ReadmeTemplate.md
-		README.md = README.md
 		readme\FooterTemplate.md = readme\FooterTemplate.md
 		docs\README.md = docs\README.md
 		readme\ConsolePageTemplate.md = readme\ConsolePageTemplate.md

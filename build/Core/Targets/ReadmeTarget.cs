@@ -110,7 +110,7 @@ class ReadmeTarget(
         await writer.WriteLineAsync();
         await writer.WriteLineAsync("AI needs to understand the situation it’s in (context). This means knowing details like API, usage scenarios, etc. This helps the AI give more relevant and personalized responses. So Markdown docs below can be useful if you or your team rely on an AI assistant to write code using Pure.DI:");
         await writer.WriteLineAsync();
-        await writer.WriteLineAsync("| AI Context file | Size | Tokens |");
+        await writer.WriteLineAsync("| AI context file | Size | Tokens |");
         await writer.WriteLineAsync("| --------------- | ---- | ------ |");
         var aiContext = await aiContextTarget.RunAsync(cancellationToken);
         foreach (var aiContextFile in aiContext.Files)
@@ -120,7 +120,7 @@ class ReadmeTarget(
         }
 
         await writer.WriteLineAsync();
-        await writer.WriteLineAsync("For use with JetBrains Rider and Junie, please refer to [these instructions](https://www.jetbrains.com/help/junie/customize-guidelines.html). For example, you can copy any `AI_CONTEXT_size.md` file into your project (where Pure.DI is used) as a `.junie/guidelines.md` file.");
+        await writer.WriteLineAsync("For different IDEs, you can use the _AGENTS.md_ file as is by simply copying it to the root directory. For use with _JetBrains Rider_ and _Junie_, please refer to [these instructions](https://www.jetbrains.com/help/junie/customize-guidelines.html). For example, you can copy any _AGENTS.md_ file into your project (using _Pure.DI_) as _.junie/guidelines.md._");
     }
 
     private async Task AddContributingAsync(StreamWriter writer)
