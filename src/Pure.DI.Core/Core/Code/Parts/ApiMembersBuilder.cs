@@ -203,7 +203,7 @@ sealed class ApiMembersBuilder(
                 code.AppendLine($"var index = (int)({Names.BucketSizeFieldName} * (((uint){Names.SystemNamespace}Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type)) % {divisor}));");
                 code.AppendLine("#endif");
                 code.AppendLine($"ref var pair = ref {Names.BucketsFieldName}[index];");
-                code.AppendLine($"return pair.Key == type ? pair.Value.{resolveMethodName}({resolveMethodArgs}) : Resolve{Names.Salt}(type, {(byTag ? "tag, " : "")}index);");
+                code.AppendLine($"return {Names.ObjectTypeName}.ReferenceEquals(pair.Key, type) ? pair.Value.{resolveMethodName}({resolveMethodArgs}) : Resolve{Names.Salt}(type, {(byTag ? "tag, " : "")}index);");
             }
             else
             {
@@ -228,7 +228,7 @@ sealed class ApiMembersBuilder(
             using (code.CreateBlock())
             {
                 code.AppendLine($"ref var pair = ref {Names.BucketsFieldName}[index];");
-                code.AppendLine("if (pair.Key == type)");
+                code.AppendLine($"if ({Names.ObjectTypeName}.ReferenceEquals(pair.Key, type))");
                 using (code.CreateBlock())
                 {
                     code.AppendLine($"return pair.Value.{resolveMethodName}({resolveMethodArgs});");
