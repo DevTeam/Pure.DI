@@ -13857,21 +13857,21 @@ DI.Setup("Composition")
 </blockquote></details>
 
 
-<details><summary>Field UsingDeclarations</summary><blockquote>
-
-Atomically generated smart tag with value "UsingDeclarations".
-            It's used for:
-            
-            class _Generator__CompositionClassBuilder_ <-- _IBuilder{TData, T}_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
-</blockquote></details>
-
-
 <details><summary>Field VarName</summary><blockquote>
 
 Atomically generated smart tag with value "VarName".
             It's used for:
             
             class _Generator__VarsMap_ <-- _IIdGenerator_(VarName) -- _IdGenerator_ as _Transient_
+</blockquote></details>
+
+
+<details><summary>Field UsingDeclarations</summary><blockquote>
+
+Atomically generated smart tag with value "UsingDeclarations".
+            It's used for:
+            
+            class _Generator__CompositionClassBuilder_ <-- _IBuilder{TData, T}_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
 </blockquote></details>
 
 
@@ -13884,15 +13884,6 @@ Atomically generated smart tag with value "Overrider".
 </blockquote></details>
 
 
-<details><summary>Field Cleaner</summary><blockquote>
-
-Atomically generated smart tag with value "Cleaner".
-            It's used for:
-            
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
-</blockquote></details>
-
-
 <details><summary>Field UniqueTag</summary><blockquote>
 
 Atomically generated smart tag with value "UniqueTag".
@@ -13902,21 +13893,30 @@ Atomically generated smart tag with value "UniqueTag".
 </blockquote></details>
 
 
-<details><summary>Field SpecialBinding</summary><blockquote>
-
-Atomically generated smart tag with value "SpecialBinding".
-            It's used for:
-            
-            class _Generator__BindingBuilder_ <-- _IIdGenerator_(SpecialBinding) -- _IdGenerator_ as _PerResolve_
-</blockquote></details>
-
-
 <details><summary>Field CompositionClass</summary><blockquote>
 
 Atomically generated smart tag with value "CompositionClass".
             It's used for:
             
             class _Generator__CodeBuilder_ <-- _IBuilder{TData, T}_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field Cleaner</summary><blockquote>
+
+Atomically generated smart tag with value "Cleaner".
+            It's used for:
+            
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field SpecialBinding</summary><blockquote>
+
+Atomically generated smart tag with value "SpecialBinding".
+            It's used for:
+            
+            class _Generator__BindingBuilder_ <-- _IIdGenerator_(SpecialBinding) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 

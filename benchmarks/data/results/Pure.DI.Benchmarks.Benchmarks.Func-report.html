@@ -2,7 +2,7 @@
 <html lang='en'>
 <head>
 <meta charset='utf-8' />
-<title>Pure.DI.Benchmarks.Benchmarks.Func-20251113-131704</title>
+<title>Pure.DI.Benchmarks.Benchmarks.Func-20251219-124058</title>
 
 <style type="text/css">
 	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
@@ -13,11 +13,11 @@
 </head>
 <body>
 <pre><code>
-BenchmarkDotNet v0.15.0, Windows 10 (10.0.19045.6332/22H2/2022Update)
+BenchmarkDotNet v0.15.8, Windows 10 (10.0.19045.6332/22H2/2022Update)
 AMD Ryzen 9 5900X 4.20GHz, 1 CPU, 24 logical and 12 physical cores
 .NET SDK 10.0.100
-  [Host]     : .NET 10.0.0 (10.0.25.52411), X64 RyuJIT AVX2
-  DefaultJob : .NET 10.0.0 (10.0.25.52411), X64 RyuJIT AVX2
+  [Host]     : .NET 10.0.0 (10.0.0, 10.0.25.52411), X64 RyuJIT x86-64-v3
+  DefaultJob : .NET 10.0.0 (10.0.0, 10.0.25.52411), X64 RyuJIT x86-64-v3
 </code></pre>
 <pre><code></code></pre>
 
@@ -28,14 +28,14 @@ AMD Ryzen 9 5900X 4.20GHz, 1 CPU, 24 logical and 12 physical cores
 </tr><tr><td>&#39;Microsoft DI&#39;</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>NA</td><td>?</td>
 </tr><tr><td>&#39;Castle Windsor&#39;</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>NA</td><td>?</td>
 </tr><tr><td>Ninject</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>NA</td><td>?</td>
-</tr><tr><td>&#39;Hand Coded&#39;</td><td>2.866 ns</td><td>0.1032 ns</td><td>0.1147 ns</td><td>1.00</td><td>0.05</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>3.055 ns</td><td>0.0520 ns</td><td>0.0434 ns</td><td>1.07</td><td>0.04</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>3.084 ns</td><td>0.1107 ns</td><td>0.0925 ns</td><td>1.08</td><td>0.05</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>4.861 ns</td><td>0.1193 ns</td><td>0.1057 ns</td><td>1.70</td><td>0.07</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>DryIoc</td><td>22.473 ns</td><td>0.3504 ns</td><td>0.3277 ns</td><td>7.85</td><td>0.32</td><td>0.0072</td><td>-</td><td>120 B</td><td>5.00</td>
-</tr><tr><td>LightInject</td><td>98.988 ns</td><td>0.8830 ns</td><td>0.7373 ns</td><td>34.60</td><td>1.34</td><td>0.0148</td><td>-</td><td>248 B</td><td>10.33</td>
-</tr><tr><td>Unity</td><td>1,390.493 ns</td><td>14.1015 ns</td><td>12.5006 ns</td><td>485.97</td><td>19.00</td><td>0.1507</td><td>-</td><td>2552 B</td><td>106.33</td>
-</tr><tr><td>Autofac</td><td>4,863.464 ns</td><td>55.1501 ns</td><td>48.8891 ns</td><td>1,699.75</td><td>66.85</td><td>0.7782</td><td>0.0076</td><td>13128 B</td><td>547.00</td>
+</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>3.025 ns</td><td>0.0603 ns</td><td>0.0535 ns</td><td>0.97</td><td>0.02</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>&#39;Hand Coded&#39;</td><td>3.122 ns</td><td>0.0366 ns</td><td>0.0343 ns</td><td>1.00</td><td>0.02</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>3.142 ns</td><td>0.1144 ns</td><td>0.1123 ns</td><td>1.01</td><td>0.04</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>7.027 ns</td><td>0.1910 ns</td><td>0.4350 ns</td><td>2.25</td><td>0.14</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>DryIoc</td><td>22.635 ns</td><td>0.3097 ns</td><td>0.2897 ns</td><td>7.25</td><td>0.12</td><td>0.0072</td><td>-</td><td>120 B</td><td>5.00</td>
+</tr><tr><td>LightInject</td><td>99.318 ns</td><td>1.6077 ns</td><td>1.4252 ns</td><td>31.82</td><td>0.56</td><td>0.0148</td><td>-</td><td>248 B</td><td>10.33</td>
+</tr><tr><td>Unity</td><td>1,396.159 ns</td><td>27.6920 ns</td><td>25.9031 ns</td><td>447.28</td><td>9.33</td><td>0.1507</td><td>-</td><td>2552 B</td><td>106.33</td>
+</tr><tr><td>Autofac</td><td>4,912.463 ns</td><td>47.3750 ns</td><td>39.5602 ns</td><td>1,573.79</td><td>20.68</td><td>0.7782</td><td>0.0076</td><td>13128 B</td><td>547.00</td>
 </tr></tbody></table>
 </body>
 </html>

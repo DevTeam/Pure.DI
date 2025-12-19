@@ -3936,21 +3936,21 @@ DI.Setup("Composition")
 </blockquote></details>
 
 
-<details><summary>Field UsingDeclarations</summary><blockquote>
-
-Atomically generated smart tag with value "UsingDeclarations".
-            It's used for:
-            
-            class _Generator__CompositionClassBuilder_ <-- _IBuilder{TData, T}_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
-</blockquote></details>
-
-
 <details><summary>Field VarName</summary><blockquote>
 
 Atomically generated smart tag with value "VarName".
             It's used for:
             
             class _Generator__VarsMap_ <-- _IIdGenerator_(VarName) -- _IdGenerator_ as _Transient_
+</blockquote></details>
+
+
+<details><summary>Field UsingDeclarations</summary><blockquote>
+
+Atomically generated smart tag with value "UsingDeclarations".
+            It's used for:
+            
+            class _Generator__CompositionClassBuilder_ <-- _IBuilder{TData, T}_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
 </blockquote></details>
 
 
@@ -3963,15 +3963,6 @@ Atomically generated smart tag with value "Overrider".
 </blockquote></details>
 
 
-<details><summary>Field Cleaner</summary><blockquote>
-
-Atomically generated smart tag with value "Cleaner".
-            It's used for:
-            
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
-</blockquote></details>
-
-
 <details><summary>Field UniqueTag</summary><blockquote>
 
 Atomically generated smart tag with value "UniqueTag".
@@ -3981,21 +3972,30 @@ Atomically generated smart tag with value "UniqueTag".
 </blockquote></details>
 
 
-<details><summary>Field SpecialBinding</summary><blockquote>
-
-Atomically generated smart tag with value "SpecialBinding".
-            It's used for:
-            
-            class _Generator__BindingBuilder_ <-- _IIdGenerator_(SpecialBinding) -- _IdGenerator_ as _PerResolve_
-</blockquote></details>
-
-
 <details><summary>Field CompositionClass</summary><blockquote>
 
 Atomically generated smart tag with value "CompositionClass".
             It's used for:
             
             class _Generator__CodeBuilder_ <-- _IBuilder{TData, T}_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field Cleaner</summary><blockquote>
+
+Atomically generated smart tag with value "Cleaner".
+            It's used for:
+            
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field SpecialBinding</summary><blockquote>
+
+Atomically generated smart tag with value "SpecialBinding".
+            It's used for:
+            
+            class _Generator__BindingBuilder_ <-- _IIdGenerator_(SpecialBinding) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
@@ -6483,7 +6483,7 @@ Thanks!
 
 ## Benchmarks
 
-BenchmarkDotNet v0.15.0, Windows 10 (10.0.19045.6332/22H2/2022Update)
+BenchmarkDotNet v0.15.8, Windows 10 (10.0.19045.6332/22H2/2022Update)
 AMD Ryzen 9 5900X 4.20GHz, 1 CPU, 24 logical and 12 physical cores
 .NET SDK 10.0.100
 
@@ -6492,18 +6492,18 @@ AMD Ryzen 9 5900X 4.20GHz, 1 CPU, 24 logical and 12 physical cores
 
 | Method |                                            Mean | Error | StdDev | Ratio | RatioSD | Gen0 | Gen1 | Allocated | Alloc Ratio |
 |--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
-| Pure.DI composition root | 2.671 ns | 0.0225 ns | 0.0188 ns | 0.98 | 0.01 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| Hand Coded | 2.723 ns | 0.0266 ns | 0.0235 ns | 1.00 | 0.01 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| Pure.DI Resolve<T>() | 2.776 ns | 0.0801 ns | 0.0710 ns | 1.02 | 0.03 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| Pure.DI Resolve(Type) | 6.154 ns | 0.1737 ns | 0.3428 ns | 2.26 | 0.13 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| LightInject | 6.880 ns | 0.0203 ns | 0.0180 ns | 2.53 | 0.02 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| Microsoft DI | 8.603 ns | 0.0174 ns | 0.0136 ns | 3.16 | 0.03 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| Simple Injector | 10.257 ns | 0.0308 ns | 0.0241 ns | 3.77 | 0.03 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| DryIoc | 11.148 ns | 0.0579 ns | 0.0484 ns | 4.09 | 0.04 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| Unity | 3,377.572 ns | 28.4610 ns | 26.6225 ns | 1,240.29 | 13.99 | 0.3090 | 0.0000 | 5176 B | 215.67 |
-| Autofac | 12,655.059 ns | 50.4007 ns | 47.1448 ns | 4,647.11 | 42.06 | 1.8158 | 0.0916 | 30424 B | 1,267.67 |
-| Castle Windsor | 26,703.771 ns | 136.6734 ns | 127.8444 ns | 9,805.98 | 93.24 | 3.0518 | 0.0305 | 51520 B | 2,146.67 |
-| Ninject | 134,273.557 ns | 3,863.1979 ns | 11,084.2398 ns | 49,307.06 | 4,071.01 | 7.0801 | 1.3428 | 119712 B | 4,988.00 |
+| Pure.DI Resolve<T>() | 2.910 ns | 0.1065 ns | 0.0996 ns | 1.00 | 0.04 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| Hand Coded | 2.916 ns | 0.0735 ns | 0.0687 ns | 1.00 | 0.03 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| Pure.DI composition root | 3.107 ns | 0.0600 ns | 0.0561 ns | 1.07 | 0.03 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| Pure.DI Resolve(Type) | 6.366 ns | 0.1763 ns | 0.3179 ns | 2.18 | 0.12 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| LightInject | 7.202 ns | 0.1494 ns | 0.1324 ns | 2.47 | 0.07 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| Microsoft DI | 8.868 ns | 0.2258 ns | 0.2112 ns | 3.04 | 0.10 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| Simple Injector | 10.358 ns | 0.1446 ns | 0.1208 ns | 3.55 | 0.09 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| DryIoc | 11.306 ns | 0.1354 ns | 0.1267 ns | 3.88 | 0.10 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| Unity | 3,392.103 ns | 28.5980 ns | 25.3514 ns | 1,164.06 | 27.75 | 0.3090 | 0.0000 | 5176 B | 215.67 |
+| Autofac | 13,076.143 ns | 56.7879 ns | 50.3410 ns | 4,487.33 | 103.31 | 1.8158 | 0.0916 | 30424 B | 1,267.67 |
+| Castle Windsor | 26,189.705 ns | 275.4301 ns | 257.6375 ns | 8,987.49 | 221.40 | 3.0518 | 0.0000 | 51520 B | 2,146.67 |
+| Ninject | 132,893.609 ns | 3,993.3789 ns | 11,457.7536 ns | 45,604.97 | 4,047.89 | 6.9580 | 1.3428 | 116872 B | 4,869.67 |
 
 [Transient details](readme/TransientDetails.md)
 
@@ -6514,18 +6514,18 @@ AMD Ryzen 9 5900X 4.20GHz, 1 CPU, 24 logical and 12 physical cores
 
 | Method |                                            Mean | Error | StdDev | Ratio | RatioSD | Gen0 | Gen1 | Allocated | Alloc Ratio |
 |--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
-| Pure.DI Resolve<T>() | 3.032 ns | 0.0612 ns | 0.0543 ns | 0.94 | 0.02 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| Pure.DI composition root | 3.046 ns | 0.1022 ns | 0.0906 ns | 0.94 | 0.03 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| Hand Coded | 3.238 ns | 0.0278 ns | 0.0260 ns | 1.00 | 0.01 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| Pure.DI Resolve(Type) | 6.391 ns | 0.1792 ns | 0.4188 ns | 1.97 | 0.13 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| Microsoft DI | 9.289 ns | 0.1147 ns | 0.1073 ns | 2.87 | 0.04 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| DryIoc | 11.405 ns | 0.0624 ns | 0.0487 ns | 3.52 | 0.03 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| Simple Injector | 12.485 ns | 0.2894 ns | 0.3445 ns | 3.86 | 0.11 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| LightInject | 364.238 ns | 6.9542 ns | 6.5050 ns | 112.48 | 2.14 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| Unity | 2,371.937 ns | 16.5860 ns | 15.5145 ns | 732.48 | 7.39 | 0.1869 | 0.0000 | 3184 B | 132.67 |
-| Autofac | 8,264.212 ns | 118.6169 ns | 99.0505 ns | 2,552.09 | 35.63 | 1.3123 | 0.0458 | 22048 B | 918.67 |
-| Castle Windsor | 13,758.214 ns | 232.7438 ns | 206.3213 ns | 4,248.70 | 70.00 | 1.3733 | 0.0000 | 23112 B | 963.00 |
-| Ninject | 62,474.870 ns | 1,292.3985 ns | 3,728.8654 ns | 19,292.98 | 1,155.86 | 3.9673 | 0.9766 | 67040 B | 2,793.33 |
+| Hand Coded | 3.094 ns | 0.0191 ns | 0.0170 ns | 1.00 | 0.01 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| Pure.DI composition root | 3.249 ns | 0.0399 ns | 0.0354 ns | 1.05 | 0.01 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| Pure.DI Resolve<T>() | 3.297 ns | 0.1143 ns | 0.1486 ns | 1.07 | 0.05 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| Pure.DI Resolve(Type) | 7.764 ns | 0.2040 ns | 0.3978 ns | 2.51 | 0.13 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| Microsoft DI | 9.433 ns | 0.0607 ns | 0.0474 ns | 3.05 | 0.02 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| DryIoc | 11.085 ns | 0.1281 ns | 0.1199 ns | 3.58 | 0.04 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| Simple Injector | 11.684 ns | 0.1633 ns | 0.1448 ns | 3.78 | 0.05 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| LightInject | 370.381 ns | 0.9639 ns | 0.8545 ns | 119.72 | 0.69 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| Unity | 2,288.160 ns | 33.5301 ns | 31.3641 ns | 739.60 | 10.58 | 0.1869 | 0.0000 | 3184 B | 132.67 |
+| Autofac | 8,512.423 ns | 92.7824 ns | 82.2492 ns | 2,751.47 | 29.60 | 1.3123 | 0.0458 | 22048 B | 918.67 |
+| Castle Windsor | 13,022.901 ns | 157.0231 ns | 146.8795 ns | 4,209.39 | 51.18 | 1.3733 | 0.0000 | 23112 B | 963.00 |
+| Ninject | 63,164.000 ns | 1,228.4213 ns | 3,170.9478 ns | 20,416.50 | 1,024.64 | 3.9063 | 0.9766 | 67040 B | 2,793.33 |
 
 [Singleton details](readme/SingletonDetails.md)
 
@@ -6536,14 +6536,14 @@ AMD Ryzen 9 5900X 4.20GHz, 1 CPU, 24 logical and 12 physical cores
 
 | Method |                                            Mean | Error | StdDev | Ratio | RatioSD | Gen0 | Gen1 | Allocated | Alloc Ratio |
 |--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
-| Hand Coded | 2.866 ns | 0.1032 ns | 0.1147 ns | 1.00 | 0.05 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| Pure.DI Resolve<T>() | 3.055 ns | 0.0520 ns | 0.0434 ns | 1.07 | 0.04 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| Pure.DI composition root | 3.084 ns | 0.1107 ns | 0.0925 ns | 1.08 | 0.05 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| Pure.DI Resolve(Type) | 4.861 ns | 0.1193 ns | 0.1057 ns | 1.70 | 0.07 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| DryIoc | 22.473 ns | 0.3504 ns | 0.3277 ns | 7.85 | 0.32 | 0.0072 | 0.0000 | 120 B | 5.00 |
-| LightInject | 98.988 ns | 0.8830 ns | 0.7373 ns | 34.60 | 1.34 | 0.0148 | 0.0000 | 248 B | 10.33 |
-| Unity | 1,390.493 ns | 14.1015 ns | 12.5006 ns | 485.97 | 19.00 | 0.1507 | 0.0000 | 2552 B | 106.33 |
-| Autofac | 4,863.464 ns | 55.1501 ns | 48.8891 ns | 1,699.75 | 66.85 | 0.7782 | 0.0076 | 13128 B | 547.00 |
+| Pure.DI Resolve<T>() | 3.025 ns | 0.0603 ns | 0.0535 ns | 0.97 | 0.02 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| Hand Coded | 3.122 ns | 0.0366 ns | 0.0343 ns | 1.00 | 0.02 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| Pure.DI composition root | 3.142 ns | 0.1144 ns | 0.1123 ns | 1.01 | 0.04 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| Pure.DI Resolve(Type) | 7.027 ns | 0.1910 ns | 0.4350 ns | 2.25 | 0.14 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| DryIoc | 22.635 ns | 0.3097 ns | 0.2897 ns | 7.25 | 0.12 | 0.0072 | 0.0000 | 120 B | 5.00 |
+| LightInject | 99.318 ns | 1.6077 ns | 1.4252 ns | 31.82 | 0.56 | 0.0148 | 0.0000 | 248 B | 10.33 |
+| Unity | 1,396.159 ns | 27.6920 ns | 25.9031 ns | 447.28 | 9.33 | 0.1507 | 0.0000 | 2552 B | 106.33 |
+| Autofac | 4,912.463 ns | 47.3750 ns | 39.5602 ns | 1,573.79 | 20.68 | 0.7782 | 0.0076 | 13128 B | 547.00 |
 
 [Func details](readme/FuncDetails.md)
 
@@ -6554,15 +6554,15 @@ AMD Ryzen 9 5900X 4.20GHz, 1 CPU, 24 logical and 12 physical cores
 
 | Method |                                            Mean | Error | StdDev | Ratio | RatioSD | Gen0 | Gen1 | Allocated | Alloc Ratio |
 |--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
-| Hand Coded | 8.269 ns | 0.1261 ns | 0.1179 ns | 1.00 | 0.02 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| Pure.DI Resolve<T>() | 8.587 ns | 0.1281 ns | 0.1198 ns | 1.04 | 0.02 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| Pure.DI composition root | 8.698 ns | 0.1473 ns | 0.1378 ns | 1.05 | 0.02 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| Pure.DI Resolve(Type) | 10.261 ns | 0.1868 ns | 0.1656 ns | 1.24 | 0.03 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| Microsoft DI | 20.245 ns | 0.4555 ns | 0.4038 ns | 2.45 | 0.06 | 0.0072 | 0.0000 | 120 B | 5.00 |
-| LightInject | 53.336 ns | 0.7231 ns | 0.6410 ns | 6.45 | 0.12 | 0.0244 | 0.0000 | 408 B | 17.00 |
-| DryIoc | 57.240 ns | 1.1981 ns | 1.9686 ns | 6.92 | 0.25 | 0.0243 | 0.0000 | 408 B | 17.00 |
-| Unity | 1,509.864 ns | 13.7627 ns | 12.8737 ns | 182.62 | 2.93 | 0.1278 | 0.0000 | 2168 B | 90.33 |
-| Autofac | 11,990.057 ns | 59.8834 ns | 46.7530 ns | 1,450.21 | 20.65 | 1.5717 | 0.0610 | 26496 B | 1,104.00 |
+| Pure.DI composition root | 8.294 ns | 0.0461 ns | 0.0431 ns | 0.96 | 0.01 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| Hand Coded | 8.650 ns | 0.0854 ns | 0.0799 ns | 1.00 | 0.01 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| Pure.DI Resolve<T>() | 8.731 ns | 0.1504 ns | 0.1407 ns | 1.01 | 0.02 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| Pure.DI Resolve(Type) | 10.197 ns | 0.0790 ns | 0.0739 ns | 1.18 | 0.01 | 0.0014 | 0.0000 | 24 B | 1.00 |
+| Microsoft DI | 20.587 ns | 0.4628 ns | 0.8105 ns | 2.38 | 0.09 | 0.0072 | 0.0000 | 120 B | 5.00 |
+| LightInject | 54.667 ns | 1.1294 ns | 1.1093 ns | 6.32 | 0.14 | 0.0244 | 0.0000 | 408 B | 17.00 |
+| DryIoc | 59.448 ns | 0.7289 ns | 0.6818 ns | 6.87 | 0.10 | 0.0243 | 0.0000 | 408 B | 17.00 |
+| Unity | 1,493.509 ns | 18.1381 ns | 15.1462 ns | 172.68 | 2.28 | 0.1278 | 0.0000 | 2168 B | 90.33 |
+| Autofac | 12,682.524 ns | 102.3646 ns | 95.7519 ns | 1,466.36 | 16.86 | 1.5717 | 0.0610 | 26496 B | 1,104.00 |
 
 [Enum details](readme/EnumDetails.md)
 
@@ -6573,14 +6573,14 @@ AMD Ryzen 9 5900X 4.20GHz, 1 CPU, 24 logical and 12 physical cores
 
 | Method |                                            Mean | Error | StdDev | Ratio | RatioSD | Gen0 | Gen1 | Allocated | Alloc Ratio |
 |--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
-| Hand Coded | 49.22 ns | 0.915 ns | 0.811 ns | 1.00 | 0.02 | 0.0244 | 0.0000 | 408 B | 1.00 |
-| Pure.DI composition root | 49.45 ns | 0.897 ns | 1.258 ns | 1.00 | 0.03 | 0.0244 | 0.0000 | 408 B | 1.00 |
-| Pure.DI Resolve<T>() | 49.70 ns | 1.031 ns | 1.304 ns | 1.01 | 0.03 | 0.0244 | 0.0000 | 408 B | 1.00 |
-| Pure.DI Resolve(Type) | 51.40 ns | 0.974 ns | 1.627 ns | 1.04 | 0.04 | 0.0244 | 0.0000 | 408 B | 1.00 |
-| LightInject | 55.91 ns | 1.129 ns | 1.207 ns | 1.14 | 0.03 | 0.0244 | 0.0000 | 408 B | 1.00 |
-| DryIoc | 56.44 ns | 0.834 ns | 0.739 ns | 1.15 | 0.02 | 0.0243 | 0.0000 | 408 B | 1.00 |
-| Unity | 3,249.01 ns | 30.386 ns | 28.423 ns | 66.03 | 1.18 | 0.8659 | 0.0076 | 14520 B | 35.59 |
-| Autofac | 12,395.24 ns | 155.505 ns | 121.408 ns | 251.91 | 4.64 | 1.5717 | 0.0610 | 26496 B | 64.94 |
+| Pure.DI composition root | 49.61 ns | 0.483 ns | 0.428 ns | 0.98 | 0.01 | 0.0244 | 0.0000 | 408 B | 1.00 |
+| Hand Coded | 50.56 ns | 0.390 ns | 0.346 ns | 1.00 | 0.01 | 0.0244 | 0.0000 | 408 B | 1.00 |
+| Pure.DI Resolve<T>() | 51.30 ns | 0.933 ns | 0.827 ns | 1.01 | 0.02 | 0.0244 | 0.0000 | 408 B | 1.00 |
+| Pure.DI Resolve(Type) | 55.49 ns | 0.742 ns | 0.657 ns | 1.10 | 0.01 | 0.0243 | 0.0000 | 408 B | 1.00 |
+| LightInject | 55.79 ns | 0.795 ns | 0.744 ns | 1.10 | 0.02 | 0.0244 | 0.0000 | 408 B | 1.00 |
+| DryIoc | 58.43 ns | 1.044 ns | 0.926 ns | 1.16 | 0.02 | 0.0243 | 0.0000 | 408 B | 1.00 |
+| Unity | 3,264.04 ns | 61.563 ns | 127.139 ns | 64.55 | 2.53 | 0.8659 | 0.0076 | 14520 B | 35.59 |
+| Autofac | 12,973.81 ns | 114.629 ns | 95.721 ns | 256.59 | 2.49 | 1.5717 | 0.0610 | 26496 B | 64.94 |
 
 [Array details](readme/ArrayDetails.md)
 

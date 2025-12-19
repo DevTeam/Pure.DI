@@ -181,7 +181,11 @@ partial class Composition
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public object GetService(Type type)
   {
-    var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 4));
+    #if NETCOREAPP3_0_OR_GREATER
+    var index = (int)(_bucketSize * (((uint)type.TypeHandle.GetHashCode()) % 4));
+    #else
+    var index = (int)(_bucketSize * (((uint)RuntimeHelpers.GetHashCode(type)) % 4));
+    #endif
     ref var pair = ref _buckets[index];
     return pair.Key == type ? pair.Value.Resolve(this) : Resolve(type, index);
   }
@@ -205,7 +209,11 @@ partial class Composition
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public object GetRequiredKeyedService(Type type, object? tag)
   {
-    var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 4));
+    #if NETCOREAPP3_0_OR_GREATER
+    var index = (int)(_bucketSize * (((uint)type.TypeHandle.GetHashCode()) % 4));
+    #else
+    var index = (int)(_bucketSize * (((uint)RuntimeHelpers.GetHashCode(type)) % 4));
+    #endif
     ref var pair = ref _buckets[index];
     return pair.Key == type ? pair.Value.ResolveByTag(this, tag) : Resolve(type, tag, index);
   }
