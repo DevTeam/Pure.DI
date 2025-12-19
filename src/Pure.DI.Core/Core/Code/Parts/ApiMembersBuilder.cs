@@ -197,7 +197,11 @@ sealed class ApiMembersBuilder(
             var divisor = Buckets<object>.GetDivisor((uint)resolvers.Count);
             if (resolvers.Count > 0)
             {
-                code.AppendLine($"var index = (int)({Names.BucketSizeFieldName} * ((uint){Names.SystemNamespace}Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % {divisor}));");
+                code.AppendLine("#if NETCOREAPP3_0_OR_GREATER");
+                code.AppendLine($"var index = (int)({Names.BucketSizeFieldName} * (((uint)type.TypeHandle.GetHashCode()) % {divisor}));");
+                code.AppendLine("#else");
+                code.AppendLine($"var index = (int)({Names.BucketSizeFieldName} * (((uint){Names.SystemNamespace}Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type)) % {divisor}));");
+                code.AppendLine("#endif");
                 code.AppendLine($"ref var pair = ref {Names.BucketsFieldName}[index];");
                 code.AppendLine($"return pair.Key == type ? pair.Value.{resolveMethodName}({resolveMethodArgs}) : Resolve{Names.Salt}(type, {(byTag ? "tag, " : "")}index);");
             }

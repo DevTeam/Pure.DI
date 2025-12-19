@@ -89,7 +89,7 @@ public class ResolveBenchmark
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private string Resolve(System.Type type)
     {
-        var index = (int)(BucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % Divisor));
+        var index = (int)(BucketSize * ((uint)type.TypeHandle.GetHashCode() % Divisor));
         ref var pair = ref Pairs[index];
         return pair.Key == type ? pair.Value : ResolveNoInlining(type, index);
     }

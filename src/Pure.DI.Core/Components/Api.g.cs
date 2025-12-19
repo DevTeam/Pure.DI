@@ -3533,7 +3533,11 @@ namespace Pure.DI
 #endif
             for (var i = 0; i < pairs.Length; i++)
             {
+#if NETCOREAPP3_0_OR_GREATER
+                var bucket = (int)(((uint)pairs[i].Key.TypeHandle.GetHashCode()) % divisor);
+#else
                 var bucket = (int)(((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(pairs[i].Key)) % divisor);
+#endif
                 ref var size = ref bucketSizes[bucket];
                 if (++size > bucketSize)
                 {
@@ -3545,7 +3549,11 @@ namespace Pure.DI
             for (var i = 0; i < pairs.Length; i++)
             {
                 ref var pair = ref pairs[i];
+#if NETCOREAPP3_0_OR_GREATER
+                var bucket = (int)(((uint)pair.Key.TypeHandle.GetHashCode()) % divisor);
+#else
                 var bucket = (int)(((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(pair.Key)) % divisor);
+#endif
                 ref var index = ref bucketSizes[bucket++];
                 buckets[bucket * bucketSize - index] = pair;
                 index--;
