@@ -77,27 +77,40 @@ namespace Pure.DI.MS
         {
             get
             {
-                return _serviceProvider ?? throw new InvalidOperationException("The service provider has not yet been defined.");
+                lock (_lock)
+                {
+                    return _serviceProvider ?? throw new InvalidOperationException("The service provider has not yet been defined.");
+                }
             }
             set
             {
-                _serviceProvider = value;
-                var instanceResolver = CreateInstanceResolver(value);
+                if (value == null) throw new ArgumentNullException(nameof(value));
                 lock (_lock)
                 {
-                    _instanceResolver = instanceResolver;
+                    if (_instanceResolver is not null)
+                    {
+                        throw new InvalidOperationException("The service provider haы already been defined.");
+                    }
+
+                    _serviceProvider = value;
+                    _instanceResolver = CreateInstanceResolver(value);
                 }
             }
         }
 
         private static Func<Type, object, object> CreateInstanceResolver(IServiceProvider serviceProvider)
         {
-            return KeyedServiceProviderType?.IsAssignableFrom(serviceProvider.GetType()) == true
-                ? Expression.Lambda<Func<Type, object, object>>(
+            if (KeyedServiceProviderType != null
+                && GetKeyedServiceMethod != null
+                && KeyedServiceProviderType.IsAssignableFrom(serviceProvider.GetType()))
+            {
+                return Expression.Lambda<Func<Type, object, object>>(
                     Expression.Call(Expression.Constant(serviceProvider), GetKeyedServiceMethod, TypeParameter, TagParameter),
                     TypeParameter,
-                    TagParameter).Compile()
-                : new Func<Type, object, object>((type, tag) => serviceProvider.GetService(type));
+                    TagParameter).Compile();
+            }
+
+            return (type, tag) => serviceProvider.GetService(type);
         }
 
         /// <summary>
@@ -148,15 +161,7 @@ namespace Pure.DI.MS
         public IServiceProvider CreateServiceProvider(IServiceCollection services)
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
-            lock (_lock)
-            {
-                if (_instanceResolver is not null)
-                {
-                    throw new InvalidOperationException("Services have already been defined.");
-                }
-
-                return ServiceProvider = services.BuildServiceProvider();
-            }
+            return ServiceProvider = services.BuildServiceProvider();
         }
 
         /// <summary>

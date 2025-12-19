@@ -84,7 +84,7 @@ namespace Pure.DI.MS
             _resolvers.Add(new InstanceResolver(typeof(TContract), (IResolver<TComposition, object>)resolver, tag));
         }
 
-        /// <summary>3
+        /// <summary>
         /// Creates a service collection <see cref="Microsoft.Extensions.DependencyInjection.ServiceCollection"/> based on all previously registered resolvers.
         /// </summary>
         /// <param name="composition">An instance of composition.</param>
