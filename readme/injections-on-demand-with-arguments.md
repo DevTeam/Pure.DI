@@ -115,11 +115,11 @@ partial class Composition
     get
     {
       Func<int, ISensor> transientFunc1;
-      Func<int, ISensor> localFactory1 = new Func<int, ISensor>((int localArg15) =>
+      Func<int, ISensor> localFactory1 = new Func<int, ISensor>((int localArg1) =>
       {
         lock (_lock)
         {
-          int overriddenInt32 = localArg15;
+          int overriddenInt32 = localArg1;
           ISensor localValue18 = new Sensor(overriddenInt32);
           return localValue18;
         }

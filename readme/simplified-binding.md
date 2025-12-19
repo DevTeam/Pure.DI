@@ -101,7 +101,7 @@ Special types will not be added to bindings:
 - `System.Collections.Generic.ICollection<T>`
 - `System.Collections.IEnumerator`
 - `System.Collections.Generic.IEnumerator<T>`
-- `System.Collections.Generic.IIReadOnlyList<T>`
+- `System.Collections.Generic.IReadOnlyList<T>`
 - `System.Collections.Generic.IReadOnlyCollection<T>`
 - `System.IDisposable`
 - `System.IAsyncResult`

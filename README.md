@@ -674,7 +674,7 @@ Wildcard filter for instance types in OnNewInstance hooks. Default:  `*` .
 ```c#
 
 DI.Setup("Composition")
-                 .Hint(OnNewInstanceImplementationTypeNameWildcard, "*Dependency")
+                 .Hint(Hint.OnNewInstanceImplementationTypeNameWildcard, "*Dependency")
                  .Bind<IDependency>().To<Dependency>();
              
 ```
@@ -2075,7 +2075,7 @@ Defines the API for configuring dependency bindings in the composition.
 
 Starts binding definition for the implementation type itself. Also binds all directly implemented abstract types excluding special system interfaces.
             Special system interfaces are excluded from binding:
-            System.ObjectSystem.EnumSystem.MulticastDelegateSystem.DelegateSystem.Collections.IEnumerableSystem.Collections.Generic.IEnumerable<T>System.Collections.Generic.Iist<T>System.Collections.Generic.ICollection<T>System.Collections.IEnumeratorSystem.Collections.Generic.IEnumerator<T>System.Collections.Generic.IIReadOnlyList<T>System.Collections.Generic.IReadOnlyCollection<T>System.IDisposableSystem.IAsyncResultSystem.AsyncCallback
+            System.ObjectSystem.EnumSystem.MulticastDelegateSystem.DelegateSystem.Collections.IEnumerableSystem.Collections.Generic.IEnumerable<T>System.Collections.Generic.IList<T>System.Collections.Generic.ICollection<T>System.Collections.IEnumeratorSystem.Collections.Generic.IEnumerator<T>System.Collections.Generic.IReadOnlyList<T>System.Collections.Generic.IReadOnlyCollection<T>System.IDisposableSystem.IAsyncResultSystem.AsyncCallback
 ```c#
 
 DI.Setup("Composition")
@@ -2540,7 +2540,7 @@ See also _Setup(System.String,Pure.DI.CompositionKind)_.
 
 Starts binding definition for the implementation type itself. Also binds all directly implemented abstract types excluding special system interfaces.
             Special system interfaces are excluded from binding:
-            System.ObjectSystem.EnumSystem.MulticastDelegateSystem.DelegateSystem.Collections.IEnumerableSystem.Collections.Generic.IEnumerable<T>System.Collections.Generic.IList<T>System.Collections.Generic.ICollection<T>System.Collections.IEnumeratorSystem.Collections.Generic.IEnumerator<T>System.Collections.Generic.IIReadOnlyList<T>System.Collections.Generic.IReadOnlyCollection<T>System.IDisposableSystem.IAsyncResultSystem.AsyncCallback
+            System.ObjectSystem.EnumSystem.MulticastDelegateSystem.DelegateSystem.Collections.IEnumerableSystem.Collections.Generic.IEnumerable<T>System.Collections.Generic.IList<T>System.Collections.Generic.ICollection<T>System.Collections.IEnumeratorSystem.Collections.Generic.IEnumerator<T>System.Collections.Generic.IReadOnlyList<T>System.Collections.Generic.IReadOnlyCollection<T>System.IDisposableSystem.IAsyncResultSystem.AsyncCallback
 ```c#
 
 DI.Setup("Composition")
@@ -3931,7 +3931,7 @@ DI.Setup("Composition")
 
  - parameter _methodName_ - Method name
 
- - parameter _argName_ - Parameter name
+ - parameter _argName_ - Argument name
 
 </blockquote></details>
 
@@ -3954,15 +3954,6 @@ Atomically generated smart tag with value "VarName".
 </blockquote></details>
 
 
-<details><summary>Field Cleaner</summary><blockquote>
-
-Atomically generated smart tag with value "Cleaner".
-            It's used for:
-            
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
-</blockquote></details>
-
-
 <details><summary>Field Overrider</summary><blockquote>
 
 Atomically generated smart tag with value "Overrider".
@@ -3972,12 +3963,12 @@ Atomically generated smart tag with value "Overrider".
 </blockquote></details>
 
 
-<details><summary>Field SpecialBinding</summary><blockquote>
+<details><summary>Field Cleaner</summary><blockquote>
 
-Atomically generated smart tag with value "SpecialBinding".
+Atomically generated smart tag with value "Cleaner".
             It's used for:
             
-            class _Generator__BindingBuilder_ <-- _IIdGenerator_(SpecialBinding) -- _IdGenerator_ as _PerResolve_
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
 </blockquote></details>
 
 
@@ -3987,6 +3978,15 @@ Atomically generated smart tag with value "UniqueTag".
             It's used for:
             
             class _Generator__ApiInvocationProcessor_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve__BindingBuilder_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
+<details><summary>Field SpecialBinding</summary><blockquote>
+
+Atomically generated smart tag with value "SpecialBinding".
+            It's used for:
+            
+            class _Generator__BindingBuilder_ <-- _IIdGenerator_(SpecialBinding) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 

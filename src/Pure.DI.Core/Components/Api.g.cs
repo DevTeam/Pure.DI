@@ -216,7 +216,7 @@ namespace Pure.DI
         /// or using the API call <see cref="IConfiguration.Hint"/>:
         /// <code>
         /// DI.Setup("Composition")
-        ///     .Hint(OnNewInstanceImplementationTypeNameWildcard, "*Dependency")
+        ///     .Hint(Hint.OnNewInstanceImplementationTypeNameWildcard, "*Dependency")
         ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
         /// </code>
         /// </example>
@@ -1642,7 +1642,7 @@ namespace Pure.DI
         /// </example>
         /// </summary>
         /// <param name="methodName">Method name</param>
-        /// <param name="argName">Parameter name</param>
+        /// <param name="argName">Argument name</param>
         public static Tag OnMethodArg<T>(string methodName, string argName) => Shared;
     }
 
@@ -1917,7 +1917,7 @@ namespace Pure.DI
         /// <item>System.Collections.Generic.ICollection&lt;T&gt;</item>
         /// <item>System.Collections.IEnumerator</item>
         /// <item>System.Collections.Generic.IEnumerator&lt;T&gt;</item>
-        /// <item>System.Collections.Generic.IIReadOnlyList&lt;T&gt;</item>
+        /// <item>System.Collections.Generic.IReadOnlyList&lt;T&gt;</item>
         /// <item>System.Collections.Generic.IReadOnlyCollection&lt;T&gt;</item>
         /// <item>System.IDisposable</item>
         /// <item>System.IAsyncResult</item>
@@ -2441,11 +2441,11 @@ namespace Pure.DI
         /// <item>System.Delegate</item>
         /// <item>System.Collections.IEnumerable</item>
         /// <item>System.Collections.Generic.IEnumerable&lt;T&gt;</item>
-        /// <item>System.Collections.Generic.Iist&lt;T&gt;</item>
+        /// <item>System.Collections.Generic.IList&lt;T&gt;</item>
         /// <item>System.Collections.Generic.ICollection&lt;T&gt;</item>
         /// <item>System.Collections.IEnumerator</item>
         /// <item>System.Collections.Generic.IEnumerator&lt;T&gt;</item>
-        /// <item>System.Collections.Generic.IIReadOnlyList&lt;T&gt;</item>
+        /// <item>System.Collections.Generic.IReadOnlyList&lt;T&gt;</item>
         /// <item>System.Collections.Generic.IReadOnlyCollection&lt;T&gt;</item>
         /// <item>System.IDisposable</item>
         /// <item>System.IAsyncResult</item>
@@ -3494,7 +3494,6 @@ namespace Pure.DI
 #if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 #endif
-    [global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
     internal struct Pair<TValue>
     {
         public readonly global::System.Type Key;
@@ -3528,7 +3527,7 @@ namespace Pure.DI
         {
             bucketSize = 0;
 #if  NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
-            global::System.Span<uint> bucketSizes = divisor < 0x1000 ? stackalloc uint[(int)divisor] : new uint[divisor];
+            global::System.Span<uint> bucketSizes = divisor < 0x100 ? stackalloc uint[(int)divisor] : new uint[divisor];
 #else
             var bucketSizes = new uint[divisor];
 #endif
