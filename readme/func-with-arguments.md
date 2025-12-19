@@ -133,12 +133,12 @@ partial class Composition
     get
     {
       Func<int, string, IPerson> transientFunc1;
-      Func<int, string, IPerson> localFactory2 = new Func<int, string, IPerson>((int localArg13, string localArg22) =>
+      Func<int, string, IPerson> localFactory2 = new Func<int, string, IPerson>((int localArg12, string localArg23) =>
       {
         lock (_lock)
         {
-          int overriddenInt32 = localArg13;
-          string overriddenString2 = localArg22;
+          int overriddenInt32 = localArg12;
+          string overriddenString2 = localArg23;
           if (_root._singletonClock51 is null)
             lock (_lock)
               if (_root._singletonClock51 is null)

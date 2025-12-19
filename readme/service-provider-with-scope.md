@@ -220,7 +220,7 @@ partial class Composition: IDisposable
     var index = (int)(_bucketSize * (((uint)RuntimeHelpers.GetHashCode(type)) % 4));
     #endif
     ref var pair = ref _buckets[index];
-    return pair.Key == type ? pair.Value.Resolve(this) : Resolve(type, index);
+    return Object.ReferenceEquals(pair.Key, type) ? pair.Value.Resolve(this) : Resolve(type, index);
   }
 
   [MethodImpl(MethodImplOptions.NoInlining)]
@@ -230,7 +230,7 @@ partial class Composition: IDisposable
     while (++index < finish)
     {
       ref var pair = ref _buckets[index];
-      if (pair.Key == type)
+      if (Object.ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
       }
@@ -248,7 +248,7 @@ partial class Composition: IDisposable
     var index = (int)(_bucketSize * (((uint)RuntimeHelpers.GetHashCode(type)) % 4));
     #endif
     ref var pair = ref _buckets[index];
-    return pair.Key == type ? pair.Value.ResolveByTag(this, tag) : Resolve(type, tag, index);
+    return Object.ReferenceEquals(pair.Key, type) ? pair.Value.ResolveByTag(this, tag) : Resolve(type, tag, index);
   }
 
   [MethodImpl(MethodImplOptions.NoInlining)]
@@ -258,7 +258,7 @@ partial class Composition: IDisposable
     while (++index < finish)
     {
       ref var pair = ref _buckets[index];
-      if (pair.Key == type)
+      if (Object.ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
       }
