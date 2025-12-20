@@ -12,6 +12,10 @@ Russian, German, Arabic, Simplified Chinese, Japanese, French, Spanish, Hindi, P
 
 In the XML document below, translate all <value> elements into Russian. Keep the XML document structure, placeholders (e.g. {0}, ") and technical terms completely intact. The translation was made for software engineers.
 
+Ты технический писатель. В проекте "Pure.DI.Core" переведи локализованные сообщения. За основу возьми сообщения в "Strings.ru.resx". Важно: сохраняй технические термины. Важно: сохраняй параметры шаблонных сообщений.
+
+Ты технический писатель. В проекте "Pure.DI.Core" добавь локализованные ресурсы для языков: Корейский, Итальянский, Иврит, Бенгальский, Индонезийский, Вьетнамский, Тайский. За основу возьми сообщения в "Strings.ru.resx". Важно: сохраняй технические термины. Важно: сохраняй параметры шаблонных сообщений.
+
 # Readme
 
 Enhance the Markdown document below for software engineers. Retain the Markdown document structure, references and style. Simplify technical jargon without losing accuracy. Write your response in Markdown format. Here is the document:

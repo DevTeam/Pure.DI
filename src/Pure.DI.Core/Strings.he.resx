@@ -1,0 +1,172 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="Warning_NoRoots" xml:space="preserve">
+        <value>לא הוצהר על שום Composition Root. הוסף לפחות Root אחד.</value>
+    </data>
+    <data name="Error_Template_InvalidCompositionTypeName" xml:space="preserve">
+        <value>שם סוג קומפוזיציה לא חוקי "{0}".</value>
+    </data>
+    <data name="Error_Template_InvalidRootName" xml:space="preserve">
+        <value>שם Root לא חוקי "{0}".</value>
+    </data>
+    <data name="Error_Template_RootDuplicate" xml:space="preserve">
+        <value>ה-Composition Root "{0}" משכפל Root שהוצהר קודם לכן "{1}".</value>
+    </data>
+    <data name="Error_AccumulatorTypeCannotBeGenericTypeMarker" xml:space="preserve">
+        <value>סוג ה-Accumulator לא יכול להתבסס על Generic Type Marker.</value>
+    </data>
+    <data name="Error_AccumulatorCannotAccumulateGenericTypeMarker" xml:space="preserve">
+        <value>ה-Accumulator לא יכול לצבור מופעים המבוססים על Generic Type Marker.</value>
+    </data>
+    <data name="Error_Template_InvalidArgumentName" xml:space="preserve">
+        <value>שם ארגומנט לא חוקי "{0}".</value>
+    </data>
+    <data name="Error_CompositionArgumentTypeCannotBeGenericTypeMarker" xml:space="preserve">
+        <value>סוג ארגומנט הקומפוזיציה לא יכול להיות Generic Type Marker.</value>
+    </data>
+    <data name="Error_InvalidBindingDueToCompilationError" xml:space="preserve">
+        <value>Binding לא חוקי עקב שגיאת הידור.</value>
+    </data>
+    <data name="Error_Template_NotImplement" xml:space="preserve">
+        <value>{0} לא מממש את {1}.</value>
+    </data>
+    <data name="Error_Template_CyclicDependency" xml:space="preserve">
+        <value>נמצאה תלות מחזורית: {0}.</value>
+    </data>
+    <data name="Error_Template_UnableToResolve" xml:space="preserve">
+        <value>לא ניתן לפתור את "{0}" ב-{1}.</value>
+    </data>
+    <data name="Error_CannotBuildDependencyGraph" xml:space="preserve">
+        <value>לא ניתן לבנות את ה-Dependency Graph.</value>
+    </data>
+    <data name="Error_Template_InvalidRegularExpression" xml:space="preserve">
+        <value>ביטוי רגולרי לא חוקי {0}: "{1}".</value>
+    </data>
+    <data name="Error_Template_InvalidWildcard" xml:space="preserve">
+        <value>Wildcard לא חוקי {0}: "{1}".</value>
+    </data>
+    <data name="Error_Template_TypeWithLifetimeRequiresDirectOrTransitiveInjection" xml:space="preserve">
+        <value>סוג {0} עם Lifetime {1} דורש Injection ישיר או טרנזיטיבי של סוג {2} עם Lifetime {3}, מה שעלול להוביל לדליפת נתונים או להתנהגות בלתי צפויה.</value>
+    </data>
+    <data name="Error_Template_MaximumNumberOfIterations" xml:space="preserve">
+        <value>חריגה ממספר האיטרציות המרבי {0} בעת בניית ה-Dependency Graph האופטימלי. דייק את ה-Dependency Graph.</value>
+    </data>
+    <data name="Error_DependencyGraphConstractionFailure" xml:space="preserve">
+        <value>לא ניתן לבנות את ה-Dependency Graph.</value>
+    </data>
+    <data name="Error_Template_LifetimeDoesNotSupportCyclicDependencies" xml:space="preserve">
+        <value>ה-Lifetime {0} אינו תומך בתלויות מחזוריות.</value>
+    </data>
+    <data name="Error_InvalidNumberOfInitializers" xml:space="preserve">
+        <value>מספר אתחולים לא חוקי.</value>
+    </data>
+    <data name="Error_Template_CannotUseContextDirectly" xml:space="preserve">
+        <value>לא ניתן להשתמש ב-"{0}" ישירות. רק המתודות או המאפיינים שלו נגישים.</value>
+    </data>
+    <data name="Error_InvalidRootType" xml:space="preserve">
+        <value>סוג Root לא חוקי.</value>
+    </data>
+    <data name="Error_InvalidRootsRype" xml:space="preserve">
+        <value>סוג Roots לא חוקי.</value>
+    </data>
+    <data name="Error_Template_NoTypeForWildcard" xml:space="preserve">
+        <value>לא נמצא סוג היורש מ-{0} ששמו תואם למסנן "{1}".</value>
+    </data>
+    <data name="Error_InvalidBuildersType" xml:space="preserve">
+        <value>סוג Builders לא חוקי.</value>
+    </data>
+    <data name="Error_InvalidBuilderType" xml:space="preserve">
+        <value>סוג Builder לא חוקי.</value>
+    </data>
+    <data name="Error_TooManyTypeParameters" xml:space="preserve">
+        <value>יותר מדי פרמטרים של סוג.</value>
+    </data>
+    <data name="Error_AsynchronousFactoryWithAsyncNotSupported" xml:space="preserve">
+        <value>מפעלים אסינכרוניים עם מילת המפתח async אינם נתמכים.</value>
+    </data>
+    <data name="Error_Template_NotSupported" xml:space="preserve">
+        <value>{0} אינו נתמך.</value>
+    </data>
+    <data name="Error_Template_MustBeValueOfType" xml:space="preserve">
+        <value>{0} חייב להיות ערך שאינו null מסוג {1}.</value>
+    </data>
+    <data name="Error_Template_InvalidIdentifier" xml:space="preserve">
+        <value>מזהה לא חוקי "{0}".</value>
+    </data>
+    <data name="Error_Template_InvalidAttributeArgumentPosition" xml:space="preserve">
+        <value>מיקום הארגומנט {0} של ה-Attribute {1} נמצא מחוץ לטווח [0..{2}].</value>
+    </data>
+    <data name="Error_Template_AttributeMemberCannotBeProcessed" xml:space="preserve">
+        <value>לא ניתן לעבד את {0} מסוג {1} מכיוון שהוא מסומן במספר Attributes המוציאים זה את זה.</value>
+    </data>
+    <data name="Error_InvalidBinding" xml:space="preserve">
+        <value>ה-Binding מוגדר באופן שגוי.</value>
+    </data>
+    <data name="Error_Template_TooLargeComposition" xml:space="preserve">
+        <value>הקומפוזיציה גדולה מדי. נעצר בתלות מס' {0}.</value>
+    </data>
+    <data name="Error_Template_CannotConstructAbstractType" xml:space="preserve">
+        <value>לא ניתן ליצור מופע של {0} מכיוון שזהו סוג מופשט.</value>
+    </data>
+    <data name="Error_Template_CannotBeInstantiatedNoAccessibleConstructor" xml:space="preserve">
+        <value>לא ניתן ליצור מופע של {0} עקב חוסר בקונסטרקטור נגיש.</value>
+    </data>
+    <data name="Error_Template_UnsupportLanguage" xml:space="preserve">
+        <value>{0} אינו תומך ב-C# {1}. אנא השתמש בגרסת שפה {2} ומעלה.</value>
+    </data>
+    <data name="Error_Template_CannotFindSetup" xml:space="preserve">
+        <value>לא ניתן למצוא את ההגדרה "{0}".</value>
+    </data>
+    <data name="Error_Template_NoAccessibleConstructor" xml:space="preserve">
+        <value>אין קונסטרקטור לא סטטי נגיש מסוג {0} עם ארגומנט התואם ל-"{1}".</value>
+    </data>
+    <data name="Error_Template_NoAccessibleMethod" xml:space="preserve">
+        <value>אין מתודה לא סטטית נגישה מסוג {0} עם השם "{1}" וארגומנט התואם ל-"{2}".</value>
+    </data>
+    <data name="Error_Template_NoAccessibleFieldOrProperty" xml:space="preserve">
+        <value>אין שדה או מאפיין לא סטטי נגיש מסוג {1} התואם ל-"{0}".</value>
+    </data>
+    <data name="Error_Template_MustBeApiCall" xml:space="preserve">
+        <value>{0} חייב להיות ערך קבוע מסוג {1} או קריאת API מיוחדת.</value>
+    </data>
+    <data name="Warning_BindingIsNotUsed" xml:space="preserve">
+        <value>ה-Binding אינו בשימוש.</value>
+    </data>
+    <data name="Warning_Template_RootCannotBeResolvedByResolveMethods" xml:space="preserve">
+        <value>לא ניתן לפתור את ה-Root {0} על ידי מתודות Resolve עקב הארגומנטים {1}, לכן תיזרק חריגה בעת הניסיון.</value>
+    </data>
+    <data name="Warning_Template_InjectionSiteIsNotUsed" xml:space="preserve">
+        <value>התגית "{0}" ב-Injection Site אינה בשימוש.</value>
+    </data>
+    <data name="Warning_Template_BindingHasBeenOverridden" xml:space="preserve">
+        <value>ה-Binding עבור {0} נדרס.</value>
+    </data>
+    <data name="Info_CodeGenerationAborted" xml:space="preserve">
+        <value>יצירת הקוד הופסקה.</value>
+    </data>
+    <data name="Error_UnhandledError" xml:space="preserve">
+        <value>אירעה שגיאה בלתי מטופלת.</value>
+    </data>
+    <data name="Error_TypeCannotBeInferred" xml:space="preserve">
+        <value>לא ניתן להסיק את הסוג. נסה לציין אותו במפורש.</value>
+    </data>
+    <data name="Error_Template_StaticRootCannotUseLifetime" xml:space="preserve">
+        <value>ה-Root הסטטי {0} מסוג {1} אינו יכול להשתמש ב-Lifetime {2} ישירות או דרך תלות.</value>
+    </data>
+</root>

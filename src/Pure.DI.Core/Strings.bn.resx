@@ -1,0 +1,172 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="Warning_NoRoots" xml:space="preserve">
+        <value>কোনো Composition Root ঘোষণা করা হয়নি। অন্তত একটি Root যোগ করুন।</value>
+    </data>
+    <data name="Error_Template_InvalidCompositionTypeName" xml:space="preserve">
+        <value>অমান্য Composition টাইপ নাম "{0}"।</value>
+    </data>
+    <data name="Error_Template_InvalidRootName" xml:space="preserve">
+        <value>অমান্য Root নাম "{0}"।</value>
+    </data>
+    <data name="Error_Template_RootDuplicate" xml:space="preserve">
+        <value>Composition Root "{0}" আগে ঘোষিত Root "{1}" এর ডুপ্লিকেট।</value>
+    </data>
+    <data name="Error_AccumulatorTypeCannotBeGenericTypeMarker" xml:space="preserve">
+        <value>Accumulator টাইপ Generic Type Marker এর ওপর ভিত্তি করে হতে পারে না।</value>
+    </data>
+    <data name="Error_AccumulatorCannotAccumulateGenericTypeMarker" xml:space="preserve">
+        <value>Accumulator, Generic Type Marker এর ওপর ভিত্তি করে ইনস্ট্যান্স সঞ্চয় করতে পারে না।</value>
+    </data>
+    <data name="Error_Template_InvalidArgumentName" xml:space="preserve">
+        <value>অমান্য আর্গুমেন্ট নাম "{0}"।</value>
+    </data>
+    <data name="Error_CompositionArgumentTypeCannotBeGenericTypeMarker" xml:space="preserve">
+        <value>Composition আর্গুমেন্ট টাইপ Generic Type Marker এর ওপর ভিত্তি করে হতে পারে না।</value>
+    </data>
+    <data name="Error_InvalidBindingDueToCompilationError" xml:space="preserve">
+        <value>কম্পাইলেশন ত্রুটির কারণে অমান্য Binding।</value>
+    </data>
+    <data name="Error_Template_NotImplement" xml:space="preserve">
+        <value>{0}, {1} ইমপ্লিমেন্ট করে না।</value>
+    </data>
+    <data name="Error_Template_CyclicDependency" xml:space="preserve">
+        <value>Cyclic dependency পাওয়া গেছে: {0}।</value>
+    </data>
+    <data name="Error_Template_UnableToResolve" xml:space="preserve">
+        <value>{1}-এ "{0}" রিজলভ করা সম্ভব হয়নি।</value>
+    </data>
+    <data name="Error_CannotBuildDependencyGraph" xml:space="preserve">
+        <value>Dependency Graph তৈরি করা সম্ভব নয়।</value>
+    </data>
+    <data name="Error_Template_InvalidRegularExpression" xml:space="preserve">
+        <value>অমান্য রেগুলার এক্সপ্রেশন {0}: "{1}"।</value>
+    </data>
+    <data name="Error_Template_InvalidWildcard" xml:space="preserve">
+        <value>অমান্য Wildcard {0}: "{1}"।</value>
+    </data>
+    <data name="Error_Template_TypeWithLifetimeRequiresDirectOrTransitiveInjection" xml:space="preserve">
+        <value>Lifetime {1} সহ টাইপ {0}-এর জন্য Lifetime {3} সহ টাইপ {2}-এর সরাসরি বা ট্রানজিটিভ ইনজেকশন প্রয়োজন, যা ডেটা লিক বা অপ্রত্যাশিত আচরণের কারণ হতে পারে।</value>
+    </data>
+    <data name="Error_Template_MaximumNumberOfIterations" xml:space="preserve">
+        <value>সর্বোত্তম Dependency Graph তৈরির সময় সর্বোচ্চ সংখ্যক ইটারেশন {0} অতিক্রম করেছে। Dependency Graph সংশোধন করুন।</value>
+    </data>
+    <data name="Error_DependencyGraphConstractionFailure" xml:space="preserve">
+        <value>Dependency Graph তৈরি করা সম্ভব নয়।</value>
+    </data>
+    <data name="Error_Template_LifetimeDoesNotSupportCyclicDependencies" xml:space="preserve">
+        <value>Lifetime {0} সাইক্লিক ডিপেন্ডেন্সি সমর্থন করে না।</value>
+    </data>
+    <data name="Error_InvalidNumberOfInitializers" xml:space="preserve">
+        <value>অমান্য সংখ্যক ইনিশিয়ালাইজার।</value>
+    </data>
+    <data name="Error_Template_CannotUseContextDirectly" xml:space="preserve">
+        <value>"{0}" সরাসরি ব্যবহার করা সম্ভব নয়। শুধুমাত্র এর মেথড বা প্রপার্টিগুলো ব্যবহারযোগ্য।</value>
+    </data>
+    <data name="Error_InvalidRootType" xml:space="preserve">
+        <value>অমান্য Root টাইপ।</value>
+    </data>
+    <data name="Error_InvalidRootsRype" xml:space="preserve">
+        <value>অমান্য Roots টাইপ।</value>
+    </data>
+    <data name="Error_Template_NoTypeForWildcard" xml:space="preserve">
+        <value>{0} থেকে ইনহেরিট করা এমন কোনো টাইপ পাওয়া যায়নি যার নাম ফিল্টার "{1}" এর সাথে মেলে।</value>
+    </data>
+    <data name="Error_InvalidBuildersType" xml:space="preserve">
+        <value>অমান্য Builders টাইপ।</value>
+    </data>
+    <data name="Error_InvalidBuilderType" xml:space="preserve">
+        <value>অমান্য Builder টাইপ।</value>
+    </data>
+    <data name="Error_TooManyTypeParameters" xml:space="preserve">
+        <value>প্রচুর টাইপ প্যারামিটার।</value>
+    </data>
+    <data name="Error_AsynchronousFactoryWithAsyncNotSupported" xml:space="preserve">
+        <value>async কিওয়ার্ড সহ এসিনক্রোনাস ফ্যাক্টরি সমর্থিত নয়।</value>
+    </data>
+    <data name="Error_Template_NotSupported" xml:space="preserve">
+        <value>{0} সমর্থিত নয়।</value>
+    </data>
+    <data name="Error_Template_MustBeValueOfType" xml:space="preserve">
+        <value>{0} অবশ্যই টাইপ {1}-এর একটি নন-নাল ভ্যালু হতে হবে।</value>
+    </data>
+    <data name="Error_Template_InvalidIdentifier" xml:space="preserve">
+        <value>অমান্য আইডেন্টিফায়ার "{0}"।</value>
+    </data>
+    <data name="Error_Template_InvalidAttributeArgumentPosition" xml:space="preserve">
+        <value>অ্যাট্রিবিউট {1}-এর আর্গুমেন্ট {0}-এর অবস্থান [0..{2}] সীমার বাইরে।</value>
+    </data>
+    <data name="Error_Template_AttributeMemberCannotBeProcessed" xml:space="preserve">
+        <value>টাইপ {1}-এর {0} প্রসেস করা সম্ভব নয় কারণ এটি একাধিক পরস্পরবিরোধী অ্যাট্রিবিউট দ্বারা চিহ্নিত।</value>
+    </data>
+    <data name="Error_InvalidBinding" xml:space="preserve">
+        <value>Binding ভুলভাবে সংজ্ঞায়িত করা হয়েছে।</value>
+    </data>
+    <data name="Error_Template_TooLargeComposition" xml:space="preserve">
+        <value>Composition অনেক বড়। ডিপেন্ডেন্সি নং {0}-এ থামানো হয়েছে।</value>
+    </data>
+    <data name="Error_Template_CannotConstructAbstractType" xml:space="preserve">
+        <value>{0}-এর ইনস্ট্যান্স তৈরি করা সম্ভব নয় কারণ এটি একটি অ্যাবস্ট্রাক্ট টাইপ।</value>
+    </data>
+    <data name="Error_Template_CannotBeInstantiatedNoAccessibleConstructor" xml:space="preserve">
+        <value>অ্যাক্সেসযোগ্য কনস্ট্রাক্টর না থাকায় {0}-এর ইনস্ট্যান্স তৈরি করা সম্ভব নয়।</value>
+    </data>
+    <data name="Error_Template_UnsupportLanguage" xml:space="preserve">
+        <value>{0}, C# {1} সমর্থন করে না। ল্যাঙ্গুয়েজ ভার্সন {2} বা নতুন ব্যবহার করুন।</value>
+    </data>
+    <data name="Error_Template_CannotFindSetup" xml:space="preserve">
+        <value>সেটআপ "{0}" পাওয়া যায়নি।</value>
+    </data>
+    <data name="Error_Template_NoAccessibleConstructor" xml:space="preserve">
+        <value>"{1}" এর সাথে সামঞ্জস্যপূর্ণ আর্গুমেন্ট সহ টাইপ {0}-এর কোনো অ্যাক্সেসযোগ্য নন-স্ট্যাটিক কনস্ট্রাক্টর পাওয়া যায়নি।</value>
+    </data>
+    <data name="Error_Template_NoAccessibleMethod" xml:space="preserve">
+        <value>"{2}" এর সাথে সামঞ্জস্যপূর্ণ আর্গুমেন্ট এবং "{1}" নাম সহ টাইপ {0}-এর কোনো অ্যাক্সেসযোগ্য নন-স্ট্যাটিক মেথড পাওয়া যায়নি।</value>
+    </data>
+    <data name="Error_Template_NoAccessibleFieldOrProperty" xml:space="preserve">
+        <value>"{0}" এর সাথে সামঞ্জস্যপূর্ণ টাইপ {1}-এর কোনো অ্যাক্সেসযোগ্য নন-স্ট্যাটিক ফিল্ড বা প্রপার্টি পাওয়া যায়নি।</value>
+    </data>
+    <data name="Error_Template_MustBeApiCall" xml:space="preserve">
+        <value>{0} অবশ্যই টাইপ {1}-এর একটি কনস্ট্যান্ট ভ্যালু বা একটি বিশেষ API কল হতে হবে।</value>
+    </data>
+    <data name="Warning_BindingIsNotUsed" xml:space="preserve">
+        <value>Binding ব্যবহার করা হয়নি।</value>
+    </data>
+    <data name="Warning_Template_RootCannotBeResolvedByResolveMethods" xml:space="preserve">
+        <value>আর্গুমেন্ট {1} এর কারণে Resolve মেথড দ্বারা Root {0} রিজলভ করা সম্ভব নয়, তাই চেষ্টা করার সময় একটি এক্সেপশন থ্রো করা হবে।</value>
+    </data>
+    <data name="Warning_Template_InjectionSiteIsNotUsed" xml:space="preserve">
+        <value>ইনজেকশন সাইটের ট্যাগ "{0}" ব্যবহৃত হচ্ছে না।</value>
+    </data>
+    <data name="Warning_Template_BindingHasBeenOverridden" xml:space="preserve">
+        <value>{0}-এর জন্য Binding ওভাররাইড করা হয়েছে।</value>
+    </data>
+    <data name="Info_CodeGenerationAborted" xml:space="preserve">
+        <value>কোড জেনারেশন বন্ধ করা হয়েছে।</value>
+    </data>
+    <data name="Error_UnhandledError" xml:space="preserve">
+        <value>একটি আনহ্যান্ডেল ত্রুটি ঘটেছে।</value>
+    </data>
+    <data name="Error_TypeCannotBeInferred" xml:space="preserve">
+        <value>টাইপ নির্ধারণ করা সম্ভব নয়। এটি স্পষ্টভাবে নির্দিষ্ট করার চেষ্টা করুন।</value>
+    </data>
+    <data name="Error_Template_StaticRootCannotUseLifetime" xml:space="preserve">
+        <value>টাইপ {1}-এর স্ট্যাটিক রুট {0} সরাসরি বা কোনো ডিপেন্ডেন্সির মাধ্যমে Lifetime {2} ব্যবহার করতে পারে না।</value>
+    </data>
+</root>

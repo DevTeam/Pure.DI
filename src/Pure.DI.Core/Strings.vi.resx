@@ -1,0 +1,172 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="Warning_NoRoots" xml:space="preserve">
+        <value>Không có Composition Root nào được khai báo. Hãy thêm ít nhất một root.</value>
+    </data>
+    <data name="Error_Template_InvalidCompositionTypeName" xml:space="preserve">
+        <value>Tên kiểu composition "{0}" không hợp lệ.</value>
+    </data>
+    <data name="Error_Template_InvalidRootName" xml:space="preserve">
+        <value>Tên root "{0}" không hợp lệ.</value>
+    </data>
+    <data name="Error_Template_RootDuplicate" xml:space="preserve">
+        <value>Composition Root "{0}" trùng lặp với root "{1}" đã khai báo trước đó.</value>
+    </data>
+    <data name="Error_AccumulatorTypeCannotBeGenericTypeMarker" xml:space="preserve">
+        <value>Kiểu Accumulator không thể dựa trên một generic type marker.</value>
+    </data>
+    <data name="Error_AccumulatorCannotAccumulateGenericTypeMarker" xml:space="preserve">
+        <value>Accumulator không thể tích lũy các instance dựa trên generic type marker.</value>
+    </data>
+    <data name="Error_Template_InvalidArgumentName" xml:space="preserve">
+        <value>Tên đối số "{0}" không hợp lệ.</value>
+    </data>
+    <data name="Error_CompositionArgumentTypeCannotBeGenericTypeMarker" xml:space="preserve">
+        <value>Kiểu đối số của composition không thể dựa trên generic type marker.</value>
+    </data>
+    <data name="Error_InvalidBindingDueToCompilationError" xml:space="preserve">
+        <value>Binding không hợp lệ do lỗi biên dịch.</value>
+    </data>
+    <data name="Error_Template_NotImplement" xml:space="preserve">
+        <value>{0} không triển khai {1}.</value>
+    </data>
+    <data name="Error_Template_CyclicDependency" xml:space="preserve">
+        <value>Phát hiện phụ thuộc vòng: {0}.</value>
+    </data>
+    <data name="Error_Template_UnableToResolve" xml:space="preserve">
+        <value>Không thể giải quyết "{0}" trong {1}.</value>
+    </data>
+    <data name="Error_CannotBuildDependencyGraph" xml:space="preserve">
+        <value>Không thể xây dựng Dependency Graph.</value>
+    </data>
+    <data name="Error_Template_InvalidRegularExpression" xml:space="preserve">
+        <value>Biểu thức chính quy không hợp lệ {0}: "{1}".</value>
+    </data>
+    <data name="Error_Template_InvalidWildcard" xml:space="preserve">
+        <value>Wildcard không hợp lệ {0}: "{1}".</value>
+    </data>
+    <data name="Error_Template_TypeWithLifetimeRequiresDirectOrTransitiveInjection" xml:space="preserve">
+        <value>Kiểu {0} với Lifetime {1} yêu cầu injection trực tiếp hoặc bắc cầu của kiểu {2} với Lifetime {3}, điều này có thể dẫn đến rò rỉ dữ liệu hoặc hành vi không mong đợi.</value>
+    </data>
+    <data name="Error_Template_MaximumNumberOfIterations" xml:space="preserve">
+        <value>Vượt quá số lượng vòng lặp tối đa {0} khi xây dựng Dependency Graph tối ưu. Hãy tinh chỉnh Dependency Graph.</value>
+    </data>
+    <data name="Error_DependencyGraphConstractionFailure" xml:space="preserve">
+        <value>Không thể xây dựng Dependency Graph.</value>
+    </data>
+    <data name="Error_Template_LifetimeDoesNotSupportCyclicDependencies" xml:space="preserve">
+        <value>Lifetime {0} không hỗ trợ phụ thuộc vòng.</value>
+    </data>
+    <data name="Error_InvalidNumberOfInitializers" xml:space="preserve">
+        <value>Số lượng bộ khởi tạo không hợp lệ.</value>
+    </data>
+    <data name="Error_Template_CannotUseContextDirectly" xml:space="preserve">
+        <value>Không thể sử dụng "{0}" trực tiếp. Chỉ các phương thức hoặc thuộc tính của nó mới có thể truy cập được.</value>
+    </data>
+    <data name="Error_InvalidRootType" xml:space="preserve">
+        <value>Kiểu root không hợp lệ.</value>
+    </data>
+    <data name="Error_InvalidRootsRype" xml:space="preserve">
+        <value>Kiểu các root không hợp lệ.</value>
+    </data>
+    <data name="Error_Template_NoTypeForWildcard" xml:space="preserve">
+        <value>Không tìm thấy kiểu nào kế thừa từ {0} có tên khớp với bộ lọc "{1}".</value>
+    </data>
+    <data name="Error_InvalidBuildersType" xml:space="preserve">
+        <value>Kiểu các builder không hợp lệ.</value>
+    </data>
+    <data name="Error_InvalidBuilderType" xml:space="preserve">
+        <value>Kiểu builder không hợp lệ.</value>
+    </data>
+    <data name="Error_TooManyTypeParameters" xml:space="preserve">
+        <value>Quá nhiều tham số kiểu.</value>
+    </data>
+    <data name="Error_AsynchronousFactoryWithAsyncNotSupported" xml:space="preserve">
+        <value>Factory bất đồng bộ với từ khóa 'async' không được hỗ trợ.</value>
+    </data>
+    <data name="Error_Template_NotSupported" xml:space="preserve">
+        <value>{0} không được hỗ trợ.</value>
+    </data>
+    <data name="Error_Template_MustBeValueOfType" xml:space="preserve">
+        <value>{0} phải là một giá trị không null của kiểu {1}.</value>
+    </data>
+    <data name="Error_Template_InvalidIdentifier" xml:space="preserve">
+        <value>Định danh không hợp lệ "{0}".</value>
+    </data>
+    <data name="Error_Template_InvalidAttributeArgumentPosition" xml:space="preserve">
+        <value>Vị trí của đối số {0} của attribute {1} nằm ngoài phạm vi [0..{2}].</value>
+    </data>
+    <data name="Error_Template_AttributeMemberCannotBeProcessed" xml:space="preserve">
+        <value>{0} của kiểu {1} không thể xử lý được vì nó được đánh dấu bằng nhiều attribute loại trừ lẫn nhau.</value>
+    </data>
+    <data name="Error_InvalidBinding" xml:space="preserve">
+        <value>Binding được xác định không chính xác.</value>
+    </data>
+    <data name="Error_Template_TooLargeComposition" xml:space="preserve">
+        <value>Composition quá lớn. Đã dừng tại phụ thuộc #{0}.</value>
+    </data>
+    <data name="Error_Template_CannotConstructAbstractType" xml:space="preserve">
+        <value>Không thể tạo instance của {0} vì nó là kiểu trừu tượng.</value>
+    </data>
+    <data name="Error_Template_CannotBeInstantiatedNoAccessibleConstructor" xml:space="preserve">
+        <value>Không thể tạo instance của {0} vì không có constructor nào có thể truy cập được.</value>
+    </data>
+    <data name="Error_Template_UnsupportLanguage" xml:space="preserve">
+        <value>{0} không hỗ trợ C# {1}. Vui lòng sử dụng phiên bản ngôn ngữ {2} hoặc mới hơn.</value>
+    </data>
+    <data name="Error_Template_CannotFindSetup" xml:space="preserve">
+        <value>Không thể tìm thấy thiết lập "{0}".</value>
+    </data>
+    <data name="Error_Template_NoAccessibleConstructor" xml:space="preserve">
+        <value>Không tìm thấy constructor không tĩnh có thể truy cập được của kiểu {0} với đối số khớp với "{1}".</value>
+    </data>
+    <data name="Error_Template_NoAccessibleMethod" xml:space="preserve">
+        <value>Không tìm thấy phương thức không tĩnh có thể truy cập được của kiểu {0} có tên "{1}" và đối số khớp với "{2}".</value>
+    </data>
+    <data name="Error_Template_NoAccessibleFieldOrProperty" xml:space="preserve">
+        <value>Không tìm thấy trường hoặc thuộc tính không tĩnh có thể truy cập được của kiểu {1} khớp với "{0}".</value>
+    </data>
+    <data name="Error_Template_MustBeApiCall" xml:space="preserve">
+        <value>{0} phải là một giá trị hằng số của kiểu {1} hoặc một lệnh gọi API đặc biệt.</value>
+    </data>
+    <data name="Warning_BindingIsNotUsed" xml:space="preserve">
+        <value>Binding không được sử dụng.</value>
+    </data>
+    <data name="Warning_Template_RootCannotBeResolvedByResolveMethods" xml:space="preserve">
+        <value>Root {0} không thể được giải quyết bằng các phương thức Resolve do các đối số {1}, vì vậy một ngoại lệ sẽ được ném ra khi cố gắng thực hiện.</value>
+    </data>
+    <data name="Warning_Template_InjectionSiteIsNotUsed" xml:space="preserve">
+        <value>Tag "{0}" tại Injection Site không được sử dụng.</value>
+    </data>
+    <data name="Warning_Template_BindingHasBeenOverridden" xml:space="preserve">
+        <value>Binding cho {0} đã bị ghi đè.</value>
+    </data>
+    <data name="Info_CodeGenerationAborted" xml:space="preserve">
+        <value>Quá trình tạo mã đã bị hủy bỏ.</value>
+    </data>
+    <data name="Error_UnhandledError" xml:space="preserve">
+        <value>Đã xảy ra lỗi không được xử lý.</value>
+    </data>
+    <data name="Error_TypeCannotBeInferred" xml:space="preserve">
+        <value>Không thể xác định kiểu. Hãy thử chỉ định nó một cách rõ ràng.</value>
+    </data>
+    <data name="Error_Template_StaticRootCannotUseLifetime" xml:space="preserve">
+        <value>Static root {0} của kiểu {1} không thể sử dụng Lifetime {2} trực tiếp hoặc thông qua một phụ thuộc.</value>
+    </data>
+</root>
