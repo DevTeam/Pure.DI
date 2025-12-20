@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
     <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
         <xsd:element name="root" msdata:IsDataSet="true">
@@ -17,156 +17,156 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="Warning_NoRoots" xml:space="preserve">
-        <value>कोई भी संरचना जड़ें घोषित नहीं हैं। कृपया कम से कम एक जड़ जोड़ें।</value>
+        <value>कोई भी composition roots घोषित नहीं किया गया है। कम से कम एक root जोड़ें।</value>
     </data>
     <data name="Error_Template_InvalidCompositionTypeName" xml:space="preserve">
-        <value>अमान्य संरचना प्रकार का नाम "{0}"।</value>
+        <value>अमान्य composition type नाम "{0}"।</value>
     </data>
     <data name="Error_Template_InvalidRootName" xml:space="preserve">
-        <value>अमान्य जड़ नाम "{0}"।</value>
+        <value>अमान्य root नाम "{0}"।</value>
     </data>
     <data name="Error_Template_RootDuplicate" xml:space="preserve">
-        <value>संरचना जड़ "{0}" पहले घोषित जड़ "{1}" की नकल करता है।</value>
+        <value>Composition root "{0}" पहले से घोषित root "{1}" की पुनरावृत्ति करता है।</value>
     </data>
     <data name="Error_AccumulatorTypeCannotBeGenericTypeMarker" xml:space="preserve">
-        <value>संचायक प्रकार एक सामान्य प्रकार मार्कर पर आधारित नहीं हो सकता है।</value>
+        <value>Accumulator प्रकार generic type marker पर आधारित नहीं हो सकता।</value>
     </data>
     <data name="Error_AccumulatorCannotAccumulateGenericTypeMarker" xml:space="preserve">
-        <value>संचायक सामान्य प्रकार मार्कर पर आधारित उदाहरणों को संचित नहीं कर सकता है।</value>
+        <value>Accumulator generic type marker पर आधारित instances को संचित नहीं कर सकता।</value>
     </data>
     <data name="Error_Template_InvalidArgumentName" xml:space="preserve">
-        <value>अमान्य तर्क नाम "{0}"।</value>
+        <value>अमान्य argument नाम "{0}"।</value>
     </data>
     <data name="Error_CompositionArgumentTypeCannotBeGenericTypeMarker" xml:space="preserve">
-        <value>संरचना तर्क प्रकार सामान्य प्रकार मार्कर पर आधारित नहीं हो सकता है।</value>
+        <value>Composition argument प्रकार generic type marker नहीं हो सकता।</value>
     </data>
     <data name="Error_InvalidBindingDueToCompilationError" xml:space="preserve">
-        <value>संकलन त्रुटि के कारण अमान्य बाइंडिंग।</value>
+        <value>compilation त्रुटि के कारण अमान्य binding।</value>
     </data>
     <data name="Error_Template_NotImplement" xml:space="preserve">
-        <value>{0} {1} को लागू नहीं करता है।</value>
+        <value>{0}, {1} को लागू (implement) नहीं करता है।</value>
     </data>
     <data name="Error_Template_CyclicDependency" xml:space="preserve">
-        <value>चक्रीय निर्भरता पाई गई: {0}।</value>
+        <value>चक्रीय निर्भरता (cyclic dependency) पाई गई: {0}।</value>
     </data>
     <data name="Error_Template_UnableToResolve" xml:space="preserve">
-        <value>"{0}" को {1} में हल नहीं किया जा सका।</value>
+        <value>{1} में "{0}" को हल करने में असमर्थ।</value>
     </data>
     <data name="Error_CannotBuildDependencyGraph" xml:space="preserve">
-        <value>निर्भरता ग्राफ निर्माण असंभव है।</value>
+        <value>Dependency graph बनाना संभव नहीं है।</value>
     </data>
     <data name="Error_Template_InvalidRegularExpression" xml:space="preserve">
-        <value>अमान्य नियमित अभिव्यक्ति {0}: "{1}"।</value>
+        <value>अमान्य regular expression {0}: "{1}"।</value>
     </data>
     <data name="Error_Template_InvalidWildcard" xml:space="preserve">
-        <value>अमान्य वाइल्डकार्ड {0}: "{1}"।</value>
+        <value>अमान्य wildcard {0}: "{1}"।</value>
     </data>
     <data name="Error_Template_TypeWithLifetimeRequiresDirectOrTransitiveInjection" xml:space="preserve">
-        <value>प्रकार {0} जीवनकाल {1} के साथ प्रकार {2} जीवनकाल {3} के साथ प्रत्यक्ष या परोक्ष निर्भरता इंजेक्शन की आवश्यकता है, जिससे डेटा लीक और अप्रत्याशित व्यवहार हो सकता है।</value>
+        <value>Lifetime {1} वाले प्रकार {0} को Lifetime {3} वाले प्रकार {2} के प्रत्यक्ष या सक्रामक (transitive) injection की आवश्यकता है, जिससे डेटा रिसाव या अप्रत्याशित व्यवहार हो सकता है।</value>
     </data>
     <data name="Error_Template_MaximumNumberOfIterations" xml:space="preserve">
-        <value>इष्टतम निर्भरता ग्राफ बनाते समय अधिकतम पुनरावृत्ति संख्या {0} पार हो गई। निर्भरता ग्राफ को अधिक सटीकता से निर्दिष्ट करें।</value>
+        <value>इष्टतम dependency graph बनाते समय पुनरावृत्तियों (iterations) की अधिकतम संख्या {0} पार हो गई है। कृपया dependency graph को स्पष्ट करें।</value>
     </data>
     <data name="Error_DependencyGraphConstractionFailure" xml:space="preserve">
-        <value>निर्भरता ग्राफ बनाना संभव नहीं है।</value>
+        <value>Dependency graph बनाना संभव नहीं है।</value>
     </data>
     <data name="Error_Template_LifetimeDoesNotSupportCyclicDependencies" xml:space="preserve">
-        <value>{0} जीवनकाल चक्रीय निर्भरताओं का समर्थन नहीं करता है।</value>
+        <value>Lifetime {0} चक्रीय निर्भरता का समर्थन नहीं करता है।</value>
     </data>
     <data name="Error_InvalidNumberOfInitializers" xml:space="preserve">
-        <value>अमान्य आरंभीकरण संख्या।</value>
+        <value>initializers की अमान्य संख्या।</value>
     </data>
     <data name="Error_Template_CannotUseContextDirectly" xml:space="preserve">
-        <value>"{0}" को सीधे उपयोग नहीं किया जा सकता। केवल इसकी विधियाँ या गुण उपयोग किए जा सकते हैं।</value>
+        <value>"{0}" का सीधे उपयोग करना संभव नहीं है। केवल इसके methods या properties ही उपलब्ध हैं।</value>
     </data>
     <data name="Error_InvalidRootType" xml:space="preserve">
-        <value>अमान्य जड़ प्रकार।</value>
+        <value>अमान्य root प्रकार।</value>
     </data>
     <data name="Error_InvalidRootsRype" xml:space="preserve">
-        <value>अमान्य जड़ प्रकार।</value>
+        <value>अमान्य roots प्रकार।</value>
     </data>
     <data name="Error_Template_NoTypeForWildcard" xml:space="preserve">
-        <value>{0} से विरासत में मिला कोई प्रकार नहीं मिला जिसका नाम "{1}" फ़िल्टर से मेल खाता है।</value>
+        <value>{0} से विरासत में मिला कोई प्रकार नहीं मिला जिसका नाम फ़िल्टर "{1}" से मेल खाता हो।</value>
     </data>
     <data name="Error_InvalidBuildersType" xml:space="preserve">
-        <value>अमान्य बिल्डर प्रकार।</value>
+        <value>अमान्य builders प्रकार।</value>
     </data>
     <data name="Error_InvalidBuilderType" xml:space="preserve">
-        <value>अमान्य बिल्डर प्रकार।</value>
+        <value>अमान्य builder प्रकार।</value>
     </data>
     <data name="Error_TooManyTypeParameters" xml:space="preserve">
-        <value>बहुत अधिक प्रकार पैरामीटर।</value>
+        <value>बहुत अधिक type parameters।</value>
     </data>
     <data name="Error_AsynchronousFactoryWithAsyncNotSupported" xml:space="preserve">
-        <value>एसिंक कीवर्ड के साथ एसिंक्रोनस फैक्टरी समर्थित नहीं है।</value>
+        <value>async कीवर्ड के साथ असिंक्रोनस फ़ैक्टरी (asynchronous factory) समर्थित नहीं है।</value>
     </data>
     <data name="Error_Template_NotSupported" xml:space="preserve">
         <value>{0} समर्थित नहीं है।</value>
     </data>
     <data name="Error_Template_MustBeValueOfType" xml:space="preserve">
-        <value>{0} को {1} प्रकार का गैर-शून्य मान होना चाहिए।</value>
+        <value>{0} प्रकार {1} का एक non-null मान होना चाहिए।</value>
     </data>
     <data name="Error_Template_InvalidIdentifier" xml:space="preserve">
-        <value>अमान्य पहचानकर्ता "{0}"।</value>
+        <value>अमान्य identifier "{0}"।</value>
     </data>
     <data name="Error_Template_InvalidAttributeArgumentPosition" xml:space="preserve">
-        <value>विशेषता {1} का तर्क स्थान {0} सीमा [0..{2}] के बाहर है।</value>
+        <value>Attribute {1} की Argument स्थिति {0} रेंज [0..{2}] से बाहर है।</value>
     </data>
     <data name="Error_Template_AttributeMemberCannotBeProcessed" xml:space="preserve">
-        <value>{1} प्रकार का {0} संसाधित नहीं किया जा सकता क्योंकि यह कई परस्पर अनन्य विशेषताओं से चिह्नित है।</value>
+        <value>प्रकार {1} के {0} को संसाधित नहीं किया जा सकता क्योंकि यह कई परस्पर अनन्य (mutually exclusive) attributes के साथ चिह्नित है।</value>
     </data>
     <data name="Error_InvalidBinding" xml:space="preserve">
-        <value>बाइंडिंग गलत तरीके से परिभाषित है।</value>
+        <value>Binding गलत तरीके से परिभाषित की गई है।</value>
     </data>
     <data name="Error_Template_TooLargeComposition" xml:space="preserve">
-        <value>संरचना बहुत बड़ी है। निर्भरता #{0} पर रोक दिया गया।</value>
+        <value>Composition बहुत बड़ी है। निर्भरता संख्या {0} पर रुक गया।</value>
     </data>
     <data name="Error_Template_CannotConstructAbstractType" xml:space="preserve">
-        <value>{0} का उदाहरण नहीं बनाया जा सकता क्योंकि यह एक अमूर्त प्रकार है।</value>
+        <value>{0} का instance नहीं बनाया जा सकता क्योंकि यह एक abstract प्रकार है।</value>
     </data>
     <data name="Error_Template_CannotBeInstantiatedNoAccessibleConstructor" xml:space="preserve">
-        <value>{0} का उदाहरण नहीं बनाया जा सकता क्योंकि कोई सुलभ कन्स्ट्रक्टर उपलब्ध नहीं है।</value>
+        <value>{0} का instance नहीं बनाया जा सकता क्योंकि कोई सुलभ constructor उपलब्ध नहीं है।</value>
     </data>
     <data name="Error_Template_UnsupportLanguage" xml:space="preserve">
-        <value>{0} C# {1} का समर्थन नहीं करता है। कृपया भाषा संस्करण {2} या उच्चतर उपयोग करें।</value>
+        <value>{0}, C# {1} का समर्थन नहीं करता है। कृपया भाषा संस्करण {2} या नया उपयोग करें।</value>
     </data>
     <data name="Error_Template_CannotFindSetup" xml:space="preserve">
         <value>सेटअप "{0}" नहीं मिला।</value>
     </data>
     <data name="Error_Template_NoAccessibleConstructor" xml:space="preserve">
-        <value>{0} प्रकार का कोई सुलभ गैर-स्थैतिक कन्स्ट्रक्टर नहीं है जो तर्क "{1}" से मेल खाता हो।</value>
+        <value>"{1}" से मेल खाने वाले argument के साथ प्रकार {0} का कोई सुलभ गैर-स्थिर (non-static) constructor नहीं मिला।</value>
     </data>
     <data name="Error_Template_NoAccessibleMethod" xml:space="preserve">
-        <value>{0} प्रकार की कोई सुलभ गैर-स्थैतिक विधि नहीं है जो नाम "{1}" और तर्क "{2}" से मेल खाती हो।</value>
+        <value>नाम "{1}" और argument "{2}" के साथ मेल खाने वाले प्रकार {0} का कोई सुलभ गैर-स्थिर (non-static) method नहीं मिला।</value>
     </data>
     <data name="Error_Template_NoAccessibleFieldOrProperty" xml:space="preserve">
-        <value>{1} का कोई सुलभ गैर-स्थैतिक लिखने योग्य फ़ील्ड या गुण नहीं है जो "{0}" से मेल खाता हो।</value>
+        <value>प्रकार {1} का कोई सुलभ गैर-स्थिर field या property नहीं मिली जो "{0}" से मेल खाती हो।</value>
     </data>
     <data name="Error_Template_MustBeApiCall" xml:space="preserve">
-        <value>{0} को {1} प्रकार का स्थिर मान या विशेष API कॉल होना चाहिए।</value>
+        <value>{0} प्रकार {1} का एक constant मान या एक विशेष API कॉल होना चाहिए।</value>
     </data>
     <data name="Warning_BindingIsNotUsed" xml:space="preserve">
-        <value>बाइंडिंग उपयोग नहीं की गई है।</value>
+        <value>Binding का उपयोग नहीं किया गया है।</value>
     </data>
     <data name="Warning_Template_RootCannotBeResolvedByResolveMethods" xml:space="preserve">
-        <value>जड़ {0} को Resolve विधियों द्वारा हल नहीं किया जा सकता क्योंकि इसमें तर्क {1} हैं, इसलिए प्रयास करने पर एक अपवाद फेंका जाएगा।</value>
+        <value>Arguments {1} के कारण Root {0} को Resolve विधियों द्वारा हल नहीं किया जा सकता है; प्रयास करने पर एक अपवाद (exception) फेंका जाएगा।</value>
     </data>
     <data name="Warning_Template_InjectionSiteIsNotUsed" xml:space="preserve">
-        <value>इंजेक्शन साइट पर टैग का "{0}" उपयोग नहीं किया गया है।</value>
+        <value>Injection site पर टैग "{0}" का उपयोग नहीं किया गया है।</value>
     </data>
     <data name="Warning_Template_BindingHasBeenOverridden" xml:space="preserve">
-        <value>{0} के लिए बाइंडिंग ओवरराइड कर दी गई है।</value>
+        <value>{0} के लिए Binding ओवरराइड कर दी गई है।</value>
     </data>
     <data name="Info_CodeGenerationAborted" xml:space="preserve">
-        <value>कोड जनरेशन रद्द कर दिया गया है।</value>
+        <value>कोड जनरेशन रद्द कर दिया गया।</value>
     </data>
     <data name="Error_UnhandledError" xml:space="preserve">
-        <value>एक अनियंत्रित त्रुटि हुई है।</value>
+        <value>एक अनहैंडल्ड त्रुटि हुई।</value>
     </data>
     <data name="Error_TypeCannotBeInferred" xml:space="preserve">
-        <value>प्रकार निर्धारित नहीं किया जा सका। इसे स्पष्ट रूप से निर्दिष्ट करें।</value>
+        <value>प्रकार निर्धारित नहीं किया जा सकता। इसे स्पष्ट रूप से निर्दिष्ट करने का प्रयास करें।</value>
     </data>
     <data name="Error_Template_StaticRootCannotUseLifetime" xml:space="preserve">
-        <value>स्टैटिक रूट {0} प्रकार {1} का, सीधे या किसी निर्भरता के माध्यम से लाइफटाइम {2} का उपयोग नहीं कर सकता।</value>
+        <value>प्रकार {1} का स्थिर root {0} सीधे या किसी निर्भरता के माध्यम से Lifetime {2} का उपयोग नहीं कर सकता है।</value>
     </data>
 </root>

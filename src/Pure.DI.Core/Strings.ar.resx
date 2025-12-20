@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
     <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
         <xsd:element name="root" msdata:IsDataSet="true">
@@ -17,156 +17,156 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="Warning_NoRoots" xml:space="preserve">
-        <value>لم يتم تعريف أي من جذور التركيب. أضف جذرًا واحدًا على الأقل.</value>
+        <value>لم يتم التصريح عن أي من جذور التكوين (composition roots). أضف جذراً واحداً على الأقل.</value>
     </data>
     <data name="Error_Template_InvalidCompositionTypeName" xml:space="preserve">
-        <value>اسم نوع التركيب "{0}" غير صالح.</value>
+        <value>اسم نوع التكوين "{0}" غير صالح.</value>
     </data>
     <data name="Error_Template_InvalidRootName" xml:space="preserve">
         <value>اسم الجذر "{0}" غير صالح.</value>
     </data>
     <data name="Error_Template_RootDuplicate" xml:space="preserve">
-        <value>جذر التركيب "{0}" يُكرر الجذر المُعلن مسبقًا "{1}".</value>
+        <value>جذر التكوين "{0}" يكرر جذراً تم التصريح عنه سابقاً "{1}".</value>
     </data>
     <data name="Error_AccumulatorTypeCannotBeGenericTypeMarker" xml:space="preserve">
-        <value>لا يمكن أن يعتمد نوع المُجمِّع على علامة نوع عام.</value>
+        <value>لا يمكن أن يعتمد نوع المجمع (accumulator type) على علامة نوع عام (generic type marker).</value>
     </data>
     <data name="Error_AccumulatorCannotAccumulateGenericTypeMarker" xml:space="preserve">
-        <value>لا يمكن للمُجمِّع تجميع عينات تعتمد على علامة نوع عام.</value>
+        <value>لا يمكن للمجمع تراكم مثيلات تعتمد على علامة نوع عام.</value>
     </data>
     <data name="Error_Template_InvalidArgumentName" xml:space="preserve">
-        <value>اسم الوسيط "{0}" غير صالح.</value>
+        <value>اسم الوسيط (argument) "{0}" غير صالح.</value>
     </data>
     <data name="Error_CompositionArgumentTypeCannotBeGenericTypeMarker" xml:space="preserve">
-        <value>لا يمكن أن يعتمد نوع وسيط التركيب على علامة نوع عام.</value>
+        <value>لا يمكن أن يكون نوع وسيط التكوين علامة نوع عام.</value>
     </data>
     <data name="Error_InvalidBindingDueToCompilationError" xml:space="preserve">
-        <value>ربط غير صالح بسبب خطأ في التجميع.</value>
+        <value>ارتباط (binding) غير صالح بسبب خطأ في التحويل البرمجي.</value>
     </data>
     <data name="Error_Template_NotImplement" xml:space="preserve">
-        <value>{0} لا يُنفذ {1}.</value>
+        <value>{0} لا ينفذ {1}.</value>
     </data>
     <data name="Error_Template_CyclicDependency" xml:space="preserve">
-        <value>تم اكتشاف اعتمادية دائرية: {0}.</value>
+        <value>تم اكتشاف تبعية دائرية: {0}.</value>
     </data>
     <data name="Error_Template_UnableToResolve" xml:space="preserve">
         <value>تعذر حل "{0}" في {1}.</value>
     </data>
     <data name="Error_CannotBuildDependencyGraph" xml:space="preserve">
-        <value>لا يمكن بناء مخطط الاعتماديات.</value>
+        <value>تعذر بناء مخطط التبعيات (dependency graph).</value>
     </data>
     <data name="Error_Template_InvalidRegularExpression" xml:space="preserve">
-        <value>تعبير عادي غير صالح {0}: "{1}".</value>
+        <value>تعبير نمطي غير صالح {0}: "{1}".</value>
     </data>
     <data name="Error_Template_InvalidWildcard" xml:space="preserve">
-        <value>حرف عام غير صالح {0}: "{1}".</value>
+        <value>قناع (wildcard) غير صالح {0}: "{1}".</value>
     </data>
     <data name="Error_Template_TypeWithLifetimeRequiresDirectOrTransitiveInjection" xml:space="preserve">
-        <value>النوع {0} ذو العمر {1} يتطلب حقنًا مباشرًا أو غير مباشر للنوع {2} ذي العمر {3}، مما قد يؤدي إلى تسرب بيانات أو سلوك غير متوقع.</value>
+        <value>النوع {0} مع Lifetime {1} يتطلب حقن تبعية مباشر أو عابر للنوع {2} مع Lifetime {3}، مما قد يؤدي إلى تسرب البيانات أو سلوك غير متوقع.</value>
     </data>
     <data name="Error_Template_MaximumNumberOfIterations" xml:space="preserve">
-        <value>تم تجاوز الحد الأقصى لعدد التكرارات {0} عند بناء مخطط الاعتماديات الأمثل. حاول تحديد مخطط الاعتماديات بدقة أكبر.</value>
+        <value>تم تجاوز الحد الأقصى لعدد التكرارات {0} عند بناء مخطط التبعيات الأمثل. يرجى توضيح مخطط التبعيات.</value>
     </data>
     <data name="Error_DependencyGraphConstractionFailure" xml:space="preserve">
-        <value>لا يمكن بناء مخطط الاعتماديات.</value>
+        <value>تعذر بناء مخطط التبعيات.</value>
     </data>
     <data name="Error_Template_LifetimeDoesNotSupportCyclicDependencies" xml:space="preserve">
-        <value>عمر {0} لا يدعم الاعتماديات الدائرية.</value>
+        <value>الـ Lifetime {0} لا يدعم التبعيات الدائرية.</value>
     </data>
     <data name="Error_InvalidNumberOfInitializers" xml:space="preserve">
-        <value>عدد غير صالح من المُهيئات.</value>
+        <value>عدد غير صالح من المبدئيات (initializers).</value>
     </data>
     <data name="Error_Template_CannotUseContextDirectly" xml:space="preserve">
-        <value>لا يمكن استخدام "{0}" مباشرةً. يمكن استخدام خواصه أو طرقه فقط.</value>
+        <value>لا يمكن استخدام "{0}" مباشرة. تتوفر فقط أساليبه (methods) أو خصائصه (properties).</value>
     </data>
     <data name="Error_InvalidRootType" xml:space="preserve">
         <value>نوع جذر غير صالح.</value>
     </data>
     <data name="Error_InvalidRootsRype" xml:space="preserve">
-        <value>نوع الجذور غير صالح.</value>
+        <value>نوع جذور غير صالح.</value>
     </data>
     <data name="Error_Template_NoTypeForWildcard" xml:space="preserve">
-        <value>لم يتم العثور على نوع يرث من {0} ويتطابق اسمه مع المرشح "{1}".</value>
+        <value>لم يتم العثور على نوع يرث من {0} ويتوافق اسمه مع الفلتر "{1}".</value>
     </data>
     <data name="Error_InvalidBuildersType" xml:space="preserve">
-        <value>نوع البنائين غير صالح.</value>
+        <value>نوع بناة غير صالح.</value>
     </data>
     <data name="Error_InvalidBuilderType" xml:space="preserve">
-        <value>نوع الباني غير صالح.</value>
+        <value>نوع بناء غير صالح.</value>
     </data>
     <data name="Error_TooManyTypeParameters" xml:space="preserve">
-        <value>عدد كبير جدًا من معاملات النوع.</value>
+        <value>عدد كبير جداً من معلمات النوع.</value>
     </data>
     <data name="Error_AsynchronousFactoryWithAsyncNotSupported" xml:space="preserve">
-        <value>دالة التزامن غير مدعومة مع الكلمة المفتاحية async.</value>
+        <value>المصنع غير المتزامن (asynchronous factory) مع الكلمة الأساسية async غير مدعوم.</value>
     </data>
     <data name="Error_Template_NotSupported" xml:space="preserve">
         <value>{0} غير مدعوم.</value>
     </data>
     <data name="Error_Template_MustBeValueOfType" xml:space="preserve">
-        <value>{0} يجب أن يكون قيمة غير فارغة من النوع {1}.</value>
+        <value>يجب أن يكون {0} قيمة غير فارغة من النوع {1}.</value>
     </data>
     <data name="Error_Template_InvalidIdentifier" xml:space="preserve">
-        <value>مُعرِّف غير صالح "{0}".</value>
+        <value>معرف غير صالح "{0}".</value>
     </data>
     <data name="Error_Template_InvalidAttributeArgumentPosition" xml:space="preserve">
         <value>موضع الوسيط {0} للسمة {1} خارج النطاق [0..{2}].</value>
     </data>
     <data name="Error_Template_AttributeMemberCannotBeProcessed" xml:space="preserve">
-        <value>{0} من النوع {1} لا يمكن معالجته لأنه مُعلَّم بسمات متعارضة.</value>
+        <value>لا يمكن معالجة {0} من النوع {1} لأنه مميز بسمات متعددة حصرية متبادلة.</value>
     </data>
     <data name="Error_InvalidBinding" xml:space="preserve">
-        <value>الربط مُعرَّف بشكل غير صحيح.</value>
+        <value>تم تعريف الارتباط (binding) بشكل غير صحيح.</value>
     </data>
     <data name="Error_Template_TooLargeComposition" xml:space="preserve">
-        <value>التركيب كبير جدًا. توقف عند الاعتمادية رقم #{0}.</value>
+        <value>التكوين كبير جداً. توقف عند التبعية رقم {0}.</value>
     </data>
     <data name="Error_Template_CannotConstructAbstractType" xml:space="preserve">
-        <value>لا يمكن إنشاء مثيل لـ {0} لأنه نوع مجرد.</value>
+        <value>لا يمكن إنشاء مثيل من {0} لأنه نوع مجرد (abstract type).</value>
     </data>
     <data name="Error_Template_CannotBeInstantiatedNoAccessibleConstructor" xml:space="preserve">
-        <value>لا يمكن إنشاء مثيل لـ {0} بسبب عدم وجود مُنشئ قابل للوصول.</value>
+        <value>لا يمكن إنشاء مثيل من {0} لعدم توفر منشئ (constructor) يمكن الوصول إليه.</value>
     </data>
     <data name="Error_Template_UnsupportLanguage" xml:space="preserve">
-        <value>{0} لا يدعم C# {1}. يرجى استخدام إصدار لغة {2} أو أحدث.</value>
+        <value>{0} لا يدعم C# {1}. يرجى استخدام إصدار اللغة {2} أو أحدث.</value>
     </data>
     <data name="Error_Template_CannotFindSetup" xml:space="preserve">
-        <value>تعذر العثور على الإعداد "{0}".</value>
+        <value>تعذر العثور على الإعداد (setup) "{0}".</value>
     </data>
     <data name="Error_Template_NoAccessibleConstructor" xml:space="preserve">
-        <value>لا يوجد مُنشئ غير ساكن قابل للوصول للنوع {0} مع وسيط يتطابق مع "{1}".</value>
+        <value>لا يوجد منشئ غير ثابت يمكن الوصول إليه من النوع {0} مع وسيط يتوافق مع "{1}".</value>
     </data>
     <data name="Error_Template_NoAccessibleMethod" xml:space="preserve">
-        <value>لا توجد طريقة غير ساكنة قابلة للوصول للنوع {0} مع اسم يتطابق مع "{1}" ووسيط يتطابق مع "{2}".</value>
+        <value>لا توجد طريقة (method) غير ثابتة يمكن الوصول إليها من النوع {0} باسم "{1}" ووسيط يتوافق مع "{2}".</value>
     </data>
     <data name="Error_Template_NoAccessibleFieldOrProperty" xml:space="preserve">
-        <value>لا يوجد حقل أو خاصية قابلة للكتابة غير ساكنة تتطابق مع "{0}" لـ {1}.</value>
+        <value>لا يوجد حقل أو خاصية غير ثابتة يمكن الوصول إليها من النوع {1} تتوافق مع "{0}".</value>
     </data>
     <data name="Error_Template_MustBeApiCall" xml:space="preserve">
-        <value>{0} يجب أن يكون قيمة ثابتة من النوع {1} أو استدعاء API خاص.</value>
+        <value>يجب أن يكون {0} قيمة ثابتة من النوع {1} أو استدعاء API خاص.</value>
     </data>
     <data name="Warning_BindingIsNotUsed" xml:space="preserve">
-        <value>الربط غير مستخدم.</value>
+        <value>الارتباط (binding) غير مستخدم.</value>
     </data>
     <data name="Warning_Template_RootCannotBeResolvedByResolveMethods" xml:space="preserve">
-        <value>لا يمكن حل الجذر {0} باستخدام طرق Resolve بسبب وجود وسائط {1}، لذا سيتم طرح استثناء عند المحاولة.</value>
+        <value>لا يمكن حل الجذر {0} باستخدام طرق Resolve بسبب الوسائط {1}؛ سيتم طرح استثناء عند المحاولة.</value>
     </data>
     <data name="Warning_Template_InjectionSiteIsNotUsed" xml:space="preserve">
-        <value>"{0}" الخاص بالعلامة على موقع الحقن غير مستخدم.</value>
+        <value>الوسم "{0}" في موقع الحقن (injection site) غير مستخدم.</value>
     </data>
     <data name="Warning_Template_BindingHasBeenOverridden" xml:space="preserve">
-        <value>تم تجاوز الربط لـ {0}.</value>
+        <value>تم تجاوز الارتباط لـ {0}.</value>
     </data>
     <data name="Info_CodeGenerationAborted" xml:space="preserve">
-        <value>تم إيقاف إنشاء الأكواد.</value>
+        <value>تم إحباط إنشاء الكود.</value>
     </data>
     <data name="Error_UnhandledError" xml:space="preserve">
         <value>حدث خطأ غير معالج.</value>
     </data>
     <data name="Error_TypeCannotBeInferred" xml:space="preserve">
-        <value>تعذر تحديد النوع. حدده صراحةً.</value>
+        <value>تعذر تحديد النوع. حاول تحديده صراحة.</value>
     </data>
     <data name="Error_Template_StaticRootCannotUseLifetime" xml:space="preserve">
-        <value>الجذر الثابت {0} من النوع {1} لا يمكنه استخدام دورة الحياة {2} مباشرة أو من خلال تبعية.</value>
+        <value>لا يمكن للجذر الثابت {0} من النوع {1} استخدام Lifetime {2} مباشرة أو من خلال تبعية.</value>
     </data>
 </root>

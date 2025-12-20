@@ -60,7 +60,7 @@ namespace Pure.DI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The accumulator cannot accumulate instances of generic type markers..
+        ///   Looks up a localized string similar to The accumulator cannot accumulate instances based on a generic type marker..
         /// </summary>
         internal static string Error_AccumulatorCannotAccumulateGenericTypeMarker {
             get {
@@ -78,7 +78,7 @@ namespace Pure.DI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Asynchronous factories using the &apos;async&apos; keyword are not supported..
+        ///   Looks up a localized string similar to Asynchronous factory with the &apos;async&apos; keyword is not supported..
         /// </summary>
         internal static string Error_AsynchronousFactoryWithAsyncNotSupported {
             get {
@@ -96,7 +96,7 @@ namespace Pure.DI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The composition argument type cannot be a generic type marker..
+        ///   Looks up a localized string similar to The composition argument type cannot be based on a generic type marker..
         /// </summary>
         internal static string Error_CompositionArgumentTypeCannotBeGenericTypeMarker {
             get {
@@ -105,7 +105,7 @@ namespace Pure.DI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot construct the dependency graph..
+        ///   Looks up a localized string similar to Cannot build the dependency graph..
         /// </summary>
         internal static string Error_DependencyGraphConstractionFailure {
             get {
@@ -123,7 +123,7 @@ namespace Pure.DI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The binding is invalid due to a compilation error..
+        ///   Looks up a localized string similar to Invalid binding due to a compilation error..
         /// </summary>
         internal static string Error_InvalidBindingDueToCompilationError {
             get {
@@ -186,7 +186,7 @@ namespace Pure.DI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot instantiate {0} because no accessible constructor is available..
+        ///   Looks up a localized string similar to Cannot construct an instance of {0} because no accessible constructor is available..
         /// </summary>
         internal static string Error_Template_CannotBeInstantiatedNoAccessibleConstructor {
             get {
@@ -222,7 +222,7 @@ namespace Pure.DI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A cyclic dependency was found: {0}..
+        ///   Looks up a localized string similar to Cyclic dependency found: {0}..
         /// </summary>
         internal static string Error_Template_CyclicDependency {
             get {
@@ -231,7 +231,7 @@ namespace Pure.DI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The argument name &quot;{0}&quot; is invalid..
+        ///   Looks up a localized string similar to Invalid argument name &quot;{0}&quot;..
         /// </summary>
         internal static string Error_Template_InvalidArgumentName {
             get {
@@ -240,7 +240,7 @@ namespace Pure.DI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The argument position {0} for attribute {1} is out of range [0..{2}]..
+        ///   Looks up a localized string similar to The position of argument {0} of attribute {1} is out of range [0..{2}]..
         /// </summary>
         internal static string Error_Template_InvalidAttributeArgumentPosition {
             get {
@@ -249,7 +249,7 @@ namespace Pure.DI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The composition type name &quot;{0}&quot; is invalid..
+        ///   Looks up a localized string similar to Invalid composition type name &quot;{0}&quot;..
         /// </summary>
         internal static string Error_Template_InvalidCompositionTypeName {
             get {
@@ -258,7 +258,7 @@ namespace Pure.DI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The identifier &quot;{0}&quot; is invalid..
+        ///   Looks up a localized string similar to Invalid identifier &quot;{0}&quot;..
         /// </summary>
         internal static string Error_Template_InvalidIdentifier {
             get {
@@ -276,7 +276,7 @@ namespace Pure.DI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The root name &quot;{0}&quot; is invalid..
+        ///   Looks up a localized string similar to Invalid root name &quot;{0}&quot;..
         /// </summary>
         internal static string Error_Template_InvalidRootName {
             get {
@@ -303,7 +303,7 @@ namespace Pure.DI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The maximum number of iterations ({0}) was exceeded while building the optimal dependency graph. Try specifying the dependency graph more accurately..
+        ///   Looks up a localized string similar to The maximum number of iterations {0} was exceeded while building the optimal dependency graph. Refine the dependency graph..
         /// </summary>
         internal static string Error_Template_MaximumNumberOfIterations {
             get {
@@ -312,7 +312,7 @@ namespace Pure.DI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} must be a constant value of type {1} or a specific API call..
+        ///   Looks up a localized string similar to {0} must be a constant value of type {1} or a special API call..
         /// </summary>
         internal static string Error_Template_MustBeApiCall {
             get {
@@ -339,7 +339,7 @@ namespace Pure.DI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No accessible non-static writable field or property found matching &quot;{0}&quot; in {1}..
+        ///   Looks up a localized string similar to No accessible non-static field or property of type {1} matching &quot;{0}&quot; was found..
         /// </summary>
         internal static string Error_Template_NoAccessibleFieldOrProperty {
             get {
@@ -348,7 +348,7 @@ namespace Pure.DI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No accessible non-static method of type {0} found with a name matching &quot;{1}&quot; and an argument matching &quot;{2}&quot;..
+        ///   Looks up a localized string similar to No accessible non-static method of type {0} found with name &quot;{1}&quot; and an argument matching &quot;{2}&quot;..
         /// </summary>
         internal static string Error_Template_NoAccessibleMethod {
             get {
@@ -357,7 +357,7 @@ namespace Pure.DI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Type {0} does not implement {1}..
+        ///   Looks up a localized string similar to {0} does not implement {1}..
         /// </summary>
         internal static string Error_Template_NotImplement {
             get {
@@ -393,7 +393,7 @@ namespace Pure.DI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Static root {0} of type {1} cannot use lifetime {2} directly or via a dependency..
+        ///   Looks up a localized string similar to Static root {0} of type {1} cannot use lifetime {2} directly or through a dependency..
         /// </summary>
         internal static string Error_Template_StaticRootCannotUseLifetime {
             get {
@@ -411,7 +411,7 @@ namespace Pure.DI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Type {0} with lifetime {1} requires direct or transitive injection of type {2} with lifetime {3}, which may lead to data leakage and unexpected behavior..
+        ///   Looks up a localized string similar to Type {0} with lifetime {1} requires direct or transitive injection of type {2} with lifetime {3}, which may lead to data leakage or unexpected behavior..
         /// </summary>
         internal static string Error_Template_TypeWithLifetimeRequiresDirectOrTransitiveInjection {
             get {
@@ -429,7 +429,7 @@ namespace Pure.DI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} does not support C# {1}. Please use language version {2} or later..
+        ///   Looks up a localized string similar to {0} does not support C# {1}. Use language version {2} or newer..
         /// </summary>
         internal static string Error_Template_UnsupportLanguage {
             get {
@@ -510,7 +510,7 @@ namespace Pure.DI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The root {0} cannot be resolved using Resolve methods because it has arguments ({1}); an exception will be thrown if attempted..
+        ///   Looks up a localized string similar to The root {0} cannot be resolved by Resolve methods due to arguments {1}, so an exception will be thrown when attempting to do so..
         /// </summary>
         internal static string Warning_Template_RootCannotBeResolvedByResolveMethods {
             get {
