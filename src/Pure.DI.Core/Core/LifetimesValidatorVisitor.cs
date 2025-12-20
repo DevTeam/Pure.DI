@@ -53,7 +53,7 @@ sealed class LifetimesValidatorVisitor(
                 if (ctx.Errors.Add(new RootKindSpecificLifetimeErrorKey(ctx.Root, targetNode)))
                 {
                     logger.CompileError(
-                        string.Format(Strings.Error_Template_StaicRootCannotUseLifetime, ctx.Root.Name, ctx.Root.Source.RootType, targetNode.Lifetime),
+                        string.Format(Strings.Error_Template_StaticRootCannotUseLifetime, ctx.Root.Name, ctx.Root.Source.RootType, targetNode.Lifetime),
                         dependency.Injection.Locations,
                         LogId.ErrorLifetimeDefect);
                 }
@@ -65,7 +65,7 @@ sealed class LifetimesValidatorVisitor(
                 if (ctx.Errors.Add(new RootKindSpecificLifetimeErrorKey(ctx.Root, sourceNode)))
                 {
                     logger.CompileError(
-                        string.Format(Strings.Error_Template_StaicRootCannotUseLifetime, ctx.Root.Name, ctx.Root.Source.RootType, sourceNode.Lifetime),
+                        string.Format(Strings.Error_Template_StaticRootCannotUseLifetime, ctx.Root.Name, ctx.Root.Source.RootType, sourceNode.Lifetime),
                         dependency.Injection.Locations,
                         LogId.ErrorLifetimeDefect);
                 }

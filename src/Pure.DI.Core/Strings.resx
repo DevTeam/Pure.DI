@@ -66,7 +66,7 @@
     <data name="Error_Template_TypeWithLifetimeRequiresDirectOrTransitiveInjection" xml:space="preserve">
         <value>Type {0} with lifetime {1} requires direct or transitive injection of type {2} with lifetime {3}, which may lead to data leakage and unexpected behavior.</value>
     </data>
-    <data name="Error_Template_StaicRootCannotUseLifetime" xml:space="preserve">
+    <data name="Error_Template_StaticRootCannotUseLifetime" xml:space="preserve">
         <value>Static root {0} of type {1} cannot use lifetime {2} directly or via a dependency.</value>
     </data>
     <data name="Error_Template_MaximumNumberOfIterations" xml:space="preserve">

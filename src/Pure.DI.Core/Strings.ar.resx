@@ -166,7 +166,7 @@
     <data name="Error_TypeCannotBeInferred" xml:space="preserve">
         <value>تعذر تحديد النوع. حدده صراحةً.</value>
     </data>
-    <data name="Error_Template_StaicRootCannotUseLifetime" xml:space="preserve">
+    <data name="Error_Template_StaticRootCannotUseLifetime" xml:space="preserve">
         <value>الجذر الثابت {0} من النوع {1} لا يمكنه استخدام دورة الحياة {2} مباشرة أو من خلال تبعية.</value>
     </data>
 </root>
