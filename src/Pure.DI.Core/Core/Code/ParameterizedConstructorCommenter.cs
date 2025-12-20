@@ -15,7 +15,7 @@ sealed class ParameterizedConstructorCommenter(
         code.AppendLine("/// <summary>");
         code.AppendLine($"/// This parameterized constructor creates a new instance of <see cref=\"{composition.Source.Source.Name.ClassName}\"/> with arguments.");
         code.AppendLine("/// </summary>");
-        foreach (var arg in composition.ClassArgs.GetArgsOfKind(ArgKind.Class))
+        foreach (var arg in composition.ClassArgs.GetArgsOfKind(ArgKind.Composition))
         {
             if (arg.Node.Arg?.Source is not {} mdArg)
             {

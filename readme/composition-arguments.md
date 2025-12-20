@@ -1,8 +1,8 @@
-#### Class arguments
+#### Composition arguments
 
 Sometimes you need to pass some state to a composition class to use it when resolving dependencies. To do this, just use the `Arg<T>(string argName)` method, specify the type of argument and its name. You can also specify a tag for each argument. You can then use them as dependencies when building the object graph. If you have multiple arguments of the same type, just use tags to distinguish them. The values of the arguments are manipulated when you create a composition class by calling its constructor. It is important to remember that only those arguments that are used in the object graph will appear in the constructor. Arguments that are not involved will not be added to the constructor arguments.
 > [!NOTE]
-> Actually, class arguments work like normal bindings. The difference is that they bind to the values of the arguments. These values will be injected wherever they are required.
+> Actually, composition arguments work like normal bindings. The difference is that they bind to the values of the arguments. These values will be injected wherever they are required.
 
 
 
@@ -17,13 +17,13 @@ DI.Setup(nameof(Composition))
     // Composition root "PaymentService"
     .Root<IPaymentProcessor>("PaymentService")
 
-    // Argument: Connection timeout (e.g., from config)
+    // Composition argument: Connection timeout (e.g., from config)
     .Arg<int>("timeoutSeconds")
 
-    // Argument: API Token (using a tag to distinguish from other strings)
+    // Composition argument: API Token (using a tag to distinguish from other strings)
     .Arg<string>("authToken", "api token")
 
-    // Argument: Bank gateway address
+    // Composition argument: Bank gateway address
     .Arg<string>("gatewayUrl");
 
 // Create the composition, passing real settings from "outside"
@@ -99,98 +99,5 @@ dotnet run
 
 </details>
 
-The following partial class will be generated:
 
-```c#
-partial class Composition
-{
-#if NET9_0_OR_GREATER
-  private readonly Lock _lock;
-#else
-  private readonly Object _lock;
-#endif
-
-  private readonly int _argTimeoutSeconds;
-  private readonly string _argAuthToken;
-  private readonly string _argGatewayUrl;
-
-  [OrdinalAttribute(128)]
-  public Composition(int timeoutSeconds, string authToken, string gatewayUrl)
-  {
-    _argTimeoutSeconds = timeoutSeconds;
-    _argAuthToken = authToken ?? throw new ArgumentNullException(nameof(authToken));
-    _argGatewayUrl = gatewayUrl ?? throw new ArgumentNullException(nameof(gatewayUrl));
-#if NET9_0_OR_GREATER
-    _lock = new Lock();
-#else
-    _lock = new Object();
-#endif
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _argTimeoutSeconds = parentScope._argTimeoutSeconds;
-    _argAuthToken = parentScope._argAuthToken;
-    _argGatewayUrl = parentScope._argGatewayUrl;
-    _lock = parentScope._lock;
-  }
-
-  public IPaymentProcessor PaymentService
-  {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    get
-    {
-      return new PaymentProcessor(_argAuthToken, new BankGateway(_argTimeoutSeconds, _argGatewayUrl));
-    }
-  }
-}
-```
-
-Class diagram:
-
-```mermaid
----
- config:
-  maxTextSize: 2147483647
-  maxEdges: 2147483647
-  class:
-   hideEmptyMembersBox: true
----
-classDiagram
-	BankGateway --|> IBankGateway
-	PaymentProcessor --|> IPaymentProcessor
-	Composition ..> PaymentProcessor : IPaymentProcessor PaymentService
-	BankGateway o-- Int32 : Argument "timeoutSeconds"
-	BankGateway o-- String : Argument "gatewayUrl"
-	PaymentProcessor *--  BankGateway : IBankGateway
-	PaymentProcessor o-- String : "api token"  Argument "authToken"
-	namespace Pure.DI.UsageTests.Basics.ClassArgumentsScenario {
-		class BankGateway {
-				<<class>>
-			+BankGateway(Int32 timeoutSeconds, String gatewayUrl)
-		}
-		class Composition {
-		<<partial>>
-		+IPaymentProcessor PaymentService
-		}
-		class IBankGateway {
-			<<interface>>
-		}
-		class IPaymentProcessor {
-			<<interface>>
-		}
-		class PaymentProcessor {
-				<<class>>
-			+PaymentProcessor(String token, IBankGateway gateway)
-		}
-	}
-	namespace System {
-		class Int32 {
-				<<struct>>
-		}
-		class String {
-				<<class>>
-		}
-	}
-```
 

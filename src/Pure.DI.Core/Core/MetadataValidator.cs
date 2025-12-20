@@ -141,10 +141,10 @@ sealed class MetadataValidator(
                         isValid = false;
                     }
 
-                    if (arg.Kind == ArgKind.Class && marker.IsMarkerBased(setup, arg.Type))
+                    if (arg.Kind == ArgKind.Composition && marker.IsMarkerBased(setup, arg.Type))
                     {
                         logger.CompileError(
-                            Strings.Error_ClassArgumentTypeCannotBeGenericTypeMarker,
+                            Strings.Error_CompositionArgumentTypeCannotBeGenericTypeMarker,
                             ImmutableArray.Create(location()),
                             LogId.ErrorInvalidMetadata);
                     }

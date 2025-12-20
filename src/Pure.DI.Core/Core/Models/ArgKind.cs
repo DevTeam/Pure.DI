@@ -2,6 +2,6 @@ namespace Pure.DI.Core.Models;
 
 enum ArgKind
 {
-    Class,
+    Composition,
     Root
 }

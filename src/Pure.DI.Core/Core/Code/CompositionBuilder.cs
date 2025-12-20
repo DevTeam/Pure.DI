@@ -67,7 +67,7 @@ class CompositionBuilder(
                 RootArgs = args.GetArgsOfKind(ArgKind.Root).ToImmutableArray()
             };
 
-            classArgs.AddRange(args.GetArgsOfKind(ArgKind.Class));
+            classArgs.AddRange(args.GetArgsOfKind(ArgKind.Composition));
             var typeDescription = typeResolver.Resolve(graph.Source, processedRoot.Injection.Type);
             var isMethod = (processedRoot.Kind & RootKinds.Method) == RootKinds.Method
                            || processedRoot.RootArgs.Length > 0

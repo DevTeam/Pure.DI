@@ -37,8 +37,8 @@
     <data name="Error_Template_InvalidArgumentName" xml:space="preserve">
         <value>اسم الوسيط "{0}" غير صالح.</value>
     </data>
-    <data name="Error_ClassArgumentTypeCannotBeGenericTypeMarker" xml:space="preserve">
-        <value>لا يمكن أن يعتمد نوع وسيط الفصل على علامة نوع عام.</value>
+    <data name="Error_CompositionArgumentTypeCannotBeGenericTypeMarker" xml:space="preserve">
+        <value>لا يمكن أن يعتمد نوع وسيط التركيب على علامة نوع عام.</value>
     </data>
     <data name="Error_InvalidBindingDueToCompilationError" xml:space="preserve">
         <value>ربط غير صالح بسبب خطأ في التجميع.</value>

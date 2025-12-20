@@ -9,7 +9,7 @@ sealed class ArgFieldsBuilder(ITypeResolver typeResolver)
 
     public CompositionCode Build(CompositionCode composition)
     {
-        var classArgs = composition.ClassArgs.GetArgsOfKind(ArgKind.Class).ToList();
+        var classArgs = composition.ClassArgs.GetArgsOfKind(ArgKind.Composition).ToList();
         if (classArgs.Count == 0)
         {
             return composition;

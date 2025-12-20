@@ -37,8 +37,8 @@
     <data name="Error_Template_InvalidArgumentName" xml:space="preserve">
         <value>Nombre de argumento inválido "{0}".</value>
     </data>
-    <data name="Error_ClassArgumentTypeCannotBeGenericTypeMarker" xml:space="preserve">
-        <value>El tipo de argumento de clase no puede basarse en un marcador de tipo genérico.</value>
+    <data name="Error_CompositionArgumentTypeCannotBeGenericTypeMarker" xml:space="preserve">
+        <value>El tipo de argumento de composición no puede basarse en un marcador de tipo genérico.</value>
     </data>
     <data name="Error_InvalidBindingDueToCompilationError" xml:space="preserve">
         <value>Enlace inválido debido a un error de compilación.</value>

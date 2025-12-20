@@ -574,11 +574,11 @@ Delayed dependency instantiation:
 - Creation of distinct instances with different configurations
 - Type-safe resolution of dependencies with constructor arguments
 
-## Class arguments
+## Composition arguments
 
 Sometimes you need to pass some state to a composition class to use it when resolving dependencies. To do this, just use the `Arg<T>(string argName)` method, specify the type of argument and its name. You can also specify a tag for each argument. You can then use them as dependencies when building the object graph. If you have multiple arguments of the same type, just use tags to distinguish them. The values of the arguments are manipulated when you create a composition class by calling its constructor. It is important to remember that only those arguments that are used in the object graph will appear in the constructor. Arguments that are not involved will not be added to the constructor arguments.
 > [!NOTE]
-> Actually, class arguments work like normal bindings. The difference is that they bind to the values of the arguments. These values will be injected wherever they are required.
+> Actually, composition arguments work like normal bindings. The difference is that they bind to the values of the arguments. These values will be injected wherever they are required.
 
 
 ```c#
@@ -592,13 +592,13 @@ DI.Setup(nameof(Composition))
     // Composition root "PaymentService"
     .Root<IPaymentProcessor>("PaymentService")
 
-    // Argument: Connection timeout (e.g., from config)
+    // Composition argument: Connection timeout (e.g., from config)
     .Arg<int>("timeoutSeconds")
 
-    // Argument: API Token (using a tag to distinguish from other strings)
+    // Composition argument: API Token (using a tag to distinguish from other strings)
     .Arg<string>("authToken", "api token")
 
-    // Argument: Bank gateway address
+    // Composition argument: Bank gateway address
     .Arg<string>("gatewayUrl");
 
 // Create the composition, passing real settings from "outside"

@@ -96,11 +96,11 @@ namespace Pure.DI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The class argument type cannot be based on a generic type marker..
+        ///   Looks up a localized string similar to The composition argument type cannot be based on a generic type marker..
         /// </summary>
-        internal static string Error_ClassArgumentTypeCannotBeGenericTypeMarker {
+        internal static string Error_CompositionArgumentTypeCannotBeGenericTypeMarker {
             get {
-                return ResourceManager.GetString("Error_ClassArgumentTypeCannotBeGenericTypeMarker", resourceCulture);
+                return ResourceManager.GetString("Error_CompositionArgumentTypeCannotBeGenericTypeMarker", resourceCulture);
             }
         }
         

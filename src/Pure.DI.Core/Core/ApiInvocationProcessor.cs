@@ -304,7 +304,7 @@ sealed class ApiInvocationProcessor(
                         break;
 
                     case nameof(IConfiguration.Arg):
-                        VisitArg(invocation, metadataVisitor, semanticModel, ArgKind.Class, invocation, genericName, invocationComments);
+                        VisitArg(invocation, metadataVisitor, semanticModel, ArgKind.Composition, invocation, genericName, invocationComments);
                         break;
 
                     case nameof(IConfiguration.RootArg):

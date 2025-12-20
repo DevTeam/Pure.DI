@@ -2,7 +2,7 @@
 $v=true
 $p=202
 $d=Exposed roots via arg
-$h=Composition roots from other assemblies or projects can be used as a source of bindings passed through class arguments. When you add a binding to a composition from another assembly or project, the roots of the composition with the `RootKind.Exposed` type will be used in the bindings automatically. For example, in some assembly a composition is defined as:
+$h=Composition roots from other assemblies or projects can be used as a source of bindings passed through composition arguments. When you add a binding to a composition from another assembly or project, the roots of the composition with the `RootKind.Exposed` type will be used in the bindings automatically. For example, in some assembly a composition is defined as:
 $h=```c#
 $h=public partial class CompositionInOtherProject
 $h={

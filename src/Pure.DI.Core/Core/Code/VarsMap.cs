@@ -70,7 +70,7 @@ class VarsMap(
     {
         return Disposables.Create(() => {
             _map
-                .Where(i => !(i.Value.Declaration.Node.ActualLifetime is Lifetime.Singleton or Lifetime.Scoped || i.Value.Declaration.Node.Arg is { Source.Kind: ArgKind.Class }))
+                .Where(i => !(i.Value.Declaration.Node.ActualLifetime is Lifetime.Singleton or Lifetime.Scoped || i.Value.Declaration.Node.Arg is { Source.Kind: ArgKind.Composition }))
                 .ToList()
                 .ForEach(i => {
 #if DEBUG

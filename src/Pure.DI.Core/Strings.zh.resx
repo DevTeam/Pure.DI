@@ -37,8 +37,8 @@
     <data name="Error_Template_InvalidArgumentName" xml:space="preserve">
         <value>无效的参数名称“{0}”。</value>
     </data>
-    <data name="Error_ClassArgumentTypeCannotBeGenericTypeMarker" xml:space="preserve">
-        <value>类参数类型不能基于泛型类型标记。</value>
+    <data name="Error_CompositionArgumentTypeCannotBeGenericTypeMarker" xml:space="preserve">
+        <value>组合参数类型不能基于泛型类型标记。</value>
     </data>
     <data name="Error_InvalidBindingDueToCompilationError" xml:space="preserve">
         <value>由于编译错误导致绑定无效。</value>

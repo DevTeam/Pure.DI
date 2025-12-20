@@ -37,8 +37,8 @@
     <data name="Error_Template_InvalidArgumentName" xml:space="preserve">
         <value>अमान्य तर्क नाम "{0}"।</value>
     </data>
-    <data name="Error_ClassArgumentTypeCannotBeGenericTypeMarker" xml:space="preserve">
-        <value>कक्षा तर्क प्रकार सामान्य प्रकार मार्कर पर आधारित नहीं हो सकता है।</value>
+    <data name="Error_CompositionArgumentTypeCannotBeGenericTypeMarker" xml:space="preserve">
+        <value>संरचना तर्क प्रकार सामान्य प्रकार मार्कर पर आधारित नहीं हो सकता है।</value>
     </data>
     <data name="Error_InvalidBindingDueToCompilationError" xml:space="preserve">
         <value>संकलन त्रुटि के कारण अमान्य बाइंडिंग।</value>

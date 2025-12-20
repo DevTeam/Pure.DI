@@ -3936,48 +3936,12 @@ DI.Setup("Composition")
 </blockquote></details>
 
 
-<details><summary>Field UsingDeclarations</summary><blockquote>
-
-Atomically generated smart tag with value "UsingDeclarations".
-            It's used for:
-            
-            class _Generator__CompositionClassBuilder_ <-- _IBuilder{TData, T}_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
-</blockquote></details>
-
-
 <details><summary>Field VarName</summary><blockquote>
 
 Atomically generated smart tag with value "VarName".
             It's used for:
             
             class _Generator__VarsMap_ <-- _IIdGenerator_(VarName) -- _IdGenerator_ as _Transient_
-</blockquote></details>
-
-
-<details><summary>Field UniqueTag</summary><blockquote>
-
-Atomically generated smart tag with value "UniqueTag".
-            It's used for:
-            
-            class _Generator__ApiInvocationProcessor_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve__BindingBuilder_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve_
-</blockquote></details>
-
-
-<details><summary>Field Override</summary><blockquote>
-
-Atomically generated smart tag with value "Override".
-            It's used for:
-            
-            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
-</blockquote></details>
-
-
-<details><summary>Field Overrider</summary><blockquote>
-
-Atomically generated smart tag with value "Overrider".
-            It's used for:
-            
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Overrider) -- _GraphOverrider_ as _PerBlock_
 </blockquote></details>
 
 
@@ -3990,12 +3954,48 @@ Atomically generated smart tag with value "Cleaner".
 </blockquote></details>
 
 
+<details><summary>Field UsingDeclarations</summary><blockquote>
+
+Atomically generated smart tag with value "UsingDeclarations".
+            It's used for:
+            
+            class _Generator__CompositionClassBuilder_ <-- _IBuilder{TData, T}_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field Override</summary><blockquote>
+
+Atomically generated smart tag with value "Override".
+            It's used for:
+            
+            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
 <details><summary>Field SpecialBinding</summary><blockquote>
 
 Atomically generated smart tag with value "SpecialBinding".
             It's used for:
             
             class _Generator__BindingBuilder_ <-- _IIdGenerator_(SpecialBinding) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
+<details><summary>Field UniqueTag</summary><blockquote>
+
+Atomically generated smart tag with value "UniqueTag".
+            It's used for:
+            
+            class _Generator__ApiInvocationProcessor_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve__BindingBuilder_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
+<details><summary>Field Overrider</summary><blockquote>
+
+Atomically generated smart tag with value "Overrider".
+            It's used for:
+            
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Overrider) -- _GraphOverrider_ as _PerBlock_
 </blockquote></details>
 
 
@@ -5435,7 +5435,7 @@ Creates an attribute instance.
 - [Simplified factory](readme/simplified-factory.md)
 - [Injection on demand](readme/injection-on-demand.md)
 - [Injections on demand with arguments](readme/injections-on-demand-with-arguments.md)
-- [Class arguments](readme/class-arguments.md)
+- [Composition arguments](readme/composition-arguments.md)
 - [Root arguments](readme/root-arguments.md)
 - [Tags](readme/tags.md)
 - [Smart tags](readme/smart-tags.md)
@@ -6392,7 +6392,7 @@ AI needs to understand the situation it’s in (context). This means knowing det
 | AI context file | Size | Tokens |
 | --------------- | ---- | ------ |
 | [AGENTS_SMALL.md](AGENTS_SMALL.md) | 33KB | 8K |
-| [AGENTS_MEDIUM.md](AGENTS_MEDIUM.md) | 119KB | 30K |
+| [AGENTS_MEDIUM.md](AGENTS_MEDIUM.md) | 120KB | 30K |
 | [AGENTS.md](AGENTS.md) | 449KB | 115K |
 
 For different IDEs, you can use the _AGENTS.md_ file as is by simply copying it to the root directory. For use with _JetBrains Rider_ and _Junie_, please refer to [these instructions](https://www.jetbrains.com/help/junie/customize-guidelines.html). For example, you can copy any _AGENTS.md_ file into your project (using _Pure.DI_) as _.junie/guidelines.md._
@@ -6483,9 +6483,9 @@ Thanks!
 
 ## Benchmarks
 
-BenchmarkDotNet v0.15.8, Windows 10 (10.0.19045.6332/22H2/2022Update)
-AMD Ryzen 9 5900X 4.20GHz, 1 CPU, 24 logical and 12 physical cores
-.NET SDK 10.0.100
+BenchmarkDotNet v0.14.0, Windows 10 (10.0.19045.4894/22H2/2022Update)
+AMD Ryzen 9 5900X, 1 CPU, 24 logical and 12 physical cores
+.NET SDK 9.0.100
 
 <details>
 <summary>Transient</summary>

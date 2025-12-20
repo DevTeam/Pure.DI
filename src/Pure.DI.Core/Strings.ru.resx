@@ -37,8 +37,8 @@
     <data name="Error_Template_InvalidArgumentName" xml:space="preserve">
         <value>Недопустимое имя аргумента "{0}".</value>
     </data>
-    <data name="Error_ClassArgumentTypeCannotBeGenericTypeMarker" xml:space="preserve">
-        <value>Тип аргумента класса не может быть основан на маркере обобщённого типа.</value>
+    <data name="Error_CompositionArgumentTypeCannotBeGenericTypeMarker" xml:space="preserve">
+        <value>Тип аргумента композиции не может быть основан на маркере обобщённого типа.</value>
     </data>
     <data name="Error_InvalidBindingDueToCompilationError" xml:space="preserve">
         <value>Недопустимая привязка из-за ошибки компиляции.</value>

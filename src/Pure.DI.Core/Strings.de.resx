@@ -37,8 +37,8 @@
     <data name="Error_Template_InvalidArgumentName" xml:space="preserve">
         <value>Ungültiger Argumentname "{0}".</value>
     </data>
-    <data name="Error_ClassArgumentTypeCannotBeGenericTypeMarker" xml:space="preserve">
-        <value>Der Klassenargumenttyp kann nicht auf einem generischen Typmarker basieren.</value>
+    <data name="Error_CompositionArgumentTypeCannotBeGenericTypeMarker" xml:space="preserve">
+        <value>Der Kompositionsargumenttyp kann nicht auf einem generischen Typ marker basieren.</value>
     </data>
     <data name="Error_InvalidBindingDueToCompilationError" xml:space="preserve">
         <value>Ungültige Bindung aufgrund eines Kompilierungsfehlers.</value>

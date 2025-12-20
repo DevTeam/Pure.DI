@@ -37,8 +37,8 @@
     <data name="Error_Template_InvalidArgumentName" xml:space="preserve">
         <value>無効な引数名「{0}」。</value>
     </data>
-    <data name="Error_ClassArgumentTypeCannotBeGenericTypeMarker" xml:space="preserve">
-        <value>クラス引数タイプはジェネリックタイプマーカーに基づくことはできません。</value>
+    <data name="Error_CompositionArgumentTypeCannotBeGenericTypeMarker" xml:space="preserve">
+        <value>コンポジション引数タイプはジェネリックタイプマーカーに基づくことはできません。</value>
     </data>
     <data name="Error_InvalidBindingDueToCompilationError" xml:space="preserve">
         <value>コンパイルエラーによる無効なバインディング。</value>

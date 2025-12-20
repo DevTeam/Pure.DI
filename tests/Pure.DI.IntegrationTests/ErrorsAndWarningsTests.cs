@@ -124,7 +124,7 @@ public class ErrorsAndWarningsTests
         // Then
         result.Success.ShouldBeFalse(result);
         result.Errors.Count.ShouldBe(2, result);
-        result.Errors.Count(i => i is { Id: LogId.ErrorInvalidMetadata, Message: "The class argument type cannot be based on a generic type marker." } && i.Locations.FirstOrDefault().GetSource() == "Arg<IList<TT>>(\"serviceName\")").ShouldBe(1, result);
+        result.Errors.Count(i => i is { Id: LogId.ErrorInvalidMetadata, Message: "The composition argument type cannot be based on a generic type marker." } && i.Locations.FirstOrDefault().GetSource() == "Arg<IList<TT>>(\"serviceName\")").ShouldBe(1, result);
     }
 
     [Fact]
@@ -189,7 +189,7 @@ public class ErrorsAndWarningsTests
         // Then
         result.Success.ShouldBeFalse(result);
         result.Errors.Count.ShouldBe(2, result);
-        result.Errors.Count(i => i is { Id: LogId.ErrorInvalidMetadata, Message: "The class argument type cannot be based on a generic type marker." } && i.Locations.FirstOrDefault().GetSource() == "Arg<TT>(\"serviceName\")").ShouldBe(1, result);
+        result.Errors.Count(i => i is { Id: LogId.ErrorInvalidMetadata, Message: "The composition argument type cannot be based on a generic type marker." } && i.Locations.FirstOrDefault().GetSource() == "Arg<TT>(\"serviceName\")").ShouldBe(1, result);
     }
 
     [Fact]
