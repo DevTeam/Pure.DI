@@ -312,7 +312,7 @@ public class ErrorsAndWarningsTests
         // Then
         result.Success.ShouldBeFalse(result);
         result.Errors
-            .Count(i => i is { Id: LogId.ErrorInvalidMetadata } && i.Message == $"It is not possible to use \"{contextArgName}\" directly. Only its methods or properties can be used." && i.Locations.FirstOrDefault().GetSource() == contextArgName)
+            .Count(i => i is { Id: LogId.ErrorInvalidMetadata } && i.Message == $"Cannot use \"{contextArgName}\" directly. Only its methods or properties are accessible." && i.Locations.FirstOrDefault().GetSource() == contextArgName)
             .ShouldBe(1, result);
     }
 
@@ -453,7 +453,7 @@ public class ErrorsAndWarningsTests
         result.Success.ShouldBeFalse(result);
         result.Errors.Count.ShouldBe(1, result);
         result.Errors
-            .Count(i => i is { Id: LogId.ErrorInvalidMetadata, Message: "Asynchronous factory with the async keyword is not supported." } && i.Locations.FirstOrDefault().GetSource() == "async")
+            .Count(i => i is { Id: LogId.ErrorInvalidMetadata, Message: "Asynchronous factory with the 'async' keyword is not supported." } && i.Locations.FirstOrDefault().GetSource() == "async")
             .ShouldBe(1, result);
     }
 
