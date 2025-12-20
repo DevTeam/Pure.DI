@@ -10,7 +10,7 @@
         <ProjectReference Include="..\..\src\Pure.DI\Pure.DI.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
         <ProjectReference Include="..\Clock\Clock.csproj"/>
         <Protobuf Include="..\GrpcService\Protos\clock.proto" GrpcServices="Client" />
-        <PackageReference Include="Grpc.AspNetCore" Version="2.71.0" />
+        <PackageReference Include="Grpc.AspNetCore" Version="2.76.0" />
     </ItemGroup>
 
 </Project>
