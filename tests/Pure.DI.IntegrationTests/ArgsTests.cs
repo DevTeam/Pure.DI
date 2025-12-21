@@ -618,6 +618,150 @@ public class ArgsTests
         result.StdOut.ShouldBe(["Some Name 37 56"], result);
     }
 
+    [Fact]
+    public async Task ShouldSupportArgInFactory()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService { string Name { get; } }
+
+                               class Service : IService
+                               {
+                                   public Service(string name) => Name = name;
+                                   public string Name { get; }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Arg<string>("name", "nameTag")
+                                           .Bind<IService>().To(ctx => {
+                                               ctx.Inject<string>("nameTag", out var name);
+                                               return new Service(name);
+                                           })
+                                           .Root<IService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition("Arg Value");
+                                       Console.WriteLine(composition.Service.Name);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Arg Value"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportArgWithDefaultValue()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService { string Name { get; } }
+
+                               class Service : IService
+                               {
+                                   public Service(string name = "Default") => Name = name;
+                                   public string Name { get; }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Arg<string>("name")
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition("Arg Value");
+                                       Console.WriteLine(composition.Service.Name);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Arg Value"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportArgInGenericComposition()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService<T> { T Value { get; } }
+
+                               class Service<T> : IService<T>
+                               {
+                                   public Service(T value) => Value = value;
+                                   public T Value { get; }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Arg<int>("val")
+                                           .Bind<IService<int>>().To<Service<int>>()
+                                           .Root<IService<int>>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition(123);
+                                       Console.WriteLine(composition.Service.Value);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["123"], result);
+    }
+
 #if ROSLYN4_8_OR_GREATER
     [Fact]
     public async Task ShouldSupportTagsAsArray()
