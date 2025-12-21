@@ -494,4 +494,99 @@ public class EnumerableInjectionTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Service creating", "Dependency 1 created", "Dependency 2 created", "Dependency 3 created"], result);
     }
+    [Fact]
+    public async Task ShouldSupportEnumerableOfValueTypes()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               struct Dependency {}
+                           
+                               class Service
+                               {
+                                   public Service(IEnumerable<Dependency> deps)
+                                   { 
+                                       int count = 0;
+                                       foreach(var dep in deps) count++;
+                                       Console.WriteLine($"Count: {count}");
+                                   }    
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<Dependency>(1).To<Dependency>()
+                                           .Bind<Dependency>(2).To<Dependency>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Count: 2"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportEnumerableWithMixedLifetimes()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency1: IDependency {}
+                               class Dependency2: IDependency {}
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>(1).As(Lifetime.Singleton).To<Dependency1>()
+                                           .Bind<IDependency>(2).As(Lifetime.Transient).To<Dependency2>()
+                                           .Root<IEnumerable<IDependency>>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root1 = composition.Root;
+                                       var root2 = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
 }

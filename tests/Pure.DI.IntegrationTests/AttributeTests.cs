@@ -787,4 +787,109 @@ public class AttributeTests
         result.StdOut.ShouldBe(["123 Nik https://github.com/DevTeam/Pure.DI"], result);
     }
 #endif
+    [Fact]
+    public async Task ShouldSupportCustomOrdinalAttribute()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               [AttributeUsage(AttributeTargets.Constructor | AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Field)]
+                               class MyOrdinalAttribute : Attribute
+                               {
+                                   public MyOrdinalAttribute(int ordinal) { }
+                               }
+
+                               interface IDependency { }
+                               class Dependency : IDependency { }
+
+                               class Service
+                               {
+                                   [MyOrdinal(1)]
+                                   public IDependency Dep { get; set; }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Bind<Service>().To<Service>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                       Console.WriteLine(service.Dep != null);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportTagAttributeOnProperty()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency { }
+                               class AbcDependency : IDependency { }
+                               class XyzDependency : IDependency { }
+
+                               class Service
+                               {
+                                   [Tag("Xyz")]
+                                   public IDependency Dep { get; set; }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<AbcDependency>()
+                                           .Bind<IDependency>("Xyz").To<XyzDependency>()
+                                           .Bind<Service>().To<Service>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                       Console.WriteLine(service.Dep.GetType().Name);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["XyzDependency"], result);
+    }
 }

@@ -455,4 +455,104 @@ public class MethodInjectionTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Initialize dep", "Initialize dep", "Initialize", "True", "Activate"], result);
     }
+    [Fact]
+    public async Task ShouldSupportMethodInjectionWithTagOnParameter()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency: IDependency {}
+                           
+                               class Service
+                               {
+                                   public IDependency? Dep { get; private set; }
+
+                                   [Ordinal(0)]
+                                   public void Init([Tag("myTag")] IDependency dep)
+                                   {
+                                       Dep = dep;
+                                   }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>("myTag").To<Dependency>()
+                                           .Bind<Service>().To<Service>()
+                                           .Root<Service>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                       Console.WriteLine(service.Dep != null);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportMethodInjectionForMultipleMethods()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Service
+                               {
+                                   [Ordinal(0)]
+                                   public void Init1() => Console.WriteLine("Init1");
+
+                                   [Ordinal(1)]
+                                   public void Init2() => Console.WriteLine("Init2");
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<Service>().To<Service>()
+                                           .Root<Service>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Init1", "Init2"], result);
+    }
 }

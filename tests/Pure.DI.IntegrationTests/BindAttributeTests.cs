@@ -1118,6 +1118,105 @@ public class BindAttributeTests
         // Then
         result.Success.ShouldBeTrue(result);
     }
+    [Fact]
+    public async Task ShouldSupportBindAttributeOnPropertyWithSingleton()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency : IDependency {}
+
+                               class BaseComposition
+                               {
+                                   [Bind(typeof(IDependency), Lifetime.Singleton)]
+                                   public IDependency Dep => new Dependency();
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<BaseComposition>().To<BaseComposition>()
+                                           .Root<IDependency>("Root1")
+                                           .Root<IDependency>("Root2");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root1 = composition.Root1;
+                                       var root2 = composition.Root2;
+                                       Console.WriteLine(ReferenceEquals(root1, root2));
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportBindAttributeWithMultipleTags()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency : IDependency {}
+
+                               class BaseComposition
+                               {
+                                   [Bind(typeof(IDependency), Lifetime.Transient, "a")]
+                                   [Bind(typeof(IDependency), Lifetime.Transient, "b")]
+                                   public IDependency Dep => new Dependency();
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<BaseComposition>().To<BaseComposition>()
+                                           .Root<IDependency>("RootA", "a")
+                                           .Root<IDependency>("RootB", "b");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.RootA != null);
+                                       Console.WriteLine(composition.RootB != null);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True"], result);
+    }
 }
 
 /*

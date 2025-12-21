@@ -1514,4 +1514,78 @@ public class GraphTests
                                                +[Service2(Sample.IDependency2 dependency<--Sample.IDependency2))]<--[Sample.IDependency2]--[Dependency2()]
                                              """.Replace("\r", ""));
     }
+    [Fact]
+    public async Task ShouldSupportGraphForFunc()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency: IDependency {}
+                           
+                               class Service
+                               {
+                                   public Service(Func<IDependency> factory) {}
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        var graphs = GetGraphs(result);
+        graphs.Length.ShouldBe(1, result);
+        graphs[0].ConvertToString().Contains("Func<Sample.IDependency>").ShouldBeTrue(result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportGraphWithArgs()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Service
+                               {
+                                   public Service(string name) {}
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Arg<string>("name")
+                                           .Root<Service>("Root");
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        var graphs = GetGraphs(result);
+        graphs.Length.ShouldBe(1, result);
+        graphs[0].ConvertToString().Contains("string name").ShouldBeTrue(result);
+    }
 }

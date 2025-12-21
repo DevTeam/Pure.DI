@@ -49,4 +49,69 @@ public class CommentsTests
         result.GeneratedCode.Contains("/// My root line 1").ShouldBeTrue();
         result.GeneratedCode.Contains("/// My root line 2").ShouldBeTrue();
     }
+
+    [Fact]
+    public async Task ShouldSupportCommentsOnBindings()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency: IDependency {}
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           // This is a dependency
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Root<IDependency>("Root");
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.GeneratedCode.Contains("/// This is a dependency").ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task ShouldSupportXmlComments()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           /// <summary>
+                                           /// Service Name Root
+                                           /// </summary>
+                                           .Root<string>("ServiceName");
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.GeneratedCode.Contains("/// <summary>").ShouldBeTrue();
+        result.GeneratedCode.Contains("/// Service Name Root").ShouldBeTrue();
+    }
 }

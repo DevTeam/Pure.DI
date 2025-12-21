@@ -269,4 +269,101 @@ public class FieldInjectionTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["True", "True"], result);
     }
+    [Fact]
+    public async Task ShouldSupportFieldInjectionWithTag()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency: IDependency {}
+                           
+                               class Service
+                               {
+                                   [Ordinal(0), Tag("myTag")]
+                                   public IDependency? _dep;
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>("myTag").To<Dependency>()
+                                           .Bind<Service>().To<Service>()
+                                           .Root<Service>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                       Console.WriteLine(service._dep != null);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportInternalFieldInjection()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency: IDependency {}
+                           
+                               class Service
+                               {
+                                   [Ordinal(0)]
+                                   internal IDependency? _dep;
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Bind<Service>().To<Service>()
+                                           .Root<Service>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                       Console.WriteLine(service._dep != null);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
 }

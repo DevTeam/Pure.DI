@@ -2155,4 +2155,103 @@ public class FuncTests
         result.Warnings.Count(i => i.Id == LogId.WarningMetadataDefect && i.Locations.FirstOrDefault().GetSource() == "To<Metronome>()").ShouldBe(1, result);
     }
 #endif
+    [Fact]
+    public async Task ShouldSupportFuncForValueType()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               struct Dependency
+                               {
+                                   public Dependency() => Console.WriteLine("Ctor");
+                               }
+                           
+                               class Service
+                               {
+                                   public Service(Func<Dependency> factory)
+                                   { 
+                                       factory();
+                                   }    
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<Dependency>().To<Dependency>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Ctor"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFuncWithCustomTag()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency: IDependency {}
+                           
+                               class Service
+                               {
+                                   public Service([Tag("myCustomTag")] Func<IDependency> factory)
+                                   { 
+                                       Console.WriteLine(factory() != null);
+                                   }    
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>("myCustomTag").To<Dependency>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
 }

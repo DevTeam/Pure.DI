@@ -200,4 +200,85 @@ public class GenericsTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Sample.Dependency`1[System.Int32]", "Sample.Dependency`1[System.String]"], result);
     }
+    [Fact]
+    public async Task ShouldSupportMultipleGenericMarkers()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency<T1, T2> {}
+                               class Dependency<T1, T2> : IDependency<T1, T2> {}
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency<TT1, TT2>>().To<Dependency<TT1, TT2>>()
+                                           .Root<IDependency<int, string>>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Root.GetType().Name);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Dependency`2"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportNestedGenerics()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IBox<T> {}
+                               class Box<T> : IBox<T> {}
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IBox<TT>>().To<Box<TT>>()
+                                           .Root<IBox<IBox<int>>>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Root.GetType().Name);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Box`1"], result);
+    }
 }

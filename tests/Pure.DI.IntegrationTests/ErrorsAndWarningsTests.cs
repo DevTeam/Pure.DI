@@ -1835,4 +1835,74 @@ public class ErrorsAndWarningsTests
         result.Success.ShouldBeFalse(result);
         result.Logs.Count(i => i.Id == LogId.ErrorLifetimeDefect).ShouldBe(1, result);
     }
+    [Fact]
+    public async Task ShouldShowErrorWhenNoPublicConstructor()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Service
+                               {
+                                   private Service() {}
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<Service>().To<Service>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Any(i => i.Id == LogId.ErrorUnableToResolve).ShouldBeTrue(result);
+    }
+
+    [Fact]
+    public async Task ShouldShowErrorWhenAmbiguousConstructors()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Service
+                               {
+                                   public Service(string s) {}
+                                   public Service(int i) {}
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<string>().To(_ => "abc")
+                                           .Bind<int>().To(_ => 1)
+                                           .Bind<Service>().To<Service>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Any(i => i.Id == LogId.ErrorUnableToResolve).ShouldBeTrue(result);
+    }
 }

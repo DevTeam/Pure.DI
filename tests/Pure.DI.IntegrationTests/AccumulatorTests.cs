@@ -1236,4 +1236,110 @@ public class AccumulatorTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Root1 acc count: 1", "Root2 acc count: 1", "Accs are same: False"], result);
     }
+    [Fact]
+    public async Task ShouldSupportAccumulatorAsDependency()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IAccumulating {}
+                               class MyAccumulator : List<IAccumulating> {}
+                               interface IDependency: IAccumulating {}
+                               class Dependency : IDependency {}
+                           
+                               interface IService
+                               {
+                                   MyAccumulator Accumulator { get; }
+                               }
+                           
+                               class Service : IService
+                               {
+                                   public Service(IDependency dependency, MyAccumulator accumulator)
+                                   {
+                                       Accumulator = accumulator;
+                                   }
+                           
+                                   public MyAccumulator Accumulator { get; }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Accumulate<IAccumulating, MyAccumulator>(Lifetime.Transient)
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Root");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                       Console.WriteLine(service.Accumulator.Count);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["1"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportAccumulatorForValueTypes()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IAccumulating {}
+                               class MyAccumulator : List<IAccumulating> {}
+                               struct Dependency : IAccumulating {}
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Accumulate<IAccumulating, MyAccumulator>(Lifetime.Transient)
+                                           .Bind<Dependency>().To<Dependency>()
+                                           .Root<(Dependency dep, MyAccumulator accumulator)>("Root");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root = composition.Root;
+                                       Console.WriteLine(root.accumulator.Count);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["1"], result);
+    }
 }

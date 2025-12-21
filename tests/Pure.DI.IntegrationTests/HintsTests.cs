@@ -396,4 +396,69 @@ public class HintsTests
             result.Errors.Count(i => i.Id == LogId.ErrorUnableToResolve && i.Locations.FirstOrDefault().GetSource() == "content").ShouldBe(1, result);
         }
     }
+    [Fact]
+    public async Task ShouldNotGenerateResolveMethodsWhenResolveIsOff()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency: IDependency {}
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Hint(Hint.Resolve, "Off")
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Root<IDependency>("Root");
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.GeneratedCode.Contains("public T Resolve<T>()").ShouldBeFalse(result);
+    }
+
+    [Fact]
+    public async Task ShouldNotGenerateThreadSafeSingletonWhenThreadSafeIsOff()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency: IDependency {}
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Hint(Hint.ThreadSafe, "Off")
+                                           .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
+                                           .Root<IDependency>("Root");
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.GeneratedCode.Contains("lock").ShouldBeFalse(result);
+    }
 }

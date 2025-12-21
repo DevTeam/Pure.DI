@@ -2557,4 +2557,97 @@ public class FactoryTests
         // Then
         result.Success.ShouldBeTrue(result);
     }
+    [Fact]
+    public async Task ShouldSupportFactoryWithArrayInjection()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency: IDependency {}
+                           
+                               class Service
+                               {
+                                   public Service(IDependency[] deps) 
+                                   {
+                                       Console.WriteLine(deps.Length);
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>(1).To<Dependency>()
+                                           .Bind<IDependency>(2).To<Dependency>()
+                                           .Bind<Service>().To(ctx => {
+                                               ctx.Inject<IDependency[]>(out var deps);
+                                               return new Service(deps);
+                                           })
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["2"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFactoryReturningValueTuple()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<(int, string)>().To(ctx => (123, "abc"))
+                                           .Root<(int, string)>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root = composition.Root;
+                                       Console.WriteLine($"{root.Item1} {root.Item2}");
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["123 abc"], result);
+    }
 }

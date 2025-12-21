@@ -961,4 +961,106 @@ public class BuildersTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Initialize 1", "Initialize 2"], result);
     }
+    [Fact]
+    public async Task ShouldSupportBuilderForValueType()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency: IDependency {}
+                           
+                               struct Service
+                               {
+                                   [Ordinal(0)]
+                                   public IDependency Dep { get; set; }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Builder<Service>("BuildUpService");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = new Service();
+                                       service = composition.BuildUpService(service);
+                                       Console.WriteLine(service.Dep != null);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportBuilderWithMethodInjectionAndTags()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency: IDependency {}
+                           
+                               class Service
+                               {
+                                   public IDependency Dep { get; private set; }
+
+                                   [Ordinal(0)]
+                                   public void Init([Tag("myTag")] IDependency dep)
+                                   {
+                                       Dep = dep;
+                                   }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>("myTag").To<Dependency>()
+                                           .Builder<Service>("BuildUpService");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = new Service();
+                                       composition.BuildUpService(service);
+                                       Console.WriteLine(service.Dep != null);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
 }

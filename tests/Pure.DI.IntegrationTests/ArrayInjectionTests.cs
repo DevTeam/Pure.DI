@@ -433,4 +433,96 @@ public class ArrayInjectionTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Service creating", "Dependency created"], result);
     }
+    [Fact]
+    public async Task ShouldSupportArrayOfValueTypes()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               struct Dependency {}
+                           
+                               interface IService {}
+                               class Service: IService 
+                               {
+                                   public Service(Dependency[] deps)
+                                   { 
+                                       Console.WriteLine($"Deps count: {deps.Length}");
+                                   }    
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<Dependency>(1).To<Dependency>()
+                                           .Bind<Dependency>(2).To<Dependency>()
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Deps count: 2"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportArrayAsRoot()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency: IDependency {}
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>(1).To<Dependency>()
+                                           .Bind<IDependency>(2).To<Dependency>()
+                                           .Root<IDependency[]>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Root.Length);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["2"], result);
+    }
 }

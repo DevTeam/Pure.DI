@@ -811,4 +811,98 @@ public class CtorTests
         result.Success.ShouldBeFalse(result);
         result.Errors.Count(i => i.Id == LogId.ErrorCyclicDependency).ShouldBe(1, result);
     }
+    [Fact]
+    public async Task ShouldSupportCtorWithInParameter()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency: IDependency {}
+
+                               class Service
+                               {
+                                   public Service(in IDependency dep)
+                                   {
+                                       Console.WriteLine(dep != null);
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldPreferBindingOverDefaultValueInCtor()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Service
+                               {
+                                   public Service(string name = "Default")
+                                   {
+                                       Console.WriteLine(name);
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<string>().To(_ => "Bound")
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Bound"], result);
+    }
 }

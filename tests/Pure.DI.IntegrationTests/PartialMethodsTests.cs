@@ -1267,4 +1267,105 @@ public class PartialMethodsTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Int32 created", "String created", "Dependency 99 created", "String created", "Int32 created", "Service 'MyService' created"], result);
     }
+    [Fact]
+    public async Task ShouldSupportOnNewInstanceForValueType()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               struct Dependency {}
+                           
+                               internal partial class Composition
+                               {
+                                   partial void OnNewInstance<T>(ref T value, object? tag, Lifetime lifetime) 
+                                   {
+                                       if (typeof(T) == typeof(Dependency))
+                                       {
+                                           Console.WriteLine("Dependency instance created");
+                                       }
+                                   }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Hint(Hint.OnNewInstance, "On")
+                                           .Bind<Dependency>().To<Dependency>()
+                                           .Root<Dependency>("Root");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Dependency instance created"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportOnDependencyInjectionForValueType()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               internal partial class Composition
+                               {
+                                   private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime) 
+                                   {
+                                       if (typeof(T) == typeof(int))
+                                       {
+                                           Console.WriteLine($"Injecting int: {value}");
+                                       }
+                                       return value;      
+                                   }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<int>().To(_ => 123)
+                                           .Root<int>("Root");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Injecting int: 123"], result);
+    }
 }

@@ -368,4 +368,101 @@ public class PropertyInjectionTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["OtherDep0", "True", "OtherDep1", "True"], result);
     }
+    [Fact]
+    public async Task ShouldSupportPropertyInjectionWithTag()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency: IDependency {}
+                           
+                               class Service
+                               {
+                                   [Ordinal(0), Tag("myTag")]
+                                   public IDependency? Dep { get; set; }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>("myTag").To<Dependency>()
+                                           .Bind<Service>().To<Service>()
+                                           .Root<Service>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                       Console.WriteLine(service.Dep != null);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportInternalPropertyInjection()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency: IDependency {}
+                           
+                               class Service
+                               {
+                                   [Ordinal(0)]
+                                   internal IDependency? Dep { get; set; }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Bind<Service>().To<Service>()
+                                           .Root<Service>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                       Console.WriteLine(service.Dep != null);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
 }

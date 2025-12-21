@@ -210,4 +210,103 @@ public class LazyTests
         // Then
         result.Success.ShouldBeTrue(result);
     }
+    [Fact]
+    public async Task ShouldSupportLazyForValueType()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               struct Dependency
+                               {
+                                   public Dependency() => Console.WriteLine("Ctor");
+                               }
+                           
+                               class Service
+                               {
+                                   public Service(Lazy<Dependency> factory)
+                                   { 
+                                       var val = factory.Value;
+                                   }    
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<Dependency>().To<Dependency>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Ctor"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportLazyWithTag()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency: IDependency {}
+                           
+                               class Service
+                               {
+                                   public Service([Tag("myTag")] Lazy<IDependency> factory)
+                                   { 
+                                       Console.WriteLine(factory.Value != null);
+                                   }    
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>("myTag").To<Dependency>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
 }

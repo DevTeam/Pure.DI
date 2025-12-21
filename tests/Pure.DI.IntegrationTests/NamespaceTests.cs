@@ -435,4 +435,82 @@ public class NamespaceTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe([$"Initialize 1 {PathSeparator}"], result);
     }
+    [Fact]
+    public async Task ShouldSupportGlobalNamespace()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           interface IDependency {}
+                           class Dependency: IDependency {}
+
+                           static class Setup
+                           {
+                               private static void SetupComposition()
+                               {
+                                   DI.Setup("Composition")
+                                       .Bind<IDependency>().To<Dependency>()
+                                       .Root<IDependency>("Root");
+                               }
+                           }
+
+                           public class Program
+                           {
+                               public static void Main()
+                               {
+                                   var composition = new Composition();
+                                   Console.WriteLine(composition.Root != null);
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportDeepNestedNamespaces()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace A.B.C.D.E
+                           {
+                               interface IDependency {}
+                               class Dependency: IDependency {}
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Root<IDependency>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new A.B.C.D.E.Composition();
+                                       Console.WriteLine(composition.Root != null);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
 }

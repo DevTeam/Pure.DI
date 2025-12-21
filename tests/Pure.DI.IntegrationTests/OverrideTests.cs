@@ -3324,4 +3324,109 @@ public class OverrideTests
         // Then
         result.Success.ShouldBeTrue(result);
     }
+    [Fact]
+    public async Task ShouldSupportOverrideWithTag()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency1: IDependency {}
+                               class Dependency2: IDependency {}
+                           
+                               class Service
+                               {
+                                   public Service([Tag("t")] IDependency dep)
+                                   { 
+                                       Console.WriteLine(dep.GetType().Name);
+                                   }    
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>("t").To<Dependency1>()
+                                           .Bind<Service>().To(ctx => {
+                                               ctx.Override<IDependency>(new Dependency2(), "t");
+                                               ctx.Inject<Service>(out var service);
+                                               return service;
+                                           })
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Dependency2"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportOverrideForValueType()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Service
+                               {
+                                   public Service(int value)
+                                   { 
+                                       Console.WriteLine(value);
+                                   }    
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<int>().To(_ => 1)
+                                           .Bind<Service>().To(ctx => {
+                                               ctx.Override<int>(2);
+                                               ctx.Inject<Service>(out var service);
+                                               return service;
+                                           })
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["2"], result);
+    }
 }

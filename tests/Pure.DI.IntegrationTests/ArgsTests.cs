@@ -809,4 +809,90 @@ public class ArgsTests
         result.StdOut.ShouldBe(["-1", "1", "1"], result);
     }
 #endif
+    [Fact]
+    public async Task ShouldSupportMultipleArgsOfSameTypeWithTags()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService {}
+                               class Service: IService 
+                               {
+                                   public Service([Tag("a")] string arg1, [Tag("b")] string arg2) 
+                                   {
+                                       Console.WriteLine($"{arg1} {arg2}");
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Arg<string>("arg1", "a")
+                                           .Arg<string>("arg2", "b")
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition("Hello", "World");
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Hello World"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportArgAsRootWithTag()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Arg<int>("id", "myId")
+                                           .Root<int>("GetId", "myId");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition(99);
+                                       Console.WriteLine(composition.GetId);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["99"], result);
+    }
 }

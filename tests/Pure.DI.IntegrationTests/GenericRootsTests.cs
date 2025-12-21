@@ -889,4 +889,87 @@ public class GenericRootsTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Initialize 1 Abc", "Initialize 2 Abc"], result);
     }
+    [Fact]
+    public async Task ShouldSupportGenericRootWhenNewConstraint()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Dependency<T> where T: new()
+                               {
+                                   public Dependency() => Console.WriteLine(typeof(T).Name);
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<Dependency<TT>>().To<Dependency<TT>>()
+                                           .Root<Dependency<TT>>("GetRoot");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       composition.GetRoot<int>();
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Int32"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportGenericRootWhenFunc()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Dependency<T> {}
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<Dependency<TT>>().To<Dependency<TT>>()
+                                           .Root<Func<Dependency<TT>>>("GetRootFactory");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var factory = composition.GetRootFactory<int>();
+                                       Console.WriteLine(factory() != null);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
 }

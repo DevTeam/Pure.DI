@@ -882,4 +882,108 @@ public class BclInjectionTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Service creating", "Dependency A 1 created", "Dependency B 2 created"], result);
     }
+    [Fact]
+    public async Task ShouldSupportActionInjection()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency: IDependency 
+                               {
+                                   public Dependency() => Console.WriteLine("Dependency created");
+                               }
+
+                               class Service
+                               {
+                                   public Service(Action action) 
+                                   {
+                                       action();
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Bind<Action>().To(ctx => new Action(() => ctx.Inject<IDependency>(out _)))
+                                           .Bind<Service>().To<Service>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Dependency created"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportValueTaskInjection()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Threading.Tasks;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency: IDependency {}
+
+                               class Service
+                               {
+                                   public Service(ValueTask<IDependency> depTask) 
+                                   {
+                                       Console.WriteLine(depTask.IsCompleted);
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Bind<Service>().To<Service>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
 }

@@ -427,4 +427,102 @@ public class AutoBindingTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Ctor2"], result);
     }
+    [Fact]
+    public async Task ShouldSupportAutoBindingForValueType()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               struct Dependency
+                               {
+                                   public Dependency() => Console.WriteLine("Struct ctor");
+                               }
+                           
+                               interface IService {}
+                               class Service: IService
+                               {
+                                   public Service(Dependency dep) {}
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var service = new Composition().Service;         
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Struct ctor"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportAutoBindingForNestedClass()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Outer
+                               {
+                                   public class Inner
+                                   {
+                                       public Inner() => Console.WriteLine("Inner ctor");
+                                   }
+                               }
+                           
+                               interface IService {}
+                               class Service: IService
+                               {
+                                   public Service(Outer.Inner dep) {}
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var service = new Composition().Service;         
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Inner ctor"], result);
+    }
 }
