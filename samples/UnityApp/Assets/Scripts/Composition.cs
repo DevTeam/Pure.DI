@@ -7,6 +7,10 @@ internal partial class Composition
     public static readonly Composition Shared = new();
     
     private void Setup() => DI.Setup()
-        .Bind().As(Singleton).To<ClockModel>()
+        .Bind<IClockConfig>().To((ctx) =>
+        {
+            return Resources.Load<ClockConfig>("ClockConfig");
+        })
+        .Bind().As(Singleton).To<ClockService>()
         .Builders<MonoBehaviour>();
 }
