@@ -1068,4 +1068,169 @@ public class AccumulatorTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["77 [Shroedingers cat]", "77 <Black cat>", "Cats:", "Shroedingers cat", "Black cat", "ShroedingersCat was disposed"], result);
     }
+
+    [Fact]
+    public async Task ShouldSupportMultipleDifferentAccumulators()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IAccumulating1 { }
+                               interface IAccumulating2 { }
+                               
+                               class Accumulator1 : List<IAccumulating1> { }
+                               class Accumulator2 : List<IAccumulating2> { }
+                               
+                               class Dependency : IAccumulating1, IAccumulating2 { }
+                               
+                               interface IService { }
+                               class Service : IService 
+                               {
+                                   public Service(Dependency dependency) { }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Accumulate<IAccumulating1, Accumulator1>(Lifetime.Transient)
+                                           .Accumulate<IAccumulating2, Accumulator2>(Lifetime.Transient)
+                                           .Bind<Dependency>().To<Dependency>()
+                                           .Bind<IService>().To<Service>()
+                                           .Root<(IService service, Accumulator1 acc1, Accumulator2 acc2)>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var (service, acc1, acc2) = composition.Root;
+                                       Console.WriteLine($"Acc1 count: {acc1.Count}");
+                                       Console.WriteLine($"Acc2 count: {acc2.Count}");
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Acc1 count: 1", "Acc2 count: 1"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportAccumulatorWithGenericTypes()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IHandler { }
+                               interface IHandler<T> : IHandler { }
+                               
+                               class Handler<T> : IHandler<T> { }
+                               
+                               class HandlersAccumulator : List<IHandler>
+                               {
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Accumulate<IHandler, HandlersAccumulator>(Lifetime.Transient)
+                                           .Bind<IHandler<int>>().To<Handler<int>>()
+                                           .Bind<IHandler<string>>().To<Handler<string>>()
+                                           .Root<(IHandler<int> h1, IHandler<string> h2, HandlersAccumulator acc)>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root = composition.Root;
+                                       Console.WriteLine($"Acc count: {root.acc.Count}");
+                                       foreach(var h in root.acc) Console.WriteLine(h.GetType().Name);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Acc count: 2", "Handler`1", "Handler`1"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportMultipleRootsAndAccumulators()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IAccumulating { }
+                               class Accumulator : List<IAccumulating> { }
+                               class Dependency : IAccumulating { }
+                               
+                               interface IService { }
+                               class Service : IService
+                               {
+                                   public Service(Dependency dependency) {}
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Accumulate<IAccumulating, Accumulator>(Lifetime.Transient)
+                                           .Bind<Dependency>().To<Dependency>()
+                                           .Bind<IService>().To<Service>()
+                                           .Root<(IService service, Accumulator acc)>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root1 = composition.Root;
+                                       var root2 = composition.Root;
+                                       Console.WriteLine($"Root1 acc count: {root1.acc.Count}");
+                                       Console.WriteLine($"Root2 acc count: {root2.acc.Count}");
+                                       Console.WriteLine($"Accs are same: {ReferenceEquals(root1.acc, root2.acc)}");
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Root1 acc count: 1", "Root2 acc count: 1", "Accs are same: False"], result);
+    }
 }
