@@ -1,2 +1,15 @@
 fileFormatVersion: 2
 guid: c5cdbad8394da674daccd3531201b39d
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - scope: {fileID: 11400000, guid: 119c7ccc026e6e441b4b5d54a37cefbc, type: 2}
+  - hoursPivot: {instanceID: 0}
+  - minutesPivot: {instanceID: 0}
+  - secondsPivot: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
