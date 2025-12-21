@@ -1,6 +1,6 @@
 ﻿using System;
 
-public interface IClockModel
+public interface IClockService
 {
     DateTime Now { get; }
 }
