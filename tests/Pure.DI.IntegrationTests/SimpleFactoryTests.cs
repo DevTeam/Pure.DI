@@ -1,5 +1,8 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
+/// <summary>
+/// Tests related to the simple factory bindings using lambdas.
+/// </summary>
 public class SimpleFactoryTests
 {
 

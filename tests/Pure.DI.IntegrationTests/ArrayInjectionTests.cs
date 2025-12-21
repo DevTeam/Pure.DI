@@ -1,5 +1,8 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
+/// <summary>
+/// Tests related to the injection of arrays.
+/// </summary>
 public class ArrayInjectionTests
 {
 

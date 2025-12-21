@@ -1,5 +1,8 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
+/// <summary>
+/// Tests related to the method injection.
+/// </summary>
 public class MethodInjectionTests
 {
     [Theory]

@@ -1,5 +1,8 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
+/// <summary>
+/// Tests related to the generation of the Resolve methods for the composition.
+/// </summary>
 public class ResolversTests
 {
     [Fact]

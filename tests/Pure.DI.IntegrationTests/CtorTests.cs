@@ -4,6 +4,9 @@ namespace Pure.DI.IntegrationTests;
 
 using Core;
 
+/// <summary>
+/// Tests related to the constructor injection and its customization.
+/// </summary>
 public class CtorTests
 {
     [Fact]

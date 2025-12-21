@@ -1,5 +1,8 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
+/// <summary>
+/// Tests related to the field injection.
+/// </summary>
 public class FieldInjectionTests
 {
     [Theory]

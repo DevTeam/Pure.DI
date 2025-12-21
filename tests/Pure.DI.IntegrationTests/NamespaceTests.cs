@@ -2,6 +2,9 @@
 
 using static Path;
 
+/// <summary>
+/// Tests related to the namespace handling in the generated code.
+/// </summary>
 public class NamespaceTests
 {
     [Fact]

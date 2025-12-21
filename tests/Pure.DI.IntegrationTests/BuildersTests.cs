@@ -1,5 +1,8 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
+/// <summary>
+/// Tests related to the custom builders for the composition.
+/// </summary>
 public class BuildersTests
 {
     [Fact]

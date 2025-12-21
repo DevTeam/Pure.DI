@@ -2,6 +2,9 @@
 
 using Core;
 
+/// <summary>
+/// Tests related to the injection of IEnumerable dependencies.
+/// </summary>
 public class EnumerableInjectionTests
 {
     [Theory]

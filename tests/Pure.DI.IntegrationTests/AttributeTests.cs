@@ -1,5 +1,8 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
+/// <summary>
+/// Tests related to the usage of various attributes for customizing the DI process, such as [Tag], [Ordinal], etc.
+/// </summary>
 public class AttributeTests
 {
     [Fact]

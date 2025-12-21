@@ -2,6 +2,9 @@
 
 using Core;
 
+/// <summary>
+/// Tests related to the usage of hints for customizing the generation process.
+/// </summary>
 public class HintsTests
 {
     [Fact]

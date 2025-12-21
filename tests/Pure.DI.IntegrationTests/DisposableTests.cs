@@ -1,5 +1,8 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
+/// <summary>
+/// Tests related to the support for IDisposable and IAsyncDisposable in the composition.
+/// </summary>
 public class DisposableTests
 {
 

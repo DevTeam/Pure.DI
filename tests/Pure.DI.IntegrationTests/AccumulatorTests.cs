@@ -1,5 +1,8 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
+/// <summary>
+/// Tests related to the accumulator feature, which allows collecting multiple instances into a single collection during the resolution process.
+/// </summary>
 public class AccumulatorTests
 {
     [Fact]

@@ -2,6 +2,9 @@
 
 using System.Globalization;
 
+/// <summary>
+/// Tests related to the usage of tags for distinguishing between different implementations of the same interface.
+/// </summary>
 public class TagsTests
 {
     [Theory]

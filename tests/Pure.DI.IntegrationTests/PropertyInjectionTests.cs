@@ -1,5 +1,8 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
+/// <summary>
+/// Tests related to the property injection.
+/// </summary>
 public class PropertyInjectionTests
 {
     [Theory]

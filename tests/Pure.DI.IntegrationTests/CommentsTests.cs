@@ -1,5 +1,8 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
+/// <summary>
+/// Tests related to the generation of comments in the generated code.
+/// </summary>
 public class CommentsTests
 {
     [Fact]

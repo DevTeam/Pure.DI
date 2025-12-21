@@ -2,6 +2,9 @@
 
 using Core;
 
+/// <summary>
+/// Tests related to the composition arguments feature, allowing to pass arguments to the composition root.
+/// </summary>
 public class ArgsTests
 {
 

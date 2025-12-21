@@ -1,5 +1,8 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
+/// <summary>
+/// Tests related to the definition and resolution of composition roots.
+/// </summary>
 public class RootsTests
 {
     [Fact]

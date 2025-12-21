@@ -1,5 +1,8 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
+/// <summary>
+/// Tests related to the [RootBind] attribute.
+/// </summary>
 public class RootBindTests
 {
     [Fact]

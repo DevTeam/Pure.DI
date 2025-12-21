@@ -2,6 +2,9 @@
 
 using System.Diagnostics.CodeAnalysis;
 
+/// <summary>
+/// Tests based on the Schrödinger's Cat example, demonstrating complex scenarios.
+/// </summary>
 public class ShroedingersCatTests
 {
     [Theory]

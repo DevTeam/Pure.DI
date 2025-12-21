@@ -1,5 +1,8 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
+/// <summary>
+/// Tests related to the injection of the composition itself into its dependencies.
+/// </summary>
 public class CompositionInjectionTests
 {
     [Fact]

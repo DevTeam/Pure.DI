@@ -1,5 +1,8 @@
 namespace Pure.DI.IntegrationTests;
 
+/// <summary>
+/// Tests related to the injection of Lazy dependencies for deferred resolution.
+/// </summary>
 public class LazyTests
 {
     [Theory]

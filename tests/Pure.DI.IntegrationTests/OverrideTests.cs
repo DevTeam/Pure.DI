@@ -2,6 +2,9 @@
 
 using Core;
 
+/// <summary>
+/// Tests related to the overriding of bindings.
+/// </summary>
 public class OverrideTests
 {
     [Theory]

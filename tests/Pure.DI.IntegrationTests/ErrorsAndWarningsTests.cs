@@ -2,6 +2,9 @@
 
 using Core;
 
+/// <summary>
+/// Tests related to the validation of the DI setup, checking for errors and warnings during the generation process.
+/// </summary>
 public class ErrorsAndWarningsTests
 {
     [Fact]

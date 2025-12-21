@@ -3,6 +3,9 @@ namespace Pure.DI.IntegrationTests;
 using System.Text;
 using Core.Models;
 
+/// <summary>
+/// Tests related to the generation of the dependency graph in various formats (e.g., DOT).
+/// </summary>
 public class GraphTests
 {
 

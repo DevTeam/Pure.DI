@@ -1,5 +1,8 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
+/// <summary>
+/// Tests related to the generation of benchmarks for the composition.
+/// </summary>
 public class BenchmarksTests
 {
     private const string Models = """

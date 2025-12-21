@@ -1,5 +1,8 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
+/// <summary>
+/// Tests related to the auto-binding feature, where the library automatically tries to resolve types that are not explicitly bound.
+/// </summary>
 public class AutoBindingTests
 {
     [Fact]

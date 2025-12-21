@@ -2,6 +2,9 @@
 
 using Core;
 
+/// <summary>
+/// Tests related to the general DI setup and configuration.
+/// </summary>
 public class SetupTests
 {
     [Fact]

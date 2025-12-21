@@ -1,5 +1,8 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
+/// <summary>
+/// Tests related to the generic type bindings and their resolution.
+/// </summary>
 public class GenericsTests
 {
 

@@ -2,6 +2,9 @@
 
 using Core;
 
+/// <summary>
+/// Tests related to the injection of Func dependencies for delayed or factory-like resolution.
+/// </summary>
 public class FuncTests
 {
     [Theory]

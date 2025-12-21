@@ -1,5 +1,8 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
+/// <summary>
+/// Tests related to the support for tuples as roots or dependencies.
+/// </summary>
 public class TuplesTests
 {
 

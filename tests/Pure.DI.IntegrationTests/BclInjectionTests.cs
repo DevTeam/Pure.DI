@@ -1,5 +1,8 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
+/// <summary>
+/// Tests related to the injection of BCL types (e.g., IEnumerable, IAsyncEnumerable, Span, ReadOnlySpan, etc.).
+/// </summary>
 public class BclInjectionTests
 {
     [Theory]

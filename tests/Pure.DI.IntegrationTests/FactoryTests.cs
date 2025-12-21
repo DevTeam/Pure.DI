@@ -1,5 +1,8 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
+/// <summary>
+/// Tests related to the factory bindings using lambdas and their customization.
+/// </summary>
 public class FactoryTests
 {
     [Theory]
