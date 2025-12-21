@@ -82,7 +82,7 @@ sealed class VariationalDependencyGraphBuilder(
             DependencyGraph? dependencyGraph = null;
             while (variator.TryGetNextVariants(variants, out var nodes))
             {
-                if (maxAttempts-- == 0)
+                if (maxAttempts-- <= 0)
                 {
                     throw new CompileErrorException(
                         Strings.Error_CannotBuildDependencyGraph,
@@ -96,6 +96,8 @@ sealed class VariationalDependencyGraphBuilder(
                         string.Format(Strings.Error_Template_MaximumNumberOfIterations, globalProperties.MaxIterations),
                         ImmutableArray.Create(locationProvider.GetLocation(setup.Source)),
                         LogId.ErrorInvalidMetadata);
+
+                    break;
                 }
 
                 cancellationToken.ThrowIfCancellationRequested();
