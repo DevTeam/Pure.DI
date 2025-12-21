@@ -2,6 +2,8 @@
 
 namespace Pure.DI.IntegrationTests;
 
+using Core;
+
 public class CtorTests
 {
     [Fact]
@@ -504,4 +506,306 @@ public class CtorTests
         result.StdOut.ShouldBe(["1", "2", "3"], result);
     }
 #endif
+
+    [Fact]
+    public async Task ShouldSupportCtorWithTags()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency: IDependency {}
+
+                               class Service
+                               {
+                                   public Service([Tag("Dep1")] IDependency dep)
+                                   {
+                                       Console.WriteLine(dep.GetType().Name);
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>("Dep1").To<Dependency>()
+                                           .Bind<Service>().To<Service>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Dependency"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSelectCtorWithMostParameters()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Service
+                               {
+                                   public Service(string name) 
+                                   {
+                                       Console.WriteLine("1");
+                                   }
+
+                                   public Service(string name, int id)
+                                   {
+                                       Console.WriteLine("2");
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<string>().To(_ => "Murka")
+                                           .Bind<int>().To(_ => 1)
+                                           .Bind<Service>().To<Service>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["2"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportParams()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Service
+                               {
+                                   public Service(params string[] args) 
+                                   {
+                                       Console.WriteLine(args.Length);
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<string[]>().To(_ => new string[] {"a", "b"})
+                                           .Bind<Service>().To<Service>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["2"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportInternalCtor()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Service
+                               {
+                                   internal Service(string name) 
+                                   {
+                                       Console.WriteLine(name);
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<string>().To(_ => "Murka")
+                                           .Bind<Service>().To<Service>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Murka"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSelectCtorWithMostResolvableParameters()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDep1 {}
+                               class Dep1: IDep1 {}
+                               interface IDep2 {}
+
+                               class Service
+                               {
+                                   public string Value;
+                                   public Service(IDep1 dep1) => Value = "1";
+                                   public Service(IDep1 dep1, IDep2 dep2) => Value = "2";
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDep1>().To<Dep1>()
+                                           .Bind<Service>().To<Service>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                       Console.WriteLine(service.Value);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["1"], result);
+    }
+
+    [Fact]
+    public async Task ShouldHandleCyclicDependencies()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           namespace Sample
+                           {
+                               using System;
+                               using Pure.DI;
+                           
+                               internal interface IService { }
+                           
+                               internal interface IDependency1 { }
+                           
+                               internal interface IDependency2 { }
+                           
+                               internal class Service : IService
+                               {
+                                   internal Service(IDependency1 dep) {}
+                               }
+                           
+                               internal class Dependency1 : IDependency1
+                               {
+                                   public Dependency1(IDependency2 dep) {}
+                               }
+                           
+                               internal class Dependency2 : IDependency2
+                               {
+                                   public Dependency2(IService service) {}
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency1>().To<Dependency1>()
+                                           .Bind<IDependency2>().To<Dependency2>()
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service"); 
+                                   }
+                               }
+                           
+                               public class Program { public static void Main() { } }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count(i => i.Id == LogId.ErrorCyclicDependency).ShouldBe(1, result);
+    }
 }
