@@ -441,4 +441,445 @@ public class BclInjectionTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Dependency created", "Dependency created", "Dependency created", "Service creating"], result);
     }
+
+    [Fact]
+    public async Task ShouldSupportLazyInjection()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                           
+                               class Dependency: IDependency 
+                               {
+                                   public Dependency() => Console.WriteLine("Dependency created");
+                               }
+                           
+                               interface IService {}
+                           
+                               class Service: IService 
+                               {
+                                   public Service(Lazy<IDependency> lazy)
+                                   { 
+                                       Console.WriteLine("Service creating");
+                                       var dep = lazy.Value;
+                                   }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Service creating", "Dependency created"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFuncInjection()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                           
+                               class Dependency: IDependency 
+                               {
+                                   public Dependency() => Console.WriteLine("Dependency created");
+                               }
+                           
+                               interface IService {}
+                           
+                               class Service: IService 
+                               {
+                                   public Service(Func<IDependency> func)
+                                   { 
+                                       Console.WriteLine("Service creating");
+                                       var dep1 = func();
+                                       var dep2 = func();
+                                   }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Service creating", "Dependency created", "Dependency created"], result);
+    }
+
+    [Theory]
+    [InlineData("System.Collections.Generic.IEnumerable")]
+    [InlineData("System.Collections.Generic.IReadOnlyCollection")]
+    [InlineData("System.Collections.Generic.IReadOnlyList")]
+    [InlineData("System.Collections.Generic.IList")]
+    [InlineData("System.Collections.Generic.ICollection")]
+    [InlineData("System.Collections.Immutable.ImmutableArray")]
+    [InlineData("System.Collections.Immutable.IImmutableList")]
+    [InlineData("System.Collections.Immutable.ImmutableList")]
+    public async Task ShouldSupportCollectionOfLazyInjection(string collectionType)
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using System.Linq;
+                           using Pure.DI;
+                           using System.Collections.Immutable;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                           
+                               class Dependency1: IDependency 
+                               {
+                                   public Dependency1() => Console.WriteLine("Dependency created");
+                               }
+
+                               class Dependency2: IDependency 
+                               {
+                                   public Dependency2() => Console.WriteLine("Dependency created");
+                               }
+                           
+                               interface IService {}
+                           
+                               class Service: IService 
+                               {
+                                   public Service(###CollectionType###<Lazy<IDependency>> deps)
+                                   { 
+                                       Console.WriteLine("Service creating");
+                                       foreach(var dep in deps)
+                                       {
+                                           var unused = dep.Value;
+                                       }
+                                   }
+                               }
+                       
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<Dependency1>()
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                   }
+                               }
+                           }
+                           """.Replace("###CollectionType###", collectionType).RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Service creating", "Dependency created"], result);
+    }
+
+    [Theory]
+    [InlineData("System.Collections.Generic.IEnumerable")]
+    [InlineData("System.Collections.Generic.IReadOnlyCollection")]
+    [InlineData("System.Collections.Generic.IReadOnlyList")]
+    [InlineData("System.Collections.Generic.IList")]
+    [InlineData("System.Collections.Generic.ICollection")]
+    [InlineData("System.Collections.Immutable.ImmutableArray")]
+    [InlineData("System.Collections.Immutable.IImmutableList")]
+    [InlineData("System.Collections.Immutable.ImmutableList")]
+    public async Task ShouldSupportCollectionOfFuncInjection(string collectionType)
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using System.Linq;
+                           using Pure.DI;
+                           using System.Collections.Immutable;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                           
+                               class Dependency1: IDependency 
+                               {
+                                   public Dependency1() => Console.WriteLine("Dependency created");
+                               }
+
+                               class Dependency2: IDependency 
+                               {
+                                   public Dependency2() => Console.WriteLine("Dependency created");
+                               }
+                           
+                               interface IService {}
+                           
+                               class Service: IService 
+                               {
+                                   public Service(###CollectionType###<Func<IDependency>> deps)
+                                   { 
+                                       Console.WriteLine("Service creating");
+                                       foreach(var dep in deps)
+                                       {
+                                           var unused = dep();
+                                       }
+                                   }
+                               }
+                       
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<Dependency1>()
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                   }
+                               }
+                           }
+                           """.Replace("###CollectionType###", collectionType).RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Service creating", "Dependency created"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportThreadLocalInjection()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Threading;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                           
+                               class Dependency: IDependency 
+                               {
+                                   public Dependency() => Console.WriteLine("Dependency created");
+                               }
+                           
+                               interface IService {}
+                           
+                               class Service: IService 
+                               {
+                                   public Service(ThreadLocal<IDependency> threadLocal)
+                                   { 
+                                       Console.WriteLine("Service creating");
+                                       var dep = threadLocal.Value;
+                                   }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Service creating", "Dependency created"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportTaskInjection()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Threading.Tasks;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                           
+                               class Dependency: IDependency 
+                               {
+                                   public Dependency() => Console.WriteLine("Dependency created");
+                               }
+                           
+                               interface IService {}
+                           
+                               class Service: IService 
+                               {
+                                   public Service(Task<IDependency> task)
+                                   { 
+                                       Console.WriteLine("Service creating");
+                                       var dep = task.Result;
+                                   }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Service creating", "Dependency created"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFuncWithArgumentsInjection()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                           
+                               class Dependency: IDependency 
+                               {
+                                   public Dependency(string name, int id) => Console.WriteLine($"Dependency {name} {id} created");
+                               }
+                           
+                               interface IService {}
+                           
+                               class Service: IService 
+                               {
+                                   public Service(Func<string, int, IDependency> factory)
+                                   { 
+                                       Console.WriteLine("Service creating");
+                                       var dep1 = factory("A", 1);
+                                       var dep2 = factory("B", 2);
+                                   }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Service creating", "Dependency A 1 created", "Dependency B 2 created"], result);
+    }
 }
