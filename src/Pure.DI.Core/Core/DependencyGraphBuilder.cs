@@ -165,20 +165,22 @@ sealed class DependencyGraphBuilder(
                                 typeConstructor,
                                 ++maxBindingId);
 
-                            var genericNode = nodesFactory.CreateNodes(setup, typeConstructor, genericBinding).Single(i => i.Variation == sourceNode.Variation);
-                            UpdateMap(newInjection, genericNode);
-                            queue.Enqueue(CreateNewProcessingNode(newInjection.Tag, genericNode));
-                            foreach (var contract in genericBinding.Contracts.Where(i => i.ContractType is not null))
+                            if (nodesFactory.CreateNodes(setup, typeConstructor, genericBinding).FirstOrDefault(i => i.Variation == sourceNode.Variation) is {} genericNode)
                             {
-                                foreach (var tag in contract.Tags.Select(i => i.Value).DefaultIfEmpty(null))
+                                UpdateMap(newInjection, genericNode);
+                                queue.Enqueue(CreateNewProcessingNode(newInjection.Tag, genericNode));
+                                foreach (var contract in genericBinding.Contracts.Where(i => i.ContractType is not null))
                                 {
-                                    newInjection = new Injection(InjectionKind.Contract, RefKind.None, contract.ContractType!, contextTag ?? tag, injection.Locations);
-                                    UpdateMap(newInjection, genericNode);
+                                    foreach (var tag in contract.Tags.Select(i => i.Value).DefaultIfEmpty(null))
+                                    {
+                                        newInjection = new Injection(InjectionKind.Contract, RefKind.None, contract.ContractType!, contextTag ?? tag, injection.Locations);
+                                        UpdateMap(newInjection, genericNode);
+                                    }
                                 }
-                            }
 
-                            isDone = true;
-                            break;
+                                isDone = true;
+                                break;
+                            }
                         }
 
                         if (isDone)
