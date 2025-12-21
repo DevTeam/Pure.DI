@@ -812,7 +812,7 @@ public class GenericRootsTests
     }
 
     [Fact]
-    public async Task ShouldSupportRootsWhenGeneric()
+    public async Task ShouldSupportGenericRoots()
     {
         // Given
 

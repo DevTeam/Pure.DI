@@ -93,7 +93,7 @@ public class ArgsTests
     }
 
     [Fact]
-    public async Task ShouldNotShowWaningAboutRootArgWhenResolveMethodsAreNotGenerated()
+    public async Task ShouldNotShowWarningAboutRootArgWhenResolveMethodsAreNotGenerated()
     {
         // Given
 

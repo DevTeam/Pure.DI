@@ -1875,7 +1875,7 @@ public class FuncTests
 
 #if ROSLYN4_8_OR_GREATER
     [Fact]
-    public async Task ShouldSupportFunWithArgWhenOverrideValueIsNotUsed()
+    public async Task ShouldSupportFuncWithArgWhenOverrideValueIsNotUsed()
     {
         // Given
 

@@ -212,7 +212,7 @@ public class AccumulatorTests
     }
 
     [Fact]
-    public async Task ShouldSupportAccumulatorWhenDifferentLifetimes2()
+    public async Task ShouldSupportAccumulatorWhenInjectedAsFunc()
     {
         // Given
 
@@ -325,7 +325,7 @@ public class AccumulatorTests
     }
 
     [Fact]
-    public async Task ShouldSupportAccumulatorWhenForContracts()
+    public async Task ShouldSupportAccumulatorForContracts()
     {
         // Given
 
@@ -425,7 +425,7 @@ public class AccumulatorTests
     }
 
     [Fact]
-    public async Task ShouldSupportAccumulatorWhenLifetime()
+    public async Task ShouldSupportAccumulatorWithLifetime()
     {
         // Given
 
@@ -799,7 +799,7 @@ public class AccumulatorTests
     }
 
     [Fact]
-    public async Task ShroedingersCatScenarioWhenAccumulator()
+    public async Task ShouldSupportAccumulatorInShroedingersCatScenario()
     {
         // Given
 

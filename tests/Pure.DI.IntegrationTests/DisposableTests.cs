@@ -4,7 +4,7 @@ public class DisposableTests
 {
 
     [Fact]
-    public async Task ShouldSupportDisposableWhenNotTreadSafe()
+    public async Task ShouldSupportDisposableWhenNotThreadSafe()
     {
         // Given
 

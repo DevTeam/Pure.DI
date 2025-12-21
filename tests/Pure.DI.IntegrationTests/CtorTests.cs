@@ -165,7 +165,7 @@ public class CtorTests
     }
 
     [Fact]
-    public async Task ShouldSelectDefaultCtorWhenHasStatic()
+    public async Task ShouldSelectDefaultCtorWhenItHasStaticConstructor()
     {
         // Given
 
@@ -291,7 +291,7 @@ public class CtorTests
     }
 
     [Fact]
-    public async Task ShouldSupportUseParameterlessCtor()
+    public async Task ShouldSupportParameterlessCtor()
     {
         // Given
 
@@ -377,7 +377,7 @@ public class CtorTests
     }
 
     [Fact]
-    public async Task ShouldUseCtorItHasDefaultValue()
+    public async Task ShouldUseCtorWhenItHasDefaultValue()
     {
         // Given
 

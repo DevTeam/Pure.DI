@@ -12,7 +12,7 @@ public class ShroedingersCatTests
     [InlineData(NullableContextOptions.Enable, "Hint(Hint.FormatCode, \"On\")")]
     [InlineData(NullableContextOptions.Enable, "Hint(Hint.ThreadSafe, \"Off\")")]
     [SuppressMessage("Usage", "xUnit1026:Theory methods should use all of their parameters")]
-    public async Task ShroedingersCatScenario(NullableContextOptions nullableContextOptions, params string[] additionalCalls)
+    public async Task ShouldSupportShroedingersCatScenario(NullableContextOptions nullableContextOptions, params string[] additionalCalls)
     {
         // Given
         var additionalCallsStr = string.Join(".", additionalCalls);
@@ -125,7 +125,7 @@ public class ShroedingersCatTests
     }
 
     [Fact]
-    public async Task SimpleShroedingersCatScenario()
+    public async Task ShouldSupportSimpleShroedingersCatScenario()
     {
         // Given
         // When

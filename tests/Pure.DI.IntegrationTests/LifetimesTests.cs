@@ -322,7 +322,7 @@ public class LifetimesTests
     }
 
     [Fact]
-    public async Task ShouldDefaultLifetimeForTypIsNotMatch()
+    public async Task ShouldUseDefaultLifetimeWhenTypeDoesNotMatch()
     {
         // Given
 
@@ -363,7 +363,7 @@ public class LifetimesTests
     }
 
     [Fact]
-    public async Task ShouldDefaultLifetimeForTypIsNotMatchButHasDefault()
+    public async Task ShouldUseDefaultLifetimeWhenTypeDoesNotMatchButHasDefaultLifetime()
     {
         // Given
 
@@ -1356,7 +1356,7 @@ public class LifetimesTests
     }
 
     [Fact]
-    public async Task ShouldSupportPreResolveWithinFunc()
+    public async Task ShouldSupportPerResolveWithinFunc()
     {
         // Given
 
@@ -1438,7 +1438,7 @@ public class LifetimesTests
     }
 
     [Fact]
-    public async Task ShouldSupportPreResolveWithinSingleton()
+    public async Task ShouldSupportPerResolveWithinSingleton()
     {
         // Given
 

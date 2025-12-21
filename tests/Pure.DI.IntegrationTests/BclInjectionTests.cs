@@ -277,7 +277,7 @@ public class BclInjectionTests
     [InlineData("System.Collections.Concurrent.BlockingCollection")]
     [InlineData("System.Collections.ObjectModel.Collection")]
     [InlineData("System.Collections.ObjectModel.ReadOnlyCollection")]
-    public async Task ShouldSupportCollectionInjectionWhenHasNoBindings(string collectionType, LanguageVersion languageVersion = LanguageVersion.CSharp9)
+    public async Task ShouldSupportCollectionInjectionWhenItHasNoBindings(string collectionType, LanguageVersion languageVersion = LanguageVersion.CSharp9)
     {
         // Given
 

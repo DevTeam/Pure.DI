@@ -632,7 +632,7 @@ public class ErrorsAndWarningsTests
     }
 
     [Fact]
-    public async Task ShouldShowMinimumNumbersOfErrorsWhenUnresolvedDependency()
+    public async Task ShouldShowMinimumNumberOfErrorsWhenUnresolvedDependency()
     {
         // Given
 
