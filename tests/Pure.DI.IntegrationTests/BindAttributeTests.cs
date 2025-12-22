@@ -1145,8 +1145,7 @@ public class BindAttributeTests
                                    {
                                        DI.Setup("Composition")
                                            .Bind<BaseComposition>().To<BaseComposition>()
-                                           .Root<IDependency>("Root1")
-                                           .Root<IDependency>("Root2");
+                                           .Root<IDependency>("Root");
                                    }
                                }
 
@@ -1155,8 +1154,8 @@ public class BindAttributeTests
                                    public static void Main()
                                    {
                                        var composition = new Composition();
-                                       var root1 = composition.Root1;
-                                       var root2 = composition.Root2;
+                                       var root1 = composition.Root;
+                                       var root2 = composition.Root;
                                        Console.WriteLine(ReferenceEquals(root1, root2));
                                    }
                                }
