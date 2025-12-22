@@ -38,6 +38,7 @@ sealed class FactoryRewriter(
         _nestedLambdaCounter++;
         try
         {
+            node = ReplaceByBlockLambdaIfNeeded(node);
             return base.VisitSimpleLambdaExpression(node);
         }
         finally
@@ -51,6 +52,7 @@ sealed class FactoryRewriter(
         try
         {
             _nestedLambdaCounter++;
+            node = ReplaceByBlockLambdaIfNeeded(node);
             var processedNode = base.VisitParenthesizedLambdaExpression(node);
             if (_nestedBlockCounter > 0
                 || processedNode is not ParenthesizedLambdaExpressionSyntax lambda
@@ -65,6 +67,20 @@ sealed class FactoryRewriter(
         {
             _nestedLambdaCounter--;
         }
+    }
+
+    private T ReplaceByBlockLambdaIfNeeded<T>(T node) where T: LambdaExpressionSyntax
+    {
+        if (_nestedLambdaCounter > 1 && node.ExpressionBody is {} expressionBody && GetContextAction(expressionBody) is not null)
+        {
+            node = (T)node.WithExpressionBody(null).WithBlock(
+                SyntaxFactory.Block(
+                    SyntaxFactory.ExpressionStatement(expressionBody).WithLeadingTrivia(SyntaxFactory.LineFeed).WithTrailingTrivia(SyntaxFactory.LineFeed)
+                )
+            );
+        }
+
+        return node;
     }
 
     public override SyntaxNode? VisitBlock(BlockSyntax block)
@@ -134,25 +150,33 @@ sealed class FactoryRewriter(
                 SyntaxFactory.IdentifierName(ctx.VarInjection.Var.Name).WithLeadingTrivia(SyntaxFactory.Space).WithTrailingTrivia(SyntaxFactory.Space),
                 (ExpressionSyntax)Visit(returnBody).WithLeadingTrivia(SyntaxFactory.Space)));
 
-    public override SyntaxNode VisitExpressionStatement(ExpressionStatementSyntax node)
+    private (InvocationExpressionSyntax invocation, string name)? GetContextAction(ExpressionSyntax expression)
     {
-        node = (ExpressionStatementSyntax)base.VisitExpressionStatement(node)!;
-        if (node.Expression is not InvocationExpressionSyntax
+        if (expression is not InvocationExpressionSyntax
             {
                 ArgumentList.Arguments.Count: > 0,
                 Expression: MemberAccessExpressionSyntax { Expression: IdentifierNameSyntax context } memberAccessExpression
             } invocation
             || context.Identifier.Text != ctx.Factory.Source.Context.Identifier.Text)
         {
-            return node;
+            return null;
         }
 
-        var name = memberAccessExpression.Name switch
+        return memberAccessExpression.Name switch
         {
-            GenericNameSyntax { TypeArgumentList.Arguments.Count: 1 } genericName => genericName.Identifier.Text,
-            IdentifierNameSyntax identifierName => identifierName.Identifier.Text,
-            _ => ""
+            GenericNameSyntax { TypeArgumentList.Arguments.Count: 1 } genericName => (invocation, genericName.Identifier.Text),
+            IdentifierNameSyntax identifierName => (invocation, identifierName.Identifier.Text),
+            _ => null
         };
+    }
+
+    public override SyntaxNode VisitExpressionStatement(ExpressionStatementSyntax node)
+    {
+        node = (ExpressionStatementSyntax)base.VisitExpressionStatement(node)!;
+        if (GetContextAction(node.Expression) is not var (invocation, name))
+        {
+            return node;
+        }
 
         ExpressionSyntax? expressionSyntax = null;
         var processed = name switch

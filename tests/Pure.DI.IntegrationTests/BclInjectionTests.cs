@@ -793,8 +793,8 @@ public class BclInjectionTests
                                {
                                    public Service(Task<IDependency> task)
                                    { 
-                                       Console.WriteLine("Service creating");
                                        var dep = task.Result;
+                                       Console.WriteLine("Service creating");
                                    }
                                }
                            
@@ -822,7 +822,7 @@ public class BclInjectionTests
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["Service creating", "Dependency created"], result);
+        result.StdOut.ShouldBe(["Dependency created", "Service creating"], result);
     }
 
     [Fact]
@@ -884,7 +884,7 @@ public class BclInjectionTests
     }
 
     [Fact]
-    public async Task ShouldSupportActionInjection()
+    public async Task ShouldSupportActionInjectionWhenBlockAndArgIsNotUsed()
     {
         // Given
 
@@ -915,7 +915,115 @@ public class BclInjectionTests
                                    {
                                        DI.Setup("Composition")
                                            .Bind<IDependency>().To<Dependency>()
-                                           .Bind<Action>().As(Lifetime.PerResolve).To(ctx => new Action(() => ctx.Inject<IDependency>(out _)))
+                                           .Bind<Action>().As(Lifetime.PerResolve).To(ctx => { return new Action(() => { ctx.Inject<IDependency>(out _); }); } )
+                                           .Bind<Service>().To<Service>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Dependency created"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportActionInjectionWhenBlock()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency: IDependency 
+                               {
+                                   public Dependency() => Console.WriteLine("Dependency created");
+                               }
+
+                               class Service
+                               {
+                                   public Service(Action action) 
+                                   {
+                                       action();
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Bind<Action>().As(Lifetime.PerResolve).To(ctx => { return new Action(() => { ctx.Inject<IDependency>(out var val); }); } )
+                                           .Bind<Service>().To<Service>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Dependency created"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportActionInjectionWhenExpression()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency: IDependency 
+                               {
+                                   public Dependency() => Console.WriteLine("Dependency created");
+                               }
+
+                               class Service
+                               {
+                                   public Service(Action action) 
+                                   {
+                                       action();
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Bind<Action>().As(Lifetime.PerResolve).To(ctx => new Action(() => ctx.Inject<IDependency>(out var abc)))
                                            .Bind<Service>().To<Service>()
                                            .Root<Service>("Root");
                                    }
