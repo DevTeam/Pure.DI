@@ -46,7 +46,7 @@ sealed class InstanceDpProvider(
 
                 case IFieldSymbol field:
                     if (field is { IsReadOnly: false, IsStatic: false, IsConst: false }
-                        && (field.IsRequired ? 0 : GetOrdinal(setup, setupAttributes, member)) is {} fieldOrdinal)
+                        && (GetOrdinal(setup, setupAttributes, member) ?? (field.IsRequired ? int.MaxValue : null)) is {} fieldOrdinal)
                     {
                         var type = field.Type.WithNullableAnnotation(NullableAnnotation.NotAnnotated);
                         fields.Add(
@@ -65,7 +65,7 @@ sealed class InstanceDpProvider(
 
                 case IPropertySymbol property:
                     if (property is { IsReadOnly: false, IsStatic: false, IsIndexer: false }
-                        && (property.IsRequired ? 0 : GetOrdinal(setup, setupAttributes, member)) is {} propertyOrdinal)
+                        && (GetOrdinal(setup, setupAttributes, member) ?? (property.IsRequired ? int.MaxValue : null)) is {} propertyOrdinal)
                     {
                         var type = property.Type.WithNullableAnnotation(NullableAnnotation.NotAnnotated);
                         properties.Add(
@@ -92,13 +92,12 @@ sealed class InstanceDpProvider(
 
     private int? GetOrdinal(MdSetup setup, ImmutableArray<IMdAttribute> setupAttributes, ISymbol member, IMethodSymbol method) =>
         GetOrdinal(setup, setupAttributes, member) ??
-        (method.Parameters.Length > 0  ? method.Parameters.Select(i => GetOrdinal(setup, setupAttributes, i)).Max() : null);
+        (method.Parameters.Length > 0  ? method.Parameters.Select(i => GetOrdinal(setup, setupAttributes, i)).Min() : null);
 
     private int? GetOrdinal(MdSetup setup, ImmutableArray<IMdAttribute> setupAttributes, ISymbol member) =>
         attributes.GetAttribute(setup.SemanticModel, setupAttributes, member, AttributeKind.Ordinal, default(int?))
         ?? (attributes.GetAttribute(setup.SemanticModel, setupAttributes, member, AttributeKind.Type, default(ITypeSymbol?)) is not null
-            || attributes.GetAttribute(setup.SemanticModel, setupAttributes, member, AttributeKind.Tag, default(object?))
-                is not null ? 0
+            || attributes.GetAttribute(setup.SemanticModel, setupAttributes, member, AttributeKind.Tag, default(object?)) is not null ? int.MaxValue
             : null);
 
     public ImmutableArray<DpParameter> GetParameters(

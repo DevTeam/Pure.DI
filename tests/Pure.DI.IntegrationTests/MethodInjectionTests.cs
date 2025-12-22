@@ -189,6 +189,76 @@ public class MethodInjectionTests
     }
 
     [Fact]
+    public async Task ShouldSupportMethodInjectionSequence()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+
+                               class Dependency: IDependency
+                               {        
+                               }
+
+                               interface IService
+                               {
+                               }
+
+                               class Service: IService 
+                               {
+                                   [Ordinal(2)]
+                                   public void Dep2(IDependency dep)
+                                   {
+                                       Console.WriteLine("Dep2");
+                                   }
+
+                                   [Ordinal(1)]
+                                   public void Dep1(IDependency dep)
+                                   {
+                                       Console.WriteLine("Dep1");
+                                   }
+
+                                   [Ordinal(0)]
+                                   public void Dep0(IDependency dep)
+                                   {
+                                       Console.WriteLine("Dep0");
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;                    
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Dep0", "Dep1", "Dep2"], result);
+    }
+
+    [Fact]
     public async Task ShouldSupportMethodInjectionWhenCustomAttribute()
     {
         // Given

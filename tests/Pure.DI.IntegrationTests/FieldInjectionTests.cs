@@ -179,6 +179,68 @@ public class FieldInjectionTests
     }
 
     [Fact]
+    public async Task ShouldSupportRequiredFieldInjectionSequence()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                           
+                               class Dep0: IDependency { public Dep0() => Console.WriteLine("Dep0"); }
+                               class Dep1: IDependency { public Dep1() => Console.WriteLine("Dep1"); }
+                               class Dep2: IDependency { public Dep2() => Console.WriteLine("Dep2"); }
+                           
+                               interface IService
+                               {
+                               }
+                           
+                               class Service: IService 
+                               {
+                                   public required Dep2 Dep2;
+                           
+                                   [Ordinal(1)]
+                                   public required Dep1 Dep1;
+
+                                   [Ordinal(0)]
+                                   public required Dep0 Dep0;
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<Dep0>().To<Dep0>()
+                                           .Bind<Dep1>().To<Dep1>()
+                                           .Bind<Dep2>().To<Dep2>()
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;                    
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Dep0", "Dep1", "Dep2"], result);
+    }
+
+    [Fact]
     public async Task ShouldSupportRequiredFieldInjectionWhenBaseField()
     {
         // Given

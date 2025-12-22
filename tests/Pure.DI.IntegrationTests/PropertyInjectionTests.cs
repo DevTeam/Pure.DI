@@ -236,7 +236,7 @@ public class PropertyInjectionTests
                                    
                                    public required IDependency OtherDep1
                                    {
-                                       init 
+                                       init
                                        {
                                            Console.WriteLine("OtherDep1");
                                            Console.WriteLine(value != Dep);
@@ -279,6 +279,84 @@ public class PropertyInjectionTests
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["OtherDep0", "True", "OtherDep1", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportRequiredPropertyInjectionSequence()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                           
+                               class Dependency: IDependency
+                               {        
+                               }
+                           
+                               interface IService
+                               {
+                               }
+                           
+                               class Service: IService 
+                               {
+                                   public required IDependency Dep2
+                                   {
+                                       init
+                                       {
+                                           Console.WriteLine("Dep2");
+                                       }
+                                   }
+                           
+                                   [Ordinal(1)]
+                                   public required IDependency Dep1
+                                   {
+                                       init
+                                       {
+                                           Console.WriteLine("Dep1");
+                                       }
+                                   }
+
+                                   [Ordinal(0)]
+                                   public required IDependency Dep0
+                                   {
+                                       init
+                                       {
+                                           Console.WriteLine("Dep0");
+                                       }
+                                   }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;                    
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Dep0", "Dep1", "Dep2"], result);
     }
 
     [Fact]
@@ -368,6 +446,7 @@ public class PropertyInjectionTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["OtherDep0", "True", "OtherDep1", "True"], result);
     }
+
     [Fact]
     public async Task ShouldSupportPropertyInjectionWithTag()
     {
