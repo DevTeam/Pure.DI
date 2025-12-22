@@ -354,7 +354,7 @@ sealed class ApiInvocationProcessor(
                                 LogId.ErrorInvalidMetadata);
                         }
 
-                        var rootSymbol = semantic.GetTypeSymbol<INamedTypeSymbol>(semanticModel, rootTypeSyntax);
+                        var rootSymbol = semantic.GetTypeSymbol<ITypeSymbol>(semanticModel, rootTypeSyntax);
                         VisitRoot(invocation, metadataVisitor, semanticModel, invocation, invocationComments, rootSymbol);
                         break;
 
@@ -752,7 +752,7 @@ sealed class ApiInvocationProcessor(
         SemanticModel semanticModel,
         InvocationExpressionSyntax invocation,
         IReadOnlyCollection<string> invocationComments,
-        INamedTypeSymbol rootSymbol)
+        ITypeSymbol rootSymbol)
     {
         var rootArgs = arguments.GetArgs(invocation.ArgumentList, "name", "tag", "kind");
         var tag = rootArgs[1] is {} tagArg ? semantic.GetConstantValue<object>(semanticModel, tagArg.Expression, SmartTagKind.Tag) : null;
@@ -1186,7 +1186,7 @@ sealed class ApiInvocationProcessor(
     private string? GetName(
         SyntaxNode source,
         string? nameTemplate,
-        INamedTypeSymbol? type = null,
+        ITypeSymbol? type = null,
         object? tag = null)
     {
         if (string.IsNullOrWhiteSpace(nameTemplate))
