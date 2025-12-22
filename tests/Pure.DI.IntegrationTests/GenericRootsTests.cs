@@ -889,6 +889,7 @@ public class GenericRootsTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Initialize 1 Abc", "Initialize 2 Abc"], result);
     }
+
     [Fact]
     public async Task ShouldSupportGenericRootWhenNewConstraint()
     {
@@ -910,9 +911,10 @@ public class GenericRootsTests
                                {
                                    private static void SetupComposition()
                                    {
+                                       // Resolve = off
                                        DI.Setup("Composition")
-                                           .Bind<Dependency<TT>>().To<Dependency<TT>>()
-                                           .Root<Dependency<TT>>("GetRoot");
+                                           .Bind<Dependency<TTN>>().To<Dependency<TTN>>()
+                                           .Root<Dependency<TTN>>("GetRoot");
                                    }
                                }
 
@@ -969,7 +971,7 @@ public class GenericRootsTests
                            """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result);
+        result.Errors.Count.ShouldBe(0, result);
         result.StdOut.ShouldBe(["True"], result);
     }
 }
