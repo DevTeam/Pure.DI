@@ -36,61 +36,48 @@ sealed class InstanceDpProvider(
             switch (member)
             {
                 case IMethodSymbol method:
-                    if (method.MethodKind == MethodKind.Ordinary)
+                    if (method.MethodKind == MethodKind.Ordinary
+                        && GetOrdinal(setup, setupAttributes, member, method) is {} methodOrdinal)
                     {
-                        var ordinal = attributes.GetAttribute(setup.SemanticModel, setupAttributes, member, AttributeKind.Ordinal, default(int?))
-                                      ?? method.Parameters
-                                          .Select(param => attributes.GetAttribute(setup.SemanticModel, setupAttributes, param, AttributeKind.Ordinal, default(int?)))
-                                          .FirstOrDefault(i => i.HasValue);
-
-                        if (ordinal.HasValue)
-                        {
-                            methods.Add(new DpMethod(method, ordinal, GetParameters(setup, method.Parameters, typeConstructor), locationProvider));
-                        }
+                        methods.Add(new DpMethod(method, methodOrdinal, GetParameters(setup, method.Parameters, typeConstructor), locationProvider));
                     }
 
                     break;
 
                 case IFieldSymbol field:
-                    if (field is { IsReadOnly: false, IsStatic: false, IsConst: false })
+                    if (field is { IsReadOnly: false, IsStatic: false, IsConst: false }
+                        && (field.IsRequired ? 0 : GetOrdinal(setup, setupAttributes, member)) is {} fieldOrdinal)
                     {
-                        var ordinal = attributes.GetAttribute(setup.SemanticModel, setupAttributes, member, AttributeKind.Ordinal, default(int?));
-                        if (field.IsRequired || ordinal.HasValue)
-                        {
-                            var type = field.Type.WithNullableAnnotation(NullableAnnotation.NotAnnotated);
-                            fields.Add(
-                                new DpField(
-                                    field,
-                                    ordinal,
-                                    new Injection(
-                                        InjectionKind.Field,
-                                        RefKind.None,
-                                        attributes.GetAttribute(setup.SemanticModel, setup.TypeAttributes, field, AttributeKind.Type, typeConstructor.Construct(setup, type)),
-                                        GetTagAttribute(setup, field),
-                                        field.Locations)));
-                        }
+                        var type = field.Type.WithNullableAnnotation(NullableAnnotation.NotAnnotated);
+                        fields.Add(
+                            new DpField(
+                                field,
+                                fieldOrdinal,
+                                new Injection(
+                                    InjectionKind.Field,
+                                    RefKind.None,
+                                    attributes.GetAttribute(setup.SemanticModel, setup.TypeAttributes, field, AttributeKind.Type, typeConstructor.Construct(setup, type)),
+                                    GetTagAttribute(setup, field),
+                                    field.Locations)));
                     }
 
                     break;
 
                 case IPropertySymbol property:
-                    if (property is { IsReadOnly: false, IsStatic: false, IsIndexer: false })
+                    if (property is { IsReadOnly: false, IsStatic: false, IsIndexer: false }
+                        && (property.IsRequired ? 0 : GetOrdinal(setup, setupAttributes, member)) is {} propertyOrdinal)
                     {
-                        var ordinal = attributes.GetAttribute(setup.SemanticModel, setupAttributes, member, AttributeKind.Ordinal, default(int?));
-                        if (ordinal.HasValue || property.IsRequired)
-                        {
-                            var type = property.Type.WithNullableAnnotation(NullableAnnotation.NotAnnotated);
-                            properties.Add(
-                                new DpProperty(
-                                    property,
-                                    ordinal,
-                                    new Injection(
-                                        InjectionKind.Property,
-                                        RefKind.None,
-                                        attributes.GetAttribute(setup.SemanticModel, setup.TypeAttributes, property, AttributeKind.Type, typeConstructor.Construct(setup, type)),
-                                        GetTagAttribute(setup, property),
-                                        property.Locations)));
-                        }
+                        var type = property.Type.WithNullableAnnotation(NullableAnnotation.NotAnnotated);
+                        properties.Add(
+                            new DpProperty(
+                                property,
+                                propertyOrdinal,
+                                new Injection(
+                                    InjectionKind.Property,
+                                    RefKind.None,
+                                    attributes.GetAttribute(setup.SemanticModel, setup.TypeAttributes, property, AttributeKind.Type, typeConstructor.Construct(setup, type)),
+                                    GetTagAttribute(setup, property),
+                                    property.Locations)));
                     }
 
                     break;
@@ -102,6 +89,17 @@ sealed class InstanceDpProvider(
             fields.ToImmutableArray(),
             properties.ToImmutableArray());
     }
+
+    private int? GetOrdinal(MdSetup setup, ImmutableArray<IMdAttribute> setupAttributes, ISymbol member, IMethodSymbol method) =>
+        GetOrdinal(setup, setupAttributes, member) ??
+        (method.Parameters.Length > 0  ? method.Parameters.Select(i => GetOrdinal(setup, setupAttributes, i)).Max() : null);
+
+    private int? GetOrdinal(MdSetup setup, ImmutableArray<IMdAttribute> setupAttributes, ISymbol member) =>
+        attributes.GetAttribute(setup.SemanticModel, setupAttributes, member, AttributeKind.Ordinal, default(int?))
+        ?? (attributes.GetAttribute(setup.SemanticModel, setupAttributes, member, AttributeKind.Type, default(ITypeSymbol?)) is not null
+            || attributes.GetAttribute(setup.SemanticModel, setupAttributes, member, AttributeKind.Tag, default(object?))
+                is not null ? 0
+            : null);
 
     public ImmutableArray<DpParameter> GetParameters(
         in MdSetup setup,
