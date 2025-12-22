@@ -882,6 +882,7 @@ public class BclInjectionTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Service creating", "Dependency A 1 created", "Dependency B 2 created"], result);
     }
+
     [Fact]
     public async Task ShouldSupportActionInjection()
     {
@@ -914,7 +915,7 @@ public class BclInjectionTests
                                    {
                                        DI.Setup("Composition")
                                            .Bind<IDependency>().To<Dependency>()
-                                           .Bind<Action>().To(ctx => new Action(() => ctx.Inject<IDependency>(out _)))
+                                           .Bind<Action>().As(Lifetime.PerResolve).To(ctx => new Action(() => ctx.Inject<IDependency>(out _)))
                                            .Bind<Service>().To<Service>()
                                            .Root<Service>("Root");
                                    }

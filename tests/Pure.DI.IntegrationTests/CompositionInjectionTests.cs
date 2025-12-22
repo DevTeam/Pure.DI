@@ -128,6 +128,7 @@ public class CompositionInjectionTests
         var result = await """
                            using System;
                            using Pure.DI;
+                           #pragma warning disable CS8618
 
                            namespace Sample
                            {

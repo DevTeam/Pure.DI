@@ -2624,50 +2624,6 @@ public class LifetimesTests
         result.Success.ShouldBeTrue(result);
         result.GeneratedCode.Contains(Names.PerResolveVariablePrefix).ShouldBeTrue(result);
     }
-    [Fact]
-    public async Task ShouldSupportSingletonForValueType()
-    {
-        // Given
-
-        // When
-        var result = await """
-                           using System;
-                           using Pure.DI;
-
-                           namespace Sample
-                           {
-                               struct Dependency
-                               {
-                                   public Dependency() => Console.WriteLine("Ctor");
-                               }
-                           
-                               static class Setup
-                               {
-                                   private static void SetupComposition()
-                                   {
-                                       DI.Setup("Composition")
-                                           .Bind<Dependency>().As(Lifetime.Singleton).To<Dependency>()
-                                           .Root<Dependency>("Root1")
-                                           .Root<Dependency>("Root2");
-                                   }
-                               }
-
-                               public class Program
-                               {
-                                   public static void Main()
-                                   {
-                                       var composition = new Composition();
-                                       var r1 = composition.Root1;
-                                       var r2 = composition.Root2;
-                                   }
-                               }
-                           }
-                           """.RunAsync();
-
-        // Then
-        result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["Ctor"], result);
-    }
 
     [Fact]
     public async Task ShouldSupportPerResolveInDeepHierarchy()

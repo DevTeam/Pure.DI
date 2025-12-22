@@ -427,6 +427,7 @@ public class AutoBindingTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Ctor2"], result);
     }
+
     [Fact]
     public async Task ShouldSupportAutoBindingForValueType()
     {
@@ -468,7 +469,7 @@ public class AutoBindingTests
                                    }
                                }
                            }
-                           """.RunAsync();
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);

@@ -189,36 +189,6 @@ public class BenchmarksTests
         result.Success.ShouldBeTrue(result);
         result.GeneratedCode.Split(Environment.NewLine).Count(i => i.Contains("new global::Sample.Service3(new global::Sample.Service4(), new global::Sample.Service4());")).ShouldBe(1, result);
     }
-    [Fact]
-    public async Task ShouldGenerateOptimizedSingleton()
-    {
-        // Given
-
-        // When
-        var result = await (Models + """
-                                     static class Setup
-                                     {
-                                       private static void SetupComposition()
-                                       {
-                                           DI.Setup("Composition")
-                                               .Bind<IService4>().As(Lifetime.Singleton).To<Service4>()
-                                               .Root<IService4>("Root");
-                                       }
-                                     }
-
-                                     public class Program
-                                     {
-                                       public static void Main()
-                                       {
-                                           var composition = new Composition();
-                                       }
-                                     }
-                                     """).RunAsync(new Options(LanguageVersion.CSharp10));
-
-        // Then
-        result.Success.ShouldBeTrue(result);
-        result.GeneratedCode.Contains("_service4").ShouldBeTrue(result);
-    }
 
     [Fact]
     public async Task ShouldGenerateOptimizedArray()

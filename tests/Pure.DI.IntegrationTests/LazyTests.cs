@@ -210,6 +210,7 @@ public class LazyTests
         // Then
         result.Success.ShouldBeTrue(result);
     }
+
     [Fact]
     public async Task ShouldSupportLazyForValueType()
     {
@@ -254,7 +255,7 @@ public class LazyTests
                                    }
                                }
                            }
-                           """.RunAsync();
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);

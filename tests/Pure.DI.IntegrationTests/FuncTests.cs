@@ -2199,7 +2199,7 @@ public class FuncTests
                                    }
                                }
                            }
-                           """.RunAsync();
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);

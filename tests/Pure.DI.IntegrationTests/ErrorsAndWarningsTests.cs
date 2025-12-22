@@ -1835,6 +1835,7 @@ public class ErrorsAndWarningsTests
         result.Success.ShouldBeFalse(result);
         result.Logs.Count(i => i.Id == LogId.ErrorLifetimeDefect).ShouldBe(1, result);
     }
+
     [Fact]
     public async Task ShouldShowErrorWhenNoPublicConstructor()
     {
@@ -1870,7 +1871,7 @@ public class ErrorsAndWarningsTests
     }
 
     [Fact]
-    public async Task ShouldShowErrorWhenAmbiguousConstructors()
+    public async Task ShouldNowShowErrorWhenAmbiguousConstructors()
     {
         // Given
 
@@ -1884,6 +1885,7 @@ public class ErrorsAndWarningsTests
                                class Service
                                {
                                    public Service(string s) {}
+
                                    public Service(int i) {}
                                }
 
@@ -1895,7 +1897,15 @@ public class ErrorsAndWarningsTests
                                            .Bind<string>().To(_ => "abc")
                                            .Bind<int>().To(_ => 1)
                                            .Bind<Service>().To<Service>()
-                                           .Root<Service>("Root");
+                                           .Root<Service>("MyRoot");
+                                   }
+                               }
+                               
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var root = new Composition().MyRoot;
                                    }
                                }
                            }
@@ -1903,6 +1913,6 @@ public class ErrorsAndWarningsTests
 
         // Then
         result.Success.ShouldBeFalse(result);
-        result.Errors.Any(i => i.Id == LogId.ErrorUnableToResolve).ShouldBeTrue(result);
+        result.Errors.Count.ShouldBe(0, result);
     }
 }

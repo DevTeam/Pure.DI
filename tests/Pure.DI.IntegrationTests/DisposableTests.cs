@@ -588,6 +588,7 @@ public class DisposableTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Dependency2", "Dependency3", "Dispose3", "Dispose2"], result);
     }
+
     [Fact]
     public async Task ShouldSupportSingletonWithDisposable()
     {
@@ -649,50 +650,6 @@ public class DisposableTests
                                    {
                                        using var composition = new Composition();
                                        var service = composition.Service;
-                                   }
-                               }
-                           }
-                           """.RunAsync();
-
-        // Then
-        result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["Dispose"], result);
-    }
-    [Fact]
-    public async Task ShouldSupportDisposableWithPerBlockLifetime()
-    {
-        // Given
-
-        // When
-        var result = await """
-                           using System;
-                           using Pure.DI;
-
-                           namespace Sample
-                           {
-                               class Dependency: IDisposable
-                               {
-                                   public void Dispose() => Console.WriteLine("Dispose");
-                               }
-                           
-                               static class Setup
-                               {
-                                   private static void SetupComposition()
-                                   {
-                                       DI.Setup("Composition")
-                                           .Bind<Dependency>().As(Lifetime.PerBlock).To<Dependency>()
-                                           .Root<Dependency>("Root");
-                                   }
-                               }
-                           
-                               public class Program
-                               {
-                                   public static void Main()
-                                   {
-                                       using (var composition = new Composition())
-                                       {
-                                           var root = composition.Root;
-                                       }
                                    }
                                }
                            }

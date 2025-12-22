@@ -3324,6 +3324,7 @@ public class OverrideTests
         // Then
         result.Success.ShouldBeTrue(result);
     }
+
     [Fact]
     public async Task ShouldSupportOverrideWithTag()
     {
@@ -3353,10 +3354,9 @@ public class OverrideTests
                                    private static void SetupComposition()
                                    {
                                        DI.Setup("Composition")
-                                           .Bind<IDependency>("t").To<Dependency1>()
                                            .Bind<Service>().To(ctx => {
                                                ctx.Override<IDependency>(new Dependency2(), "t");
-                                               ctx.Inject<Service>(out var service);
+                                               ctx.Inject<Service>("raw", out var service);
                                                return service;
                                            })
                                            .Root<Service>("Root");
@@ -3404,10 +3404,9 @@ public class OverrideTests
                                    private static void SetupComposition()
                                    {
                                        DI.Setup("Composition")
-                                           .Bind<int>().To(_ => 1)
                                            .Bind<Service>().To(ctx => {
                                                ctx.Override<int>(2);
-                                               ctx.Inject<Service>(out var service);
+                                               ctx.Inject<Service>("raw", out var service);
                                                return service;
                                            })
                                            .Root<Service>("Root");
