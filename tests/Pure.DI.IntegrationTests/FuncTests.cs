@@ -2254,4 +2254,992 @@ public class FuncTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["True"], result);
     }
+
+    [Fact]
+    public async Task ShouldSupportFuncWith3Args()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency: IDependency 
+                               {
+                                   public Dependency(string arg1, int arg2, bool arg3) => Console.WriteLine($"{arg1} {arg2} {arg3}");
+                               }
+                           
+                               class Service
+                               {
+                                   public Service(Func<string, int, bool, IDependency> factory) => factory("abc", 123, true);
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["abc 123 True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFuncWith4Args()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Globalization;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency: IDependency 
+                               {
+                                   public Dependency(string arg1, int arg2, bool arg3, double arg4) => Console.WriteLine($"{arg1} {arg2} {arg3} {arg4.ToString(CultureInfo.InvariantCulture)}");
+                               }
+                           
+                               class Service
+                               {
+                                   public Service(Func<string, int, bool, double, IDependency> factory) => factory("abc", 123, true, 12.3);
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["abc 123 True 12.3"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFuncWithManyArgs()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Globalization;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency: IDependency 
+                               {
+                                   public Dependency(long arg1, int arg2, bool arg3, double arg4, string arg5, float arg6, char arg7, byte arg8) 
+                                       => Console.WriteLine($"{arg1} {arg2} {arg3} {arg4.ToString(CultureInfo.InvariantCulture)} {arg5} {arg6.ToString(CultureInfo.InvariantCulture)} {arg7} {arg8}");
+                               }
+                           
+                               class Service
+                               {
+                                   public Service(Func<long, int, bool, double, string, float, char, byte, IDependency> factory) 
+                                       => factory(1L, 2, true, 3.0, "4", 5.0f, '6', 7);
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["1 2 True 3 4 5 6 7"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFuncOfLazy()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency: IDependency {}
+                           
+                               class Service
+                               {
+                                   public Service(Func<Lazy<IDependency>> factory)
+                                   { 
+                                       var lazy = factory();
+                                       Console.WriteLine(lazy.Value != null);
+                                   }    
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportLazyOfFunc()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency: IDependency {}
+                           
+                               class Service
+                               {
+                                   public Service(Lazy<Func<IDependency>> factory)
+                                   { 
+                                       Console.WriteLine(factory.Value() != null);
+                                   }    
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFuncOfGeneric()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency<T> {}
+                               class Dependency<T>: IDependency<T> {}
+                           
+                               class Service
+                               {
+                                   public Service(Func<IDependency<int>> factory)
+                                   { 
+                                       Console.WriteLine(factory() is IDependency<int>);
+                                   }    
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency<TT>>().To<Dependency<TT>>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFuncWithGenericArg()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency<T> {}
+                               class Dependency<T>: IDependency<T> 
+                               {
+                                   public Dependency(T value) => Console.WriteLine(value);
+                               }
+                           
+                               class Service
+                               {
+                                   public Service(Func<int, IDependency<int>> factory)
+                                   { 
+                                       factory(99);
+                                   }    
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency<TT>>().To<Dependency<TT>>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["99"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFuncForInternalType()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               internal interface IDependency {}
+                               internal class Dependency: IDependency {}
+                           
+                               internal class Service
+                               {
+                                   public Service(Func<IDependency> factory)
+                                   { 
+                                       Console.WriteLine(factory() != null);
+                                   }    
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFuncInRecord()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency: IDependency {}
+                           
+                               record Service(Func<IDependency> Factory);
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                       Console.WriteLine(service.Factory() != null);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFuncInRecordStruct()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency: IDependency {}
+                           
+                               record struct Service(Func<IDependency> Factory);
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                       Console.WriteLine(service.Factory() != null);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFuncForDisposable()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Dependency: IDisposable
+                               {
+                                   public void Dispose() => Console.WriteLine("Disposed");
+                               }
+                           
+                               class Service
+                               {
+                                   public Service(Func<Dependency> factory)
+                                   { 
+                                       using var dep = factory();
+                                   }    
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<Dependency>().To<Dependency>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Disposed"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFuncWithSameArgTypes()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency: IDependency 
+                               {
+                                   public Dependency(string arg1, string arg2) => Console.WriteLine($"{arg1} {arg2}");
+                               }
+                           
+                               class Service
+                               {
+                                   public Service(Func<string, string, IDependency> factory) => factory("a", "b");
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        // Pure.DI currently does not support distinguishing positional arguments of the same type in Func
+        result.StdOut.ShouldBe(["b b"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFuncInFactory()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency: IDependency {}
+                           
+                               class Service
+                               {
+                                   public Service(IDependency dep) => Console.WriteLine(dep != null);
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Bind<Service>().To(ctx => {
+                                               ctx.Inject<Func<IDependency>>(out var factory);
+                                               return new Service(factory());
+                                           })
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFuncWithNullArg()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           #nullable disable
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency: IDependency 
+                               {
+                                   public Dependency(string arg) => Console.WriteLine(arg ?? "null");
+                               }
+                           
+                               class Service
+                               {
+                                   public Service(Func<string, IDependency> factory) => factory(null);
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["null"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFuncForStruct()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               struct Dependency 
+                               {
+                                   public override string ToString() => "struct";
+                               }
+                           
+                               class Service
+                               {
+                                   public Service(Func<Dependency> factory) => Console.WriteLine(factory());
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<Dependency>().To<Dependency>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["struct"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFuncWithStructArg()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               struct MyStruct { public int Value; }
+
+                               class Dependency
+                               {
+                                   public Dependency(MyStruct s) => Console.WriteLine(s.Value);
+                               }
+                           
+                               class Service
+                               {
+                                   public Service(Func<MyStruct, Dependency> factory) => factory(new MyStruct { Value = 42 });
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<Dependency>().To<Dependency>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["42"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFuncWithTask()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Threading.Tasks;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Dependency {}
+                           
+                               class Service
+                               {
+                                   public Service(Func<Task<Dependency>> factory)
+                                   { 
+                                       Console.WriteLine(factory().Result != null);
+                                   }    
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<Dependency>().To<Dependency>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFuncWithValueTask()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Threading.Tasks;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Dependency {}
+                           
+                               class Service
+                               {
+                                   public Service(Func<ValueTask<Dependency>> factory)
+                                   { 
+                                       Console.WriteLine(factory().Result != null);
+                                   }    
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<Dependency>().To<Dependency>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFuncWithEnumArg()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               enum MyEnum { Value1, Value2 }
+
+                               class Dependency
+                               {
+                                   public Dependency(MyEnum e) => Console.WriteLine(e);
+                               }
+                           
+                               class Service
+                               {
+                                   public Service(Func<MyEnum, Dependency> factory) => factory(MyEnum.Value2);
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<Dependency>().To<Dependency>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Value2"], result);
+    }
+
+
+    [Fact]
+    public async Task ShouldSupportFuncWithComplexHierarchy()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDep1 {}
+                               class Dep1 : IDep1 {}
+                               interface IDep2 {}
+                               class Dep2 : IDep2 { public Dep2(IDep1 d) {} }
+                           
+                               class Service
+                               {
+                                   public Service(Func<IDep2> factory) 
+                                   {
+                                       Console.WriteLine(factory() != null);
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDep1>().To<Dep1>()
+                                           .Bind<IDep2>().To<Dep2>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
 }

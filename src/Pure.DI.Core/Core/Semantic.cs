@@ -97,17 +97,17 @@ sealed class Semantic(
                     switch (classIdentifierName.Identifier.Text)
                     {
                         case nameof(CompositionKind) when IsSpecialType(semanticModel, node, SpecialType.CompositionKind):
-                            if (Enum.TryParse<CompositionKind>(valueStr, out var compositionKindValue))
+                            if (Enum.TryParse<CompositionKind>(valueStr, out var compositionKindValue) && compositionKindValue is T compositionKind)
                             {
-                                return (T)(object)compositionKindValue;
+                                return compositionKind;
                             }
 
                             break;
 
                         case nameof(Lifetime) when IsSpecialType(semanticModel, node, SpecialType.Lifetime):
-                            if (Enum.TryParse<Lifetime>(valueStr, out var lifetimeValue))
+                            if (Enum.TryParse<Lifetime>(valueStr, out var lifetimeValue) && lifetimeValue is T lifetime)
                             {
-                                return (T)(object)lifetimeValue;
+                                return lifetime;
                             }
 
                             break;
@@ -192,7 +192,10 @@ sealed class Semantic(
                             }
 
                             var injectionSite = injectionSiteFactory.CreateInjectionSite(methodArgName.Expression, method, methodArg);
-                            return (T)MdTag.CreateTagOnValue(invocationExpressionSyntax, ImmutableArray.Create(injectionSite));
+                            if (MdTag.CreateTagOnValue(invocationExpressionSyntax, ImmutableArray.Create(injectionSite)) is T tagValue)
+                            {
+                                return tagValue;
+                            }
                         }
 
                         break;
@@ -238,14 +241,14 @@ sealed class Semantic(
             }
 
             var operation = semanticModel.GetOperation(node);
-            if (operation?.ConstantValue.Value is T value)
+            if (operation?.ConstantValue.Value is T val2)
             {
-                return value;
+                return val2;
             }
 
-            if (typeof(T) == typeof(object) && operation is ITypeOfOperation { TypeOperand: T val })
+            if (typeof(T) == typeof(object) && operation is ITypeOfOperation { TypeOperand: T val3 })
             {
-                return val;
+                return val3;
             }
         }
 

@@ -2668,4 +2668,1185 @@ public class LifetimesTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Dep Ctor"], result);
     }
+
+    [Fact]
+    public async Task ShouldSupportPerResolveWithLazy()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDep {}
+                               class Dep: IDep { public Dep() => Console.WriteLine("Dep Ctor"); }
+
+                               class Service
+                               {
+                                   public Service(IDep d1, Lazy<IDep> d2)
+                                   {
+                                       var val = d2.Value;
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDep>().As(Lifetime.PerResolve).To<Dep>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var r = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Dep Ctor"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportPerResolveWithFunc()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDep {}
+                               class Dep: IDep { public Dep() => Console.WriteLine("Dep Ctor"); }
+
+                               class Service
+                               {
+                                   public Service(IDep d1, Func<IDep> d2)
+                                   {
+                                       var val = d2();
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDep>().As(Lifetime.PerResolve).To<Dep>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var r = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Dep Ctor"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportPerBlockWithLazy()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDep {}
+                               class Dep: IDep { public Dep() => Console.WriteLine("Dep Ctor"); }
+
+                               class Service
+                               {
+                                   public Service(IDep d1, Lazy<IDep> d2)
+                                   {
+                                       var val = d2.Value;
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDep>().As(Lifetime.PerBlock).To<Dep>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var r = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Dep Ctor", "Dep Ctor"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportPerBlockWithFunc()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDep {}
+                               class Dep: IDep { public Dep() => Console.WriteLine("Dep Ctor"); }
+
+                               class Service
+                               {
+                                   public Service(IDep d1, Func<IDep> d2)
+                                   {
+                                       var val = d2();
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDep>().As(Lifetime.PerBlock).To<Dep>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var r = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Dep Ctor", "Dep Ctor"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportPerResolveWithGeneric()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDep<T> {}
+                               class Dep<T>: IDep<T> { public Dep() => Console.WriteLine(typeof(T).Name); }
+
+                               class Service
+                               {
+                                   public Service(IDep<int> d1, IDep<int> d2, IDep<string> d3) {}
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDep<TT>>().As(Lifetime.PerResolve).To<Dep<TT>>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var r = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Int32", "String"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportPerBlockWithGeneric()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDep<T> {}
+                               class Dep<T>: IDep<T> { public Dep() => Console.WriteLine(typeof(T).Name); }
+
+                               class Service
+                               {
+                                   public Service(IDep<int> d1, IDep<int> d2, IDep<string> d3) {}
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDep<TT>>().As(Lifetime.PerBlock).To<Dep<TT>>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var r = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Int32", "String"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSingletonWithGeneric()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDep<T> {}
+                               class Dep<T>: IDep<T> { public Dep() => Console.WriteLine(typeof(T).Name); }
+
+                               class Service
+                               {
+                                   public Service(IDep<int> d1, IDep<int> d2, IDep<string> d3) {}
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDep<TT>>().As(Lifetime.Singleton).To<Dep<TT>>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var r1 = composition.Root;
+                                       var r2 = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Int32", "String"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportPerResolveWithTags()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDep {}
+                               class Dep: IDep { public Dep() => Console.WriteLine("Dep Ctor"); }
+
+                               class Service
+                               {
+                                   public Service([Tag(1)] IDep d1, [Tag(1)] IDep d2, [Tag(2)] IDep d3) {}
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDep>(1, 2).As(Lifetime.PerResolve).To<Dep>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var r = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Dep Ctor"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportPerBlockWithTags()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDep {}
+                               class Dep: IDep { public Dep() => Console.WriteLine("Dep Ctor"); }
+
+                               class Service
+                               {
+                                   public Service([Tag(1)] IDep d1, [Tag(1)] IDep d2, [Tag(2)] IDep d3) {}
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDep>(1, 2).As(Lifetime.PerBlock).To<Dep>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var r = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Dep Ctor"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSingletonWithTags()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDep {}
+                               class Dep: IDep { public Dep() => Console.WriteLine("Dep Ctor"); }
+
+                               class Service
+                               {
+                                   public Service([Tag(1)] IDep d1, [Tag(1)] IDep d2, [Tag(2)] IDep d3) {}
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDep>(1, 2).As(Lifetime.Singleton).To<Dep>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var r1 = composition.Root;
+                                       var r2 = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Dep Ctor"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportPerResolveWithFactory()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDep {}
+                               class Dep: IDep { public Dep() => Console.WriteLine("Dep Ctor"); }
+
+                               class Service
+                               {
+                                   public Service(IDep d1, IDep d2) {}
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDep>().As(Lifetime.PerResolve).To(ctx => new Dep())
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var r = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Dep Ctor"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportPerBlockWithFactory()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDep {}
+                               class Dep: IDep { public Dep() => Console.WriteLine("Dep Ctor"); }
+
+                               class Service
+                               {
+                                   public Service(IDep d1, IDep d2) {}
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDep>().As(Lifetime.PerBlock).To(ctx => new Dep())
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var r = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Dep Ctor"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSingletonWithFactory()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDep {}
+                               class Dep: IDep { public Dep() => Console.WriteLine("Dep Ctor"); }
+
+                               class Service
+                               {
+                                   public Service(IDep d1, IDep d2) {}
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDep>().As(Lifetime.Singleton).To(ctx => new Dep())
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var r1 = composition.Root;
+                                       var r2 = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Dep Ctor"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportPerResolveWithArray()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDep {}
+                               class Dep: IDep { public Dep() => Console.WriteLine("Dep Ctor"); }
+
+                               class Service
+                               {
+                                   public Service(IDep[] d1, IDep[] d2) {}
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDep>().As(Lifetime.PerResolve).To<Dep>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var r = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Dep Ctor"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportPerBlockWithArray()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDep {}
+                               class Dep: IDep { public Dep() => Console.WriteLine("Dep Ctor"); }
+
+                               class Service
+                               {
+                                   public Service(IDep[] d1, IDep[] d2) {}
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDep>().As(Lifetime.PerBlock).To<Dep>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var r = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Dep Ctor"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSingletonWithArray()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDep {}
+                               class Dep: IDep { public Dep() => Console.WriteLine("Dep Ctor"); }
+
+                               class Service
+                               {
+                                   public Service(IDep[] d1, IDep[] d2) {}
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDep>().As(Lifetime.Singleton).To<Dep>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var r1 = composition.Root;
+                                       var r2 = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Dep Ctor"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportPerResolveWithEnumerable()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDep {}
+                               class Dep: IDep { public Dep() => Console.WriteLine("Dep Ctor"); }
+
+                               class Service
+                               {
+                                   public Service(IEnumerable<IDep> d1, IEnumerable<IDep> d2) 
+                                   {
+                                       foreach(var x in d1) {}
+                                       foreach(var x in d2) {}
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDep>().As(Lifetime.PerResolve).To<Dep>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var r = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Dep Ctor"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportPerBlockWithEnumerable()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDep {}
+                               class Dep: IDep { public Dep() => Console.WriteLine("Dep Ctor"); }
+
+                               class Service
+                               {
+                                   public Service(IEnumerable<IDep> d1, IEnumerable<IDep> d2) 
+                                   {
+                                       foreach(var x in d1) {}
+                                       foreach(var x in d2) {}
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDep>().As(Lifetime.PerBlock).To<Dep>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var r = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Dep Ctor", "Dep Ctor"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSingletonWithEnumerable()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDep {}
+                               class Dep: IDep { public Dep() => Console.WriteLine("Dep Ctor"); }
+
+                               class Service
+                               {
+                                   public Service(IEnumerable<IDep> d1, IEnumerable<IDep> d2) 
+                                   {
+                                       foreach(var x in d1) {}
+                                       foreach(var x in d2) {}
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDep>().As(Lifetime.Singleton).To<Dep>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var r1 = composition.Root;
+                                       var r2 = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Dep Ctor"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportPerResolveWhenCircularDependencyViaLazy()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDep1 {}
+                               class Dep1: IDep1 { public Dep1(Lazy<IDep2> d2) {} }
+
+                               interface IDep2 {}
+                               class Dep2: IDep2 { public Dep2(IDep1 d1) {} }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDep1>().As(Lifetime.PerResolve).To<Dep1>()
+                                           .Bind<IDep2>().As(Lifetime.PerResolve).To<Dep2>()
+                                           .Root<IDep1>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var r = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportPerResolveWithSeveralRoots()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDep {}
+                               class Dep: IDep { public Dep() => Console.WriteLine("Dep Ctor"); }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDep>("Root1", "Root2").As(Lifetime.PerResolve).To<Dep>()
+                                           .Root<IDep>("Root1", "Root1")
+                                           .Root<IDep>("Root2", "Root2");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var r1 = composition.Root1;
+                                       var r2 = composition.Root2;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Dep Ctor", "Dep Ctor"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportPerBlockWithSeveralRoots()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDep {}
+                               class Dep: IDep { public Dep() => Console.WriteLine("Dep Ctor"); }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDep>("Root1", "Root2").As(Lifetime.PerBlock).To<Dep>()
+                                           .Root<IDep>("Root1", "Root1")
+                                           .Root<IDep>("Root2", "Root2");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var r1 = composition.Root1;
+                                       var r2 = composition.Root2;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Dep Ctor", "Dep Ctor"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSingletonWithSeveralRoots()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDep {}
+                               class Dep: IDep { public Dep() => Console.WriteLine("Dep Ctor"); }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDep>("Root1", "Root2").As(Lifetime.Singleton).To<Dep>()
+                                           .Root<IDep>("Root1", "Root1")
+                                           .Root<IDep>("Root2", "Root2");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var r1 = composition.Root1;
+                                       var r2 = composition.Root2;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Dep Ctor"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportPerResolveWithTask()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Threading.Tasks;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDep {}
+                               class Dep: IDep { public Dep() => Console.WriteLine("Dep Ctor"); }
+
+                               class Service
+                               {
+                                   public Service(Task<IDep> d1, Task<IDep> d2) 
+                                   {
+                                       var v1 = d1.Result;
+                                       var v2 = d2.Result;
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDep>().As(Lifetime.PerResolve).To<Dep>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var r = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Dep Ctor"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportPerResolveWithValueTask()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Threading.Tasks;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDep {}
+                               class Dep: IDep { public Dep() => Console.WriteLine("Dep Ctor"); }
+
+                               class Service
+                               {
+                                   public Service(ValueTask<IDep> d1, ValueTask<IDep> d2) 
+                                   {
+                                       var v1 = d1.Result;
+                                       var v2 = d2.Result;
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDep>().As(Lifetime.PerResolve).To<Dep>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var r = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Dep Ctor"], result);
+    }
 }

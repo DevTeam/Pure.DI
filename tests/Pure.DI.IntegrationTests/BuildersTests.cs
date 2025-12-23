@@ -1064,4 +1064,235 @@ public class BuildersTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["True"], result);
     }
+
+    [Fact]
+    public async Task ShouldSupportBuilderWithArgs()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+                           #pragma warning disable CS8618
+
+                           namespace Sample
+                           {
+                               interface IDependency { string Name { get; } }
+                               class Dependency: IDependency 
+                               {
+                                   public Dependency(string name) => Name = name;
+                                   public string Name { get; }
+                               }
+                           
+                               class Service
+                               {
+                                   [Ordinal(0)]
+                                   public IDependency Dep { get; set; }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Arg<string>("depName")
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Builder<Service>("BuildUpService");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition(depName: "ArgValue");
+                                       var service = new Service();
+                                       composition.BuildUpService(service);
+                                       Console.WriteLine(service.Dep.Name);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["ArgValue"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportBuilderWithLifetimes()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+                           #pragma warning disable CS8618
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency: IDependency {}
+                           
+                               class Service
+                               {
+                                   [Ordinal(0)]
+                                   public IDependency Dep1 { get; set; }
+                                   
+                                   [Ordinal(1)]
+                                   public IDependency Dep2 { get; set; }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
+                                           .Builder<Service>("BuildUpService");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service1 = new Service();
+                                       composition.BuildUpService(service1);
+                                       
+                                       var service2 = new Service();
+                                       composition.BuildUpService(service2);
+                                       
+                                       Console.WriteLine(ReferenceEquals(service1.Dep1, service1.Dep2));
+                                       Console.WriteLine(ReferenceEquals(service1.Dep1, service2.Dep1));
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportBuilderWithPartialClasses()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+                           #pragma warning disable CS8618
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency: IDependency {}
+                           
+                               partial class Service
+                               {
+                                   [Ordinal(0)]
+                                   public IDependency Dep1 { get; set; }
+                               }
+
+                               partial class Service
+                               {
+                                   [Ordinal(1)]
+                                   public IDependency Dep2 { get; set; }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Builder<Service>("BuildUpService");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = new Service();
+                                       composition.BuildUpService(service);
+                                       
+                                       Console.WriteLine(service.Dep1 != null);
+                                       Console.WriteLine(service.Dep2 != null);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportBuilderWithDeepHierarchy()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+                           #pragma warning disable CS8618
+
+                           namespace Sample
+                           {
+                               interface IDependency1 {}
+                               class Dependency1: IDependency1 {}
+                               
+                               interface IDependency2 { IDependency1 Dep1 { get; } }
+                               class Dependency2: IDependency2 
+                               {
+                                   public Dependency2(IDependency1 dep1) => Dep1 = dep1;
+                                   public IDependency1 Dep1 { get; }
+                               }
+                           
+                               class Service
+                               {
+                                   [Ordinal(0)]
+                                   public IDependency2 Dep2 { get; set; }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency1>().To<Dependency1>()
+                                           .Bind<IDependency2>().To<Dependency2>()
+                                           .Builder<Service>("BuildUpService");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = new Service();
+                                       composition.BuildUpService(service);
+                                       
+                                       Console.WriteLine(service.Dep2 != null);
+                                       Console.WriteLine(service.Dep2!.Dep1 != null);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True"], result);
+    }
 }

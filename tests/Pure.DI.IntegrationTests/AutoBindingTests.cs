@@ -218,13 +218,14 @@ public class AutoBindingTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options { LanguageVersion = LanguageVersion.CSharp12 });
+                           """.RunAsync(new Options { LanguageVersion = LanguageVersion.CSharp10 });
 
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Default"], result);
     }
 
+#if ROSLYN4_8_OR_GREATER
     [Fact]
     public async Task ShouldSupportAutoBindingForClassWithPrimaryConstructor()
     {
@@ -273,6 +274,7 @@ public class AutoBindingTests
         // Then
         result.Success.ShouldBeTrue(result);
     }
+#endif
 
     [Fact]
     public async Task ShouldNotSupportAutoBindingForInterface()

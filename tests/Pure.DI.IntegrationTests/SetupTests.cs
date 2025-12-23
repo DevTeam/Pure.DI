@@ -1871,4 +1871,1536 @@ public class SetupTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["True"], result);
     }
+
+    [Fact]
+    public async Task ShouldSupportSetupInPartialClass()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService {}
+                               class Service: IService {}
+                               
+                               partial class Setup
+                               {
+                                   private void Setup1()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+
+                               partial class Setup
+                               {
+                                   private void Setup2()
+                                   {
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Service is Service);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSetupInGlobalNamespace()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           interface IService {}
+                           class Service: IService {}
+                           
+                           static class Setup
+                           {
+                               private static void SetupComposition()
+                               {
+                                   DI.Setup("Composition")
+                                       .Bind<IService>().To<Service>()
+                                       .Root<IService>("Service");
+                               }
+                           }
+
+                           public class Program
+                           {
+                               public static void Main()
+                               {
+                                   var composition = new Composition();
+                                   Console.WriteLine(composition.Service is Service);
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSetupWithHints()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService {}
+                               class Service: IService {}
+                               
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Hint(Hint.ThreadSafe, "Off")
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Service is Service);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSetupWithMultipleBindingsForSameType()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService {}
+                               class Service1: IService {}
+                               class Service2: IService {}
+                               
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IService>("1").To<Service1>()
+                                           .Bind<IService>("2").To<Service2>()
+                                           .Root<IService>("Service1", "1")
+                                           .Root<IService>("Service2", "2");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Service1 is Service1);
+                                       Console.WriteLine(composition.Service2 is Service2);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSetupWithDefaultLifetime()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService {}
+                               class Service: IService {}
+                               
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .DefaultLifetime(Lifetime.Singleton)
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Service == composition.Service);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSetupWithIgnoredOnCannotResolve()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService {}
+                               class Service: IService 
+                               {
+                                   public Service(string name) {}
+                               }
+                               
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Hint(Hint.OnCannotResolve, "Ignore")
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       try {
+                                           Console.WriteLine(composition.Service == null);
+                                       }
+                                       catch(Exception) {
+                                            Console.WriteLine("Error");
+                                       }
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSetupWithCustomCompositionNameUsingNameof()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService {}
+                               class Service: IService {}
+                               
+                               partial class MyComposition {}
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(MyComposition))
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new MyComposition();
+                                       Console.WriteLine(composition is MyComposition);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSetupWithNestedClasses()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public class Outer
+                               {
+                                   public interface IService {}
+                                   public class Service: IService {}
+
+                                   static class Setup
+                                   {
+                                       private static void SetupComposition()
+                                       {
+                                           DI.Setup("Composition")
+                                               .Bind<IService>().To<Service>()
+                                               .Root<IService>("Service");
+                                       }
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Sample.Composition();
+                                       Console.WriteLine(composition.Service is Outer.Service);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSetupWithGenericRoot()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService<T> {}
+                               class Service<T>: IService<T> {}
+                               
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IService<TT>>().To<Service<TT>>()
+                                           .Root<IService<int>>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Service is Service<int>);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSetupWithMultipleRootsOfSameType()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService {}
+                               class Service: IService {}
+                               
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service1")
+                                           .Root<IService>("Service2");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Service1 is Service);
+                                       Console.WriteLine(composition.Service2 is Service);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count.ShouldBe(1);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSetupWithConstantName()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService {}
+                               class Service: IService {}
+                               
+                               static class Setup
+                               {
+                                   private const string Name = "Composition";
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(Name)
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Service is Service);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSetupWithTag()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService {}
+                               class Service: IService {}
+                               
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IService>("MyTag").To<Service>()
+                                           .Root<IService>("Service", "MyTag");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Service is Service);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSetupWithMultipleSetupsInOneFile()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService1 {}
+                               class Service1: IService1 {}
+                               interface IService2 {}
+                               class Service2: IService2 {}
+                               
+                               static class Setup
+                               {
+                                   private static void Setup1()
+                                   {
+                                       DI.Setup("Composition1")
+                                           .Bind<IService1>().To<Service1>()
+                                           .Root<IService1>("Service");
+                                   }
+
+                                   private static void Setup2()
+                                   {
+                                       DI.Setup("Composition2")
+                                           .Bind<IService2>().To<Service2>()
+                                           .Root<IService2>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var c1 = new Composition1();
+                                       var c2 = new Composition2();
+                                       Console.WriteLine(c1.Service is Service1);
+                                       Console.WriteLine(c2.Service is Service2);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True"], result);
+    }
+
+    [Fact]
+    public async Task DefaultLifetimeInBaseShouldBeRestoredToTransient()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService {}
+                               class Service: IService {}
+                               
+                               static class Setup
+                               {
+                                   private static void SetupBase()
+                                   {
+                                       DI.Setup("Base")
+                                           .Bind<string>().To(_ => "Abc")
+                                           .Root<string>("Dummy")
+                                           .DefaultLifetime(Lifetime.Singleton);
+                                   }
+
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .DependsOn("Base")
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Service != composition.Service);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSetupWithOverriddenDefaultLifetime()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService {}
+                               class Service: IService {}
+                               
+                               static class Setup
+                               {
+                                   private static void SetupBase()
+                                   {
+                                       DI.Setup("Base")
+                                           .Bind<string>().To(_ => "Abc")
+                                           .Root<string>("Dummy")
+                                           .DefaultLifetime(Lifetime.Singleton);
+                                   }
+
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .DependsOn("Base")
+                                           .DefaultLifetime(Lifetime.Transient)
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Service == composition.Service);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["False"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSetupWithBindToMethod()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService {}
+                               class Service: IService {}
+                               
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IService>().To(_ => new Service())
+                                           .Root<IService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Service is Service);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSetupWithGenericBinding()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService<T> {}
+                               class Service<T>: IService<T> {}
+                               
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IService<TT>>().To<Service<TT>>()
+                                           .Root<IService<int>>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Service is Service<int>);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSetupWithPerResolveLifetime()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDep {}
+                               class Dep: IDep {}
+                               interface IService { IDep Dep1 { get; } IDep Dep2 { get; } }
+                               class Service: IService 
+                               {
+                                   public Service(IDep dep1, IDep dep2) { Dep1 = dep1; Dep2 = dep2; }
+                                   public IDep Dep1 { get; }
+                                   public IDep Dep2 { get; }
+                               }
+                               
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .DefaultLifetime(Lifetime.PerResolve)
+                                           .Bind<IDep>().To<Dep>()
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                       Console.WriteLine(service.Dep1 == service.Dep2);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSetupWithPerBlockLifetime()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDep {}
+                               class Dep: IDep {}
+                               interface IService { IDep Dep1 { get; } IDep Dep2 { get; } }
+                               class Service: IService 
+                               {
+                                   public Service(IDep dep1, IDep dep2) { Dep1 = dep1; Dep2 = dep2; }
+                                   public IDep Dep1 { get; }
+                                   public IDep Dep2 { get; }
+                               }
+                               
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .DefaultLifetime(Lifetime.PerBlock)
+                                           .Bind<IDep>().To<Dep>()
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                       Console.WriteLine(service.Dep1 == service.Dep2);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSetupInStaticConstructor()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService {}
+                               class Service: IService {}
+                               
+                               static class Setup
+                               {
+                                   static Setup()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Service is Service);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSetupInConstructor()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService {}
+                               class Service: IService {}
+                               
+                               class Setup
+                               {
+                                   public Setup()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Service is Service);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSetupWithMultipleInterfacesInOneBind()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService1 {}
+                               interface IService2 {}
+                               class Service: IService1, IService2 {}
+                               
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IService1>().Bind<IService2>().To<Service>()
+                                           .Root<IService1>("Service1")
+                                           .Root<IService2>("Service2");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Service1 is Service);
+                                       Console.WriteLine(composition.Service2 is Service);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSetupWithPublicRootKind()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService {}
+                               class Service: IService {}
+                               
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service", default, RootKinds.Public | RootKinds.Property);
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Service is Service);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSetupWithInternalRootKind()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService {}
+                               class Service: IService {}
+                               
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service", default, RootKinds.Internal | RootKinds.Property);
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Service is Service);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSetupWithStaticPropertyRoot()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService {}
+                               class Service: IService {}
+                               
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service", default, RootKinds.Static | RootKinds.Property);
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       Console.WriteLine(Composition.Service is Service);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSetupWithOnNewInstance()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService {}
+                               class Service: IService {}
+                               
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Hint(Hint.OnNewInstance, "On")
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+
+                               partial class Composition
+                               {
+                                   partial void OnNewInstance<T>(ref T value, object? tag, Lifetime lifetime)
+                                   {
+                                       if (value is Service)
+                                       {
+                                           Console.WriteLine($"New instance {value.GetType().Name}");
+                                       }
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Latest));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["New instance Service"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSetupWithTransitiveDependsOn()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService1 {}
+                               class Service1: IService1 {}
+                               interface IService2 {}
+                               class Service2: IService2 {}
+                               
+                               static class Setup
+                               {
+                                   private static void SetupBase1()
+                                   {
+                                       DI.Setup("Base1", CompositionKind.Internal)
+                                           .Bind<IService1>().To<Service1>();
+                                   }
+
+                                   private static void SetupBase2()
+                                   {
+                                       DI.Setup("Base2", CompositionKind.Internal)
+                                           .DependsOn("Base1")
+                                           .Bind<IService2>().To<Service2>();
+                                   }
+
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .DependsOn("Base2")
+                                           .Root<IService1>("Service1")
+                                           .Root<IService2>("Service2");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Service1 is Service1);
+                                       Console.WriteLine(composition.Service2 is Service2);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSetupWithBindingToTaggedImplementation()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService {}
+                               class Service: IService {}
+                               
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IService>("Tag").To<Service>()
+                                           .Bind<IService>().To(ctx => { ctx.Inject<IService>("Tag", out var service); return service; })
+                                           .Root<IService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Service is Service);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSetupWithMergingSetupsInDifferentNamespaces()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Ns1
+                           {
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Sample.Composition")
+                                           .Bind<string>().To(_ => "Ns1");
+                                   }
+                               }
+                           }
+
+                           namespace Ns2
+                           {
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Sample.Composition")
+                                           .Bind<int>().To(_ => 2)
+                                           .Root<string>("Str")
+                                           .Root<int>("Val");
+                                   }
+                               }
+                           }
+
+                           namespace Sample
+                           {
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Str);
+                                       Console.WriteLine(composition.Val);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Ns1", "2"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSetupWithThreadSafeHint()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService {}
+                               class Service: IService {}
+                               
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Hint(Hint.ThreadSafe, "On")
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Service is Service);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSetupWithFormatCodeHint()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService {}
+                               class Service: IService {}
+                               
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Hint(Hint.FormatCode, "On")
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Service is Service);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSetupWithToStringHint()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService {}
+                               class Service: IService {}
+                               
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Hint(Hint.ToString, "On")
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.ToString().Length > 0);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSetupWithDisposeHint()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService {}
+                               class Service: IService, IDisposable 
+                               {
+                                   public void Dispose() => Console.WriteLine("Disposed");
+                               }
+                               
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IService>().As(Lifetime.Singleton).To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       using (var composition = new Composition())
+                                       {
+                                           var service = composition.Service;
+                                       }
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Disposed"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSetupWithOverriddenRoot()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService {}
+                               class Service1: IService {}
+                               class Service2: IService {}
+                               
+                               static class Setup
+                               {
+                                   private static void SetupBase()
+                                   {
+                                       DI.Setup("Base")
+                                           .Bind<IService>().To<Service1>()
+                                           .Root<IService>("Service");
+                                   }
+
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .DependsOn("Base")
+                                           .Bind<IService>().To<Service2>();
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Service is Service2);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Errors.Count.ShouldBe(0, result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
 }

@@ -2650,4 +2650,911 @@ public class FactoryTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["123 abc"], result);
     }
+
+    [Fact]
+    public async Task ShouldSupportFactoryReturningArray()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<string[]>().To(ctx => new [] { "a", "b" })
+                                           .Root<string[]>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(string.Join(", ", composition.Root));
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["a, b"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFactoryReturningIEnumerable()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using System.Linq;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IEnumerable<int>>().To(ctx => Enumerable.Range(1, 3))
+                                           .Root<IEnumerable<int>>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(string.Join(", ", composition.Root));
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["1, 2, 3"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFactoryWithMultipleInjects()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public interface IDep1 { }
+                               public class Dep1 : IDep1 { }
+                               public interface IDep2 { }
+                               public class Dep2 : IDep2 { }
+
+                               public class Service
+                               {
+                                   public Service(IDep1 d1, IDep2 d2) => (D1, D2) = (d1, d2);
+                                   public IDep1 D1 { get; }
+                                   public IDep2 D2 { get; }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDep1>().To<Dep1>()
+                                           .Bind<IDep2>().To<Dep2>()
+                                           .Bind<Service>().To(ctx => {
+                                               ctx.Inject<IDep1>(out var d1);
+                                               ctx.Inject<IDep2>(out var d2);
+                                               return new Service(d1, d2);
+                                           })
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var s = composition.Root;
+                                       Console.WriteLine($"{s.D1 is Dep1} {s.D2 is Dep2}");
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFactoryWithNestedInject()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public interface IDep { }
+                               public class Dep : IDep { }
+
+                               public interface IService { IDep Dep { get; } }
+                               public class Service : IService { 
+                                   public Service(IDep dep) => Dep = dep;
+                                   public IDep Dep { get; } 
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDep>().To<Dep>()
+                                           .Bind<IService>().To(ctx => {
+                                               ctx.Inject<IDep>(out var dep);
+                                               return new Service(dep);
+                                           })
+                                           .Root<IService>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var s = composition.Root;
+                                       Console.WriteLine(s.Dep is Dep);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFactoryWithClosure()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               static class ServiceHost
+                               {
+                                   public const string Prefix = "Hello ";
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<string>().To(ctx => ServiceHost.Prefix + "World")
+                                           .Root<string>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Root);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Hello World"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFactoryThrowingException()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<string>().To(ctx => 
+                                           {
+                                               if (DateTime.Now.Ticks > 0) throw new InvalidOperationException("Error");
+                                               return "";
+                                           })
+                                           .Root<string>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       try {
+                                           var composition = new Composition();
+                                           var s = composition.Root;
+                                       }
+                                       catch (InvalidOperationException ex) {
+                                           Console.WriteLine(ex.Message);
+                                       }
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Error"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFactoryForRecord()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public record Point(int X, int Y);
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<Point>().To(ctx => new Point(1, 2))
+                                           .Root<Point>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Root);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Point { X = 1, Y = 2 }"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFactoryForStruct()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public struct MyStruct { 
+                                   public int Value;
+                                   public MyStruct(int v) => Value = v;
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<MyStruct>().To(ctx => new MyStruct(123))
+                                           .Root<MyStruct>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Root.Value);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["123"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFactoryForStaticProperty()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               static class ServiceHost
+                               {
+                                   public static string Name => "StaticService";
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<string>().To(ctx => ServiceHost.Name)
+                                           .Root<string>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Root);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["StaticService"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFactoryForFunc()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<Func<int, string>>().To(ctx => new Func<int, string>((int x) => $"val: {x}"))
+                                           .Root<Func<int, string>>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Root(10));
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["val: 10"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFactoryWithDefaultParamsInInject()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public interface IService { }
+                               public class Service : IService { }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IService>().To<Service>()
+                                           .Bind<string>().To(ctx => {
+                                               ctx.Inject<IService>(out var s);
+                                               return s.GetType().Name;
+                                           })
+                                           .Root<string>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Root);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Service"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFactoryForGuid()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<Guid>().To(ctx => new Guid("CA761232-ED42-11CE-BACD-00AA0057B223"))
+                                           .Root<Guid>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Root);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["ca761232-ed42-11ce-bacd-00aa0057b223"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFactoryForDateTime()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<DateTime>().To(ctx => new DateTime(2023, 5, 1))
+                                           .Root<DateTime>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Root.ToString("yyyy-MM-dd"));
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["2023-05-01"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFactoryReturningNull()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<string>().To(ctx => (string)null)
+                                           .Root<string>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Root == null);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options { NullableContextOptions = NullableContextOptions.Disable });
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFactoryWithLazy()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public interface IService { }
+                               public class Service : IService { 
+                                   public Service() => Console.WriteLine("Created");
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IService>().To<Service>()
+                                           .Bind<Lazy<IService>>().To(ctx => {
+                                               ctx.Inject<IService>(out var s);
+                                               return new Lazy<IService>(() => s);
+                                           })
+                                           .Root<Lazy<IService>>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var lazy = composition.Root;
+                                       Console.WriteLine("Before");
+                                       var s = lazy.Value;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Created", "Before"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFactoryWithPerBlockLifetime()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public interface IDep { }
+                               public class Dep : IDep { 
+                                   public Dep() => Console.WriteLine("Dep Created");
+                               }
+
+                               public class Service
+                               {
+                                   public Service(IDep d1, IDep d2) { }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDep>().As(Lifetime.PerBlock).To(ctx => new Dep())
+                                           .Bind<Service>().To<Service>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var s = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Dep Created"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFactoryWithInternalCtor()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public class Service
+                               {
+                                   internal Service(string name) => Name = name;
+                                   public string Name { get; }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<Service>().To(ctx => new Service("internal"))
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Root.Name);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["internal"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFactoryWithSwitchExpression()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<string>("A").To(ctx => "alpha")
+                                           .Bind<string>("B").To(ctx => "beta")
+                                           .Root<string>("RootA", "A")
+                                           .Root<string>("RootB", "B");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.RootA);
+                                       Console.WriteLine(composition.RootB);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["alpha", "beta"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFactoryWithOptionalInjection()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public interface IOptional { }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<string>().To(ctx => {
+                                               ctx.Inject<IOptional>(out var opt);
+                                               return "present";
+                                           })
+                                           .Root<string>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Root);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFactoryWithMemberInitialization()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Service
+                               {
+                                   public string? Name { get; set; }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<Service>().To(ctx => new Service { Name = "Initialized" })
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Root.Name);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Initialized"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFactoryWithDictionary()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDictionary<string, int>>().To(ctx => new Dictionary<string, int> { ["abc"] = 123 })
+                                           .Root<IDictionary<string, int>>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Root["abc"]);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["123"], result);
+    }
 }
