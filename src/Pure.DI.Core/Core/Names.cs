@@ -57,6 +57,7 @@ static class Names
     public const string IEnumerableTypeName = $"{SystemNamespace}Collections.Generic.IEnumerable<>";
     public const string IAsyncEnumerableTypeName = $"{SystemNamespace}Collections.Generic.IAsyncEnumerable<>";
     public const string CannotResolveExceptionTypeName = $"{ApiNamespace}{nameof(CannotResolveException)}";
+    public const string NonSerializedAttributeTypeName = $"{SystemNamespace}{nameof(NonSerializedAttribute)}";
 
     // Members
     public const string ResolveMethodName = nameof(IResolver<,>.Resolve);
