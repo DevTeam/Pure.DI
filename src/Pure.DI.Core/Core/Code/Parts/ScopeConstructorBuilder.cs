@@ -2,12 +2,20 @@
 
 namespace Pure.DI.Core.Code.Parts;
 
-sealed class ScopeConstructorBuilder(ILocks locks) : IClassPartBuilder
+sealed class ScopeConstructorBuilder(
+    ILocks locks,
+    IConstructors constructors)
+    : IClassPartBuilder
 {
     public ClassPart Part => ClassPart.ScopeConstructor;
 
     public CompositionCode Build(CompositionCode composition)
     {
+        if (!constructors.IsEnabled(composition, ConstructorKind.Scope))
+        {
+            return composition;
+        }
+
         var code = composition.Code;
         var membersCounter = composition.MembersCount;
         var hints = composition.Source.Source.Hints;

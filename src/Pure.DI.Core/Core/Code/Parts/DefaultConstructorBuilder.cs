@@ -3,14 +3,15 @@
 namespace Pure.DI.Core.Code.Parts;
 
 sealed class DefaultConstructorBuilder(
-    ILocks locks)
+    ILocks locks,
+    IConstructors constructors)
     : IClassPartBuilder
 {
     public ClassPart Part => ClassPart.DefaultConstructor;
 
     public CompositionCode Build(CompositionCode composition)
     {
-        if (composition.ClassArgs.Length > 0)
+        if (!constructors.IsEnabled(composition, ConstructorKind.Default))
         {
             return composition;
         }

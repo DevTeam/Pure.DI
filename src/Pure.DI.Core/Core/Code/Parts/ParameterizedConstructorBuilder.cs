@@ -5,13 +5,19 @@ namespace Pure.DI.Core.Code.Parts;
 sealed class ParameterizedConstructorBuilder(
     ITypeResolver typeResolver,
     [Tag(typeof(ParameterizedConstructorCommenter))] ICommenter<Unit> constructorCommenter,
-    ILocks locks)
+    ILocks locks,
+    IConstructors constructors)
     : IClassPartBuilder
 {
     public ClassPart Part => ClassPart.ParameterizedConstructor;
 
     public CompositionCode Build(CompositionCode composition)
     {
+        if (!constructors.IsEnabled(composition, ConstructorKind.Parameterized))
+        {
+            return composition;
+        }
+
         if (composition.ClassArgs.Length == 0)
         {
             return composition;
