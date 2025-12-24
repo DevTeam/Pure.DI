@@ -205,6 +205,118 @@ public class BindAttributeTests
         result.Success.ShouldBeTrue(result);
     }
 
+    [Theory]
+    [InlineData(Lifetime.Singleton)]
+    [InlineData(Lifetime.Transient)]
+    [InlineData(Lifetime.PerBlock)]
+    [InlineData(Lifetime.PerResolve)]
+    internal async Task ShouldSupportBindAttributeWhenBindToCompositionType(Lifetime lifetime)
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               internal interface IDependency { }
+                           
+                               internal class Dependency : IDependency { }
+                           
+                               internal interface IService { }
+                           
+                               internal class Service : IService
+                               {
+                                   public Service(IDependency dependency)
+                                   {
+                                   }
+                               }
+                               
+                               partial class Composition
+                               {
+                                   [Bind] public IDependency Dep => new Dependency();
+                           
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind().As(Lifetime.#lifetime#).To<Composition>()
+                                           .Bind().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }  
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition(); 
+                                   }
+                               }
+                           }
+                           """.Replace("#lifetime#", lifetime.ToString()).RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
+
+    [Theory]
+    [InlineData(Lifetime.Singleton)]
+    [InlineData(Lifetime.Transient)]
+    [InlineData(Lifetime.PerBlock)]
+    [InlineData(Lifetime.PerResolve)]
+    internal async Task ShouldSupportBindAttributeWhenBindToCompositionInstance(Lifetime lifetime)
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               internal interface IDependency { }
+                           
+                               internal class Dependency : IDependency { }
+                           
+                               internal interface IService { }
+                           
+                               internal class Service : IService
+                               {
+                                   public Service(IDependency dependency)
+                                   {
+                                   }
+                               }
+                               
+                               partial class Composition
+                               {
+                                   [Bind] public IDependency Dep => new Dependency();
+                           
+                                   private void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind().As(Lifetime.#lifetime#).To(_ => this)
+                                           .Bind().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }  
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition(); 
+                                   }
+                               }
+                           }
+                           """.Replace("#lifetime#", lifetime.ToString()).RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
+
     [Fact]
     public async Task ShouldSupportBindAttributeWhenSeveral()
     {
