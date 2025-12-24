@@ -5,7 +5,8 @@ namespace Pure.DI.Core.Code.Parts;
 
 sealed class FieldsBuilder(
     ITypeResolver typeResolver,
-    ILocks locks)
+    ILocks locks,
+    IConstructors constructors)
     : IClassPartBuilder
 {
     public ClassPart Part => ClassPart.Fields;
@@ -17,7 +18,8 @@ sealed class FieldsBuilder(
         var compilation = composition.Compilation;
         var nullable = compilation.Options.NullableContextOptions == NullableContextOptions.Disable ? "" : "?";
 
-        if (composition.Singletons.Length > 0)
+        var isAnyConstructorEnabled = constructors.IsEnabled(composition.Source);
+        if (isAnyConstructorEnabled && composition.Singletons.Length > 0)
         {
             // _parent filed
             code.AppendLine($"private readonly {composition.Source.Source.Name.ClassName} {Names.RootFieldName};");
@@ -28,9 +30,9 @@ sealed class FieldsBuilder(
         {
             // _lock field
             code.AppendLine(new Line(int.MinValue, "#if NET9_0_OR_GREATER"));
-            code.AppendLine($"private readonly {Names.LockTypeName} {Names.LockFieldName};");
+            code.AppendLine($"private readonly {Names.LockTypeName} {Names.LockFieldName}{(isAnyConstructorEnabled ? "" : $" = new {Names.LockTypeName}()")};");
             code.AppendLine(new Line(int.MinValue, "#else"));
-            code.AppendLine($"private readonly {Names.ObjectTypeName} {Names.LockFieldName};");
+            code.AppendLine($"private readonly {Names.ObjectTypeName} {Names.LockFieldName}{(isAnyConstructorEnabled ? "" : $" = new {Names.ObjectTypeName}()")};");
             code.AppendLine(new Line(int.MinValue, "#endif"));
             membersCounter++;
         }
@@ -38,7 +40,7 @@ sealed class FieldsBuilder(
         if (composition.TotalDisposablesCount > 0)
         {
             // _disposables field
-            code.AppendLine($"private object[] {Names.DisposablesFieldName};");
+            code.AppendLine($"private object[] {Names.DisposablesFieldName}{(isAnyConstructorEnabled ? "" : $" = new object[{composition.TotalDisposablesCount.ToString()}]")};");
             membersCounter++;
 
             // _disposeIndex field

@@ -11,7 +11,7 @@ sealed class SetupsBuilder(
     ISemantic semantic,
     ISymbolNames symbolNames,
     Func<ILocalVariableRenamingRewriter> localVariableRenamingRewriterFactory,
-    IRegistryManager<int> registryManager)
+    IRegistryManager<int> bindingsRegistryManager)
     : IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>, IMetadataVisitor, ISetupFinalizer
 {
     private readonly List<MdAccumulator> _accumulators = [];
@@ -217,7 +217,7 @@ sealed class SetupsBuilder(
             return;
         }
 
-        registryManager.Register(setup, binding.Id);
+        bindingsRegistryManager.Register(setup, binding.Id);
         var typeConstructor = typeConstructorFactory();
         foreach (var (attribute, member) in membersToBind)
         {

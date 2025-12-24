@@ -75,17 +75,12 @@ class OrderProcessor(IGlobalCache cache) : IOrderProcessor
     public IGlobalCache Cache { get; } = cache;
 }
 
-internal partial class Composition
+internal partial class Composition(List<string> log)
 {
-    private readonly List<string> _log = [];
-
-    public Composition(List<string> log) : this() =>
-        _log = log;
-
     partial void OnNewInstance<T>(
         ref T value,
         object? tag,
         Lifetime lifetime) =>
-        _log.Add($"{typeof(T).Name} created");
+        log.Add($"{typeof(T).Name} created");
 }
 // }

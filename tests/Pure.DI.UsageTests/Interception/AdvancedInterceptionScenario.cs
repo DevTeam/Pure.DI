@@ -93,7 +93,6 @@ internal partial class Composition : IInterceptor
     private readonly IInterceptor[] _interceptors = [];
 
     public Composition(List<string> log)
-        : this()
     {
         _log = log;
         _interceptors = [this];

@@ -117,7 +117,6 @@ public sealed partial class Generator
             .Bind().To<LifetimeOptimizer>()
             .Bind().To<RootCompositionDependencyRefCounterVisitor>()
             .Bind().To<CycleTools>()
-            .Bind().To<Constructors>()
 
             // Validators
             .Bind(Type).To<MetadataValidator>()
@@ -191,6 +190,7 @@ public sealed partial class Generator
             .Bind().To<NameProvider>()
             .Bind().To<OverrideIdProvider>()
             .Bind().To<OverridesRegistry>()
-            .Bind().To<Accumulators>();
+            .Bind().To<Accumulators>()
+            .Bind().To<Constructors>();
 }
 // @formatter:on

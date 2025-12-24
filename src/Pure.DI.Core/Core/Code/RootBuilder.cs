@@ -28,6 +28,7 @@ class RootBuilder(
     IOverridesRegistry overridesRegistry,
     INameFormatter nameFormatter,
     ILocalFunctions localFunctions,
+    IConstructors constructors,
     CancellationToken cancellationToken)
     : IBuilder<RootContext, VarInjection>
 {
@@ -867,7 +868,7 @@ class RootBuilder(
         if (var.AbstractNode.ActualLifetime is Singleton or Scoped && nodeTools.IsDisposableAny(var.AbstractNode.Node))
         {
             var parent = "";
-            if (var.AbstractNode.ActualLifetime == Singleton)
+            if (var.AbstractNode.ActualLifetime == Singleton && constructors.IsEnabled(ctx.RootContext.Graph))
             {
                 parent = $"{Names.RootFieldName}.";
             }

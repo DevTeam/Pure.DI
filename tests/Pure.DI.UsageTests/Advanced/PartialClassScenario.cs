@@ -72,17 +72,9 @@ class OrderService(
 }
 
 // The partial class is also useful for specifying access modifiers to the generated class
-public partial class Composition
+public partial class Composition(string storeName)
 {
-    private readonly string _storeName = "";
     private long _id;
-
-    // Customizable constructor
-    public Composition(string storeName)
-        : this()
-    {
-        _storeName = storeName;
-    }
 
     private long GenerateId() => Interlocked.Increment(ref _id);
 
@@ -97,7 +89,7 @@ public partial class Composition
             .Bind<IOrder>().To<Order>()
             .Bind<long>().To(_ => GenerateId())
             // Binds the string with the tag "Order details"
-            .Bind<string>("Order details").To(_ => $"{_storeName}_{GenerateId()}")
+            .Bind<string>("Order details").To(_ => $"{storeName}_{GenerateId()}")
             .Root<OrderService>("OrderService", kind: Internal);
 }
 // }

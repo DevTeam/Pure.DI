@@ -18,7 +18,7 @@ sealed class VariationalDependencyGraphBuilder(
     IBuilder<ContractsBuildContext, ISet<Injection>> contractsBuilder,
     IDependencyGraphBuilder graphBuilder,
     Func<DependencyNode, ISet<Injection>, IProcessingNode> processingNodeFactory,
-    IRegistryManager<int> registryManager,
+    IRegistryManager<int> bindingsRegistryManager,
     ILocationProvider locationProvider,
     CancellationToken cancellationToken)
     : IBuilder<MdSetup, DependencyGraph?>
@@ -164,11 +164,11 @@ sealed class VariationalDependencyGraphBuilder(
         {
             foreach (var id in binding.OriginalIds)
             {
-                registryManager.Register(setup, id);
+                bindingsRegistryManager.Register(setup, id);
             }
         }
 
-        registryManager.Register(setup, binding.Id);
+        bindingsRegistryManager.Register(setup, binding.Id);
     }
 
     [SuppressMessage("ReSharper", "NotDisposedResourceIsReturned")]

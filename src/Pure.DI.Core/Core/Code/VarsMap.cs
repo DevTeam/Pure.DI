@@ -5,7 +5,8 @@ class VarsMap(
     [Tag(Tag.VarName)] IIdGenerator idGenerator,
     INameProvider nameProvider,
     ICycleTools cycleTools,
-    ILifetimeOptimizer lifetimeOptimizer)
+    ILifetimeOptimizer lifetimeOptimizer,
+    IConstructors constructors)
     : IVarsMap
 {
     private readonly Dictionary<int, Var> _map = [];
@@ -43,7 +44,7 @@ class VarsMap(
 #if DEBUG
                     varTrace = ImmutableArray.Create(trace.ToString());
 #endif
-                    var = new Var(CreateDeclaration(node), varTrace);
+                    var = new Var(graph, constructors, CreateDeclaration(node), varTrace);
                     _map.Add(node.BindingId, var);
                 }
                 varInjection = new VarInjection(var, injection);
@@ -54,7 +55,7 @@ class VarsMap(
 #if DEBUG
                 varTrace = ImmutableArray.Create(trace.ToString());
 #endif
-                varInjection = new VarInjection(new Var(CreateDeclaration(node), varTrace), injection);
+                varInjection = new VarInjection(new Var(graph, constructors, CreateDeclaration(node), varTrace), injection);
                 break;
         }
 

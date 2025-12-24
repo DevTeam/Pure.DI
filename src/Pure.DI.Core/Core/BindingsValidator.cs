@@ -4,7 +4,7 @@ namespace Pure.DI.Core;
 
 sealed class BindingsValidator(
     ILogger logger,
-    IRegistry<int> registry,
+    IRegistry<int> bindingsRegistry,
     ILocationProvider locationProvider)
     : IValidator<DependencyGraph>
 {
@@ -12,7 +12,7 @@ sealed class BindingsValidator(
     {
         foreach (var binding in graph.Source.Bindings.Where(i => i.SourceSetup.Kind == CompositionKind.Public && i.Contracts.All(c => c.Kind == ContractKind.Explicit)))
         {
-            if (!GetIds(binding).Any(id => registry.IsRegistered(graph.Source, id)))
+            if (!GetIds(binding).Any(id => bindingsRegistry.IsRegistered(graph.Source, id)))
             {
                 logger.CompileWarning(
                     Strings.Warning_BindingIsNotUsed,

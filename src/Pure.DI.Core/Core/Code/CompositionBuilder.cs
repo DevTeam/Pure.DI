@@ -9,6 +9,7 @@ class CompositionBuilder(
     IVarDeclarationTools varDeclarationTools,
     IBuilder<CompositionCode, Lines> classDiagramBuilder,
     IOverridesRegistry overridesRegistry,
+    IRegistry<int> bindingsRegistry,
     CancellationToken cancellationToken)
     : IBuilder<DependencyGraph, CompositionCode>
 {
@@ -67,7 +68,7 @@ class CompositionBuilder(
                 RootArgs = args.GetArgsOfKind(ArgKind.Root).ToImmutableArray()
             };
 
-            classArgs.AddRange(args.GetArgsOfKind(ArgKind.Composition));
+            classArgs.AddRange(args.GetArgsOfKind(ArgKind.Composition).Where(node => bindingsRegistry.IsRegistered(graph.Source, node.Node.BindingId)));
             var typeDescription = typeResolver.Resolve(graph.Source, processedRoot.Injection.Type);
             var isMethod = (processedRoot.Kind & RootKinds.Method) == RootKinds.Method
                            || processedRoot.RootArgs.Length > 0

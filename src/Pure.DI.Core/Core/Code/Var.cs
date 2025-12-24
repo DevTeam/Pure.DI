@@ -1,6 +1,10 @@
 ﻿namespace Pure.DI.Core.Code;
 
-record Var(VarDeclaration Declaration, ImmutableArray<string> Trace)
+record Var(
+    DependencyGraph graph,
+    IConstructors constructors,
+    VarDeclaration Declaration,
+    ImmutableArray<string> Trace)
 {
     private string? _codeExpression;
 
@@ -12,7 +16,7 @@ record Var(VarDeclaration Declaration, ImmutableArray<string> Trace)
 
     public string Name =>
         string.IsNullOrEmpty(NameOverride)
-            ? (AbstractNode.ActualLifetime == Lifetime.Singleton ? $"{Names.RootFieldName}." : "") + Declaration.NameProvider.GetVariableName(AbstractNode, Declaration.PerLifetimeId)
+            ? (AbstractNode.ActualLifetime == Lifetime.Singleton && constructors.IsEnabled(graph) ? $"{Names.RootFieldName}." : "") + Declaration.NameProvider.GetVariableName(AbstractNode, Declaration.PerLifetimeId)
             : NameOverride;
 
     public string CodeExpression

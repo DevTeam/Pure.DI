@@ -74,19 +74,14 @@ class UserService(IUserRepository repository) : IUserService
     public IUserRepository Repository { get; } = repository;
 }
 
-partial class Composition
+partial class Composition(List<string> log)
 {
-    private readonly List<string> _log = [];
-
-    public Composition(List<string> log) : this() =>
-        _log = log;
-
     private partial T OnDependencyInjection<T>(
         in T value,
         object? tag,
         Lifetime lifetime)
     {
-        _log.Add($"{value?.GetType().Name} injected");
+        log.Add($"{value?.GetType().Name} injected");
         return value;
     }
 }
