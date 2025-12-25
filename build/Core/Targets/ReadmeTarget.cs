@@ -326,7 +326,8 @@ class ReadmeTarget(
                         .Replace("Benchmarks.Model.", "")
                         .Replace(salt, "")
                         .Replace("(MethodImplOptions)256", "MethodImplOptions.AggressiveInlining")
-                        .Replace("(MethodImplOptions)8", "MethodImplOptions.NoInlining")));
+                        .Replace("(MethodImplOptions)8", "MethodImplOptions.NoInlining")
+                        .Replace("[NonSerializedAttribute] ", "")));
 
             await writer.WriteLineAsync(generatedCode);
             await writer.WriteLineAsync("```");
