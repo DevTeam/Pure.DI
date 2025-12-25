@@ -10,12 +10,12 @@ public partial class Scope : MonoBehaviour
     void Setup() => DI.Setup()
         .Bind().To(_ => clockConfig)
         .Bind().As(Singleton).To<ClockService>()
-        .Root<ClockManager>("Root")
+        .Root<ClockManager>(nameof(ClockManager))
         .Builders<MonoBehaviour>();
 
     void Start()
     {
-        Root.Start();
+        ClockManager.Start();
     }
 
     void OnDestroy()

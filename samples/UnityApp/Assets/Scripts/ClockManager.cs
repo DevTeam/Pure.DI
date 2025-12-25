@@ -3,10 +3,12 @@ using UnityEngine;
 
 public class ClockManager : IDisposable
 {
+    private readonly Scope _scope;
     private readonly IClockConfig _config;
 
-    public ClockManager(IClockConfig config)
+    public ClockManager(Scope scope, IClockConfig config)
     {
+        _scope = scope;
         _config = config;
     }
 
@@ -15,7 +17,7 @@ public class ClockManager : IDisposable
         // Important: Start it just sample. Game can spawn any object at any time
         if (_config.ShowDigital)
         {
-            GameObject.Instantiate(_config.ClockDigitalPrefab);
+            _scope.BuildUp(GameObject.Instantiate(_config.ClockDigitalPrefab));
         }
     }
 
