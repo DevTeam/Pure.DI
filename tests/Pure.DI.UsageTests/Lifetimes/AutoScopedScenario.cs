@@ -22,11 +22,17 @@ using Shouldly;
 using Xunit;
 using static Lifetime;
 
+// {
+//# using Pure.DI;
+//# using static Pure.DI.Lifetime;
+// }
+
 public class Scenario
 {
     [Fact]
     public void Run()
     {
+// {
         var composition = new Composition();
         var musicApp = composition.MusicAppRoot;
 
@@ -45,11 +51,11 @@ public class Scenario
         // But inside one session, the same queue is used everywhere within that scope
         session1.Queue.Items.Count.ShouldBe(2);
         session2.Queue.Items.Count.ShouldBe(1);
-
+// }
         composition.SaveClassDiagram();
     }
 }
-
+// {
 // Domain abstractions
 
 interface IPlaybackQueue
@@ -110,3 +116,4 @@ partial class Composition
             // App-level root
             .Root<MusicApp>("MusicAppRoot");
 }
+// }
