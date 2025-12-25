@@ -785,16 +785,17 @@ public class ResolversTests
                            namespace Sample
                            {
                                interface IService {}
-                               class Service: IService {}
+                               interface IService2 {}
+                               class Service: IService, IService2 {}
                                static class Setup
                                {
                                    private static void SetupComposition()
                                    {
                                        DI.Setup("Composition")
                                            .Bind<IService>().To<Service>()
-                                           .Bind<object>().To<Service>()
+                                           .Bind<IService2>().To<Service>()
                                            .Root<IService>("RootService")
-                                           .Root<object>("RootObject");
+                                           .Root<IService2>("RootService2");
                                    }
                                }
                            
@@ -804,7 +805,7 @@ public class ResolversTests
                                    {
                                        var composition = new Composition();
                                        Console.WriteLine(composition.Resolve<IService>());
-                                       Console.WriteLine(composition.Resolve<object>());
+                                       Console.WriteLine(composition.Resolve<IService2>());
                                    }
                                }
                            }

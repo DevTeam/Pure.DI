@@ -78,7 +78,7 @@ class RootSignatureProvider(
             {
                 var relatedRoots =
                     from publicRoot in composition.PublicRoots
-                    join relatedRoot in root.Source.BuilderRoots on publicRoot.Source equals relatedRoot
+                    join relatedRoot in root.Source.BuilderRoots on publicRoot.Source.OriginalId equals relatedRoot.OriginalId
                     select publicRoot;
 
                 typeParameters = relatedRoots.SelectMany(i => i.TypeDescription.TypeArgs).Where(i => i.Name == typeArg.Name && i.TypeParam != null).Select(i => i.TypeParam!).ToImmutableArray();

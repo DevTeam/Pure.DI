@@ -1295,4 +1295,66 @@ public class BuildersTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["True", "True"], result);
     }
+
+    [Theory]
+    [InlineData("Sample.BaseClass")]
+    [InlineData("BaseClassWithoutNamespace")]
+    [InlineData("System.Collections.Generic.List<int>")]
+    [InlineData("System.ArgumentNullException")]
+
+    public async Task ShouldCreateBuildersWhenBaseType(string baseType)
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Reflection;
+                           using System.Linq;
+                           using Pure.DI;
+                           #pragma warning disable CS8618
+                           #pragma warning disable CS0649
+                           
+                           abstract class BaseClassWithoutNamespace { }
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               
+                               class Dependency: IDependency {}
+                               
+                               abstract class BaseClass { }
+                               
+                               class Service: #baseType#
+                               {
+                                    [Dependency] public IDependency dependency;
+                               }
+                               
+                               partial class Composition: #baseType#
+                               {
+                                   private void Setup()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Builders<#baseType#>("BuildUp");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var methods = composition.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Public).Where(m => m.Name == "BuildUp").ToArray();
+                                       Console.WriteLine(methods.Length);
+                                   }
+                               }
+                           }
+                           """.Replace("#baseType#", baseType).RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["2"], result);
+        result.GeneratedCode.Contains("case global::Sample.Composition").ShouldBeFalse(result);
+    }
 }

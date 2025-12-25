@@ -1,6 +1,7 @@
 namespace Pure.DI.Core.Models;
 
 record MdRoot(
+    int OriginalId,
     InvocationExpressionSyntax Source,
     SemanticModel SemanticModel,
     ITypeSymbol RootType,
@@ -8,6 +9,7 @@ record MdRoot(
     MdTag? Tag,
     RootKinds Kind,
     IReadOnlyCollection<string> Comments,
+    ITypeSymbol RootContractType,
     bool IsBuilder,
     ImmutableArray<MdRoot> BuilderRoots = default)
 {

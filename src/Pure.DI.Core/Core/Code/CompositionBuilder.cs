@@ -70,7 +70,8 @@ class CompositionBuilder(
 
             classArgs.AddRange(args.GetArgsOfKind(ArgKind.Composition).Where(node => bindingsRegistry.IsRegistered(graph.Source, node.Node.BindingId)));
             var typeDescription = typeResolver.Resolve(graph.Source, processedRoot.Injection.Type);
-            var isMethod = (processedRoot.Kind & RootKinds.Method) == RootKinds.Method
+            var isMethod = processedRoot.Source.IsBuilder
+                           || (processedRoot.Kind & RootKinds.Method) == RootKinds.Method
                            || processedRoot.RootArgs.Length > 0
                            || typeDescription.TypeArgs.Count > 0;
 

@@ -9,6 +9,9 @@ sealed class RootMethodsBuilder(
     IRootSignatureProvider rootSignatureProvider,
     [Tag(typeof(RootMethodsCommenter))] ICommenter<Root> rootCommenter,
     IMarker marker,
+    IUniqueNameProvider uniqueNameProvider,
+    INameFormatter nameFormatter,
+    ITypeResolver typeResolver,
     CancellationToken cancellationToken)
     : IClassPartBuilder
 {
@@ -131,18 +134,46 @@ sealed class RootMethodsBuilder(
 
             try
             {
-                if (composition.Source.Source.Hints.IsFormatCodeEnabled)
+                if (!root.Source.BuilderRoots.IsDefaultOrEmpty)
                 {
-                    var codeText = string.Join(Environment.NewLine, root.Lines);
-                    var syntaxTree = CSharpSyntaxTree.ParseText(codeText, cancellationToken: cancellationToken);
-                    foreach (var line in syntaxTree.GetRoot().NormalizeWhitespace("\t", Environment.NewLine).GetText().Lines)
+                    code.AppendLine($"switch ({Names.BuildingInstance})");
+                    using (code.CreateBlock())
                     {
-                        code.AppendLine(line.ToString());
+                        foreach (var builderRoot in root.Source.BuilderRoots)
+                        {
+                            var rootType = typeResolver.Resolve(composition.Source.Source, builderRoot.RootType);
+                            var instanceName = uniqueNameProvider.GetUniqueName($"{nameFormatter.Format("{type}", builderRoot.RootType, builderRoot.Tag?.Value)}");
+                            code.AppendLine($"case {rootType} {instanceName}:");
+                            using (code.Indent())
+                            {
+                                code.AppendLine($"return {builderRoot.Name}({instanceName});");
+                            }
+                        }
+
+                        code.AppendLine("default:");
+                        using (code.Indent())
+                        {
+                            code.AppendLine($"throw new {Names.ArgumentExceptionTypeName}($\"{Names.CannotBuildMessage} {{{Names.BuildingInstance}.GetType()}}.\", \"{Names.BuildingInstance}\");");
+                        }
                     }
+
+                    code.AppendLine($"return {Names.BuildingInstance};");
                 }
                 else
                 {
-                    code.AppendLines(root.Lines);
+                    if (composition.Source.Source.Hints.IsFormatCodeEnabled)
+                    {
+                        var codeText = string.Join(Environment.NewLine, root.Lines);
+                        var syntaxTree = CSharpSyntaxTree.ParseText(codeText, cancellationToken: cancellationToken);
+                        foreach (var line in syntaxTree.GetRoot().NormalizeWhitespace("\t", Environment.NewLine).GetText().Lines)
+                        {
+                            code.AppendLine(line.ToString());
+                        }
+                    }
+                    else
+                    {
+                        code.AppendLines(root.Lines);
+                    }
                 }
             }
             finally

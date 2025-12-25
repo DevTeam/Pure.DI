@@ -1702,4 +1702,65 @@ public class RootsTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Service"], result);
     }
+
+    [Theory]
+    [InlineData("Sample.BaseClass")]
+    [InlineData("BaseClassWithoutNamespace")]
+    [InlineData("System.Collections.Generic.List<int>")]
+    [InlineData("System.ArgumentNullException")]
+
+    public async Task ShouldCreateRootsWhenBaseType(string baseType)
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Reflection;
+                           using System.Linq;
+                           using Pure.DI;
+                           #pragma warning disable CS8618
+                           #pragma warning disable CS0649
+                           
+                           abstract class BaseClassWithoutNamespace { }
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               
+                               class Dependency: IDependency {}
+                               
+                               abstract class BaseClass { }
+                               
+                               class Service: #baseType#
+                               {
+                                    [Dependency] public IDependency dependency;
+                               }
+                               
+                               partial class Composition: #baseType#
+                               {
+                                   private void Setup()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Roots<#baseType#>();
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var methods = composition.GetType().GetProperties(BindingFlags.Instance | BindingFlags.NonPublic).Where(m => m.Name.StartsWith("Root")).ToArray();
+                                       Console.WriteLine(methods.Length);
+                                   }
+                               }
+                           }
+                           """.Replace("#baseType#", baseType).RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["2"], result);
+    }
 }
