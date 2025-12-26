@@ -22,7 +22,7 @@ sealed class FieldsBuilder(
         if (isAnyConstructorEnabled && composition.Singletons.Length > 0)
         {
             // _parent filed
-            code.AppendLine($"private readonly {composition.Source.Source.Name.ClassName} {Names.RootFieldName};");
+            code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] private readonly {composition.Source.Source.Name.ClassName} {Names.RootFieldName};");
             membersCounter++;
         }
 
