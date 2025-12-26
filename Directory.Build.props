@@ -1,6 +1,7 @@
 <Project>
 
     <PropertyGroup>
+        <VersionRange>2.3.*</VersionRange>
         <InternalVersion>2.2.15</InternalVersion>
         <BasePackageId>Pure.DI</BasePackageId>
         <LangVersion>latest</LangVersion>

@@ -4,14 +4,26 @@
 namespace Build.Core;
 
 using System.Collections.Immutable;
+using System.Xml.Linq;
 using NuGet.Versioning;
 
 [SuppressMessage("Performance", "CA1822:Mark members as static")]
-class Settings(Properties properties, Versions versions)
+class Settings
 {
-    public static readonly VersionRange VersionRange = VersionRange.Parse("2.2.*");
+    private readonly Lazy<VersionRange> _versionRange;
+    private readonly Lazy<NuGetVersion> _currentVersion;
+    private readonly Properties _properties;
 
-    private readonly Lazy<NuGetVersion> _currentVersion = new(() => GetVersion(versions));
+    public Settings(Properties properties, Versions versions, Env env)
+    {
+        _properties = properties;
+        _versionRange = new Lazy<VersionRange>(() => GetVersionRange(env));
+        _currentVersion = new Lazy<NuGetVersion>(() => GetVersion(versions));
+        NuGetKey = properties["NuGetKey"];
+        Tests = !bool.TryParse(properties["tests"], out var tests) || tests;
+    }
+
+    public VersionRange VersionRange => _versionRange.Value;
 
     public bool BuildServer { get; } = Environment.GetEnvironmentVariable("TEAMCITY_VERSION") is not null;
 
@@ -23,7 +35,7 @@ class Settings(Properties properties, Versions versions)
     {
         get
         {
-            if (NuGetVersion.TryParse(properties["version"], out var version))
+            if (NuGetVersion.TryParse(_properties["version"], out var version))
             {
                 WriteLine($"The next version has been overridden by {version}.", Color.Details);
                 return version;
@@ -34,7 +46,7 @@ class Settings(Properties properties, Versions versions)
         }
     }
 
-    public string NuGetKey { get; } = properties["NuGetKey"];
+    public string NuGetKey { get; }
 
     public ImmutableArray<CodeAnalysis> CodeAnalysis { get; } =
     [
@@ -47,8 +59,30 @@ class Settings(Properties properties, Versions versions)
 
     public string BaseDotNetFrameworkVersion => $"{BaseDotNetFrameworkMajorVersion}.0";
 
-    public bool Tests { get; } = !bool.TryParse(properties["tests"], out var tests) || tests;
+    public bool Tests { get; }
 
-    private static NuGetVersion GetVersion(Versions versions) =>
+    private NuGetVersion GetVersion(Versions versions) =>
         versions.GetNext(new NuGetRestoreSettings("Pure.DI"), VersionRange, 0);
+
+    private static VersionRange GetVersionRange(Env env)
+    {
+        var propsFile = Path.Combine(env.GetPath(PathType.SolutionDirectory), "Directory.Build.props");
+        if (!File.Exists(propsFile))
+        {
+            Error($"Could not find the props file: {propsFile}");
+            return VersionRange.Parse("*");
+        }
+
+        var doc = XDocument.Load(propsFile);
+        var versionRangeText = doc.Descendants("VersionRange").FirstOrDefault()?.Value;
+
+        // ReSharper disable once InvertIf
+        if (string.IsNullOrWhiteSpace(versionRangeText))
+        {
+            Error($"Could not find 'VersionRange' in {propsFile}");
+            return VersionRange.Parse("*");
+        }
+
+        return VersionRange.Parse(versionRangeText);
+    }
 }

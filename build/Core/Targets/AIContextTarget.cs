@@ -102,8 +102,8 @@ class AIContextTarget(
                 await writer.WriteLineAsync();
                 await writer.WriteLineAsync("# Examples of using Pure.DI for different types of .NET projects.");
                 await writer.WriteLineAsync();
-                var generatorPackageVersion = versions.GetNext(new NuGetRestoreSettings("Pure.DI"), Settings.VersionRange, 0).ToString();
-                var msPackageVersion = versions.GetNext(new NuGetRestoreSettings("Pure.DI.MS"), Settings.VersionRange, 0).ToString();
+                var generatorPackageVersion = versions.GetNext(new NuGetRestoreSettings("Pure.DI"), settings.VersionRange, 0).ToString();
+                var msPackageVersion = versions.GetNext(new NuGetRestoreSettings("Pure.DI.MS"), settings.VersionRange, 0).ToString();
                 foreach (var readmeFile in Directory.EnumerateFiles(Path.Combine(ReadmeDir), "*.md"))
                 {
                     if (readmeFile.EndsWith("Template.md", StringComparison.InvariantCultureIgnoreCase))

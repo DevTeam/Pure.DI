@@ -19,7 +19,7 @@ class TemplateTarget(
 
     public async Task<Package> RunAsync(CancellationToken cancellationToken)
     {
-        var packageVersion = versions.GetNext(new NuGetRestoreSettings("Pure.DI"), Settings.VersionRange, 0);
+        var packageVersion = versions.GetNext(new NuGetRestoreSettings("Pure.DI"), settings.VersionRange, 0);
         var packageVersionStr = packageVersion.ToString();
         var templatesPath = Path.Combine("src", ProjectName, "Templates");
 
