@@ -14,7 +14,11 @@ _ReSharper.Caches/
 .idea
 .logs
 .packages
-samples/UnityApp/Library
-samples/UnityApp/UserSettings
-samples/UnityApp/Temp
 /src/Pure.DI.Core/Pure.DI.xml
+
+# Unity
+/samples/UnityApp/Library
+/samples/UnityApp/UserSettings
+/samples/UnityApp/Temp
+/samples/UnityApp/*.csproj
+/samples/UnityApp/*.sln
