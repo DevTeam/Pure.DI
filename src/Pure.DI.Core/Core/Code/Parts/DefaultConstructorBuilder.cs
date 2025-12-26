@@ -23,7 +23,7 @@ sealed class DefaultConstructorBuilder(
         if (isCommentsEnabled)
         {
             code.AppendLine("/// <summary>");
-            code.AppendLine($"/// This constructor creates a new instance of <see cref=\"{composition.Source.Source.Name.ClassName}\"/>.");
+            code.AppendLine($"/// This constructor creates a new instance of <see cref=\"{composition.Source.Source.Name.ClassName}\"/>. Typically used to create a root scope in scenarios where <see cref=\"Lifetime.Scoped\"/> lifetime might be used.");
             code.AppendLine("/// </summary>");
         }
 
