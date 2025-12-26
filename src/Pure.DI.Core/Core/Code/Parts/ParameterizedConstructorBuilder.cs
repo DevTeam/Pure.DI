@@ -18,11 +18,6 @@ sealed class ParameterizedConstructorBuilder(
             return composition;
         }
 
-        if (composition.ClassArgs.Length == 0)
-        {
-            return composition;
-        }
-
         var code = composition.Code;
         var membersCounter = composition.MembersCount;
         if (composition.ClassArgs.Length == 0)
