@@ -10,41 +10,38 @@ using NuGet.Versioning;
 [SuppressMessage("Performance", "CA1822:Mark members as static")]
 class Settings
 {
+    private readonly Lazy<XDocument> _buildPropsDoc;
     private readonly Lazy<VersionRange> _versionRange;
     private readonly Lazy<NuGetVersion> _currentVersion;
+    private readonly Lazy<NuGetVersion> _nextVersion;
+    private readonly Lazy<int> _baseDotNetFrameworkMajorVersion;
     private readonly Properties _properties;
+    private readonly Versions _versions;
+    private readonly Env _env;
 
     public Settings(Properties properties, Versions versions, Env env)
     {
         _properties = properties;
-        _versionRange = new Lazy<VersionRange>(() => GetVersionRange(env));
-        _currentVersion = new Lazy<NuGetVersion>(() => GetVersion(versions));
+        _versions = versions;
+        _env = env;
+        _buildPropsDoc = new Lazy<XDocument>(GetBuildPropsDoc);
+        _versionRange = new Lazy<VersionRange>(() => VersionRange.Parse(TryGetBuildProperty("VersionRange") ?? "*"));
+        _currentVersion = new Lazy<NuGetVersion>(GetCurrentVersion);
+        _nextVersion = new Lazy<NuGetVersion>(GetNextVersion);
+        _baseDotNetFrameworkMajorVersion =new Lazy<int>(GetBaseTargetFrameworkMajorVersion);
         NuGetKey = properties["NuGetKey"];
         Tests = !bool.TryParse(properties["tests"], out var tests) || tests;
     }
 
     public VersionRange VersionRange => _versionRange.Value;
 
+    public NuGetVersion CurrentVersion => _currentVersion.Value;
+
+    public NuGetVersion NextVersion => _nextVersion.Value;
+
     public bool BuildServer { get; } = Environment.GetEnvironmentVariable("TEAMCITY_VERSION") is not null;
 
     public string Configuration => "Release";
-
-    public NuGetVersion CurrentVersion => _currentVersion.Value;
-
-    public NuGetVersion NextVersion
-    {
-        get
-        {
-            if (NuGetVersion.TryParse(_properties["version"], out var version))
-            {
-                WriteLine($"The next version has been overridden by {version}.", Color.Details);
-                return version;
-            }
-
-            var currentVersion = _currentVersion.Value;
-            return new NuGetVersion(currentVersion.Major, currentVersion.Minor, currentVersion.Patch + 1);
-        }
-    }
 
     public string NuGetKey { get; }
 
@@ -55,34 +52,71 @@ class Settings
     ];
 
     // Make sure that /Directory.Build.props has been updated.
-    public int BaseDotNetFrameworkMajorVersion => 10;
+    public int BaseDotNetFrameworkMajorVersion => _baseDotNetFrameworkMajorVersion.Value;
 
     public string BaseDotNetFrameworkVersion => $"{BaseDotNetFrameworkMajorVersion}.0";
 
     public bool Tests { get; }
 
-    private NuGetVersion GetVersion(Versions versions) =>
-        versions.GetNext(new NuGetRestoreSettings("Pure.DI"), VersionRange, 0);
+    private NuGetVersion GetCurrentVersion() =>
+        _versions.GetCurrent(new NuGetRestoreSettings("Pure.DI"));
 
-    private static VersionRange GetVersionRange(Env env)
+    private NuGetVersion GetNextVersion()
     {
-        var propsFile = Path.Combine(env.GetPath(PathType.SolutionDirectory), "Directory.Build.props");
+        // ReSharper disable once InvertIf
+        if (NuGetVersion.TryParse(_properties["version"], out var version))
+        {
+            WriteLine($"The next version has been overridden by {version}.", Color.Details);
+            return version;
+        }
+
+        return _versions.GetNext(new NuGetRestoreSettings("Pure.DI"), VersionRange);
+    }
+
+    private int GetBaseTargetFrameworkMajorVersion()
+    {
+        var baseTargetFrameworkStr = TryGetBuildProperty("BaseTargetFramework");
+        if (string.IsNullOrWhiteSpace(baseTargetFrameworkStr))
+        {
+            Error("Could not find the BaseTargetFramework property");
+            return 0;
+        }
+
+        // parse net10.0 using regular expression
+        var match = System.Text.RegularExpressions.Regex.Match(baseTargetFrameworkStr, @"^net(\d+)\.\d+$");
+        // ReSharper disable once InvertIf
+        if (!match.Success || !int.TryParse(match.Groups[1].Value, out var majorVersion))
+        {
+            Error($"Invalid TargetFramework format: {baseTargetFrameworkStr}");
+            return 0;
+        }
+
+        return majorVersion;
+    }
+
+    private string? TryGetBuildProperty(string propertyName)
+    {
+        var value = _buildPropsDoc.Value.Descendants(propertyName).FirstOrDefault()?.Value;
+        // ReSharper disable once InvertIf
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            Error($"Could not find '{propertyName}'");
+            return null;
+        }
+
+        return value;
+    }
+
+    private XDocument GetBuildPropsDoc()
+    {
+        var propsFile = Path.Combine(_env.GetPath(PathType.SolutionDirectory), "Directory.Build.props");
+        // ReSharper disable once InvertIf
         if (!File.Exists(propsFile))
         {
             Error($"Could not find the props file: {propsFile}");
-            return VersionRange.Parse("*");
+            return new XDocument();
         }
 
-        var doc = XDocument.Load(propsFile);
-        var versionRangeText = doc.Descendants("VersionRange").FirstOrDefault()?.Value;
-
-        // ReSharper disable once InvertIf
-        if (string.IsNullOrWhiteSpace(versionRangeText))
-        {
-            Error($"Could not find 'VersionRange' in {propsFile}");
-            return VersionRange.Parse("*");
-        }
-
-        return VersionRange.Parse(versionRangeText);
+        return XDocument.Load(propsFile);
     }
 }

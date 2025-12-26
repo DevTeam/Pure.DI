@@ -11,7 +11,6 @@ using Pure.DI.Benchmarks.Benchmarks;
 class ReadmeTarget(
     Commands commands,
     Env env,
-    Versions versions,
     Settings settings,
     RootCommand rootCommand,
     ReadmeTools readmeTools,
@@ -157,8 +156,7 @@ class ReadmeTarget(
     private async Task GenerateExamplesAsync(IReadOnlyCollection<ExampleGroup> examples, TextWriter writer, string logsDirectory)
     {
         await writer.WriteLineAsync();
-        var generatorPackageVersion = versions.GetNext(new NuGetRestoreSettings("Pure.DI"), settings.VersionRange, 0).ToString();
-        var msPackageVersion = versions.GetNext(new NuGetRestoreSettings("Pure.DI.MS"), settings.VersionRange, 0).ToString();
+        var packageVersion = settings.CurrentVersion.ToString();
         foreach (var readmeFile in Directory.EnumerateFiles(Path.Combine(ReadmeDir), "*.md"))
         {
             if (readmeFile.EndsWith("Template.md", StringComparison.InvariantCultureIgnoreCase))
@@ -167,8 +165,8 @@ class ReadmeTarget(
                 {
                     var content = await File.ReadAllTextAsync(readmeFile);
                     content = content
-                        .Replace("$(version)", generatorPackageVersion)
-                        .Replace("$(ms.version)", msPackageVersion)
+                        .Replace("$(version)", packageVersion)
+                        .Replace("$(ms.version)", packageVersion)
                         .Replace("$(targetFrameworkVersion)", $"net{settings.BaseDotNetFrameworkVersion}");
                     await File.WriteAllTextAsync(readmeFile.Replace("PageTemplate.md", ".md"), content);
                 }

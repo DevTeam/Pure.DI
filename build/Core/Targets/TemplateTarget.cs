@@ -6,7 +6,6 @@ namespace Build.Core.Targets;
 class TemplateTarget(
     Settings settings,
     Commands commands,
-    Versions versions,
     Env env,
     ITeamCityArtifactsWriter artifactsWriter,
     [Tag(typeof(AIContextTarget))] ITarget<AIContext> aiContextTarget)
@@ -19,7 +18,7 @@ class TemplateTarget(
 
     public async Task<Package> RunAsync(CancellationToken cancellationToken)
     {
-        var packageVersion = versions.GetNext(new NuGetRestoreSettings("Pure.DI"), settings.VersionRange, 0);
+        var packageVersion = settings.CurrentVersion;
         var packageVersionStr = packageVersion.ToString();
         var templatesPath = Path.Combine("src", ProjectName, "Templates");
 

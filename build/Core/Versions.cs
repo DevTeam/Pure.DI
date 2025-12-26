@@ -15,12 +15,27 @@ partial class Versions(INuGet nuGet)
             .Restore(restoreSettings.WithHideWarningsAndErrors(true).WithVersionRange(versionRange).WithNoCache(true))
             .Where(i => i.Name == restoreSettings.PackageId)
             .Select(i => i.NuGetVersion)
-            .Select(i => i.Release != string.Empty
-                ? GetNextRelease(versionRange, i)
-                : new NuGetVersion(i.Major, i.Minor, i.Patch + patchIncrement))
+            .Select(i => CreateNextNuGetVersion(versionRange, patchIncrement, i))
             .Max()
-        ?? new NuGetVersion(
-            versionRange.MinVersion?.Major ?? 1,
+        ?? CreateDefaultNuGetVersion(versionRange);
+
+    public NuGetVersion GetCurrent(NuGetRestoreSettings restoreSettings) =>
+        nuGet
+            .Restore(restoreSettings.WithHideWarningsAndErrors(true).WithNoCache(true))
+            .Where(i => i.Name == restoreSettings.PackageId)
+            .Select(i => i.NuGetVersion)
+            .Max()
+        ?? CreateDefaultNuGetVersion(VersionRange.Parse("1.0.0"));
+
+    private static NuGetVersion CreateNextNuGetVersion(VersionRange versionRange, int patchIncrement, NuGetVersion version)
+    {
+        return version.Release != string.Empty
+            ? GetNextRelease(versionRange, version)
+            : new NuGetVersion(version.Major, version.Minor, version.Patch + patchIncrement);
+    }
+
+    private static NuGetVersion CreateDefaultNuGetVersion(VersionRange versionRange) =>
+        new(versionRange.MinVersion?.Major ?? 1,
             versionRange.MinVersion?.Minor ?? 0,
             versionRange.MinVersion?.Patch ?? 0);
 
