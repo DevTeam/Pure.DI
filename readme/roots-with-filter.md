@@ -57,45 +57,27 @@ The following partial class will be generated:
 ```c#
 partial class Composition
 {
-  private readonly Composition _root;
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock;
+  private readonly Lock _lock = new Lock();
 #else
-  private readonly Object _lock;
+  private readonly Object _lock = new Object();
 #endif
 
   private Configuration? _singletonConfiguration51;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-#if NET9_0_OR_GREATER
-    _lock = new Lock();
-#else
-    _lock = new Object();
-#endif
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = parentScope._lock;
-  }
 
   public EmailService MyEmailService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonConfiguration51 is null)
+      if (_singletonConfiguration51 is null)
         lock (_lock)
-          if (_root._singletonConfiguration51 is null)
+          if (_singletonConfiguration51 is null)
           {
-            _root._singletonConfiguration51 = new Configuration();
+            _singletonConfiguration51 = new Configuration();
           }
 
-      return new EmailService(_root._singletonConfiguration51);
+      return new EmailService(_singletonConfiguration51);
     }
   }
 }

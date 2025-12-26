@@ -92,31 +92,13 @@ The following partial class will be generated:
 ```c#
 partial class Composition
 {
-  private readonly Composition _root;
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock;
+  private readonly Lock _lock = new Lock();
 #else
-  private readonly Object _lock;
+  private readonly Object _lock = new Object();
 #endif
 
   private DeviceFeatureProvider? _singletonDeviceFeatureProvider51;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-#if NET9_0_OR_GREATER
-    _lock = new Lock();
-#else
-    _lock = new Object();
-#endif
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = parentScope._lock;
-  }
 
   public IPhotoService PhotoService
   {
@@ -125,7 +107,7 @@ partial class Composition
     {
       IGps transientIGps1;
       EnsureDeviceFeatureProviderExists();
-      DeviceFeatureProvider localInstance_1182D1277 = _root._singletonDeviceFeatureProvider51;
+      DeviceFeatureProvider localInstance_1182D1277 = _singletonDeviceFeatureProvider51;
       transientIGps1 = localInstance_1182D1277.Gps;
       Func<ICamera> transientFunc2 = new Func<ICamera>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -133,7 +115,7 @@ partial class Composition
       {
         ICamera transientICamera4;
         EnsureDeviceFeatureProviderExists();
-        DeviceFeatureProvider localInstance_1182D1278 = _root._singletonDeviceFeatureProvider51;
+        DeviceFeatureProvider localInstance_1182D1278 = _singletonDeviceFeatureProvider51;
         transientICamera4 = localInstance_1182D1278.Camera;
         ICamera localValue16 = transientICamera4;
         return localValue16;
@@ -142,11 +124,11 @@ partial class Composition
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureDeviceFeatureProviderExists()
       {
-        if (_root._singletonDeviceFeatureProvider51 is null)
+        if (_singletonDeviceFeatureProvider51 is null)
           lock (_lock)
-            if (_root._singletonDeviceFeatureProvider51 is null)
+            if (_singletonDeviceFeatureProvider51 is null)
             {
-              _root._singletonDeviceFeatureProvider51 = new DeviceFeatureProvider();
+              _singletonDeviceFeatureProvider51 = new DeviceFeatureProvider();
             }
       }
     }

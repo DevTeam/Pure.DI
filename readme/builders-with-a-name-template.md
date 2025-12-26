@@ -100,25 +100,10 @@ The following partial class will be generated:
 partial class Composition
 {
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock;
+  private readonly Lock _lock = new Lock();
 #else
-  private readonly Object _lock;
+  private readonly Object _lock = new Object();
 #endif
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-#if NET9_0_OR_GREATER
-    _lock = new Lock();
-#else
-    _lock = new Object();
-#endif
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _lock = parentScope._lock;
-  }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Webcam InstallWebcam(Webcam buildingInstance)
@@ -149,30 +134,16 @@ partial class Composition
   public IDevice InstallIDevice(IDevice buildingInstance)
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    IDevice transientIDevice;
-    IDevice localBuildingInstance4 = buildingInstance;
-    switch (localBuildingInstance4)
+    switch (buildingInstance)
     {
-      case Webcam localWebcam:
-      {
-        transientIDevice = InstallWebcam(localWebcam);
-        goto transientIDeviceFinish;
-      }
-
-      case Thermostat localThermostat:
-      {
-        transientIDevice = InstallThermostat(localThermostat);
-        goto transientIDeviceFinish;
-      }
-
+      case Webcam Webcam:
+        return InstallWebcam(Webcam);
+      case Thermostat Thermostat:
+        return InstallThermostat(Thermostat);
       default:
-        throw new ArgumentException($"Unable to build an instance of typeof type {localBuildingInstance4.GetType()}.", "buildingInstance");
+        throw new ArgumentException($"Unable to build an instance of typeof type {buildingInstance.GetType()}.", "buildingInstance");
     }
-
-    transientIDevice = localBuildingInstance4;
-    transientIDeviceFinish:
-      ;
-    return transientIDevice;
+    return buildingInstance;
   }
   #pragma warning restore CS0162
 }

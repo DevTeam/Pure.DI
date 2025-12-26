@@ -91,31 +91,13 @@ The following partial class will be generated:
 ```c#
 partial class Composition
 {
-  private readonly Composition _root;
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock;
+  private readonly Lock _lock = new Lock();
 #else
-  private readonly Object _lock;
+  private readonly Object _lock = new Object();
 #endif
 
   private NetworkDataSource? _singletonNetworkDataSource53;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-#if NET9_0_OR_GREATER
-    _lock = new Lock();
-#else
-    _lock = new Object();
-#endif
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = parentScope._lock;
-  }
 
   public (IDashboard dashboard, TelemetryRegistry registry) Root
   {
@@ -123,15 +105,15 @@ partial class Composition
     get
     {
       var perBlockTelemetryRegistry1 = new TelemetryRegistry();
-      if (_root._singletonNetworkDataSource53 is null)
+      if (_singletonNetworkDataSource53 is null)
         lock (_lock)
-          if (_root._singletonNetworkDataSource53 is null)
+          if (_singletonNetworkDataSource53 is null)
           {
             NetworkDataSource _singletonNetworkDataSource53Temp;
             _singletonNetworkDataSource53Temp = new NetworkDataSource();
             perBlockTelemetryRegistry1.Add(_singletonNetworkDataSource53Temp);
             Thread.MemoryBarrier();
-            _root._singletonNetworkDataSource53 = _singletonNetworkDataSource53Temp;
+            _singletonNetworkDataSource53 = _singletonNetworkDataSource53Temp;
           }
 
       var transientSqlDataSource3 = new SqlDataSource();
@@ -140,7 +122,7 @@ partial class Composition
         perBlockTelemetryRegistry1.Add(transientSqlDataSource3);
       }
 
-      var transientDashboard2 = new Dashboard(transientSqlDataSource3, _root._singletonNetworkDataSource53, new SqlDataSource());
+      var transientDashboard2 = new Dashboard(transientSqlDataSource3, _singletonNetworkDataSource53, new SqlDataSource());
       lock (_lock)
       {
         perBlockTelemetryRegistry1.Add(transientDashboard2);

@@ -107,50 +107,30 @@ The following partial class will be generated:
 ```c#
 partial class Composition: IDisposable, IAsyncDisposable
 {
-  private readonly Composition _root;
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock;
+  private readonly Lock _lock = new Lock();
 #else
-  private readonly Object _lock;
+  private readonly Object _lock = new Object();
 #endif
-  private object[] _disposables;
+  private object[] _disposables = new object[1];
   private int _disposeIndex;
 
   private AuditLogWriter? _singletonAuditLogWriter51;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-#if NET9_0_OR_GREATER
-    _lock = new Lock();
-#else
-    _lock = new Object();
-#endif
-    _disposables = new object[1];
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = parentScope._lock;
-    _disposables = parentScope._disposables;
-  }
 
   public ICheckoutService CheckoutService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonAuditLogWriter51 is null)
+      if (_singletonAuditLogWriter51 is null)
         lock (_lock)
-          if (_root._singletonAuditLogWriter51 is null)
+          if (_singletonAuditLogWriter51 is null)
           {
-            _root._singletonAuditLogWriter51 = new AuditLogWriter();
-            _root._disposables[_root._disposeIndex++] = _root._singletonAuditLogWriter51;
+            _singletonAuditLogWriter51 = new AuditLogWriter();
+            _disposables[_disposeIndex++] = _singletonAuditLogWriter51;
           }
 
-      return new CheckoutService(_root._singletonAuditLogWriter51);
+      return new CheckoutService(_singletonAuditLogWriter51);
     }
   }
 

@@ -66,31 +66,13 @@ The following partial class will be generated:
 ```c#
 partial class Composition
 {
-  private readonly Composition _root;
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock;
+  private readonly Lock _lock = new Lock();
 #else
-  private readonly Object _lock;
+  private readonly Object _lock = new Object();
 #endif
 
   private OtherAssembly.CompositionInOtherProject? _singletonCompositionInOtherProject51;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-#if NET9_0_OR_GREATER
-    _lock = new Lock();
-#else
-    _lock = new Object();
-#endif
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = parentScope._lock;
-  }
 
   public Program Program
   {
@@ -98,14 +80,14 @@ partial class Composition
     get
     {
       OtherAssembly.IMyService transientIMyService1;
-      if (_root._singletonCompositionInOtherProject51 is null)
+      if (_singletonCompositionInOtherProject51 is null)
         lock (_lock)
-          if (_root._singletonCompositionInOtherProject51 is null)
+          if (_singletonCompositionInOtherProject51 is null)
           {
-            _root._singletonCompositionInOtherProject51 = new OtherAssembly.CompositionInOtherProject();
+            _singletonCompositionInOtherProject51 = new OtherAssembly.CompositionInOtherProject();
           }
 
-      OtherAssembly.CompositionInOtherProject localInstance_1182D1272 = _root._singletonCompositionInOtherProject51;
+      OtherAssembly.CompositionInOtherProject localInstance_1182D1272 = _singletonCompositionInOtherProject51;
       transientIMyService1 = localInstance_1182D1272.MyService;
       return new Program(transientIMyService1);
     }

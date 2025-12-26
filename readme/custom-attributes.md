@@ -120,12 +120,6 @@ partial class PersonComposition
 #endif
   }
 
-  internal PersonComposition(PersonComposition parentScope)
-  {
-    _argPersonId = parentScope._argPersonId;
-    _lock = parentScope._lock;
-  }
-
   public IPerson Person
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

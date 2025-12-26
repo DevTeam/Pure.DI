@@ -85,15 +85,6 @@ The following partial class will be generated:
 ```c#
 partial class Composition
 {
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-  }
-
-  internal Composition(Composition parentScope)
-  {
-  }
-
   public ISecuritySystem SecuritySystem
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

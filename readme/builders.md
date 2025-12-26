@@ -100,25 +100,10 @@ The following partial class will be generated:
 partial class Composition
 {
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock;
+  private readonly Lock _lock = new Lock();
 #else
-  private readonly Object _lock;
+  private readonly Object _lock = new Object();
 #endif
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-#if NET9_0_OR_GREATER
-    _lock = new Lock();
-#else
-    _lock = new Object();
-#endif
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _lock = parentScope._lock;
-  }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public CleanerBot BuildUp(CleanerBot buildingInstance)
@@ -149,30 +134,16 @@ partial class Composition
   public IRobot BuildUp(IRobot buildingInstance)
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    IRobot transientIRobot;
-    IRobot localBuildingInstance1 = buildingInstance;
-    switch (localBuildingInstance1)
+    switch (buildingInstance)
     {
-      case CleanerBot localCleanerBot:
-      {
-        transientIRobot = BuildUp(localCleanerBot);
-        goto transientIRobotFinish;
-      }
-
-      case GuardBot localGuardBot:
-      {
-        transientIRobot = BuildUp(localGuardBot);
-        goto transientIRobotFinish;
-      }
-
+      case CleanerBot CleanerBot:
+        return BuildUp(CleanerBot);
+      case GuardBot GuardBot:
+        return BuildUp(GuardBot);
       default:
-        throw new ArgumentException($"Unable to build an instance of typeof type {localBuildingInstance1.GetType()}.", "buildingInstance");
+        throw new ArgumentException($"Unable to build an instance of typeof type {buildingInstance.GetType()}.", "buildingInstance");
     }
-
-    transientIRobot = localBuildingInstance1;
-    transientIRobotFinish:
-      ;
-    return transientIRobot;
+    return buildingInstance;
   }
   #pragma warning restore CS0162
 }

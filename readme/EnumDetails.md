@@ -104,15 +104,6 @@ The following partial class will be generated:
 ```c#
 partial class Enum
 {
-  [OrdinalAttribute(256)]
-  public Enum()
-  {
-  }
-
-  internal Enum(Enum parentScope)
-  {
-  }
-
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public partial CompositionRoot TestPureDIByCR()
   {

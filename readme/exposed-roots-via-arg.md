@@ -82,12 +82,6 @@ partial class Composition
 #endif
   }
 
-  internal Composition(Composition parentScope)
-  {
-    _argBaseComposition = parentScope._argBaseComposition;
-    _lock = parentScope._lock;
-  }
-
   public Program Program
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

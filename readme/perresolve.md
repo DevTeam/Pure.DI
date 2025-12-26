@@ -103,32 +103,14 @@ The following partial class will be generated:
 ```c#
 partial class Composition
 {
-  private readonly Composition _root;
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock;
+  private readonly Lock _lock = new Lock();
 #else
-  private readonly Object _lock;
+  private readonly Object _lock = new Object();
 #endif
 
   private (IRoutePlanningSession s3, IRoutePlanningSession s4) _singletonValueTuple54;
   private bool _singletonValueTuple54Created;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-#if NET9_0_OR_GREATER
-    _lock = new Lock();
-#else
-    _lock = new Object();
-#endif
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = parentScope._lock;
-  }
 
   public TrainTripPlanner Planner
   {
@@ -136,17 +118,17 @@ partial class Composition
     get
     {
       var perResolveRoutePlanningSession1 = default(RoutePlanningSession);
-      if (!_root._singletonValueTuple54Created)
+      if (!_singletonValueTuple54Created)
         lock (_lock)
-          if (!_root._singletonValueTuple54Created)
+          if (!_singletonValueTuple54Created)
           {
             EnsureRoutePlanningSessionExists();
-            _root._singletonValueTuple54 = (perResolveRoutePlanningSession1, perResolveRoutePlanningSession1);
+            _singletonValueTuple54 = (perResolveRoutePlanningSession1, perResolveRoutePlanningSession1);
             Thread.MemoryBarrier();
-            _root._singletonValueTuple54Created = true;
+            _singletonValueTuple54Created = true;
           }
 
-      return new TrainTripPlanner(perResolveRoutePlanningSession1, perResolveRoutePlanningSession1, _root._singletonValueTuple54);
+      return new TrainTripPlanner(perResolveRoutePlanningSession1, perResolveRoutePlanningSession1, _singletonValueTuple54);
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureRoutePlanningSessionExists()
       {

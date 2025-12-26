@@ -101,31 +101,13 @@ The following partial class will be generated:
 ```c#
 partial class Composition
 {
-  private readonly Composition _root;
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock;
+  private readonly Lock _lock = new Lock();
 #else
-  private readonly Object _lock;
+  private readonly Object _lock = new Object();
 #endif
 
   private Clock? _singletonClock51;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-#if NET9_0_OR_GREATER
-    _lock = new Lock();
-#else
-    _lock = new Object();
-#endif
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = parentScope._lock;
-  }
 
   public ITeam Team
   {
@@ -133,20 +115,20 @@ partial class Composition
     get
     {
       Func<int, string, IPerson> transientFunc1;
-      Func<int, string, IPerson> localFactory2 = new Func<int, string, IPerson>((int localArg15, string localArg25) =>
+      Func<int, string, IPerson> localFactory2 = new Func<int, string, IPerson>((int localArg17, string localArg26) =>
       {
         lock (_lock)
         {
-          int overriddenInt32 = localArg15;
-          string overriddenString2 = localArg25;
-          if (_root._singletonClock51 is null)
+          int overriddenInt32 = localArg17;
+          string overriddenString2 = localArg26;
+          if (_singletonClock51 is null)
             lock (_lock)
-              if (_root._singletonClock51 is null)
+              if (_singletonClock51 is null)
               {
-                _root._singletonClock51 = new Clock();
+                _singletonClock51 = new Clock();
               }
 
-          IPerson localValue20 = new Person(overriddenString2, _root._singletonClock51, overriddenInt32);
+          IPerson localValue20 = new Person(overriddenString2, _singletonClock51, overriddenInt32);
           return localValue20;
         }
       });

@@ -90,31 +90,13 @@ The following partial class will be generated:
 ```c#
 partial class Composition
 {
-  private readonly Composition _root;
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock;
+  private readonly Lock _lock = new Lock();
 #else
-  private readonly Object _lock;
+  private readonly Object _lock = new Object();
 #endif
 
   private ConsoleLogger? _singletonConsoleLogger51;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-#if NET9_0_OR_GREATER
-    _lock = new Lock();
-#else
-    _lock = new Object();
-#endif
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = parentScope._lock;
-  }
 
   private ILogger Root2
   {
@@ -122,15 +104,15 @@ partial class Composition
     get
     {
       EnsureConsoleLoggerExists();
-      return _root._singletonConsoleLogger51;
+      return _singletonConsoleLogger51;
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureConsoleLoggerExists()
       {
-        if (_root._singletonConsoleLogger51 is null)
+        if (_singletonConsoleLogger51 is null)
           lock (_lock)
-            if (_root._singletonConsoleLogger51 is null)
+            if (_singletonConsoleLogger51 is null)
             {
-              _root._singletonConsoleLogger51 = new ConsoleLogger();
+              _singletonConsoleLogger51 = new ConsoleLogger();
             }
       }
     }
@@ -142,15 +124,15 @@ partial class Composition
     get
     {
       EnsureConsoleLoggerExists();
-      return new OrderService(_root._singletonConsoleLogger51);
+      return new OrderService(_singletonConsoleLogger51);
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureConsoleLoggerExists()
       {
-        if (_root._singletonConsoleLogger51 is null)
+        if (_singletonConsoleLogger51 is null)
           lock (_lock)
-            if (_root._singletonConsoleLogger51 is null)
+            if (_singletonConsoleLogger51 is null)
             {
-              _root._singletonConsoleLogger51 = new ConsoleLogger();
+              _singletonConsoleLogger51 = new ConsoleLogger();
             }
       }
     }

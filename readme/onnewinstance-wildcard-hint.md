@@ -63,18 +63,13 @@ class OrderService(IRepository repository, ILogger logger) : IOrderService
     public override string ToString() => nameof(OrderService);
 }
 
-internal partial class Composition
+internal partial class Composition(List<string> log)
 {
-    private readonly List<string> _log = [];
-
-    public Composition(List<string> log) : this() =>
-        _log = log;
-
     partial void OnNewInstance<T>(
         ref T value,
         object? tag,
         Lifetime lifetime) =>
-        _log.Add($"{typeof(T).Name} created");
+        log.Add($"{typeof(T).Name} created");
 }
 ```
 
@@ -113,49 +108,31 @@ The following partial class will be generated:
 ```c#
 partial class Composition
 {
-  private readonly Composition _root;
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock;
+  private readonly Lock _lock = new Lock();
 #else
-  private readonly Object _lock;
+  private readonly Object _lock = new Object();
 #endif
 
   private UserRepository? _singletonUserRepository51;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-#if NET9_0_OR_GREATER
-    _lock = new Lock();
-#else
-    _lock = new Object();
-#endif
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = parentScope._lock;
-  }
 
   public IOrderService Root
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonUserRepository51 is null)
+      if (_singletonUserRepository51 is null)
         lock (_lock)
-          if (_root._singletonUserRepository51 is null)
+          if (_singletonUserRepository51 is null)
           {
             UserRepository _singletonUserRepository51Temp;
             _singletonUserRepository51Temp = new UserRepository();
             OnNewInstance<UserRepository>(ref _singletonUserRepository51Temp, null, Lifetime.Singleton);
             Thread.MemoryBarrier();
-            _root._singletonUserRepository51 = _singletonUserRepository51Temp;
+            _singletonUserRepository51 = _singletonUserRepository51Temp;
           }
 
-      var transientOrderService = new OrderService(_root._singletonUserRepository51, new ConsoleLogger());
+      var transientOrderService = new OrderService(_singletonUserRepository51, new ConsoleLogger());
       OnNewInstance<OrderService>(ref transientOrderService, null, Lifetime.Transient);
       return transientOrderService;
     }

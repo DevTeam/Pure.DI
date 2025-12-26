@@ -1290,6 +1290,102 @@ To run the above code, the following NuGet packages must be added:
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 
+## Auto scoped
+
+You can use the following example to automatically create a session when creating instances of a particular type:
+
+```c#
+using Shouldly;
+using Pure.DI;
+using static Pure.DI.Lifetime;
+
+var composition = new Composition();
+var musicApp = composition.MusicAppRoot;
+
+// Session #1: user starts listening on "Living Room Speaker"
+var session1 = musicApp.StartListeningSession();
+session1.Enqueue("Daft Punk - One More Time");
+session1.Enqueue("Massive Attack - Teardrop");
+
+// Session #2: user starts listening on "Headphones"
+var session2 = musicApp.StartListeningSession();
+session2.Enqueue("Radiohead - Weird Fishes/Arpeggi");
+
+// Different sessions -> different scoped queue instances
+session1.Queue.ShouldNotBe(session2.Queue);
+
+// But inside one session, the same queue is used everywhere within that scope
+session1.Queue.Items.Count.ShouldBe(2);
+session2.Queue.Items.Count.ShouldBe(1);
+
+// Domain abstractions
+
+interface IPlaybackQueue
+{
+    IReadOnlyList<string> Items { get; }
+    void Add(string trackTitle);
+}
+
+sealed class PlaybackQueue : IPlaybackQueue
+{
+    private readonly List<string> _items = [];
+
+    public IReadOnlyList<string> Items => _items;
+
+    public void Add(string trackTitle) => _items.Add(trackTitle);
+}
+
+interface IListeningSession
+{
+    IPlaybackQueue Queue { get; }
+
+    void Enqueue(string trackTitle);
+}
+
+sealed class ListeningSession(IPlaybackQueue queue) : IListeningSession
+{
+    public IPlaybackQueue Queue => queue;
+
+    public void Enqueue(string trackTitle) => queue.Add(trackTitle);
+}
+
+// Implements a "session boundary" for listening
+class MusicApp(Func<IListeningSession> sessionFactory)
+{
+    // Each call creates a new DI scope under the hood (new "listening session").
+    public IListeningSession StartListeningSession() => sessionFactory();
+}
+
+partial class Composition
+{
+    static void Setup() =>
+
+        DI.Setup()
+            // Scoped: one queue per listening session
+            .Bind().As(Scoped).To<PlaybackQueue>()
+
+            // Session composition root (private root used only to build sessions)
+            .Root<ListeningSession>("Session", kind: RootKinds.Private)
+
+            // Auto scoped factory: creates a new scope for each listening session
+            .Bind().To(IListeningSession (Composition parentScope) => {
+                // Create a child scope so scoped services (PlaybackQueue) are unique per session.
+                var scope = new Composition(parentScope);
+                return scope.Session;
+            })
+
+            // App-level root
+            .Root<MusicApp>("MusicAppRoot");
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+> [!IMPORTANT]
+> The method `Inject()`cannot be used outside of the binding setup.
+
 ## Default lifetime
 
 For example, if some lifetime is used more often than others, you can make it the default lifetime:
@@ -3455,7 +3551,6 @@ internal partial class Composition : IInterceptor
     private readonly IInterceptor[] _interceptors = [];
 
     public Composition(List<string> log)
-        : this()
     {
         _log = log;
         _interceptors = [this];

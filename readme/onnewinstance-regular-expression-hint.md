@@ -43,18 +43,13 @@ class OrderProcessor(IGlobalCache cache) : IOrderProcessor
     public IGlobalCache Cache { get; } = cache;
 }
 
-internal partial class Composition
+internal partial class Composition(List<string> log)
 {
-    private readonly List<string> _log = [];
-
-    public Composition(List<string> log) : this() =>
-        _log = log;
-
     partial void OnNewInstance<T>(
         ref T value,
         object? tag,
         Lifetime lifetime) =>
-        _log.Add($"{typeof(T).Name} created");
+        log.Add($"{typeof(T).Name} created");
 }
 ```
 
@@ -93,49 +88,31 @@ The following partial class will be generated:
 ```c#
 partial class Composition
 {
-  private readonly Composition _root;
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock;
+  private readonly Lock _lock = new Lock();
 #else
-  private readonly Object _lock;
+  private readonly Object _lock = new Object();
 #endif
 
   private GlobalCache? _singletonGlobalCache51;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-#if NET9_0_OR_GREATER
-    _lock = new Lock();
-#else
-    _lock = new Object();
-#endif
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = parentScope._lock;
-  }
 
   public IOrderProcessor OrderProcessor
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonGlobalCache51 is null)
+      if (_singletonGlobalCache51 is null)
         lock (_lock)
-          if (_root._singletonGlobalCache51 is null)
+          if (_singletonGlobalCache51 is null)
           {
             GlobalCache _singletonGlobalCache51Temp;
             _singletonGlobalCache51Temp = new GlobalCache();
             OnNewInstance<GlobalCache>(ref _singletonGlobalCache51Temp, null, Lifetime.Singleton);
             Thread.MemoryBarrier();
-            _root._singletonGlobalCache51 = _singletonGlobalCache51Temp;
+            _singletonGlobalCache51 = _singletonGlobalCache51Temp;
           }
 
-      var transientOrderProcessor = new OrderProcessor(_root._singletonGlobalCache51);
+      var transientOrderProcessor = new OrderProcessor(_singletonGlobalCache51);
       OnNewInstance<OrderProcessor>(ref transientOrderProcessor, null, Lifetime.PerBlock);
       return transientOrderProcessor;
     }

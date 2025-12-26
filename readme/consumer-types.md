@@ -116,12 +116,6 @@ partial class Composition
 #endif
   }
 
-  internal Composition(Composition parentScope)
-  {
-    _argLogger = parentScope._argLogger;
-    _lock = parentScope._lock;
-  }
-
   public IOrderProcessing OrderProcessing
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

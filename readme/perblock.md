@@ -98,32 +98,14 @@ The following partial class will be generated:
 ```c#
 partial class Composition
 {
-  private readonly Composition _root;
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock;
+  private readonly Lock _lock = new Lock();
 #else
-  private readonly Object _lock;
+  private readonly Object _lock = new Object();
 #endif
 
   private (IDatabaseConnection conn3, IDatabaseConnection conn4) _singletonValueTuple54;
   private bool _singletonValueTuple54Created;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-#if NET9_0_OR_GREATER
-    _lock = new Lock();
-#else
-    _lock = new Object();
-#endif
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = parentScope._lock;
-  }
 
   public OrderRepository Repository
   {
@@ -131,16 +113,16 @@ partial class Composition
     get
     {
       var perBlockDatabaseConnection1 = new DatabaseConnection();
-      if (!_root._singletonValueTuple54Created)
+      if (!_singletonValueTuple54Created)
         lock (_lock)
-          if (!_root._singletonValueTuple54Created)
+          if (!_singletonValueTuple54Created)
           {
-            _root._singletonValueTuple54 = (perBlockDatabaseConnection1, perBlockDatabaseConnection1);
+            _singletonValueTuple54 = (perBlockDatabaseConnection1, perBlockDatabaseConnection1);
             Thread.MemoryBarrier();
-            _root._singletonValueTuple54Created = true;
+            _singletonValueTuple54Created = true;
           }
 
-      return new OrderRepository(perBlockDatabaseConnection1, perBlockDatabaseConnection1, _root._singletonValueTuple54);
+      return new OrderRepository(perBlockDatabaseConnection1, perBlockDatabaseConnection1, _singletonValueTuple54);
     }
   }
 }

@@ -106,12 +106,6 @@ partial class Composition
 #endif
   }
 
-  internal Composition(Composition parentScope)
-  {
-    _argConnectionString = parentScope._argConnectionString;
-    _lock = parentScope._lock;
-  }
-
   public IDatabaseClient Client
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

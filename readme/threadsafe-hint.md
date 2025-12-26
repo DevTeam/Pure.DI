@@ -61,27 +61,15 @@ The following partial class will be generated:
 ```c#
 partial class Composition
 {
-  private readonly Composition _root;
 
   private ReportGenerator? _singletonReportGenerator52;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-  }
 
   public IReportGenerator Generator
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonReportGenerator52 is null)
+      if (_singletonReportGenerator52 is null)
       {
         Func<IDatabaseConnection> transientFunc1 = new Func<IDatabaseConnection>(
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -90,10 +78,10 @@ partial class Composition
           IDatabaseConnection localValue30 = new SqlDatabaseConnection();
           return localValue30;
         });
-        _root._singletonReportGenerator52 = new ReportGenerator(transientFunc1);
+        _singletonReportGenerator52 = new ReportGenerator(transientFunc1);
       }
 
-      return _root._singletonReportGenerator52;
+      return _singletonReportGenerator52;
     }
   }
 }

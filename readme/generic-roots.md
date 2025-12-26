@@ -69,15 +69,6 @@ The following partial class will be generated:
 ```c#
 partial class Composition
 {
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-  }
-
-  internal Composition(Composition parentScope)
-  {
-  }
-
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public NetworkExporter<T1> GetMyNetworkExporter_T<T1>()
   {

@@ -3936,24 +3936,6 @@ DI.Setup("Composition")
 </blockquote></details>
 
 
-<details><summary>Field VarName</summary><blockquote>
-
-Atomically generated smart tag with value "VarName".
-            It's used for:
-            
-            class _Generator__VarsMap_ <-- _IIdGenerator_(VarName) -- _IdGenerator_ as _Transient_
-</blockquote></details>
-
-
-<details><summary>Field Cleaner</summary><blockquote>
-
-Atomically generated smart tag with value "Cleaner".
-            It's used for:
-            
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
-</blockquote></details>
-
-
 <details><summary>Field UsingDeclarations</summary><blockquote>
 
 Atomically generated smart tag with value "UsingDeclarations".
@@ -3963,21 +3945,12 @@ Atomically generated smart tag with value "UsingDeclarations".
 </blockquote></details>
 
 
-<details><summary>Field Override</summary><blockquote>
+<details><summary>Field VarName</summary><blockquote>
 
-Atomically generated smart tag with value "Override".
+Atomically generated smart tag with value "VarName".
             It's used for:
             
-            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
-</blockquote></details>
-
-
-<details><summary>Field SpecialBinding</summary><blockquote>
-
-Atomically generated smart tag with value "SpecialBinding".
-            It's used for:
-            
-            class _Generator__BindingBuilder_ <-- _IIdGenerator_(SpecialBinding) -- _IdGenerator_ as _PerResolve_
+            class _Generator__VarsMap_ <-- _IIdGenerator_(VarName) -- _IdGenerator_ as _Transient_
 </blockquote></details>
 
 
@@ -3990,12 +3963,39 @@ Atomically generated smart tag with value "UniqueTag".
 </blockquote></details>
 
 
+<details><summary>Field Override</summary><blockquote>
+
+Atomically generated smart tag with value "Override".
+            It's used for:
+            
+            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
 <details><summary>Field Overrider</summary><blockquote>
 
 Atomically generated smart tag with value "Overrider".
             It's used for:
             
             class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Overrider) -- _GraphOverrider_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field Cleaner</summary><blockquote>
+
+Atomically generated smart tag with value "Cleaner".
+            It's used for:
+            
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field SpecialBinding</summary><blockquote>
+
+Atomically generated smart tag with value "SpecialBinding".
+            It's used for:
+            
+            class _Generator__BindingBuilder_ <-- _IIdGenerator_(SpecialBinding) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
@@ -4984,6 +4984,81 @@ DI.Setup("Composition")
 </blockquote></details>
 
 
+<details><summary>TTN</summary><blockquote>
+
+Represents a generic type argument marker for a reference type that has a public parameterless constructor.
+            
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTN>>().To<Dependency<TTN>>();
+            
+```
+
+
+</blockquote></details>
+
+
+<details><summary>TTN1</summary><blockquote>
+
+Represents a generic type argument marker for a reference type that has a public parameterless constructor.
+            
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTN1>>().To<Dependency<TTN1>>();
+            
+```
+
+
+</blockquote></details>
+
+
+<details><summary>TTN2</summary><blockquote>
+
+Represents a generic type argument marker for a reference type that has a public parameterless constructor.
+            
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTN2>>().To<Dependency<TTN2>>();
+            
+```
+
+
+</blockquote></details>
+
+
+<details><summary>TTN3</summary><blockquote>
+
+Represents a generic type argument marker for a reference type that has a public parameterless constructor.
+            
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTN3>>().To<Dependency<TTN3>>();
+            
+```
+
+
+</blockquote></details>
+
+
+<details><summary>TTN4</summary><blockquote>
+
+Represents a generic type argument marker for a reference type that has a public parameterless constructor.
+            
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTN4>>().To<Dependency<TTN4>>();
+            
+```
+
+
+</blockquote></details>
+
+
 <details><summary>TTObservable`1</summary><blockquote>
 
 Represents the generic type arguments marker for _IObservable`1_.
@@ -5463,6 +5538,7 @@ Creates an attribute instance.
 - [PerResolve](readme/perresolve.md)
 - [PerBlock](readme/perblock.md)
 - [Scope](readme/scope.md)
+- [Auto scoped](readme/auto-scoped.md)
 - [Default lifetime](readme/default-lifetime.md)
 - [Default lifetime for a type](readme/default-lifetime-for-a-type.md)
 - [Default lifetime for a type and a tag](readme/default-lifetime-for-a-type-and-a-tag.md)
@@ -6392,8 +6468,8 @@ AI needs to understand the situation it’s in (context). This means knowing det
 | AI context file | Size | Tokens |
 | --------------- | ---- | ------ |
 | [AGENTS_SMALL.md](AGENTS_SMALL.md) | 33KB | 8K |
-| [AGENTS_MEDIUM.md](AGENTS_MEDIUM.md) | 120KB | 30K |
-| [AGENTS.md](AGENTS.md) | 449KB | 115K |
+| [AGENTS_MEDIUM.md](AGENTS_MEDIUM.md) | 122KB | 31K |
+| [AGENTS.md](AGENTS.md) | 453KB | 116K |
 
 For different IDEs, you can use the _AGENTS.md_ file as is by simply copying it to the root directory. For use with _JetBrains Rider_ and _Junie_, please refer to [these instructions](https://www.jetbrains.com/help/junie/customize-guidelines.html). For example, you can copy any _AGENTS.md_ file into your project (using _Pure.DI_) as _.junie/guidelines.md._
 ## How to contribute to Pure.DI
@@ -6483,9 +6559,9 @@ Thanks!
 
 ## Benchmarks
 
-BenchmarkDotNet v0.14.0, Windows 10 (10.0.19045.4894/22H2/2022Update)
-AMD Ryzen 9 5900X, 1 CPU, 24 logical and 12 physical cores
-.NET SDK 9.0.100
+BenchmarkDotNet v0.15.8, Windows 10 (10.0.19045.6332/22H2/2022Update)
+AMD Ryzen 9 5900X 4.20GHz, 1 CPU, 24 logical and 12 physical cores
+.NET SDK 10.0.100
 
 <details>
 <summary>Transient</summary>

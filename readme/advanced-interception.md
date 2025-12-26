@@ -62,7 +62,6 @@ internal partial class Composition : IInterceptor
     private readonly IInterceptor[] _interceptors = [];
 
     public Composition(List<string> log)
-        : this()
     {
         _log = log;
         _interceptors = [this];
@@ -153,15 +152,6 @@ The following partial class will be generated:
 ```c#
 partial class Composition
 {
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-  }
-
-  internal Composition(Composition parentScope)
-  {
-  }
-
   public IBusinessService BusinessService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -96,55 +96,37 @@ The following partial class will be generated:
 ```c#
 partial class Composition
 {
-  private readonly Composition _root;
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock;
+  private readonly Lock _lock = new Lock();
 #else
-  private readonly Object _lock;
+  private readonly Object _lock = new Object();
 #endif
 
   private RagChatAssistant? _singletonRagChatAssistant52;
   private LlmGateway? _singletonLlmGateway51;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-#if NET9_0_OR_GREATER
-    _lock = new Lock();
-#else
-    _lock = new Object();
-#endif
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = parentScope._lock;
-  }
 
   public IChatAssistant Assistant
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonRagChatAssistant52 is null)
+      if (_singletonRagChatAssistant52 is null)
         lock (_lock)
-          if (_root._singletonRagChatAssistant52 is null)
+          if (_singletonRagChatAssistant52 is null)
           {
             EnsureLlmGatewayExists();
-            _root._singletonRagChatAssistant52 = new RagChatAssistant(_root._singletonLlmGateway51, _root._singletonLlmGateway51);
+            _singletonRagChatAssistant52 = new RagChatAssistant(_singletonLlmGateway51, _singletonLlmGateway51);
           }
 
-      return _root._singletonRagChatAssistant52;
+      return _singletonRagChatAssistant52;
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureLlmGatewayExists()
       {
-        if (_root._singletonLlmGateway51 is null)
+        if (_singletonLlmGateway51 is null)
           lock (_lock)
-            if (_root._singletonLlmGateway51 is null)
+            if (_singletonLlmGateway51 is null)
             {
-              _root._singletonLlmGateway51 = new LlmGateway();
+              _singletonLlmGateway51 = new LlmGateway();
             }
       }
     }

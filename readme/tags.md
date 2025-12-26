@@ -96,31 +96,13 @@ The following partial class will be generated:
 ```c#
 partial class Composition
 {
-  private readonly Composition _root;
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock;
+  private readonly Lock _lock = new Lock();
 #else
-  private readonly Object _lock;
+  private readonly Object _lock = new Object();
 #endif
 
   private InternalApiClient? _singletonInternalApiClient52;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-#if NET9_0_OR_GREATER
-    _lock = new Lock();
-#else
-    _lock = new Object();
-#endif
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = parentScope._lock;
-  }
 
   public IApiClient InternalRoot
   {
@@ -128,15 +110,15 @@ partial class Composition
     get
     {
       EnsureInternalApiClientInternalExists();
-      return _root._singletonInternalApiClient52;
+      return _singletonInternalApiClient52;
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureInternalApiClientInternalExists()
       {
-        if (_root._singletonInternalApiClient52 is null)
+        if (_singletonInternalApiClient52 is null)
           lock (_lock)
-            if (_root._singletonInternalApiClient52 is null)
+            if (_singletonInternalApiClient52 is null)
             {
-              _root._singletonInternalApiClient52 = new InternalApiClient();
+              _singletonInternalApiClient52 = new InternalApiClient();
             }
       }
     }
@@ -148,15 +130,15 @@ partial class Composition
     get
     {
       EnsureInternalApiClientInternalExists();
-      return new ApiFacade(new RestApiClient(), _root._singletonInternalApiClient52, new RestApiClient());
+      return new ApiFacade(new RestApiClient(), _singletonInternalApiClient52, new RestApiClient());
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureInternalApiClientInternalExists()
       {
-        if (_root._singletonInternalApiClient52 is null)
+        if (_singletonInternalApiClient52 is null)
           lock (_lock)
-            if (_root._singletonInternalApiClient52 is null)
+            if (_singletonInternalApiClient52 is null)
             {
-              _root._singletonInternalApiClient52 = new InternalApiClient();
+              _singletonInternalApiClient52 = new InternalApiClient();
             }
       }
     }

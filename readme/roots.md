@@ -59,31 +59,13 @@ The following partial class will be generated:
 ```c#
 partial class Composition
 {
-  private readonly Composition _root;
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock;
+  private readonly Lock _lock = new Lock();
 #else
-  private readonly Object _lock;
+  private readonly Object _lock = new Object();
 #endif
 
   private Preferences? _singletonPreferences51;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-#if NET9_0_OR_GREATER
-    _lock = new Lock();
-#else
-    _lock = new Object();
-#endif
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = parentScope._lock;
-  }
 
   public SettingsWindow SettingsWindow
   {
@@ -91,15 +73,15 @@ partial class Composition
     get
     {
       EnsurePreferencesExists();
-      return new SettingsWindow(_root._singletonPreferences51);
+      return new SettingsWindow(_singletonPreferences51);
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsurePreferencesExists()
       {
-        if (_root._singletonPreferences51 is null)
+        if (_singletonPreferences51 is null)
           lock (_lock)
-            if (_root._singletonPreferences51 is null)
+            if (_singletonPreferences51 is null)
             {
-              _root._singletonPreferences51 = new Preferences();
+              _singletonPreferences51 = new Preferences();
             }
       }
     }
@@ -111,15 +93,15 @@ partial class Composition
     get
     {
       EnsurePreferencesExists();
-      return new MainWindow(_root._singletonPreferences51);
+      return new MainWindow(_singletonPreferences51);
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsurePreferencesExists()
       {
-        if (_root._singletonPreferences51 is null)
+        if (_singletonPreferences51 is null)
           lock (_lock)
-            if (_root._singletonPreferences51 is null)
+            if (_singletonPreferences51 is null)
             {
-              _root._singletonPreferences51 = new Preferences();
+              _singletonPreferences51 = new Preferences();
             }
       }
     }

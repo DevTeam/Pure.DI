@@ -135,31 +135,13 @@ The following partial class will be generated:
 ```c#
 partial class Composition
 {
-  private readonly Composition _root;
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock;
+  private readonly Lock _lock = new Lock();
 #else
-  private readonly Object _lock;
+  private readonly Object _lock = new Object();
 #endif
 
   private TimeProvider? _singletonTimeProvider52;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-#if NET9_0_OR_GREATER
-    _lock = new Lock();
-#else
-    _lock = new Object();
-#endif
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = parentScope._lock;
-  }
 
   public IOrderBatchProcessor OrderProcessor
   {
@@ -186,14 +168,14 @@ partial class Composition
           int overriddenInt321 = localCustomerId;
           string overriddenString2 = $"Order:{localOrderId}-Cust:{localCustomerId}";
           ProcessingToken overriddenProcessingToken3 = localToken;
-          if (_root._singletonTimeProvider52 is null)
+          if (_singletonTimeProvider52 is null)
             lock (_lock)
-              if (_root._singletonTimeProvider52 is null)
+              if (_singletonTimeProvider52 is null)
               {
-                _root._singletonTimeProvider52 = new TimeProvider();
+                _singletonTimeProvider52 = new TimeProvider();
               }
 
-          OrderHandler localHandler = new OrderHandler(overriddenString2, _root._singletonTimeProvider52, overriddenInt32, overriddenInt321, overriddenProcessingToken3);
+          OrderHandler localHandler = new OrderHandler(overriddenString2, _singletonTimeProvider52, overriddenInt32, overriddenInt321, overriddenProcessingToken3);
           return localHandler;
         }
       };

@@ -99,48 +99,30 @@ The following partial class will be generated:
 ```c#
 partial class Composition
 {
-  private readonly Composition _root;
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock;
+  private readonly Lock _lock = new Lock();
 #else
-  private readonly Object _lock;
+  private readonly Object _lock = new Object();
 #endif
 
   private StructConsumer<int> _singletonStructConsumer59;
   private bool _singletonStructConsumer59Created;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-#if NET9_0_OR_GREATER
-    _lock = new Lock();
-#else
-    _lock = new Object();
-#endif
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = parentScope._lock;
-  }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Program<T1> GetRoot<T1>(T1 name)
     where T1: notnull
   {
     if (name is null) throw new ArgumentNullException(nameof(name));
-    if (!_root._singletonStructConsumer59Created)
+    if (!_singletonStructConsumer59Created)
       lock (_lock)
-        if (!_root._singletonStructConsumer59Created)
+        if (!_singletonStructConsumer59Created)
         {
-          _root._singletonStructConsumer59 = new StructConsumer<int>();
+          _singletonStructConsumer59 = new StructConsumer<int>();
           Thread.MemoryBarrier();
-          _root._singletonStructConsumer59Created = true;
+          _singletonStructConsumer59Created = true;
         }
 
-    return new Program<T1>(new Workflow<T1, int, List<T1>, Dictionary<T1, int>>(new Consumer<T1>(name), _root._singletonStructConsumer59));
+    return new Program<T1>(new Workflow<T1, int, List<T1>, Dictionary<T1, int>>(new Consumer<T1>(name), _singletonStructConsumer59));
   }
 }
 ```

@@ -148,35 +148,15 @@ The following partial class will be generated:
 ```c#
 partial class Composition: IDisposable
 {
-  private readonly Composition _root;
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock;
+  private readonly Lock _lock = new Lock();
 #else
-  private readonly Object _lock;
+  private readonly Object _lock = new Object();
 #endif
-  private object[] _disposables;
+  private object[] _disposables = new object[1];
   private int _disposeIndex;
 
   private DbConnection? _singletonDbConnection52;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-#if NET9_0_OR_GREATER
-    _lock = new Lock();
-#else
-    _lock = new Object();
-#endif
-    _disposables = new object[1];
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = parentScope._lock;
-    _disposables = parentScope._disposables;
-  }
 
   public DataService DataService
   {
@@ -215,15 +195,15 @@ partial class Composition: IDisposable
         Abstractions.Own<IDbConnection> transientOwn7;
         // Creates the owner of an instance
         Abstractions.Own localOwn1 = perBlockOwn6;
-        if (_root._singletonDbConnection52 is null)
+        if (_singletonDbConnection52 is null)
           lock (_lock)
-            if (_root._singletonDbConnection52 is null)
+            if (_singletonDbConnection52 is null)
             {
-              _root._singletonDbConnection52 = new DbConnection();
-              _root._disposables[_root._disposeIndex++] = _root._singletonDbConnection52;
+              _singletonDbConnection52 = new DbConnection();
+              _disposables[_disposeIndex++] = _singletonDbConnection52;
             }
 
-        IDbConnection localValue10 = _root._singletonDbConnection52;
+        IDbConnection localValue10 = _singletonDbConnection52;
         transientOwn7 = new Abstractions.Own<IDbConnection>(localValue10, localOwn1);
         lock (_lock)
         {

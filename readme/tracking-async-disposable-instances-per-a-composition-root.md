@@ -99,25 +99,10 @@ The following partial class will be generated:
 partial class Composition
 {
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock;
+  private readonly Lock _lock = new Lock();
 #else
-  private readonly Object _lock;
+  private readonly Object _lock = new Object();
 #endif
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-#if NET9_0_OR_GREATER
-    _lock = new Lock();
-#else
-    _lock = new Object();
-#endif
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _lock = parentScope._lock;
-  }
 
   public Owned<IQuery> Query
   {

@@ -83,15 +83,6 @@ The following partial class will be generated:
 ```c#
 partial class Func
 {
-  [OrdinalAttribute(256)]
-  public Func()
-  {
-  }
-
-  internal Func(Func parentScope)
-  {
-  }
-
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public partial CompositionRoot TestPureDIByCR()
   {

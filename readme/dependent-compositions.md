@@ -78,15 +78,6 @@ The following partial class will be generated:
 ```c#
 partial class Composition
 {
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-  }
-
-  internal Composition(Composition parentScope)
-  {
-  }
-
   public IUserService UserService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -102,15 +93,6 @@ The following partial class will be generated:
 ```c#
 partial class OtherComposition
 {
-  [OrdinalAttribute(256)]
-  public OtherComposition()
-  {
-  }
-
-  internal OtherComposition(OtherComposition parentScope)
-  {
-  }
-
   public IUserService UserService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

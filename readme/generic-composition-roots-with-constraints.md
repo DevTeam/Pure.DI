@@ -92,15 +92,6 @@ The following partial class will be generated:
 ```c#
 partial class Composition
 {
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-  }
-
-  internal Composition(Composition parentScope)
-  {
-  }
-
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public IDataProcessor<T2, bool> GetSpecializedProcessor<T2>()
     where T2: IDisposable

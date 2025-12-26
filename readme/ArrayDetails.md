@@ -102,15 +102,6 @@ The following partial class will be generated:
 ```c#
 partial class Array
 {
-  [OrdinalAttribute(256)]
-  public Array()
-  {
-  }
-
-  internal Array(Array parentScope)
-  {
-  }
-
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public partial CompositionRoot TestPureDIByCR()
   {

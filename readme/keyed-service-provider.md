@@ -100,31 +100,13 @@ The following partial class will be generated:
 ```c#
 partial class Composition
 {
-  private readonly Composition _root;
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock;
+  private readonly Lock _lock = new Lock();
 #else
-  private readonly Object _lock;
+  private readonly Object _lock = new Object();
 #endif
 
   private PayPalGateway? _singletonPayPalGateway51;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-#if NET9_0_OR_GREATER
-    _lock = new Lock();
-#else
-    _lock = new Object();
-#endif
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = parentScope._lock;
-  }
 
   private IPaymentGateway Root2
   {
@@ -132,15 +114,15 @@ partial class Composition
     get
     {
       EnsurePayPalGatewayPayPalExists();
-      return _root._singletonPayPalGateway51;
+      return _singletonPayPalGateway51;
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsurePayPalGatewayPayPalExists()
       {
-        if (_root._singletonPayPalGateway51 is null)
+        if (_singletonPayPalGateway51 is null)
           lock (_lock)
-            if (_root._singletonPayPalGateway51 is null)
+            if (_singletonPayPalGateway51 is null)
             {
-              _root._singletonPayPalGateway51 = new PayPalGateway();
+              _singletonPayPalGateway51 = new PayPalGateway();
             }
       }
     }
@@ -152,15 +134,15 @@ partial class Composition
     get
     {
       EnsurePayPalGatewayPayPalExists();
-      return new OnlineOrderService(_root._singletonPayPalGateway51);
+      return new OnlineOrderService(_singletonPayPalGateway51);
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsurePayPalGatewayPayPalExists()
       {
-        if (_root._singletonPayPalGateway51 is null)
+        if (_singletonPayPalGateway51 is null)
           lock (_lock)
-            if (_root._singletonPayPalGateway51 is null)
+            if (_singletonPayPalGateway51 is null)
             {
-              _root._singletonPayPalGateway51 = new PayPalGateway();
+              _singletonPayPalGateway51 = new PayPalGateway();
             }
       }
     }

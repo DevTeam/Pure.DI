@@ -106,25 +106,10 @@ The following partial class will be generated:
 partial class Composition
 {
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock;
+  private readonly Lock _lock = new Lock();
 #else
-  private readonly Object _lock;
+  private readonly Object _lock = new Object();
 #endif
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-#if NET9_0_OR_GREATER
-    _lock = new Lock();
-#else
-    _lock = new Object();
-#endif
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _lock = parentScope._lock;
-  }
 
   #pragma warning disable CS0162
   [MethodImpl(MethodImplOptions.NoInlining)]
@@ -132,30 +117,16 @@ partial class Composition
     where T1: struct
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    IMessage<T1, T4> transientIMessage;
-    IMessage<T1, T4> localBuildingInstance9 = buildingInstance;
-    switch (localBuildingInstance9)
+    switch (buildingInstance)
     {
-      case QueryMessage<T1, T4> localQueryMessage_TT_TT2:
-      {
-        transientIMessage = BuildUp(localQueryMessage_TT_TT2);
-        goto transientIMessageFinish;
-      }
-
-      case CommandMessage<T1, T4> localCommandMessage_TT_TT2:
-      {
-        transientIMessage = BuildUp(localCommandMessage_TT_TT2);
-        goto transientIMessageFinish;
-      }
-
+      case QueryMessage<T1, T4> QueryMessage_TT_TT2:
+        return BuildUp(QueryMessage_TT_TT2);
+      case CommandMessage<T1, T4> CommandMessage_TT_TT2:
+        return BuildUp(CommandMessage_TT_TT2);
       default:
-        throw new ArgumentException($"Unable to build an instance of typeof type {localBuildingInstance9.GetType()}.", "buildingInstance");
+        throw new ArgumentException($"Unable to build an instance of typeof type {buildingInstance.GetType()}.", "buildingInstance");
     }
-
-    transientIMessage = localBuildingInstance9;
-    transientIMessageFinish:
-      ;
-    return transientIMessage;
+    return buildingInstance;
   }
   #pragma warning restore CS0162
 

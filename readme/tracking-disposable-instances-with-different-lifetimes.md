@@ -135,35 +135,15 @@ The following partial class will be generated:
 ```c#
 partial class Composition: IDisposable
 {
-  private readonly Composition _root;
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock;
+  private readonly Lock _lock = new Lock();
 #else
-  private readonly Object _lock;
+  private readonly Object _lock = new Object();
 #endif
-  private object[] _disposables;
+  private object[] _disposables = new object[1];
   private int _disposeIndex;
 
   private Connection? _singletonConnection52;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-#if NET9_0_OR_GREATER
-    _lock = new Lock();
-#else
-    _lock = new Object();
-#endif
-    _disposables = new object[1];
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = parentScope._lock;
-    _disposables = parentScope._disposables;
-  }
 
   public QueryHandler QueryHandler
   {
@@ -218,15 +198,15 @@ partial class Composition: IDisposable
         }
 
         IOwned localOwned10 = transientOwned9;
-        if (_root._singletonConnection52 is null)
+        if (_singletonConnection52 is null)
           lock (_lock)
-            if (_root._singletonConnection52 is null)
+            if (_singletonConnection52 is null)
             {
-              _root._singletonConnection52 = new Connection();
-              _root._disposables[_root._disposeIndex++] = _root._singletonConnection52;
+              _singletonConnection52 = new Connection();
+              _disposables[_disposeIndex++] = _singletonConnection52;
             }
 
-        IConnection localValue14 = _root._singletonConnection52;
+        IConnection localValue14 = _singletonConnection52;
         transientOwned8 = new Owned<IConnection>(localValue14, localOwned10);
         lock (_lock)
         {

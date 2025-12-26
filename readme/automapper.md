@@ -204,14 +204,6 @@ partial class Composition: IDisposable
     _disposables = new object[1];
   }
 
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _argLogMessage = parentScope._argLogMessage;
-    _lock = parentScope._lock;
-    _disposables = parentScope._disposables;
-  }
-
   public Program Root
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

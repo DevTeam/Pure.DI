@@ -77,15 +77,6 @@ The following partial class will be generated:
 ```c#
 partial class Transient
 {
-  [OrdinalAttribute(256)]
-  public Transient()
-  {
-  }
-
-  internal Transient(Transient parentScope)
-  {
-  }
-
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public partial CompositionRoot TestPureDIByCR()
   {

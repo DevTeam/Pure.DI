@@ -68,31 +68,13 @@ The following partial class will be generated:
 ```c#
 partial class Composition
 {
-  private readonly Composition _root;
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock;
+  private readonly Lock _lock = new Lock();
 #else
-  private readonly Object _lock;
+  private readonly Object _lock = new Object();
 #endif
 
   private OtherAssembly.CompositionWithGenericRootsInOtherProject? _singletonCompositionWithGenericRootsInOtherProject51;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-#if NET9_0_OR_GREATER
-    _lock = new Lock();
-#else
-    _lock = new Object();
-#endif
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = parentScope._lock;
-  }
 
   public Program Program
   {
@@ -100,14 +82,14 @@ partial class Composition
     get
     {
       OtherAssembly.IMyGenericService<int> transientIMyGenericService1;
-      if (_root._singletonCompositionWithGenericRootsInOtherProject51 is null)
+      if (_singletonCompositionWithGenericRootsInOtherProject51 is null)
         lock (_lock)
-          if (_root._singletonCompositionWithGenericRootsInOtherProject51 is null)
+          if (_singletonCompositionWithGenericRootsInOtherProject51 is null)
           {
-            _root._singletonCompositionWithGenericRootsInOtherProject51 = new OtherAssembly.CompositionWithGenericRootsInOtherProject();
+            _singletonCompositionWithGenericRootsInOtherProject51 = new OtherAssembly.CompositionWithGenericRootsInOtherProject();
           }
 
-      OtherAssembly.CompositionWithGenericRootsInOtherProject localInstance_1182D127 = _root._singletonCompositionWithGenericRootsInOtherProject51;
+      OtherAssembly.CompositionWithGenericRootsInOtherProject localInstance_1182D127 = _singletonCompositionWithGenericRootsInOtherProject51;
       transientIMyGenericService1 = localInstance_1182D127.GetMyService<int>();
       return new Program(transientIMyGenericService1);
     }

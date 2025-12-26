@@ -134,31 +134,13 @@ The following partial class will be generated:
 ```c#
 partial class Composition
 {
-  private readonly Composition _root;
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock;
+  private readonly Lock _lock = new Lock();
 #else
-  private readonly Object _lock;
+  private readonly Object _lock = new Object();
 #endif
 
   private Clock? _singletonClock52;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-#if NET9_0_OR_GREATER
-    _lock = new Lock();
-#else
-    _lock = new Object();
-#endif
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = parentScope._lock;
-  }
 
   public IDashboard Dashboard
   {
@@ -181,14 +163,14 @@ partial class Composition
         // Overrides the 'color' argument with the resolved value
         // Creates the instance using the overridden values
         Drawing.Color overriddenColor5 = localColor;
-        if (_root._singletonClock52 is null)
+        if (_singletonClock52 is null)
           lock (_lock)
-            if (_root._singletonClock52 is null)
+            if (_singletonClock52 is null)
             {
-              _root._singletonClock52 = new Clock();
+              _singletonClock52 = new Clock();
             }
 
-        Widget localWidget = new Widget(overriddenString2, _root._singletonClock52, overriddenInt32, overriddenInt324, overriddenColor5);
+        Widget localWidget = new Widget(overriddenString2, _singletonClock52, overriddenInt32, overriddenInt324, overriddenColor5);
         return localWidget;
       };
       return new Dashboard(transientFunc1);

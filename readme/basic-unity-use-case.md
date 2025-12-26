@@ -94,31 +94,13 @@ The following partial class will be generated:
 ```c#
 partial class Composition
 {
-  private readonly Composition _root;
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock;
+  private readonly Lock _lock = new Lock();
 #else
-  private readonly Object _lock;
+  private readonly Object _lock = new Object();
 #endif
 
   private ClockService? _singletonClockService51;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-#if NET9_0_OR_GREATER
-    _lock = new Lock();
-#else
-    _lock = new Object();
-#endif
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = parentScope._lock;
-  }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Clock BuildUp(Clock buildingInstance)
@@ -126,14 +108,14 @@ partial class Composition
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
     Clock transientClock;
     Clock localBuildingInstance15 = buildingInstance;
-    if (_root._singletonClockService51 is null)
+    if (_singletonClockService51 is null)
       lock (_lock)
-        if (_root._singletonClockService51 is null)
+        if (_singletonClockService51 is null)
         {
-          _root._singletonClockService51 = new ClockService();
+          _singletonClockService51 = new ClockService();
         }
 
-    localBuildingInstance15.ClockService = _root._singletonClockService51;
+    localBuildingInstance15.ClockService = _singletonClockService51;
     transientClock = localBuildingInstance15;
     return transientClock;
   }

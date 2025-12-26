@@ -90,31 +90,13 @@ The following partial class will be generated:
 ```c#
 partial class Composition
 {
-  private readonly Composition _root;
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock;
+  private readonly Lock _lock = new Lock();
 #else
-  private readonly Object _lock;
+  private readonly Object _lock = new Object();
 #endif
 
   private PayPalGateway? _singletonPayPalGateway52;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-#if NET9_0_OR_GREATER
-    _lock = new Lock();
-#else
-    _lock = new Object();
-#endif
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = parentScope._lock;
-  }
 
   public IPaymentGateway PayPalRoot
   {
@@ -122,15 +104,15 @@ partial class Composition
     get
     {
       EnsurePayPalGatewayPureDIUsageTestsAdvancedTagTypeScenarioPayPalGatewayExists();
-      return _root._singletonPayPalGateway52;
+      return _singletonPayPalGateway52;
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsurePayPalGatewayPureDIUsageTestsAdvancedTagTypeScenarioPayPalGatewayExists()
       {
-        if (_root._singletonPayPalGateway52 is null)
+        if (_singletonPayPalGateway52 is null)
           lock (_lock)
-            if (_root._singletonPayPalGateway52 is null)
+            if (_singletonPayPalGateway52 is null)
             {
-              _root._singletonPayPalGateway52 = new PayPalGateway();
+              _singletonPayPalGateway52 = new PayPalGateway();
             }
       }
     }
@@ -142,15 +124,15 @@ partial class Composition
     get
     {
       EnsurePayPalGatewayPureDIUsageTestsAdvancedTagTypeScenarioPayPalGatewayExists();
-      return new PaymentProcessor(new CreditCardGateway(), _root._singletonPayPalGateway52, new CreditCardGateway());
+      return new PaymentProcessor(new CreditCardGateway(), _singletonPayPalGateway52, new CreditCardGateway());
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsurePayPalGatewayPureDIUsageTestsAdvancedTagTypeScenarioPayPalGatewayExists()
       {
-        if (_root._singletonPayPalGateway52 is null)
+        if (_singletonPayPalGateway52 is null)
           lock (_lock)
-            if (_root._singletonPayPalGateway52 is null)
+            if (_singletonPayPalGateway52 is null)
             {
-              _root._singletonPayPalGateway52 = new PayPalGateway();
+              _singletonPayPalGateway52 = new PayPalGateway();
             }
       }
     }

@@ -82,31 +82,13 @@ The following partial class will be generated:
 ```c#
 partial class Composition
 {
-  private readonly Composition _root;
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock;
+  private readonly Lock _lock = new Lock();
 #else
-  private readonly Object _lock;
+  private readonly Object _lock = new Object();
 #endif
 
   private CommentsFactory? _singletonCommentsFactory51;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-#if NET9_0_OR_GREATER
-    _lock = new Lock();
-#else
-    _lock = new Object();
-#endif
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = parentScope._lock;
-  }
 
   public IArticleService ArticleService
   {
@@ -114,14 +96,14 @@ partial class Composition
     get
     {
       IComments<Article> transientIComments1;
-      if (_root._singletonCommentsFactory51 is null)
+      if (_singletonCommentsFactory51 is null)
         lock (_lock)
-          if (_root._singletonCommentsFactory51 is null)
+          if (_singletonCommentsFactory51 is null)
           {
-            _root._singletonCommentsFactory51 = new CommentsFactory();
+            _singletonCommentsFactory51 = new CommentsFactory();
           }
 
-      CommentsFactory localInstance_1182D1276 = _root._singletonCommentsFactory51;
+      CommentsFactory localInstance_1182D1276 = _singletonCommentsFactory51;
       transientIComments1 = localInstance_1182D1276.Create<Article>();
       return new ArticleService(transientIComments1);
     }

@@ -107,53 +107,35 @@ The following partial class will be generated:
 ```c#
 partial class Composition
 {
-  private readonly Composition _root;
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock;
+  private readonly Lock _lock = new Lock();
 #else
-  private readonly Object _lock;
+  private readonly Object _lock = new Object();
 #endif
 
   private LiveAudioSource? _singletonLiveAudioSource51;
   private BufferedAudioSource? _singletonBufferedAudioSource52;
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-    _root = this;
-#if NET9_0_OR_GREATER
-    _lock = new Lock();
-#else
-    _lock = new Object();
-#endif
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-    _lock = parentScope._lock;
-  }
 
   public IPlaybackSession PlaybackSession
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonLiveAudioSource51 is null)
+      if (_singletonLiveAudioSource51 is null)
         lock (_lock)
-          if (_root._singletonLiveAudioSource51 is null)
+          if (_singletonLiveAudioSource51 is null)
           {
-            _root._singletonLiveAudioSource51 = new LiveAudioSource();
+            _singletonLiveAudioSource51 = new LiveAudioSource();
           }
 
-      if (_root._singletonBufferedAudioSource52 is null)
+      if (_singletonBufferedAudioSource52 is null)
         lock (_lock)
-          if (_root._singletonBufferedAudioSource52 is null)
+          if (_singletonBufferedAudioSource52 is null)
           {
-            _root._singletonBufferedAudioSource52 = new BufferedAudioSource();
+            _singletonBufferedAudioSource52 = new BufferedAudioSource();
           }
 
-      return new PlaybackSession(_root._singletonLiveAudioSource51, _root._singletonBufferedAudioSource52);
+      return new PlaybackSession(_singletonLiveAudioSource51, _singletonBufferedAudioSource52);
     }
   }
 }

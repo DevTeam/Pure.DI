@@ -41,19 +41,14 @@ class UserService(IUserRepository repository) : IUserService
     public IUserRepository Repository { get; } = repository;
 }
 
-partial class Composition
+partial class Composition(List<string> log)
 {
-    private readonly List<string> _log = [];
-
-    public Composition(List<string> log) : this() =>
-        _log = log;
-
     private partial T OnDependencyInjection<T>(
         in T value,
         object? tag,
         Lifetime lifetime)
     {
-        _log.Add($"{value?.GetType().Name} injected");
+        log.Add($"{value?.GetType().Name} injected");
         return value;
     }
 }
@@ -95,25 +90,10 @@ The following partial class will be generated:
 partial class Composition
 {
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock;
+  private readonly Lock _lock = new Lock();
 #else
-  private readonly Object _lock;
+  private readonly Object _lock = new Object();
 #endif
-
-  [OrdinalAttribute(256)]
-  public Composition()
-  {
-#if NET9_0_OR_GREATER
-    _lock = new Lock();
-#else
-    _lock = new Object();
-#endif
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _lock = parentScope._lock;
-  }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public IUserService GetUserService(int id)
