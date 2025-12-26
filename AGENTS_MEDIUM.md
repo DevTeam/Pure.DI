@@ -3613,7 +3613,7 @@ To run the above code, the following NuGet packages must be added:
  - [Castle.DynamicProxy](https://www.nuget.org/packages/Castle.DynamicProxy)
 
 
-## Basic Unity use case
+## Unity Basics
 
 ```c#
 using Pure.DI;
@@ -3621,39 +3621,40 @@ using UnityEngine;
 
 public class Clock : MonoBehaviour
 {
-    private const float HoursToDegrees = -30f, MinutesToDegrees = -6f, SecondsToDegrees = -6f;
-
-    [SerializeField]
-    private Transform hoursPivot;
-
-    [SerializeField]
-    private Transform minutesPivot;
-
-    [SerializeField]
-    private Transform secondsPivot;
+    const float HoursToDegrees = -30f, MinutesToDegrees = -6f, SecondsToDegrees = -6f;
+    [SerializeField] Scope scope;
+    [SerializeField] Transform hoursPivot;
+    [SerializeField] Transform minutesPivot;
+    [SerializeField] Transform secondsPivot;
 
     [Dependency]
     public IClockService ClockService { private get; set; }
 
-    public void Start()
+    public void Awake()
     {
-        // Injects dependencies
-        Composition.Shared.BuildUp(this);
+        scope.BuildUp(this);
     }
 
     public void Update()
     {
         var now = ClockService.Now.TimeOfDay;
-
-        hoursPivot.localRotation = Quaternion
-            .Euler(0f, 0f, HoursToDegrees * (float)now.TotalHours);
-
-        minutesPivot.localRotation = Quaternion
-            .Euler(0f, 0f, MinutesToDegrees * (float)now.TotalMinutes);
-
-        secondsPivot.localRotation = Quaternion
-            .Euler(0f, 0f, SecondsToDegrees * (float)now.TotalSeconds);
+        hoursPivot.localRotation = Quaternion.Euler(0f, 0f, HoursToDegrees * (float)now.TotalHours);
+        minutesPivot.localRotation = Quaternion.Euler(0f, 0f, MinutesToDegrees * (float)now.TotalMinutes);
+        secondsPivot.localRotation = Quaternion.Euler(0f, 0f, SecondsToDegrees * (float)now.TotalSeconds);
     }
+}
+
+public interface IClockConfig
+{
+    TimeSpan Offset { get; }
+}
+
+[CreateAssetMenu(fileName = "ClockConfig", menuName = "Clock/Config")]
+public class ClockConfig : ScriptableObject, IClockConfig
+{
+    [SerializeField] int offsetHours;
+
+    public TimeSpan Offset => TimeSpan.FromHours(offsetHours);
 }
 
 public interface IClockService
@@ -3661,20 +3662,37 @@ public interface IClockService
     DateTime Now { get; }
 }
 
-public class ClockService : IClockService
+public class ClockService : IClockService, IDisposable
 {
-    public DateTime Now => DateTime.Now;
+    private readonly IClockConfig _config;
+
+    public DateTime Now => DateTime.UtcNow + _config.Offset;
+
+    public ClockService(IClockConfig config)
+    {
+        _config = config;
+    }
+
+    public void Dispose()
+    {
+        // Perform any necessary cleanup here
+    }
 }
 
-internal partial class Composition
+public partial class Scope : MonoBehaviour
 {
-    public static readonly Composition Shared = new();
+    [SerializeField] ClockConfig clockConfig;
 
-    private static void Setup() =>
-
+    void Setup() =>
         DI.Setup()
-            .Bind().As(Lifetime.Singleton).To<ClockService>()
-            .Builder<Clock>();
+        .Bind().To(_ => clockConfig)
+        .Bind().As(Lifetime.Singleton).To<ClockService>()
+        .Builders<MonoBehaviour>();
+
+    void OnDestroy()
+    {
+        Dispose();
+    }
 }
 ```
 
@@ -3682,7 +3700,7 @@ To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
 
 
-## Unity MonoBehaviours
+## Unity with prefabs
 
 ```c#
 using Pure.DI;
@@ -3690,57 +3708,63 @@ using UnityEngine;
 
 public class Clock : MonoBehaviour
 {
-    private const float HoursToDegrees = -30f, MinutesToDegrees = -6f, SecondsToDegrees = -6f;
-
-    [SerializeField]
-    private Transform hoursPivot;
-
-    [SerializeField]
-    private Transform minutesPivot;
-
-    [SerializeField]
-    private Transform secondsPivot;
+    const float HoursToDegrees = -30f, MinutesToDegrees = -6f, SecondsToDegrees = -6f;
+    [SerializeField] Scope scope;
+    [SerializeField] Transform hoursPivot;
+    [SerializeField] Transform minutesPivot;
+    [SerializeField] Transform secondsPivot;
 
     [Dependency]
     public IClockService ClockService { private get; set; }
 
-    public void Start()
+    public void Awake()
     {
-        // Injects dependencies
-        Composition.Shared.BuildUp(this);
+        scope.BuildUp(this);
     }
 
     public void Update()
     {
         var now = ClockService.Now.TimeOfDay;
-
-        hoursPivot.localRotation = Quaternion
-            .Euler(0f, 0f, HoursToDegrees * (float)now.TotalHours);
-
-        minutesPivot.localRotation = Quaternion
-            .Euler(0f, 0f, MinutesToDegrees * (float)now.TotalMinutes);
-
-        secondsPivot.localRotation = Quaternion
-            .Euler(0f, 0f, SecondsToDegrees * (float)now.TotalSeconds);
+        hoursPivot.localRotation = Quaternion.Euler(0f, 0f, HoursToDegrees * (float)now.TotalHours);
+        minutesPivot.localRotation = Quaternion.Euler(0f, 0f, MinutesToDegrees * (float)now.TotalMinutes);
+        secondsPivot.localRotation = Quaternion.Euler(0f, 0f, SecondsToDegrees * (float)now.TotalSeconds);
     }
 }
 
-public class OtherClock : MonoBehaviour
+public class ClockDigital : MonoBehaviour
 {
-    [Dependency]
-    public IClockService ClockService { private get; set; }
+    [SerializeField] private Text timeText;
 
-    public void Start()
-    {
-        // Injects dependencies
-        Composition.Shared.BuildUp(this);
-    }
+    [Dependency] public IClockService ClockService { private get; set; }
 
-    public void Update()
+    void FixedUpdate()
     {
-        // ReSharper disable once UnusedVariable
-        var now = ClockService.Now.TimeOfDay;
+        var now = ClockService.Now;
+        timeText.text = now.ToString("HH:mm:ss");
     }
+}
+
+public interface IClockConfig
+{
+    TimeSpan Offset { get; }
+
+    bool ShowDigital { get; }
+
+    ClockDigital ClockDigitalPrefab { get; }
+}
+
+[CreateAssetMenu(fileName = "ClockConfig", menuName = "Clock/Config")]
+public class ClockConfig : ScriptableObject, IClockConfig
+{
+    [SerializeField] int offsetHours;
+    [SerializeField] bool showDigital;
+    [SerializeField] ClockDigital clockDigitalPrefab;
+
+    public TimeSpan Offset => TimeSpan.FromHours(offsetHours);
+
+    public bool ShowDigital => showDigital;
+
+    public ClockDigital ClockDigitalPrefab => clockDigitalPrefab;
 }
 
 public interface IClockService
@@ -3748,22 +3772,67 @@ public interface IClockService
     DateTime Now { get; }
 }
 
-public class ClockService : IClockService
+public class ClockService : IClockService, IDisposable
 {
-    public DateTime Now => DateTime.Now;
+    private readonly IClockConfig _config;
+
+    public ClockService(IClockConfig config)
+    {
+        _config = config;
+    }
+
+    public DateTime Now => DateTime.UtcNow + _config.Offset;
+
+    public void Dispose()
+    {
+        // Perform any necessary cleanup here
+    }
 }
 
-internal partial class Composition
+public class ClockManager : IDisposable
 {
-    public static readonly Composition Shared = new();
+    private readonly Scope _scope;
+    private readonly IClockConfig _config;
 
-    private static void Setup() =>
+    public ClockManager(Scope scope, IClockConfig config)
+    {
+        _scope = scope;
+        _config = config;
+    }
 
-        DI.Setup()
-            .Bind().As(Lifetime.Singleton).To<ClockService>()
-            // Creates a builder for each type inherited from MonoBehaviour.
-            // These types must be available at this point in the code.
-            .Builders<MonoBehaviour>();
+    public void Start()
+    {
+        if (_config.ShowDigital)
+        {
+            _scope.BuildUp(Object.Instantiate(_config.ClockDigitalPrefab));
+        }
+    }
+
+    public void Dispose()
+    {
+        // Perform any necessary cleanup here
+    }
+}
+
+public partial class Scope : MonoBehaviour
+{
+    [SerializeField]  ClockConfig clockConfig;
+
+    void Setup() => DI.Setup()
+        .Bind().To(_ => clockConfig)
+        .Bind().As(Lifetime.Singleton).To<ClockService>()
+        .Root<ClockManager>(nameof(ClockManager))
+        .Builders<MonoBehaviour>();
+
+    void Start()
+    {
+        ClockManager.Start();
+    }
+
+    void OnDestroy()
+    {
+        Dispose();
+    }
 }
 ```
 

@@ -574,11 +574,11 @@ Delayed dependency instantiation:
 - Creation of distinct instances with different configurations
 - Type-safe resolution of dependencies with constructor arguments
 
-## Class arguments
+## Composition arguments
 
 Sometimes you need to pass some state to a composition class to use it when resolving dependencies. To do this, just use the `Arg<T>(string argName)` method, specify the type of argument and its name. You can also specify a tag for each argument. You can then use them as dependencies when building the object graph. If you have multiple arguments of the same type, just use tags to distinguish them. The values of the arguments are manipulated when you create a composition class by calling its constructor. It is important to remember that only those arguments that are used in the object graph will appear in the constructor. Arguments that are not involved will not be added to the constructor arguments.
 > [!NOTE]
-> Actually, class arguments work like normal bindings. The difference is that they bind to the values of the arguments. These values will be injected wherever they are required.
+> Actually, composition arguments work like normal bindings. The difference is that they bind to the values of the arguments. These values will be injected wherever they are required.
 
 
 ```c#
@@ -592,13 +592,13 @@ DI.Setup(nameof(Composition))
     // Composition root "PaymentService"
     .Root<IPaymentProcessor>("PaymentService")
 
-    // Argument: Connection timeout (e.g., from config)
+    // Composition argument: Connection timeout (e.g., from config)
     .Arg<int>("timeoutSeconds")
 
-    // Argument: API Token (using a tag to distinguish from other strings)
+    // Composition argument: API Token (using a tag to distinguish from other strings)
     .Arg<string>("authToken", "api token")
 
-    // Argument: Bank gateway address
+    // Composition argument: Bank gateway address
     .Arg<string>("gatewayUrl");
 
 // Create the composition, passing real settings from "outside"
@@ -2266,6 +2266,102 @@ To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
+
+## Auto scoped
+
+You can use the following example to automatically create a session when creating instances of a particular type:
+
+```c#
+using Shouldly;
+using Pure.DI;
+using static Pure.DI.Lifetime;
+
+var composition = new Composition();
+var musicApp = composition.MusicAppRoot;
+
+// Session #1: user starts listening on "Living Room Speaker"
+var session1 = musicApp.StartListeningSession();
+session1.Enqueue("Daft Punk - One More Time");
+session1.Enqueue("Massive Attack - Teardrop");
+
+// Session #2: user starts listening on "Headphones"
+var session2 = musicApp.StartListeningSession();
+session2.Enqueue("Radiohead - Weird Fishes/Arpeggi");
+
+// Different sessions -> different scoped queue instances
+session1.Queue.ShouldNotBe(session2.Queue);
+
+// But inside one session, the same queue is used everywhere within that scope
+session1.Queue.Items.Count.ShouldBe(2);
+session2.Queue.Items.Count.ShouldBe(1);
+
+// Domain abstractions
+
+interface IPlaybackQueue
+{
+    IReadOnlyList<string> Items { get; }
+    void Add(string trackTitle);
+}
+
+sealed class PlaybackQueue : IPlaybackQueue
+{
+    private readonly List<string> _items = [];
+
+    public IReadOnlyList<string> Items => _items;
+
+    public void Add(string trackTitle) => _items.Add(trackTitle);
+}
+
+interface IListeningSession
+{
+    IPlaybackQueue Queue { get; }
+
+    void Enqueue(string trackTitle);
+}
+
+sealed class ListeningSession(IPlaybackQueue queue) : IListeningSession
+{
+    public IPlaybackQueue Queue => queue;
+
+    public void Enqueue(string trackTitle) => queue.Add(trackTitle);
+}
+
+// Implements a "session boundary" for listening
+class MusicApp(Func<IListeningSession> sessionFactory)
+{
+    // Each call creates a new DI scope under the hood (new "listening session").
+    public IListeningSession StartListeningSession() => sessionFactory();
+}
+
+partial class Composition
+{
+    static void Setup() =>
+
+        DI.Setup()
+            // Scoped: one queue per listening session
+            .Bind().As(Scoped).To<PlaybackQueue>()
+
+            // Session composition root (private root used only to build sessions)
+            .Root<ListeningSession>("Session", kind: RootKinds.Private)
+
+            // Auto scoped factory: creates a new scope for each listening session
+            .Bind().To(IListeningSession (Composition parentScope) => {
+                // Create a child scope so scoped services (PlaybackQueue) are unique per session.
+                var scope = new Composition(parentScope);
+                return scope.Session;
+            })
+
+            // App-level root
+            .Root<MusicApp>("MusicAppRoot");
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+> [!IMPORTANT]
+> The method `Inject()`cannot be used outside of the binding setup.
 
 ## Default lifetime
 
@@ -5666,7 +5762,6 @@ internal partial class Composition : IInterceptor
     private readonly IInterceptor[] _interceptors = [];
 
     public Composition(List<string> log)
-        : this()
     {
         _log = log;
         _interceptors = [this];
@@ -5855,20 +5950,15 @@ class PaymentService(IPaymentGateway gateway) : IPaymentService
     public IPaymentGateway Gateway { get; } = gateway;
 }
 
-partial class Composition
+partial class Composition(List<string> log)
 {
-    private readonly List<string> _log = [];
-
-    public Composition(List<string> log) : this() =>
-        _log = log;
-
     private partial T OnDependencyInjection<T>(
         in T value,
         object? tag,
         Lifetime lifetime)
     {
         // Logs the actual runtime type of the injected instance
-        _log.Add($"{value?.GetType().Name} injected");
+        log.Add($"{value?.GetType().Name} injected");
         return value;
     }
 }
@@ -5923,19 +6013,14 @@ class UserService(IUserRepository repository) : IUserService
     public IUserRepository Repository { get; } = repository;
 }
 
-partial class Composition
+partial class Composition(List<string> log)
 {
-    private readonly List<string> _log = [];
-
-    public Composition(List<string> log) : this() =>
-        _log = log;
-
     private partial T OnDependencyInjection<T>(
         in T value,
         object? tag,
         Lifetime lifetime)
     {
-        _log.Add($"{value?.GetType().Name} injected");
+        log.Add($"{value?.GetType().Name} injected");
         return value;
     }
 }
@@ -6135,18 +6220,13 @@ class OrderProcessor(IGlobalCache cache) : IOrderProcessor
     public IGlobalCache Cache { get; } = cache;
 }
 
-internal partial class Composition
+internal partial class Composition(List<string> log)
 {
-    private readonly List<string> _log = [];
-
-    public Composition(List<string> log) : this() =>
-        _log = log;
-
     partial void OnNewInstance<T>(
         ref T value,
         object? tag,
         Lifetime lifetime) =>
-        _log.Add($"{typeof(T).Name} created");
+        log.Add($"{typeof(T).Name} created");
 }
 ```
 
@@ -6221,18 +6301,13 @@ class OrderService(IRepository repository, ILogger logger) : IOrderService
     public override string ToString() => nameof(OrderService);
 }
 
-internal partial class Composition
+internal partial class Composition(List<string> log)
 {
-    private readonly List<string> _log = [];
-
-    public Composition(List<string> log) : this() =>
-        _log = log;
-
     partial void OnNewInstance<T>(
         ref T value,
         object? tag,
         Lifetime lifetime) =>
-        _log.Add($"{typeof(T).Name} created");
+        log.Add($"{typeof(T).Name} created");
 }
 ```
 
@@ -7239,17 +7314,9 @@ class OrderService(
 }
 
 // The partial class is also useful for specifying access modifiers to the generated class
-public partial class Composition
+public partial class Composition(string storeName)
 {
-    private readonly string _storeName = "";
     private long _id;
-
-    // Customizable constructor
-    public Composition(string storeName)
-        : this()
-    {
-        _storeName = storeName;
-    }
 
     private long GenerateId() => Interlocked.Increment(ref _id);
 
@@ -7261,7 +7328,7 @@ public partial class Composition
             .Bind<IOrder>().To<Order>()
             .Bind<long>().To(_ => GenerateId())
             // Binds the string with the tag "Order details"
-            .Bind<string>("Order details").To(_ => $"{_storeName}_{GenerateId()}")
+            .Bind<string>("Order details").To(_ => $"{storeName}_{GenerateId()}")
             .Root<OrderService>("OrderService", kind: Internal);
 }
 ```
@@ -8104,7 +8171,7 @@ To run the above code, the following NuGet package must be added:
 
 ## Exposed roots via arg
 
-Composition roots from other assemblies or projects can be used as a source of bindings passed through class arguments. When you add a binding to a composition from another assembly or project, the roots of the composition with the `RootKind.Exposed` type will be used in the bindings automatically. For example, in some assembly a composition is defined as:
+Composition roots from other assemblies or projects can be used as a source of bindings passed through composition arguments. When you add a binding to a composition from another assembly or project, the roots of the composition with the `RootKind.Exposed` type will be used in the bindings automatically. For example, in some assembly a composition is defined as:
 ```c#
 public partial class CompositionInOtherProject
 {
@@ -8567,7 +8634,7 @@ To run the above code, the following NuGet packages must be added:
  - [Serilog.Events](https://www.nuget.org/packages/Serilog.Events)
 
 
-## Basic Unity use case
+## Unity Basics
 
 ```c#
 using Pure.DI;
@@ -8575,39 +8642,40 @@ using UnityEngine;
 
 public class Clock : MonoBehaviour
 {
-    private const float HoursToDegrees = -30f, MinutesToDegrees = -6f, SecondsToDegrees = -6f;
-
-    [SerializeField]
-    private Transform hoursPivot;
-
-    [SerializeField]
-    private Transform minutesPivot;
-
-    [SerializeField]
-    private Transform secondsPivot;
+    const float HoursToDegrees = -30f, MinutesToDegrees = -6f, SecondsToDegrees = -6f;
+    [SerializeField] Scope scope;
+    [SerializeField] Transform hoursPivot;
+    [SerializeField] Transform minutesPivot;
+    [SerializeField] Transform secondsPivot;
 
     [Dependency]
     public IClockService ClockService { private get; set; }
 
-    public void Start()
+    public void Awake()
     {
-        // Injects dependencies
-        Composition.Shared.BuildUp(this);
+        scope.BuildUp(this);
     }
 
     public void Update()
     {
         var now = ClockService.Now.TimeOfDay;
-
-        hoursPivot.localRotation = Quaternion
-            .Euler(0f, 0f, HoursToDegrees * (float)now.TotalHours);
-
-        minutesPivot.localRotation = Quaternion
-            .Euler(0f, 0f, MinutesToDegrees * (float)now.TotalMinutes);
-
-        secondsPivot.localRotation = Quaternion
-            .Euler(0f, 0f, SecondsToDegrees * (float)now.TotalSeconds);
+        hoursPivot.localRotation = Quaternion.Euler(0f, 0f, HoursToDegrees * (float)now.TotalHours);
+        minutesPivot.localRotation = Quaternion.Euler(0f, 0f, MinutesToDegrees * (float)now.TotalMinutes);
+        secondsPivot.localRotation = Quaternion.Euler(0f, 0f, SecondsToDegrees * (float)now.TotalSeconds);
     }
+}
+
+public interface IClockConfig
+{
+    TimeSpan Offset { get; }
+}
+
+[CreateAssetMenu(fileName = "ClockConfig", menuName = "Clock/Config")]
+public class ClockConfig : ScriptableObject, IClockConfig
+{
+    [SerializeField] int offsetHours;
+
+    public TimeSpan Offset => TimeSpan.FromHours(offsetHours);
 }
 
 public interface IClockService
@@ -8615,20 +8683,37 @@ public interface IClockService
     DateTime Now { get; }
 }
 
-public class ClockService : IClockService
+public class ClockService : IClockService, IDisposable
 {
-    public DateTime Now => DateTime.Now;
+    private readonly IClockConfig _config;
+
+    public DateTime Now => DateTime.UtcNow + _config.Offset;
+
+    public ClockService(IClockConfig config)
+    {
+        _config = config;
+    }
+
+    public void Dispose()
+    {
+        // Perform any necessary cleanup here
+    }
 }
 
-internal partial class Composition
+public partial class Scope : MonoBehaviour
 {
-    public static readonly Composition Shared = new();
+    [SerializeField] ClockConfig clockConfig;
 
-    private static void Setup() =>
-
+    void Setup() =>
         DI.Setup()
-            .Bind().As(Lifetime.Singleton).To<ClockService>()
-            .Builder<Clock>();
+        .Bind().To(_ => clockConfig)
+        .Bind().As(Lifetime.Singleton).To<ClockService>()
+        .Builders<MonoBehaviour>();
+
+    void OnDestroy()
+    {
+        Dispose();
+    }
 }
 ```
 
@@ -8636,7 +8721,7 @@ To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
 
 
-## Unity MonoBehaviours
+## Unity with prefabs
 
 ```c#
 using Pure.DI;
@@ -8644,57 +8729,63 @@ using UnityEngine;
 
 public class Clock : MonoBehaviour
 {
-    private const float HoursToDegrees = -30f, MinutesToDegrees = -6f, SecondsToDegrees = -6f;
-
-    [SerializeField]
-    private Transform hoursPivot;
-
-    [SerializeField]
-    private Transform minutesPivot;
-
-    [SerializeField]
-    private Transform secondsPivot;
+    const float HoursToDegrees = -30f, MinutesToDegrees = -6f, SecondsToDegrees = -6f;
+    [SerializeField] Scope scope;
+    [SerializeField] Transform hoursPivot;
+    [SerializeField] Transform minutesPivot;
+    [SerializeField] Transform secondsPivot;
 
     [Dependency]
     public IClockService ClockService { private get; set; }
 
-    public void Start()
+    public void Awake()
     {
-        // Injects dependencies
-        Composition.Shared.BuildUp(this);
+        scope.BuildUp(this);
     }
 
     public void Update()
     {
         var now = ClockService.Now.TimeOfDay;
-
-        hoursPivot.localRotation = Quaternion
-            .Euler(0f, 0f, HoursToDegrees * (float)now.TotalHours);
-
-        minutesPivot.localRotation = Quaternion
-            .Euler(0f, 0f, MinutesToDegrees * (float)now.TotalMinutes);
-
-        secondsPivot.localRotation = Quaternion
-            .Euler(0f, 0f, SecondsToDegrees * (float)now.TotalSeconds);
+        hoursPivot.localRotation = Quaternion.Euler(0f, 0f, HoursToDegrees * (float)now.TotalHours);
+        minutesPivot.localRotation = Quaternion.Euler(0f, 0f, MinutesToDegrees * (float)now.TotalMinutes);
+        secondsPivot.localRotation = Quaternion.Euler(0f, 0f, SecondsToDegrees * (float)now.TotalSeconds);
     }
 }
 
-public class OtherClock : MonoBehaviour
+public class ClockDigital : MonoBehaviour
 {
-    [Dependency]
-    public IClockService ClockService { private get; set; }
+    [SerializeField] private Text timeText;
 
-    public void Start()
-    {
-        // Injects dependencies
-        Composition.Shared.BuildUp(this);
-    }
+    [Dependency] public IClockService ClockService { private get; set; }
 
-    public void Update()
+    void FixedUpdate()
     {
-        // ReSharper disable once UnusedVariable
-        var now = ClockService.Now.TimeOfDay;
+        var now = ClockService.Now;
+        timeText.text = now.ToString("HH:mm:ss");
     }
+}
+
+public interface IClockConfig
+{
+    TimeSpan Offset { get; }
+
+    bool ShowDigital { get; }
+
+    ClockDigital ClockDigitalPrefab { get; }
+}
+
+[CreateAssetMenu(fileName = "ClockConfig", menuName = "Clock/Config")]
+public class ClockConfig : ScriptableObject, IClockConfig
+{
+    [SerializeField] int offsetHours;
+    [SerializeField] bool showDigital;
+    [SerializeField] ClockDigital clockDigitalPrefab;
+
+    public TimeSpan Offset => TimeSpan.FromHours(offsetHours);
+
+    public bool ShowDigital => showDigital;
+
+    public ClockDigital ClockDigitalPrefab => clockDigitalPrefab;
 }
 
 public interface IClockService
@@ -8702,22 +8793,67 @@ public interface IClockService
     DateTime Now { get; }
 }
 
-public class ClockService : IClockService
+public class ClockService : IClockService, IDisposable
 {
-    public DateTime Now => DateTime.Now;
+    private readonly IClockConfig _config;
+
+    public ClockService(IClockConfig config)
+    {
+        _config = config;
+    }
+
+    public DateTime Now => DateTime.UtcNow + _config.Offset;
+
+    public void Dispose()
+    {
+        // Perform any necessary cleanup here
+    }
 }
 
-internal partial class Composition
+public class ClockManager : IDisposable
 {
-    public static readonly Composition Shared = new();
+    private readonly Scope _scope;
+    private readonly IClockConfig _config;
 
-    private static void Setup() =>
+    public ClockManager(Scope scope, IClockConfig config)
+    {
+        _scope = scope;
+        _config = config;
+    }
 
-        DI.Setup()
-            .Bind().As(Lifetime.Singleton).To<ClockService>()
-            // Creates a builder for each type inherited from MonoBehaviour.
-            // These types must be available at this point in the code.
-            .Builders<MonoBehaviour>();
+    public void Start()
+    {
+        if (_config.ShowDigital)
+        {
+            _scope.BuildUp(Object.Instantiate(_config.ClockDigitalPrefab));
+        }
+    }
+
+    public void Dispose()
+    {
+        // Perform any necessary cleanup here
+    }
+}
+
+public partial class Scope : MonoBehaviour
+{
+    [SerializeField]  ClockConfig clockConfig;
+
+    void Setup() => DI.Setup()
+        .Bind().To(_ => clockConfig)
+        .Bind().As(Lifetime.Singleton).To<ClockService>()
+        .Root<ClockManager>(nameof(ClockManager))
+        .Builders<MonoBehaviour>();
+
+    void Start()
+    {
+        ClockManager.Start();
+    }
+
+    void OnDestroy()
+    {
+        Dispose();
+    }
 }
 ```
 
@@ -8904,7 +9040,7 @@ The [project file](/samples/AvaloniaApp/AvaloniaApp.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.14">
+        <PackageReference Include="Pure.DI" Version="2.3.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -8968,11 +9104,11 @@ The [project file](/samples/BlazorServerApp/BlazorServerApp.csproj) looks like t
 <Project Sdk="Microsoft.NET.Sdk.Web">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.14">
+        <PackageReference Include="Pure.DI" Version="2.3.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.2.14" />
+        <PackageReference Include="Pure.DI.MS" Version="2.3.0" />
     </ItemGroup>
 
 </Project>
@@ -9036,11 +9172,11 @@ The [project file](/samples/BlazorWebAssemblyApp/BlazorWebAssemblyApp.csproj) lo
 <Project Sdk="Microsoft.NET.Sdk.Web">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.14">
+        <PackageReference Include="Pure.DI" Version="2.3.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.2.14" />
+        <PackageReference Include="Pure.DI.MS" Version="2.3.0" />
     </ItemGroup>
 
 </Project>
@@ -9065,7 +9201,7 @@ The [project file](/samples/ShroedingersCatNativeAOT/ShroedingersCatNativeAOT.cs
 <Project Sdk="Microsoft.NET.Sdk">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.14">
+        <PackageReference Include="Pure.DI" Version="2.3.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -9166,7 +9302,7 @@ The [project file](/samples/ShroedingersCat/ShroedingersCat.csproj) looks like t
 <Project Sdk="Microsoft.NET.Sdk">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.14">
+        <PackageReference Include="Pure.DI" Version="2.3.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -9252,7 +9388,7 @@ The [project file](/samples/ShroedingersCatTopLevelStatements/ShroedingersCatTop
 <Project Sdk="Microsoft.NET.Sdk">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.14">
+        <PackageReference Include="Pure.DI" Version="2.3.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -9354,11 +9490,11 @@ The [project file](/samples/EF/EF.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk.Web">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.14">
+        <PackageReference Include="Pure.DI" Version="2.3.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.2.14" />
+        <PackageReference Include="Pure.DI.MS" Version="2.3.0" />
     </ItemGroup>
 
 </Project>
@@ -9422,11 +9558,11 @@ The [project file](/samples/GrpcService/GrpcService.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk.Web">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.14">
+        <PackageReference Include="Pure.DI" Version="2.3.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.2.14" />
+        <PackageReference Include="Pure.DI.MS" Version="2.3.0" />
     </ItemGroup>
 
 </Project>
@@ -9587,11 +9723,11 @@ The [project file](/samples/MAUIApp/MAUIApp.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.14">
+        <PackageReference Include="Pure.DI" Version="2.3.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.2.14" />
+        <PackageReference Include="Pure.DI.MS" Version="2.3.0" />
     </ItemGroup>
 
 </Project>
@@ -9679,11 +9815,11 @@ The [project file](/samples/WebAPI/WebAPI.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk.Web">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.14">
+        <PackageReference Include="Pure.DI" Version="2.3.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.2.14" />
+        <PackageReference Include="Pure.DI.MS" Version="2.3.0" />
     </ItemGroup>
 
 </Project>
@@ -9842,11 +9978,11 @@ The [project file](/samples/WebAPI/WebAPI.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk.Web">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.14">
+        <PackageReference Include="Pure.DI" Version="2.3.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.2.14" />
+        <PackageReference Include="Pure.DI.MS" Version="2.3.0" />
     </ItemGroup>
 
 </Project>
@@ -9911,11 +10047,11 @@ The [project file](/samples/WebApp/WebApp.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk.Web">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.14">
+        <PackageReference Include="Pure.DI" Version="2.3.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.2.14" />
+        <PackageReference Include="Pure.DI.MS" Version="2.3.0" />
     </ItemGroup>
 
 </Project>
@@ -9983,7 +10119,7 @@ The [project file](/samples/WinFormsAppNetCore/WinFormsAppNetCore.csproj) looks 
 <Project Sdk="Microsoft.NET.Sdk">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.14">
+        <PackageReference Include="Pure.DI" Version="2.3.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -10056,7 +10192,7 @@ The [project file](/samples/WinFormsApp/WinFormsApp.csproj) looks like this:
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.14">
+        <PackageReference Include="Pure.DI" Version="2.3.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -10184,7 +10320,7 @@ The [project file](/samples/WpfAppNetCore/WpfAppNetCore.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk">
    ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.14">
+        <PackageReference Include="Pure.DI" Version="2.3.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -10595,7 +10731,7 @@ Wildcard filter for instance types in OnNewInstance hooks. Default:  `*` .
 ```c#
 
 DI.Setup("Composition")
-                 .Hint(OnNewInstanceImplementationTypeNameWildcard, "*Dependency")
+                 .Hint(Hint.OnNewInstanceImplementationTypeNameWildcard, "*Dependency")
                  .Bind<IDependency>().To<Dependency>();
              
 ```
@@ -11996,7 +12132,7 @@ Defines the API for configuring dependency bindings in the composition.
 
 Starts binding definition for the implementation type itself. Also binds all directly implemented abstract types excluding special system interfaces.
             Special system interfaces are excluded from binding:
-            System.ObjectSystem.EnumSystem.MulticastDelegateSystem.DelegateSystem.Collections.IEnumerableSystem.Collections.Generic.IEnumerable<T>System.Collections.Generic.Iist<T>System.Collections.Generic.ICollection<T>System.Collections.IEnumeratorSystem.Collections.Generic.IEnumerator<T>System.Collections.Generic.IReadOnlyList<T>System.Collections.Generic.IReadOnlyCollection<T>System.IDisposableSystem.IAsyncResultSystem.AsyncCallback
+            System.ObjectSystem.EnumSystem.MulticastDelegateSystem.DelegateSystem.Collections.IEnumerableSystem.Collections.Generic.IEnumerable<T>System.Collections.Generic.IList<T>System.Collections.Generic.ICollection<T>System.Collections.IEnumeratorSystem.Collections.Generic.IEnumerator<T>System.Collections.Generic.IReadOnlyList<T>System.Collections.Generic.IReadOnlyCollection<T>System.IDisposableSystem.IAsyncResultSystem.AsyncCallback
 ```c#
 
 DI.Setup("Composition")
@@ -13852,7 +13988,7 @@ DI.Setup("Composition")
 
  - parameter _methodName_ - Method name
 
- - parameter _argName_ - Parameter name
+ - parameter _argName_ - Argument name
 
 </blockquote></details>
 
@@ -13875,12 +14011,12 @@ Atomically generated smart tag with value "VarName".
 </blockquote></details>
 
 
-<details><summary>Field Cleaner</summary><blockquote>
+<details><summary>Field UniqueTag</summary><blockquote>
 
-Atomically generated smart tag with value "Cleaner".
+Atomically generated smart tag with value "UniqueTag".
             It's used for:
             
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
+            class _Generator__ApiInvocationProcessor_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve__BindingBuilder_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
@@ -13902,21 +14038,12 @@ Atomically generated smart tag with value "Override".
 </blockquote></details>
 
 
-<details><summary>Field CompositionClass</summary><blockquote>
+<details><summary>Field Cleaner</summary><blockquote>
 
-Atomically generated smart tag with value "CompositionClass".
+Atomically generated smart tag with value "Cleaner".
             It's used for:
             
-            class _Generator__CodeBuilder_ <-- _IBuilder{TData, T}_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
-</blockquote></details>
-
-
-<details><summary>Field UniqueTag</summary><blockquote>
-
-Atomically generated smart tag with value "UniqueTag".
-            It's used for:
-            
-            class _Generator__ApiInvocationProcessor_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve__BindingBuilder_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve_
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
 </blockquote></details>
 
 
@@ -13926,6 +14053,15 @@ Atomically generated smart tag with value "SpecialBinding".
             It's used for:
             
             class _Generator__BindingBuilder_ <-- _IIdGenerator_(SpecialBinding) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
+<details><summary>Field CompositionClass</summary><blockquote>
+
+Atomically generated smart tag with value "CompositionClass".
+            It's used for:
+            
+            class _Generator__CodeBuilder_ <-- _IBuilder{TData, T}_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
 </blockquote></details>
 
 
@@ -14898,6 +15034,81 @@ Represents the generic type arguments marker for _IList`1_.
 
 DI.Setup("Composition")
                 .Bind<IDependency<TTList4<TT>>>().To<Dependency<TTList4<TT>>>();
+            
+```
+
+
+</blockquote></details>
+
+
+<details><summary>TTN</summary><blockquote>
+
+Represents a generic type argument marker for a reference type that has a public parameterless constructor.
+            
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTN>>().To<Dependency<TTN>>();
+            
+```
+
+
+</blockquote></details>
+
+
+<details><summary>TTN1</summary><blockquote>
+
+Represents a generic type argument marker for a reference type that has a public parameterless constructor.
+            
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTN1>>().To<Dependency<TTN1>>();
+            
+```
+
+
+</blockquote></details>
+
+
+<details><summary>TTN2</summary><blockquote>
+
+Represents a generic type argument marker for a reference type that has a public parameterless constructor.
+            
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTN2>>().To<Dependency<TTN2>>();
+            
+```
+
+
+</blockquote></details>
+
+
+<details><summary>TTN3</summary><blockquote>
+
+Represents a generic type argument marker for a reference type that has a public parameterless constructor.
+            
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTN3>>().To<Dependency<TTN3>>();
+            
+```
+
+
+</blockquote></details>
+
+
+<details><summary>TTN4</summary><blockquote>
+
+Represents a generic type argument marker for a reference type that has a public parameterless constructor.
+            
+```c#
+
+DI.Setup("Composition")
+                .Bind<IDependency<TTN4>>().To<Dependency<TTN4>>();
             
 ```
 

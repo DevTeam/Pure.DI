@@ -3936,6 +3936,15 @@ DI.Setup("Composition")
 </blockquote></details>
 
 
+<details><summary>Field UsingDeclarations</summary><blockquote>
+
+Atomically generated smart tag with value "UsingDeclarations".
+            It's used for:
+            
+            class _Generator__CompositionClassBuilder_ <-- _IBuilder{TData, T}_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
+</blockquote></details>
+
+
 <details><summary>Field VarName</summary><blockquote>
 
 Atomically generated smart tag with value "VarName".
@@ -3954,6 +3963,33 @@ Atomically generated smart tag with value "UniqueTag".
 </blockquote></details>
 
 
+<details><summary>Field CompositionClass</summary><blockquote>
+
+Atomically generated smart tag with value "CompositionClass".
+            It's used for:
+            
+            class _Generator__CodeBuilder_ <-- _IBuilder{TData, T}_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field Override</summary><blockquote>
+
+Atomically generated smart tag with value "Override".
+            It's used for:
+            
+            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
+<details><summary>Field SpecialBinding</summary><blockquote>
+
+Atomically generated smart tag with value "SpecialBinding".
+            It's used for:
+            
+            class _Generator__BindingBuilder_ <-- _IIdGenerator_(SpecialBinding) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
 <details><summary>Field Overrider</summary><blockquote>
 
 Atomically generated smart tag with value "Overrider".
@@ -3969,42 +4005,6 @@ Atomically generated smart tag with value "Cleaner".
             It's used for:
             
             class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
-</blockquote></details>
-
-
-<details><summary>Field UsingDeclarations</summary><blockquote>
-
-Atomically generated smart tag with value "UsingDeclarations".
-            It's used for:
-            
-            class _Generator__CompositionClassBuilder_ <-- _IBuilder{TData, T}_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
-</blockquote></details>
-
-
-<details><summary>Field Override</summary><blockquote>
-
-Atomically generated smart tag with value "Override".
-            It's used for:
-            
-            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
-</blockquote></details>
-
-
-<details><summary>Field CompositionClass</summary><blockquote>
-
-Atomically generated smart tag with value "CompositionClass".
-            It's used for:
-            
-            class _Generator__CodeBuilder_ <-- _IBuilder{TData, T}_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
-</blockquote></details>
-
-
-<details><summary>Field SpecialBinding</summary><blockquote>
-
-Atomically generated smart tag with value "SpecialBinding".
-            It's used for:
-            
-            class _Generator__BindingBuilder_ <-- _IIdGenerator_(SpecialBinding) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
@@ -5645,8 +5645,8 @@ Creates an attribute instance.
 - [JSON serialization](readme/json-serialization.md)
 - [Serilog](readme/serilog.md)
 ### Unity
-- [Basic Unity use case](readme/basic-unity-use-case.md)
-- [Unity MonoBehaviours](readme/unity-monobehaviours.md)
+- [Unity Basics](readme/unity-basics.md)
+- [Unity with prefabs](readme/unity-with-prefabs.md)
 ### Applications
 - Console
   - [Schrödinger's cat](readme/Console.md)
@@ -6500,8 +6500,8 @@ AI needs to understand the situation it’s in (context). This means knowing det
 | AI context file | Size | Tokens |
 | --------------- | ---- | ------ |
 | [AGENTS_SMALL.md](AGENTS_SMALL.md) | 33KB | 8K |
-| [AGENTS_MEDIUM.md](AGENTS_MEDIUM.md) | 122KB | 31K |
-| [AGENTS.md](AGENTS.md) | 453KB | 116K |
+| [AGENTS_MEDIUM.md](AGENTS_MEDIUM.md) | 124KB | 31K |
+| [AGENTS.md](AGENTS.md) | 455KB | 116K |
 
 For different IDEs, you can use the _AGENTS.md_ file as is by simply copying it to the root directory. For use with _JetBrains Rider_ and _Junie_, please refer to [these instructions](https://www.jetbrains.com/help/junie/customize-guidelines.html). For example, you can copy any _AGENTS.md_ file into your project (using _Pure.DI_) as _.junie/guidelines.md._
 ## How to contribute to Pure.DI

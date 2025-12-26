@@ -8634,7 +8634,7 @@ To run the above code, the following NuGet packages must be added:
  - [Serilog.Events](https://www.nuget.org/packages/Serilog.Events)
 
 
-## Basic Unity use case
+## Unity Basics
 
 ```c#
 using Pure.DI;
@@ -8642,39 +8642,40 @@ using UnityEngine;
 
 public class Clock : MonoBehaviour
 {
-    private const float HoursToDegrees = -30f, MinutesToDegrees = -6f, SecondsToDegrees = -6f;
-
-    [SerializeField]
-    private Transform hoursPivot;
-
-    [SerializeField]
-    private Transform minutesPivot;
-
-    [SerializeField]
-    private Transform secondsPivot;
+    const float HoursToDegrees = -30f, MinutesToDegrees = -6f, SecondsToDegrees = -6f;
+    [SerializeField] Scope scope;
+    [SerializeField] Transform hoursPivot;
+    [SerializeField] Transform minutesPivot;
+    [SerializeField] Transform secondsPivot;
 
     [Dependency]
     public IClockService ClockService { private get; set; }
 
-    public void Start()
+    public void Awake()
     {
-        // Injects dependencies
-        Composition.Shared.BuildUp(this);
+        scope.BuildUp(this);
     }
 
     public void Update()
     {
         var now = ClockService.Now.TimeOfDay;
-
-        hoursPivot.localRotation = Quaternion
-            .Euler(0f, 0f, HoursToDegrees * (float)now.TotalHours);
-
-        minutesPivot.localRotation = Quaternion
-            .Euler(0f, 0f, MinutesToDegrees * (float)now.TotalMinutes);
-
-        secondsPivot.localRotation = Quaternion
-            .Euler(0f, 0f, SecondsToDegrees * (float)now.TotalSeconds);
+        hoursPivot.localRotation = Quaternion.Euler(0f, 0f, HoursToDegrees * (float)now.TotalHours);
+        minutesPivot.localRotation = Quaternion.Euler(0f, 0f, MinutesToDegrees * (float)now.TotalMinutes);
+        secondsPivot.localRotation = Quaternion.Euler(0f, 0f, SecondsToDegrees * (float)now.TotalSeconds);
     }
+}
+
+public interface IClockConfig
+{
+    TimeSpan Offset { get; }
+}
+
+[CreateAssetMenu(fileName = "ClockConfig", menuName = "Clock/Config")]
+public class ClockConfig : ScriptableObject, IClockConfig
+{
+    [SerializeField] int offsetHours;
+
+    public TimeSpan Offset => TimeSpan.FromHours(offsetHours);
 }
 
 public interface IClockService
@@ -8682,20 +8683,37 @@ public interface IClockService
     DateTime Now { get; }
 }
 
-public class ClockService : IClockService
+public class ClockService : IClockService, IDisposable
 {
-    public DateTime Now => DateTime.Now;
+    private readonly IClockConfig _config;
+
+    public DateTime Now => DateTime.UtcNow + _config.Offset;
+
+    public ClockService(IClockConfig config)
+    {
+        _config = config;
+    }
+
+    public void Dispose()
+    {
+        // Perform any necessary cleanup here
+    }
 }
 
-internal partial class Composition
+public partial class Scope : MonoBehaviour
 {
-    public static readonly Composition Shared = new();
+    [SerializeField] ClockConfig clockConfig;
 
-    private static void Setup() =>
-
+    void Setup() =>
         DI.Setup()
-            .Bind().As(Lifetime.Singleton).To<ClockService>()
-            .Builder<Clock>();
+        .Bind().To(_ => clockConfig)
+        .Bind().As(Lifetime.Singleton).To<ClockService>()
+        .Builders<MonoBehaviour>();
+
+    void OnDestroy()
+    {
+        Dispose();
+    }
 }
 ```
 
@@ -8703,7 +8721,7 @@ To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
 
 
-## Unity MonoBehaviours
+## Unity with prefabs
 
 ```c#
 using Pure.DI;
@@ -8711,57 +8729,63 @@ using UnityEngine;
 
 public class Clock : MonoBehaviour
 {
-    private const float HoursToDegrees = -30f, MinutesToDegrees = -6f, SecondsToDegrees = -6f;
-
-    [SerializeField]
-    private Transform hoursPivot;
-
-    [SerializeField]
-    private Transform minutesPivot;
-
-    [SerializeField]
-    private Transform secondsPivot;
+    const float HoursToDegrees = -30f, MinutesToDegrees = -6f, SecondsToDegrees = -6f;
+    [SerializeField] Scope scope;
+    [SerializeField] Transform hoursPivot;
+    [SerializeField] Transform minutesPivot;
+    [SerializeField] Transform secondsPivot;
 
     [Dependency]
     public IClockService ClockService { private get; set; }
 
-    public void Start()
+    public void Awake()
     {
-        // Injects dependencies
-        Composition.Shared.BuildUp(this);
+        scope.BuildUp(this);
     }
 
     public void Update()
     {
         var now = ClockService.Now.TimeOfDay;
-
-        hoursPivot.localRotation = Quaternion
-            .Euler(0f, 0f, HoursToDegrees * (float)now.TotalHours);
-
-        minutesPivot.localRotation = Quaternion
-            .Euler(0f, 0f, MinutesToDegrees * (float)now.TotalMinutes);
-
-        secondsPivot.localRotation = Quaternion
-            .Euler(0f, 0f, SecondsToDegrees * (float)now.TotalSeconds);
+        hoursPivot.localRotation = Quaternion.Euler(0f, 0f, HoursToDegrees * (float)now.TotalHours);
+        minutesPivot.localRotation = Quaternion.Euler(0f, 0f, MinutesToDegrees * (float)now.TotalMinutes);
+        secondsPivot.localRotation = Quaternion.Euler(0f, 0f, SecondsToDegrees * (float)now.TotalSeconds);
     }
 }
 
-public class OtherClock : MonoBehaviour
+public class ClockDigital : MonoBehaviour
 {
-    [Dependency]
-    public IClockService ClockService { private get; set; }
+    [SerializeField] private Text timeText;
 
-    public void Start()
-    {
-        // Injects dependencies
-        Composition.Shared.BuildUp(this);
-    }
+    [Dependency] public IClockService ClockService { private get; set; }
 
-    public void Update()
+    void FixedUpdate()
     {
-        // ReSharper disable once UnusedVariable
-        var now = ClockService.Now.TimeOfDay;
+        var now = ClockService.Now;
+        timeText.text = now.ToString("HH:mm:ss");
     }
+}
+
+public interface IClockConfig
+{
+    TimeSpan Offset { get; }
+
+    bool ShowDigital { get; }
+
+    ClockDigital ClockDigitalPrefab { get; }
+}
+
+[CreateAssetMenu(fileName = "ClockConfig", menuName = "Clock/Config")]
+public class ClockConfig : ScriptableObject, IClockConfig
+{
+    [SerializeField] int offsetHours;
+    [SerializeField] bool showDigital;
+    [SerializeField] ClockDigital clockDigitalPrefab;
+
+    public TimeSpan Offset => TimeSpan.FromHours(offsetHours);
+
+    public bool ShowDigital => showDigital;
+
+    public ClockDigital ClockDigitalPrefab => clockDigitalPrefab;
 }
 
 public interface IClockService
@@ -8769,22 +8793,67 @@ public interface IClockService
     DateTime Now { get; }
 }
 
-public class ClockService : IClockService
+public class ClockService : IClockService, IDisposable
 {
-    public DateTime Now => DateTime.Now;
+    private readonly IClockConfig _config;
+
+    public ClockService(IClockConfig config)
+    {
+        _config = config;
+    }
+
+    public DateTime Now => DateTime.UtcNow + _config.Offset;
+
+    public void Dispose()
+    {
+        // Perform any necessary cleanup here
+    }
 }
 
-internal partial class Composition
+public class ClockManager : IDisposable
 {
-    public static readonly Composition Shared = new();
+    private readonly Scope _scope;
+    private readonly IClockConfig _config;
 
-    private static void Setup() =>
+    public ClockManager(Scope scope, IClockConfig config)
+    {
+        _scope = scope;
+        _config = config;
+    }
 
-        DI.Setup()
-            .Bind().As(Lifetime.Singleton).To<ClockService>()
-            // Creates a builder for each type inherited from MonoBehaviour.
-            // These types must be available at this point in the code.
-            .Builders<MonoBehaviour>();
+    public void Start()
+    {
+        if (_config.ShowDigital)
+        {
+            _scope.BuildUp(Object.Instantiate(_config.ClockDigitalPrefab));
+        }
+    }
+
+    public void Dispose()
+    {
+        // Perform any necessary cleanup here
+    }
+}
+
+public partial class Scope : MonoBehaviour
+{
+    [SerializeField]  ClockConfig clockConfig;
+
+    void Setup() => DI.Setup()
+        .Bind().To(_ => clockConfig)
+        .Bind().As(Lifetime.Singleton).To<ClockService>()
+        .Root<ClockManager>(nameof(ClockManager))
+        .Builders<MonoBehaviour>();
+
+    void Start()
+    {
+        ClockManager.Start();
+    }
+
+    void OnDestroy()
+    {
+        Dispose();
+    }
 }
 ```
 
@@ -8971,7 +9040,7 @@ The [project file](/samples/AvaloniaApp/AvaloniaApp.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.15">
+        <PackageReference Include="Pure.DI" Version="2.3.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -9035,11 +9104,11 @@ The [project file](/samples/BlazorServerApp/BlazorServerApp.csproj) looks like t
 <Project Sdk="Microsoft.NET.Sdk.Web">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.15">
+        <PackageReference Include="Pure.DI" Version="2.3.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.2.15" />
+        <PackageReference Include="Pure.DI.MS" Version="2.3.0" />
     </ItemGroup>
 
 </Project>
@@ -9103,11 +9172,11 @@ The [project file](/samples/BlazorWebAssemblyApp/BlazorWebAssemblyApp.csproj) lo
 <Project Sdk="Microsoft.NET.Sdk.Web">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.15">
+        <PackageReference Include="Pure.DI" Version="2.3.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.2.15" />
+        <PackageReference Include="Pure.DI.MS" Version="2.3.0" />
     </ItemGroup>
 
 </Project>
@@ -9132,7 +9201,7 @@ The [project file](/samples/ShroedingersCatNativeAOT/ShroedingersCatNativeAOT.cs
 <Project Sdk="Microsoft.NET.Sdk">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.15">
+        <PackageReference Include="Pure.DI" Version="2.3.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -9233,7 +9302,7 @@ The [project file](/samples/ShroedingersCat/ShroedingersCat.csproj) looks like t
 <Project Sdk="Microsoft.NET.Sdk">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.15">
+        <PackageReference Include="Pure.DI" Version="2.3.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -9319,7 +9388,7 @@ The [project file](/samples/ShroedingersCatTopLevelStatements/ShroedingersCatTop
 <Project Sdk="Microsoft.NET.Sdk">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.15">
+        <PackageReference Include="Pure.DI" Version="2.3.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -9421,11 +9490,11 @@ The [project file](/samples/EF/EF.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk.Web">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.15">
+        <PackageReference Include="Pure.DI" Version="2.3.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.2.15" />
+        <PackageReference Include="Pure.DI.MS" Version="2.3.0" />
     </ItemGroup>
 
 </Project>
@@ -9489,11 +9558,11 @@ The [project file](/samples/GrpcService/GrpcService.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk.Web">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.15">
+        <PackageReference Include="Pure.DI" Version="2.3.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.2.15" />
+        <PackageReference Include="Pure.DI.MS" Version="2.3.0" />
     </ItemGroup>
 
 </Project>
@@ -9654,11 +9723,11 @@ The [project file](/samples/MAUIApp/MAUIApp.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.15">
+        <PackageReference Include="Pure.DI" Version="2.3.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.2.15" />
+        <PackageReference Include="Pure.DI.MS" Version="2.3.0" />
     </ItemGroup>
 
 </Project>
@@ -9746,11 +9815,11 @@ The [project file](/samples/WebAPI/WebAPI.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk.Web">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.15">
+        <PackageReference Include="Pure.DI" Version="2.3.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.2.15" />
+        <PackageReference Include="Pure.DI.MS" Version="2.3.0" />
     </ItemGroup>
 
 </Project>
@@ -9909,11 +9978,11 @@ The [project file](/samples/WebAPI/WebAPI.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk.Web">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.15">
+        <PackageReference Include="Pure.DI" Version="2.3.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.2.15" />
+        <PackageReference Include="Pure.DI.MS" Version="2.3.0" />
     </ItemGroup>
 
 </Project>
@@ -9978,11 +10047,11 @@ The [project file](/samples/WebApp/WebApp.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk.Web">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.15">
+        <PackageReference Include="Pure.DI" Version="2.3.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.2.15" />
+        <PackageReference Include="Pure.DI.MS" Version="2.3.0" />
     </ItemGroup>
 
 </Project>
@@ -10050,7 +10119,7 @@ The [project file](/samples/WinFormsAppNetCore/WinFormsAppNetCore.csproj) looks 
 <Project Sdk="Microsoft.NET.Sdk">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.15">
+        <PackageReference Include="Pure.DI" Version="2.3.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -10123,7 +10192,7 @@ The [project file](/samples/WinFormsApp/WinFormsApp.csproj) looks like this:
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.15">
+        <PackageReference Include="Pure.DI" Version="2.3.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -10251,7 +10320,7 @@ The [project file](/samples/WpfAppNetCore/WpfAppNetCore.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk">
    ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.2.15">
+        <PackageReference Include="Pure.DI" Version="2.3.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -13924,6 +13993,15 @@ DI.Setup("Composition")
 </blockquote></details>
 
 
+<details><summary>Field UsingDeclarations</summary><blockquote>
+
+Atomically generated smart tag with value "UsingDeclarations".
+            It's used for:
+            
+            class _Generator__CompositionClassBuilder_ <-- _IBuilder{TData, T}_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
+</blockquote></details>
+
+
 <details><summary>Field VarName</summary><blockquote>
 
 Atomically generated smart tag with value "VarName".
@@ -13951,24 +14029,6 @@ Atomically generated smart tag with value "Overrider".
 </blockquote></details>
 
 
-<details><summary>Field Cleaner</summary><blockquote>
-
-Atomically generated smart tag with value "Cleaner".
-            It's used for:
-            
-            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
-</blockquote></details>
-
-
-<details><summary>Field UsingDeclarations</summary><blockquote>
-
-Atomically generated smart tag with value "UsingDeclarations".
-            It's used for:
-            
-            class _Generator__CompositionClassBuilder_ <-- _IBuilder{TData, T}_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
-</blockquote></details>
-
-
 <details><summary>Field Override</summary><blockquote>
 
 Atomically generated smart tag with value "Override".
@@ -13978,12 +14038,12 @@ Atomically generated smart tag with value "Override".
 </blockquote></details>
 
 
-<details><summary>Field CompositionClass</summary><blockquote>
+<details><summary>Field Cleaner</summary><blockquote>
 
-Atomically generated smart tag with value "CompositionClass".
+Atomically generated smart tag with value "Cleaner".
             It's used for:
             
-            class _Generator__CodeBuilder_ <-- _IBuilder{TData, T}_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
+            class _Generator__DependencyGraphBuilder_ <-- _IGraphRewriter_(Cleaner) -- _GraphCleaner_ as _PerBlock_
 </blockquote></details>
 
 
@@ -13993,6 +14053,15 @@ Atomically generated smart tag with value "SpecialBinding".
             It's used for:
             
             class _Generator__BindingBuilder_ <-- _IIdGenerator_(SpecialBinding) -- _IdGenerator_ as _PerResolve_
+</blockquote></details>
+
+
+<details><summary>Field CompositionClass</summary><blockquote>
+
+Atomically generated smart tag with value "CompositionClass".
+            It's used for:
+            
+            class _Generator__CodeBuilder_ <-- _IBuilder{TData, T}_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
 </blockquote></details>
 
 
