@@ -3936,15 +3936,6 @@ DI.Setup("Composition")
 </blockquote></details>
 
 
-<details><summary>Field UsingDeclarations</summary><blockquote>
-
-Atomically generated smart tag with value "UsingDeclarations".
-            It's used for:
-            
-            class _Generator__CompositionClassBuilder_ <-- _IBuilder{TData, T}_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
-</blockquote></details>
-
-
 <details><summary>Field VarName</summary><blockquote>
 
 Atomically generated smart tag with value "VarName".
@@ -3960,15 +3951,6 @@ Atomically generated smart tag with value "UniqueTag".
             It's used for:
             
             class _Generator__ApiInvocationProcessor_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve__BindingBuilder_ <-- _IIdGenerator_(UniqueTag) -- _IdGenerator_ as _PerResolve_
-</blockquote></details>
-
-
-<details><summary>Field Override</summary><blockquote>
-
-Atomically generated smart tag with value "Override".
-            It's used for:
-            
-            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
@@ -3990,12 +3972,21 @@ Atomically generated smart tag with value "Cleaner".
 </blockquote></details>
 
 
-<details><summary>Field SpecialBinding</summary><blockquote>
+<details><summary>Field UsingDeclarations</summary><blockquote>
 
-Atomically generated smart tag with value "SpecialBinding".
+Atomically generated smart tag with value "UsingDeclarations".
             It's used for:
             
-            class _Generator__BindingBuilder_ <-- _IIdGenerator_(SpecialBinding) -- _IdGenerator_ as _PerResolve_
+            class _Generator__CompositionClassBuilder_ <-- _IBuilder{TData, T}_(UsingDeclarations) -- _UsingDeclarationsBuilder_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field Override</summary><blockquote>
+
+Atomically generated smart tag with value "Override".
+            It's used for:
+            
+            class _Generator__OverrideIdProvider_ <-- _IIdGenerator_(Override) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
@@ -4005,6 +3996,15 @@ Atomically generated smart tag with value "CompositionClass".
             It's used for:
             
             class _Generator__CodeBuilder_ <-- _IBuilder{TData, T}_(CompositionClass) -- _CompositionClassBuilder_ as _PerBlock_
+</blockquote></details>
+
+
+<details><summary>Field SpecialBinding</summary><blockquote>
+
+Atomically generated smart tag with value "SpecialBinding".
+            It's used for:
+            
+            class _Generator__BindingBuilder_ <-- _IIdGenerator_(SpecialBinding) -- _IdGenerator_ as _PerResolve_
 </blockquote></details>
 
 
@@ -5765,33 +5765,65 @@ No composition class will be created when this value is specified, but this setu
 <details>
 <summary>Constructors</summary>
 
-### Default constructor
+By default, starting with version 2.3.0, no constructors are generated for a composition. The actual set of constructors depends on the composition arguments and lifetime scopes.
 
-It's quite trivial, this constructor simply initializes the internal state.
+#### Parameterized constructor (automatic generation)
+   
+If the composition has any arguments defined, Pure.DI automatically generates a public parameterized constructor that includes all specified arguments.
 
-### Parameterized constructor
-
-It replaces the default constructor and is only created if at least one argument is specified. For example:
+Example configuration:
 
 ```c#
 DI.Setup("Composition")
-    .Arg<string>("name")
-    .Arg<int>("id")
-    ...
+  .Arg<string>("name")
+  .Arg<int>("id")
+  // ...
 ```
 
-In this case, the constructor with arguments is as follows:
+Resulting constructor:
 
 ```c#
-public Composition(string name, int id) { ... }
+public Composition(string name, int id) { /* ... */ }
 ```
 
-and there is no default constructor. It is important to remember that only those arguments that are used in the object graph will appear in the constructor. Arguments that are not involved cannot be defined, as they are omitted from the constructor parameters to save resources.
+Important notes:
 
-### Scope constructor
+- Only arguments that are actually used in the object graph appear in the constructor.
+- Unused arguments are omitted to optimize resource usage.
+- If no arguments are specified, no parameterized constructor is created.
 
-This constructor creates a composition instance for the new scope. This allows ``Lifetime.Scoped`` to be applied. See [this](readme/scope.md) example for details.
+#### Scope‑related constructors (conditional generation)
+   
+If there is at least one binding with `Lifetime.Scoped`, Pure.DI generates two constructors:
 
+1. Public default constructor
+
+Used for creating the root scope instance.
+
+```c#
+public Composition() { /* ... */ }
+```
+
+2. Internal constructor with parent scope
+
+Used for creating child scope instances. This constructor is internal and accepts a single parameter — the parent scope.
+
+```c#
+internal Composition(Composition parentScope) { /* ... */ }
+```
+
+Important notes:
+
+- The public default constructor enables initialization of the root composition.
+- The internal constructor with parent reference enables proper scoping hierarchy for `Lifetime.Scoped` dependencies.
+- These constructors are only generated when `Lifetime.Scoped` bindings exist in the composition.
+
+#### Summary of constructor generation rules
+
+- No arguments + no _Scoped_ lifetimes: no constructors generated.
+- Arguments present: public parameterized constructor with all used arguments.
+- At least one _Scoped_ lifetime: two constructors (public default + internal with parent).
+- Both arguments and Scoped lifetimes: all three constructors (parameterized, public default, internal with parent).
 </details>
 
 <details>
