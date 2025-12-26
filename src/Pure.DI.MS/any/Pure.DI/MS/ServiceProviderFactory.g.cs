@@ -35,21 +35,6 @@ namespace Pure.DI.MS
         private static readonly ParameterExpression TagParameter = Expression.Parameter(typeof(object));
     
         /// <summary>
-        /// The name of the setup to use as the dependency name in a dependent setup.
-        /// <example>
-        /// For example,
-        /// <code>
-        /// void Setup() =&amp;gt;
-        ///     DI.Setup(nameof(Composition))
-        ///         // Use the DI setup from the base class
-        ///         .DependsOn(Base);
-        /// </code>
-        /// </example>
-        /// </summary>
-        [Obsolete("Since Pure.DI 2.2.7 using the Base value is not necessary in the DependsOn invocation, thus you can skip this invocation.")]
-        protected const string Base = "Pure.DI.MS.ServiceProviderFactory";
-    
-        /// <summary>
         /// An instance of <see cref="ServiceCollectionFactory{TComposition}"/>.
         /// </summary>
         private static readonly ServiceCollectionFactory<TComposition> ServiceCollectionFactory = new global::Pure.DI.MS.ServiceCollectionFactory<TComposition>();
