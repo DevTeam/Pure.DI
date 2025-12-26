@@ -97,20 +97,22 @@ class MusicApp(Func<IListeningSession> sessionFactory)
 partial class Composition
 {
     static void Setup() =>
+// }
         // This hint indicates to not generate methods such as Resolve
         // Resolve = Off
+// {
         DI.Setup()
             // Scoped: one queue per listening session
             .Bind().As(Scoped).To<PlaybackQueue>()
 
             // Session composition root (private root used only to build sessions)
-            .Root<ListeningSession>("SessionRoot", kind: RootKinds.Private)
+            .Root<ListeningSession>("Session", kind: RootKinds.Private)
 
             // Auto scoped factory: creates a new scope for each listening session
             .Bind().To(IListeningSession (Composition parentScope) => {
                 // Create a child scope so scoped services (PlaybackQueue) are unique per session.
                 var scope = new Composition(parentScope);
-                return scope.SessionRoot;
+                return scope.Session;
             })
 
             // App-level root
