@@ -4,8 +4,7 @@ using static Pure.DI.Lifetime;
 
 public partial class Scope : MonoBehaviour
 {
-    [SerializeField]
-    public ClockConfig clockConfig;
+    [SerializeField] public ClockConfig clockConfig;
 
     void Setup() => DI.Setup()
         .Bind().To(_ => clockConfig)

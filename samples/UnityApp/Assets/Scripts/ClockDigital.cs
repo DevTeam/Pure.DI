@@ -1,4 +1,3 @@
-using System;
 using Pure.DI;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,21 +6,14 @@ using UnityEngine.UI;
 
 public class ClockDigital : MonoBehaviour
 {
-    [SerializeField]
-    private Text timeText;
+    [SerializeField] private Text timeText;
 
     [Dependency]
-    public IClockService ClockService { private get; set; } // How to resolve this?
+    public IClockService ClockService { private get; set; }
 
     void FixedUpdate()
     {
-        if (timeText == null || ClockService == null)
-        {
-            return;
-        }
-
         var now = ClockService.Now;
-
         timeText.text = now.ToString("HH:mm:ss");
     }
 }

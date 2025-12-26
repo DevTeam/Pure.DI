@@ -1,8 +1,8 @@
 ﻿/*
 $v=true
-$p=1
+$p=2
 $i=false
-$d=Unity Basics
+$d=Unity with prefabs
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -19,9 +19,10 @@ $d=Unity Basics
 // ReSharper disable UnassignedField.Global
 // ReSharper disable FieldCanBeMadeReadOnly.Local
 // ReSharper disable ConvertConstructorToMemberInitializers
+// ReSharper disable ReplaceWithFieldKeyword
 #pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
-namespace Pure.DI.UsageTests.Unity.UnityBasicScenario;
+namespace Pure.DI.UsageTests.Unity.UnityWithPrefabsScenario;
 
 using UnityEngine;
 using Xunit;
@@ -80,22 +81,47 @@ public class Clock : MonoBehaviour
     }
 }
 
+public class ClockDigital : MonoBehaviour
+{
+    [SerializeField] private Text timeText;
+
+    [Dependency] public IClockService ClockService { private get; set; }
+
+    void FixedUpdate()
+    {
+        var now = ClockService.Now;
+        timeText.text = now.ToString("HH:mm:ss");
+    }
+}
+
 public interface IClockConfig
 {
     TimeSpan Offset { get; }
+
+    bool ShowDigital { get; }
+
+    ClockDigital ClockDigitalPrefab { get; }
 }
 
 [CreateAssetMenu(fileName = "ClockConfig", menuName = "Clock/Config")]
 public class ClockConfig : ScriptableObject, IClockConfig
 {
     [SerializeField] int offsetHours;
+    [SerializeField] bool showDigital;
+    [SerializeField] ClockDigital clockDigitalPrefab;
 // }
     public ClockConfig()
     {
         offsetHours = 3;
+        showDigital = true;
+        clockDigitalPrefab = new ClockDigital();
     }
 // {
     public TimeSpan Offset => TimeSpan.FromHours(offsetHours);
+
+    public bool ShowDigital => showDigital;
+
+    public ClockDigital ClockDigitalPrefab => clockDigitalPrefab;
 }
 
 public interface IClockService
@@ -107,11 +133,36 @@ public class ClockService : IClockService, IDisposable
 {
     private readonly IClockConfig _config;
 
-    public DateTime Now => DateTime.UtcNow + _config.Offset;
-
     public ClockService(IClockConfig config)
     {
         _config = config;
+    }
+
+    public DateTime Now => DateTime.UtcNow + _config.Offset;
+
+    public void Dispose()
+    {
+        // Perform any necessary cleanup here
+    }
+}
+
+public class ClockManager : IDisposable
+{
+    private readonly Scope _scope;
+    private readonly IClockConfig _config;
+
+    public ClockManager(Scope scope, IClockConfig config)
+    {
+        _scope = scope;
+        _config = config;
+    }
+
+    public void Start()
+    {
+        if (_config.ShowDigital)
+        {
+            _scope.BuildUp(Object.Instantiate(_config.ClockDigitalPrefab));
+        }
     }
 
     public void Dispose()
@@ -122,7 +173,7 @@ public class ClockService : IClockService, IDisposable
 
 public partial class Scope : MonoBehaviour
 {
-    [SerializeField] ClockConfig clockConfig;
+    [SerializeField]  ClockConfig clockConfig;
 // }
     public Scope()
     {
@@ -131,11 +182,16 @@ public partial class Scope : MonoBehaviour
     // Resolve = Off
     // ToString = Off
 // {
-    void Setup() =>
-        DI.Setup()
+    void Setup() => DI.Setup()
         .Bind().To(_ => clockConfig)
         .Bind().As(Lifetime.Singleton).To<ClockService>()
+        .Root<ClockManager>(nameof(ClockManager))
         .Builders<MonoBehaviour>();
+
+    void Start()
+    {
+        ClockManager.Start();
+    }
 
     void OnDestroy()
     {

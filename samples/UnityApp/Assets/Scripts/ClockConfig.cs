@@ -9,6 +9,8 @@ public class ClockConfig : ScriptableObject, IClockConfig
     [SerializeField] ClockDigital clockDigitalPrefab;
 
     public TimeSpan Offset => TimeSpan.FromHours(offsetHours);
+
     public bool ShowDigital => showDigital;
+
     public ClockDigital ClockDigitalPrefab => clockDigitalPrefab;
 }

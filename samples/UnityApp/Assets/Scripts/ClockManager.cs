@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 public class ClockManager : IDisposable
 {
@@ -14,10 +15,9 @@ public class ClockManager : IDisposable
 
     public void Start()
     {
-        // Important: Start it just sample. Game can spawn any object at any time
         if (_config.ShowDigital)
         {
-            _scope.BuildUp(GameObject.Instantiate(_config.ClockDigitalPrefab));
+            _scope.BuildUp(Object.Instantiate(_config.ClockDigitalPrefab));
         }
     }
 
