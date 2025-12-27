@@ -14,9 +14,14 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="IndexRange" Version="1.1.0" />
-        <EmbeddedResource Include="Components\Api.g.cs"/>
-        <EmbeddedResource Include="Features\Default.g.cs"/>
-        <EmbeddedResource Include="Components\GenericTypeArguments.g.cs"/>
+        <Compile Update="Components\Api.g.cs">
+            <LastGenOutput>GenericTypeArguments.g.cs</LastGenOutput>
+            <Generator>TextTemplatingFileGenerator</Generator>
+            <AutoGen>True</AutoGen>
+            <DesignTime>True</DesignTime>
+            <DependentUpon>Api.g.tt</DependentUpon>
+        </Compile>
+        <EmbeddedResource Include="Components\Api.g.cs" />
         <Compile Update="Components\GenericTypeArguments.g.cs">
             <LastGenOutput>GenericTypeArguments.g.cs</LastGenOutput>
             <Generator>TextTemplatingFileGenerator</Generator>
@@ -24,6 +29,8 @@
             <DesignTime>True</DesignTime>
             <DependentUpon>GenericTypeArguments.g.tt</DependentUpon>
         </Compile>
+        <EmbeddedResource Include="Components\GenericTypeArguments.g.cs" />
+        <EmbeddedResource Include="Features\Default.g.cs"/>
         <EmbeddedResource Update="Strings.resx">
             <Generator>ResXFileCodeGenerator</Generator>
             <LastGenOutput>Strings.Designer.cs</LastGenOutput>
@@ -63,9 +70,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Update="Components\GenericTypeArguments.g.tt">
-            <Generator>TextTemplatingFileGenerator</Generator>
-        </None>
+      <None Update="Components\Api.g.tt">
+        <Generator>TextTemplatingFileGenerator</Generator>
+      </None>
     </ItemGroup>
-
+    
 </Project>
