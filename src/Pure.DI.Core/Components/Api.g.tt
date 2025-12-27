@@ -2325,16 +2325,14 @@ var exampleTypeArgs = string.Join(", ", GetSuffixes(0, i).Select(suffix => $"Ser
 var comments = string.Join(Environment.NewLine, GetSuffixes(0, i).Select(suffix => $"        /// <typeparam name=\"T{suffix}\">Implementation type {(suffix == "" ? "" : suffix + " ")}to bind.</typeparam>"));
 #>
 
+<#
+if (i < 4)
+{
+#>
         /// <summary>
-        /// Abc
-        /// <example>
-        /// <code>
-        /// DI.Setup("Composition")
-        ///     .<#=lifetime#>&lt;<#=exampleTypeArgs#>>&gt;();
-        /// </code>
-        /// </example>
+        /// Defines simplified lifetime-specific binding.
         /// </summary>
-<#=comments#>
+<#= comments #>
         /// <param name="tags">Optional tags to associate with these bindings.</param>
         /// <returns>Binding configuration interface for method chaining.</returns>
         /// <seealso cref="To{T}()"/>
@@ -2343,6 +2341,9 @@ var comments = string.Join(Environment.NewLine, GetSuffixes(0, i).Select(suffix 
         /// <seealso cref="To{T1,T2,T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
+<#
+}
+#>
         IConfiguration <#=lifetime#><<#=typeArgs#>>(params object[] tags);
 <#
 }
