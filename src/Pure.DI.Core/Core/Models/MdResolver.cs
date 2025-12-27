@@ -5,7 +5,7 @@ namespace Pure.DI.Core.Models;
 
 readonly record struct MdResolver(
     SemanticModel SemanticModel,
-    InvocationExpressionSyntax Source,
+    ExpressionSyntax Source,
     int Position,
     ITypeSymbol ContractType,
     MdTag? Tag,

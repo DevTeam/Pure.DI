@@ -4,7 +4,7 @@ namespace Pure.DI.Core.Models;
 
 readonly record struct MdInitializer(
     SemanticModel SemanticModel,
-    InvocationExpressionSyntax Source,
+    ExpressionSyntax Source,
     int Position,
     ITypeSymbol Type,
     ExpressionSyntax TargetArg,

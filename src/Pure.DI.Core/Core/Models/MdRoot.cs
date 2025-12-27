@@ -2,7 +2,7 @@ namespace Pure.DI.Core.Models;
 
 record MdRoot(
     int OriginalId,
-    InvocationExpressionSyntax Source,
+    ExpressionSyntax Source,
     SemanticModel SemanticModel,
     ITypeSymbol RootType,
     string Name,

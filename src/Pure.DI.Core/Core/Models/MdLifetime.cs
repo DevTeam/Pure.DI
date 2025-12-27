@@ -5,7 +5,7 @@ namespace Pure.DI.Core.Models;
 
 readonly record struct MdLifetime(
     SemanticModel SemanticModel,
-    InvocationExpressionSyntax Source,
+    ExpressionSyntax Source,
     Lifetime Value)
 {
     public override string ToString() => $"As({Value})";

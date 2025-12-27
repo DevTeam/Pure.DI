@@ -5,7 +5,7 @@ namespace Pure.DI.Core.Models;
 
 readonly record struct MdArg(
     SemanticModel SemanticModel,
-    InvocationExpressionSyntax Source,
+    ExpressionSyntax Source,
     ITypeSymbol Type,
     string ArgName,
     ArgKind Kind,

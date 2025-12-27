@@ -5,7 +5,7 @@ namespace Pure.DI.Core.Models;
 
 readonly record struct MdDependsOn(
     SemanticModel SemanticModel,
-    InvocationExpressionSyntax Source,
+    ExpressionSyntax Source,
     in ImmutableArray<CompositionName> CompositionTypeNames,
     bool Explicit)
 {

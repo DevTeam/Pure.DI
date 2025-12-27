@@ -537,6 +537,88 @@ public class LifetimesTests
     }
 
     [Fact]
+    public async Task ShouldSupportPerBlockBinding()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency1 {}
+                           
+                               class Dependency1: IDependency1 {}
+                           
+                               interface IDependency2
+                               {
+                                   IDependency1 Dep1 { get; }
+                               }
+                           
+                               class Dependency2: IDependency2
+                               {
+                                   public Dependency2(IDependency1 dep1) => Dep1 = dep1;
+                           
+                                   public IDependency1 Dep1 { get; }
+                               }
+                           
+                               interface IService
+                               {
+                                   IDependency1 Dep1 { get; }
+                           
+                                   IDependency2 Dep2 { get; }
+                                   
+                                   IDependency1 Dep3 { get; }
+                               }
+                           
+                               class Service: IService
+                               {
+                                   public Service(IDependency1 dep1, IDependency2 dep2, IDependency1 dep3)
+                                   {
+                                       Dep1 = dep1;
+                                       Dep2 = dep2;
+                                       Dep3 = dep3;
+                                   }
+                           
+                                   public IDependency1 Dep1 { get; }
+                           
+                                   public IDependency2 Dep2 { get; }
+                                   
+                                   public IDependency1 Dep3 { get; }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .PerBlock<Dependency1>()
+                                           .Transient<Dependency2, Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                       Console.WriteLine(service.Dep1 == service.Dep2.Dep1);
+                                       Console.WriteLine(service.Dep1 == service.Dep3);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True"], result);
+    }
+
+    [Fact]
     public async Task ShouldSupportPerBlockWhenFunc()
     {
         // Given
@@ -836,6 +918,89 @@ public class LifetimesTests
                                        DI.Setup(nameof(Composition))
                                            .Bind<IDependency1>().As(Lifetime.PerResolve).To<Dependency1>()
                                            .Bind<IDependency2>().To<Dependency2>()
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                       Console.WriteLine(service.Dep1 == service.Dep2.Dep1);
+                                       Console.WriteLine(service.Dep1 == service.Dep3);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportPerResolveBinding()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency1 {}
+                           
+                               class Dependency1: IDependency1 {}
+                           
+                               interface IDependency2
+                               {
+                                   IDependency1 Dep1 { get; }
+                               }
+                           
+                               class Dependency2: IDependency2
+                               {
+                                   public Dependency2(IDependency1 dep1) => Dep1 = dep1;
+                           
+                                   public IDependency1 Dep1 { get; }
+                               }
+                           
+                               interface IService
+                               {
+                                   IDependency1 Dep1 { get; }
+                           
+                                   IDependency2 Dep2 { get; }
+                                   
+                                   IDependency1 Dep3 { get; }
+                               }
+                           
+                               class Service: IService 
+                               {
+                                   public Service(IDependency1 dep1, IDependency2 dep2, IDependency1 dep3)
+                                   {
+                                       Dep1 = dep1;
+                                       Dep2 = dep2;
+                                       Dep3 = dep3;
+                                   }
+                           
+                                   public IDependency1 Dep1 { get; }
+                           
+                                   public IDependency2 Dep2 { get; }
+                                   
+                                   public IDependency1 Dep3 { get; }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .PerResolve<Dependency1>()
+                                           .Transient<Dependency2>()
                                            .Bind<IService>().To<Service>()
                                            .Root<IService>("Service");
                                    }
@@ -1682,6 +1847,160 @@ public class LifetimesTests
     }
 
     [Fact]
+    public async Task ShouldSupportScopedBinding()
+    {
+        // Given
+
+        // When
+        var result = await """
+                               using System;
+                               using Pure.DI;
+                               using static Pure.DI.Lifetime; 
+                           
+                               namespace Sample
+                               {
+                               interface ISingletonDep
+                               {
+                                   bool IsDisposed { get; }
+                               }
+                           
+                               class SingletonDep
+                                   : ISingletonDep, IDisposable
+                               {
+                                   public bool IsDisposed { get; private set; }
+                           
+                                   public void Dispose() => IsDisposed = true;
+                               }
+                           
+                               interface IScopedDep
+                               {
+                                   ISingletonDep SingletonDep { get; }
+                           
+                                   bool IsDisposed { get; }
+                               }
+                           
+                               class ScopedDep : IScopedDep, IDisposable
+                               {
+                                   private readonly ISingletonDep _singletonDep;
+                           
+                                   public ScopedDep(ISingletonDep singletonDep)
+                                   {
+                                       _singletonDep = singletonDep;
+                                   }
+                           
+                                   public ISingletonDep SingletonDep => _singletonDep;
+                                   
+                                   public bool IsDisposed { get; private set; }
+                           
+                                   public void Dispose() => IsDisposed = true;
+                               }
+                           
+                               interface IService
+                               {
+                                   IScopedDep ScopedDep { get; }
+                               }
+                           
+                               class Service : IService
+                               {
+                                   private readonly IScopedDep _scopedDep;
+                           
+                                   public Service(IScopedDep scopedDep)
+                                   {
+                                       _scopedDep = scopedDep;
+                                   }
+                           
+                                   public IScopedDep ScopedDep => _scopedDep;
+                               }
+                           
+                               // Implements a session
+                               class Session : Composition
+                               {
+                                   public Session(Composition composition) : base(composition)
+                                   {
+                                   }
+                               }
+                           
+                               class ProgramRoot
+                               {
+                                   private readonly ISingletonDep _singletonDep;
+                                   private readonly Func<Session> _sessionFactory;
+                           
+                                   public ProgramRoot(ISingletonDep singletonDep,
+                                       Func<Session> sessionFactory)
+                                   {
+                                       _singletonDep = singletonDep;
+                                       _sessionFactory = sessionFactory;
+                                   }
+                           
+                                   public ISingletonDep SingletonDep => _singletonDep;
+                                   
+                                   public Session CreateSession() => _sessionFactory();
+                               }
+                           
+                               partial class Composition
+                               {
+                                   void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Singleton<SingletonDep>()
+                                           .Scoped<ScopedDep>()
+                                           .Transient<Service>()
+                                           .Root<IService>("SessionRoot")
+                                           .Root<ProgramRoot>("ProgramRoot");
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var program = composition.ProgramRoot;
+                           
+                                       // Creates session #1
+                                       var session1 = program.CreateSession();
+                                       var scopedDepInSession1 = session1.SessionRoot.ScopedDep;
+                                       System.Console.WriteLine(scopedDepInSession1 == session1.SessionRoot.ScopedDep);
+                           
+                                       // Checks that the singleton instances are identical
+                                       System.Console.WriteLine(scopedDepInSession1.SingletonDep == program.SingletonDep);
+                           
+                                       // Creates session #2
+                                       var session2 = program.CreateSession();
+                                       var scopedDepInSession2 = session2.SessionRoot.ScopedDep;
+                                       System.Console.WriteLine(scopedDepInSession2 == session2.SessionRoot.ScopedDep);
+                           
+                                       // Checks that the scoped instances are not identical in different sessions
+                                       System.Console.WriteLine(scopedDepInSession1 != scopedDepInSession2);
+                           
+                                       // Checks that the singleton instances are identical in different sessions
+                                       System.Console.WriteLine(scopedDepInSession1.SingletonDep == scopedDepInSession2.SingletonDep);
+                           
+                                       // Disposes of session #1
+                                       session1.Dispose();
+                                       // Checks that the scoped instance is finalized
+                                       System.Console.WriteLine(scopedDepInSession1.IsDisposed);
+                           
+                                       // Session #2 is still not finalized
+                                       System.Console.WriteLine(session2.SessionRoot.ScopedDep.IsDisposed);
+                           
+                                       // Disposes of session #2
+                                       session2.Dispose();
+                                       // Checks that the scoped instance is finalized
+                                       System.Console.WriteLine(scopedDepInSession2.IsDisposed);
+                           
+                                       // Disposes of composition
+                                       composition.Dispose();
+                                       System.Console.WriteLine(scopedDepInSession1.SingletonDep.IsDisposed);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True", "True", "True", "True", "True", "False", "True", "True"], result);
+    }
+
+    [Fact]
     public async Task ShouldSupportScopedAsSingleton()
     {
         // Given
@@ -1831,6 +2150,73 @@ public class LifetimesTests
                                        DI.Setup(nameof(Composition))
                                            .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
                                            .Bind<IService>().To<Service>()
+                                           .Root<IDependency>("Dependency")
+                                           .Root<IService>("Root");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service1 = composition.Root;
+                                       var service2 = composition.Root;
+                                       Console.WriteLine(service1.Dependency1 == service1.Dependency2);        
+                                       Console.WriteLine(service2.Dependency1 == service1.Dependency1);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSingletonBinding()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               internal interface IDependency { }
+                           
+                               internal class Dependency : IDependency { }
+                           
+                               internal interface IService
+                               {
+                                   public IDependency Dependency1 { get; }
+                                           
+                                   public IDependency Dependency2 { get; }
+                               }
+                           
+                               internal class Service : IService
+                               {
+                                   public Service(Func<IDependency> dependency1, IDependency dependency2)
+                                   {
+                                       Dependency1 = dependency1();
+                                       Dependency2 = dependency2;
+                                   }
+                           
+                                   public IDependency Dependency1 { get; }
+                                           
+                                   public IDependency Dependency2 { get; }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Singleton<Dependency>()
+                                           .Transient<Service>()
                                            .Root<IDependency>("Dependency")
                                            .Root<IService>("Root");
                                    }
@@ -2085,6 +2471,7 @@ public class LifetimesTests
         // Then
         result.Success.ShouldBeTrue(result);
     }
+
     [Fact]
     public async Task ShouldSupportTransient()
     {
@@ -2109,6 +2496,344 @@ public class LifetimesTests
                                    }
                                }
                            
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Service != composition.Service);        
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportTransientBind()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService {}
+                               
+                               class Service: IService {}
+                               
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Transient<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Service != composition.Service);        
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportTransientBindWhenOneDependency()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                           
+                               class Dependency: IDependency {}
+                           
+                               interface IService {}
+                               
+                               class Service: IService
+                               {
+                                    public Service(IDependency dependency)
+                                    {
+                                    }
+                               }
+                               
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Transient<Dependency, Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Service != composition.Service);        
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportTransientBindWhenTag()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+
+                               class Dependency: IDependency {}
+
+                               interface IService {}
+                               
+                               class Service: IService
+                               {
+                                    public Service([Tag(123)] IDependency dependency)
+                                    {
+                                    }
+                               }
+                               
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Transient<Dependency, Service>("abc", 123)
+                                           .Root<IService>("Service", "abc");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Service != composition.Service);        
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportTransientBindWhenTwoDependencies()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency1 {}
+                               class Dependency1: IDependency1 {}
+
+                               interface IDependency2 {}
+                               class Dependency2: IDependency2 {}
+
+                               interface IService {}
+                               
+                               class Service: IService
+                               {
+                                    public Service(IDependency1 dependency1, IDependency2 dependency2)
+                                    {
+                                    }
+                               }
+                               
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Transient<Dependency1, Dependency2, Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Service != composition.Service);        
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportTransientBindWhenFiveDependencies()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency1 {}
+                               class Dependency1: IDependency1 {}
+                               interface IDependency2 {}
+                               class Dependency2: IDependency2 {}
+                               interface IDependency3 {}
+                               class Dependency3: IDependency3 {}
+                               interface IDependency4 {}
+                               class Dependency4: IDependency4 {}
+                               interface IDependency5 {}
+                               class Dependency5: IDependency5 {}
+
+                               interface IService {}
+                               
+                               class Service: IService
+                               {
+                                    public Service(
+                                        IDependency1 dependency1, 
+                                        IDependency2 dependency2,
+                                        IDependency3 dependency3,
+                                        IDependency4 dependency4,
+                                        IDependency5 dependency5)
+                                    {
+                                    }
+                               }
+                               
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Transient<Dependency1, Dependency2, Dependency3, Dependency4, Dependency5, Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Service != composition.Service);        
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportTransientBindWhenTenDependencies()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency1 {}
+                               class Dependency1: IDependency1 {}
+                               interface IDependency2 {}
+                               class Dependency2: IDependency2 {}
+                               interface IDependency3 {}
+                               class Dependency3: IDependency3 {}
+                               interface IDependency4 {}
+                               class Dependency4: IDependency4 {}
+                               interface IDependency5 {}
+                               class Dependency5: IDependency5 {}
+                               interface IDependency6 {}
+                               class Dependency6: IDependency6 {}
+                               interface IDependency7 {}
+                               class Dependency7: IDependency7 {}
+                               interface IDependency8 {}
+                               class Dependency8: IDependency8 {}
+                               interface IDependency9 {}
+                               class Dependency9: IDependency9 {}
+                               interface IDependency10 {}
+                               class Dependency10: IDependency10 {}
+
+                               interface IService {}
+                               
+                               class Service: IService
+                               {
+                                    public Service(
+                                        IDependency1 dependency1, 
+                                        IDependency2 dependency2,
+                                        IDependency3 dependency3,
+                                        IDependency4 dependency4,
+                                        IDependency5 dependency5,
+                                        IDependency6 dependency6,
+                                        IDependency7 dependency7,
+                                        IDependency8 dependency8,
+                                        IDependency9 dependency9,
+                                        IDependency10 dependency10)
+                                    {
+                                    }
+                               }
+                               
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Transient<Dependency1, Dependency2, Dependency3, Dependency4, Dependency5, Dependency6, Dependency7, Dependency8, Dependency9, Dependency10, Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+
                                public class Program
                                {
                                    public static void Main()

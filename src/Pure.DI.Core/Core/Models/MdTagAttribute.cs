@@ -5,7 +5,7 @@ namespace Pure.DI.Core.Models;
 
 readonly record struct MdTagAttribute(
     SemanticModel SemanticModel,
-    InvocationExpressionSyntax Source,
+    ExpressionSyntax Source,
     INamedTypeSymbol AttributeType,
     int ArgumentPosition) : IMdAttribute
 {

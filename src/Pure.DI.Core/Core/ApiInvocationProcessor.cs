@@ -320,6 +320,37 @@ sealed class ApiInvocationProcessor(
 
                         break;
 
+                    case nameof(IConfiguration.Transient):
+                    case nameof(IConfiguration.Singleton):
+                    case nameof(IConfiguration.Scoped):
+                    case nameof(IConfiguration.PerResolve):
+                    case nameof(IConfiguration.PerBlock):
+                        if (genericName.TypeArgumentList.Arguments.Count > 0
+                            && Enum.TryParse<Lifetime>(genericName.Identifier.Text, out var bindingLifetime))
+                        {
+                            var lifetimesTags = BuildTags(semanticModel, invocation.ArgumentList.Arguments);
+                            foreach (var typeArgument in genericName.TypeArgumentList.Arguments)
+                            {
+                                metadataVisitor.VisitContract(
+                                    new MdContract(
+                                        semanticModel,
+                                        typeArgument,
+                                        null,
+                                        ContractKind.Explicit,
+                                        lifetimesTags));
+
+                                metadataVisitor.VisitLifetime(new MdLifetime(semanticModel, typeArgument, bindingLifetime));
+
+                                var implementationType = semantic.GetTypeSymbol<INamedTypeSymbol>(semanticModel, typeArgument);
+                                metadataVisitor.VisitImplementation(new MdImplementation(semanticModel, typeArgument, implementationType));
+                            }
+
+                            break;
+                        }
+
+                        NotSupported(invocation);
+                        break;
+
                     case nameof(IConfiguration.Arg):
                         VisitArg(invocation, metadataVisitor, semanticModel, ArgKind.Composition, invocation, genericName, invocationComments);
                         break;

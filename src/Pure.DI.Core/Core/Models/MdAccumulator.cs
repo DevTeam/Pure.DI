@@ -5,7 +5,7 @@ namespace Pure.DI.Core.Models;
 
 readonly record struct MdAccumulator(
     SemanticModel SemanticModel,
-    InvocationExpressionSyntax Source,
+    ExpressionSyntax Source,
     ITypeSymbol Type,
     ITypeSymbol AccumulatorType,
     Lifetime Lifetime)
