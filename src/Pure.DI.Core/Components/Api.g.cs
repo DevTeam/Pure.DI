@@ -2767,6 +2767,45 @@ namespace Pure.DI
         IConfiguration To<T>(global::System.Func<IContext, T> factory);
 
         /// <summary>
+        /// Specifies a context-less factory method to create the implementation instance.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;()
+        ///     To(() =&gt;
+        ///     {
+        ///         var service = new Service("My Service");
+        ///         service.Initialize();
+        ///         return service;
+        ///     })
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <param name="factory">Factory method to create and initialize the instance.</param>
+        /// <typeparam name="T">Implementation type.</typeparam>
+        /// <returns>Configuration interface for method chaining.</returns>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="To{T}(factory)"/>
+        /// <seealso cref="To{T}()"/>
+        /// <seealso cref="To{T1,T}()"/>
+        /// <seealso cref="To{T1,T2,T}()"/>
+        /// <seealso cref="Tags"/>
+        /// <seealso cref="As"/>
+        /// <remarks>
+        /// This method is useful for creating and initializing an instance manually.
+        /// At the compilation stage, the set of dependencies that the object to be created needs is determined.
+        /// In most cases, this happens automatically, according to the set of constructors and their arguments, and does not require additional customization efforts.
+        /// But sometimes it is necessary to manually create and/or initialize an object.
+        /// There are scenarios where manual control over the creation process is required, such as
+        /// <list type="bullet">
+        /// <item>when additional initialization logic is needed</item>
+        /// <item>when complex construction steps are required</item>
+        /// <item>when specific object states need to be set during creation</item>
+        /// </list>
+        /// </remarks>
+        IConfiguration To<T>(global::System.Func<T> factory);
+
+        /// <summary>
         /// Specifies a source code statement to create the implementation.
         /// <example>
         /// <code>
@@ -3428,6 +3467,12 @@ namespace Pure.DI
 
             /// <inheritdoc />
             public IConfiguration To<T>(global::System.Func<IContext, T> factory)
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T>(Func<T> factory)
             {
                 return this;
             }

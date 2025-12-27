@@ -87,9 +87,9 @@ public partial class Composition(string storeName)
 // {
         DI.Setup()
             .Bind<IOrder>().To<Order>()
-            .Bind<long>().To(_ => GenerateId())
+            .Bind<long>().To(GenerateId)
             // Binds the string with the tag "Order details"
-            .Bind<string>("Order details").To(_ => $"{storeName}_{GenerateId()}")
+            .Bind<string>("Order details").To(() => $"{storeName}_{GenerateId()}")
             .Root<OrderService>("OrderService", kind: Internal);
 }
 // }

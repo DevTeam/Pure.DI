@@ -31,7 +31,7 @@ public class Scenario
         // {
         DI.Setup(nameof(Composition))
             .Bind<IEngine>().To<ElectricEngine>()
-            .Bind<Coordinates>().To(_ => new Coordinates(10, 20))
+            .Bind<Coordinates>().To(() => new Coordinates(10, 20))
             .Bind<IVehicle>().To<Car>()
 
             // Composition root

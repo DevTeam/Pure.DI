@@ -36,7 +36,7 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Bind().To(_ => Guid.NewGuid())
+            .Bind().To(Guid.NewGuid)
             .Bind().To<PlutoniumBattery>()
             // Creates a builder for each type inherited from IRobot.
             // These types must be available at this point in the code.

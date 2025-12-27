@@ -38,7 +38,7 @@ public class Scenario
         // FormatCode = On
 // {    
         DI.Setup(nameof(Composition))
-            .Bind(Tag.Red).To(_ => Color.Red)
+            .Bind(Tag.Red).To(() => Color.Red)
             .Bind().As(Lifetime.Singleton).To<Clock>()
             // The factory accepts the widget ID and the layer index
             .Bind().To<Func<int, int, IWidget>>(ctx =>

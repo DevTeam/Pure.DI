@@ -45,7 +45,7 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Bind().To(_ => Guid.NewGuid())
+            .Bind().To(Guid.NewGuid)
             .Bind().To<PhotonBlaster>()
             .Builder<Player>("Equip");
 

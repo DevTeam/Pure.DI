@@ -31,7 +31,7 @@ public class Scenario
         // Resolve = Off
         // {
         DI.Setup(nameof(Composition))
-            .Bind().To(_ => Guid.NewGuid())
+            .Bind().To(Guid.NewGuid)
             .Bind().To<WiFi>()
             // Creates a builder based on the name template
             // for each type inherited from IDevice.

@@ -113,7 +113,7 @@ partial class Composition
             .Root<ISettingsService>(nameof(Settings))
             .Bind().To<SettingsService>()
             .DefaultLifetime(Singleton)
-            .Bind().To(_ => new JsonSerializerOptions { WriteIndented = true })
+            .Bind().To(() => new JsonSerializerOptions { WriteIndented = true })
             .Bind(JSON).To<JsonSerializerOptions, Func<string, TT?>>(options => json => JsonSerializer.Deserialize<TT>(json, options))
             .Bind(JSON).To<JsonSerializerOptions, Func<TT, string>>(options => value => JsonSerializer.Serialize(value, options))
             .Bind().To<Storage>();

@@ -28,7 +28,7 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Bind<IMessageSender[]>().To<IMessageSender[]>(_ =>
+            .Bind<IMessageSender[]>().To<IMessageSender[]>(() =>
                 [new EmailSender(), new SmsSender(), new EmailSender()]
             )
             .Bind<INotificationService>().To<NotificationService>()

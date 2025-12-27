@@ -35,7 +35,7 @@ public class Scenario
         // FormatCode = On
 // {    
         DI.Setup(nameof(Composition))
-            .Bind("Global").To(_ => new ProcessingToken("TOKEN-123"))
+            .Bind("Global").To(() => new ProcessingToken("TOKEN-123"))
             .Bind().As(Lifetime.Singleton).To<TimeProvider>()
             .Bind().To<Func<int, int, IOrderHandler>>(ctx =>
                 (orderId, customerId) => {

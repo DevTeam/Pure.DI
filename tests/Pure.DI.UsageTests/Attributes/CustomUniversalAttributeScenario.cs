@@ -37,8 +37,8 @@ public class Scenario
             .OrdinalAttribute<InjectAttribute<TT>>(1)
             .TypeAttribute<InjectAttribute<TT>>()
             .Arg<int>("personId")
-            .Bind().To(_ => new Uri("https://github.com/DevTeam/Pure.DI"))
-            .Bind("NikName").To(_ => "Nik")
+            .Bind().To(() => new Uri("https://github.com/DevTeam/Pure.DI"))
+            .Bind("NikName").To(() => "Nik")
             .Bind().To<Person>()
 
             // Composition root

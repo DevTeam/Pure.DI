@@ -33,7 +33,7 @@ public class Scenario
 // {
         DI.Setup(nameof(Composition))
             .RootArg<string>("name")
-            .Bind().To(_ => Guid.NewGuid())
+            .Bind().To(Guid.NewGuid)
             .Bind().To(ctx => {
                 var person = new Person();
                 // Injects dependencies into an existing object

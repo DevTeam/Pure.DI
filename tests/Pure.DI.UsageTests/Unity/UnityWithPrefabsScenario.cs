@@ -183,7 +183,7 @@ public partial class Scope : MonoBehaviour
     // ToString = Off
 // {
     void Setup() => DI.Setup()
-        .Bind().To(_ => clockConfig)
+        .Bind().To(() => clockConfig)
         .Bind().As(Lifetime.Singleton).To<ClockService>()
         .Root<ClockManager>(nameof(ClockManager))
         .Builders<MonoBehaviour>();

@@ -75,7 +75,8 @@ sealed class ApiInvocationProcessor(
 
                                 if (type is INamedTypeSymbol symbol)
                                 {
-                                    if (symbol.TypeArguments.Length > 1
+                                    var typeArgumentsCount = symbol.TypeArguments.Length;
+                                    if (typeArgumentsCount > 1
                                         && symbolNames.GetGlobalName(symbol.TypeArguments[0]) != Names.IContextTypeName)
                                     {
                                         switch (invocation.ArgumentList.Arguments[0].Expression)
@@ -94,7 +95,7 @@ sealed class ApiInvocationProcessor(
                                         break;
                                     }
 
-                                    if (symbol.TypeArguments.Length == 2 && symbol.TypeArguments is [_, {} resultType])
+                                    if (typeArgumentsCount is 1 or 2 && symbol.TypeArguments is [.., {} resultType])
                                     {
                                         VisitFactory(invocation, metadataVisitor, semanticModel, resultType, lambdaExpression);
                                         break;
@@ -104,7 +105,24 @@ sealed class ApiInvocationProcessor(
                                 VisitFactory(invocation, metadataVisitor, semanticModel, type, lambdaExpression);
                                 break;
 
-                            case []:
+                            case [{ Expression: {} expression }]:
+                                var expressionType = semantic.TryGetTypeSymbol<ITypeSymbol>(semanticModel, expression);
+                                if (expressionType is INamedTypeSymbol { IsGenericType: true, TypeArguments.Length: 1 } expressionTypeSymbol
+                                    && expressionTypeSymbol.TypeArguments is [{} expressionResultType])
+                                {
+                                    VisitFactory(
+                                        invocation,
+                                        metadataVisitor,
+                                        semanticModel,
+                                        expressionResultType,
+                                        SyntaxFactory.ParenthesizedLambdaExpression(
+                                            SyntaxFactory.InvocationExpression(expression)));
+                                }
+                                else
+                                {
+                                    NotSupported(invocation);
+                                }
+
                                 break;
 
                             default:
@@ -837,6 +855,10 @@ sealed class ApiInvocationProcessor(
 
             case ParenthesizedLambdaExpressionSyntax { ParameterList.Parameters: [{} singleParameter] }:
                 contextParameter = singleParameter;
+                break;
+
+            case ParenthesizedLambdaExpressionSyntax { ParameterList.Parameters: [] }:
+                contextParameter = RootBuilder.DefaultCtxParameter;
                 break;
 
             default:

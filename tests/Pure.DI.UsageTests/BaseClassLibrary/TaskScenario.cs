@@ -37,7 +37,7 @@ public class Scenario
         DI.Setup(nameof(Composition))
             .Hint(Hint.Resolve, "Off")
             // Overrides TaskScheduler.Default if necessary
-            .Bind<TaskScheduler>().To(_ => TaskScheduler.Current)
+            .Bind<TaskScheduler>().To(() => TaskScheduler.Current)
             // Specifies to use CancellationToken from the composition root argument,
             // if not specified, then CancellationToken.None will be used
             .RootArg<CancellationToken>("cancellationToken")

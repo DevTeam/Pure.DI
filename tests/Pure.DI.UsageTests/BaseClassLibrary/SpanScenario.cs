@@ -39,9 +39,9 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Bind<Point>('a').To(_ => new Point(1, 1))
-            .Bind<Point>('b').To(_ => new Point(2, 2))
-            .Bind<Point>('c').To(_ => new Point(3, 3))
+            .Bind<Point>('a').To(() => new Point(1, 1))
+            .Bind<Point>('b').To(() => new Point(2, 2))
+            .Bind<Point>('c').To(() => new Point(3, 3))
             .Bind<IPath>().To<Path>()
 
             // Composition root

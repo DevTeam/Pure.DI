@@ -23,7 +23,7 @@ public class Scenario
 // {        
         DI.Setup("Composition")
             // Represents a large data set or buffer
-            .Bind().To<int[]>(_ => [10, 20, 30])
+            .Bind().To<int[]>(() => [10, 20, 30])
             .Root<Service>("MyService");
 
         var composition = new Composition();

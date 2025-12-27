@@ -30,7 +30,7 @@ public class Scenario
 // {
         DI.Setup(nameof(Composition))
             .RootArg<string>("userName")
-            .Bind().To(_ => Guid.NewGuid())
+            .Bind().To(Guid.NewGuid)
             .Bind().To(ctx => {
                 // The "BuildUp" method injects dependencies into an existing object.
                 // This is useful when the object is created externally (e.g., by a UI framework

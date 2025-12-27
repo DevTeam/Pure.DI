@@ -41,8 +41,8 @@ public class Scenario
             .TypeAttribute<MyTypeAttribute>()
             .TypeAttribute<MyGenericTypeAttribute<TT>>()
             .Arg<int>("personId")
-            .Bind().To(_ => new Uri("https://github.com/DevTeam/Pure.DI"))
-            .Bind("NikName").To(_ => "Nik")
+            .Bind().To(() => new Uri("https://github.com/DevTeam/Pure.DI"))
+            .Bind("NikName").To(() => "Nik")
             .Bind().To<Person>()
 
             // Composition root

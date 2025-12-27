@@ -32,7 +32,7 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Bind("today").To(_ => DateTime.Today)
+            .Bind("today").To(() => DateTime.Today)
             // Injects FileLogger and DateTime instances
             // and performs further initialization logic
             // defined in the lambda function to set up the log file name

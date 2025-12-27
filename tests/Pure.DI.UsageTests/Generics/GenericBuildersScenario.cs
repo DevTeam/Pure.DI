@@ -31,7 +31,7 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Bind(Tag.Id).To<TT>(_ => (TT)(object)Guid.NewGuid())
+            .Bind(Tag.Id).To(() => (TT)(object)Guid.NewGuid())
             .Bind().To<MessageTracker<TT>>()
             // Generic builder to inject dependencies into existing messages
             .Builders<IMessage<TT, TT2>>("BuildUp");

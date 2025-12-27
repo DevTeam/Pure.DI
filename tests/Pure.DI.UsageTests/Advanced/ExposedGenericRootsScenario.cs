@@ -9,7 +9,7 @@ $h={
 $h=    private static void Setup() =>
 $h=    DI.Setup()
 $h=        .Hint(Hint.Resolve, "Off")
-$h=        .Bind().To(_ => 99)
+$h=        .Bind().To(() => 99)
 $h=        .Bind().As(Lifetime.Singleton).To<MyDependency>()
 $h=        .Bind().To<MyGenericService<TT>>()
 $h=        .Root<IMyGenericService<TT>>("GetMyService", kind: RootKinds.Exposed);
