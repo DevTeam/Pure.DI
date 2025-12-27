@@ -149,25 +149,21 @@ If there is at least one binding with `Lifetime.Scoped`, Pure.DI generates two c
 
 1. Public default constructor
 
-Used for creating the root scope instance.
-
-```c#
-public Composition() { /* ... */ }
-```
+> Used for creating the root scope instance.
+>  ```c#
+> public Composition() { /* ... */ }
+> ```
 
 2. Internal constructor with parent scope
 
-Used for creating child scope instances. This constructor is internal and accepts a single parameter — the parent scope.
-
-```c#
-internal Composition(Composition parentScope) { /* ... */ }
-```
-
-Important notes:
-
-- The public default constructor enables initialization of the root composition.
-- The internal constructor with parent reference enables proper scoping hierarchy for `Lifetime.Scoped` dependencies.
-- These constructors are only generated when `Lifetime.Scoped` bindings exist in the composition.
+> Used for creating child scope instances. This constructor is internal and accepts a single parameter — the parent scope.
+> ```c#
+> internal Composition(Composition parentScope) { /* ... */ }
+> ```
+> Important notes:
+> - The public default constructor enables initialization of the root composition.
+> - The internal constructor with parent reference enables proper scoping hierarchy for `Lifetime.Scoped` dependencies.
+> - These constructors are only generated when `Lifetime.Scoped` bindings exist in the composition.
 
 #### Summary of constructor generation rules
 
