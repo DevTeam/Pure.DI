@@ -68,13 +68,14 @@ class GraphOverrider(
         }
 
         // Rewritten nodes are context-dependent when any override scope is active.
-        // In such cases we must not reuse a node cached only by Binding.Id,
-        // otherwise override branches can leak into sibling branches.
-        var canUseProcessedCache = !consumeLocalOverrides
-                                   && nodes.Count == 0
-                                   && localOverrides.Count == 0
-                                   && overrides.Count == 0;
-        if (canUseProcessedCache && processed.TryGetValue(targetNode.Binding.Id, out var node))
+        // In such cases we isolate memoization to the current branch to avoid
+        // leaking context-dependent rewrites into sibling branches.
+        var isContextFree = !consumeLocalOverrides
+                            && nodes.Count == 0
+                            && localOverrides.Count == 0
+                            && overrides.Count == 0;
+        var branchProcessed = isContextFree ? processed : processed.ToDictionary();
+        if (branchProcessed.TryGetValue(targetNode.Binding.Id, out var node))
         {
             return node;
         }
@@ -105,10 +106,7 @@ class GraphOverrider(
             overridesEnumerable = [];
         }
 
-        if (canUseProcessedCache)
-        {
-            processed[targetNode.Binding.Id] = targetNode;
-        }
+        branchProcessed[targetNode.Binding.Id] = targetNode;
         var newDependencies = new List<Dependency>(dependencies.Count);
         var lastDependencyPosition = 0;
         using var overridesEnumerator = overridesEnumerable.GetEnumerator();
@@ -191,7 +189,7 @@ class GraphOverrider(
             {
                 var sourceOverrides = overridesMap.ToDictionary();
                 var source = Override(
-                    processed,
+                    branchProcessed,
                     nodesMap,
                     nextLocalOverrides,
                     nextLocalOverrides.Count > 0,
