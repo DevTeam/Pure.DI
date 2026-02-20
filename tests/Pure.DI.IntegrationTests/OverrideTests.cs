@@ -2616,7 +2616,6 @@ public class OverrideTests
                                                    new Command(canExecute, execute) { Dispatcher = dispatcher };
                                            })
                                            .Singleton<NodeFactory, TreeCompressor>()
-                                           .Transient<DirectoryNodeViewModel>()
                                            .Transient<FileTreeNodeViewModel>()
                                            .Bind<IFileDuplicatesViewModel>().To<FileDuplicatesViewModel>()
                                            .Bind().As(Lifetime.Singleton).To<DuplicatesViewModel>()

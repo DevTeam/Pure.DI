@@ -74,7 +74,7 @@ class GraphOverrider(
                             && nodes.Count == 0
                             && localOverrides.Count == 0
                             && overrides.Count == 0;
-        var branchProcessed = isContextFree ? processed : processed.ToDictionary();
+        var branchProcessed = isContextFree ? processed : new Dictionary<int, DependencyNode>(processed);
         if (branchProcessed.TryGetValue(targetNode.Binding.Id, out var node))
         {
             return node;
