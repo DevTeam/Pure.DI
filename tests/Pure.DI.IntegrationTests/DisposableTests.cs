@@ -1588,7 +1588,7 @@ public class DisposableTests
                                {
                                    private readonly string _name;
 
-                                   public Dependency(string prefix, string name) => _name = prefix + name;
+                                   public Dependency([Tag("pr")] string prefix, string name) => _name = prefix + name;
 
                                    public void Dispose() => Console.WriteLine($"Dispose {_name}");
                                }
@@ -1600,7 +1600,7 @@ public class DisposableTests
                                        DI.Setup(nameof(Composition))
                                            .Hint(Hint.Resolve, "Off")
                                            .Bind<Dependency>().As(Lifetime.Singleton).To<Dependency>()
-                                           .Arg<string>("prefix")
+                                           .Arg<string>("prefix", "pr")
                                            .RootArg<string>("name")
                                            .Root<Dependency>("Root");
                                    }

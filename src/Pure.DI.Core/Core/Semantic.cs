@@ -2,8 +2,6 @@
 
 namespace Pure.DI.Core;
 
-using System.ComponentModel;
-using System.Reflection;
 using Microsoft.CodeAnalysis.Operations;
 
 sealed class Semantic(

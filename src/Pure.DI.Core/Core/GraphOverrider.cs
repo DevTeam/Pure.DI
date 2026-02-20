@@ -210,6 +210,7 @@ class GraphOverrider(
 
         return targetNode;
     }
+
     private static IDictionary<int, DependencyNode> CreateBranchProcessedCache(
         IDictionary<int, DependencyNode> processed,
         bool consumeLocalOverrides,
@@ -224,7 +225,8 @@ class GraphOverrider(
                             && nodes.Count == 0
                             && localOverrides.Count == 0
                             && overrides.Count == 0;
-        return isContextFree ? processed : processed.ToDictionary();
+
+        return isContextFree ? processed : new Dictionary<int, DependencyNode>(processed);
     }
 
     private static Dictionary<Injection, DependencyNode> CreateLocalNodesMap(
@@ -233,12 +235,14 @@ class GraphOverrider(
         bool consumeLocalOverrides)
     {
         var localNodesMap = nodes.ToDictionary();
-        if (consumeLocalOverrides && localOverrides.Count > 0)
+        if (!consumeLocalOverrides || localOverrides.Count <= 0)
         {
-            foreach (var pair in localOverrides)
-            {
-                localNodesMap[pair.Key] = pair.Value;
-            }
+            return localNodesMap;
+        }
+
+        foreach (var pair in localOverrides)
+        {
+            localNodesMap[pair.Key] = pair.Value;
         }
 
         return localNodesMap;
@@ -266,5 +270,4 @@ class GraphOverrider(
             list.Add(entry);
         }
     }
-
 }

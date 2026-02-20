@@ -390,7 +390,7 @@ sealed class FactoryCodeBuilder(
                     var initCtx = ctx;
                     var initializersWalker = initializersWalkerFactory(
                         new InitializersWalkerContext(
-                            i => variablesCodeBuilderFactory().Build(initCtx.CreateChild(i)),
+                            injection => variablesCodeBuilderFactory().Build(initCtx.CreateChild(injection)),
                             initialization.VariableName,
                             new FactoryInitializationArgsEnumerator(initializationArgs, initializationArgsIdx)));
                     yield return initializersWalker.VisitInitializer(ctx, initializer);
@@ -436,7 +436,7 @@ sealed class FactoryCodeBuilder(
     private static bool IsReturnOfVariable(ReadOnlySpan<char> line, string variableName)
     {
         var trimmed = line.Trim();
-        if (!trimmed.StartsWith("return ", global::System.StringComparison.Ordinal) || !trimmed.EndsWith(";", global::System.StringComparison.Ordinal))
+        if (!trimmed.StartsWith("return ", StringComparison.Ordinal) || !trimmed.EndsWith(";", StringComparison.Ordinal))
         {
             return false;
         }

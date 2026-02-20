@@ -29,9 +29,10 @@ class OverrideIdProvider([Tag(OverridesIdGenerator)] IIdGenerator idGenerator) :
         public override int GetHashCode()
         {
             var hashCode = SymbolEqualityComparer.Default.GetHashCode(_type);
+            // ReSharper disable once LoopCanBeConvertedToQuery
             foreach (var tagHashCode in _tags.Select(GetTagHashCode).OrderBy(i => i))
             {
-                hashCode = (hashCode * 397) ^ tagHashCode;
+                hashCode = hashCode * 397 ^ tagHashCode;
             }
 
             return hashCode;
