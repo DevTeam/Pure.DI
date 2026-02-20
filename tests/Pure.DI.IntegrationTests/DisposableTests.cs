@@ -1466,4 +1466,214 @@ public class DisposableTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Dispose"], result);
     }
+    [Fact]
+    public async Task ShouldSupportDisposableWithTaggedRootArg()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Dependency: IDisposable
+                               {
+                                   private readonly string _name;
+
+                                   public Dependency([Tag("name")] string name) => _name = name;
+
+                                   public void Dispose() => Console.WriteLine($"Dispose {_name}");
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Hint(Hint.Resolve, "Off")
+                                           .Bind<Dependency>().As(Lifetime.Singleton).To<Dependency>()
+                                           .RootArg<string>("name", "name")
+                                           .Root<Dependency>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root = composition.Root("alpha");
+                                       composition.Dispose();
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Dispose alpha"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportDisposableWithTwoRootArgs()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Dependency: IDisposable
+                               {
+                                   private readonly int _id;
+                                   private readonly string _name;
+
+                                   public Dependency(int id, string name)
+                                   {
+                                       _id = id;
+                                       _name = name;
+                                   }
+
+                                   public void Dispose() => Console.WriteLine($"Dispose {_id}:{_name}");
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Hint(Hint.Resolve, "Off")
+                                           .Bind<Dependency>().As(Lifetime.Singleton).To<Dependency>()
+                                           .RootArg<int>("id")
+                                           .RootArg<string>("name")
+                                           .Root<Dependency>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root = composition.Root(7, "beta");
+                                       composition.Dispose();
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Dispose 7:beta"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportDisposableWithCompositionArgAndRootArg()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Dependency: IDisposable
+                               {
+                                   private readonly string _name;
+
+                                   public Dependency(string prefix, string name) => _name = prefix + name;
+
+                                   public void Dispose() => Console.WriteLine($"Dispose {_name}");
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Hint(Hint.Resolve, "Off")
+                                           .Bind<Dependency>().As(Lifetime.Singleton).To<Dependency>()
+                                           .Arg<string>("prefix")
+                                           .RootArg<string>("name")
+                                           .Root<Dependency>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition("pre-");
+                                       var root = composition.Root("gamma");
+                                       composition.Dispose();
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Dispose pre-gamma"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportDisposableWithRootArgAndAdditionalRoot()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Dependency: IDisposable
+                               {
+                                   private readonly string _name;
+
+                                   public Dependency(string name) => _name = name;
+
+                                   public void Dispose() => Console.WriteLine($"Dispose {_name}");
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Hint(Hint.Resolve, "Off")
+                                           .Bind<Dependency>().As(Lifetime.Singleton).To<Dependency>()
+                                           .Bind<int>().To(_ => 42)
+                                           .RootArg<string>("name")
+                                           .Root<Dependency>("Root")
+                                           .Root<int>("Value");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root = composition.Root("delta");
+                                       var value = composition.Value;
+                                       if (value != 42) throw new Exception();
+                                       composition.Dispose();
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Dispose delta"], result);
+    }
 }
