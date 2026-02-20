@@ -170,7 +170,8 @@ class VarsMap(
     /// </summary>
     private IReadOnlyDictionary<int, VarState> CreateState(Var var) =>
         _map
-            .Where(i => i.Key != var.Declaration.Node.BindingId)
+            .Where(i => i.Key != var.Declaration.Node.BindingId
+                        && i.Value.Declaration.Node.Construct is not { Source.Kind: MdConstructKind.Override })
             .ToDictionary(i => i.Key, i => new VarState(i.Value));
 
     /// <summary>
