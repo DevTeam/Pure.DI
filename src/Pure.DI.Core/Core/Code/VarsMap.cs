@@ -71,9 +71,7 @@ class VarsMap(
                 break;
         }
 
-        IsThreadSafe |= node.ActualLifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve
-                        || node.Arg is not null
-                        || node.Construct is { Source.Kind: MdConstructKind.Accumulator };
+        IsThreadSafe |= IsThreadSafeNode(node);
 
         varInjection.Var.HasCycle = hasCycle;
         return varInjection;
@@ -84,7 +82,7 @@ class VarsMap(
     {
         return Disposables.Create(() => {
             _map
-                .Where(i => !(i.Value.Declaration.Node.ActualLifetime is Lifetime.Singleton or Lifetime.Scoped || i.Value.Declaration.Node.Arg is { Source.Kind: ArgKind.Composition }))
+                .Where(i => !IsRootPersistentNode(i.Value.Declaration.Node))
                 .ToList()
                 .ForEach(i => {
 #if DEBUG
@@ -163,6 +161,24 @@ class VarsMap(
     private VarDeclaration CreateDeclaration(IDependencyNode node) =>
         new(nameProvider, idGenerator.Generate(), node);
 
+    private static bool IsThreadSafeNode(IDependencyNode node) =>
+        node.ActualLifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve
+        || node.Arg is not null
+        || node.Construct is { Source.Kind: MdConstructKind.Accumulator };
+
+    private static bool IsRootPersistentNode(IDependencyNode node) =>
+        node.ActualLifetime is Lifetime.Singleton or Lifetime.Scoped
+        || node.Arg is { Source.Kind: ArgKind.Composition };
+
+    private static bool IsNestedScopePersistentNode(IDependencyNode node) =>
+        node.ActualLifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve
+        || node.Arg is not null;
+
+    private static bool ShouldKeepCurrentNodeInNestedScope(IDependencyNode node) =>
+        node.ActualLifetime is Lifetime.PerBlock
+        && node.Arg is not { Source.Kind: ArgKind.Root }
+        && node.Construct is not { Source.Kind: MdConstructKind.Override };
+
     /// <summary>
     /// Creates a snapshot of the current variables' state.
     /// Global code state (like LocalFunction) is NOT part of the snapshot because it should accumulate.
@@ -190,17 +206,13 @@ class VarsMap(
             }
 
             var node = i.Value.Declaration.Node;
-            var isPersistent = node.ActualLifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve
-                               || node.Arg is not null;
             if (node.BindingId == var.Declaration.Node.BindingId)
             {
-                var keepCurrent = node.ActualLifetime is Lifetime.PerBlock
-                                  && node.Arg is not { Source.Kind: ArgKind.Root }
-                                  && node.Construct is not { Source.Kind: MdConstructKind.Override };
-                return !isPersistent && !keepCurrent;
+                return !IsNestedScopePersistentNode(node)
+                       && !ShouldKeepCurrentNodeInNestedScope(node);
             }
 
-            return !isPersistent;
+            return !IsNestedScopePersistentNode(node);
         }).ToList();
 
         foreach (var item in newItems)
