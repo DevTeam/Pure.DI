@@ -67,7 +67,13 @@ class GraphOverrider(
             return targetNode;
         }
 
-        if (processed.TryGetValue(targetNode.Binding.Id, out var node))
+        // Rewritten nodes are context-dependent when any override scope is active.
+        // In such cases we must not reuse a node cached only by Binding.Id,
+        // otherwise local override branches can leak into sibling branches.
+        var canUseProcessedCache = !consumeLocalOverrides
+                                   && localOverrides.Count == 0
+                                   && overrides.Count == 0;
+        if (canUseProcessedCache && processed.TryGetValue(targetNode.Binding.Id, out var node))
         {
             return node;
         }
@@ -98,7 +104,10 @@ class GraphOverrider(
             overridesEnumerable = [];
         }
 
-        processed.Add(targetNode.Binding.Id, targetNode);
+        if (canUseProcessedCache)
+        {
+            processed[targetNode.Binding.Id] = targetNode;
+        }
         var newDependencies = new List<Dependency>(dependencies.Count);
         var lastDependencyPosition = 0;
         using var overridesEnumerator = overridesEnumerable.GetEnumerator();
