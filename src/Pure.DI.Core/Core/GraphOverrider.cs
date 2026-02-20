@@ -69,8 +69,9 @@ class GraphOverrider(
 
         // Rewritten nodes are context-dependent when any override scope is active.
         // In such cases we must not reuse a node cached only by Binding.Id,
-        // otherwise local override branches can leak into sibling branches.
+        // otherwise override branches can leak into sibling branches.
         var canUseProcessedCache = !consumeLocalOverrides
+                                   && nodes.Count == 0
                                    && localOverrides.Count == 0
                                    && overrides.Count == 0;
         if (canUseProcessedCache && processed.TryGetValue(targetNode.Binding.Id, out var node))
