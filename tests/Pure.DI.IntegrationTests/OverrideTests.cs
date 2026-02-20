@@ -2834,7 +2834,7 @@ public class OverrideTests
     }
 
     [Fact]
-    public async Task ShouldSupportStdFuncWith2ArgsOfSameType()
+    public async Task ShouldReportErrorForStdFuncWith2ArgsOfSameTypeAndTag()
     {
         // Given
 
@@ -2926,8 +2926,8 @@ public class OverrideTests
                            """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["3", "10:100", "11:101", "12:102"], result);
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count(i => i.Id == LogId.ErrorUnableToResolve && i.Text.Contains("int(\"sub\")")).ShouldBe(1, result);
     }
 
     [Fact]
