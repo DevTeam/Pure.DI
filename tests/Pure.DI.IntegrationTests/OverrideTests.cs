@@ -2834,7 +2834,7 @@ public class OverrideTests
     }
 
     [Fact]
-    public async Task ShouldReportErrorForStdFuncWith2ArgsOfSameTypeAndTag()
+    public async Task ShouldSupportOverrideWhenFuncWith2ArgsOfSameTypeAndTag()
     {
         // Given
 
@@ -2904,7 +2904,14 @@ public class OverrideTests
                                    {
                                        DI.Setup(nameof(Composition))
                                           .Bind().As(Lifetime.Singleton).To<Clock>()
-                                          .Bind().To<Dependency>()
+                                          .Bind().To<Func<int, int, IDependency>>(ctx =>
+                                              (id, subId) =>
+                                              {
+                                                  ctx.Override(id);
+                                                  ctx.Override(subId, "sub");
+                                                  ctx.Inject<Dependency>(out var dependency);
+                                                  return dependency;
+                                              })
                                           .Bind().To<Service>()
                                           .Root<IService>("Root");
                                    }
@@ -2926,8 +2933,8 @@ public class OverrideTests
                            """.RunAsync();
 
         // Then
-        result.Success.ShouldBeFalse(result);
-        result.Errors.Count(i => i.Id == LogId.ErrorUnableToResolve && i.Text.Contains("int(\"sub\")")).ShouldBe(1, result);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["3", "10:100", "11:101", "12:102"], result);
     }
 
     [Fact]
