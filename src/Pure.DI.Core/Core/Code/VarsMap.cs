@@ -191,7 +191,7 @@ class VarsMap(
 
             var node = i.Value.Declaration.Node;
             var isPersistent = node.ActualLifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve
-                               || node.Arg is { Source.Kind: ArgKind.Composition };
+                               || node.Arg is not null;
             if (node.BindingId == var.Declaration.Node.BindingId)
             {
                 var keepCurrent = node.ActualLifetime is Lifetime.PerBlock
