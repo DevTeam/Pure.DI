@@ -194,7 +194,7 @@ class VarsMap(
                 return false;
             }
 
-            return !(node.ActualLifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve || node.Arg is not null);
+            return !(node.ActualLifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve || node.Arg is { Source.Kind: ArgKind.Composition });
         }).ToList();
 
         foreach (var item in newItems)
