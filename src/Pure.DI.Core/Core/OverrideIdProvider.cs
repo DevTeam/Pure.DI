@@ -28,14 +28,16 @@ class OverrideIdProvider([Tag(OverridesIdGenerator)] IIdGenerator idGenerator) :
 
         public override int GetHashCode()
         {
-            var hash = new HashCode();
-            hash.Add(_type, SymbolEqualityComparer.Default);
-            foreach (var tag in _tags.OrderBy(i => i.GetHashCode()))
+            var hashCode = SymbolEqualityComparer.Default.GetHashCode(_type);
+            foreach (var tagHashCode in _tags.Select(GetTagHashCode).OrderBy(i => i))
             {
-                hash.Add(tag);
+                hashCode = (hashCode * 397) ^ tagHashCode;
             }
 
-            return hash.ToHashCode();
+            return hashCode;
         }
+
+        private static int GetTagHashCode(object tag) =>
+            tag.GetHashCode();
     }
 }
