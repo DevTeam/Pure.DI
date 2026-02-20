@@ -67,28 +67,19 @@ class GraphOverrider(
             return targetNode;
         }
 
-        // Rewritten nodes are context-dependent when any override scope is active.
-        // In such cases we isolate memoization to the current branch to avoid
-        // leaking context-dependent rewrites into sibling branches.
-        var isContextFree = !consumeLocalOverrides
-                            && nodes.Count == 0
-                            && localOverrides.Count == 0
-                            && overrides.Count == 0;
-        var branchProcessed = isContextFree ? processed : processed.ToDictionary();
+        var branchProcessed = CreateBranchProcessedCache(
+            processed,
+            consumeLocalOverrides,
+            nodes,
+            localOverrides,
+            overrides);
         if (branchProcessed.TryGetValue(targetNode.Binding.Id, out var node))
         {
             return node;
         }
 
         var nodesMap = nodes.ToDictionary();
-        var localNodesMap = nodesMap.ToDictionary();
-        if (consumeLocalOverrides && localOverrides.Count > 0)
-        {
-            foreach (var pair in localOverrides)
-            {
-                localNodesMap[pair.Key] = pair.Value;
-            }
-        }
+        var localNodesMap = CreateLocalNodesMap(nodesMap, localOverrides, consumeLocalOverrides);
 
         var overridesMap = overrides.ToDictionary();
         IEnumerable<ImmutableArray<DpOverride>> overridesEnumerable;
@@ -215,17 +206,65 @@ class GraphOverrider(
             newDependencies.Add(currentDependency);
         }
 
-        var entry = new GraphEntry<DependencyNode, Dependency>(targetNode, newDependencies);
-        var entryIndex = entries.FindIndex(i => Equals(i.Target, targetNode));
-        if (entryIndex >= 0)
-        {
-            entries[entryIndex] = entry;
-        }
-        else
-        {
-            entries.Add(entry);
-        }
+        UpsertEntry(entries, targetNode, newDependencies);
 
         return targetNode;
     }
+    private static IDictionary<int, DependencyNode> CreateBranchProcessedCache(
+        IDictionary<int, DependencyNode> processed,
+        bool consumeLocalOverrides,
+        IReadOnlyDictionary<Injection, DependencyNode> nodes,
+        IReadOnlyDictionary<Injection, DependencyNode> localOverrides,
+        IReadOnlyDictionary<int, DpOverride> overrides)
+    {
+        // Rewritten nodes are context-dependent when any override scope is active.
+        // In such cases we isolate memoization to the current branch to avoid
+        // leaking context-dependent rewrites into sibling branches.
+        var isContextFree = !consumeLocalOverrides
+                            && nodes.Count == 0
+                            && localOverrides.Count == 0
+                            && overrides.Count == 0;
+        return isContextFree ? processed : processed.ToDictionary();
+    }
+
+    private static Dictionary<Injection, DependencyNode> CreateLocalNodesMap(
+        IReadOnlyDictionary<Injection, DependencyNode> nodes,
+        IReadOnlyDictionary<Injection, DependencyNode> localOverrides,
+        bool consumeLocalOverrides)
+    {
+        var localNodesMap = nodes.ToDictionary();
+        if (consumeLocalOverrides && localOverrides.Count > 0)
+        {
+            foreach (var pair in localOverrides)
+            {
+                localNodesMap[pair.Key] = pair.Value;
+            }
+        }
+
+        return localNodesMap;
+    }
+
+    private static void UpsertEntry(
+        ICollection<GraphEntry<DependencyNode, Dependency>> entries,
+        DependencyNode targetNode,
+        IReadOnlyCollection<Dependency> newDependencies)
+    {
+        var entry = new GraphEntry<DependencyNode, Dependency>(targetNode, newDependencies);
+        if (entries is not List<GraphEntry<DependencyNode, Dependency>> list)
+        {
+            entries.Add(entry);
+            return;
+        }
+
+        var entryIndex = list.FindIndex(i => Equals(i.Target, targetNode));
+        if (entryIndex >= 0)
+        {
+            list[entryIndex] = entry;
+        }
+        else
+        {
+            list.Add(entry);
+        }
+    }
+
 }
