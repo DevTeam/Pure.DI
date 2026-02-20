@@ -194,8 +194,10 @@ class VarsMap(
                                || node.Arg is { Source.Kind: ArgKind.Composition };
             if (node.BindingId == var.Declaration.Node.BindingId)
             {
-                return !isPersistent
-                       && node.Construct is { Source.Kind: MdConstructKind.Override };
+                var keepCurrent = node.ActualLifetime is Lifetime.PerBlock
+                                  && node.Arg is not { Source.Kind: ArgKind.Root }
+                                  && node.Construct is not { Source.Kind: MdConstructKind.Override };
+                return !isPersistent && !keepCurrent;
             }
 
             return !isPersistent;
