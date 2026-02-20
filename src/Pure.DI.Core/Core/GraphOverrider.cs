@@ -215,7 +215,17 @@ class GraphOverrider(
             newDependencies.Add(currentDependency);
         }
 
-        entries.Add(new GraphEntry<DependencyNode, Dependency>(targetNode, newDependencies));
+        var entry = new GraphEntry<DependencyNode, Dependency>(targetNode, newDependencies);
+        var entryIndex = entries.FindIndex(i => Equals(i.Target, targetNode));
+        if (entryIndex >= 0)
+        {
+            entries[entryIndex] = entry;
+        }
+        else
+        {
+            entries.Add(entry);
+        }
+
         return targetNode;
     }
 }
