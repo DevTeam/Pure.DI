@@ -189,12 +189,14 @@ class VarsMap(
             }
 
             var node = i.Value.Declaration.Node;
+            var isPersistent = node.ActualLifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve
+                               || node.Arg is { Source.Kind: ArgKind.Composition };
             if (node.BindingId == var.Declaration.Node.BindingId)
             {
-                return false;
+                return !isPersistent;
             }
 
-            return !(node.ActualLifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve || node.Arg is { Source.Kind: ArgKind.Composition });
+            return !isPersistent;
         }).ToList();
 
         foreach (var item in newItems)
