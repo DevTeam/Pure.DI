@@ -3242,4 +3242,156 @@ public class FuncTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["True"], result);
     }
+
+    [Theory]
+    [InlineData(Lifetime.Singleton)]
+    [InlineData(Lifetime.Scoped)]
+    [InlineData(Lifetime.PerResolve)]
+    [InlineData(Lifetime.PerBlock)]
+    internal async Task ShouldSupportFuncOfFuncOfSingletons(Lifetime lifetime)
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDep1 {}
+                               class Dep1 : IDep1 {}
+                               interface IDep2 {}
+                               class Dep2 : IDep2 { public Dep2(IDep1 d) {} }
+                           
+                               public interface IApp { }
+                           
+                               interface IConfigProvider { }
+                               
+                               class ConfigProvider : IConfigProvider
+                               {
+                                   public ConfigProvider(Func<IApp>? appFactory)
+                                   {
+                                       Console.WriteLine($"appFactory: {(appFactory is null ? "null" : "exists")}");
+                                   }
+                               }
+                               
+                               class App : IApp
+                               {
+                                   public App(IConfigProvider configProvider)
+                                   {
+                                       Console.WriteLine($"configProvider: {(configProvider is null ? "null" : "exists")}");
+                                   }
+                               }
+                               
+                               public partial class Composition
+                               {
+                                   public void Setup() =>
+                                       // Resolve = off 
+                                       DI.Setup(nameof(Composition))
+                                       .Bind<Func<IApp>>().As(Lifetime.#lifetime#).To<Func<IApp>>(ctx => () =>
+                                       {
+                                           ctx.Inject<IApp>(out var appMode);
+                                           return appMode;
+                                       }).Root<Func<IApp>>("App")
+                                       .Bind<IConfigProvider>().As(Lifetime.#lifetime#).To(ctx => {
+                                           ctx.Inject(out Func<IApp> winBackStatusFactory);
+                                           return new ConfigProvider(winBackStatusFactory);
+                                       })
+                                       .Bind<IApp>().As(Lifetime.#lifetime#).To(ctx => {
+                                           ctx.Inject<IConfigProvider>(out var tagManagerSetup);
+                                           return new App(tagManagerSetup);
+                                       });
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var app = composition.App();
+                                   }
+                               }
+                           }
+                           """.Replace("#lifetime#", lifetime.ToString()).RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["appFactory: exists", "configProvider: exists"], result);
+    }
+
+    [Theory]
+    [InlineData(Lifetime.Transient)]
+    [InlineData(Lifetime.Singleton)]
+    [InlineData(Lifetime.Scoped)]
+    internal async Task ShouldSupportFuncOfFuncOfSingletonsWhenAbnormalInjectionLocation(Lifetime lifetime)
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDep1 {}
+                               class Dep1 : IDep1 {}
+                               interface IDep2 {}
+                               class Dep2 : IDep2 { public Dep2(IDep1 d) {} }
+                           
+                               public interface IApp { }
+                           
+                               interface IConfigProvider { }
+                               
+                               class ConfigProvider : IConfigProvider
+                               {
+                                   public ConfigProvider(Func<IApp>? appFactory)
+                                   {
+                                       Console.WriteLine($"appFactory: {(appFactory is null ? "null" : "exists")}");
+                                   }
+                               }
+                               
+                               class App : IApp
+                               {
+                                   public App(IConfigProvider configProvider)
+                                   {
+                                       Console.WriteLine($"configProvider: {(configProvider is null ? "null" : "exists")}");
+                                   }
+                               }
+                               
+                               public partial class Composition
+                               {
+                                   public void Setup() =>
+                                       // Resolve = off 
+                                       DI.Setup(nameof(Composition))
+                                       .Bind<Func<IApp>>().As(Lifetime.#lifetime#).To<Func<IApp>>(ctx => {
+                                           ctx.Inject<IApp>(out var appMode);
+                                           return () => appMode;
+                                       }).Root<Func<IApp>>("App")
+                                       .Bind<IConfigProvider>().As(Lifetime.#lifetime#).To(ctx => {
+                                           ctx.Inject(out Func<IApp> winBackStatusFactory);
+                                           return new ConfigProvider(winBackStatusFactory);
+                                       })
+                                       .Bind<IApp>().As(Lifetime.#lifetime#).To(ctx => {
+                                           ctx.Inject<IConfigProvider>(out var tagManagerSetup);
+                                           return new App(tagManagerSetup);
+                                       });
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var app = composition.App();
+                                   }
+                               }
+                           }
+                           """.Replace("#lifetime#", lifetime.ToString()).RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Logs.Count(i => i.Id == LogId.ErrorCyclicDependency && i.Locations.FirstOrDefault().GetSource() == "var appMode").ShouldBe(1, result);
+    }
 }
