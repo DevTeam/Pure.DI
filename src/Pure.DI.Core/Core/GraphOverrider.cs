@@ -179,12 +179,13 @@ class GraphOverrider(
             var currentDependency = dependency with { Target = targetNode };
             if (!localNodesMap.TryGetValue(currentDependency.Injection, out var overridingSourceNode))
             {
+                var sourceOverrides = overridesMap.ToDictionary();
                 var source = Override(
                     processed,
                     nodesMap,
                     nextLocalOverrides,
                     nextLocalOverrides.Count > 0,
-                    overridesMap,
+                    sourceOverrides,
                     setup,
                     graph,
                     rootNode,

@@ -2425,6 +2425,224 @@ public class OverrideTests
     }
 
     [Fact]
+    public async Task ShouldSupportOverrideInFactoryWithLocalFunctionAndFuncArgs()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using System.Threading.Tasks;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IStorage {}
+
+                               class Storage : IStorage
+                               {
+                               }
+
+                               class Command
+                               {
+                                   public Command(Func<bool> canExecute, Func<Task> execute)
+                                   {
+                                       CanExecute = canExecute;
+                                       Execute = execute;
+                                   }
+
+                                   public Func<bool> CanExecute { get; }
+
+                                   public Func<Task> Execute { get; }
+
+                                   public IDispatcher? Dispatcher { get; set; }
+                               }
+
+                               interface IDispatcher {}
+
+                               class Dispatcher : IDispatcher
+                               {
+                               }
+
+                               class NodeName
+                               {
+                                   public NodeName(string value)
+                                   {
+                                       Value = value;
+                                   }
+
+                                   public string Value { get; }
+                               }
+
+                               interface ITreeNodeViewModel
+                               {
+                                   string Kind { get; }
+                               }
+
+                               class DirectoryNodeViewModel : ITreeNodeViewModel
+                               {
+                                   public DirectoryNodeViewModel(
+                                       Func<Func<bool>, Func<Task>, Command> commandBuilder,
+                                       IStorage storage,
+                                       NodeName name,
+                                       List<ITreeNodeViewModel> children)
+                                   {
+                                       Kind = $"Dir:{name.Value}:{children.Count}";
+                                   }
+
+                                   public string Kind { get; }
+                               }
+
+                               class FileTreeNodeViewModel : ITreeNodeViewModel
+                               {
+                                   public FileTreeNodeViewModel(
+                                       Func<Func<bool>, Func<Task>, Command> commandBuilder,
+                                       IStorage storage,
+                                       NodeName name)
+                                   {
+                                       Kind = $"File:{name.Value}";
+                                   }
+
+                                   public string Kind { get; }
+                               }
+
+                               class NodeFactory
+                               {
+                                   private readonly IStorage _storage;
+                                   private readonly Func<Func<bool>, Func<Task>, Command> _commandBuilder;
+                                   private readonly Func<Func<Func<bool>, Func<Task>, Command>, IStorage, NodeName, List<ITreeNodeViewModel>, ITreeNodeViewModel> _dirFactory;
+                                   private readonly Func<Func<Func<bool>, Func<Task>, Command>, IStorage, NodeName, ITreeNodeViewModel> _fileFactory;
+
+                                   public NodeFactory(
+                                       IStorage storage,
+                                       Func<Func<Func<bool>, Func<Task>, Command>, IStorage, NodeName, List<ITreeNodeViewModel>, ITreeNodeViewModel> dirFactory,
+                                       Func<Func<Func<bool>, Func<Task>, Command>, IStorage, NodeName, ITreeNodeViewModel> fileFactory,
+                                       Func<Func<bool>, Func<Task>, Command> commandBuilder)
+                                   {
+                                       _storage = storage;
+                                       _commandBuilder = commandBuilder;
+                                       _dirFactory = dirFactory;
+                                       _fileFactory = fileFactory;
+                                   }
+
+                                   public ITreeNodeViewModel CreateDir(NodeName name, List<ITreeNodeViewModel> children) =>
+                                       _dirFactory(_commandBuilder, _storage, name, children);
+
+                                   public ITreeNodeViewModel CreateFile(NodeName name) =>
+                                       _fileFactory(_commandBuilder, _storage, name);
+                               }
+
+                               class TreeCompressor
+                               {
+                                   public TreeCompressor(
+                                       Func<NodeName, List<ITreeNodeViewModel>, ITreeNodeViewModel> dirFactory,
+                                       Func<NodeName, ITreeNodeViewModel> fileFactory)
+                                   {
+                                       DirFactory = dirFactory;
+                                       FileFactory = fileFactory;
+                                   }
+
+                                   public Func<NodeName, List<ITreeNodeViewModel>, ITreeNodeViewModel> DirFactory { get; }
+
+                                   public Func<NodeName, ITreeNodeViewModel> FileFactory { get; }
+                               }
+
+                               interface IFileDuplicates
+                               {
+                                   int Id { get; }
+
+                                   string Name { get; }
+                               }
+
+                               class FileDuplicates : IFileDuplicates
+                               {
+                                   public FileDuplicates(int id, string name)
+                                   {
+                                       Id = id;
+                                       Name = name;
+                                   }
+
+                                   public int Id { get; }
+
+                                   public string Name { get; }
+                               }
+
+                               interface IFileDuplicatesViewModel
+                               {
+                                   int Id { get; }
+
+                                   string Name { get; }
+                               }
+
+                               class FileDuplicatesViewModel : IFileDuplicatesViewModel
+                               {
+                                   public FileDuplicatesViewModel(
+                                       IFileDuplicates duplicates,
+                                       NodeFactory nodeFactory,
+                                       TreeCompressor treeCompressor)
+                                   {
+                                       Id = duplicates.Id;
+                                       Name = duplicates.Name;
+                                   }
+
+                                   public int Id { get; }
+
+                                   public string Name { get; }
+                               }
+
+                               class DuplicatesViewModel
+                               {
+                                   public DuplicatesViewModel(Func<IFileDuplicates, IFileDuplicatesViewModel> factory)
+                                   {
+                                       Factory = factory;
+                                   }
+
+                                   public Func<IFileDuplicates, IFileDuplicatesViewModel> Factory { get; }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Hint(Hint.Resolve, "Off")
+                                           .Bind<IStorage>().As(Lifetime.Singleton).To<Storage>()
+                                           .Bind<IDispatcher>().As(Lifetime.Singleton).To<Dispatcher>()
+                                           .Bind().As(Lifetime.Singleton).To<Func<Func<bool>, Func<Task>, Command>>(ctx =>
+                                           {
+                                               ctx.Inject(out IDispatcher dispatcher);
+                                               return (canExecute, execute) =>
+                                                   new Command(canExecute, execute) { Dispatcher = dispatcher };
+                                           })
+                                           .Singleton<NodeFactory, TreeCompressor>()
+                                           .Transient<DirectoryNodeViewModel>()
+                                           .Transient<FileTreeNodeViewModel>()
+                                           .Bind<IFileDuplicatesViewModel>().To<FileDuplicatesViewModel>()
+                                           .Bind().As(Lifetime.Singleton).To<DuplicatesViewModel>()
+                                           .Root<DuplicatesViewModel>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root = composition.Root;
+                                       var vm = root.Factory(new FileDuplicates(42, "custom"));
+                                       Console.WriteLine($"{vm.Id} {vm.Name}");
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["42 custom"], result);
+    }
+
+    [Fact]
     public async Task ShouldSupportStdFuncWithArg()
     {
         // Given
