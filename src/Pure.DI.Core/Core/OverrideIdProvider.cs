@@ -23,10 +23,21 @@ class OverrideIdProvider([Tag(OverridesIdGenerator)] IIdGenerator idGenerator) :
             if (obj.GetType() != GetType()) return false;
             var other = (Key)obj;
             return SymbolEqualityComparer.Default.Equals(_type, other._type)
-                   && (_tags.Count == 0 && other._tags.Count == 0 || _tags.Intersect(other._tags).Any());
+                   && _tags.SetEquals(other._tags);
         }
 
-        public override int GetHashCode() =>
-            SymbolEqualityComparer.Default.GetHashCode(_type);
+        public override int GetHashCode()
+        {
+            var hashCode = SymbolEqualityComparer.Default.GetHashCode(_type);
+            foreach (var tagHashCode in _tags.Select(GetTagHashCode).OrderBy(i => i))
+            {
+                hashCode = (hashCode * 397) ^ tagHashCode;
+            }
+
+            return hashCode;
+        }
+
+        private static int GetTagHashCode(object tag) =>
+            tag.GetHashCode();
     }
 }

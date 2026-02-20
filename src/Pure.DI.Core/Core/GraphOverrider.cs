@@ -67,7 +67,15 @@ class GraphOverrider(
             return targetNode;
         }
 
-        if (processed.TryGetValue(targetNode.Binding.Id, out var node))
+        // Rewritten nodes are context-dependent when any override scope is active.
+        // In such cases we isolate memoization to the current branch to avoid
+        // leaking context-dependent rewrites into sibling branches.
+        var isContextFree = !consumeLocalOverrides
+                            && nodes.Count == 0
+                            && localOverrides.Count == 0
+                            && overrides.Count == 0;
+        var branchProcessed = isContextFree ? processed : processed.ToDictionary();
+        if (branchProcessed.TryGetValue(targetNode.Binding.Id, out var node))
         {
             return node;
         }
@@ -98,7 +106,7 @@ class GraphOverrider(
             overridesEnumerable = [];
         }
 
-        processed.Add(targetNode.Binding.Id, targetNode);
+        branchProcessed[targetNode.Binding.Id] = targetNode;
         var newDependencies = new List<Dependency>(dependencies.Count);
         var lastDependencyPosition = 0;
         using var overridesEnumerator = overridesEnumerable.GetEnumerator();
@@ -181,7 +189,7 @@ class GraphOverrider(
             {
                 var sourceOverrides = overridesMap.ToDictionary();
                 var source = Override(
-                    processed,
+                    branchProcessed,
                     nodesMap,
                     nextLocalOverrides,
                     nextLocalOverrides.Count > 0,
@@ -207,7 +215,17 @@ class GraphOverrider(
             newDependencies.Add(currentDependency);
         }
 
-        entries.Add(new GraphEntry<DependencyNode, Dependency>(targetNode, newDependencies));
+        var entry = new GraphEntry<DependencyNode, Dependency>(targetNode, newDependencies);
+        var entryIndex = entries.FindIndex(i => Equals(i.Target, targetNode));
+        if (entryIndex >= 0)
+        {
+            entries[entryIndex] = entry;
+        }
+        else
+        {
+            entries.Add(entry);
+        }
+
         return targetNode;
     }
 }

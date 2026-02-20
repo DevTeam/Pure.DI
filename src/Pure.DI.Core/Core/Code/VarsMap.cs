@@ -170,7 +170,8 @@ class VarsMap(
     /// </summary>
     private IReadOnlyDictionary<int, VarState> CreateState(Var var) =>
         _map
-            .Where(i => i.Key != var.Declaration.Node.BindingId)
+            .Where(i => i.Key != var.Declaration.Node.BindingId
+                        && i.Value.Declaration.Node.Construct is not { Source.Kind: MdConstructKind.Override })
             .ToDictionary(i => i.Key, i => new VarState(i.Value));
 
     /// <summary>
@@ -189,12 +190,15 @@ class VarsMap(
             }
 
             var node = i.Value.Declaration.Node;
+            var isPersistent = node.ActualLifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve
+                               || node.Arg is { Source.Kind: ArgKind.Composition };
             if (node.BindingId == var.Declaration.Node.BindingId)
             {
-                return false;
+                return !isPersistent
+                       && node.Construct is { Source.Kind: MdConstructKind.Override };
             }
 
-            return !(node.ActualLifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve || node.Arg is not null);
+            return !isPersistent;
         }).ToList();
 
         foreach (var item in newItems)
