@@ -2834,6 +2834,103 @@ public class OverrideTests
     }
 
     [Fact]
+    public async Task ShouldSupportStdFuncWith2ArgsOfSameType()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IClock
+                               {
+                                   DateTimeOffset Now { get; }
+                               }
+                               
+                               class Clock : IClock
+                               {
+                                   public DateTimeOffset Now => DateTimeOffset.Now;
+                               }
+                               
+                               interface IDependency
+                               {
+                                   int Id { get; }
+                                   int SubId { get; }
+                               }
+                               
+                               class Dependency : IDependency
+                               {
+                                   private readonly int _id;
+                                   private readonly int _subId;
+                               
+                                   public Dependency(IClock clock, int id, [Tag("sub")] int subId)
+                                   {
+                                       _id = id;
+                                       _subId = subId;
+                                   }
+                               
+                                   public int Id => _id;
+                                   
+                                   public int SubId => _subId;
+                               }
+                               
+                               interface IService
+                               {
+                                   List<IDependency> Dependencies { get; }
+                               }
+                               
+                               class Service : IService
+                               {
+                                   public Service(Func<int, int, IDependency> dependencyFactory)
+                                   {
+                                       Dependencies = new List<IDependency>
+                                       {
+                                           dependencyFactory(10, 100),
+                                           dependencyFactory(11, 101),
+                                           dependencyFactory(12, 102)
+                                       };
+                                   }
+                               
+                                   public List<IDependency> Dependencies { get; }
+                               }
+                               
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                          .Bind().As(Lifetime.Singleton).To<Clock>()
+                                          .Bind().To<Dependency>()
+                                          .Bind().To<Service>()
+                                          .Root<IService>("Root");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                       Console.WriteLine(service.Dependencies.Count);
+                                       Console.WriteLine($"{service.Dependencies[0].Id}:{service.Dependencies[0].SubId}");
+                                       Console.WriteLine($"{service.Dependencies[1].Id}:{service.Dependencies[1].SubId}");
+                                       Console.WriteLine($"{service.Dependencies[2].Id}:{service.Dependencies[2].SubId}");
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["3", "10:100", "11:101", "12:102"], result);
+    }
+
+    [Fact]
     public async Task ShouldSupportOverrideWhenCtor()
     {
         // Given
