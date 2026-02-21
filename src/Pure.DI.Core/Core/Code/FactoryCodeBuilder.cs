@@ -181,7 +181,7 @@ sealed class FactoryCodeBuilder(
 
         var textLines = new List<TextLine>();
         var hasOverridesLock = false;
-        var isLazy = nodeTools.IsLazy(var.AbstractNode.Node);
+        var isLazy = nodeTools.IsLazy(var.AbstractNode.Node, ctx.RootContext.Graph);
         if (hasOverrides && ctx.IsLockRequired && !isLazy)
         {
             if (!var.Declaration.IsDeclared)

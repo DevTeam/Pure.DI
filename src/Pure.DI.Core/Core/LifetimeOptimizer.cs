@@ -45,7 +45,7 @@ sealed class LifetimeOptimizer(
         var ctx = new RootCompositionDependencyRefCounterContext(node);
         graphWalker.Walk(
             ctx,
-            graph,
+            dependencyGraph,
             root.Node,
             visitor,
             cancellationToken);

@@ -4,7 +4,7 @@ interface IGraphWalker<TContext, T>
 {
     T Walk(
         TContext ctx,
-        IGraph<DependencyNode, Dependency> graph,
+        DependencyGraph dependencyGraph,
         DependencyNode root,
         IGraphVisitor<TContext, T> visitor,
         CancellationToken cancellationToken);

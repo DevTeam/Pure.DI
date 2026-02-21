@@ -2,7 +2,7 @@
 
 interface INodeTools
 {
-    bool IsLazy(DependencyNode node);
+    bool IsLazy(DependencyNode node, DependencyGraph graph);
 
     bool IsBlock(IDependencyNode node);
 

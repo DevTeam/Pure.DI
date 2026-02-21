@@ -3,7 +3,7 @@
 interface IAccumulators
 {
     IEnumerable<(MdAccumulator, Dependency)> GetAccumulators(
-        IGraph<DependencyNode, Dependency> graph,
+        DependencyGraph graph,
         IDependencyNode targetNode);
 
     IEnumerable<Accumulator> CreateAccumulators(

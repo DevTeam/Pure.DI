@@ -6,20 +6,21 @@ sealed class GraphWalker<TContext, T>(INodeTools nodeTools)
 {
     public T Walk(
         TContext ctx,
-        IGraph<DependencyNode, Dependency> graph,
+        DependencyGraph dependencyGraph,
         DependencyNode root,
         IGraphVisitor<TContext, T> visitor,
         CancellationToken cancellationToken)
     {
         HashSet<ProcessedKey> processed = [];
         var nodeInfos = new Stack<NodeInfo>();
-        var visitingInfo = visitor.Create(ctx, graph, root);
-        if (!visitor.Visit(ctx, graph, visitingInfo))
+        var graph = dependencyGraph.Graph;
+        var visitingInfo = visitor.Create(ctx, dependencyGraph, root);
+        if (!visitor.Visit(ctx, dependencyGraph, visitingInfo))
         {
             return visitingInfo;
         }
 
-        nodeInfos.Push(new NodeInfo(root, visitor.Create(ctx, graph, root), ImmutableArray<int>.Empty));
+        nodeInfos.Push(new NodeInfo(root, visitor.Create(ctx, dependencyGraph, root), ImmutableArray<int>.Empty));
         while (nodeInfos.TryPop(out var nodeInfo))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -45,13 +46,13 @@ sealed class GraphWalker<TContext, T>(INodeTools nodeTools)
                     continue;
                 }
 
-                visitingInfo = visitor.AppendDependency(ctx, graph, dependency, nodeInfo.Info);
-                if (!visitor.Visit(ctx, graph, visitingInfo))
+                visitingInfo = visitor.AppendDependency(ctx, dependencyGraph, dependency, nodeInfo.Info);
+                if (!visitor.Visit(ctx, dependencyGraph, visitingInfo))
                 {
                     return visitingInfo;
                 }
 
-                var depIndices = nodeTools.IsLazy(dependency.Source) ? nodeInfo.DepIndices.Add(depIndex++) : ImmutableArray.Create(depIndex++);
+                var depIndices = nodeTools.IsLazy(dependency.Source, dependencyGraph) ? nodeInfo.DepIndices.Add(depIndex++) : ImmutableArray.Create(depIndex++);
                 var processedKey = new ProcessedKey(dependency.Target, dependency.Source, depIndices);
                 if (processed.Add(processedKey))
                 {

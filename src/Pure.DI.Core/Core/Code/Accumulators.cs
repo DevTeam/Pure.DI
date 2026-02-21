@@ -6,7 +6,7 @@ class Accumulators(
     : IAccumulators
 {
     public IEnumerable<(MdAccumulator, Dependency)> GetAccumulators(
-        IGraph<DependencyNode, Dependency> graph,
+        DependencyGraph graph,
         IDependencyNode targetNode)
     {
         var processed = new HashSet<IDependencyNode>();
@@ -19,7 +19,7 @@ class Accumulators(
                 continue;
             }
 
-            if (!graph.TryGetInEdges(node.Node, out var dependencies))
+            if (!graph.Graph.TryGetInEdges(node.Node, out var dependencies))
             {
                 continue;
             }
@@ -27,7 +27,7 @@ class Accumulators(
             foreach (var dependency in dependencies)
             {
                 var source = dependency.Source;
-                if (nodeTools.IsLazy(source.Node))
+                if (nodeTools.IsLazy(source.Node, graph))
                 {
                     continue;
                 }

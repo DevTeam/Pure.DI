@@ -5,21 +5,21 @@ sealed class RootCompositionDependencyRefCounterVisitor(INodeTools nodeTools)
 {
     public ImmutableArray<DependencyNode> Create(
         RootCompositionDependencyRefCounterContext ctx,
-        IGraph<DependencyNode, Dependency> graph,
+        DependencyGraph dependencyGraph,
         DependencyNode rootNode,
         ImmutableArray<DependencyNode> parent) =>
         ImmutableArray.Create(rootNode);
 
     public ImmutableArray<DependencyNode> AppendDependency(
         RootCompositionDependencyRefCounterContext ctx,
-        IGraph<DependencyNode, Dependency> graph,
+        DependencyGraph dependencyGraph,
         Dependency dependency,
         ImmutableArray<DependencyNode> parent = default) =>
         parent.Add(dependency.Source);
 
     public bool Visit(
         RootCompositionDependencyRefCounterContext ctx,
-        IGraph<DependencyNode, Dependency> graph,
+        DependencyGraph dependencyGraph,
         in ImmutableArray<DependencyNode> path)
     {
         var dependencyNode = path.Last();
@@ -33,7 +33,7 @@ sealed class RootCompositionDependencyRefCounterVisitor(INodeTools nodeTools)
         switch (dependencyNode.Lifetime)
         {
             case Lifetime.PerResolve:
-                if (path.Any(nodeTools.IsLazy))
+                if (path.Any(i => nodeTools.IsLazy(i, dependencyGraph)))
                 {
                     ctx.Counts.Clear();
                     return false;

@@ -7,14 +7,14 @@ sealed class CyclicDependencyValidatorVisitor(INodeTools nodeTools)
 {
     public ImmutableArray<Dependency> Create(
         CyclicDependenciesValidatorContext ctx,
-        IGraph<DependencyNode, Dependency> graph,
+        DependencyGraph dependencyGraph,
         DependencyNode rootNode,
         ImmutableArray<Dependency> parent) =>
         ImmutableArray<Dependency>.Empty;
 
     public ImmutableArray<Dependency> AppendDependency(
         CyclicDependenciesValidatorContext ctx,
-        IGraph<DependencyNode, Dependency> graph,
+        DependencyGraph dependencyGraph,
         Dependency dependency,
         ImmutableArray<Dependency> parent = default) =>
         parent.IsDefaultOrEmpty
@@ -23,7 +23,7 @@ sealed class CyclicDependencyValidatorVisitor(INodeTools nodeTools)
 
     public bool Visit(
         CyclicDependenciesValidatorContext ctx,
-        IGraph<DependencyNode, Dependency> graph,
+        DependencyGraph dependencyGraph,
         in ImmutableArray<Dependency> path)
     {
         if (path.Length < 2)
@@ -35,7 +35,7 @@ sealed class CyclicDependencyValidatorVisitor(INodeTools nodeTools)
         foreach (var dependency in path)
         {
             var source = dependency.Source;
-            if (source.Lifetime is Singleton or Scoped or PerResolve or PerBlock && nodeTools.IsLazy(source))
+            if (source.Lifetime is Singleton or Scoped or PerResolve or PerBlock && nodeTools.IsLazy(source, ctx.DependencyGraph))
             {
                 nodes.Clear();
             }

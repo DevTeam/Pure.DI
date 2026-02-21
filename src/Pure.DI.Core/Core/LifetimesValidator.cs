@@ -21,7 +21,7 @@ sealed class LifetimesValidator(
         {
             graphWalker.Walk(
                 new LifetimesValidatorContext(root, errors),
-                graph,
+                dependencyGraph,
                 root.Node,
                 visitor,
                 cancellationToken);

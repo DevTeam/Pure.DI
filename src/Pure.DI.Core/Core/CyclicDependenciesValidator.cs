@@ -13,14 +13,13 @@ sealed class CyclicDependenciesValidator(
 {
     public bool Validate(DependencyGraph dependencyGraph)
     {
-        var graph = dependencyGraph.Graph;
         var errors = new HashSet<object>();
         foreach (var root in dependencyGraph.Roots)
         {
             var ctx = new CyclicDependenciesValidatorContext(dependencyGraph, errors);
             var path = graphWalker.Walk(
                 ctx,
-                graph,
+                dependencyGraph,
                 root.Node,
                 visitor, cancellationToken);
 

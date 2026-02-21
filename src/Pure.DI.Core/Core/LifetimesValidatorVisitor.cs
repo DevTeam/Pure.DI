@@ -8,14 +8,14 @@ sealed class LifetimesValidatorVisitor(
 {
     public ImmutableArray<Dependency> Create(
         LifetimesValidatorContext ctx,
-        IGraph<DependencyNode, Dependency> graph,
+        DependencyGraph dependencyGraph,
         DependencyNode rootNode,
         ImmutableArray<Dependency> parent) =>
         ImmutableArray<Dependency>.Empty;
 
     public ImmutableArray<Dependency> AppendDependency(
         LifetimesValidatorContext ctx,
-        IGraph<DependencyNode, Dependency> graph,
+        DependencyGraph dependencyGraph,
         Dependency dependency,
         ImmutableArray<Dependency> parent = default) =>
         parent.IsDefaultOrEmpty
@@ -24,7 +24,7 @@ sealed class LifetimesValidatorVisitor(
 
     public bool Visit(
         LifetimesValidatorContext ctx,
-        IGraph<DependencyNode, Dependency> graph,
+        DependencyGraph dependencyGraph,
         in ImmutableArray<Dependency> path)
     {
         if (path.IsEmpty)
