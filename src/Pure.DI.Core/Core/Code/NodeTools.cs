@@ -5,10 +5,12 @@ namespace Pure.DI.Core.Code;
 using static Lifetime;
 using SpecialType=Microsoft.CodeAnalysis.SpecialType;
 
-sealed class NodeTools(ITypes types) : INodeTools
+sealed class NodeTools(ITypes types, ICache<(int, SemanticModel), bool> isLazy) : INodeTools
 {
     public bool IsLazy(DependencyNode node, DependencyGraph graph) =>
-        (IsDelegate(node) || IsEnumerable(node) || IsAsyncEnumerable(node)) && (node.Factory is not {} factory || IsLazyFactory(factory, graph.Source.SemanticModel));
+        isLazy.Get((node.BindingId, graph.Source.SemanticModel), _ =>
+            (IsDelegate(node) || IsEnumerable(node) || IsAsyncEnumerable(node))
+            && (node.Factory is not {} factory || IsLazyFactory(factory, graph.Source.SemanticModel)));
 
     public bool IsBlock(IDependencyNode node) =>
         node.ActualLifetime is Singleton or Scoped or PerResolve;

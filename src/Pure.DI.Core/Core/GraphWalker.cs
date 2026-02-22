@@ -20,7 +20,7 @@ sealed class GraphWalker<TContext, T>(INodeTools nodeTools)
             return visitingInfo;
         }
 
-        nodeInfos.Push(new NodeInfo(root, visitor.Create(ctx, dependencyGraph, root), ImmutableArray<int>.Empty));
+        nodeInfos.Push(new NodeInfo(root, visitingInfo, ImmutableArray<int>.Empty));
         while (nodeInfos.TryPop(out var nodeInfo))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -36,11 +36,6 @@ sealed class GraphWalker<TContext, T>(INodeTools nodeTools)
             var depIndex = 0;
             foreach (var dependency in dependencies)
             {
-                if (cancellationToken.IsCancellationRequested)
-                {
-                    break;
-                }
-
                 if (!dependency.IsResolved)
                 {
                     continue;
@@ -52,7 +47,13 @@ sealed class GraphWalker<TContext, T>(INodeTools nodeTools)
                     return visitingInfo;
                 }
 
-                var depIndices = nodeTools.IsLazy(dependency.Source, dependencyGraph) ? nodeInfo.DepIndices.Add(depIndex++) : ImmutableArray.Create(depIndex++);
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    break;
+                }
+
+                var isLazy = nodeTools.IsLazy(dependency.Source, dependencyGraph);
+                var depIndices = isLazy ? nodeInfo.DepIndices.Add(depIndex++) : ImmutableArray.Create(depIndex++);
                 var processedKey = new ProcessedKey(dependency.Target, dependency.Source, depIndices);
                 if (processed.Add(processedKey))
                 {
@@ -81,8 +82,13 @@ sealed class GraphWalker<TContext, T>(INodeTools nodeTools)
             unchecked
             {
                 var hashCode = _target.GetHashCode();
-                hashCode = hashCode * 397 ^ _target.GetHashCode();
                 hashCode = hashCode * 397 ^ _source.GetHashCode();
+                // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
+                foreach (var depIndex in _depIndices)
+                {
+                    hashCode = hashCode * 397 ^ depIndex;
+                }
+
                 _hashCode = hashCode;
             }
         }
@@ -95,7 +101,7 @@ sealed class GraphWalker<TContext, T>(INodeTools nodeTools)
                 return false;
             }
 
-            var length = _depIndices.Length < other._depIndices.Length ? _depIndices.Length : other._depIndices.Length;
+            var length = Math.Min(_depIndices.Length, other._depIndices.Length);
             // ReSharper disable once LoopCanBeConvertedToQuery
             return _depIndices.AsSpan()[..length].SequenceEqual(other._depIndices.AsSpan()[..length]);
         }

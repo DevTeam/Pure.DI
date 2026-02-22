@@ -7,7 +7,6 @@ using Microsoft.CodeAnalysis.Operations;
 sealed class Semantic(
     IInjectionSiteFactory injectionSiteFactory,
     IWildcardMatcher wildcardMatcher,
-    ITypes types,
     ISmartTags smartTags,
     ILocationProvider locationProvider,
     CancellationToken cancellationToken)
@@ -98,7 +97,7 @@ sealed class Semantic(
                     var valueStr = memberAccessExpressionSyntax.Name.Identifier.Text;
                     switch (classIdentifierName.Identifier.Text)
                     {
-                        case nameof(CompositionKind) when IsSpecialType(semanticModel, node, SpecialType.CompositionKind):
+                        case nameof(CompositionKind):
                             if (Enum.TryParse<CompositionKind>(valueStr, out var compositionKindValue) && compositionKindValue is T compositionKind)
                             {
                                 return compositionKind;
@@ -106,7 +105,7 @@ sealed class Semantic(
 
                             break;
 
-                        case nameof(Lifetime) when IsSpecialType(semanticModel, node, SpecialType.Lifetime):
+                        case nameof(Lifetime):
                             if (Enum.TryParse<Lifetime>(valueStr, out var lifetimeValue) && lifetimeValue is T lifetime)
                             {
                                 return lifetime;
@@ -303,17 +302,13 @@ sealed class Semantic(
 
         return text switch
         {
-            nameof(Tag.Type) when IsSpecialType(semanticModel, node, SpecialType.Tag) => (T)(object)Tag.Type,
-            nameof(Tag.Unique) when IsSpecialType(semanticModel, node, SpecialType.Tag) => (T)(object)Tag.Unique,
-            nameof(Tag.Any) when IsSpecialType(semanticModel, node, SpecialType.Tag) => (T)(object)Tag.Any,
+            nameof(Tag.Type) => (T)(object)Tag.Type,
+            nameof(Tag.Unique) => (T)(object)Tag.Unique,
+            nameof(Tag.Any) => (T)(object)Tag.Any,
             _ => (T)smartTags.Register(smartTagKind, text)
         };
     }
 
     public bool IsValidNamespace(INamespaceSymbol? namespaceSymbol) =>
         namespaceSymbol is { IsImplicitlyDeclared: false };
-
-    private bool IsSpecialType(SemanticModel semanticModel, SyntaxNode node, SpecialType specialType) =>
-        semanticModel.GetTypeInfo(node).Type is {} type
-        && types.TypeEquals(type, types.TryGet(specialType, semanticModel.Compilation));
 }

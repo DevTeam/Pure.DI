@@ -1,7 +1,6 @@
 ﻿namespace Pure.DI.Core;
 
-sealed class Metadata(
-    ITypes types)
+sealed class Metadata
     : IMetadata
 {
     public bool IsMetadata(SyntaxNode node, SemanticModel? semanticModel, CancellationToken cancellationToken)
@@ -24,21 +23,10 @@ sealed class Metadata(
                 case MemberAccessExpressionSyntax memberAccess
                     when memberAccess.Kind() == SyntaxKind.SimpleMemberAccessExpression
                          && memberAccess.Name.Identifier.Text == nameof(DI.Setup):
-
-                    if (semanticModel is null || ReturnConfiguration(curInvocation, semanticModel))
-                    {
-                        return true;
-                    }
-
-                    break;
+                    return true;
             }
         }
 
         return false;
     }
-
-    private bool ReturnConfiguration(InvocationExpressionSyntax invocation, SemanticModel semanticModel) =>
-        semanticModel.GetTypeInfo(invocation) is var typeInfo
-        && (typeInfo.Type ?? typeInfo.ConvertedType) is {} type
-        && types.TypeEquals(type, types.TryGet(SpecialType.IConfiguration, semanticModel.Compilation));
 }
