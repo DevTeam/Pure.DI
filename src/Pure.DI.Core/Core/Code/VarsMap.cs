@@ -4,16 +4,10 @@ namespace Pure.DI.Core.Code;
 /// <summary>
 /// Default implementation of <see cref="IVarsMap"/>.
 /// </summary>
-/// <param name="idGenerator">The ID generator.</param>
-/// <param name="nameProvider">The name provider.</param>
-/// <param name="cycleTools">The cycle tools.</param>
-/// <param name="lifetimeOptimizer">The lifetime optimizer.</param>
-/// <param name="constructors">The constructors tools.</param>
 class VarsMap(
     [Tag(Tag.VarNameIdGenerator)] IIdGenerator idGenerator,
     INameProvider nameProvider,
     ICycleTools cycleTools,
-    ILifetimeOptimizer lifetimeOptimizer,
     IConstructors constructors)
     : IVarsMap
 {
@@ -31,18 +25,8 @@ class VarsMap(
     /// <inheritdoc />
     public VarInjection GetInjection(DependencyGraph graph, Root root, in Injection injection, IDependencyNode node)
     {
-        var hasCycle = cycleTools.GetCyclicNode(graph.Graph, node.Node) == node.Node;
         VarInjection varInjection;
         var trace = new StringBuilder();
-        if (!hasCycle)
-        {
-            var optimizedLifetime = lifetimeOptimizer.Optimize(root, graph, node, trace);
-            if (optimizedLifetime != node.Lifetime)
-            {
-                node = new OptimizedNode(node, optimizedLifetime);
-            }
-        }
-
         ImmutableArray<string> varTrace;
         switch (node.ActualLifetime)
         {
@@ -73,7 +57,7 @@ class VarsMap(
 
         IsThreadSafe |= IsThreadSafeNode(node);
 
-        varInjection.Var.HasCycle = hasCycle;
+        varInjection.Var.HasCycle = cycleTools.GetCyclicNode(graph.Graph, node.Node) == node.Node;
         return varInjection;
     }
 
@@ -304,23 +288,5 @@ class VarsMap(
                 variable.CodeExpression)
         {
         }
-    }
-
-    private record OptimizedNode(
-        IDependencyNode BaseNode,
-        Lifetime ActualLifetime)
-        : IDependencyNode
-    {
-        public int BindingId => BaseNode.BindingId;
-
-        public MdBinding Binding => BaseNode.Binding;
-
-        public Lifetime Lifetime => BaseNode.Lifetime;
-
-        public DpArg? Arg => BaseNode.Arg;
-
-        public DpConstruct? Construct => BaseNode.Construct;
-
-        public DependencyNode Node => BaseNode.Node;
     }
 }

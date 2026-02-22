@@ -293,10 +293,10 @@ sealed class Semantic(
         // ReSharper disable once InvertIf
         if (semanticModel.SyntaxTree == node.SyntaxTree)
         {
-            var identifierOperation = semanticModel.GetOperation(node);
-            if (identifierOperation is not IInvalidOperation && identifierOperation?.ConstantValue.Value is T identifierValue)
+            var value = semanticModel.GetConstantValue(node);
+            if (value.Value is T val)
             {
-                return identifierValue;
+                return val;
             }
         }
 
