@@ -81,6 +81,7 @@ sealed class GraphWalker<TContext, T>(INodeTools nodeTools)
             unchecked
             {
                 var hashCode = _target.GetHashCode();
+                hashCode = hashCode * 397 ^ _target.GetHashCode();
                 hashCode = hashCode * 397 ^ _source.GetHashCode();
                 _hashCode = hashCode;
             }
