@@ -76,174 +76,183 @@ sealed class Semantic(
 
     public T? GetConstantValue<T>(SemanticModel semanticModel, SyntaxNode node, SmartTagKind smartTagKind)
     {
-        switch (node)
+        // Fast path: literal expressions (no semantic model needed)
+        if (node is LiteralExpressionSyntax literalExpression)
         {
-            case LiteralExpressionSyntax literalExpression:
+            if (literalExpression.IsKind(SyntaxKind.DefaultLiteralExpression)
+                || literalExpression.IsKind(SyntaxKind.NullLiteralExpression))
             {
-                if (literalExpression.IsKind(SyntaxKind.DefaultLiteralExpression)
-                    || literalExpression.IsKind(SyntaxKind.NullLiteralExpression))
-                {
-                    return default;
-                }
-
-                return (T?)literalExpression.Token.Value;
+                return default;
             }
 
-            case MemberAccessExpressionSyntax memberAccessExpressionSyntax
-                when memberAccessExpressionSyntax.IsKind(SyntaxKind.SimpleMemberAccessExpression):
+            return (T?)literalExpression.Token.Value;
+        }
+
+        // Fast path: simple member access expressions for enums (no semantic model needed)
+        if (node is MemberAccessExpressionSyntax memberAccess && memberAccess.IsKind(SyntaxKind.SimpleMemberAccessExpression))
+        {
+            if (memberAccess.Expression is IdentifierNameSyntax classIdentifier)
             {
-                if (memberAccessExpressionSyntax.Expression is IdentifierNameSyntax classIdentifierName)
+                var valueStr = memberAccess.Name.Identifier.Text;
+                var className = classIdentifier.Identifier.Text;
+
+                // Fast path: parse enums from syntax
+                if (TryParseEnumFromMemberAccess<T>(className, valueStr, out var enumValue))
                 {
-                    var valueStr = memberAccessExpressionSyntax.Name.Identifier.Text;
-                    switch (classIdentifierName.Identifier.Text)
-                    {
-                        case nameof(CompositionKind):
-                            if (Enum.TryParse<CompositionKind>(valueStr, out var compositionKindValue) && compositionKindValue is T compositionKind)
-                            {
-                                return compositionKind;
-                            }
-
-                            break;
-
-                        case nameof(Lifetime):
-                            if (Enum.TryParse<Lifetime>(valueStr, out var lifetimeValue) && lifetimeValue is T lifetime)
-                            {
-                                return lifetime;
-                            }
-
-                            break;
-
-                        case nameof(Name):
-                        case nameof(Tag) when typeof(T) == typeof(object):
-                            return GetConstantValue<T>(semanticModel, node, smartTagKind, valueStr);
-                    }
+                    return enumValue;
                 }
 
-                break;
-            }
-
-            case IdentifierNameSyntax identifierNameSyntax when typeof(T) == typeof(object):
-                return GetConstantValue<T>(semanticModel, node, smartTagKind, identifierNameSyntax.Identifier.Text);
-
-            case InvocationExpressionSyntax invocationExpressionSyntax:
-            {
-                switch (invocationExpressionSyntax.Expression)
+                // Fast path: Name and Tag (no semantic model needed)
+                if (className is nameof(Name) or nameof(Tag) && typeof(T) == typeof(object))
                 {
-                    case MemberAccessExpressionSyntax { Name.Identifier.Text: nameof(Tag.On), Expression: IdentifierNameSyntax { Identifier.Text: nameof(Tag) } }:
-                        if (invocationExpressionSyntax.ArgumentList.Arguments is var injectionSitesArgs)
-                        {
-                            var injectionSites = injectionSitesArgs
-                                .Select(injectionSiteArg => (Source: injectionSiteArg.Expression, Value: GetConstantValue<string>(semanticModel, injectionSiteArg.Expression, smartTagKind)))
-                                .Where(i => !string.IsNullOrWhiteSpace(i.Value))
-                                .Select(i => new MdInjectionSite(i.Source, i.Value!))
-                                .ToImmutableArray();
-
-                            return (T)MdTag.CreateTagOnValue(invocationExpressionSyntax, injectionSites);
-                        }
-
-                        // ReSharper disable once HeuristicUnreachableCode
-                        break;
-
-                    case MemberAccessExpressionSyntax { Name: GenericNameSyntax { TypeArgumentList.Arguments: [{} typeArg] }, Name.Identifier.Text: nameof(Tag.OnConstructorArg), Expression: IdentifierNameSyntax { Identifier.Text: nameof(Tag) } }:
-                        if (invocationExpressionSyntax.ArgumentList.Arguments is [{} ctorArgName])
-                        {
-                            var name = GetRequiredConstantValue<string>(semanticModel, ctorArgName.Expression, smartTagKind);
-                            var ctor = GetTypeSymbol<ITypeSymbol>(semanticModel, typeArg)
-                                .GetMembers()
-                                .OfType<IMethodSymbol>()
-                                .FirstOrDefault(i =>
-                                    IsAccessible(i)
-                                    && !i.IsStatic
-                                    && i.Parameters.Any(p => wildcardMatcher.Match(name.AsSpan(), p.Name.AsSpan())));
-
-                            if (ctor is null)
-                            {
-                                throw new CompileErrorException(
-                                    string.Format(Strings.Error_Template_NoAccessibleConstructor, typeArg, name),
-                                    ImmutableArray.Create(locationProvider.GetLocation(invocationExpressionSyntax)),
-                                    LogId.ErrorNoAccessibleConstructorForTagOn,
-                                    nameof(Strings.Error_Template_NoAccessibleConstructor));
-                            }
-
-                            var injectionSite = injectionSiteFactory.CreateInjectionSite(ctorArgName.Expression, ctor, name);
-                            return (T)MdTag.CreateTagOnValue(invocationExpressionSyntax, ImmutableArray.Create(injectionSite));
-                        }
-
-                        break;
-
-                    case MemberAccessExpressionSyntax { Name: GenericNameSyntax { TypeArgumentList.Arguments: [{} typeArg] }, Name.Identifier.Text: nameof(Tag.OnMethodArg), Expression: IdentifierNameSyntax { Identifier.Text: nameof(Tag) } }:
-                        if (invocationExpressionSyntax.ArgumentList.Arguments is [{} methodNameArg, {} methodArgName])
-                        {
-                            var methodName = GetRequiredConstantValue<string>(semanticModel, methodNameArg.Expression, smartTagKind);
-                            var methodArg = GetRequiredConstantValue<string>(semanticModel, methodArgName.Expression, smartTagKind);
-                            var method = GetTypeSymbol<ITypeSymbol>(semanticModel, typeArg)
-                                .GetMembers()
-                                .OfType<IMethodSymbol>()
-                                .FirstOrDefault(i =>
-                                    i.MethodKind == MethodKind.Ordinary
-                                    && IsAccessible(i)
-                                    && wildcardMatcher.Match(methodName.AsSpan(), i.Name.AsSpan())
-                                    && i.Parameters.Any(p => wildcardMatcher.Match(methodArg.AsSpan(), p.Name.AsSpan())));
-
-                            if (method is null)
-                            {
-                                throw new CompileErrorException(
-                                    string.Format(Strings.Error_Template_NoAccessibleMethod, typeArg, methodName, methodArg),
-                                    ImmutableArray.Create(locationProvider.GetLocation(invocationExpressionSyntax)),
-                                    LogId.ErrorNoAccessibleMethodForTagOn,
-                                    nameof(Strings.Error_Template_NoAccessibleMethod));
-                            }
-
-                            var injectionSite = injectionSiteFactory.CreateInjectionSite(methodArgName.Expression, method, methodArg);
-                            if (MdTag.CreateTagOnValue(invocationExpressionSyntax, ImmutableArray.Create(injectionSite)) is T tagValue)
-                            {
-                                return tagValue;
-                            }
-                        }
-
-                        break;
-
-                    case MemberAccessExpressionSyntax { Name: GenericNameSyntax { TypeArgumentList.Arguments: [{} typeArg] }, Name.Identifier.Text: nameof(Tag.OnMember), Expression: IdentifierNameSyntax { Identifier.Text: nameof(Tag) } }:
-                        if (invocationExpressionSyntax.ArgumentList.Arguments is [{} memberNameArg])
-                        {
-                            var name = GetRequiredConstantValue<string>(semanticModel, memberNameArg.Expression, smartTagKind);
-                            var type = GetTypeSymbol<ITypeSymbol>(semanticModel, typeArg);
-                            var member = type
-                                .GetMembers()
-                                .FirstOrDefault(i =>
-                                    IsAccessible(i)
-                                    && i is IFieldSymbol { IsReadOnly: false, IsConst: false } or IPropertySymbol { IsReadOnly: false, SetMethod: not null }
-                                    && wildcardMatcher.Match(name.AsSpan(), i.Name.AsSpan()));
-
-                            if (member is null)
-                            {
-                                throw new CompileErrorException(
-                                    string.Format(Strings.Error_Template_NoAccessibleFieldOrProperty, name, typeArg),
-                                    ImmutableArray.Create(locationProvider.GetLocation(invocationExpressionSyntax)),
-                                    LogId.ErrorNoAccessibleFieldOrPropertyForTagOn,
-                                    nameof(Strings.Error_Template_NoAccessibleFieldOrProperty));
-                            }
-
-                            var injectionSite = injectionSiteFactory.CreateInjectionSite(memberNameArg, type, name);
-                            return (T)MdTag.CreateTagOnValue(invocationExpressionSyntax, ImmutableArray.Create(injectionSite));
-                        }
-
-                        break;
+                    return GetConstantValue<T>(semanticModel, node, smartTagKind, valueStr);
                 }
-
-                break;
             }
         }
 
+        // Fast path: identifier names (no semantic model needed)
+        if (node is IdentifierNameSyntax identifierName && typeof(T) == typeof(object))
+        {
+            return GetConstantValue<T>(semanticModel, node, smartTagKind, identifierName.Identifier.Text);
+        }
+
+        // Fast path: Tag.* invocations (some semantic model usage)
+        // ReSharper disable once InvertIf
+        if (node is InvocationExpressionSyntax invocation)
+        {
+            var value = TryProcessTagInvocation<T>(semanticModel, invocation, smartTagKind);
+            if (value is not null)
+            {
+                return value;
+            }
+        }
+
+        // Last resort: use semantic model (expensive operations)
+        return GetConstantValueFromSemanticModel<T>(semanticModel, node);
+    }
+
+    private T? TryProcessTagInvocation<T>(SemanticModel semanticModel, InvocationExpressionSyntax invocation, SmartTagKind smartTagKind)
+    {
+        if (invocation.Expression is not MemberAccessExpressionSyntax memberAccess)
+        {
+            return default;
+        }
+
+        switch (memberAccess)
+        {
+            case { Name.Identifier.Text: nameof(Tag.On), Expression: IdentifierNameSyntax { Identifier.Text: nameof(Tag) } }:
+                if (invocation.ArgumentList.Arguments is var injectionSitesArgs)
+                {
+                    var injectionSites = injectionSitesArgs
+                        .Select(injectionSiteArg => (Source: injectionSiteArg.Expression, Value: GetConstantValue<string>(semanticModel, injectionSiteArg.Expression, smartTagKind)))
+                        .Where(i => !string.IsNullOrWhiteSpace(i.Value))
+                        .Select(i => new MdInjectionSite(i.Source, i.Value!))
+                        .ToImmutableArray();
+
+                    return (T)MdTag.CreateTagOnValue(invocation, injectionSites);
+                }
+                break;
+
+            case { Name: GenericNameSyntax { TypeArgumentList.Arguments: [{} typeArg] }, Name.Identifier.Text: nameof(Tag.OnConstructorArg), Expression: IdentifierNameSyntax { Identifier.Text: nameof(Tag) } }:
+                if (invocation.ArgumentList.Arguments is [{} ctorArgName])
+                {
+                    var name = GetRequiredConstantValue<string>(semanticModel, ctorArgName.Expression, smartTagKind);
+                    var ctor = GetTypeSymbol<ITypeSymbol>(semanticModel, typeArg)
+                        .GetMembers()
+                        .OfType<IMethodSymbol>()
+                        .FirstOrDefault(i =>
+                            IsAccessible(i)
+                            && !i.IsStatic
+                            && i.Parameters.Any(p => wildcardMatcher.Match(name.AsSpan(), p.Name.AsSpan())));
+
+                    if (ctor is null)
+                    {
+                        throw new CompileErrorException(
+                            string.Format(Strings.Error_Template_NoAccessibleConstructor, typeArg, name),
+                            ImmutableArray.Create(locationProvider.GetLocation(invocation)),
+                            LogId.ErrorNoAccessibleConstructorForTagOn,
+                            nameof(Strings.Error_Template_NoAccessibleConstructor));
+                    }
+
+                    var injectionSite = injectionSiteFactory.CreateInjectionSite(ctorArgName.Expression, ctor, name);
+                    return (T)MdTag.CreateTagOnValue(invocation, ImmutableArray.Create(injectionSite));
+                }
+                break;
+
+            case { Name: GenericNameSyntax { TypeArgumentList.Arguments: [{} typeArg] }, Name.Identifier.Text: nameof(Tag.OnMethodArg), Expression: IdentifierNameSyntax { Identifier.Text: nameof(Tag) } }:
+                if (invocation.ArgumentList.Arguments is [{} methodNameArg, {} methodArgName])
+                {
+                    var methodName = GetRequiredConstantValue<string>(semanticModel, methodNameArg.Expression, smartTagKind);
+                    var methodArg = GetRequiredConstantValue<string>(semanticModel, methodArgName.Expression, smartTagKind);
+                    var method = GetTypeSymbol<ITypeSymbol>(semanticModel, typeArg)
+                        .GetMembers()
+                        .OfType<IMethodSymbol>()
+                        .FirstOrDefault(i =>
+                            i.MethodKind == MethodKind.Ordinary
+                            && IsAccessible(i)
+                            && wildcardMatcher.Match(methodName.AsSpan(), i.Name.AsSpan())
+                            && i.Parameters.Any(p => wildcardMatcher.Match(methodArg.AsSpan(), p.Name.AsSpan())));
+
+                    if (method is null)
+                    {
+                        throw new CompileErrorException(
+                            string.Format(Strings.Error_Template_NoAccessibleMethod, typeArg, methodName, methodArg),
+                            ImmutableArray.Create(locationProvider.GetLocation(invocation)),
+                            LogId.ErrorNoAccessibleMethodForTagOn,
+                            nameof(Strings.Error_Template_NoAccessibleMethod));
+                    }
+
+                    var injectionSite = injectionSiteFactory.CreateInjectionSite(methodArgName.Expression, method, methodArg);
+                    if (MdTag.CreateTagOnValue(invocation, ImmutableArray.Create(injectionSite)) is T tagValue)
+                    {
+                        return tagValue;
+                    }
+                }
+                break;
+
+            case { Name: GenericNameSyntax { TypeArgumentList.Arguments: [{} typeArg] }, Name.Identifier.Text: nameof(Tag.OnMember), Expression: IdentifierNameSyntax { Identifier.Text: nameof(Tag) } }:
+                if (invocation.ArgumentList.Arguments is [{} memberNameArg])
+                {
+                    var name = GetRequiredConstantValue<string>(semanticModel, memberNameArg.Expression, smartTagKind);
+                    var type = GetTypeSymbol<ITypeSymbol>(semanticModel, typeArg);
+                    var member = type
+                        .GetMembers()
+                        .FirstOrDefault(i =>
+                            IsAccessible(i)
+                            && i is IFieldSymbol { IsReadOnly: false, IsConst: false } or IPropertySymbol { IsReadOnly: false, SetMethod: not null }
+                            && wildcardMatcher.Match(name.AsSpan(), i.Name.AsSpan()));
+
+                    if (member is null)
+                    {
+                        throw new CompileErrorException(
+                            string.Format(Strings.Error_Template_NoAccessibleFieldOrProperty, name, typeArg),
+                            ImmutableArray.Create(locationProvider.GetLocation(invocation)),
+                            LogId.ErrorNoAccessibleFieldOrPropertyForTagOn,
+                            nameof(Strings.Error_Template_NoAccessibleFieldOrProperty));
+                    }
+
+                    var injectionSite = injectionSiteFactory.CreateInjectionSite(memberNameArg, type, name);
+                    return (T)MdTag.CreateTagOnValue(invocation, ImmutableArray.Create(injectionSite));
+                }
+                break;
+        }
+
+        return default;
+    }
+
+    private T GetConstantValueFromSemanticModel<T>(SemanticModel semanticModel, SyntaxNode node)
+    {
         // ReSharper disable once InvertIf
         if (semanticModel.SyntaxTree == node.SyntaxTree)
         {
+            // Try GetConstantValue first (lighter weight operation)
             var optionalValue = semanticModel.GetConstantValue(node);
             if (TryGetValueOf<T>(optionalValue.Value, out var val))
             {
                 return val;
             }
 
+            // Try GetOperation as last resort (expensive operation!)
             var operation = semanticModel.GetOperation(node);
             if (TryGetValueOf<T>(operation?.ConstantValue.Value, out var val2))
             {
@@ -261,6 +270,36 @@ sealed class Semantic(
             ImmutableArray.Create(locationProvider.GetLocation(node)),
             LogId.ErrorMustBeApiCall,
             nameof(Strings.Error_Template_MustBeApiCall));
+    }
+
+    private static bool TryParseEnumFromMemberAccess<T>(string enumTypeName, string valueStr, [NotNullWhen(true)] out T? val)
+    {
+        val = default;
+        switch (enumTypeName)
+        {
+            case nameof(CompositionKind) when Enum.TryParse<CompositionKind>(valueStr, out var compositionKindValue) && compositionKindValue is T compositionKind:
+                val = compositionKind;
+                return true;
+
+            case nameof(Lifetime) when Enum.TryParse<Lifetime>(valueStr, out var lifetimeValue) && lifetimeValue is T lifetime:
+                val = lifetime;
+                return true;
+
+            case nameof(RootKinds) when Enum.TryParse<RootKinds>(valueStr, out var rootKindsValue) && rootKindsValue is T rootKinds:
+                val = rootKinds;
+                return true;
+
+            case nameof(SetupContextKind) when Enum.TryParse<SetupContextKind>(valueStr, out var setupContextKindValue) && setupContextKindValue is T setupContextKind:
+                val = setupContextKind;
+                return true;
+
+            case nameof(Hint) when Enum.TryParse<Hint>(valueStr, out var hintValue) && hintValue is T hint:
+                val = hint;
+                return true;
+
+            default:
+                return false;
+        }
     }
 
     private static bool TryGetValueOf<T>(object? obj, [NotNullWhen(true)] out T? val)
