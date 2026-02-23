@@ -2,9 +2,19 @@
 
 namespace Pure.DI.Core;
 
-sealed class Marker(IGenericTypeArguments genericTypeArguments) : IMarker
+sealed class Marker(
+    IGenericTypeArguments genericTypeArguments,
+    ICache<Marker.BasedMarkerKey, bool> markerBasedCache,
+    ICache<Marker.MarkerKey, bool> markerCache): IMarker
 {
     public bool IsMarkerBased(MdSetup setup, ITypeSymbol type) =>
+        markerCache.Get(new MarkerKey(type), _ => IsMarkerInternal(setup, type))
+        || markerBasedCache.Get(new BasedMarkerKey(type), _ => IsMarkerBasedInternal(setup, type));
+
+    public bool IsMarker(MdSetup setup, ITypeSymbol type) =>
+        markerCache.Get(new MarkerKey(type), _ => IsMarkerInternal(setup, type));
+
+    private bool IsMarkerBasedInternal(MdSetup setup, ITypeSymbol type) =>
         IsMarker(setup, type) || type switch
         {
             INamedTypeSymbol { IsGenericType: false } => false,
@@ -13,9 +23,29 @@ sealed class Marker(IGenericTypeArguments genericTypeArguments) : IMarker
             _ => false
         };
 
-    public bool IsMarker(MdSetup setup, ITypeSymbol type) =>
+    private bool IsMarkerInternal(MdSetup setup, ITypeSymbol type) =>
         genericTypeArguments.IsGenericTypeArgument(setup, type)
         || type.GetAttributes()
             .Where(i => i.AttributeClass is not null)
             .Any(i => genericTypeArguments.IsGenericTypeArgumentAttribute(setup, i.AttributeClass!));
+
+    internal class MarkerKeyBase(ITypeSymbol typeSymbol)
+    {
+        private readonly ITypeSymbol _typeSymbol = typeSymbol;
+
+        public override bool Equals(object? obj)
+        {
+            if (obj is null) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            var other = (MarkerKeyBase)obj;
+            return SymbolEqualityComparer.Default.Equals(_typeSymbol, other._typeSymbol);
+        }
+
+        public override int GetHashCode() => SymbolEqualityComparer.Default.GetHashCode(_typeSymbol);
+    }
+
+    internal class BasedMarkerKey(ITypeSymbol typeSymbol) : MarkerKeyBase(typeSymbol);
+
+    internal class MarkerKey(ITypeSymbol typeSymbol) : MarkerKeyBase(typeSymbol);
 }

@@ -5,7 +5,7 @@ using System.Diagnostics;
 static class DebugHelper
 {
     [Conditional("DEBUG_MODE")]
-    public static void Debug()
+    public static void DebugIfNeeded()
     {
         if (!Debugger.IsAttached)
         {
