@@ -1,0 +1,140 @@
+<#@ template language="C#" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System" #>
+<#
+	const int hierarchy = 3;
+	const int count = 3;
+	var total = 1;
+	var methodIndex = 0;
+	var random = new Random();
+
+	var lifetimes = new[]
+	{
+		"Lifetime.Transient",
+		"Lifetime.Singleton",
+		"Lifetime.PerBlock",
+		"Lifetime.PerResolve"
+	};
+
+	string GetRandomLifetime()
+	{
+		return lifetimes[random.Next(lifetimes.Length)];
+	}
+
+	var bindings = new List<string>();
+	var declarations = new StringBuilder();
+
+	void GenerateDependencies(int index, string prefix, int depth)
+	{
+		total++;
+		var interfaceName = $"IDependency_{prefix}{index}";
+		var className = $"Dependency_{prefix}{index}";
+		declarations.AppendLine($"public interface {interfaceName};");
+		declarations.AppendLine();
+
+		declarations.Append($"public class {className}(");
+
+		var dependencies = new List<string>();
+		if (depth < count)
+		{
+			for (var i = 0; i < hierarchy; i++)
+			{
+				dependencies.Add($"IDependency_{prefix}{index}_{i} dep{depth}{i}");
+			}
+		}
+
+		if (dependencies.Count > 0)
+		{
+			declarations.Append(string.Join(", ", dependencies));
+		}
+		declarations.AppendLine($"): {interfaceName};");
+		declarations.AppendLine();
+
+		// Generate nested dependencies
+		if (depth >= count)
+		{
+			return;
+		}
+
+		for (var i = 0; i < hierarchy; i++)
+		{
+			var newPrefix = $"{prefix}{index}_";
+			GenerateDependencies(i, newPrefix, depth + 1);
+
+			var nestedInterfaceName = $"IDependency_{newPrefix}{i}";
+			var nestedClassName = $"Dependency_{newPrefix}{i}";
+			var nestedLifetime = lifetimes[random.Next(lifetimes.Length)];
+
+			var binding = new StringBuilder();
+			var methodName = methodIndex++;
+			binding.AppendLine($"\tprivate void Setup_{methodName}() => DI.Setup()");
+			binding.AppendLine($"\t\t.Bind<{nestedInterfaceName}>().As({nestedLifetime}).To(ctx => {{");
+			binding.AppendLine($"\t\t\tctx.Inject<{nestedClassName}>(out var val{depth}{i});");
+			binding.AppendLine($"\t\t\treturn val{depth}{i};");
+			binding.AppendLine($"\t\t}}).Root<{nestedInterfaceName}>();");
+
+			bindings.Add(binding.ToString());
+		}
+	}
+
+	// Generate interface and class declarations
+	declarations.AppendLine("public interface IRoot;");
+	declarations.AppendLine();
+	declarations.Append("public class Root(");
+
+	var rootDependencies = new List<string>();
+	for (var i = 0; i < hierarchy; i++)
+	{
+		rootDependencies.Add($"IDependency_{i} dep{i}");
+	}
+
+	declarations.Append(string.Join(", ", rootDependencies));
+	declarations.AppendLine("): IRoot;");
+	declarations.AppendLine();
+
+	// Generate dependencies recursively
+	for (var i = 0; i < hierarchy; i++)
+	{
+		GenerateDependencies(i, "", 0);
+	}
+
+	// Root binding
+	var rootBinding = new StringBuilder();
+	var rootLifetime = GetRandomLifetime();
+	rootBinding.AppendLine("\tprivate void Setup() => DI.Setup()");
+	rootBinding.AppendLine($"\t\t.Bind<IRoot>().As({rootLifetime}).To<Root>().Root<IRoot>(\"Root\");");
+	bindings.Insert(0, rootBinding.ToString());
+
+	// Add root bindings for each IDependency_
+	for (var i = 0; i < hierarchy; i++)
+	{
+		var lifetime = GetRandomLifetime();
+		var binding = new StringBuilder();
+		var methodName = methodIndex++;
+		binding.AppendLine($"\tprivate void Setup_{methodName}() => DI.Setup()");
+		binding.AppendLine($"\t\t.Bind<IDependency_{i}>().As({lifetime}).To(ctx => {{");
+		binding.AppendLine($"\t\t\tctx.Inject<Dependency_{i}>(out var val{i});");
+		binding.AppendLine($"\t\t\treturn val{i};");
+		binding.AppendLine($"\t\t}}).Root<IDependency_{i}>();");
+
+		bindings.Add(binding.ToString());
+	}
+#>
+// ReSharper disable InconsistentNaming
+// ReSharper disable EmptyConstructor
+// ReSharper disable UnusedMember.Local
+#pragma warning disable CS9113 // Parameter is unread.
+
+namespace HugeComposition;
+
+using Pure.DI;
+
+// Total bindings: <#= total #>
+
+public partial class Composition
+{
+<#= string.Join("\n", bindings) #>
+}
+
+<#= declarations.ToString() #>

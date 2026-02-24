@@ -18,4 +18,20 @@
         <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="HugeComposition.tt">
+        <Generator>TextTemplatingFileGenerator</Generator>
+        <LastGenOutput>HugeComposition.cs</LastGenOutput>
+      </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="HugeComposition.cs" />
+      <EmbeddedResource Include="HugeComposition.cs">
+        <AutoGen>True</AutoGen>
+        <DesignTime>True</DesignTime>
+        <DependentUpon>HugeComposition.tt</DependentUpon>
+      </EmbeddedResource>
+    </ItemGroup>
+
 </Project>

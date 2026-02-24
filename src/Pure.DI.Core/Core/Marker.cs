@@ -8,8 +8,7 @@ sealed class Marker(
     ICache<Marker.MarkerKey, bool> markerCache): IMarker
 {
     public bool IsMarkerBased(MdSetup setup, ITypeSymbol type) =>
-        markerCache.Get(new MarkerKey(type), _ => IsMarkerInternal(setup, type))
-        || markerBasedCache.Get(new BasedMarkerKey(type), _ => IsMarkerBasedInternal(setup, type));
+        markerBasedCache.Get(new BasedMarkerKey(type), _ => IsMarkerBasedInternal(setup, type));
 
     public bool IsMarker(MdSetup setup, ITypeSymbol type) =>
         markerCache.Get(new MarkerKey(type), _ => IsMarkerInternal(setup, type));
@@ -33,14 +32,8 @@ sealed class Marker(
     {
         private readonly ITypeSymbol _typeSymbol = typeSymbol;
 
-        public override bool Equals(object? obj)
-        {
-            if (obj is null) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            var other = (MarkerKeyBase)obj;
-            return SymbolEqualityComparer.Default.Equals(_typeSymbol, other._typeSymbol);
-        }
+        public override bool Equals(object? obj) =>
+            SymbolEqualityComparer.Default.Equals(_typeSymbol, (obj as MarkerKeyBase)?._typeSymbol);
 
         public override int GetHashCode() => SymbolEqualityComparer.Default.GetHashCode(_typeSymbol);
     }

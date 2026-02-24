@@ -39,8 +39,6 @@ record DependencyNode(
     {
     }
 
-    public virtual bool Equals(DependencyNode? other) => Binding.Equals(other?.Binding);
-
     private IEnumerable<string> ToStrings(int indent) =>
         Root?.ToStrings(indent)
         ?? Implementation?.ToStrings(indent)
@@ -52,6 +50,8 @@ record DependencyNode(
     public override string ToString() => string.Join(Environment.NewLine, ToStrings(0));
 
     public override int GetHashCode() => Binding.GetHashCode();
+
+    public virtual bool Equals(DependencyNode? other) => Binding.Equals(other?.Binding);
 
     public int BindingId => Binding.Id;
 

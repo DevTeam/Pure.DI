@@ -17,9 +17,10 @@ sealed class VariationalDependencyGraphBuilder(
     IVariator<IProcessingNode> variator,
     IBuilder<ContractsBuildContext, ISet<Injection>> contractsBuilder,
     IDependencyGraphBuilder graphBuilder,
-    Func<DependencyNode, ISet<Injection>, IProcessingNode> processingNodeFactory,
+    IBuilder<ProcessingNodeContext, IProcessingNode> processingNodeBuilder,
     IRegistryManager<int> bindingsRegistryManager,
     ILocationProvider locationProvider,
+    [Tag(Tag.LocalCache)] Func<ICache<ProcessingNodeKey, IProcessingNode>> nodesCacheFactory,
     CancellationToken cancellationToken)
     : IBuilder<MdSetup, DependencyGraph?>
 {
@@ -30,6 +31,7 @@ sealed class VariationalDependencyGraphBuilder(
         var allNodes = new List<IProcessingNode>();
         var injections = new Dictionary<Injection, DependencyNode>();
         var allOverriddenInjections = new HashSet<Injection>();
+        var nodesCache = nodesCacheFactory();
         foreach (var node in rawNodes)
         {
             var contracts = contractsBuilder.Build(new ContractsBuildContext(node.Binding, MdTag.ContextTag, MdTag.AnyTag));
@@ -77,7 +79,7 @@ sealed class VariationalDependencyGraphBuilder(
 
             if (isRoot || contracts.Count > 0)
             {
-                allNodes.Add(processingNodeFactory(node, contracts));
+                allNodes.Add(processingNodeBuilder.Build(new ProcessingNodeContext(nodesCache, node, MdTag.ContextTag, contracts)));
             }
         }
 
@@ -114,11 +116,11 @@ sealed class VariationalDependencyGraphBuilder(
 
                 cancellationToken.ThrowIfCancellationRequested();
 
-                var newNodes = SortByPriority(graphBuilder.TryBuild(setup, nodes, out var graph))
+                var newNodes = SortByPriority(graphBuilder.TryBuild(setup, nodes, nodesCache, out var graph))
                     .Select(CreateProcessingNode)
-                    .ToArray();
+                    .ToList();
 
-                if (newNodes.Length > 0)
+                if (newNodes.Count > 0)
                 {
                     var newVariants = CreateVariants(newNodes);
                     foreach (var newVariant in newVariants)
@@ -153,10 +155,12 @@ sealed class VariationalDependencyGraphBuilder(
 
                 continue;
 
-                IProcessingNode CreateProcessingNode(DependencyNode dependencyNode) =>
-                    processingNodeFactory(
-                        dependencyNode,
-                        contractsBuilder.Build(new ContractsBuildContext(dependencyNode.Binding, MdTag.ContextTag, MdTag.AnyTag)));
+                IProcessingNode CreateProcessingNode(DependencyNode dependencyNode)
+                {
+                    var processingNode = processingNodeBuilder.Build(new ProcessingNodeContext(nodesCache, dependencyNode, MdTag.ContextTag, contractsBuilder.Build(new ContractsBuildContext(dependencyNode.Binding, MdTag.ContextTag, MdTag.AnyTag))));
+                    allNodes.Add(processingNode);
+                    return processingNode;
+                }
             }
 
             return dependencyGraph;

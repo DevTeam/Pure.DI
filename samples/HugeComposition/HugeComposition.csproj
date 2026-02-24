@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>$(targetFrameworkVersion)</TargetFramework>
+        <PureDIProfilePath>c:\profiling</PureDIProfilePath>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!--<CompilerVisibleProperty Include="PureDIProfilePath" />-->
+        <ProjectReference Include="..\..\src\Pure.DI.Core\Pure.DI.Core.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
+        <ProjectReference Include="..\..\src\Pure.DI\Pure.DI.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="Composition.tt">
+        <Generator>TextTemplatingFileGenerator</Generator>
+        <LastGenOutput>Composition.cs</LastGenOutput>
+      </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Composition.cs">
+        <AutoGen>True</AutoGen>
+        <DesignTime>True</DesignTime>
+        <DependentUpon>Composition.tt</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
+</Project>

@@ -13,14 +13,13 @@ using Injection=Injection;
 
 sealed class DependencyGraphBuilder(
     INodesFactory nodesFactory,
-    IBuilder<ContractsBuildContext, ISet<Injection>> contractsBuilder,
     IMarker marker,
     IBindingsFactory bindingsFactory,
     Func<ITypeConstructor> typeConstructorFactory,
     IFilter filter,
     ICache<INamedTypeSymbol, MdConstructKind> constructKinds,
     ISymbolNames symbolNames,
-    Func<DependencyNode, ISet<Injection>, IProcessingNode> processingNodeFactory,
+    IBuilder<ProcessingNodeContext, IProcessingNode> processingNodeBuilder,
     [Tag(Overrider)] IGraphRewriter graphOverrider,
     [Tag(Cleaner)] IGraphRewriter graphCleaner,
     ILocationProvider locationProvider,
@@ -31,6 +30,7 @@ sealed class DependencyGraphBuilder(
     public IEnumerable<DependencyNode> TryBuild(
         MdSetup setup,
         IReadOnlyCollection<IProcessingNode> nodes,
+        ICache<ProcessingNodeKey, IProcessingNode> nodesCache,
         out IGraph<DependencyNode, Dependency>? graph)
     {
         graph = null;
@@ -103,9 +103,9 @@ sealed class DependencyGraphBuilder(
             {
                 var hasSourceNode = map.TryGetValue(injection, out var sourceNode);
                 var bypassSelfFactoryOverride = hasSourceNode
-                    && sourceNode!.Binding.Id == targetNode.Binding.Id
-                    && injection.Kind == InjectionKind.FactoryInjection
-                    && targetNode.Factory is not null;
+                                                && sourceNode!.Binding.Id == targetNode.Binding.Id
+                                                && injection.Kind == InjectionKind.FactoryInjection
+                                                && targetNode.Factory is not null;
 
                 if (bypassSelfFactoryOverride
                     && injection.Type is { IsAbstract: false, TypeKind: not TypeKind.Delegate, SpecialType: Microsoft.CodeAnalysis.SpecialType.None })
@@ -124,7 +124,7 @@ sealed class DependencyGraphBuilder(
                         var contextTag = GetContextTag(injection, newNode);
                         var newInjection = injection with { Tag = contextTag ?? injection.Tag };
                         edges.Add(new Dependency(true, newNode, newInjection, targetNode, position));
-                        queue.Enqueue(CreateNewProcessingNode(newInjection.Tag, newNode));
+                        queue.Enqueue(CreateNewProcessingNode(nodesCache, newInjection.Tag, newNode));
                     }
 
                     continue;
@@ -139,7 +139,7 @@ sealed class DependencyGraphBuilder(
                 {
                     if (!marker.IsMarkerBased(setup, sourceNode!.Type))
                     {
-                        queue.Enqueue(CreateNewProcessingNode(injection.Tag, sourceNode));
+                        queue.Enqueue(CreateNewProcessingNode(nodesCache, injection.Tag, sourceNode));
                         continue;
                     }
                 }
@@ -201,7 +201,7 @@ sealed class DependencyGraphBuilder(
                             if (genericNode is not null)
                             {
                                 UpdateMap(newInjection, genericNode);
-                                queue.Enqueue(CreateNewProcessingNode(newInjection.Tag, genericNode));
+                                queue.Enqueue(CreateNewProcessingNode(nodesCache, newInjection.Tag, genericNode));
                                 foreach (var contract in genericBinding.Contracts.Where(i => i.ContractType is not null))
                                 {
                                     foreach (var tag in contract.Tags.Select(i => i.Value).DefaultIfEmpty(null))
@@ -253,7 +253,7 @@ sealed class DependencyGraphBuilder(
                                         var contextTag = GetContextTag(injection, newNode);
                                         var newInjection = injection with { Tag = contextTag ?? injection.Tag };
                                         UpdateMap(newInjection, newNode);
-                                        var processingNode = CreateNewProcessingNode(newInjection.Tag, newNode);
+                                        var processingNode = CreateNewProcessingNode(nodesCache, newInjection.Tag, newNode);
                                         queue.Enqueue(processingNode);
                                     }
 
@@ -262,7 +262,7 @@ sealed class DependencyGraphBuilder(
                         }
 
                         // OnCannotResolve
-                        if (TryCreateOnCannotResolve(setup, typeConstructor, targetNode, injection, ref maxBindingId, map, processed))
+                        if (TryCreateOnCannotResolve(nodesCache, setup, typeConstructor, targetNode, injection, ref maxBindingId, map, processed))
                         {
                             continue;
                         }
@@ -288,7 +288,7 @@ sealed class DependencyGraphBuilder(
                             var contextTag = GetContextTag(injection, newNode);
                             var newInjection = injection with { Tag = contextTag ?? injection.Tag };
                             UpdateMap(newInjection, newNode);
-                            queue.Enqueue(CreateNewProcessingNode(newInjection.Tag, newNode));
+                            queue.Enqueue(CreateNewProcessingNode(nodesCache, newInjection.Tag, newNode));
                         }
 
                         continue;
@@ -346,7 +346,7 @@ sealed class DependencyGraphBuilder(
                         var contextTag = GetContextTag(injection, newNode);
                         var newInjection = injection with { Tag = contextTag ?? injection.Tag };
                         UpdateMap(newInjection, newNode);
-                        queue.Enqueue(CreateNewProcessingNode(newInjection.Tag, newNode));
+                        queue.Enqueue(CreateNewProcessingNode(nodesCache, newInjection.Tag, newNode));
                     }
 
                     continue;
@@ -377,7 +377,7 @@ sealed class DependencyGraphBuilder(
                 }
 
                 // OnCannotResolve
-                if (TryCreateOnCannotResolve(setup, typeConstructor, targetNode, injection, ref maxBindingId, map, processed))
+                if (TryCreateOnCannotResolve(nodesCache, setup, typeConstructor, targetNode, injection, ref maxBindingId, map, processed))
                 {
                     continue;
                 }
@@ -481,6 +481,7 @@ sealed class DependencyGraphBuilder(
     }
 
     private bool TryCreateOnCannotResolve(
+        ICache<ProcessingNodeKey, IProcessingNode> nodesCache,
         MdSetup setup,
         ITypeConstructor typeConstructor,
         DependencyNode ownerNode,
@@ -515,7 +516,7 @@ sealed class DependencyGraphBuilder(
                 foreach (var onCannotResolveNode in onCannotResolveNodes)
                 {
                     map[unresolvedInjection] = onCannotResolveNode;
-                    processed.Add(CreateNewProcessingNode(unresolvedInjection.Tag, onCannotResolveNode));
+                    processed.Add(CreateNewProcessingNode(nodesCache, unresolvedInjection.Tag, onCannotResolveNode));
                     return true;
                 }
             }
@@ -524,11 +525,8 @@ sealed class DependencyGraphBuilder(
         return false;
     }
 
-    private IProcessingNode CreateNewProcessingNode(object? contextTag, DependencyNode dependencyNode)
-    {
-        var contracts = contractsBuilder.Build(new ContractsBuildContext(dependencyNode.Binding, contextTag, contextTag));
-        return processingNodeFactory(dependencyNode, contracts);
-    }
+    private IProcessingNode CreateNewProcessingNode(ICache<ProcessingNodeKey, IProcessingNode> nodesCache, object? contextTag, DependencyNode dependencyNode) =>
+        processingNodeBuilder.Build(new ProcessingNodeContext(nodesCache, dependencyNode, contextTag));
 
     private static object? GetContextTag(Injection injection, DependencyNode node) =>
         node.Factory is { Source.HasContextTag: true } ? injection.Tag : null;
