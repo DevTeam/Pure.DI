@@ -420,9 +420,9 @@ public class GraphTests
                                                +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>> dependency<--Sample.IDependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>>))]
                                              Service(Sample.IDependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>> dependency<--Sample.IDependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>>))
                                                +[Service(Sample.IDependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>> dependency<--Sample.IDependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>>))]<--[Sample.IDependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>>]--[Dependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>>(Sample.Dependency2 dep<--Sample.Dependency2))]
-                                             Dependency2()
                                              Dependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>>(Sample.Dependency2 dep<--Sample.Dependency2))
                                                +[Dependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>>(Sample.Dependency2 dep<--Sample.Dependency2))]<--[Sample.Dependency2]--[Dependency2()]
+                                             Dependency2()
                                              """.Replace("\r", ""));
     }
 

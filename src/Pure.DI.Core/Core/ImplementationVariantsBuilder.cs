@@ -11,37 +11,27 @@ sealed class ImplementationVariantsBuilder(
     [SuppressMessage("ReSharper", "NotDisposedResourceIsReturned")]
     public IEnumerable<DpImplementation> Build(DpImplementation implementation)
     {
-        var variants =
-            implementation.Methods.Select(method => CreateVariants(method, ImplementationVariantKind.Method))
-                .Concat(Enumerable.Repeat(CreateVariants(implementation.Constructor, ImplementationVariantKind.Ctor), 1))
-                .Select(i => new SafeEnumerator<ImplementationVariant>(i.GetEnumerator()))
+        var setsOfOptions =
+            implementation.Methods.Select(method => CreateOptions(method, ImplementationVariantKind.Method))
+                .Concat(Enumerable.Repeat(CreateOptions(implementation.Constructor, ImplementationVariantKind.Ctor), 1))
+                .Select(i => new SetOfOptions<ImplementationVariant>(i.ToList()))
                 .ToList();
 
-        try
+        while (implementationVariator.TryGetNext(setsOfOptions, out var implementationOptions))
         {
-            while (implementationVariator.TryGetNextVariants(variants, out var curVariants))
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                yield return curVariants.Aggregate(
-                    implementation with { Methods = ImmutableArray<DpMethod>.Empty },
-                    (current, variant) => variant.Kind switch
-                    {
-                        ImplementationVariantKind.Ctor => current with { Constructor = variant.Method },
-                        ImplementationVariantKind.Method => current with { Methods = current.Methods.Add(variant.Method) },
-                        _ => current
-                    });
-            }
-        }
-        finally
-        {
-            foreach (var variation in variants)
-            {
-                variation.Dispose();
-            }
+            cancellationToken.ThrowIfCancellationRequested();
+            yield return implementationOptions.Aggregate(
+                implementation with { Methods = ImmutableArray<DpMethod>.Empty },
+                (current, variant) => variant.Kind switch
+                {
+                    ImplementationVariantKind.Ctor => current with { Constructor = variant.Method },
+                    ImplementationVariantKind.Method => current with { Methods = current.Methods.Add(variant.Method) },
+                    _ => current
+                });
         }
     }
 
-    private static IEnumerable<ImplementationVariant> CreateVariants(DpMethod method, ImplementationVariantKind kind)
+    private static IEnumerable<ImplementationVariant> CreateOptions(DpMethod method, ImplementationVariantKind kind)
     {
         yield return new ImplementationVariant(kind, method);
         for (var i = method.Parameters.Length - 1; i >= 0; i--)

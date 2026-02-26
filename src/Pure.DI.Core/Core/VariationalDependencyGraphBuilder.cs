@@ -7,27 +7,28 @@
 
 namespace Pure.DI.Core;
 
-using Variation=IEnumerator<IProcessingNode>;
+using Options = SetOfOptions<IProcessingNode>;
 
 sealed class VariationalDependencyGraphBuilder(
     ILogger logger,
     IGlobalProperties globalProperties,
     Func<ITypeConstructor> typeConstructorFactory,
     IEnumerable<IBuilder<DependencyNodeBuildContext, IEnumerable<DependencyNode>>> dependencyNodeBuilders,
-    IVariator<IProcessingNode> variator,
+    IVariator<IProcessingNode> nodeVariator,
     IFastBuilder<ContractsBuildContext, ISet<Injection>> contractsBuilder,
     IDependencyGraphBuilder graphBuilder,
     IFastBuilder<ProcessingNodeContext, IProcessingNode> processingNodeBuilder,
     IRegistryManager<int> bindingsRegistryManager,
     ILocationProvider locationProvider,
     [Tag(Tag.LocalCache)] Func<ICache<ProcessingNodeKey, IProcessingNode>> nodesCacheFactory,
+    IDependencyNodePrioritizer dependencyNodePrioritizer,
     CancellationToken cancellationToken)
     : IBuilder<MdSetup, DependencyGraph?>
 {
     public DependencyGraph? Build(MdSetup setup)
     {
         var dependencyNodeBuildContext = new DependencyNodeBuildContext(setup, typeConstructorFactory());
-        var rawNodes = SortByPriority(dependencyNodeBuilders.SelectMany(builder => builder.Build(dependencyNodeBuildContext))).Reverse();
+        var rawNodes = dependencyNodePrioritizer.SortByPriority(dependencyNodeBuilders.SelectMany(builder => builder.Build(dependencyNodeBuildContext))).Reverse();
         var allNodes = new List<IProcessingNode>();
         var injections = new Dictionary<Injection, DependencyNode>();
         var allOverriddenInjections = new HashSet<Injection>();
@@ -84,94 +85,87 @@ sealed class VariationalDependencyGraphBuilder(
         }
 
         allNodes.Reverse();
-        var variants = new LinkedList<Variation>(CreateVariants(allNodes));
-        try
+        var setsOfOptions = new LinkedList<Options>(CreateOptions(allNodes));
+        var maxIterations = globalProperties.MaxIterations;
+        var maxAttempts = 0x2000;
+        DependencyGraph? dependencyGraph = null;
+        while (nodeVariator.TryGetNext(setsOfOptions, out var nodes))
         {
-            var maxIterations = globalProperties.MaxIterations;
-            var maxAttempts = 0x2000;
-            DependencyGraph? dependencyGraph = null;
-            while (variator.TryGetNextVariants(variants, out var nodes))
+            if (maxAttempts-- <= 0)
             {
-                if (maxAttempts-- <= 0)
-                {
-                    throw new CompileErrorException(
-                        Strings.Error_CannotBuildDependencyGraph,
-                        ImmutableArray.Create(locationProvider.GetLocation(setup.Source)),
-                        LogId.ErrorCannotBuildDependencyGraph,
-                        nameof(Strings.Error_CannotBuildDependencyGraph));
-                }
+                throw new CompileErrorException(
+                    Strings.Error_CannotBuildDependencyGraph,
+                    ImmutableArray.Create(locationProvider.GetLocation(setup.Source)),
+                    LogId.ErrorCannotBuildDependencyGraph,
+                    nameof(Strings.Error_CannotBuildDependencyGraph));
+            }
 
-                if (maxIterations-- <= 0)
-                {
-                    logger.CompileError(
-                        LogMessage.Format(
-                            nameof(Strings.Error_Template_MaximumNumberOfIterations),
-                            Strings.Error_Template_MaximumNumberOfIterations,
-                            globalProperties.MaxIterations),
-                        ImmutableArray.Create(locationProvider.GetLocation(setup.Source)),
-                        LogId.ErrorMaximumNumberOfIterations);
+            if (maxIterations-- <= 0)
+            {
+                logger.CompileError(
+                    LogMessage.Format(
+                        nameof(Strings.Error_Template_MaximumNumberOfIterations),
+                        Strings.Error_Template_MaximumNumberOfIterations,
+                        globalProperties.MaxIterations),
+                    ImmutableArray.Create(locationProvider.GetLocation(setup.Source)),
+                    LogId.ErrorMaximumNumberOfIterations);
 
-                    break;
-                }
+                break;
+            }
 
-                cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
-                var newNodes = SortByPriority(graphBuilder.TryBuild(setup, nodes, nodesCache, out var graph))
-                    .Select(CreateProcessingNode)
-                    .ToList();
-
-                if (newNodes.Count > 0)
-                {
-                    var newVariants = CreateVariants(newNodes);
-                    foreach (var newVariant in newVariants)
-                    {
-                        variants.AddFirst(newVariant);
-                    }
-
-                    continue;
-                }
-
-                if (graph is null)
-                {
-                    continue;
-                }
-
+            var ctx = new GraphBuildContext(setup, nodes, nodesCache);
+            var newNodes = graphBuilder.TryBuild(ctx).ToList();
+            var graph = ctx.Graph;
+            if (graph is not null)
+            {
                 dependencyGraph = new DependencyGraph(setup, graph);
-                if (dependencyGraph is { IsResolved: true })
-                {
-                    foreach (var dependency in dependencyGraph.Graph.Edges)
-                    {
-                        RegisterNode(setup, dependency.Target);
-                        RegisterNode(setup, dependency.Source);
-                    }
-
-                    foreach (var node in dependencyGraph.Graph.Vertices)
-                    {
-                        RegisterNode(setup, node);
-                    }
-
-                    return dependencyGraph;
-                }
-
-                continue;
-
-                IProcessingNode CreateProcessingNode(DependencyNode dependencyNode)
-                {
-                    var processingNode = processingNodeBuilder.Build(new ProcessingNodeContext(nodesCache, dependencyNode, MdTag.ContextTag, contractsBuilder.Build(new ContractsBuildContext(dependencyNode.Binding, MdTag.ContextTag, MdTag.AnyTag))));
-                    allNodes.Add(processingNode);
-                    return processingNode;
-                }
             }
 
-            return dependencyGraph;
-        }
-        finally
-        {
-            foreach (var variant in variants)
+            if (dependencyGraph is { IsResolved: true })
             {
-                variant.Dispose();
+                foreach (var dependency in dependencyGraph.Graph.Edges)
+                {
+                    RegisterNode(setup, dependency.Target);
+                    RegisterNode(setup, dependency.Source);
+                }
+
+                foreach (var node in dependencyGraph.Graph.Vertices)
+                {
+                    RegisterNode(setup, node);
+                }
+
+                return dependencyGraph;
+            }
+
+            if (newNodes.Count == 0)
+            {
+                continue;
+            }
+
+            foreach (var options in setsOfOptions)
+            {
+                options.Reset();
+            }
+
+            var newProcessingNodes = dependencyNodePrioritizer.SortByPriority(newNodes).Select(CreateProcessingNode);
+            foreach (var newOption in CreateOptions(newProcessingNodes))
+            {
+                setsOfOptions.AddFirst(newOption);
+            }
+
+            continue;
+
+            IProcessingNode CreateProcessingNode(DependencyNode dependencyNode)
+            {
+                var processingNode = processingNodeBuilder.Build(new ProcessingNodeContext(nodesCache, dependencyNode, MdTag.ContextTag, contractsBuilder.Build(new ContractsBuildContext(dependencyNode.Binding, MdTag.ContextTag, MdTag.AnyTag))));
+                allNodes.Add(processingNode);
+                return processingNode;
             }
         }
+
+        return dependencyGraph;
     }
     private void RegisterNode(MdSetup setup, DependencyNode node)
     {
@@ -188,15 +182,7 @@ sealed class VariationalDependencyGraphBuilder(
     }
 
     [SuppressMessage("ReSharper", "NotDisposedResourceIsReturned")]
-    private static IEnumerable<Variation> CreateVariants(IEnumerable<IProcessingNode> nodes) =>
+    private static IEnumerable<Options> CreateOptions(IEnumerable<IProcessingNode> nodes) =>
         nodes.GroupBy(i => i.Node.Binding)
-            .Select(i => new SafeEnumerator<IProcessingNode>(i.ToList().GetEnumerator()));
-
-    private static IEnumerable<DependencyNode> SortByPriority(IEnumerable<DependencyNode> nodes) =>
-        nodes.GroupBy(i => i.Binding)
-            .OrderBy(i => i.Key.Id)
-            .SelectMany(grp => grp
-                .OrderBy(i => i.Implementation?.Constructor.Ordinal ?? int.MaxValue)
-                .ThenByDescending(i => i.Implementation?.Constructor.Parameters.Count(p => !p.ParameterSymbol.IsOptional))
-                .ThenByDescending(i => i.Implementation?.Constructor.Method.DeclaredAccessibility));
+            .Select(i => new Options(i.ToList()));
 }

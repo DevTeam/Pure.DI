@@ -24,16 +24,15 @@ sealed class DependencyGraphBuilder(
     [Tag(Cleaner)] IGraphRewriter graphCleaner,
     ILocationProvider locationProvider,
     ITypeResolver typeResolver,
+    IDependencyNodePrioritizer dependencyNodePrioritizer,
     CancellationToken cancellationToken)
     : IDependencyGraphBuilder
 {
-    public IEnumerable<DependencyNode> TryBuild(
-        MdSetup setup,
-        IReadOnlyCollection<IProcessingNode> nodes,
-        ICache<ProcessingNodeKey, IProcessingNode> nodesCache,
-        out IGraph<DependencyNode, Dependency>? graph)
+    public IEnumerable<DependencyNode> TryBuild(GraphBuildContext ctx)
     {
-        graph = null;
+        var setup = ctx.Setup;
+        var nodes = ctx.Nodes;
+        var nodesCache = ctx.NodesCache;
         var maxBindingId = 0;
         var map = new Dictionary<Injection, DependencyNode>(nodes.Count);
         var contextMap = new Dictionary<Injection, DependencyNode>(nodes.Count);
@@ -155,7 +154,15 @@ sealed class DependencyGraphBuilder(
                         hasExplicitDefaultValue,
                         explicitDefaultValue);
 
-                    return nodesFactory.CreateNodes(setup, typeConstructor, accumulatorBinding);
+                    foreach (var dependencyNode in nodesFactory.CreateNodes(setup, typeConstructor, accumulatorBinding))
+                    {
+                        yield return dependencyNode;
+                        /*UpdateMap(injection, dependencyNode);
+                        var processingNode = CreateNewProcessingNode(nodesCache, injection.Tag, dependencyNode);
+                        queue.Enqueue(processingNode);*/
+                    }
+
+                    yield break;
                 }
 
                 switch (injection.Type)
@@ -217,7 +224,13 @@ sealed class DependencyGraphBuilder(
 
                             if (genericNodes.Count > 0)
                             {
-                                return genericNodes;
+                                foreach (var dependencyNode in genericNodes)
+                                {
+                                    yield return dependencyNode;
+                                }
+
+                                isDone = true;
+                                break;
                             }
                         }
 
@@ -355,11 +368,10 @@ sealed class DependencyGraphBuilder(
                 // Auto-binding
                 if (injection.Type is { IsAbstract: false, SpecialType: Microsoft.CodeAnalysis.SpecialType.None })
                 {
-                    var autoBinding = bindingsFactory.CreateAutoBinding(setup, targetNode, injection, typeConstructor, ++maxBindingId);
                     var disableAutoBinding = false;
                     if (setup.Hints.DisableAutoBinding)
                     {
-                        string GetTypeName() => typeResolver.Resolve(setup, autoBinding.Type).Name;
+                        string GetTypeName() => typeResolver.Resolve(setup, injection.Type).Name;
                         string GetLifetimeName() => targetNode.Lifetime.ValueToString();
                         if (filter.IsMeet(
                                 setup,
@@ -372,7 +384,28 @@ sealed class DependencyGraphBuilder(
 
                     if (!disableAutoBinding)
                     {
-                        return nodesFactory.CreateNodes(setup, typeConstructor, autoBinding).ToList();
+                        var autoBinding = bindingsFactory.CreateAutoBinding(setup, targetNode, injection, typeConstructor, ++maxBindingId);
+                        var autoNodes = dependencyNodePrioritizer.SortByPriority(nodesFactory.CreateNodes(setup, typeConstructor, autoBinding)).ToList();
+                        foreach (var autoNode in autoNodes)
+                        {
+                            yield return autoNode;
+                        }
+
+                        if (injection.Type is INamedTypeSymbol { IsGenericType: true })
+                        {
+                            yield break;
+                        }
+
+                        if (autoNodes.FirstOrDefault() is {} newNode)
+                        {
+                            var contextTag = GetContextTag(injection, newNode);
+                            var newInjection = injection with { Tag = contextTag ?? injection.Tag };
+                            var newProcessingNode = CreateNewProcessingNode(nodesCache, newInjection.Tag, newNode);
+                            UpdateMap(newInjection, newNode);
+                            queue.Enqueue(newProcessingNode);
+                        }
+
+                        continue;
                     }
                 }
 
@@ -429,7 +462,7 @@ sealed class DependencyGraphBuilder(
             entries.Add(new GraphEntry<DependencyNode, Dependency>(node.Node, edges));
         }
 
-        graph = new Graph<DependencyNode, Dependency>(entries);
+        IGraph<DependencyNode, Dependency> graph = new Graph<DependencyNode, Dependency>(entries);
         var lastId = maxBindingId;
         graph = graphOverrider.Rewrite(setup, graph, ref maxBindingId);
         // Has overrides
@@ -438,7 +471,8 @@ sealed class DependencyGraphBuilder(
             graph = graphCleaner.Rewrite(setup, graph, ref maxBindingId);
         }
 
-        return ImmutableArray<DependencyNode>.Empty;
+        ctx.Graph = graph;
+        yield break;
 
         void UpdateMap(Injection injection, DependencyNode node)
         {

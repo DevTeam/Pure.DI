@@ -76,7 +76,7 @@ public sealed partial class Generator
                 NodeTools, LocalFunctions, ExceptionHandler, WildcardMatcher, InjectionSiteFactory, Semantic, Attributes, Compilations, GraphWalker<TT, TT1>,
                 LifetimeAnalyzer, InstanceDpProvider, Injections, NameFormatter, BindingsFactory, NodesFactory, LocationProvider,
                 CycleTools, LifetimeProvider, VarDeclarationTools, ContractTagComparer,
-                CodeNameProvider>()
+                CodeNameProvider, DependencyNodePrioritizer>()
             .PerBlock<LifetimesValidatorVisitor, CyclicDependencyValidatorVisitor>(Type)
             .PerBlock<GraphOverrider>(Overrider)
             .PerBlock<GraphCleaner>(Cleaner)

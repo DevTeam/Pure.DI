@@ -1,75 +1,81 @@
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable IdentifierTypo
 
+// ReSharper disable InvertIf
 namespace Pure.DI.Core;
 
 sealed class Variator<T> : IVariator<T>
-    where T : class
 {
-    public bool TryGetNextVariants(
-        IEnumerable<IEnumerator<T>> variations,
-        [NotNullWhen(true)] out IReadOnlyCollection<T>? variants)
+    public bool TryGetNext(
+        IEnumerable<ISetOfOptions<T>> setsOfOptions,
+        [NotNullWhen(true)] out IReadOnlyCollection<T>? options)
     {
-        var enumerators = variations.ToList();
+        var enumerators = setsOfOptions.ToList();
         if (enumerators.Count == 0)
         {
-            variants = null;
+            options = null;
             return false;
         }
 
-        var allNotStarted = enumerators.All(i => i is SafeEnumerator<T> { IsStarted: false });
-        var needsInitialization = allNotStarted || enumerators.Any(i => i is not SafeEnumerator<T> && i.Current is null);
-        if (needsInitialization)
+        if (enumerators.All(v => !v.IsStarted))
         {
             var initial = new List<T>(enumerators.Count);
             foreach (var enumerator in enumerators)
             {
-                if (!enumerator.MoveNext() || enumerator.Current is null)
+                if (!TryMoveToNext(enumerator))
                 {
-                    variants = null;
+                    options = null;
                     return false;
                 }
 
-                initial.Add(enumerator.Current);
+                initial.Add(enumerator.Current!);
             }
 
-            variants = initial;
+            options = initial;
             return true;
         }
 
         for (var index = 0; index < enumerators.Count; index++)
         {
             var enumerator = enumerators[index];
-            if (!enumerator.MoveNext() || enumerator.Current is null)
+            if (TryMoveToNext(enumerator))
             {
-                continue;
-            }
-
-            for (var resetIndex = 0; resetIndex < index; resetIndex++)
-            {
-                var resetEnumerator = enumerators[resetIndex];
-                resetEnumerator.Reset();
-                if (resetEnumerator.MoveNext() && resetEnumerator.Current is not null)
+                for (var resetIndex = 0; resetIndex < index; resetIndex++)
                 {
-                    continue;
+                    var resetEnumerator = enumerators[resetIndex];
+                    resetEnumerator.Reset();
+                    if (!TryMoveToNext(resetEnumerator))
+                    {
+                        options = null;
+                        return false;
+                    }
                 }
 
-                variants = null;
-                return false;
+                options = enumerators.Select(v => v.Current!).ToList();
+                return true;
             }
 
-            var current = enumerators.Select(i => i.Current).ToList();
-            if (current.Any(i => i is null))
+            // MoveNext failed - this enumerator is exhausted
+            // If this is the last enumerator, all combinations are exhausted
+            if (index == enumerators.Count - 1)
             {
-                variants = null;
+                options = null;
                 return false;
             }
 
-            variants = current.Select(i => i!).ToList();
-            return true;
+            // Not the last enumerator - reset this one and continue to next
+            enumerator.Reset();
+            if (!TryMoveToNext(enumerator))
+            {
+                options = null;
+                return false;
+            }
         }
 
-        variants = null;
+        options = null;
         return false;
     }
+
+    private static bool TryMoveToNext(ISetOfOptions<T> enumerator) =>
+        enumerator.MoveNext() && enumerator.Current is not null;
 }
