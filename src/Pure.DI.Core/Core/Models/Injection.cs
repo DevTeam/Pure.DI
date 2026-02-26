@@ -12,9 +12,13 @@ readonly record struct Injection(
     public override string ToString() => $"{Type}{(Tag != null && Tag is not MdTagOnSites ? $"({Tag.ValueToString()})" : "")}";
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool Equals(Injection other) =>
-        (ReferenceEquals(Type, other.Type) || SymbolEqualityComparer.Default.Equals(Type, other.Type))
-        && EqualTags(Tag, other.Tag);
+    public bool Equals(Injection other)
+    {
+        var type = Type;
+        var otherType = other.Type;
+        return (ReferenceEquals(type, otherType) || SymbolEqualityComparer.Default.Equals(type, otherType))
+               && EqualTags(Tag, other.Tag);
+    }
 
     public override int GetHashCode() =>
         SymbolEqualityComparer.Default.GetHashCode(Type);

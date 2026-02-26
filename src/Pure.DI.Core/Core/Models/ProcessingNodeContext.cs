@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core.Models;
 
-record ProcessingNodeContext(
+readonly record struct ProcessingNodeContext(
     ICache<ProcessingNodeKey, IProcessingNode> Cache,
     DependencyNode Node,
     object? ContextTag,

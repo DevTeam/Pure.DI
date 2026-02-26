@@ -1,3 +1,9 @@
 ﻿namespace Pure.DI.Core.Models;
 
-record ProcessingNodeKey(DependencyNode Node, int Variation, object? ContextTag);
+record struct ProcessingNodeKey(
+    int Variation,
+    DependencyNode Node,
+    object? ContextTag)
+{
+    public ISet<Injection>? Contracts;
+};

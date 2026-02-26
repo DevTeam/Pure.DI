@@ -1,7 +1,7 @@
 ﻿namespace Pure.DI.Core;
 
 class BindingsFactory(
-    Func<IBuilder<RewriterContext<MdFactory>, MdFactory>> factoryRewriterFactory,
+    Func<IFastBuilder<RewriterContext<MdFactory>, MdFactory>> factoryRewriterFactory,
     ITypes types,
     IMarker marker)
     : IBindingsFactory

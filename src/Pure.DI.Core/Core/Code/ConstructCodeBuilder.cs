@@ -13,16 +13,16 @@ sealed class ConstructCodeBuilder(
     [Tag(CodeBuilderKind.ExplicitDefaultValue)] IBuilder<CodeBuilderContext, IEnumerator> explicitDefaultValueBuilder)
     : IBuilder<CodeBuilderContext, IEnumerator>
 {
-    public IEnumerator Build(CodeBuilderContext data) =>
-        data.Context.VarInjection.Var.AbstractNode.Construct?.Source.Kind switch
+    public IEnumerator Build(CodeBuilderContext ctx) =>
+        ctx.Context.VarInjection.Var.AbstractNode.Construct?.Source.Kind switch
         {
-            Enumerable => enumerableBuilder.Build(data),
-            AsyncEnumerable => asyncEnumerableBuilder.Build(data),
-            Array => arrayBuilder.Build(data),
-            Span => spanBuilder.Build(data),
-            Composition => compositionBuilder.Build(data),
-            OnCannotResolve => onCannotResolveBuilder.Build(data),
-            ExplicitDefaultValue => explicitDefaultValueBuilder.Build(data),
+            Enumerable => enumerableBuilder.Build(ctx),
+            AsyncEnumerable => asyncEnumerableBuilder.Build(ctx),
+            Array => arrayBuilder.Build(ctx),
+            Span => spanBuilder.Build(ctx),
+            Composition => compositionBuilder.Build(ctx),
+            OnCannotResolve => onCannotResolveBuilder.Build(ctx),
+            ExplicitDefaultValue => explicitDefaultValueBuilder.Build(ctx),
             _ => EmptyEnumerator()
         };
 

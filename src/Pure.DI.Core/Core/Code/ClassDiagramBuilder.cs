@@ -7,7 +7,7 @@ namespace Pure.DI.Core.Code;
 using static LinesExtensions;
 
 sealed class ClassDiagramBuilder(
-    IBuilder<ContractsBuildContext, ISet<Injection>> injectionsBuilder,
+    IFastBuilder<ContractsBuildContext, ISet<Injection>> injectionsBuilder,
     IMarker marker,
     ITypeResolver typeResolver,
     IRootAccessModifierResolver rootAccessModifierResolver,

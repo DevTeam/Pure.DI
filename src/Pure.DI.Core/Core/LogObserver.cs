@@ -4,7 +4,7 @@
 namespace Pure.DI.Core;
 
 sealed class LogObserver(
-    IBuilder<LogEntry, LogInfo> logInfoBuilder,
+    IFastBuilder<LogEntry, LogInfo> logInfoBuilder,
     IGeneratorDiagnostic diagnostic)
     : IObserver<LogEntry>
 {

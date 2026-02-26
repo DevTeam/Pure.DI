@@ -4,7 +4,7 @@ namespace Pure.DI.Core.Code;
 class CompositionBuilder(
     ITypeResolver typeResolver,
     Func<IVarsMap> varsMapFactory,
-    Func<IBuilder<RootContext, VarInjection>> rootBuilder,
+    Func<IFastBuilder<RootContext, VarInjection>> rootBuilder,
     INodeTools nodeTools,
     IVarDeclarationTools varDeclarationTools,
     IBuilder<CompositionCode, Lines> classDiagramBuilder,

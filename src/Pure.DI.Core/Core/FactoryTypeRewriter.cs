@@ -6,11 +6,11 @@ sealed class FactoryTypeRewriter(
     IMarker marker,
     ITypeResolver typeResolver,
     ITypes types)
-    : CSharpSyntaxRewriter, IBuilder<RewriterContext<MdFactory>, MdFactory>
+    : CSharpSyntaxRewriter, IFastBuilder<RewriterContext<MdFactory>, MdFactory>
 {
     private RewriterContext<MdFactory> _context;
 
-    public MdFactory Build(RewriterContext<MdFactory> context)
+    public MdFactory Build(in RewriterContext<MdFactory> context)
     {
         _context = context;
         var factory = context.State;
@@ -22,8 +22,8 @@ sealed class FactoryTypeRewriter(
             Resolvers = factory.Resolvers
                 .Select(resolver => resolver with
                 {
-                    ContractType = context.TypeConstructor.Construct(context.Setup, resolver.ContractType),
-                    Tag = CreateTag(context.Injection, resolver.Tag)
+                    ContractType = _context.TypeConstructor.Construct(_context.Setup, resolver.ContractType),
+                    Tag = CreateTag(_context.Injection, resolver.Tag)
                 })
                 .ToImmutableArray()
         };

@@ -2,9 +2,9 @@
 
 namespace Pure.DI.Core;
 
-sealed class ContractsBuilder : IBuilder<ContractsBuildContext, ISet<Injection>>
+sealed class ContractsBuilder : IFastBuilder<ContractsBuildContext, ISet<Injection>>
 {
-    public ISet<Injection> Build(ContractsBuildContext context)
+    public ISet<Injection> Build(in ContractsBuildContext context)
     {
         var binding = context.Binding;
         if (binding.Tags.IsDefault)

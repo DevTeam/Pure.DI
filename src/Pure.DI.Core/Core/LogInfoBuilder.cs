@@ -3,9 +3,9 @@
 
 namespace Pure.DI.Core;
 
-sealed class LogInfoBuilder : IBuilder<LogEntry, LogInfo>
+sealed class LogInfoBuilder : IFastBuilder<LogEntry, LogInfo>
 {
-    public LogInfo Build(LogEntry logEntry)
+    public LogInfo Build(in LogEntry logEntry)
     {
         var severityCode = logEntry.Severity switch
         {

@@ -3,7 +3,7 @@
 namespace Pure.DI.Core;
 
 sealed class RootsBuilder(
-    IBuilder<ContractsBuildContext, ISet<Injection>> contractsBuilder,
+    IFastBuilder<ContractsBuildContext, ISet<Injection>> contractsBuilder,
     IBaseSymbolsProvider baseSymbolsProvider)
     : IBuilder<DependencyGraph, DependencyGraph>
 {

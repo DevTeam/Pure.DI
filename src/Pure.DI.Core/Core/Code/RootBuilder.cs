@@ -14,11 +14,11 @@ class RootBuilder(
     IBuildTools buildTools,
     ITypeResolver typeResolver,
     Func<IBuilder<CodeContext, IEnumerator>> variablesCodeBuilderFactory)
-    : IBuilder<RootContext, VarInjection>
+    : IFastBuilder<RootContext, VarInjection>
 {
     public static readonly ParameterSyntax DefaultCtxParameter = SyntaxFactory.Parameter(SyntaxFactory.Identifier("ctx_1182D127"));
 
-    public VarInjection Build(RootContext rootContext)
+    public VarInjection Build(in RootContext rootContext)
     {
         var rootVarsMap = rootContext.VarsMap;
         var rootVarInjection = rootVarsMap.GetInjection(rootContext.Graph, rootContext.Root, rootContext.Root.Injection, rootContext.Root.Node);

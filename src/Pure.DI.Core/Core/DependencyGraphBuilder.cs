@@ -19,7 +19,7 @@ sealed class DependencyGraphBuilder(
     IFilter filter,
     ICache<INamedTypeSymbol, MdConstructKind> constructKinds,
     ISymbolNames symbolNames,
-    IBuilder<ProcessingNodeContext, IProcessingNode> processingNodeBuilder,
+    IFastBuilder<ProcessingNodeContext, IProcessingNode> processingNodeBuilder,
     [Tag(Overrider)] IGraphRewriter graphOverrider,
     [Tag(Cleaner)] IGraphRewriter graphCleaner,
     ILocationProvider locationProvider,
