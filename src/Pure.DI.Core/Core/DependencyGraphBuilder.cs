@@ -32,11 +32,13 @@ sealed class DependencyGraphBuilder(
     {
         var setup = ctx.Setup;
         var nodes = ctx.Nodes;
+        var accumulators = ctx.Accumulators;
         var nodesCache = ctx.NodesCache;
+        var nodesLength = nodes.Length;
+        var map = new Dictionary<Injection, DependencyNode>(nodesLength);
+        var contextMap = new Dictionary<Injection, DependencyNode>(nodesLength);
+        var queue = new Queue<IProcessingNode>(nodesLength >> 2);
         var maxBindingId = 0;
-        var map = new Dictionary<Injection, DependencyNode>(nodes.Count);
-        var contextMap = new Dictionary<Injection, DependencyNode>(nodes.Count);
-        var queue = new Queue<IProcessingNode>();
         foreach (var processingNode in nodes)
         {
             var node = processingNode.Node;
@@ -56,18 +58,6 @@ sealed class DependencyGraphBuilder(
             {
                 queue.Enqueue(processingNode);
             }
-        }
-
-        var accumulators = new Dictionary<ITypeSymbol, List<MdAccumulator>>(SymbolEqualityComparer.Default);
-        foreach (var accumulator in setup.Accumulators)
-        {
-            if (!accumulators.TryGetValue(accumulator.AccumulatorType, out var accs))
-            {
-                accs = [];
-                accumulators.Add(accumulator.AccumulatorType, accs);
-            }
-
-            accs.Add(accumulator);
         }
 
         var processedInjection = new HashSet<Injection>();

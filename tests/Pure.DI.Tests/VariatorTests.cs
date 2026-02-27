@@ -49,7 +49,7 @@ public class VariatorTests
 
         // When & Then
         variator.TryGetNext(sets, out var variants).ShouldBeFalse();
-        variants.ShouldBeNull();
+        variants.IsDefaultOrEmpty.ShouldBeTrue();
     }
 
     [Fact]
@@ -204,7 +204,7 @@ public class VariatorTests
             }
 
             // Verify we get the correct number of variants
-            variants.Count.ShouldBe(5);
+            variants.Length.ShouldBe(5);
 
             // Verify the pattern at various iterations
             switch (iterationCount)
@@ -219,7 +219,7 @@ public class VariatorTests
                 case 3:
                     string.Join(", ", variants).ShouldBe("1_c, 2_a, 3_a, 4_a, 5_a");
                     break;
-                // After first variation resets, second variation advances
+                // After the first variation resets, the second variation advances
                 case 4:
                     string.Join(", ", variants).ShouldBe("1_a, 2_b, 3_a, 4_a, 5_a");
                     break;
@@ -229,7 +229,7 @@ public class VariatorTests
                 case 6:
                     string.Join(", ", variants).ShouldBe("1_c, 2_b, 3_a, 4_a, 5_a");
                     break;
-                // Second variation advances again
+                // The second variation advances again
                 case 7:
                     string.Join(", ", variants).ShouldBe("1_a, 2_c, 3_a, 4_a, 5_a");
                     break;
@@ -312,7 +312,7 @@ public class VariatorTests
                 throw new InvalidOperationException("Too many iterations");
             }
 
-            variants.Count.ShouldBe(6);
+            variants.Length.ShouldBe(6);
 
             // Track sums to verify all combinations are generated
             var sum = variants.Sum();

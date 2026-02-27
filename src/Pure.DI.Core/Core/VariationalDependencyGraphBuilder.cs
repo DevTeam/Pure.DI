@@ -89,6 +89,14 @@ sealed class VariationalDependencyGraphBuilder(
         var maxIterations = globalProperties.MaxIterations;
         var maxAttempts = 0x2000;
         DependencyGraph? dependencyGraph = null;
+        var accumulators = setup.Accumulators
+            .GroupBy(acc => acc.AccumulatorType, SymbolEqualityComparer.Default)
+            .ToImmutableDictionary(i => i.Key!, i => i.ToImmutableArray(), SymbolEqualityComparer.Default);
+        var buildCtx = new GraphBuildContext(
+            setup,
+            ImmutableArray<IProcessingNode>.Empty,
+            accumulators,
+            nodesCache);
         while (nodeVariator.TryGetNext(setsOfOptions, out var nodes))
         {
             if (maxAttempts-- <= 0)
@@ -115,9 +123,9 @@ sealed class VariationalDependencyGraphBuilder(
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            var ctx = new GraphBuildContext(setup, nodes, nodesCache);
-            var newNodes = graphBuilder.TryBuild(ctx).ToList();
-            var graph = ctx.Graph;
+            buildCtx = buildCtx with { Nodes = nodes };
+            var newNodes = graphBuilder.TryBuild(buildCtx).ToList();
+            var graph = buildCtx.Graph;
             if (graph is not null)
             {
                 dependencyGraph = new DependencyGraph(setup, graph);

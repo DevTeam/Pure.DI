@@ -6,32 +6,30 @@ namespace Pure.DI.Core;
 
 sealed class Variator<T> : IVariator<T>
 {
-    public bool TryGetNext(
-        IEnumerable<ISetOfOptions<T>> setsOfOptions,
-        [NotNullWhen(true)] out IReadOnlyCollection<T>? options)
+    public bool TryGetNext(IEnumerable<ISetOfOptions<T>> setsOfOptions, out ImmutableArray<T> options)
     {
         var enumerators = setsOfOptions.ToList();
         if (enumerators.Count == 0)
         {
-            options = null;
+            options = default;
             return false;
         }
 
         if (enumerators.All(v => !v.IsStarted))
         {
-            var initial = new List<T>(enumerators.Count);
+            var initial = ImmutableArray.CreateBuilder<T>(enumerators.Count);
             foreach (var enumerator in enumerators)
             {
                 if (!TryMoveToNext(enumerator))
                 {
-                    options = null;
+                    options = default;
                     return false;
                 }
 
                 initial.Add(enumerator.Current!);
             }
 
-            options = initial;
+            options = initial.MoveToImmutable();
             return true;
         }
 
@@ -46,12 +44,12 @@ sealed class Variator<T> : IVariator<T>
                     resetEnumerator.Reset();
                     if (!TryMoveToNext(resetEnumerator))
                     {
-                        options = null;
+                        options = default;
                         return false;
                     }
                 }
 
-                options = enumerators.Select(v => v.Current!).ToList();
+                options = enumerators.Select(v => v.Current!).ToImmutableArray();
                 return true;
             }
 
@@ -59,7 +57,7 @@ sealed class Variator<T> : IVariator<T>
             // If this is the last enumerator, all combinations are exhausted
             if (index == enumerators.Count - 1)
             {
-                options = null;
+                options = default;
                 return false;
             }
 
@@ -67,12 +65,12 @@ sealed class Variator<T> : IVariator<T>
             enumerator.Reset();
             if (!TryMoveToNext(enumerator))
             {
-                options = null;
+                options = default;
                 return false;
             }
         }
 
-        options = null;
+        options = default;
         return false;
     }
 

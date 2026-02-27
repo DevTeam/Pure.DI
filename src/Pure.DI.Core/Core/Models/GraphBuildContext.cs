@@ -2,7 +2,8 @@
 
 record GraphBuildContext(
     MdSetup Setup,
-    IReadOnlyCollection<IProcessingNode> Nodes,
+    in ImmutableArray<IProcessingNode> Nodes,
+    in ImmutableDictionary<ISymbol, ImmutableArray<MdAccumulator>> Accumulators,
     ICache<ProcessingNodeKey, IProcessingNode> NodesCache)
 {
     public IGraph<DependencyNode, Dependency>? Graph { get; set; }
