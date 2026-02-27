@@ -2,7 +2,6 @@
 
 namespace Pure.DI.Core;
 
-using System.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
 
 sealed class Semantic(
@@ -10,9 +9,6 @@ sealed class Semantic(
     IWildcardMatcher wildcardMatcher,
     ISmartTags smartTags,
     ILocationProvider locationProvider,
-    ICache<Semantic.NodeKey, Optional<object?>> constValCache,
-    ICache<Semantic.NodeKey, IOperation?> constOpCache,
-    ICache<Semantic.NodeKey, Microsoft.CodeAnalysis.TypeInfo> typeInfoCache,
     CancellationToken cancellationToken)
     : ISemantic
 {
@@ -22,7 +18,7 @@ sealed class Semantic(
     public T? TryGetTypeSymbol<T>(SemanticModel semanticModel, SyntaxNode node)
         where T : ITypeSymbol
     {
-        var typeInfo = typeInfoCache.Get(new NodeKey(node.SyntaxTree, node.ToString()), _ => semanticModel.GetTypeInfo(node, cancellationToken));
+        var typeInfo = semanticModel.GetTypeInfo(node, cancellationToken);
         var typeSymbol = typeInfo.Type ?? typeInfo.ConvertedType;
         if (typeSymbol is T symbol and not IErrorTypeSymbol)
         {
@@ -330,17 +326,15 @@ sealed class Semantic(
         // ReSharper disable once InvertIf
         if (semanticModel.SyntaxTree == node.SyntaxTree)
         {
-            var constKey = new NodeKey(node.SyntaxTree, node.ToString());
-
             // Try GetConstantValue first (lighter weight operation)
-            var optionalValue = constValCache.Get(constKey, _ => semanticModel.GetConstantValue(node));
+            var optionalValue = semanticModel.GetConstantValue(node);
             if (TryGetValueOf<T>(optionalValue.Value, out var val))
             {
                 return val;
             }
 
             // Try GetOperation as last resort (expensive operation!)
-            var operation = constOpCache.Get(constKey, _ => semanticModel.GetOperation(node));
+            var operation = semanticModel.GetOperation(node);
             if (TryGetValueOf<T>(operation?.ConstantValue.Value, out var val2))
             {
                 return val2;
