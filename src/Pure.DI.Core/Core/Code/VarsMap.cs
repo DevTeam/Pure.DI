@@ -168,11 +168,28 @@ class VarsMap(
     /// Global code state (like LocalFunction) is NOT part of the snapshot because it should accumulate.
     /// Only path-specific state (IsDeclared, IsCreated, CodeExpression) is captured.
     /// </summary>
-    private IReadOnlyDictionary<int, VarState> CreateState(Var var) =>
-        _map
-            .Where(i => i.Key != var.Declaration.Node.BindingId
-                        && i.Value.Declaration.Node.Construct is not { Source.Kind: MdConstructKind.Override })
-            .ToDictionary(i => i.Key, i => new VarState(i.Value));
+    private IReadOnlyDictionary<int, VarState> CreateState(Var var)
+    {
+        var excludeBindingId = var.Declaration.Node.BindingId;
+        var result = new Dictionary<int, VarState>(_map.Count);
+        foreach (var item in _map)
+        {
+            if (item.Key == excludeBindingId)
+            {
+                continue;
+            }
+
+            var constructKind = item.Value.Declaration.Node.Construct?.Source.Kind;
+            if (constructKind == MdConstructKind.Override)
+            {
+                continue;
+            }
+
+            result[item.Key] = new VarState(item.Value);
+        }
+
+        return result;
+    }
 
     /// <summary>
     /// Removes variables that were newly introduced in the nested scope and have non-persistent lifetimes
@@ -216,23 +233,22 @@ class VarsMap(
 #if DEBUG
         lines.AppendLine($"// restore state ({reason} {var.Declaration.Name})");
 #endif
-        var restored = new HashSet<int>();
+        var excludeBindingId = var.Declaration.Node.BindingId;
         foreach (var stateItem in state)
         {
-            var (varToRestore, isDeclared, isCreated, isLocalFunctionCalled, codeExpression) = stateItem.Value;
-            if (varToRestore.Declaration.Node.BindingId == var.Declaration.Node.BindingId)
+            var stateValue = stateItem.Value;
+            var varToRestore = stateValue.Var;
+            if (varToRestore.Declaration.Node.BindingId == excludeBindingId)
             {
                 continue;
             }
 
-            restored.Add(stateItem.Key);
-            
-            // Only restore path-specific state. 
+            // Only restore path-specific state.
             // Global state (like LocalFunction) should persist even after exiting a nested scope.
-            if (varToRestore.Declaration.IsDeclared == isDeclared
-                && varToRestore.IsCreated == isCreated
-                && (!restoreLocalFunctionCalled || varToRestore.IsLocalFunctionCalled == isLocalFunctionCalled)
-                && varToRestore.CodeExpression == codeExpression)
+            if (varToRestore.Declaration.IsDeclared == stateValue.IsDeclared
+                && varToRestore.IsCreated == stateValue.IsCreated
+                && (!restoreLocalFunctionCalled || varToRestore.IsLocalFunctionCalled == stateValue.IsLocalFunctionCalled)
+                && varToRestore.CodeExpression == stateValue.CodeExpression)
             {
                 continue;
             }
@@ -240,21 +256,28 @@ class VarsMap(
 #if DEBUG
             lines.AppendLine($"//   {varToRestore.Declaration.Name}");
 #endif
-            varToRestore.Declaration.IsDeclared = isDeclared;
-            varToRestore.IsCreated = isCreated;
+            varToRestore.Declaration.IsDeclared = stateValue.IsDeclared;
+            varToRestore.IsCreated = stateValue.IsCreated;
             if (restoreLocalFunctionCalled)
             {
-                varToRestore.IsLocalFunctionCalled = isLocalFunctionCalled;
+                varToRestore.IsLocalFunctionCalled = stateValue.IsLocalFunctionCalled;
             }
-            varToRestore.CodeExpression = codeExpression;
+
+            varToRestore.CodeExpression = stateValue.CodeExpression;
         }
 
-        // For variables that were NOT in the snapshot (newly discovered in the nested scope),
-        // we reset their path-specific state to defaults.
-        // This ensures that if they are needed again in the parent scope, they will be properly initialized.
-        foreach (var varToRestore in _map.Where(i => !restored.Contains(i.Key)).Select(i => i.Value))
+        // Find variables that were NOT in the snapshot (newly discovered in the nested scope),
+        // and reset their path-specific state to defaults.
+        var stateKeys = new HashSet<int>(state.Keys);
+        foreach (var item in _map)
         {
-            if (varToRestore.Declaration.Node.BindingId == var.Declaration.Node.BindingId)
+            if (stateKeys.Contains(item.Key))
+            {
+                continue;
+            }
+
+            var varToRestore = item.Value;
+            if (varToRestore.Declaration.Node.BindingId == excludeBindingId)
             {
                 continue;
             }
