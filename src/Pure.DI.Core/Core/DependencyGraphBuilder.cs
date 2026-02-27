@@ -39,7 +39,6 @@ sealed class DependencyGraphBuilder(
         var queue = new Queue<IProcessingNode>();
         foreach (var processingNode in nodes)
         {
-            cancellationToken.ThrowIfCancellationRequested();
             var node = processingNode.Node;
             if (node.Binding.Id > maxBindingId)
             {
@@ -154,15 +153,17 @@ sealed class DependencyGraphBuilder(
                         hasExplicitDefaultValue,
                         explicitDefaultValue);
 
-                    foreach (var dependencyNode in nodesFactory.CreateNodes(setup, typeConstructor, accumulatorBinding))
+                    var accumulatorNodes = dependencyNodePrioritizer.SortByPriority(nodesFactory.CreateNodes(setup, typeConstructor, accumulatorBinding));
+                    if (accumulatorNodes.FirstOrDefault() is {} newNode)
                     {
-                        yield return dependencyNode;
-                        /*UpdateMap(injection, dependencyNode);
-                        var processingNode = CreateNewProcessingNode(nodesCache, injection.Tag, dependencyNode);
-                        queue.Enqueue(processingNode);*/
+                        var contextTag = GetContextTag(injection, newNode);
+                        var newInjection = injection with { Tag = contextTag ?? injection.Tag };
+                        var newProcessingNode = CreateNewProcessingNode(nodesCache, newInjection.Tag, newNode);
+                        UpdateMap(newInjection, newNode);
+                        queue.Enqueue(newProcessingNode);
                     }
 
-                    yield break;
+                    continue;
                 }
 
                 switch (injection.Type)
