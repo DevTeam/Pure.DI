@@ -15,6 +15,7 @@ record Var(
     ImmutableArray<string> Trace)
 {
     private string? _codeExpression;
+    private string? _baseName;
 
     /// <summary>
     /// Gets the type of the instance.
@@ -34,17 +35,35 @@ record Var(
     /// <summary>
     /// Gets the variable name.
     /// </summary>
-    public string Name =>
-        string.IsNullOrEmpty(NameOverride)
-            ? (AbstractNode.ActualLifetime == Lifetime.Singleton && constructors.IsEnabled(graph) ? $"{Names.RootFieldName}." : "") + Declaration.NameProvider.GetVariableName(AbstractNode, Declaration.PerLifetimeId)
-            : NameOverride;
+    public string Name
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(NameOverride))
+            {
+                return NameOverride;
+            }
+
+            // Cache the base name (without prefix) since it never changes
+            _baseName ??= Declaration.NameProvider.GetVariableName(AbstractNode, Declaration.PerLifetimeId);
+
+            // For Singleton, we need to check constructors.IsEnabled(graph) every time
+            // because it can change dynamically
+            if (AbstractNode.ActualLifetime == Lifetime.Singleton && constructors.IsEnabled(graph))
+            {
+                return Names.RootFieldName + "." + _baseName;
+            }
+
+            return _baseName;
+        }
+    }
 
     /// <summary>
     /// Gets or sets the code expression for the variable.
     /// </summary>
     public string CodeExpression
     {
-        get => string.IsNullOrEmpty(_codeExpression) ? Name : _codeExpression!;
+        get => _codeExpression ?? Name;
         set => _codeExpression = value;
     }
 

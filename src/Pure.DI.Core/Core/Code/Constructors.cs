@@ -10,11 +10,8 @@ class Constructors(
     public bool IsEnabled(CompositionCode composition, ConstructorKind kind) =>
         kind switch
         {
-            ConstructorKind.Default => composition.ClassArgs.Length == 0
-                                        && !HasSetupContextParameters(composition)
-                                        && IsEnabled(composition.Source),
-            ConstructorKind.Parameterized => (composition.ClassArgs.Length > 0 || HasSetupContextParameters(composition))
-                                             && IsEnabled(composition.Source),
+            ConstructorKind.Default => composition.ClassArgs.Length == 0 && !HasSetupContextParameters(composition) && IsEnabled(composition.Source),
+            ConstructorKind.Parameterized => (composition.ClassArgs.Length > 0 || HasSetupContextParameters(composition)) && IsEnabled(composition.Source),
             ConstructorKind.Scope => IsScopeEnabled(composition.Source),
             _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, null)
         };
