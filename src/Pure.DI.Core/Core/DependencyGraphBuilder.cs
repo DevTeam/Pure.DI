@@ -26,9 +26,9 @@ sealed class DependencyGraphBuilder(
     ITypeResolver typeResolver,
     IDependencyNodePrioritizer dependencyNodePrioritizer,
     CancellationToken cancellationToken)
-    : IDependencyGraphBuilder
+    : IBuilder<GraphBuildContext, IEnumerable<DependencyNode>>
 {
-    public IEnumerable<DependencyNode> TryBuild(GraphBuildContext ctx)
+    public IEnumerable<DependencyNode> Build(GraphBuildContext ctx)
     {
         var setup = ctx.Setup;
         var nodes = ctx.Nodes;

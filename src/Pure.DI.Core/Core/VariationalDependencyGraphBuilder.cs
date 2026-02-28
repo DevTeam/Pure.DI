@@ -16,7 +16,7 @@ sealed class VariationalDependencyGraphBuilder(
     IEnumerable<IBuilder<DependencyNodeBuildContext, IEnumerable<DependencyNode>>> dependencyNodeBuilders,
     IVariator<IProcessingNode> nodeVariator,
     IFastBuilder<ContractsBuildContext, ISet<Injection>> contractsBuilder,
-    IDependencyGraphBuilder graphBuilder,
+    IBuilder<GraphBuildContext, IEnumerable<DependencyNode>> graphBuilder,
     IFastBuilder<ProcessingNodeContext, IProcessingNode> processingNodeBuilder,
     IRegistryManager<int> bindingsRegistryManager,
     ILocationProvider locationProvider,
@@ -124,7 +124,7 @@ sealed class VariationalDependencyGraphBuilder(
             cancellationToken.ThrowIfCancellationRequested();
 
             buildCtx = buildCtx with { Nodes = nodes };
-            var newNodes = graphBuilder.TryBuild(buildCtx).ToList();
+            var newNodes = graphBuilder.Build(buildCtx).ToList();
             var graph = buildCtx.Graph;
             if (graph is not null)
             {
