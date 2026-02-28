@@ -5,7 +5,8 @@ namespace Pure.DI.Core.Code;
 sealed class TypeResolver(
     IMarker marker,
     IUniqueNameProvider uniqueNameProvider,
-    ISymbolNames symbolNames)
+    ISymbolNames symbolNames,
+    ITypes types)
     : ITypeResolver
 {
     private readonly Dictionary<ITypeSymbol, string> _names = new(SymbolEqualityComparer.Default);
@@ -14,6 +15,11 @@ sealed class TypeResolver(
 
     private TypeDescription Resolve(MdSetup setup, ITypeSymbol type, ITypeParameterSymbol? typeParam)
     {
+        if (SymbolEqualityComparer.Default.Equals(types.TryGet(SpecialType.LightweightRoot, setup.SemanticModel.Compilation), type))
+        {
+            return new TypeDescription(Names.LightweightRootClassName, ImmutableArray<TypeDescription>.Empty, null);
+        }
+
         TypeDescription description;
         switch (type)
         {

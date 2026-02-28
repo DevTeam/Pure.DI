@@ -38,28 +38,21 @@ class RootBuilder(
         rootVarInjection.Var.CodeExpression = buildTools.OnInjected(ctx, rootVarInjection);
 
         var setup = rootContext.Graph.Source;
-        var perResolves = new List<VarDeclaration>();
-        foreach (var declaration in rootVarsMap.Declarations)
-        {
-            if (declaration.Node.ActualLifetime is PerResolve)
-            {
-                perResolves.Add(declaration);
-            }
-        }
-
-        perResolves.Sort((a, b) => a.Node.BindingId.CompareTo(b.Node.BindingId));
-
-        foreach (var perResolve in perResolves)
-        {
-            rootContext.Lines.AppendLine($"var {perResolve.Name} = default({typeResolver.Resolve(setup, perResolve.InstanceType)});");
-            if (perResolve.InstanceType.IsValueType)
-            {
-                rootContext.Lines.AppendLine($"var {perResolve.Name}{Names.CreatedValueNameSuffix} = false;");
-            }
-        }
-
+        AddPerResolveVars(rootContext.Lines, rootVarsMap.Declarations.Where(i => i.Node.ActualLifetime is PerResolve), setup);
         rootContext.Lines.AppendLines(lines);
         return rootVarInjection;
+    }
+
+    private void AddPerResolveVars(Lines lines, IEnumerable<VarDeclaration> perResolveVars, MdSetup setup)
+    {
+        foreach (var perResolve in perResolveVars.OrderBy(i => i.Node.BindingId))
+        {
+            lines.AppendLine($"var {perResolve.Name} = default({typeResolver.Resolve(setup, perResolve.InstanceType)});");
+            if (perResolve.InstanceType.IsValueType)
+            {
+                lines.AppendLine($"var {perResolve.Name}{Names.CreatedValueNameSuffix} = false;");
+            }
+        }
     }
 
     private void BuildCode(CodeContext parentCtx)

@@ -25,6 +25,7 @@ static class CodeExtensions
             nuint => $"(nuint){tag}",
             char val => $"'{val}'",
             Enum val => $"{val.GetType()}.{val}",
+            IField { ContainingType.TypeKind: TypeKind.Enum } val => $"{val.ContainingType.ToDisplayString()}.{val.Name}",
             IFieldSymbol val when val.ContainingType.TypeKind == TypeKind.Enum
                 => $"{val.ContainingType.ToDisplayString()}.{val.Name}",
             ITypeSymbol val => $"typeof({val.ToDisplayString()})",

@@ -29,7 +29,8 @@ sealed class RootMethodsBuilder(
         var membersCounter = composition.MembersCount;
         code.AppendLine("#region Roots");
         var isFirst = true;
-        foreach (var root in composition.PublicRoots.Where(i => generatePrivateRoots || i.IsPublic))
+        var roots = composition.PublicRoots.Where(i => generatePrivateRoots || i.IsPublic);
+        foreach (var root in roots)
         {
             if (isFirst)
             {

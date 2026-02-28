@@ -165,9 +165,9 @@ public static class TestExtensions
             .AddSyntaxTrees(generatedSources.Select(i => CSharpSyntaxTree.ParseText(i.SourceText, parseOptions)).ToArray());
 
         generatedSources.AddRange(generatedApiSources);
-        var generatedCode = string.Join(Environment.NewLine, generatedSources.Select((src, index) => $"Generated {index + 1}" + Environment.NewLine + Environment.NewLine + src.SourceText));
+        var generatedCode = string.Join(Environment.NewLine, generatedSources.Select(i => i.SourceText));
 
-        compilation.Check(stdOut, options, generatedCode);
+        compilation.Check(stdOut, options);
 
         using var assemblyStream = new MemoryStream();
         var result = compilation.Emit(assemblyStream);
@@ -277,34 +277,37 @@ public static class TestExtensions
                 MetadataReference.CreateFromFile(typeof(IAsyncEnumerable<>).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(INotifyPropertyChanged).Assembly.Location));
 
-    private static CSharpCompilation Check(this CSharpCompilation compilation, List<string> output, Options? options, string? generatedCode)
+    private static CSharpCompilation Check(this CSharpCompilation compilation, List<string> output, Options? options)
     {
-        var errors = (
-                from diagnostic in compilation.GetDiagnostics()
-                where diagnostic.Severity is DiagnosticSeverity.Error or DiagnosticSeverity.Warning
-                select GetErrorMessage(diagnostic))
+        var diagnostics = (
+            from diagnostic in compilation.GetDiagnostics()
+            where diagnostic.Severity is DiagnosticSeverity.Error or DiagnosticSeverity.Warning
+            select diagnostic)
             .ToList();
 
-        output.AddRange(errors);
+        if (diagnostics.Count == 0)
+        {
+            return compilation;
+        }
+
+        output.Add($"Language version is {compilation.LanguageVersion}");
+        output.Add(Environment.NewLine);
+        foreach (var diagnosticsBySourceTree in diagnostics.GroupBy(i => i.Location.SourceTree!))
+        {
+            output.AddRange(diagnosticsBySourceTree.Select(diagnostic => diagnostic.ToString()));
+            output.Add(Environment.NewLine);
+
+            var sourceCode = diagnosticsBySourceTree.Key.ToString();
+            output.AddRange(AddLineNumbers(sourceCode));
+            output.Add(Environment.NewLine);
+        }
 
         if (!(options?.CheckCompilationErrors ?? true))
         {
             return compilation;
         }
 
-        var hasError = errors.Count != 0;
-        if (!hasError)
-        {
-            return compilation;
-        }
-
-        errors.Insert(0, $"Language version is {compilation.LanguageVersion}, available versions are ... {string.Join(", ", Enum.GetNames<LanguageVersion>().TakeLast(5))}");
-        if (!string.IsNullOrWhiteSpace(generatedCode))
-        {
-            errors.AddRange(AddLineNumbers(generatedCode));
-        }
-
-        Assert.False(hasError, string.Join(Environment.NewLine, errors));
+        Assert.True(diagnostics.Count == 0, string.Join(Environment.NewLine, output));
         return compilation;
     }
 
@@ -317,30 +320,6 @@ public static class TestExtensions
 
         var source = location.SourceTree.ToString();
         return source.Substring(location.SourceSpan.Start, location.SourceSpan.Length);
-    }
-
-    private static string GetErrorMessage(Diagnostic diagnostic)
-    {
-        var description = diagnostic.GetMessage(CultureInfo.InvariantCulture);
-        if (!diagnostic.Location.IsInSource)
-        {
-            return description;
-        }
-
-        var source = diagnostic.Location.GetSource();
-        return description
-               + Environment.NewLine + Environment.NewLine
-               + diagnostic
-               + Environment.NewLine + Environment.NewLine
-               + source
-               + Environment.NewLine + Environment.NewLine
-               + "Line " + (diagnostic.Location.GetMappedLineSpan().StartLinePosition.Line + 1)
-               + Environment.NewLine
-               + Environment.NewLine
-               + string.Join(
-                   Environment.NewLine,
-                   AddLineNumbers(source)
-               );
     }
 
     private static IEnumerable<string> AddLineNumbers(string source) =>

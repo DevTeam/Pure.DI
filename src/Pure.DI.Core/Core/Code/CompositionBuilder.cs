@@ -61,11 +61,12 @@ class CompositionBuilder(
             }
 
             var args = varDeclarationTools.Sort(varsMap.Declarations.Where(i => i.Node.Arg is not null)).ToList();
+            var rootArgs = args.GetArgsOfKind(ArgKind.Root);
             var processedRoot = root with
             {
                 Lines = ctx.Lines,
                 TypeDescription = typeResolver.Resolve(graph.Source, root.Injection.Type),
-                RootArgs = args.GetArgsOfKind(ArgKind.Root).ToImmutableArray()
+                RootArgs = rootArgs.ToImmutableArray()
             };
 
             classArgs.AddRange(args.GetArgsOfKind(ArgKind.Composition)

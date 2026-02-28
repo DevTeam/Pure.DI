@@ -1565,6 +1565,11 @@ namespace Pure.DI
         /// Applies the override modifier to redefine a base implementation.
         /// </summary>
         Override = 1 << 10,
+
+        /// <summary>
+        /// This root type makes the composition root lightweight - no separate object composition will be generated for creating the object, a common one will be used for all lightweight roots and a delegate will be used to create the type instance.
+        /// </summary>
+        Light = 1 << 11
     }
 
     /// <summary>
@@ -3574,6 +3579,8 @@ var typeArgs = string.Join(", ", GetSuffixes(1, i + 1).Select(suffix => $"T{suff
         /// <seealso cref="DI.Setup"/>
         T ResolveByTag(TComposite composite, object tag);
     }
+
+    internal class LightweightRoot { }
 
     /// <summary>
     /// Represents an exception thrown when a composition root cannot be resolved.

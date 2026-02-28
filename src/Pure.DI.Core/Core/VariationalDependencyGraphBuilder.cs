@@ -27,7 +27,7 @@ sealed class VariationalDependencyGraphBuilder(
 {
     public DependencyGraph? Build(MdSetup setup)
     {
-        var dependencyNodeBuildContext = new DependencyNodeBuildContext(setup, typeConstructorFactory());
+        var dependencyNodeBuildContext = new DependencyNodeBuildContext(setup, setup, typeConstructorFactory());
         var rawNodes = dependencyNodePrioritizer.SortByPriority(dependencyNodeBuilders.SelectMany(builder => builder.Build(dependencyNodeBuildContext))).Reverse();
         var allNodes = new List<IProcessingNode>();
         var injections = new Dictionary<Injection, DependencyNode>();

@@ -79,6 +79,38 @@ class BindingsFactory(
                 accumulators));
     }
 
+    public MdBinding CreateLightweightRootBinding(
+        MdSetup setup,
+        MdRoot root)
+    {
+        var lifetime = new MdLifetime(
+            root.SemanticModel,
+            root.Source,
+            Lifetime.Transient);
+
+        var implementation = new MdImplementation(
+            root.SemanticModel,
+            root.Source,
+            root.RootType);
+
+        var contract = new MdContract(
+            root.SemanticModel,
+            root.Source,
+            root.RootType,
+            ContractKind.Explicit,
+            ImmutableArray<MdTag>.Empty);
+
+        return new MdBinding(
+            root.OriginalId,
+            root.Source,
+            setup,
+            root.SemanticModel,
+            ImmutableArray.Create(contract),
+            ImmutableArray<MdTag>.Empty,
+            Lifetime: lifetime,
+            Implementation: implementation);
+    }
+
     public MdBinding CreateAutoBinding(
         MdSetup setup,
         DependencyNode targetNode,
@@ -99,7 +131,7 @@ class BindingsFactory(
             : ImmutableArray<MdTag>.Empty;
 
         var newContracts = ImmutableArray.Create(new MdContract(semanticModel, setup.Source, sourceType, ContractKind.Implicit, ImmutableArray<MdTag>.Empty));
-        var newBinding = new MdBinding(
+        return new MdBinding(
             bindingId,
             targetNode.Binding.Source,
             setup,
@@ -107,9 +139,8 @@ class BindingsFactory(
             newContracts,
             newTags,
             new MdLifetime(semanticModel, setup.Source, Lifetime.Transient),
-            new MdImplementation(semanticModel, setup.Source, sourceType),
+            Implementation: new MdImplementation(semanticModel, setup.Source, sourceType),
             TypeConstructor: typeConstructor);
-        return newBinding;
     }
 
     public MdBinding CreateConstructBinding(

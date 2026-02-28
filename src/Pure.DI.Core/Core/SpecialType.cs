@@ -6,5 +6,7 @@ enum SpecialType
     CompositionKind,
     Lifetime,
     Tag,
-    IConfiguration
+    IConfiguration,
+    Func,
+    LightweightRoot
 }

@@ -88,7 +88,7 @@ public sealed partial class Generator
             .PerBlock<ClassCommenter, ParameterizedConstructorCommenter, RootMethodsCommenter>(Type)
 
             // Builders
-            .PerBlock<MetadataBuilder, LogInfoBuilder, ResolversBuilder, ContractsBuilder, ClassDiagramBuilder, RootsBuilder, VariationalDependencyGraphBuilder,
+            .PerBlock<MetadataBuilder, LogInfoBuilder, ResolversBuilder, LightweightRootClassBuilder, ContractsBuilder, ClassDiagramBuilder, RootsBuilder, VariationalDependencyGraphBuilder,
                 ImplementationVariantsBuilder, ApiBuilder, CodeBuilder, SetupsBuilder, CodeGenerator, FactoryTypeRewriter, TagClassBuilder, MermaidUrlBuilder,
                 CompositionBuilder, RootBuilder, RootCodeBuilder, ProcessingNodeBuilder>()
             .PerBlock<FactoryDependencyNodeBuilder, ArgDependencyNodeBuilder, ConstructDependencyNodeBuilder, ImplementationDependencyNodeBuilder, RootDependencyNodeBuilder>(Unique)

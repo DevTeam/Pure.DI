@@ -6,7 +6,8 @@ namespace Pure.DI.Core.Code.Parts;
 
 sealed class ResolverClassesBuilder(
     IBuilder<RootsContext, IEnumerable<ResolverInfo>> resolversBuilder,
-    ICodeNameProvider codeNameProvider)
+    ICodeNameProvider codeNameProvider,
+    ITypeResolver typeResolver)
     : IClassPartBuilder
 {
     public ClassPart Part => ClassPart.ResolverClasses;
@@ -52,7 +53,8 @@ sealed class ResolverClassesBuilder(
         foreach (var resolver in resolversBuilder.Build(new RootsContext(composition.Source.Source, composition.PublicRoots)))
         {
             var resolverClassName = resolver.ClassName;
-            var baseTypeName = $"{Names.ResolverClassName}<{resolver.Type}>";
+            var resolverType = typeResolver.Resolve(composition.Source.Source, resolver.Type);
+            var baseTypeName = $"{Names.ResolverClassName}<{resolverType}>";
             var baseTypes = new List<string> { baseTypeName };
             var objectTypeName = "";
             if (resolver.Type.IsValueType)
@@ -65,7 +67,7 @@ sealed class ResolverClassesBuilder(
             code.AppendLine($"private sealed class {resolverClassName}: {string.Join(", ", baseTypes)}");
             using (code.CreateBlock())
             {
-                ImplementInterface(composition, resolver, code);
+                ImplementInterface(composition, resolver, resolverType, code);
 
                 if (!string.IsNullOrWhiteSpace(objectTypeName))
                 {
@@ -91,10 +93,10 @@ sealed class ResolverClassesBuilder(
         return composition with { MembersCount = membersCount };
     }
 
-    private static void ImplementInterface(CompositionCode composition, ResolverInfo resolver, Lines code)
+    private static void ImplementInterface(CompositionCode composition, ResolverInfo resolver, TypeDescription resolverType, Lines code)
     {
         var defaultRoot = resolver.Roots.SingleOrDefault(i => i.Injection.Tag is null);
-        code.AppendLine($"public override {resolver.Type} {Names.ResolveMethodName}({composition.Source.Source.Name.ClassName} composition)");
+        code.AppendLine($"public override {resolverType} {Names.ResolveMethodName}({composition.Source.Source.Name.ClassName} composition)");
         using (code.CreateBlock())
         {
             if (defaultRoot is not null)
@@ -110,7 +112,7 @@ sealed class ResolverClassesBuilder(
 
         code.AppendLine();
 
-        code.AppendLine($"public override {resolver.Type} {Names.ResolveByTagMethodName}({composition.Source.Source.Name.ClassName} composition, object tag)");
+        code.AppendLine($"public override {resolverType} {Names.ResolveByTagMethodName}({composition.Source.Source.Name.ClassName} composition, object tag)");
         using (code.CreateBlock())
         {
             var taggedRoots = resolver.Roots;

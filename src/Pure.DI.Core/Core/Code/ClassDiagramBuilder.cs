@@ -305,6 +305,9 @@ sealed class ClassDiagramBuilder(
     private string FormatField(MdSetup setup, IFieldSymbol field, FormatOptions options) =>
         $"{Format(field.DeclaredAccessibility)}{FormatType(setup, field.Type, options)} {field.Name}";
 
+    private string FormatField(MdSetup setup, IField field, FormatOptions options) =>
+        $"{Format(field.DeclaredAccessibility)}{FormatType(setup, field.Type, options)} {field.Name}";
+
     private string FormatParameter(MdSetup setup, IParameterSymbol parameter, FormatOptions options) =>
         $"{FormatType(setup, parameter.Type, options)} {parameter.Name}";
 

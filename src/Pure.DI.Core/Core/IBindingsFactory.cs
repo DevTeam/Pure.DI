@@ -17,6 +17,10 @@ interface IBindingsFactory
         bool hasExplicitDefaultValue,
         object? explicitDefaultValue);
 
+    MdBinding CreateLightweightRootBinding(
+        MdSetup setup,
+        MdRoot root);
+
     MdBinding CreateAutoBinding(
         MdSetup setup,
         DependencyNode targetNode,

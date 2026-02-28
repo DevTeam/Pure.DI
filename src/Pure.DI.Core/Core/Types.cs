@@ -13,7 +13,9 @@ sealed class Types(
         { SpecialType.CompositionKind, $"{Names.GeneratorName}.{nameof(CompositionKind)}" },
         { SpecialType.Lifetime, $"{Names.GeneratorName}.{nameof(Lifetime)}" },
         { SpecialType.Tag, $"{Names.GeneratorName}.{nameof(Tag)}" },
-        { SpecialType.IConfiguration, $"{Names.GeneratorName}.{nameof(IConfiguration)}" }
+        { SpecialType.IConfiguration, $"{Names.GeneratorName}.{nameof(IConfiguration)}" },
+        { SpecialType.Func, "System.Func`1" },
+        { SpecialType.LightweightRoot, Names.LightweightRootBaseClassName }
     };
 
     public string GetName(ITypeSymbol typeSymbol) =>

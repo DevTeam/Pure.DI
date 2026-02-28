@@ -11,7 +11,8 @@ record MdRoot(
     IReadOnlyCollection<string> Comments,
     ITypeSymbol RootContractType,
     bool IsBuilder,
-    ImmutableArray<MdRoot> BuilderRoots = default)
+    ImmutableArray<MdRoot> BuilderRoots = default,
+    bool IsLightweightRootMethod = false)
 {
     public override string ToString() => $"Root<{RootType}>(\"{Name}\", {Tag.ToString()})";
 }

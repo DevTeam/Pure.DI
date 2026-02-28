@@ -58,10 +58,12 @@ static class Names
     public const string IAsyncEnumerableTypeName = $"{SystemNamespace}Collections.Generic.IAsyncEnumerable<>";
     public const string CannotResolveExceptionTypeName = $"{ApiNamespace}{nameof(CannotResolveException)}";
     public const string NonSerializedAttributeTypeName = $"{SystemNamespace}{nameof(NonSerializedAttribute)}";
+    public const string FuncTypeName = $"{SystemNamespace}Func";
 
     // Members
     public const string ResolveMethodName = nameof(IResolver<,>.Resolve);
     public const string ResolveByTagMethodName = nameof(IResolver<,>.ResolveByTag);
+    public static readonly string LightweightRootName = "Roots" + Salt;
 
     // Partial methods
     public const string OnNewInstanceMethodName = "OnNewInstance";
@@ -87,8 +89,10 @@ static class Names
     public static readonly string InitializationMarker = "initializeMarker" + Salt;
     public static readonly string OverrideMarker = "overrideMarker" + Salt;
 
-    // Others
+    // Class names
     public static readonly string ResolverClassName = $"Resolver{Salt}";
+    public static readonly string LightweightRootBaseClassName = $"{GeneratorName}.{nameof(LightweightRoot)}";
+    public static readonly string LightweightRootClassName = $"{nameof(LightweightRoot)}{Salt}";
 
     // Fields
     public static readonly string BucketsFieldName = $"_buckets{Salt}";

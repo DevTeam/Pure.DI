@@ -14,5 +14,6 @@ enum ClassPart
     ResolversFields,
     StaticConstructor,
     ResolverClasses,
+    LightweightRootClass,
     ToStringMethod
 }

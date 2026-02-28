@@ -2,4 +2,5 @@
 
 record DependencyNodeBuildContext(
     MdSetup Setup,
+    MdSetup OriginalSetup,
     ITypeConstructor TypeConstructor);

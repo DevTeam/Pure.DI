@@ -42,7 +42,7 @@ sealed class FactoryDependencyNodeBuilder(
                     continue;
                 }
 
-                var targetDp = instanceDpProvider.Get(setup, ctx.TypeConstructor, targetType);
+                var targetDp = instanceDpProvider.Get(ctx.OriginalSetup, ctx.TypeConstructor, targetType);
                 initializers.Add(new DpInitializer(initializer, targetDp.Methods, targetDp.Properties, targetDp.Fields, CreateOverrides(initializer.Overrides), locationProvider));
             }
 

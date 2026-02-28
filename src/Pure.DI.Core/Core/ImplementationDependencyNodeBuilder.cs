@@ -86,7 +86,7 @@ sealed class ImplementationDependencyNodeBuilder(
                 yield return new DependencyNode(0, binding, ctx.TypeConstructor, Error: error);
             }
 
-            var instanceDp = instanceDpProvider.Get(setup, ctx.TypeConstructor, implementationType);
+            var instanceDp = instanceDpProvider.Get(ctx.OriginalSetup, ctx.TypeConstructor, implementationType);
             var implementations = constructors
                 .Select(constructor =>
                     new DpImplementation(
