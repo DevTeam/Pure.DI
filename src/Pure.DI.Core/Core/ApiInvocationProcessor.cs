@@ -323,7 +323,8 @@ sealed class ApiInvocationProcessor(
                                 ImmutableArray<MdAccumulator>.Empty,
                                 ImmutableArray<SetupContextMembers>.Empty,
                                 [],
-                                comments.FilterHints(invocationComments).ToList()));
+                                comments.FilterHints(invocationComments).ToList(),
+                                ImmutableArray<MdDefaultLifetime>.Empty));
 
                         if (baseTypeDeclarationSyntax is not null && semanticModel.GetDeclaredSymbol(baseTypeDeclarationSyntax) is {} baseType)
                         {

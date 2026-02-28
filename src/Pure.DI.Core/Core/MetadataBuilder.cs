@@ -145,6 +145,7 @@ sealed class MetadataBuilder(
         var usingDirectives = ImmutableArray.CreateBuilder<MdUsingDirectives>(2);
         var accumulators = ImmutableArray.CreateBuilder<MdAccumulator>(1);
         var setupContextMembers = new List<SetupContextMembers>();
+        var defaultLifetimes = new List<MdDefaultLifetime>();
         var bindingId = 0;
         var comments = new List<string>();
         // ReSharper disable once UseDeconstruction
@@ -212,10 +213,12 @@ sealed class MetadataBuilder(
             ordinalAttributesBuilder.AddRange(setup.OrdinalAttributes);
             specialTypeBuilder.AddRange(setup.SpecialTypes);
             accumulators.AddRange(setup.Accumulators);
+            defaultLifetimes.AddRange(setup.DefaultLifetimes);
             if (!setup.SetupContextMembers.IsDefaultOrEmpty)
             {
                 setupContextMembers.AddRange(setup.SetupContextMembers);
             }
+
             foreach (var usingDirective in setup.UsingDirectives)
             {
                 usingDirectives.Add(usingDirective);
@@ -310,7 +313,8 @@ sealed class MetadataBuilder(
             accumulators.ToImmutable(),
             mergedSetupContextMembers,
             tagOn,
-            comments);
+            comments,
+            defaultLifetimes.ToImmutableArray());
     }
 
     private static ImmutableArray<MdResolver> AddRootArgumentResolver(

@@ -3,7 +3,8 @@
 class BindingsFactory(
     Func<IFastBuilder<RewriterContext<MdFactory>, MdFactory>> factoryRewriterFactory,
     ITypes types,
-    IMarker marker)
+    IMarker marker,
+    ILifetimeProvider lifetimeProvider)
     : IBindingsFactory
 {
     public MdBinding CreateGenericBinding(
@@ -131,6 +132,8 @@ class BindingsFactory(
             : ImmutableArray<MdTag>.Empty;
 
         var newContracts = ImmutableArray.Create(new MdContract(semanticModel, setup.Source, sourceType, ContractKind.Implicit, ImmutableArray<MdTag>.Empty));
+        var actualLifetime = lifetimeProvider.GetActualLifetime(setup.DefaultLifetimes, null, sourceType, ImmutableArray<MdTag>.Empty, newContracts);
+
         return new MdBinding(
             bindingId,
             targetNode.Binding.Source,
@@ -138,7 +141,7 @@ class BindingsFactory(
             semanticModel,
             newContracts,
             newTags,
-            new MdLifetime(semanticModel, setup.Source, Lifetime.Transient),
+            actualLifetime,
             Implementation: new MdImplementation(semanticModel, setup.Source, sourceType),
             TypeConstructor: typeConstructor);
     }

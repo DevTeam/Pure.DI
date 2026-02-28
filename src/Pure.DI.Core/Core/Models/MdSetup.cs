@@ -23,7 +23,8 @@ record MdSetup(
     in ImmutableArray<MdAccumulator> Accumulators,
     in ImmutableArray<SetupContextMembers> SetupContextMembers,
     IReadOnlyCollection<MdTagOnSites> TagOn,
-    IReadOnlyCollection<string> Comments)
+    IReadOnlyCollection<string> Comments,
+    ImmutableArray<MdDefaultLifetime> DefaultLifetimes)
 {
     public virtual bool Equals(MdSetup? other) =>
         other is not null && (ReferenceEquals(this, other) || Name.Equals(other.Name));

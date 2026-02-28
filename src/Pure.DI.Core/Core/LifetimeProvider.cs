@@ -19,7 +19,7 @@ class LifetimeProvider(ITypes types, IBaseSymbolsProvider baseSymbolsProvider) :
             return GetDefaultLifetime(defaultLifetimes);
         }
 
-        foreach (var defaultLifetime in defaultLifetimes.Where(i => i.Type is not null))
+        foreach (var defaultLifetime in defaultLifetimes.Where(i => i.Type is not null).Reverse())
         {
             var baseSymbols = baseSymbolsProvider.GetBaseSymbols(type, (baseType, _) =>
                 IsMatchingDefaultLifetime(defaultLifetime, baseType, tags, contracts));

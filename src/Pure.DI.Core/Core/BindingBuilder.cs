@@ -14,7 +14,7 @@ sealed class BindingBuilder(
     : IBindingBuilder
 {
     private readonly List<MdContract> _contracts = [];
-    private readonly LinkedList<MdDefaultLifetime> _defaultLifetimes = [];
+    private readonly List<MdDefaultLifetime> _defaultLifetimes = [];
     private readonly List<MdTag> _tags = [];
     private MdArg? _arg;
     private MdFactory? _factory;
@@ -24,7 +24,7 @@ sealed class BindingBuilder(
     private ExpressionSyntax? _source;
 
     public void AddDefaultLifetime(MdDefaultLifetime defaultLifetime) =>
-        _defaultLifetimes.AddFirst(defaultLifetime);
+        _defaultLifetimes.Add(defaultLifetime);
 
     public MdLifetime Lifetime
     {

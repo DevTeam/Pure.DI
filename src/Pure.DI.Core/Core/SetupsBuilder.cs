@@ -29,6 +29,7 @@ sealed class SetupsBuilder(
     private readonly List<MdTypeAttribute> _typeAttributes = [];
     private readonly List<MdUsingDirectives> _usingDirectives = [];
     private readonly List<IBindingBuilder> _bindingBuilders = [];
+    private readonly List<MdDefaultLifetime> _defaultLifetimes = [];
     private IBindingBuilder _bindingBuilder = bindingBuilderFactory();
     private Hints _hints = new();
     private MdSetup? _setup;
@@ -104,6 +105,7 @@ sealed class SetupsBuilder(
     public void VisitDefaultLifetime(in MdDefaultLifetime defaultLifetime)
     {
         _defaultLifetime = defaultLifetime;
+        _defaultLifetimes.Add(defaultLifetime);
         _bindingBuilder.AddDefaultLifetime(defaultLifetime);
     }
 
@@ -161,10 +163,12 @@ sealed class SetupsBuilder(
         _specialTypes.AddRange(setup.SpecialTypes);
         _usingDirectives.AddRange(setup.UsingDirectives);
         _accumulators.AddRange(setup.Accumulators);
+        _defaultLifetimes.AddRange(setup.DefaultLifetimes);
         if (!setup.SetupContextMembers.IsDefaultOrEmpty)
         {
             _setupContextMembers.AddRange(setup.SetupContextMembers);
         }
+
         foreach (var binding in setup.Bindings)
         {
             FinalizeBinding(setup, setupMap, binding);
@@ -754,7 +758,8 @@ sealed class SetupsBuilder(
             SpecialTypes = _specialTypes.ToImmutableArray(),
             UsingDirectives = _usingDirectives.ToImmutableArray(),
             Accumulators = _accumulators.Distinct().ToImmutableArray(),
-            SetupContextMembers = _setupContextMembers.ToImmutableArray()
+            SetupContextMembers = _setupContextMembers.ToImmutableArray(),
+            DefaultLifetimes = _defaultLifetimes.ToImmutableArray()
         };
 
         // Creates bindings with all relevant information.
@@ -782,6 +787,7 @@ sealed class SetupsBuilder(
         _specialTypes.Clear();
         _usingDirectives.Clear();
         _accumulators.Clear();
+        _defaultLifetimes.Clear();
         _setup = null;
         _bindingBuilder = bindingBuilderFactory();
         return setup;

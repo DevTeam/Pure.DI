@@ -159,6 +159,47 @@ public class LifetimesTests
     }
 
     [Fact]
+    public async Task ShouldDefaultLifetimeForInstanceWhenAutoBinding()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService {}
+                               class Service: IService {}
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .DefaultLifetime<Service>(Lifetime.PerBlock)
+                                           .DefaultLifetime<Service>(Lifetime.Singleton)
+                                           .Root<Service>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Service == composition.Service);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
     public async Task ShouldDefaultLifetimeForInstanceWhenTag()
     {
         // Given
