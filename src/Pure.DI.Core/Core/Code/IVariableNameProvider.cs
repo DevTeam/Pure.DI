@@ -7,4 +7,6 @@ interface INameProvider
     string GetOverrideVariableName(MdOverride @override);
 
     string GetLocalUniqueVariableName(string baseName);
+
+    string GetUniqueRootName(string name, ITypeSymbol rootType);
 }

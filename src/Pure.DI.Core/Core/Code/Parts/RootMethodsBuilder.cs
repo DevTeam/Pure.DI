@@ -162,9 +162,20 @@ sealed class RootMethodsBuilder(
                 }
                 else
                 {
+                    Lines lines;
+                    if (root.Source.Kind.HasFlag(RootKinds.Light))
+                    {
+                        lines = new Lines();
+                        lines.AppendLine($"return {Names.LightweightRootName}.{root.Source.UniqueName}();");
+                    }
+                    else
+                    {
+                        lines = root.Lines;
+                    }
+
                     if (composition.Source.Source.Hints.IsFormatCodeEnabled)
                     {
-                        var codeText = string.Join(Environment.NewLine, root.Lines);
+                        var codeText = string.Join(Environment.NewLine, lines);
                         var syntaxTree = CSharpSyntaxTree.ParseText(codeText, cancellationToken: cancellationToken);
                         foreach (var line in syntaxTree.GetRoot().NormalizeWhitespace("\t", Environment.NewLine).GetText().Lines)
                         {
@@ -173,7 +184,7 @@ sealed class RootMethodsBuilder(
                     }
                     else
                     {
-                        code.AppendLines(root.Lines);
+                        code.AppendLines(lines);
                     }
                 }
             }

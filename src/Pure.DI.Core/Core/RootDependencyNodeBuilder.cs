@@ -50,6 +50,7 @@ sealed class RootDependencyNodeBuilder(
                 setup.SemanticModel,
                 rootType,
                 Names.LightweightRootName,
+                Names.LightweightRootName,
                 null,
                 RootKinds.Private,
                 ImmutableArray<string>.Empty,

@@ -39,6 +39,7 @@ sealed class DependencyGraphBuilder(
         var contextMap = new Dictionary<Injection, DependencyNode>(nodesLength);
         var queue = new Queue<IProcessingNode>(nodesLength >> 2);
         var maxBindingId = 0;
+        var processed = new HashSet<IProcessingNode>();
         foreach (var processingNode in nodes)
         {
             var node = processingNode.Node;
@@ -56,12 +57,18 @@ sealed class DependencyGraphBuilder(
             }
             else
             {
-                queue.Enqueue(processingNode);
+                if (node.Root.Source.Kind.HasFlag(RootKinds.Light))
+                {
+                    processed.Add(processingNode);
+                }
+                else
+                {
+                    queue.Enqueue(processingNode);
+                }
             }
         }
 
         var processedInjection = new HashSet<Injection>();
-        var processed = new HashSet<IProcessingNode>();
         var notProcessed = new HashSet<IProcessingNode>();
         var edgesMap = new Dictionary<IProcessingNode, List<Dependency>>();
         var handledInjections = new Dictionary<IProcessingNode, HashSet<(Injection Injection, int? Position)>>();

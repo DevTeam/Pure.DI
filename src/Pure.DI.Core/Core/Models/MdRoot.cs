@@ -6,6 +6,7 @@ record MdRoot(
     SemanticModel SemanticModel,
     ITypeSymbol RootType,
     string Name,
+    string UniqueName,
     MdTag? Tag,
     RootKinds Kind,
     IReadOnlyCollection<string> Comments,

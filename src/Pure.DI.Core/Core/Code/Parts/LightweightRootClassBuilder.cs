@@ -25,7 +25,7 @@ class LightweightRootClassBuilder(
             {
                 var mdRoot = root.Source;
                 var rootType = typeResolver.Resolve(composition.Source.Source, mdRoot.RootType);
-                code.AppendLine($"[{Names.OrdinalAttributeName}()] public {Names.FuncTypeName}<{rootType}> Root{root.Source.OriginalId};");
+                code.AppendLine($"[{Names.OrdinalAttributeName}()] public {Names.FuncTypeName}<{rootType}> {root.Source.UniqueName};");
             }
         }
         code.AppendLine("#pragma warning restore CS0649");

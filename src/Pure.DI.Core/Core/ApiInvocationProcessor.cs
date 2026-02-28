@@ -18,7 +18,8 @@ sealed class ApiInvocationProcessor(
     IWildcardMatcher wildcardMatcher,
     Func<IFactoryApiWalker> factoryApiWalkerFactory,
     Func<ILocalVariableRenamingRewriter> localVariableRenamingRewriterFactory,
-    ILocationProvider locationProvider)
+    ILocationProvider locationProvider,
+    INameProvider nameProvider)
     : IApiInvocationProcessor
 {
     private static readonly char[] TypeNamePartsSeparators = ['.'];
@@ -597,7 +598,7 @@ sealed class ApiInvocationProcessor(
                         foreach (var rootType in GetRelatedTypes(invocation, semanticModel, invocation, rootsType, rootsWildcardFilter))
                         {
                             var rootName = GetName((SyntaxNode?)rootsArgs[1] ?? invocation, rootsName, rootType) ?? "";
-                            metadataVisitor.VisitRoot(new MdRoot(idGenerator.Generate(), invocation, semanticModel, rootType, rootName, new MdTag(0, null), rootsKind, invocationComments, rootsType, false));
+                            metadataVisitor.VisitRoot(new MdRoot(idGenerator.Generate(), invocation, semanticModel, rootType, rootName, nameProvider.GetUniqueRootName(rootName, rootType), new MdTag(0, null), rootsKind, invocationComments, rootsType, false));
                             hasRootsType = true;
                         }
 
@@ -682,7 +683,7 @@ sealed class ApiInvocationProcessor(
                         VisitFactory(invocation, metadataVisitor, semanticModel, buildersRootType, builderLambdaExpression);
 
                         var builderRootName = GetName((SyntaxNode?)buildersArgs[0] ?? invocation, buildersName, buildersRootType) ?? Names.DefaultBuilderName;
-                        var root = new MdRoot(idGenerator.Generate(), invocation, semanticModel, buildersRootType, builderRootName, builderTag, buildersKind, invocationComments, buildersRootType, true, builderRoots.ToImmutableArray());
+                        var root = new MdRoot(idGenerator.Generate(), invocation, semanticModel, buildersRootType, builderRootName, nameProvider.GetUniqueRootName(builderRootName, buildersRootType), builderTag, buildersKind, invocationComments, buildersRootType, true, builderRoots.ToImmutableArray());
                         metadataVisitor.VisitRoot(root);
                         break;
 
@@ -926,7 +927,7 @@ sealed class ApiInvocationProcessor(
         VisitFactory(source, metadataVisitor, semanticModel, builderType, builderLambdaExpression);
 
         // Root
-        var root = new MdRoot(idGenerator.Generate(), source, semanticModel, builderType, builderName, builderTag, kind, invocationComments, rootContractType, true);
+        var root = new MdRoot(idGenerator.Generate(), source, semanticModel, builderType, builderName, nameProvider.GetUniqueRootName(builderName, builderType), builderTag, kind, invocationComments, rootContractType, true);
         metadataVisitor.VisitRoot(root);
         return root;
     }
@@ -1029,7 +1030,7 @@ sealed class ApiInvocationProcessor(
             ? GetName(nameArg, semantic.GetConstantValue<object>(semanticModel, nameArg.Expression, SmartTagKind.Name)?.ToString(), rootSymbol, tag) ?? ""
             : "";
         var kind = rootArgs[2] is {} kindArg ? semantic.GetConstantValue<RootKinds>(semanticModel, kindArg.Expression) : RootKinds.Default;
-        metadataVisitor.VisitRoot(new MdRoot(idGenerator.Generate(), source, semanticModel, rootSymbol, name, new MdTag(0, tag), kind, invocationComments, rootSymbol, false));
+        metadataVisitor.VisitRoot(new MdRoot(idGenerator.Generate(), source, semanticModel, rootSymbol, name, nameProvider.GetUniqueRootName(name, rootSymbol), new MdTag(0, tag), kind, invocationComments, rootSymbol, false));
     }
 
     private void VisitRoot(
@@ -1047,7 +1048,7 @@ sealed class ApiInvocationProcessor(
             ? GetName(nameArg, semantic.GetConstantValue<object>(semanticModel, nameArg.Expression, SmartTagKind.Name)?.ToString(), rootSymbol, tag.Value.Value) ?? ""
             : "";
         var kind = rootArgs[1] is {} kindArg ? semantic.GetConstantValue<RootKinds>(semanticModel, kindArg.Expression) : RootKinds.Default;
-        metadataVisitor.VisitRoot(new MdRoot(idGenerator.Generate(), source, semanticModel, rootSymbol, name, tag, kind, invocationComments, rootSymbol, false));
+        metadataVisitor.VisitRoot(new MdRoot(idGenerator.Generate(), source, semanticModel, rootSymbol, name, nameProvider.GetUniqueRootName(name, rootSymbol), tag, kind, invocationComments, rootSymbol, false));
     }
 
     private void VisitBind(
