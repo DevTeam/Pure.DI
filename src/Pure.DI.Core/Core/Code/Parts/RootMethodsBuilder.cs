@@ -15,8 +15,6 @@ sealed class RootMethodsBuilder(
     CancellationToken cancellationToken)
     : IClassPartBuilder
 {
-    private const int MaxFuncArgumentCount = 16;
-
     public ClassPart Part => ClassPart.RootMethods;
 
     public CompositionCode Build(CompositionCode composition)
@@ -168,14 +166,13 @@ sealed class RootMethodsBuilder(
                     if (root.Source.Kind.HasFlag(RootKinds.Light))
                     {
                         lines = new Lines();
-                        if (root.TypeDescription.TypeArgs.Count == 0
-                            && root.RootArgs.Length <= MaxFuncArgumentCount)
+                        if (root.RootArgs.IsEmpty)
                         {
-                            lines.AppendLine($"return {Names.LightweightRootName}.{root.Source.UniqueName}({string.Join(", ", root.RootArgs.Select(i => i.Name))});");
+                            lines.AppendLine($"return {Names.LightweightRootName}.{root.Source.UniqueName}();");
                         }
                         else
                         {
-                            lines.AppendLines(root.Lines);
+                            lines.AppendLine($"return {Names.LightweightRootName}({string.Join(", ", root.RootArgs.Select(i => i.Name))}).{root.Source.UniqueName}();");
                         }
                     }
                     else
