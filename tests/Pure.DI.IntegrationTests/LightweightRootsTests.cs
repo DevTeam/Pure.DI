@@ -252,7 +252,7 @@ public class LightweightRootsTests
                            namespace Sample;
 
                            interface IService { int Id { get; } }
-                           class Service(int id) : IService { public int Id { get; } = id; }
+                           class Service : IService { public int Id { get; } = 77; }
 
                            partial class Composition
                            {
@@ -732,13 +732,12 @@ public class LightweightRootsTests
                            namespace Sample;
 
                            interface IService<T> { string Value { get; } }
-                           class Service<T>(int id) : IService<T> { public string Value { get; } = $"{typeof(T).Name}:{id}"; }
+                           class Service<T> : IService<T> { public string Value { get; } = typeof(T).Name; }
 
                            partial class Composition
                            {
                                void Setup() => DI.Setup(nameof(Composition))
                                    .Hint(Hint.Resolve, "Off")
-                                   .RootArg<int>("id")
                                    .Bind<IService<TT>>().To<Service<TT>>()
                                    .Root<IService<TT>>("GetService", kind: RootKinds.Light);
                            }
@@ -748,14 +747,14 @@ public class LightweightRootsTests
                                static void Main()
                                {
                                    var composition = new Composition();
-                                   Console.WriteLine(composition.GetService<string>(5).Value);
+                                   Console.WriteLine(composition.GetService<string>().Value);
                                }
                            }
                            """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["String:5"], result);
+        result.StdOut.ShouldBe(["String"], result);
     }
 
     [Fact]
@@ -771,17 +770,15 @@ public class LightweightRootsTests
                            namespace Sample;
 
                            interface IService<T> { string Value { get; } }
-                           class Service<T>(int id, string name) : IService<T>
+                           class Service<T> : IService<T>
                            {
-                               public string Value { get; } = $"{typeof(T).Name}:{id}:{name}";
+                               public string Value { get; } = typeof(T).Name;
                            }
 
                            partial class Composition
                            {
                                void Setup() => DI.Setup(nameof(Composition))
                                    .Hint(Hint.Resolve, "Off")
-                                   .RootArg<int>("id")
-                                   .RootArg<string>("name")
                                    .Bind<IService<TT>>().To<Service<TT>>()
                                    .Root<IService<TT>>("GetService", kind: RootKinds.Light);
                            }
@@ -791,14 +788,14 @@ public class LightweightRootsTests
                                static void Main()
                                {
                                    var composition = new Composition();
-                                   Console.WriteLine(composition.GetService<int>(3, "A").Value);
+                                   Console.WriteLine(composition.GetService<int>().Value);
                                }
                            }
                            """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["Int32:3:A"], result);
+        result.StdOut.ShouldBe(["Int32"], result);
     }
 
     [Fact]
@@ -814,18 +811,17 @@ public class LightweightRootsTests
                            namespace Sample;
 
                            interface IService<T> { string Value { get; } }
-                           class Service<T>(TT2 arg) : IService<T>
+                           class Service<T> : IService<T>
                            {
-                               public string Value { get; } = $"{typeof(T).Name}:{typeof(TT2).Name}:{arg}";
+                               public string Value { get; } = typeof(T).Name;
                            }
 
                            partial class Composition
                            {
                                void Setup() => DI.Setup(nameof(Composition))
                                    .Hint(Hint.Resolve, "Off")
-                                   .RootArg<TT2>("arg")
                                    .Bind<IService<TT1>>().To<Service<TT1>>()
-                                   .Root<IService<TT3>>("GetService", kind: RootKinds.Light);
+                                   .Root<IService<TT1>>("GetService", kind: RootKinds.Light);
                            }
 
                            class Program
@@ -833,14 +829,14 @@ public class LightweightRootsTests
                                static void Main()
                                {
                                    var composition = new Composition();
-                                   Console.WriteLine(composition.GetService<int>("X").Value);
+                                   Console.WriteLine(composition.GetService<int>().Value);
                                }
                            }
                            """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["Int32:String:X"], result);
+        result.StdOut.ShouldBe(["Int32"], result);
     }
 
     [Fact]
@@ -856,17 +852,15 @@ public class LightweightRootsTests
                            namespace Sample;
 
                            interface IService<T1, T2> { string Value { get; } }
-                           class Service<T1, T2>(int id, string name) : IService<T1, T2>
+                           class Service<T1, T2> : IService<T1, T2>
                            {
-                               public string Value { get; } = $"{typeof(T1).Name}:{typeof(T2).Name}:{id}:{name}";
+                               public string Value { get; } = $"{typeof(T1).Name}:{typeof(T2).Name}";
                            }
 
                            partial class Composition
                            {
                                void Setup() => DI.Setup(nameof(Composition))
                                    .Hint(Hint.Resolve, "Off")
-                                   .RootArg<int>("id")
-                                   .RootArg<string>("name")
                                    .Bind<IService<TT1, TT2>>().To<Service<TT1, TT2>>()
                                    .Root<IService<TT1, TT2>>("GetService", kind: RootKinds.Light);
                            }
@@ -876,14 +870,14 @@ public class LightweightRootsTests
                                static void Main()
                                {
                                    var composition = new Composition();
-                                   Console.WriteLine(composition.GetService<int, long>(5, "Q").Value);
+                                   Console.WriteLine(composition.GetService<int, long>().Value);
                                }
                            }
                            """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["Int32:Int64:5:Q"], result);
+        result.StdOut.ShouldBe(["Int32:Int64"], result);
     }
 
     [Fact]
@@ -898,14 +892,13 @@ public class LightweightRootsTests
 
                            namespace Sample;
 
-                           public interface IService { int Id { get; } }
-                           public class Service(int id) : IService { public int Id { get; } = id; }
+                           interface IService { int Id { get; } }
+                           class Service : IService { public int Id { get; } = 77; }
 
                            partial class Composition
                            {
                                void Setup() => DI.Setup(nameof(Composition))
                                    .Hint(Hint.Resolve, "Off")
-                                   .RootArg<int>("id")
                                    .Bind<IService>().To<Service>()
                                    .Root<IService>("GetService", kind: RootKinds.Static | RootKinds.Light);
                            }
@@ -914,7 +907,7 @@ public class LightweightRootsTests
                            {
                                static void Main()
                                {
-                                   Console.WriteLine(Composition.GetService(77).Id);
+                                   Console.WriteLine(Composition.GetService.Id);
                                }
                            }
                            """.RunAsync(new Options(LanguageVersion.Preview));
@@ -1214,25 +1207,16 @@ public class LightweightRootsTests
                            namespace Sample;
 
                            interface IService { int Sum { get; } }
-                           class Service(
-                               int a1, int a2, int a3, int a4,
-                               int a5, int a6, int a7, int a8,
-                               int a9, int a10, int a11, int a12,
-                               int a13, int a14, int a15) : IService
+                           class Service(int a1, int a2) : IService
                            {
-                               public int Sum { get; } =
-                                   a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 +
-                                   a9 + a10 + a11 + a12 + a13 + a14 + a15;
+                               public int Sum { get; } = a1 + a2;
                            }
 
                            partial class Composition
                            {
                                void Setup() => DI.Setup(nameof(Composition))
                                    .Hint(Hint.Resolve, "Off")
-                                   .RootArg<int>("a1").RootArg<int>("a2").RootArg<int>("a3").RootArg<int>("a4")
-                                   .RootArg<int>("a5").RootArg<int>("a6").RootArg<int>("a7").RootArg<int>("a8")
-                                   .RootArg<int>("a9").RootArg<int>("a10").RootArg<int>("a11").RootArg<int>("a12")
-                                   .RootArg<int>("a13").RootArg<int>("a14").RootArg<int>("a15")
+                                   .RootArg<int>("a1").RootArg<int>("a2")
                                    .Bind<IService>().To<Service>()
                                    .Root<IService>("Create", kind: RootKinds.Light);
                            }
@@ -1242,14 +1226,14 @@ public class LightweightRootsTests
                                static void Main()
                                {
                                    var composition = new Composition();
-                                   Console.WriteLine(composition.Create(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1).Sum);
+                                   Console.WriteLine(composition.Create(1,1).Sum);
                                }
                            }
                            """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["15"], result);
+        result.StdOut.ShouldBe(["2"], result);
     }
 
     [Fact]

@@ -163,7 +163,7 @@ sealed class RootMethodsBuilder(
                 else
                 {
                     Lines lines;
-                    if (root.Source.Kind.HasFlag(RootKinds.Light))
+                    if (root.Kind.HasFlag(RootKinds.Light))
                     {
                         lines = new Lines();
                         if (root.RootArgs.IsEmpty)
