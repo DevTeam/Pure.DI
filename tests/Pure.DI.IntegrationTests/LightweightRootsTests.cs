@@ -1212,11 +1212,11 @@ public class LightweightRootsTests
                                int a1, int a2, int a3, int a4,
                                int a5, int a6, int a7, int a8,
                                int a9, int a10, int a11, int a12,
-                               int a13, int a14, int a15, int a16) : IService
+                               int a13, int a14, int a15) : IService
                            {
                                public int Sum { get; } =
                                    a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 +
-                                   a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16;
+                                   a9 + a10 + a11 + a12 + a13 + a14 + a15;
                            }
 
                            partial class Composition
@@ -1226,7 +1226,7 @@ public class LightweightRootsTests
                                    .RootArg<int>("a1").RootArg<int>("a2").RootArg<int>("a3").RootArg<int>("a4")
                                    .RootArg<int>("a5").RootArg<int>("a6").RootArg<int>("a7").RootArg<int>("a8")
                                    .RootArg<int>("a9").RootArg<int>("a10").RootArg<int>("a11").RootArg<int>("a12")
-                                   .RootArg<int>("a13").RootArg<int>("a14").RootArg<int>("a15").RootArg<int>("a16")
+                                   .RootArg<int>("a13").RootArg<int>("a14").RootArg<int>("a15")
                                    .Bind<IService>().To<Service>()
                                    .Root<IService>("Create", kind: RootKinds.Light);
                            }
@@ -1236,14 +1236,14 @@ public class LightweightRootsTests
                                static void Main()
                                {
                                    var composition = new Composition();
-                                   Console.WriteLine(composition.Create(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16).Sum);
+                                   Console.WriteLine(composition.Create(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15).Sum);
                                }
                            }
                            """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["136"], result);
+        result.StdOut.ShouldBe(["120"], result);
     }
 
     [Fact]

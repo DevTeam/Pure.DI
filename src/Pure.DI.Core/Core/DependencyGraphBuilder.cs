@@ -57,7 +57,8 @@ sealed class DependencyGraphBuilder(
             }
             else
             {
-                if (node.Root.Kind.HasFlag(RootKinds.Light))
+                if (node.Root.Source.Kind.HasFlag(RootKinds.Light)
+                    && node.Root.Source.RootType is not INamedTypeSymbol { IsGenericType: true })
                 {
                     processed.Add(processingNode);
                 }
