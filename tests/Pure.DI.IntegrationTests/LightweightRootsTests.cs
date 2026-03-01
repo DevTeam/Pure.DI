@@ -58,7 +58,7 @@ public class LightweightRootsTests
                                    }
                                }
                            }
-                           """.RunAsync();
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -120,7 +120,7 @@ public class LightweightRootsTests
                                    }
                                }
                            }
-                           """.RunAsync();
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -193,7 +193,7 @@ public class LightweightRootsTests
                                    }
                                }
                            }
-                           """.RunAsync();
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -232,7 +232,7 @@ public class LightweightRootsTests
                                    Console.WriteLine(composition.GetService("abc").Name);
                                }
                            }
-                           """.RunAsync();
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -271,7 +271,7 @@ public class LightweightRootsTests
                                    Console.WriteLine(composition.GetService(42).Id);
                                }
                            }
-                           """.RunAsync();
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -311,7 +311,7 @@ public class LightweightRootsTests
                                    Console.WriteLine(composition.GetService(new User("Bob")).Name);
                                }
                            }
-                           """.RunAsync();
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -351,7 +351,7 @@ public class LightweightRootsTests
                                    Console.WriteLine(composition.Create(7, "Neo").Value);
                                }
                            }
-                           """.RunAsync();
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -391,7 +391,7 @@ public class LightweightRootsTests
                                    Console.WriteLine(composition.Create(name: "Trinity", id: 9).Value);
                                }
                            }
-                           """.RunAsync();
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -430,7 +430,7 @@ public class LightweightRootsTests
                                    Console.WriteLine(composition.Create("t-1").Token);
                                }
                            }
-                           """.RunAsync();
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -473,7 +473,7 @@ public class LightweightRootsTests
                                    Console.WriteLine(composition.Create(1, "A").Value);
                                }
                            }
-                           """.RunAsync();
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -511,7 +511,7 @@ public class LightweightRootsTests
                                    Console.WriteLine(composition.GetService<int>().Name);
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.CSharp9));
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -552,7 +552,7 @@ public class LightweightRootsTests
                                    Console.WriteLine(composition.GetService<int, string>().Name);
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.CSharp9));
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -596,7 +596,7 @@ public class LightweightRootsTests
                                    Console.WriteLine(composition.GetService<int>().Count);
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.CSharp9));
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -635,7 +635,7 @@ public class LightweightRootsTests
                                    Console.WriteLine(composition.GetService<RefType>().Name);
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.CSharp9));
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -673,7 +673,7 @@ public class LightweightRootsTests
                                    Console.WriteLine(composition.GetService<int>().Name);
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.CSharp9));
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -712,7 +712,7 @@ public class LightweightRootsTests
                                    Console.WriteLine(composition.GetService<RefType>().Size);
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.CSharp9));
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -751,7 +751,7 @@ public class LightweightRootsTests
                                    Console.WriteLine(composition.GetService<string>(5).Value);
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.CSharp9));
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -794,7 +794,7 @@ public class LightweightRootsTests
                                    Console.WriteLine(composition.GetService<int>(3, "A").Value);
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.CSharp9));
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -836,7 +836,7 @@ public class LightweightRootsTests
                                    Console.WriteLine(composition.GetService<int, string>("X").Value);
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.CSharp9));
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -879,7 +879,7 @@ public class LightweightRootsTests
                                    Console.WriteLine(composition.GetService<int, long>(5, "Q").Value);
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.CSharp9));
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -917,7 +917,7 @@ public class LightweightRootsTests
                                    Console.WriteLine(Composition.GetService(77).Id);
                                }
                            }
-                           """.RunAsync();
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -954,7 +954,7 @@ public class LightweightRootsTests
                                    Console.WriteLine(Composition.GetService<decimal>().Name);
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.CSharp9));
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -993,7 +993,7 @@ public class LightweightRootsTests
                                    Console.WriteLine(composition.GetService(6).Id);
                                }
                            }
-                           """.RunAsync();
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1031,7 +1031,7 @@ public class LightweightRootsTests
                                    Console.WriteLine(composition.GetService<Guid>().Name);
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.CSharp9));
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1070,7 +1070,7 @@ public class LightweightRootsTests
                                    Console.WriteLine(composition.Create(4).Id);
                                }
                            }
-                           """.RunAsync();
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1109,7 +1109,7 @@ public class LightweightRootsTests
                                    Console.WriteLine(composition.Create(11).Id);
                                }
                            }
-                           """.RunAsync();
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1150,7 +1150,7 @@ public class LightweightRootsTests
                                    Console.WriteLine(composition.UsePrivate(12));
                                }
                            }
-                           """.RunAsync();
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1194,7 +1194,7 @@ public class LightweightRootsTests
                                    Console.WriteLine(composition.UseProtected(13));
                                }
                            }
-                           """.RunAsync();
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1245,7 +1245,7 @@ public class LightweightRootsTests
                                    Console.WriteLine(composition.Create(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1).Sum);
                                }
                            }
-                           """.RunAsync();
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1283,7 +1283,7 @@ public class LightweightRootsTests
                                    var service = composition.Create("wrong");
                                }
                            }
-                           """.RunAsync(new Options(CheckCompilationErrors: false));
+                           """.RunAsync(new Options(LanguageVersion.Preview, CheckCompilationErrors: false));
 
         // Then
         result.Success.ShouldBeFalse(result);
@@ -1320,7 +1320,7 @@ public class LightweightRootsTests
                                    var service = composition.Create();
                                }
                            }
-                           """.RunAsync(new Options(CheckCompilationErrors: false));
+                           """.RunAsync(new Options(LanguageVersion.Preview, CheckCompilationErrors: false));
 
         // Then
         result.Success.ShouldBeFalse(result);
@@ -1356,7 +1356,7 @@ public class LightweightRootsTests
                                    var service = composition.GetService<int>();
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.CSharp9, CheckCompilationErrors: false));
+                           """.RunAsync(new Options(LanguageVersion.Preview, CheckCompilationErrors: false));
 
         // Then
         result.Success.ShouldBeFalse(result);

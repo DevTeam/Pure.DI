@@ -12,6 +12,7 @@ class LightweightRootClassBuilder(
     {
         var roots = composition.PublicRoots
             .Where(i => i.Kind.HasFlag(RootKinds.Light))
+            .Where(i => i.TypeDescription.TypeArgs.Count == 0)
             .Where(i => i.RootArgs.Length <= MaxFuncArgumentCount)
             .ToList();
         if (roots.Count == 0)

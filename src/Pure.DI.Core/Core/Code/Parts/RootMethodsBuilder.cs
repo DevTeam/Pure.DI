@@ -168,7 +168,8 @@ sealed class RootMethodsBuilder(
                     if (root.Source.Kind.HasFlag(RootKinds.Light))
                     {
                         lines = new Lines();
-                        if (root.RootArgs.Length <= MaxFuncArgumentCount)
+                        if (root.TypeDescription.TypeArgs.Count == 0
+                            && root.RootArgs.Length <= MaxFuncArgumentCount)
                         {
                             lines.AppendLine($"return {Names.LightweightRootName}.{root.Source.UniqueName}({string.Join(", ", root.RootArgs.Select(i => i.Name))});");
                         }
