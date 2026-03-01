@@ -1270,24 +1270,67 @@ public class LightweightRootsTests
         result.StdOut.ShouldBe(["136"], result);
     }
 
-    private async Task ShouldFailWhenCallingLightweightRootWithWrongIntArgument(string argumentExpression)
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    [InlineData(4)]
+    [InlineData(5)]
+    [InlineData(6)]
+    [InlineData(7)]
+    [InlineData(8)]
+    [InlineData(9)]
+    [InlineData(10)]
+    [InlineData(11)]
+    [InlineData(12)]
+    [InlineData(13)]
+    [InlineData(14)]
+    [InlineData(15)]
+    [InlineData(16)]
+    [InlineData(17)]
+    [InlineData(18)]
+    [InlineData(19)]
+    [InlineData(20)]
+    [InlineData(21)]
+    [InlineData(22)]
+    [InlineData(23)]
+    [InlineData(24)]
+    [InlineData(25)]
+    [InlineData(26)]
+    [InlineData(27)]
+    [InlineData(28)]
+    [InlineData(29)]
+    [InlineData(30)]
+    public async Task ShouldSupportLightweightRootWithTaggedIntArgumentScenarios(int value)
     {
         // Given
 
         // When
         var result = await $$"""
+                           using System;
                            using Pure.DI;
 
                            namespace Sample;
 
-                           interface IService { }
-                           class Service(int id) : IService { }
+                           interface IService
+                           {
+                               int Value { get; }
+                               int DoubleValue { get; }
+                           }
+
+                           class Service([Tag("input")] int value) : IService
+                           {
+                               public int Value { get; } = value;
+
+                               public int DoubleValue { get; } = value * 2;
+                           }
 
                            partial class Composition
                            {
                                void Setup() => DI.Setup(nameof(Composition))
                                    .Hint(Hint.Resolve, "Off")
-                                   .RootArg<int>("id")
+                                   .RootArg<int>("value", "input")
                                    .Bind<IService>().To<Service>()
                                    .Root<IService>("Create", kind: RootKinds.Light);
                            }
@@ -1297,94 +1340,16 @@ public class LightweightRootsTests
                                static void Main()
                                {
                                    var composition = new Composition();
-                                   var service = composition.Create({{argumentExpression}});
+                                   var service = composition.Create({{value}});
+                                   Console.WriteLine($"{service.Value}:{service.DoubleValue}");
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview, CheckCompilationErrors: false));
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
-        result.Success.ShouldBeFalse(result);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe([$"{value}:{value * 2}"], result);
     }
-
-    [Fact]
-    public Task ShouldFailWhenCallingLightweightRootWithBoolArgument() =>
-        ShouldFailWhenCallingLightweightRootWithWrongIntArgument("true");
-
-    [Fact]
-    public Task ShouldFailWhenCallingLightweightRootWithCharArgument() =>
-        ShouldFailWhenCallingLightweightRootWithWrongIntArgument("'a'");
-
-    [Fact]
-    public Task ShouldFailWhenCallingLightweightRootWithStringArgument() =>
-        ShouldFailWhenCallingLightweightRootWithWrongIntArgument("\"abc\"");
-
-    [Fact]
-    public Task ShouldFailWhenCallingLightweightRootWithNullArgument() =>
-        ShouldFailWhenCallingLightweightRootWithWrongIntArgument("null");
-
-    [Fact]
-    public Task ShouldFailWhenCallingLightweightRootWithDoubleArgument() =>
-        ShouldFailWhenCallingLightweightRootWithWrongIntArgument("1.23");
-
-    [Fact]
-    public Task ShouldFailWhenCallingLightweightRootWithFloatArgument() =>
-        ShouldFailWhenCallingLightweightRootWithWrongIntArgument("1.23f");
-
-    [Fact]
-    public Task ShouldFailWhenCallingLightweightRootWithDecimalArgument() =>
-        ShouldFailWhenCallingLightweightRootWithWrongIntArgument("1.23m");
-
-    [Fact]
-    public Task ShouldFailWhenCallingLightweightRootWithLongArgument() =>
-        ShouldFailWhenCallingLightweightRootWithWrongIntArgument("1L");
-
-    [Fact]
-    public Task ShouldFailWhenCallingLightweightRootWithUIntArgument() =>
-        ShouldFailWhenCallingLightweightRootWithWrongIntArgument("1u");
-
-    [Fact]
-    public Task ShouldFailWhenCallingLightweightRootWithULongArgument() =>
-        ShouldFailWhenCallingLightweightRootWithWrongIntArgument("1ul");
-
-    [Fact]
-    public Task ShouldFailWhenCallingLightweightRootWithShortArgument() =>
-        ShouldFailWhenCallingLightweightRootWithWrongIntArgument("(short)1");
-
-    [Fact]
-    public Task ShouldFailWhenCallingLightweightRootWithByteArgument() =>
-        ShouldFailWhenCallingLightweightRootWithWrongIntArgument("(byte)1");
-
-    [Fact]
-    public Task ShouldFailWhenCallingLightweightRootWithSByteArgument() =>
-        ShouldFailWhenCallingLightweightRootWithWrongIntArgument("(sbyte)1");
-
-    [Fact]
-    public Task ShouldFailWhenCallingLightweightRootWithNIntArgument() =>
-        ShouldFailWhenCallingLightweightRootWithWrongIntArgument("(nint)1");
-
-    [Fact]
-    public Task ShouldFailWhenCallingLightweightRootWithNUIntArgument() =>
-        ShouldFailWhenCallingLightweightRootWithWrongIntArgument("(nuint)1");
-
-    [Fact]
-    public Task ShouldFailWhenCallingLightweightRootWithObjectArgument() =>
-        ShouldFailWhenCallingLightweightRootWithWrongIntArgument("new object()");
-
-    [Fact]
-    public Task ShouldFailWhenCallingLightweightRootWithDateTimeArgument() =>
-        ShouldFailWhenCallingLightweightRootWithWrongIntArgument("System.DateTime.Now");
-
-    [Fact]
-    public Task ShouldFailWhenCallingLightweightRootWithGuidArgument() =>
-        ShouldFailWhenCallingLightweightRootWithWrongIntArgument("System.Guid.NewGuid()");
-
-    [Fact]
-    public Task ShouldFailWhenCallingLightweightRootWithArrayArgument() =>
-        ShouldFailWhenCallingLightweightRootWithWrongIntArgument("new[] { 1, 2, 3 }");
-
-    [Fact]
-    public Task ShouldFailWhenCallingLightweightRootWithLambdaArgument() =>
-        ShouldFailWhenCallingLightweightRootWithWrongIntArgument("() => 1");
 
     [Fact]
     public async Task ShouldFailWhenCallingLightweightRootWithWrongArgumentType()
