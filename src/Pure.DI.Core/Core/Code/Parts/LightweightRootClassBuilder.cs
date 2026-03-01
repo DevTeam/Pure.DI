@@ -4,11 +4,16 @@ class LightweightRootClassBuilder(
     ITypeResolver typeResolver)
     : IClassPartBuilder
 {
+    private const int MaxFuncArgumentCount = 16;
+
     public ClassPart Part => ClassPart.LightweightRootClass;
 
     public CompositionCode Build(CompositionCode composition)
     {
-        var roots = composition.PublicRoots.Where(i => i.Kind.HasFlag(RootKinds.Light)).ToList();
+        var roots = composition.PublicRoots
+            .Where(i => i.Kind.HasFlag(RootKinds.Light))
+            .Where(i => i.RootArgs.Length <= MaxFuncArgumentCount)
+            .ToList();
         if (roots.Count == 0)
         {
             return composition;
@@ -25,7 +30,9 @@ class LightweightRootClassBuilder(
             {
                 var mdRoot = root.Source;
                 var rootType = typeResolver.Resolve(composition.Source.Source, mdRoot.RootType);
-                code.AppendLine($"[{Names.OrdinalAttributeName}()] public {Names.FuncTypeName}<{rootType}> {root.Source.UniqueName};");
+                var argTypes = root.RootArgs
+                    .Select(arg => $"{typeResolver.Resolve(composition.Source.Source, arg.InstanceType)}, ");
+                code.AppendLine($"[{Names.OrdinalAttributeName}()] public {Names.FuncTypeName}<{string.Concat(argTypes)}{rootType}> {root.Source.UniqueName};");
             }
         }
         code.AppendLine("#pragma warning restore CS0649");
