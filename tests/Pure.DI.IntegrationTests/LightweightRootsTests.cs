@@ -1270,6 +1270,75 @@ public class LightweightRootsTests
         result.StdOut.ShouldBe(["136"], result);
     }
 
+    [Theory]
+    [InlineData(20)]
+    [InlineData(21)]
+    [InlineData(22)]
+    [InlineData(23)]
+    [InlineData(24)]
+    [InlineData(25)]
+    [InlineData(26)]
+    [InlineData(27)]
+    [InlineData(28)]
+    [InlineData(29)]
+    [InlineData(30)]
+    public async Task ShouldFailWhenLightweightRootHasTooManyTaggedArguments(int argsCount)
+    {
+        // Given
+        var ctorArgs = new global::System.Collections.Generic.List<string>();
+        var sumArgs = new global::System.Collections.Generic.List<string>();
+        var rootArgs = new global::System.Collections.Generic.List<string>();
+        var callArgs = new global::System.Collections.Generic.List<string>();
+        for (var i = 1; i <= argsCount; i++)
+        {
+            ctorArgs.Add($"[Tag(\"a{i}\")] int a{i}");
+            sumArgs.Add($"a{i}");
+            rootArgs.Add($".RootArg<int>(\"a{i}\", \"a{i}\")");
+            callArgs.Add(i.ToString());
+        }
+
+        var ctorSeparator = ",\n                               ";
+        var rootSeparator = "\n                                   ";
+
+        var setupCode = $"""
+                           using Pure.DI;
+
+                           namespace Sample;
+
+                           interface IService {{ int Sum {{ get; }} }}
+                           class Service(
+                               {string.Join(ctorSeparator, ctorArgs)})
+                               : IService
+                           {{
+                               public int Sum {{ get; }} = {string.Join(" + ", sumArgs)};
+                           }}
+
+                           partial class Composition
+                           {{
+                               void Setup() => DI.Setup(nameof(Composition))
+                                   .Hint(Hint.Resolve, "Off")
+                                   {string.Join(rootSeparator, rootArgs)}
+                                   .Bind<IService>().To<Service>()
+                                   .Root<IService>("Create", kind: RootKinds.Light);
+                           }}
+
+                           class Program
+                           {{
+                               static void Main()
+                               {{
+                                   var composition = new Composition();
+                                   var service = composition.Create({string.Join(", ", callArgs)});
+                               }}
+                           }}
+                           """;
+
+        // When
+        var result = await setupCode.RunAsync(new Options(LanguageVersion.Preview, CheckCompilationErrors: false));
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+    }
+
     [Fact]
     public async Task ShouldFailWhenCallingLightweightRootWithWrongArgumentType()
     {
