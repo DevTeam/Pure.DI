@@ -1208,18 +1208,47 @@ public class LightweightRootsTests
                            namespace Sample;
 
                            interface IService { int Sum { get; } }
-                           class Service(Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int> sum) : IService
+                           class Service(
+                               [Tag("a1")] int a1,
+                               [Tag("a2")] int a2,
+                               [Tag("a3")] int a3,
+                               [Tag("a4")] int a4,
+                               [Tag("a5")] int a5,
+                               [Tag("a6")] int a6,
+                               [Tag("a7")] int a7,
+                               [Tag("a8")] int a8,
+                               [Tag("a9")] int a9,
+                               [Tag("a10")] int a10,
+                               [Tag("a11")] int a11,
+                               [Tag("a12")] int a12,
+                               [Tag("a13")] int a13,
+                               [Tag("a14")] int a14,
+                               [Tag("a15")] int a15)
+                               : IService
                            {
-                               public int Sum { get; } = sum(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
+                               public int Sum { get; } =
+                                   a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15;
                            }
 
                            partial class Composition
                            {
                                void Setup() => DI.Setup(nameof(Composition))
                                    .Hint(Hint.Resolve, "Off")
-                                   .Bind<Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int>>()
-                                       .To(_ => (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15) =>
-                                           a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15)
+                                   .RootArg<int>("a1", "a1")
+                                   .RootArg<int>("a2", "a2")
+                                   .RootArg<int>("a3", "a3")
+                                   .RootArg<int>("a4", "a4")
+                                   .RootArg<int>("a5", "a5")
+                                   .RootArg<int>("a6", "a6")
+                                   .RootArg<int>("a7", "a7")
+                                   .RootArg<int>("a8", "a8")
+                                   .RootArg<int>("a9", "a9")
+                                   .RootArg<int>("a10", "a10")
+                                   .RootArg<int>("a11", "a11")
+                                   .RootArg<int>("a12", "a12")
+                                   .RootArg<int>("a13", "a13")
+                                   .RootArg<int>("a14", "a14")
+                                   .RootArg<int>("a15", "a15")
                                    .Bind<IService>().To<Service>()
                                    .Root<IService>("Create", kind: RootKinds.Light);
                            }
@@ -1229,7 +1258,7 @@ public class LightweightRootsTests
                                static void Main()
                                {
                                    var composition = new Composition();
-                                   Console.WriteLine(composition.Create.Sum);
+                                   Console.WriteLine(composition.Create(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15).Sum);
                                }
                            }
                            """.RunAsync(new Options(LanguageVersion.Preview));
