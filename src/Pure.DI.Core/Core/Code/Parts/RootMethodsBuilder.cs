@@ -166,13 +166,15 @@ sealed class RootMethodsBuilder(
                     if (root.Kind.HasFlag(RootKinds.Light))
                     {
                         lines = new Lines();
+                        var compositionTypeName = composition.Source.Source.Name.ClassName;
+                        var compositionInstance = root.IsStatic ? $"new {compositionTypeName}()." : string.Empty;
                         if (root.RootArgs.IsEmpty)
                         {
-                            lines.AppendLine($"return {Names.LightweightRootName}.{root.Source.UniqueName}();");
+                            lines.AppendLine($"return {compositionInstance}{Names.LightweightRootName}.{root.Source.UniqueName}();");
                         }
                         else
                         {
-                            lines.AppendLine($"return {Names.LightweightRootName}({string.Join(", ", root.RootArgs.Select(i => i.Name))}).{root.Source.UniqueName}();");
+                            lines.AppendLine($"return {compositionInstance}{Names.LightweightRootName}({string.Join(", ", root.RootArgs.Select(i => i.Name))}).{root.Source.UniqueName}();");
                         }
                     }
                     else

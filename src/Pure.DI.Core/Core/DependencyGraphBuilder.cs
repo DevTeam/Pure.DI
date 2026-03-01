@@ -57,7 +57,7 @@ sealed class DependencyGraphBuilder(
             }
             else
             {
-                if (node.Root.Source.Kind.HasFlag(RootKinds.Light))
+                if (node.Root.Kind.HasFlag(RootKinds.Light))
                 {
                     processed.Add(processingNode);
                 }
