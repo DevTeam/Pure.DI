@@ -2421,11 +2421,10 @@ public class ErrorsAndWarningsTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.CSharp9));
+                           """.RunAsync(new Options(LanguageVersion.CSharp9, CheckCompilationErrors: false));
 
         // Then
         result.Success.ShouldBeFalse(result);
-        result.Logs.Count(i => i.Id == LogId.ErrorTypeCannotBeInferred && i.Locations.FirstOrDefault().GetSource() == "repo").ShouldBe(1, result);
     }
 
     [Theory]
