@@ -16,7 +16,6 @@ sealed class LifetimesValidator(
         }
 
         var errors = new HashSet<object>();
-        var graph = dependencyGraph.Graph;
         foreach (var root in dependencyGraph.Roots)
         {
             graphWalker.Walk(

@@ -7,7 +7,7 @@ sealed class ResolversBuilder(ITypeResolver typeResolver)
 {
     public IEnumerable<ResolverInfo> Build(RootsContext ctx) =>
         ctx.Roots
-            .Where(i => i.RootArgs.IsEmpty && !i.Source.IsLightweightRootMethod)
+            .Where(i => i.RootArgs.IsEmpty && i.Source.LightweightKind is not LightweightKind.TransientComposition)
             .Where(i => !i.Injection.Type.IsRefLikeType)
             .Where(i => !ReferenceEquals(i.Injection.Tag, MdTag.ContextTag))
             .Where(i => typeResolver.Resolve(ctx.Setup, i.Injection.Type).TypeArgs.Count == 0)

@@ -22,10 +22,10 @@ namespace System
     internal delegate TResult Func<out TResult>();
 #endif
 #if NET20 || NET35
-<#for(var i = 0; i < baseCount; i ++)
+<#for(var i = 1; i <= 16; i ++)
 {
-var typeArgs = string.Join(", ", GetSuffixes(0, i).Select(suffix => $"in T{suffix}"));
-var args = string.Join(", ", GetSuffixes(0, i).Select(suffix => $"T{suffix} arg{suffix}"));
+var typeArgs = string.Join(", ", GetSuffixes(1, i).Select(suffix => $"in T{suffix}"));
+var args = string.Join(", ", GetSuffixes(1, i).Select(suffix => $"T{suffix} arg{suffix}"));
 #>
     internal delegate TResult Func<<#=typeArgs#>, out TResult>(<#=args#>);
 <#
@@ -3580,6 +3580,9 @@ var typeArgs = string.Join(", ", GetSuffixes(1, i + 1).Select(suffix => $"T{suff
         T ResolveByTag(TComposite composite, object tag);
     }
 
+    /// <summary>
+    /// Lightweight composition root. Does not create a separate composition object for instance creation, uses a common one for all lightweight roots and a delegate to create the type instance.
+    /// </summary>
     internal class LightweightRoot { }
 
     /// <summary>

@@ -13,7 +13,7 @@ record MdRoot(
     ITypeSymbol RootContractType,
     bool IsBuilder,
     ImmutableArray<MdRoot> BuilderRoots = default,
-    bool IsLightweightRootMethod = false)
+    LightweightKind LightweightKind = LightweightKind.None)
 {
     public override string ToString() => $"Root<{RootType}>(\"{Name}\", {Tag.ToString()})";
 }

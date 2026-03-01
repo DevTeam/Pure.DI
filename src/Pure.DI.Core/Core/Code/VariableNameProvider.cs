@@ -24,9 +24,7 @@ class NameProvider(IUniqueNameProvider uniqueNameProvider): INameProvider
         uniqueNameProvider.GetUniqueName($"{Names.LocalVariablePrefix}{ToTitleCase(baseName)}{Names.Salt}");
 
     public string GetUniqueRootName(string name, ITypeSymbol rootType) =>
-        string.IsNullOrWhiteSpace(name)
-            ? uniqueNameProvider.GetUniqueName(ToTitleCase(rootType.Name))
-            : name;
+        uniqueNameProvider.GetUniqueName(string.IsNullOrWhiteSpace(name) ? ToTitleCase(rootType.Name) : name);
 
     private static string GetVariableName(string prefix, string baseName, int id) =>
         $"{prefix}{ToTitleCase(baseName)}{Names.Salt}{(id != 0 ? id.ToString() : "")}";
