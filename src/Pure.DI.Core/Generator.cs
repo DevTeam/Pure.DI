@@ -77,7 +77,7 @@ public sealed partial class Generator
                 LifetimeAnalyzer, InstanceDpProvider, Injections, NameFormatter, BindingsFactory, NodesFactory, LocationProvider,
                 CycleTools, LifetimeProvider, VarDeclarationTools, ContractTagComparer,
                 CodeNameProvider, DependencyNodePrioritizer>()
-            .PerBlock<LifetimesValidatorVisitor, CyclicDependencyValidatorVisitor>(Type)
+            .PerBlock<LifetimesValidatorVisitor, CyclicDependencyValidatorVisitor, RootArgsVisitor>()
             .PerBlock<GraphOverrider>(Overrider)
             .PerBlock<GraphCleaner>(Cleaner)
 

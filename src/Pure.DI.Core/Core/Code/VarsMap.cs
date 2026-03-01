@@ -23,7 +23,7 @@ class VarsMap(
     public bool IsThreadSafe { get; private set; }
 
     /// <inheritdoc />
-    public VarInjection GetInjection(DependencyGraph graph, Root root, in Injection injection, IDependencyNode node)
+    public VarInjection GetInjection(DependencyGraph graph, in Injection injection, IDependencyNode node)
     {
         VarInjection varInjection;
         var trace = new StringBuilder();

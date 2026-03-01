@@ -58,7 +58,7 @@ sealed class RootDependencyNodeBuilder(
                 rootType,
                 false,
                 ImmutableArray<MdRoot>.Empty,
-                LightweightKind: LightweightKind.TransientComposition);
+                LightweightKind: LightweightKind.RootsProvider);
 
             var binding = bindingsFactory.CreateLightweightRootBinding(setup, root);
 

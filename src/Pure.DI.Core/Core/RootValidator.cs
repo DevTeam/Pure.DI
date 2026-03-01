@@ -16,7 +16,7 @@ sealed class RootValidator(
         }
 
         var invalidRoots = composition.PublicRoots
-            .Where(root => root.Source is { IsBuilder: false, LightweightKind: not LightweightKind.TransientComposition })
+            .Where(root => root.Source is { IsBuilder: false, LightweightKind: not LightweightKind.RootsProvider })
             .Where(root => !root.RootArgs.IsDefaultOrEmpty && root.TypeDescription.TypeArgs.Count == 0)
             .GroupBy(root => root.Node.Binding.Id)
             .Select(root => root.First());

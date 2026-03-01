@@ -52,7 +52,7 @@ class Accumulators(
         Root root,
         IEnumerable<(MdAccumulator accumulator, Dependency dependency)> accumulators,
         IVarsMap varsMap) =>
-        accumulators.Select(i => new Accumulator(varsMap.GetInjection(graph, root, i.dependency.Injection, i.dependency.Source), i.accumulator.Type, i.accumulator.Lifetime));
+        accumulators.Select(i => new Accumulator(varsMap.GetInjection(graph, i.dependency.Injection, i.dependency.Source), i.accumulator.Type, i.accumulator.Lifetime));
 
     public void BuildAccumulators(CodeContext ctx)
     {

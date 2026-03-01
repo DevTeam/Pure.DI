@@ -10,6 +10,8 @@ class CompositionBuilder(
     IBuilder<CompositionCode, Lines> classDiagramBuilder,
     IOverridesRegistry overridesRegistry,
     IRegistry<int> bindingsRegistry,
+    IGraphWalker<RootArgsContext, ImmutableArray<Dependency>> graphWalker,
+    IGraphVisitor<RootArgsContext, ImmutableArray<Dependency>> rootArgsVisitor,
     CancellationToken cancellationToken)
     : IBuilder<DependencyGraph, CompositionCode>
 {
@@ -27,67 +29,80 @@ class CompositionBuilder(
                 break;
             }
 
+            var typeDescription = typeResolver.Resolve(graph.Source, root.Injection.Type);
+            var processedRoot = root with { TypeDescription = typeDescription };
+            if (typeDescription.TypeArgs.Count > 0)
+            {
+                processedRoot = processedRoot with { Kind = processedRoot.Kind & ~RootKinds.Light };
+            }
+
+            IEnumerable<VarDeclaration> args;
             var lines = new Lines();
             using var rootToken = varsMap.Root(lines);
-            var ctx = new RootContext(graph, root, varsMap, lines);
-            var rootVarInjection = rootBuilder().Build(ctx);
-            var isThreadSafeRoot = ctx.LockIsInUse || graph.Source.Hints.IsThreadSafeEnabled && varsMap.IsThreadSafe;
-            if (root.IsStatic)
+            if (root.Source.Kind.HasFlag(RootKinds.Light) && typeDescription.TypeArgs.Count == 0)
             {
-                if (isThreadSafeRoot || overridesRegistry.GetOverrides(root).Any())
-                {
-                    // resolveLock local field
-                    var newLines = new Lines();
-                    newLines.AppendLine(new Line(int.MinValue, "#if NET9_0_OR_GREATER"));
-                    newLines.AppendLine($"var {Names.PerResolveLockFieldName} = new {Names.LockTypeName}();");
-                    newLines.AppendLine(new Line(int.MinValue, "#else"));
-                    newLines.AppendLine($"var {Names.PerResolveLockFieldName} = new {Names.ObjectTypeName}();");
-                    newLines.AppendLine(new Line(int.MinValue, "#endif"));
-                    newLines.AppendLines(ctx.Lines);
-                    lines = newLines;
-                    ctx = ctx with { Lines = lines };
-                }
+                var rootArgsContext = new RootArgsContext(varsMap, new List<VarDeclaration>());
+                graphWalker.Walk(rootArgsContext, graph, root.Node, rootArgsVisitor, cancellationToken);
+                args = rootArgsContext.Args;
             }
             else
             {
-                isThreadSafe |= isThreadSafeRoot;
+                var ctx = new RootContext(graph, root, varsMap, lines);
+                var rootVarInjection = rootBuilder().Build(ctx);
+                var isThreadSafeRoot = ctx.LockIsInUse || graph.Source.Hints.IsThreadSafeEnabled && varsMap.IsThreadSafe;
+                if (root.IsStatic)
+                {
+                    if (isThreadSafeRoot || overridesRegistry.GetOverrides(root).Any())
+                    {
+                        // resolveLock local field
+                        var newLines = new Lines();
+                        newLines.AppendLine(new Line(int.MinValue, "#if NET9_0_OR_GREATER"));
+                        newLines.AppendLine($"var {Names.PerResolveLockFieldName} = new {Names.LockTypeName}();");
+                        newLines.AppendLine(new Line(int.MinValue, "#else"));
+                        newLines.AppendLine($"var {Names.PerResolveLockFieldName} = new {Names.ObjectTypeName}();");
+                        newLines.AppendLine(new Line(int.MinValue, "#endif"));
+                        newLines.AppendLines(ctx.Lines);
+                        lines = newLines;
+                        ctx = ctx with { Lines = lines };
+                    }
+                }
+                else
+                {
+                    isThreadSafe |= isThreadSafeRoot;
+                }
+
+                lines.AppendLine($"return {rootVarInjection.Var.CodeExpression};");
+                foreach (var localFunction in varsMap.Vars.Select(i => i.LocalFunction).Where(i => i.Count > 0))
+                {
+                    lines.AppendLine();
+                    lines.AppendLines(localFunction);
+                }
+
+                processedRoot = processedRoot with { Lines = ctx.Lines };
+                args = varsMap.Declarations.Where(i => i.Node.Arg is not null);
             }
 
-            lines.AppendLine($"return {rootVarInjection.Var.CodeExpression};");
-            foreach (var localFunction in varsMap.Vars.Select(i => i.LocalFunction).Where(i => i.Count > 0))
-            {
-                lines.AppendLine();
-                lines.AppendLines(localFunction);
-            }
+            var currentArgs = varDeclarationTools.Sort(args).ToList();
 
-            var args = varDeclarationTools.Sort(varsMap.Declarations.Where(i => i.Node.Arg is not null)).ToList();
-            var rootArgs = args.GetArgsOfKind(ArgKind.Root);
-            var processedRoot = root with
-            {
-                Lines = ctx.Lines,
-                TypeDescription = typeResolver.Resolve(graph.Source, root.Injection.Type),
-                RootArgs = rootArgs.ToImmutableArray()
-            };
+            var currentClassArgs = currentArgs.GetArgsOfKind(ArgKind.Composition)
+                .Where(arg => arg.Node.Arg is not { Source.IsSetupContext: true })
+                .Where(arg => bindingsRegistry.IsRegistered(graph.Source, arg.Node.BindingId));
 
-            classArgs.AddRange(args.GetArgsOfKind(ArgKind.Composition)
-                .Where(node => node.Node.Arg is not { Source.IsSetupContext: true })
-                .Where(node => bindingsRegistry.IsRegistered(graph.Source, node.Node.BindingId)));
-            var typeDescription = typeResolver.Resolve(graph.Source, processedRoot.Injection.Type);
+            classArgs.AddRange(currentClassArgs);
+
+            var currentRootArgs = currentArgs.GetArgsOfKind(ArgKind.Root).ToImmutableArray();
+
             var isMethod = processedRoot.Source.IsBuilder
                            || (processedRoot.Kind & RootKinds.Method) == RootKinds.Method
-                           || processedRoot.RootArgs.Length > 0
+                           || currentRootArgs.Length > 0
                            || typeDescription.TypeArgs.Count > 0;
 
             processedRoot = processedRoot with
             {
-                TypeDescription = typeDescription,
+                RootArgs = currentRootArgs.ToImmutableArray(),
                 IsMethod = isMethod
+                // , Kind = processedRoot.Kind & ~RootKinds.Light
             };
-
-            if (processedRoot.Kind.HasFlag(RootKinds.Light) && typeDescription.TypeArgs.Count > 0)
-            {
-                processedRoot = processedRoot with { Kind = processedRoot.Kind & ~RootKinds.Light };
-            }
 
             roots.Add(processedRoot);
         }

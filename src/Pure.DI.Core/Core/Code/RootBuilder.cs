@@ -21,7 +21,7 @@ class RootBuilder(
     public VarInjection Build(in RootContext rootContext)
     {
         var rootVarsMap = rootContext.VarsMap;
-        var rootVarInjection = rootVarsMap.GetInjection(rootContext.Graph, rootContext.Root, rootContext.Root.Injection, rootContext.Root.Node);
+        var rootVarInjection = rootVarsMap.GetInjection(rootContext.Graph, rootContext.Root.Injection, rootContext.Root.Node);
         var lines = new Lines();
         var ctx = new CodeContext(
             rootContext,

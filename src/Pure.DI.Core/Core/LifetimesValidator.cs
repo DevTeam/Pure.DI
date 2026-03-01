@@ -4,7 +4,7 @@ namespace Pure.DI.Core;
 
 sealed class LifetimesValidator(
     IGraphWalker<LifetimesValidatorContext, ImmutableArray<Dependency>> graphWalker,
-    [Tag(typeof(LifetimesValidatorVisitor))] IGraphVisitor<LifetimesValidatorContext, ImmutableArray<Dependency>> visitor,
+    IGraphVisitor<LifetimesValidatorContext, ImmutableArray<Dependency>> visitor,
     CancellationToken cancellationToken)
     : IValidator<DependencyGraph>
 {

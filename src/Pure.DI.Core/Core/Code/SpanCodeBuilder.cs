@@ -25,7 +25,7 @@ sealed class SpanCodeBuilder(
             var injections = new List<VarInjection>(spanDependencies.Count);
             foreach (var dependency in spanDependencies)
             {
-                injections.Add(ctx.VarsMap.GetInjection(ctx.RootContext.Graph, ctx.RootContext.Root, dependency.Injection, dependency.Source));
+                injections.Add(ctx.VarsMap.GetInjection(ctx.RootContext.Graph, dependency.Injection, dependency.Source));
             }
 
             injections.Sort(variableTools.InjectionComparer);

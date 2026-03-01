@@ -36,7 +36,7 @@ sealed class InstanceDpProvider(
                             InjectionKind.Field,
                             RefKind.None,
                             rootType,
-                            null,
+                            root.Tag?.Value,
                             ImmutableArray.Create(root.Source.GetLocation()))));
             }
         }

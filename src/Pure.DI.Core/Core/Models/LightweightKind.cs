@@ -3,6 +3,5 @@
 public enum LightweightKind
 {
     None,
-    TransientRoot,
-    TransientComposition
+    RootsProvider
 }

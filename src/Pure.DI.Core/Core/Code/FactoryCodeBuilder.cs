@@ -243,7 +243,7 @@ sealed class FactoryCodeBuilder(
         {
             foreach (var dependency in dependencies)
             {
-                var dependencyVar = varsMap.GetInjection(ctx.RootContext.Graph, ctx.RootContext.Root, dependency.Injection, dependency.Source);
+                var dependencyVar = varsMap.GetInjection(ctx.RootContext.Graph, dependency.Injection, dependency.Source);
                 varInjections.Add(dependencyVar);
                 if (dependencyVar.Injection.Kind is InjectionKind.FactoryInjection)
                 {

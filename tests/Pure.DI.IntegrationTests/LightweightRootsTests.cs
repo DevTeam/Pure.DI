@@ -62,7 +62,7 @@ public class LightweightRootsTests
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["Initialize 1 Abc", "Initialize 1 Abc"], result);
+        result.StdOut.ShouldBe(["Initialize 1 Abc", "Initialize 1 Abc" ], result);
     }
 
     [Fact]
@@ -213,7 +213,15 @@ public class LightweightRootsTests
                            namespace Sample;
 
                            interface IService { string Name { get; } }
-                           class Service(string name) : IService { public string Name { get; } = name; }
+                           class Service : IService
+                           {
+                           	private string _name;
+                           	public Service(string name)
+                           	{
+                           		_name = name;
+                           	}
+                           	public string Name { get { return _name; } }
+                           }
 
                            partial class Composition
                            {
@@ -252,7 +260,15 @@ public class LightweightRootsTests
                            namespace Sample;
 
                            interface IService { int Id { get; } }
-                           class Service(int id) : IService { public int Id { get; } = id; }
+                           class Service : IService
+                           {
+                           	private int _id;
+                           	public Service(int id)
+                           	{
+                           		_id = id;
+                           	}
+                           	public int Id { get { return _id; } }
+                           }
 
                            partial class Composition
                            {
@@ -290,9 +306,25 @@ public class LightweightRootsTests
 
                            namespace Sample;
 
-                           class User(string name) { public string Name { get; } = name; }
+                           class User
+                           {
+                           	private string _name;
+                           	public User(string name)
+                           	{
+                           		_name = name;
+                           	}
+                           	public string Name { get { return _name; } }
+                           }
                            interface IService { string Name { get; } }
-                           class Service(User user) : IService { public string Name { get; } = user.Name; }
+                           class Service : IService
+                           {
+                           	private User _user;
+                           	public Service(User user)
+                           	{
+                           		_user = user;
+                           	}
+                           	public string Name { get { return _user.Name; } }
+                           }
 
                            partial class Composition
                            {
@@ -331,7 +363,17 @@ public class LightweightRootsTests
                            namespace Sample;
 
                            interface IService { string Value { get; } }
-                           class Service(int id, string name) : IService { public string Value { get; } = $"{id}:{name}"; }
+                           class Service : IService
+                           {
+                           	private int _id;
+                           	private string _name;
+                           	public Service(int id, string name)
+                           	{
+                           		_id = id;
+                           		_name = name;
+                           	}
+                           	public string Value { get { return $"{_id}:{_name}"; } }
+                           }
 
                            partial class Composition
                            {
@@ -371,7 +413,17 @@ public class LightweightRootsTests
                            namespace Sample;
 
                            interface IService { string Value { get; } }
-                           class Service(int id, string name) : IService { public string Value { get; } = $"{id}:{name}"; }
+                           class Service : IService
+                           {
+                           	private int _id;
+                           	private string _name;
+                           	public Service(int id, string name)
+                           	{
+                           		_id = id;
+                           		_name = name;
+                           	}
+                           	public string Value { get { return $"{_id}:{_name}"; } }
+                           }
 
                            partial class Composition
                            {
@@ -411,7 +463,15 @@ public class LightweightRootsTests
                            namespace Sample;
 
                            interface IService { string Token { get; } }
-                           class Service([Tag("token")] string token) : IService { public string Token { get; } = token; }
+                           class Service : IService
+                           {
+                           	private string _token;
+                           	public Service([Tag("token")] string token)
+                           	{
+                           		_token = token;
+                           	}
+                           	public string Token { get { return _token; } }
+                           }
 
                            partial class Composition
                            {
@@ -450,9 +510,16 @@ public class LightweightRootsTests
                            namespace Sample;
 
                            interface IService { string Value { get; } }
-                           class Service([Tag("a")] int id, [Tag("b")] string name) : IService
+                           class Service : IService
                            {
-                               public string Value { get; } = $"{id}:{name}";
+                           	private int _id;
+                           	private string _name;
+                           	public Service([Tag("a")] int id, [Tag("b")] string name)
+                           	{
+                           		_id = id;
+                           		_name = name;
+                           	}
+                           	public string Value { get { return $"{_id}:{_name}"; } }
                            }
 
                            partial class Composition
@@ -515,7 +582,7 @@ public class LightweightRootsTests
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["Int32"], result);
+        result.StdOut.ShouldBe(["Int32"]);
     }
 
     [Fact]
@@ -574,9 +641,14 @@ public class LightweightRootsTests
                            namespace Sample;
 
                            interface IService<T> { int Count { get; } }
-                           class Service<T>(IEnumerable<T> values) : IService<T>
+                           class Service<T> : IService<T>
                            {
-                               public int Count { get; } = values.Count();
+                           	private IEnumerable<T> _values;
+                           	public Service(IEnumerable<T> values)
+                           	{
+                           		_values = values;
+                           	}
+                           	public int Count { get { return _values.Count(); } }
                            }
 
                            partial class Composition
@@ -893,7 +965,15 @@ public class LightweightRootsTests
                            namespace Sample;
 
                            interface IService { int Id { get; } }
-                           class Service(int id) : IService { public int Id { get; } = id; }
+                           class Service : IService
+                           {
+                           	private int _id;
+                           	public Service(int id)
+                           	{
+                           		_id = id;
+                           	}
+                           	public int Id { get { return _id; } }
+                           }
 
                            partial class Composition
                            {
@@ -968,7 +1048,15 @@ public class LightweightRootsTests
                            namespace Sample;
 
                            interface IService { int Id { get; } }
-                           class Service(int id) : IService { public int Id { get; } = id; }
+                           class Service : IService
+                           {
+                           	private int _id;
+                           	public Service(int id)
+                           	{
+                           		_id = id;
+                           	}
+                           	public int Id { get { return _id; } }
+                           }
 
                            partial class Composition
                            {
@@ -1045,7 +1133,15 @@ public class LightweightRootsTests
                            namespace Sample;
 
                            public interface IService { int Id { get; } }
-                           public class Service(int id) : IService { public int Id { get; } = id; }
+                           public class Service : IService
+                           {
+                           	private int _id;
+                           	public Service(int id)
+                           	{
+                           		_id = id;
+                           	}
+                           	public int Id { get { return _id; } }
+                           }
 
                            public partial class Composition
                            {
@@ -1084,7 +1180,15 @@ public class LightweightRootsTests
                            namespace Sample;
 
                            interface IService { int Id { get; } }
-                           class Service(int id) : IService { public int Id { get; } = id; }
+                           class Service : IService
+                           {
+                           	private int _id;
+                           	public Service(int id)
+                           	{
+                           		_id = id;
+                           	}
+                           	public int Id { get { return _id; } }
+                           }
 
                            partial class Composition
                            {
@@ -1123,7 +1227,15 @@ public class LightweightRootsTests
                            namespace Sample;
 
                            interface IService { int Id { get; } }
-                           class Service(int id) : IService { public int Id { get; } = id; }
+                           class Service : IService
+                           {
+                           	private int _id;
+                           	public Service(int id)
+                           	{
+                           		_id = id;
+                           	}
+                           	public int Id { get { return _id; } }
+                           }
 
                            partial class Composition
                            {
@@ -1164,7 +1276,15 @@ public class LightweightRootsTests
                            namespace Sample;
 
                            interface IService { int Id { get; } }
-                           class Service(int id) : IService { public int Id { get; } = id; }
+                           class Service : IService
+                           {
+                           	private int _id;
+                           	public Service(int id)
+                           	{
+                           		_id = id;
+                           	}
+                           	public int Id { get { return _id; } }
+                           }
 
                            partial class Composition
                            {
@@ -1208,27 +1328,33 @@ public class LightweightRootsTests
                            namespace Sample;
 
                            interface IService { int Sum { get; } }
-                           class Service(
-                               [Tag("a1")] int a1,
-                               [Tag("a2")] int a2,
-                               [Tag("a3")] int a3,
-                               [Tag("a4")] int a4,
-                               [Tag("a5")] int a5,
-                               [Tag("a6")] int a6,
-                               [Tag("a7")] int a7,
-                               [Tag("a8")] int a8,
-                               [Tag("a9")] int a9,
-                               [Tag("a10")] int a10,
-                               [Tag("a11")] int a11,
-                               [Tag("a12")] int a12,
-                               [Tag("a13")] int a13,
-                               [Tag("a14")] int a14,
-                               [Tag("a15")] int a15,
-                               [Tag("a16")] int a16)
-                               : IService
+                           class Service : IService
                            {
-                               public int Sum { get; } =
-                                   a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16;
+                           	private int _a1, _a2, _a3, _a4, _a5, _a6, _a7, _a8, _a9, _a10, _a11, _a12, _a13, _a14, _a15, _a16;
+                           	public Service(
+                           		[Tag("a1")] int a1,
+                           		[Tag("a2")] int a2,
+                           		[Tag("a3")] int a3,
+                           		[Tag("a4")] int a4,
+                           		[Tag("a5")] int a5,
+                           		[Tag("a6")] int a6,
+                           		[Tag("a7")] int a7,
+                           		[Tag("a8")] int a8,
+                           		[Tag("a9")] int a9,
+                           		[Tag("a10")] int a10,
+                           		[Tag("a11")] int a11,
+                           		[Tag("a12")] int a12,
+                           		[Tag("a13")] int a13,
+                           		[Tag("a14")] int a14,
+                           		[Tag("a15")] int a15,
+                           		[Tag("a16")] int a16)
+                           	{
+                           		_a1 = a1; _a2 = a2; _a3 = a3; _a4 = a4;
+                           		_a5 = a5; _a6 = a6; _a7 = a7; _a8 = a8;
+                           		_a9 = a9; _a10 = a10; _a11 = a11; _a12 = a12;
+                           		_a13 = a13; _a14 = a14; _a15 = a15; _a16 = a16;
+                           	}
+                           	public int Sum { get { return _a1 + _a2 + _a3 + _a4 + _a5 + _a6 + _a7 + _a8 + _a9 + _a10 + _a11 + _a12 + _a13 + _a14 + _a15 + _a16; } }
                            }
 
                            partial class Composition
@@ -1296,11 +1422,16 @@ public class LightweightRootsTests
                                int DoubleValue { get; }
                            }
 
-                           class Service([Tag("input")] int value) : IService
+                           class Service : IService
                            {
-                               public int Value { get; } = value;
+                           	private int _value;
+                           	public Service([Tag("input")] int value)
+                           	{
+                           		_value = value;
+                           	}
+                           	public int Value { get { return _value; } }
 
-                               public int DoubleValue { get; } = value * 2;
+                           	public int DoubleValue { get { return _value * 2; } }
                            }
 
                            partial class Composition
@@ -1340,7 +1471,14 @@ public class LightweightRootsTests
                            namespace Sample;
 
                            interface IService { }
-                           class Service(int id) : IService { }
+                           class Service : IService
+                           {
+                           	private int _id;
+                           	public Service(int id)
+                           	{
+                           		_id = id;
+                           	}
+                           }
 
                            partial class Composition
                            {
@@ -1377,7 +1515,14 @@ public class LightweightRootsTests
                            namespace Sample;
 
                            interface IService { }
-                           class Service(int id) : IService { }
+                           class Service : IService
+                           {
+                           	private int _id;
+                           	public Service(int id)
+                           	{
+                           		_id = id;
+                           	}
+                           }
 
                            partial class Composition
                            {

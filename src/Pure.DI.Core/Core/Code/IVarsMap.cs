@@ -24,11 +24,10 @@ interface IVarsMap
     /// Gets a variable injection for the specified node.
     /// </summary>
     /// <param name="graph">The dependency graph.</param>
-    /// <param name="root">The composition root.</param>
     /// <param name="injection">The injection information.</param>
     /// <param name="node">The dependency node.</param>
     /// <returns>The variable injection.</returns>
-    VarInjection GetInjection(DependencyGraph graph, Root root, in Injection injection, IDependencyNode node);
+    VarInjection GetInjection(DependencyGraph graph, in Injection injection, IDependencyNode node);
 
     /// <summary>
     /// Resets the map to the root state.

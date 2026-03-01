@@ -4,7 +4,7 @@ namespace Pure.DI.Core;
 
 sealed class CyclicDependenciesValidator(
     IGraphWalker<CyclicDependenciesValidatorContext, ImmutableArray<Dependency>> graphWalker,
-    [Tag(typeof(CyclicDependencyValidatorVisitor))] IGraphVisitor<CyclicDependenciesValidatorContext, ImmutableArray<Dependency>> visitor,
+    IGraphVisitor<CyclicDependenciesValidatorContext, ImmutableArray<Dependency>> visitor,
     ILogger logger,
     ILocationProvider locationProvider,
     ITypeResolver typeResolver,
