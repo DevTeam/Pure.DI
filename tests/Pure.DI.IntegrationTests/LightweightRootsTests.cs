@@ -1223,11 +1223,12 @@ public class LightweightRootsTests
                                [Tag("a12")] int a12,
                                [Tag("a13")] int a13,
                                [Tag("a14")] int a14,
-                               [Tag("a15")] int a15)
+                               [Tag("a15")] int a15,
+                               [Tag("a16")] int a16)
                                : IService
                            {
                                public int Sum { get; } =
-                                   a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15;
+                                   a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16;
                            }
 
                            partial class Composition
@@ -1249,6 +1250,7 @@ public class LightweightRootsTests
                                    .RootArg<int>("a13", "a13")
                                    .RootArg<int>("a14", "a14")
                                    .RootArg<int>("a15", "a15")
+                                   .RootArg<int>("a16", "a16")
                                    .Bind<IService>().To<Service>()
                                    .Root<IService>("Create", kind: RootKinds.Light);
                            }
@@ -1258,14 +1260,14 @@ public class LightweightRootsTests
                                static void Main()
                                {
                                    var composition = new Composition();
-                                   Console.WriteLine(composition.Create(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15).Sum);
+                                   Console.WriteLine(composition.Create(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16).Sum);
                                }
                            }
                            """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["120"], result);
+        result.StdOut.ShouldBe(["136"], result);
     }
 
     [Fact]
