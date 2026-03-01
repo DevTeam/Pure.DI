@@ -163,10 +163,20 @@ sealed class RootMethodsBuilder(
                 else
                 {
                     Lines lines;
-                    if (root.Source.Kind.HasFlag(RootKinds.Light))
+                    if (root.Kind.HasFlag(RootKinds.Light))
                     {
                         lines = new Lines();
-                        lines.AppendLine($"return {Names.LightweightRootName}.{root.Source.UniqueName}();");
+                        var compositionTypeName = composition.Source.Source.Name.ClassName;
+                        var compositionInstance = root.IsStatic ? $"new {compositionTypeName}()." : string.Empty;
+                        // ReSharper disable once ConvertIfStatementToConditionalTernaryExpression
+                        if (root.RootArgs.IsEmpty)
+                        {
+                            lines.AppendLine($"return {compositionInstance}{Names.LightweightRootName}.{root.Source.UniqueName}();");
+                        }
+                        else
+                        {
+                            lines.AppendLine($"return {compositionInstance}{Names.LightweightRootName}({string.Join(", ", root.RootArgs.Select(i => i.Name))}).{root.Source.UniqueName}();");
+                        }
                     }
                     else
                     {

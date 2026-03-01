@@ -41,7 +41,8 @@ sealed class RootDependencyNodeBuilder(
 
         // ReSharper disable once InvertIf
         if (setup.Kind == CompositionKind.Public
-            && roots.Any(i => i.Kind.HasFlag(RootKinds.Light))
+            && roots.Any(i => i.Kind.HasFlag(RootKinds.Light)
+                && i.RootType is not INamedTypeSymbol { IsGenericType: true })
             && types.TryGet(SpecialType.LightweightRoot, setup.SemanticModel.Compilation) is {} rootType)
         {
             var root = new MdRoot(

@@ -27,18 +27,6 @@ class CompositionBuilder(
                 break;
             }
 
-            if (root.Source.Kind.HasFlag(RootKinds.Light))
-            {
-                var lightweightRoot = root with
-                {
-                    Lines = new Lines(),
-                    TypeDescription = typeResolver.Resolve(graph.Source, root.Injection.Type)
-                };
-
-                roots.Add(lightweightRoot);
-                continue;
-            }
-
             var lines = new Lines();
             using var rootToken = varsMap.Root(lines);
             var ctx = new RootContext(graph, root, varsMap, lines);
@@ -95,6 +83,11 @@ class CompositionBuilder(
                 TypeDescription = typeDescription,
                 IsMethod = isMethod
             };
+
+            if (processedRoot.Kind.HasFlag(RootKinds.Light) && typeDescription.TypeArgs.Count > 0)
+            {
+                processedRoot = processedRoot with { Kind = processedRoot.Kind & ~RootKinds.Light };
+            }
 
             roots.Add(processedRoot);
         }

@@ -8,7 +8,9 @@ class LightweightRootClassBuilder(
 
     public CompositionCode Build(CompositionCode composition)
     {
-        var roots = composition.PublicRoots.Where(i => i.Kind.HasFlag(RootKinds.Light)).ToList();
+        var roots = composition.PublicRoots
+            .Where(i => i.Kind.HasFlag(RootKinds.Light))
+            .ToList();
         if (roots.Count == 0)
         {
             return composition;
