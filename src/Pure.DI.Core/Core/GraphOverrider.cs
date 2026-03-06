@@ -12,7 +12,7 @@ class GraphOverrider(
         IGraph<DependencyNode, Dependency> graph,
         ref int bindingId)
     {
-        var entries = new List<GraphEntry<DependencyNode, Dependency>>(graph.Entries.Count);
+        var entries = new Dictionary<DependencyNode, IReadOnlyCollection<Dependency>>(graph.Entries.Count);
         var processed = new Dictionary<int, DependencyNode>(graph.Entries.Count);
         foreach (var rootNode in from node in graph.Vertices where node.Root is not null select node)
         {
@@ -39,28 +39,31 @@ class GraphOverrider(
             return graph;
         }
 
-        var entriesMap = entries.ToDictionary(i => i.Target, i => i.Edges);
-        foreach (var entry in graph.Entries.Where(i => !entriesMap.ContainsKey(i.Target)))
+        foreach (var graphEntry in graph.Entries)
         {
-            entriesMap.Add(entry.Target, entry.Edges);
+            if (entries.ContainsKey(graphEntry.Target))
+            {
+                continue;
+            }
+
+            entries[graphEntry.Target] = graphEntry.Edges;
         }
 
-        return new Graph<DependencyNode, Dependency>(
-            entriesMap.Select(i => new GraphEntry<DependencyNode, Dependency>(i.Key, i.Value)));
+        return new Graph<DependencyNode, Dependency>(entries.Select(i => new GraphEntry<DependencyNode, Dependency>(i.Key, i.Value)));
     }
 
     private DependencyNode Override(
-        IDictionary<int, DependencyNode> processed,
-        IReadOnlyDictionary<Injection, DependencyNode> nodes,
-        IReadOnlyDictionary<Injection, DependencyNode> localOverrides,
+        Dictionary<int, DependencyNode> processed,
+        Dictionary<Injection, DependencyNode> nodes,
+        Dictionary<Injection, DependencyNode> localOverrides,
         bool consumeLocalOverrides,
-        IReadOnlyDictionary<int, DpOverride> overrides,
+        Dictionary<int, DpOverride> overrides,
         MdSetup setup,
         IGraph<DependencyNode, Dependency> graph,
         DependencyNode rootNode,
         DependencyNode targetNode,
         ref int maxId,
-        List<GraphEntry<DependencyNode, Dependency>> entries)
+        Dictionary<DependencyNode, IReadOnlyCollection<Dependency>> entries)
     {
         if (!graph.TryGetInEdges(targetNode, out var dependencies))
         {
@@ -73,15 +76,16 @@ class GraphOverrider(
             nodes,
             localOverrides,
             overrides);
+
         if (branchProcessed.TryGetValue(targetNode.Binding.Id, out var node))
         {
             return node;
         }
 
-        var nodesMap = nodes.ToDictionary();
+        var nodesMap = new Dictionary<Injection, DependencyNode>(nodes);
         var localNodesMap = CreateLocalNodesMap(nodesMap, localOverrides, consumeLocalOverrides);
 
-        var overridesMap = overrides.ToDictionary();
+        var overridesMap = new Dictionary<int, DpOverride>(overrides);
         IEnumerable<ImmutableArray<DpOverride>> overridesEnumerable;
         if (targetNode.Factory is {} factory)
         {
@@ -178,7 +182,7 @@ class GraphOverrider(
             var currentDependency = dependency with { Target = targetNode };
             if (!localNodesMap.TryGetValue(currentDependency.Injection, out var overridingSourceNode))
             {
-                var sourceOverrides = overridesMap.ToDictionary();
+                var sourceOverrides = new Dictionary<int, DpOverride>(overridesMap);
                 var source = Override(
                     branchProcessed,
                     nodesMap,
@@ -206,17 +210,16 @@ class GraphOverrider(
             newDependencies.Add(currentDependency);
         }
 
-        UpsertEntry(entries, targetNode, newDependencies);
-
+        entries[targetNode] = newDependencies;
         return targetNode;
     }
 
-    private static IDictionary<int, DependencyNode> CreateBranchProcessedCache(
-        IDictionary<int, DependencyNode> processed,
+    private static Dictionary<int, DependencyNode> CreateBranchProcessedCache(
+        Dictionary<int, DependencyNode> processed,
         bool consumeLocalOverrides,
-        IReadOnlyDictionary<Injection, DependencyNode> nodes,
-        IReadOnlyDictionary<Injection, DependencyNode> localOverrides,
-        IReadOnlyDictionary<int, DpOverride> overrides)
+        Dictionary<Injection, DependencyNode> nodes,
+        Dictionary<Injection, DependencyNode> localOverrides,
+        Dictionary<int, DpOverride> overrides)
     {
         // Rewritten nodes are context-dependent when any override scope is active.
         // In such cases we isolate memoization to the current branch to avoid
@@ -230,11 +233,11 @@ class GraphOverrider(
     }
 
     private static Dictionary<Injection, DependencyNode> CreateLocalNodesMap(
-        IReadOnlyDictionary<Injection, DependencyNode> nodes,
-        IReadOnlyDictionary<Injection, DependencyNode> localOverrides,
+        Dictionary<Injection, DependencyNode> nodes,
+        Dictionary<Injection, DependencyNode> localOverrides,
         bool consumeLocalOverrides)
     {
-        var localNodesMap = nodes.ToDictionary();
+        var localNodesMap = new Dictionary<Injection, DependencyNode>(nodes);
         if (!consumeLocalOverrides || localOverrides.Count <= 0)
         {
             return localNodesMap;
@@ -246,28 +249,5 @@ class GraphOverrider(
         }
 
         return localNodesMap;
-    }
-
-    private static void UpsertEntry(
-        ICollection<GraphEntry<DependencyNode, Dependency>> entries,
-        DependencyNode targetNode,
-        IReadOnlyCollection<Dependency> newDependencies)
-    {
-        var entry = new GraphEntry<DependencyNode, Dependency>(targetNode, newDependencies);
-        if (entries is not List<GraphEntry<DependencyNode, Dependency>> list)
-        {
-            entries.Add(entry);
-            return;
-        }
-
-        var entryIndex = list.FindIndex(i => Equals(i.Target, targetNode));
-        if (entryIndex >= 0)
-        {
-            list[entryIndex] = entry;
-        }
-        else
-        {
-            list.Add(entry);
-        }
     }
 }
