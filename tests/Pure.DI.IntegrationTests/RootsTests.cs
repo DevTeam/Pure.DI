@@ -1741,6 +1741,7 @@ public class RootsTests
                                {
                                    private void Setup()
                                    {
+                                       // LightweightAnonymousRoot=off
                                        DI.Setup("Composition")
                                            .Bind<IDependency>().To<Dependency>()
                                            .Roots<#baseType#>();

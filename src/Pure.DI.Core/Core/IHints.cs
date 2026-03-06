@@ -53,4 +53,6 @@ interface IHints : IReadOnlyDictionary<Hint, LinkedList<string>>
     bool SkipDefaultConstructor { get; }
 
     bool DisableAutoBinding { get; }
+
+    bool IsLightweightAnonymousRoot { get; }
 }

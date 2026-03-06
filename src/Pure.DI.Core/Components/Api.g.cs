@@ -1170,6 +1170,25 @@ namespace Pure.DI
         /// </example>
         /// </summary>
         DisableAutoBindingLifetimeWildcard,
+
+        /// <summary>
+        /// Enables or disables lightweight anonymous root generation. Default: <c>On</c>.
+        /// <example>
+        /// <code>
+        /// // LightweightAnonymousRoot = Off
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        ///
+        /// or using the API call <see cref="IConfiguration.Hint"/>:
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Hint(Hint.LightweightAnonymousRoot, "Off")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// </example>
+        /// </summary>
+        LightweightAnonymousRoot,
     }
 
     /// <summary>

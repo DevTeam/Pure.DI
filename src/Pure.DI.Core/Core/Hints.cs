@@ -82,6 +82,9 @@ sealed class Hints : ConcurrentDictionary<Hint, LinkedList<string>>, IHints
     public bool DisableAutoBinding =>
         IsEnabled(Hint.DisableAutoBinding, SettingState.Off);
 
+    public bool IsLightweightAnonymousRoot =>
+        IsEnabled(Hint.LightweightAnonymousRoot, SettingState.On);
+
     private bool IsEnabled(Hint hint, SettingState defaultValue) =>
         GetEnumHint(hint, defaultValue) == SettingState.On;
 

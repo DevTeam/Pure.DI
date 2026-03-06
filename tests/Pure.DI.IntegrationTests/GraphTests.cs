@@ -146,6 +146,7 @@ public class GraphTests
                                internal partial class Composition
                                {                   
                                    void Setup() => Pure.DI.DI.Setup("Composition")
+                                       .Hint(Hint.LightweightAnonymousRoot, "off")
                                        .Bind<IService>().To<Service>().Root<IService>(); 
                                }
                            
@@ -198,6 +199,7 @@ public class GraphTests
                                internal partial class Composition
                                {                   
                                    void Setup() => Pure.DI.DI.Setup("Composition")
+                                       .Hint(Hint.LightweightAnonymousRoot, "off")
                                        .Bind<IService>().To<Service>().Root<IService>(); 
                                }
                            
@@ -254,6 +256,7 @@ public class GraphTests
                                internal partial class Composition
                                {                   
                                    void Setup() => Pure.DI.DI.Setup("Composition")
+                                       .Hint(Hint.LightweightAnonymousRoot, "off")
                                        .Arg<IDependency>("dep")
                                        .Bind<IService>().To<Service>().Root<IService>(); 
                                }
@@ -311,6 +314,7 @@ public class GraphTests
                                internal partial class Composition
                                {                   
                                    void Setup() => Pure.DI.DI.Setup("Composition")
+                                       .Hint(Hint.LightweightAnonymousRoot, "off")
                                        .Bind<string>("MyStr").To(_ => "Abc")         
                                        .Bind<IDependency<TT>>().To(ctx => {
                                            ctx.Inject<TT[]>(out var array); 
@@ -403,6 +407,7 @@ public class GraphTests
                                internal partial class Composition
                                {                   
                                    void Setup() => Pure.DI.DI.Setup("Composition")
+                                       .Hint(Hint.LightweightAnonymousRoot, "off")
                                        .Bind<IDependency<TT1, TT2>>().To<Dependency<TT1, TT2>>()
                                        .Bind<IService>().To<Service>().Root<IService>(); 
                                }
@@ -462,6 +467,7 @@ public class GraphTests
                                internal partial class Composition
                                {                   
                                    void Setup() => Pure.DI.DI.Setup("Composition")
+                                       .Hint(Hint.LightweightAnonymousRoot, "off")
                                        .Bind<IDependency>().To(_ => new Dependency())
                                        .Bind<IService>().To<Service>().Root<IService>(); 
                                }       
@@ -519,6 +525,7 @@ public class GraphTests
                                internal partial class Composition
                                {                   
                                    void Setup() => Pure.DI.DI.Setup("Composition")
+                                       .Hint(Hint.LightweightAnonymousRoot, "off")
                                        .Bind<IDependency<TT>>().To(_ => new Dependency<TT>(new TT[1]))
                                        .Bind<IService>().To<Service>().Root<IService>(); 
                                }
@@ -576,6 +583,7 @@ public class GraphTests
                                internal partial class Composition
                                {                   
                                    void Setup() => Pure.DI.DI.Setup("Composition")
+                                       .Hint(Hint.LightweightAnonymousRoot, "off")
                                        .Bind<IDependency<TT>>().To<Dependency<TT>>()
                                        .Bind<IService>().To<Service>().Root<IService>(); 
                                }
@@ -632,6 +640,7 @@ public class GraphTests
                                internal partial class Composition
                                {                   
                                    void Setup() => Pure.DI.DI.Setup("Composition")
+                                       .Hint(Hint.LightweightAnonymousRoot, "off")
                                        .Bind<IDependency>().To<Dependency>()
                                        .Bind<IService>().To<Service>().Root<IService>(); 
                                }       
@@ -747,6 +756,7 @@ public class GraphTests
                                internal partial class Composition
                                {                   
                                    void Setup() => Pure.DI.DI.Setup("Composition")
+                                       .Hint(Hint.LightweightAnonymousRoot, "off")
                                        .Bind<IDependency>().To<Dependency>()
                                        .Bind<IService>().To<Service>().Root<IService>(); 
                                }       
@@ -806,6 +816,7 @@ public class GraphTests
                                internal partial class Composition
                                {                   
                                    void Setup() => Pure.DI.DI.Setup("Composition")
+                                       .Hint(Hint.LightweightAnonymousRoot, "off")
                                        .Bind<IDependency>().To<Dependency>()
                                        .Bind<IService>().To<Service>().Root<IService>(); 
                                }
@@ -868,6 +879,7 @@ public class GraphTests
                                internal partial class Composition
                                {                   
                                    void Setup() => Pure.DI.DI.Setup("Composition")
+                                       .Hint(Hint.LightweightAnonymousRoot, "off")
                                        .Bind<IDependency2>().To<Dependency2>()
                                        .Bind<IService>().To<Service>().Root<IService>(); 
                                }
@@ -930,6 +942,7 @@ public class GraphTests
                                        .Bind<IDependency>().To<Dependency>(); 
                            
                                    private static void Setup2() => Pure.DI.DI.Setup("Composition")
+                                       .Hint(Hint.LightweightAnonymousRoot, "off")
                                        .Bind<IService>().To<Service>().Root<IService>();
                                }
                            
@@ -990,6 +1003,7 @@ public class GraphTests
                            
                                    private static void Setup2() => Pure.DI.DI.Setup("Composition")
                                        .DependsOn("BaseComposition")
+                                       .Hint(Hint.LightweightAnonymousRoot, "off")
                                        .Bind<IService>().To<Service>().Root<IService>();
                                }
                            
@@ -1051,6 +1065,7 @@ public class GraphTests
                            
                                    private static void Setup2() => Pure.DI.DI.Setup("Composition")
                                        .DependsOn("BaseComposition")
+                                       .Hint(Hint.LightweightAnonymousRoot, "off")
                                        .Bind<IService>().To<Service>()
                                        .Root<IService>();
                                }
@@ -1320,6 +1335,7 @@ public class GraphTests
                                           .Bind<IDependency>().To<Dependency>();
                            
                                        Pure.DI.DI.Setup("Composition")
+                                           .Hint(Hint.LightweightAnonymousRoot, "off")
                                            .Bind<IService>().To<Service>().Root<IService>();
                                    }  
                                }       
@@ -1479,10 +1495,12 @@ public class GraphTests
                                internal partial class Composition
                                {                   
                                    private static void Setup1() => Pure.DI.DI.Setup("Composition1")
+                                       .Hint(Hint.LightweightAnonymousRoot, "off")
                                        .Bind<IDependency1>().To<Dependency1>()
                                        .Bind<IService1>().To<Service1>().Root<IService1>();        
                            
                                    private static void Setup2() => Pure.DI.DI.Setup("Composition2")
+                                       .Hint(Hint.LightweightAnonymousRoot, "off")
                                        .Bind<IDependency2>().To<Dependency2>()
                                        .Bind<IService2>().To<Service2>().Root<IService2>();
                                }       

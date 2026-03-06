@@ -153,7 +153,7 @@ sealed class SetupsBuilder(
         }
 
         _bindings.AddRange(setup.Bindings);
-        _roots.AddRange(setup.Roots);
+        _roots.AddRange(setup.Roots.Select(i => ConfigureRoot(i, _hints)));
         _dependsOn.AddRange(setup.DependsOn);
         _genericTypeArguments.AddRange(setup.GenericTypeArguments);
         _genericTypeArgumentAttributes.AddRange(setup.GenericTypeArgumentAttributes);
@@ -791,5 +791,20 @@ sealed class SetupsBuilder(
         _setup = null;
         _bindingBuilder = bindingBuilderFactory();
         return setup;
+    }
+
+    [SuppressMessage("ReSharper", "InvertIf")]
+    private static MdRoot ConfigureRoot(MdRoot root, Hints hints)
+    {
+        if (hints.IsLightweightAnonymousRoot)
+        {
+            if (root is { IsBuilder: false, RootType: INamedTypeSymbol { IsGenericType: false } }
+                && string.IsNullOrWhiteSpace(root.Name))
+            {
+                root = root with { Kind = root.Kind | RootKinds.Light };
+            }
+        }
+
+        return root;
     }
 }
