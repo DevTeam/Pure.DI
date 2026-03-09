@@ -1,22 +1,30 @@
 ﻿namespace Pure.DI.Core.Code;
 
-/// <summary>
-/// Represents a variable declaration in the generated code.
-/// </summary>
-/// <param name="NameProvider">The name provider.</param>
-/// <param name="PerLifetimeId">The ID per lifetime.</param>
-/// <param name="Node">The dependency node.</param>
 record VarDeclaration(
     INameProvider NameProvider,
+    IVarStateTracker stateTracker,
     int PerLifetimeId,
     IDependencyNode Node)
 {
-    private readonly Lazy<string> _name = new(() => NameProvider.GetVariableName(Node, PerLifetimeId));
+    private bool _isDeclared = IsDeclaredDefault(Node);
 
     /// <summary>
     /// Gets or sets a value indicating whether the variable has been declared.
     /// </summary>
-    public bool IsDeclared { get; set; } = IsDeclaredDefault(Node) ;
+    public bool IsDeclared
+    {
+        get => _isDeclared;
+        set
+        {
+            if (_isDeclared == value)
+            {
+                return;
+            }
+
+            stateTracker.OnStateChanging(Node.BindingId);
+            _isDeclared = value;
+        }
+    }
 
     /// <summary>
     /// Gets the type of the instance.
@@ -26,7 +34,7 @@ record VarDeclaration(
     /// <summary>
     /// Gets the variable name.
     /// </summary>
-    public string Name => _name.Value;
+    public string Name { get; } = NameProvider.GetVariableName(Node, PerLifetimeId);
 
     /// <summary>
     /// Resets the declaration to its default state.
@@ -35,12 +43,12 @@ record VarDeclaration(
     public bool ResetToDefaults()
     {
         var declaredDefault = IsDeclaredDefault(Node);
-        if (declaredDefault == IsDeclared)
+        if (declaredDefault == _isDeclared)
         {
             return false;
         }
 
-        IsDeclared = declaredDefault;
+        _isDeclared = declaredDefault;
         return true;
     }
 
@@ -49,6 +57,8 @@ record VarDeclaration(
     /// </summary>
     /// <returns>True if the state has changed.</returns>
     public bool ResetStateToDefaults() => ResetToDefaults();
+
+    internal void RestoreDeclaredState(bool isDeclared) => _isDeclared = isDeclared;
 
     public override string ToString() => $"{InstanceType} {Name}";
 

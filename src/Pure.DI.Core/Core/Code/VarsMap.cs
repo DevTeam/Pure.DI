@@ -1,4 +1,4 @@
-﻿// ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+// ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 namespace Pure.DI.Core.Code;
 
 /// <summary>
@@ -9,9 +9,13 @@ class VarsMap(
     INameProvider nameProvider,
     ICycleTools cycleTools,
     IConstructors constructors)
-    : IVarsMap
+    : IVarsMap,
+      IVarStateTracker
 {
     private readonly Dictionary<int, Var> _map = [];
+    private readonly HashSet<int> _perBlockBindingIds = [];
+    private readonly List<ScopeState> _activeScopes = [];
+    private int _suppressedTrackingCount;
 
     /// <inheritdoc />
     public IEnumerable<Var> Vars => _map.Values;
@@ -40,8 +44,14 @@ class VarsMap(
 #if DEBUG
                     varTrace = ImmutableArray.Create(trace.ToString());
 #endif
-                    var = new Var(graph, constructors, CreateDeclaration(node), varTrace);
+                    var = CreateVar(graph, node, varTrace);
                     _map.Add(node.BindingId, var);
+                    if (node.ActualLifetime == Lifetime.PerBlock)
+                    {
+                        _perBlockBindingIds.Add(node.BindingId);
+                    }
+
+                    RegisterAddedVar(node.BindingId);
                 }
                 varInjection = new VarInjection(var, injection);
                 break;
@@ -51,7 +61,7 @@ class VarsMap(
 #if DEBUG
                 varTrace = ImmutableArray.Create(trace.ToString());
 #endif
-                varInjection = new VarInjection(new Var(graph, constructors, CreateDeclaration(node), varTrace), injection);
+                varInjection = new VarInjection(CreateVar(graph, node, varTrace), injection);
                 break;
         }
 
@@ -65,16 +75,26 @@ class VarsMap(
     public IDisposable Root(Lines lines)
     {
         return Disposables.Create(() => {
-            _map
-                .Where(i => !IsRootPersistentNode(i.Value.Declaration.Node))
-                .ToList()
-                .ForEach(i => {
-#if DEBUG
-                    lines.AppendLine($"// {i.Value.Declaration.Name}: remove ({nameof(Root)})");
-#endif
-                    _map.Remove(i.Key);
-                });
+            var keysToRemove = new List<int>();
+            foreach (var item in _map)
+            {
+                if (IsRootPersistentNode(item.Value.AbstractNode))
+                {
+                    continue;
+                }
 
+#if DEBUG
+                lines.AppendLine($"// {item.Value.Declaration.Name}: remove ({nameof(Root)})");
+#endif
+                keysToRemove.Add(item.Key);
+            }
+
+            foreach (var key in keysToRemove)
+            {
+                _map.Remove(key);
+            }
+
+            _perBlockBindingIds.Clear();
             foreach (var var in _map.Values)
             {
                 var.Declaration.ResetToDefaults();
@@ -88,32 +108,47 @@ class VarsMap(
     /// <inheritdoc />
     public IDisposable LocalFunction(Var var, Lines lines)
     {
-        // Snapshot the current state before entering a local function.
-        var state = CreateState(var);
-        
+        var scope = EnterScope(var.AbstractNode.BindingId);
+
         // Per-block variables should be isolated between local functions.
-        var removed = new List<KeyValuePair<int, Var>>();
-        _map
-            .Where(i => i.Value.Declaration.Node.ActualLifetime is Lifetime.PerBlock)
-            .ToList()
-            .ForEach(i => {
+        List<KeyValuePair<int, Var>>? removed = null;
+        foreach (var bindingId in _perBlockBindingIds)
+        {
+            if (!_map.TryGetValue(bindingId, out var perBlockVar))
+            {
+                continue;
+            }
+
 #if DEBUG
-                lines.AppendLine($"// {i.Value.Declaration.Name}: remove ({nameof(LocalFunction)})");
+            lines.AppendLine($"// {perBlockVar.Declaration.Name}: remove ({nameof(LocalFunction)})");
 #endif
-                removed.Add(i);
-                _map.Remove(i.Key);
-            });
+            (removed ??= new List<KeyValuePair<int, Var>>(_perBlockBindingIds.Count)).Add(new KeyValuePair<int, Var>(bindingId, perBlockVar));
+            _map.Remove(bindingId);
+        }
 
         return Disposables.Create(() => {
-            // Cleanup and restore state after exiting the local function.
-            RemoveNewNonPersistentVars(var, state, lines, nameof(LocalFunction));
-            RestoreState(var, state, lines, nameof(LocalFunction), false);
-            foreach (var item in removed)
+            _suppressedTrackingCount++;
+            try
             {
+                RemoveNewNonPersistentVars(var, scope, lines, nameof(LocalFunction));
+                RestoreState(scope, lines, nameof(LocalFunction), false);
+                if (removed is null)
+                {
+                    return;
+                }
+
+                foreach (var item in removed)
+                {
 #if DEBUG
-                lines.AppendLine($"// {item.Value.Declaration.Name}: rollback ({nameof(LocalFunction)})");
+                    lines.AppendLine($"// {item.Value.Declaration.Name}: rollback ({nameof(LocalFunction)})");
 #endif
-                _map[item.Key] = item.Value;
+                    _map[item.Key] = item.Value;
+                }
+            }
+            finally
+            {
+                _suppressedTrackingCount--;
+                ExitScope(scope);
             }
         });
     }
@@ -121,29 +156,47 @@ class VarsMap(
     /// <inheritdoc />
     public IDisposable Lazy(Var var, Lines lines)
     {
-        // Snapshot the state before entering a lazy scope (e.g., Func<T>).
-        var state = CreateState(var);
+        var scope = EnterScope(var.AbstractNode.BindingId);
         return Disposables.Create(() => {
-            // Cleanup and restore state after exiting the lazy scope.
-            RemoveNewNonPersistentVars(var, state, lines, nameof(Lazy));
-            RestoreState(var, state, lines, nameof(Lazy), true);
+            _suppressedTrackingCount++;
+            try
+            {
+                RemoveNewNonPersistentVars(var, scope, lines, nameof(Lazy));
+                RestoreState(scope, lines, nameof(Lazy), true);
+            }
+            finally
+            {
+                _suppressedTrackingCount--;
+                ExitScope(scope);
+            }
         });
     }
 
     /// <inheritdoc />
     public IDisposable Block(Var var, Lines lines)
     {
-        // Snapshot the state before entering a code block.
-        var state = CreateState(var);
+        var scope = EnterScope(var.AbstractNode.BindingId);
         return Disposables.Create(() => {
-            // Cleanup and restore state after exiting the block.
-            RemoveNewNonPersistentVars(var, state, lines, nameof(Block));
-            RestoreState(var, state, lines, nameof(Block), false);
+            _suppressedTrackingCount++;
+            try
+            {
+                RemoveNewNonPersistentVars(var, scope, lines, nameof(Block));
+                RestoreState(scope, lines, nameof(Block), false);
+            }
+            finally
+            {
+                _suppressedTrackingCount--;
+                ExitScope(scope);
+            }
         });
     }
 
-    private VarDeclaration CreateDeclaration(IDependencyNode node) =>
-        new(nameProvider, idGenerator.Generate(), node);
+    private Var CreateVar(DependencyGraph graph, IDependencyNode node, ImmutableArray<string> trace)
+    {
+        var declaration = new VarDeclaration(nameProvider, this, idGenerator.Generate(), node);
+        var var = new Var(graph, constructors, this, declaration, trace);
+        return var;
+    }
 
     private static bool IsThreadSafeNode(IDependencyNode node) =>
         node.ActualLifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve
@@ -163,58 +216,103 @@ class VarsMap(
         && node.Arg is not { Source.Kind: ArgKind.Root }
         && node.Construct is not { Source.Kind: MdConstructKind.Override };
 
-    /// <summary>
-    /// Creates a snapshot of the current variables' state.
-    /// Global code state (like LocalFunction) is NOT part of the snapshot because it should accumulate.
-    /// Only path-specific state (IsDeclared, IsCreated, CodeExpression) is captured.
-    /// </summary>
-    private IReadOnlyDictionary<int, VarState> CreateState(Var var)
+    private ScopeState EnterScope(int excludeBindingId)
     {
-        var excludeBindingId = var.Declaration.Node.BindingId;
-        var result = new Dictionary<int, VarState>(_map.Count);
-        foreach (var item in _map)
+        var scope = new ScopeState(excludeBindingId);
+        _activeScopes.Add(scope);
+        return scope;
+    }
+
+    private void ExitScope(ScopeState scope)
+    {
+        if (_activeScopes.Count > 0 && ReferenceEquals(_activeScopes[^1], scope))
         {
-            if (item.Key == excludeBindingId)
-            {
-                continue;
-            }
-
-            var constructKind = item.Value.Declaration.Node.Construct?.Source.Kind;
-            if (constructKind == MdConstructKind.Override)
-            {
-                continue;
-            }
-
-            result[item.Key] = new VarState(item.Value);
+            _activeScopes.RemoveAt(_activeScopes.Count - 1);
+            return;
         }
 
-        return result;
+        _activeScopes.Remove(scope);
+    }
+
+    private void RegisterAddedVar(int bindingId)
+    {
+        foreach (var scope in _activeScopes)
+        {
+            scope.AddAddedBindingId(bindingId);
+        }
+    }
+
+    void IVarStateTracker.OnStateChanging(int bindingId)
+    {
+        if (_suppressedTrackingCount > 0 || _activeScopes.Count == 0)
+        {
+            return;
+        }
+
+        if (!_map.TryGetValue(bindingId, out var var)
+            || var.AbstractNode.Construct?.Source.Kind == MdConstructKind.Override)
+        {
+            return;
+        }
+
+        var state = new VarState(var);
+        foreach (var scope in _activeScopes)
+        {
+            if (bindingId == scope.ExcludeBindingId
+                || scope.ContainsAddedBindingId(bindingId)
+                || scope.ContainsChangedBindingId(bindingId))
+            {
+                continue;
+            }
+
+            scope.AddChangedState(bindingId, state);
+        }
     }
 
     /// <summary>
     /// Removes variables that were newly introduced in the nested scope and have non-persistent lifetimes
     /// (e.g., PerBlock or Transient). This prevents them from leaking into the parent scope.
     /// </summary>
-    private void RemoveNewNonPersistentVars(Var var, IReadOnlyDictionary<int, VarState> state, Lines lines, string reason)
+    private void RemoveNewNonPersistentVars(Var var, ScopeState scope, Lines lines, string reason)
     {
 #if DEBUG
         lines.AppendLine($"// remove new non-persistent vars ({reason} {var.Declaration.Name})");
 #endif
-        var newItems = _map.Where(i => {
-            if (state.ContainsKey(i.Key))
+        if (!scope.HasAddedBindingIds)
+        {
+            return;
+        }
+
+        List<KeyValuePair<int, Var>>? newItems = null;
+        foreach (var bindingId in scope.AddedBindingIds)
+        {
+            if (!_map.TryGetValue(bindingId, out var addedVar))
             {
-                return false;
+                continue;
             }
 
-            var node = i.Value.Declaration.Node;
-            if (node.BindingId == var.Declaration.Node.BindingId)
+            var node = addedVar.AbstractNode;
+            if (node.BindingId == scope.ExcludeBindingId)
             {
-                return !IsNestedScopePersistentNode(node)
-                       && !ShouldKeepCurrentNodeInNestedScope(node);
+                if (!IsNestedScopePersistentNode(node)
+                    && !ShouldKeepCurrentNodeInNestedScope(node))
+                {
+                    (newItems ??= []).Add(new KeyValuePair<int, Var>(bindingId, addedVar));
+                }
+
+                continue;
             }
 
-            return !IsNestedScopePersistentNode(node);
-        }).ToList();
+            if (!IsNestedScopePersistentNode(node))
+            {
+                (newItems ??= []).Add(new KeyValuePair<int, Var>(bindingId, addedVar));
+            }
+        }
+
+        if (newItems is null)
+        {
+            return;
+        }
 
         foreach (var item in newItems)
         {
@@ -226,58 +324,39 @@ class VarsMap(
     }
 
     /// <summary>
-    /// Restores the variables' state from a previously taken snapshot.
+    /// Restores the variables' state from the change log collected inside the current scope.
     /// </summary>
-    private void RestoreState(Var var, IReadOnlyDictionary<int, VarState> state, Lines lines, string reason, bool restoreLocalFunctionCalled)
+    private void RestoreState(ScopeState scope, Lines lines, string reason, bool restoreLocalFunctionCalled)
     {
 #if DEBUG
-        lines.AppendLine($"// restore state ({reason} {var.Declaration.Name})");
+        lines.AppendLine($"// restore state ({reason})");
 #endif
-        var excludeBindingId = var.Declaration.Node.BindingId;
-        foreach (var stateItem in state)
+        if (scope.HasChangedStates)
         {
-            var stateValue = stateItem.Value;
-            var varToRestore = stateValue.Var;
-            if (varToRestore.Declaration.Node.BindingId == excludeBindingId)
+            foreach (var stateItem in scope.ChangedStates)
             {
-                continue;
-            }
-
-            // Only restore path-specific state.
-            // Global state (like LocalFunction) should persist even after exiting a nested scope.
-            if (varToRestore.Declaration.IsDeclared == stateValue.IsDeclared
-                && varToRestore.IsCreated == stateValue.IsCreated
-                && (!restoreLocalFunctionCalled || varToRestore.IsLocalFunctionCalled == stateValue.IsLocalFunctionCalled)
-                && varToRestore.CodeExpression == stateValue.CodeExpression)
-            {
-                continue;
-            }
-
+                var stateValue = stateItem.Value;
+                var varToRestore = stateValue.Var;
 #if DEBUG
-            lines.AppendLine($"//   {varToRestore.Declaration.Name}");
+                lines.AppendLine($"//   {varToRestore.Declaration.Name}");
 #endif
-            varToRestore.Declaration.IsDeclared = stateValue.IsDeclared;
-            varToRestore.IsCreated = stateValue.IsCreated;
-            if (restoreLocalFunctionCalled)
-            {
-                varToRestore.IsLocalFunctionCalled = stateValue.IsLocalFunctionCalled;
+                varToRestore.Declaration.RestoreDeclaredState(stateValue.IsDeclared);
+                varToRestore.RestorePathState(
+                    stateValue.IsCreated,
+                    stateValue.IsLocalFunctionCalled,
+                    stateValue.RawCodeExpression,
+                    restoreLocalFunctionCalled);
             }
-
-            varToRestore.CodeExpression = stateValue.CodeExpression;
         }
 
-        // Find variables that were NOT in the snapshot (newly discovered in the nested scope),
-        // and reset their path-specific state to defaults.
-        var stateKeys = new HashSet<int>(state.Keys);
-        foreach (var item in _map)
+        if (!scope.HasAddedBindingIds)
         {
-            if (stateKeys.Contains(item.Key))
-            {
-                continue;
-            }
+            return;
+        }
 
-            var varToRestore = item.Value;
-            if (varToRestore.Declaration.Node.BindingId == excludeBindingId)
+        foreach (var bindingId in scope.AddedBindingIds)
+        {
+            if (bindingId == scope.ExcludeBindingId || !_map.TryGetValue(bindingId, out var varToRestore))
             {
                 continue;
             }
@@ -295,21 +374,46 @@ class VarsMap(
         }
     }
 
-    private record VarState(
-        Var Var,
-        bool IsDeclared,
-        bool IsCreated,
-        bool IsLocalFunctionCalled,
-        string CodeExpression)
+    private readonly struct VarState(Var variable)
     {
-        public VarState(Var variable)
-            : this(
-                variable,
-                variable.Declaration.IsDeclared,
-                variable.IsCreated,
-                variable.IsLocalFunctionCalled,
-                variable.CodeExpression)
-        {
-        }
+        public readonly Var Var = variable;
+
+        public readonly bool IsDeclared = variable.Declaration.IsDeclared;
+
+        public readonly bool IsCreated = variable.IsCreated;
+
+        public readonly bool IsLocalFunctionCalled = variable.IsLocalFunctionCalled;
+
+        public readonly string? RawCodeExpression = variable.RawCodeExpression;
+    }
+
+    private sealed class ScopeState(int excludeBindingId)
+    {
+        private Dictionary<int, VarState>? _changedStates;
+        private HashSet<int>? _addedBindingIds;
+
+        public int ExcludeBindingId { get; } = excludeBindingId;
+
+        public bool HasChangedStates => _changedStates is { Count: > 0 };
+
+        public bool HasAddedBindingIds => _addedBindingIds is { Count: > 0 };
+
+        public IEnumerable<KeyValuePair<int, VarState>> ChangedStates =>
+            _changedStates is not null ? _changedStates : Array.Empty<KeyValuePair<int, VarState>>();
+
+        public IEnumerable<int> AddedBindingIds =>
+            _addedBindingIds is not null ? _addedBindingIds : Array.Empty<int>();
+
+        public void AddChangedState(int bindingId, in VarState state) =>
+            (_changedStates ??= new Dictionary<int, VarState>())[bindingId] = state;
+
+        public void AddAddedBindingId(int bindingId) =>
+            (_addedBindingIds ??= []).Add(bindingId);
+
+        public bool ContainsChangedBindingId(int bindingId) =>
+            _changedStates?.ContainsKey(bindingId) == true;
+
+        public bool ContainsAddedBindingId(int bindingId) =>
+            _addedBindingIds?.Contains(bindingId) == true;
     }
 }

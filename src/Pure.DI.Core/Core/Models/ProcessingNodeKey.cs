@@ -1,4 +1,5 @@
-﻿namespace Pure.DI.Core.Models;
+﻿// ReSharper disable NotAccessedPositionalProperty.Global
+namespace Pure.DI.Core.Models;
 
 record struct ProcessingNodeKey(
     int Variation,
@@ -6,4 +7,4 @@ record struct ProcessingNodeKey(
     object? ContextTag)
 {
     public ISet<Injection>? Contracts;
-};
+}

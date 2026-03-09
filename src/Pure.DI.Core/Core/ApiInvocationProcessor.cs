@@ -22,8 +22,6 @@ sealed class ApiInvocationProcessor(
     INameProvider nameProvider)
     : IApiInvocationProcessor
 {
-    private static readonly char[] TypeNamePartsSeparators = ['.'];
-
     public void ProcessInvocation(
         IMetadataVisitor metadataVisitor,
         SemanticModel semanticModel,
@@ -1138,17 +1136,21 @@ sealed class ApiInvocationProcessor(
         var factoryApiWalker = factoryApiWalkerFactory();
         factoryApiWalker.Initialize(semanticModel, contextParameter, lambdaExpression);
         factoryApiWalker.Visit(lambdaExpression);
+        var contextSymbol = contextParameter.SyntaxTree == semanticModel.SyntaxTree
+            ? semanticModel.GetDeclaredSymbol(contextParameter)
+            : null;
+
         var resolversHasContextTag = false;
         var resolvers = factoryApiWalker.Meta
             .Where(i => i.Kind == FactoryMetaKind.Resolver)
-            .Select(meta => CreateResolver(semanticModel, resultType, meta, contextParameter, ref resolversHasContextTag, localVariableRenamingRewriter))
+            .Select(meta => CreateResolver(semanticModel, resultType, meta, contextParameter, contextSymbol, ref resolversHasContextTag, localVariableRenamingRewriter))
             .Where(i => i != default)
             .ToImmutableArray();
 
         var initializersHasContextTag = false;
         var initializers = factoryApiWalker.Meta
             .Where(i => i.Kind == FactoryMetaKind.Initializer)
-            .Select(meta => CreateInitializer(semanticModel, resultType, meta, contextParameter, ref initializersHasContextTag, localVariableRenamingRewriter))
+            .Select(meta => CreateInitializer(semanticModel, resultType, meta, contextParameter, contextSymbol, ref initializersHasContextTag, localVariableRenamingRewriter))
             .Where(i => i != default)
             .ToImmutableArray();
 
@@ -1170,12 +1172,13 @@ sealed class ApiInvocationProcessor(
         SemanticModel semanticModel,
         OverrideMeta @override,
         ParameterSyntax contextParameter,
+        ISymbol? contextSymbol,
         ILocalVariableRenamingRewriter localVariableRenamingRewriter,
         out bool hasContextTag)
     {
         hasContextTag = false;
         var invocation = @override.Expression;
-        if (!IsContextInvocation(semanticModel, invocation, contextParameter))
+        if (!IsContextInvocation(semanticModel, invocation, contextParameter, contextSymbol))
         {
             return default;
         }
@@ -1282,11 +1285,12 @@ sealed class ApiInvocationProcessor(
         ITypeSymbol resultType,
         FactoryMeta meta,
         ParameterSyntax contextParameter,
+        ISymbol? contextSymbol,
         ref bool hasContextTag,
         ILocalVariableRenamingRewriter localVariableRenamingRewriter)
     {
         var invocation = meta.Expression;
-        if (!IsContextInvocation(semanticModel, invocation, contextParameter))
+        if (!IsContextInvocation(semanticModel, invocation, contextParameter, contextSymbol))
         {
             return default;
         }
@@ -1301,7 +1305,7 @@ sealed class ApiInvocationProcessor(
         // ReSharper disable once LoopCanBeConvertedToQuery
         foreach (var @override in meta.Overrides)
         {
-            var mdOverride = CreateOverride(semanticModel, @override, contextParameter, localVariableRenamingRewriter, out hasContextTag);
+            var mdOverride = CreateOverride(semanticModel, @override, contextParameter, contextSymbol, localVariableRenamingRewriter, out hasContextTag);
             if (mdOverride != default)
             {
                 overrides.Add(mdOverride);
@@ -1322,11 +1326,12 @@ sealed class ApiInvocationProcessor(
         ITypeSymbol resultType,
         FactoryMeta meta,
         ParameterSyntax contextParameter,
+        ISymbol? contextSymbol,
         ref bool hasContextTag,
         ILocalVariableRenamingRewriter localVariableRenamingRewriter)
     {
         var invocation = meta.Expression;
-        if (!IsContextInvocation(semanticModel, invocation, contextParameter))
+        if (!IsContextInvocation(semanticModel, invocation, contextParameter, contextSymbol))
         {
             return default;
         }
@@ -1340,7 +1345,7 @@ sealed class ApiInvocationProcessor(
         // ReSharper disable once LoopCanBeConvertedToQuery
         foreach (var overrideInvocation in meta.Overrides)
         {
-            var mdOverride = CreateOverride(semanticModel, overrideInvocation, contextParameter, localVariableRenamingRewriter, out hasContextTag);
+            var mdOverride = CreateOverride(semanticModel, overrideInvocation, contextParameter, contextSymbol, localVariableRenamingRewriter, out hasContextTag);
             if (mdOverride != default)
             {
                 overrides.Add(mdOverride);
@@ -1407,7 +1412,8 @@ sealed class ApiInvocationProcessor(
     private static bool IsContextInvocation(
         SemanticModel semanticModel,
         InvocationExpressionSyntax invocation,
-        ParameterSyntax contextParameter)
+        ParameterSyntax contextParameter,
+        ISymbol? contextSymbol)
     {
         if (invocation.Expression is not MemberAccessExpressionSyntax
             {
@@ -1432,7 +1438,6 @@ sealed class ApiInvocationProcessor(
             return false;
         }
 
-        var contextSymbol = semanticModel.GetDeclaredSymbol(contextParameter);
         if (contextSymbol is null)
         {
             return false;
@@ -1521,23 +1526,44 @@ sealed class ApiInvocationProcessor(
 
     private IReadOnlyList<T> BuildConstantArgs<T>(
         SemanticModel semanticModel,
-        SeparatedSyntaxList<ArgumentSyntax> args) =>
-        args
-            .SelectMany(a => semantic.GetConstantValues<T>(semanticModel, a.Expression).Select(value => (value, a.Expression)))
-            .Select(a => a.value ?? throw new CompileErrorException(
-                string.Format(Strings.Error_Template_MustBeValueOfType, a.Expression, typeof(T)),
-                ImmutableArray.Create(locationProvider.GetLocation(a.Expression)),
-                LogId.ErrorMustBeValueOfType,
-                nameof(Strings.Error_Template_MustBeValueOfType)))
-            .ToList();
+        SeparatedSyntaxList<ArgumentSyntax> args)
+    {
+        var values = new List<T>(args.Count);
+        foreach (var arg in args)
+        {
+            foreach (var value in semantic.GetConstantValues<T>(semanticModel, arg.Expression))
+            {
+                if (value is null)
+                {
+                    throw new CompileErrorException(
+                        string.Format(Strings.Error_Template_MustBeValueOfType, arg.Expression, typeof(T)),
+                        ImmutableArray.Create(locationProvider.GetLocation(arg.Expression)),
+                        LogId.ErrorMustBeValueOfType,
+                        nameof(Strings.Error_Template_MustBeValueOfType));
+                }
+
+                values.Add(value);
+            }
+        }
+
+        return values;
+    }
 
     private ImmutableArray<MdTag> BuildTags(
         SemanticModel semanticModel,
-        IEnumerable<ArgumentSyntax> args) =>
-        args
-            .SelectMany(t => semantic.GetConstantValues<object>(semanticModel, t.Expression, SmartTagKind.Tag))
-            .Select((tag, i) => new MdTag(i, tag))
-            .ToImmutableArray();
+        IEnumerable<ArgumentSyntax> args)
+    {
+        var tags = new List<MdTag>();
+        foreach (var arg in args)
+        {
+            foreach (var tag in semantic.GetConstantValues<object>(semanticModel, arg.Expression, SmartTagKind.Tag))
+            {
+                tags.Add(new MdTag(tags.Count, tag));
+            }
+        }
+
+        return tags.ToImmutableArray();
+    }
 
     private static CompositionName CreateCompositionName(
         string name,
@@ -1548,9 +1574,18 @@ sealed class ApiInvocationProcessor(
         string newNamespace;
         if (!string.IsNullOrWhiteSpace(name))
         {
-            var compositionTypeNameParts = name.Split(TypeNamePartsSeparators, StringSplitOptions.RemoveEmptyEntries);
-            className = compositionTypeNameParts.Last();
-            newNamespace = string.Join(".", compositionTypeNameParts.Take(compositionTypeNameParts.Length - 1)).Trim();
+            var trimmedName = name.Trim();
+            var separatorIndex = trimmedName.LastIndexOf('.');
+            if (separatorIndex >= 0)
+            {
+                className = separatorIndex + 1 < trimmedName.Length ? trimmedName[(separatorIndex + 1)..] : "";
+                newNamespace = separatorIndex > 0 ? trimmedName[..separatorIndex] : "";
+            }
+            else
+            {
+                className = trimmedName;
+                newNamespace = "";
+            }
         }
         else
         {

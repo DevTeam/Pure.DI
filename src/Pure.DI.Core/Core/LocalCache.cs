@@ -3,8 +3,6 @@
 
 namespace Pure.DI.Core;
 
-using System.Collections.Concurrent;
-
 sealed class LocalCache<TKey, TValue>(
     IEqualityComparer<TKey> comparer)
     : ICache<TKey, TValue>

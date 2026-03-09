@@ -30,7 +30,7 @@ class RootBuilder(
             rootContext.VarsMap,
             rootContext.IsThreadSafeEnabled,
             lines,
-            accumulators.CreateAccumulators(rootContext.Graph, rootContext.Root, accumulators.GetAccumulators(rootContext.Graph, rootContext.Root.Node), rootVarsMap).ToImmutableArray(),
+            accumulators.CreateAccumulators(rootContext.Graph, accumulators.GetAccumulators(rootContext.Graph, rootContext.Root.Node), rootVarsMap).ToImmutableArray(),
             []);
 
         accumulators.BuildAccumulators(ctx);

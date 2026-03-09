@@ -57,16 +57,16 @@ sealed class TypeResolver(
 
             case INamedTypeSymbol namedTypeSymbol:
             {
-                var types = new List<string>();
+                var typeArgs = new List<string>();
                 var args = new List<TypeDescription>();
                 foreach (var typeArgDescription in namedTypeSymbol.TypeArguments.Zip(namedTypeSymbol.TypeParameters, (symbol, parameterSymbol) => Resolve(setup, symbol, parameterSymbol)))
                 {
                     args.AddRange(typeArgDescription.TypeArgs);
-                    types.Add(typeArgDescription.Name);
+                    typeArgs.Add(typeArgDescription.Name);
                 }
 
                 var name = string.Join("", namedTypeSymbol.ToDisplayParts().TakeWhile(i => i.ToString() != "<"));
-                description = new TypeDescription($"{name}<{string.Join(", ", types)}>", args.Distinct().ToList(), typeParam);
+                description = new TypeDescription($"{name}<{string.Join(", ", typeArgs)}>", args.Distinct().ToList(), typeParam);
             }
                 break;
 

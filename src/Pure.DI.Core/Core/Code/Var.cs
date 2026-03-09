@@ -1,31 +1,27 @@
 ﻿namespace Pure.DI.Core.Code;
 
-/// <summary>
-/// Represents a variable in the generated code.
-/// </summary>
-/// <param name="graph">The dependency graph.</param>
-/// <param name="constructors">Constructors tools.</param>
-/// <param name="Declaration">The variable declaration.</param>
-/// <param name="Trace">The trace of the variable creation.</param>
 record Var(
     DependencyGraph graph,
     IConstructors constructors,
+    IVarStateTracker stateTracker,
     VarDeclaration Declaration,
     // ReSharper disable once NotAccessedPositionalProperty.Global
     ImmutableArray<string> Trace)
 {
-    private string? _codeExpression;
     private string? _baseName;
+    private string? _rootBaseName;
+    private bool _isCreated = IsCreatedDefault(Declaration.Node);
+    private bool _isLocalFunctionCalled;
 
     /// <summary>
     /// Gets the type of the instance.
     /// </summary>
-    public ITypeSymbol InstanceType => Declaration.InstanceType;
+    public ITypeSymbol InstanceType => AbstractNode.Node.Type;
 
     /// <summary>
     /// Gets the dependency node.
     /// </summary>
-    public IDependencyNode AbstractNode => Declaration.Node;
+    public IDependencyNode AbstractNode { get; } = Declaration.Node;
 
     /// <summary>
     /// Gets or sets the name override.
@@ -49,9 +45,11 @@ record Var(
 
             // For Singleton, we need to check constructors.IsEnabled(graph) every time
             // because it can change dynamically
+            // ReSharper disable once InvertIf
             if (AbstractNode.ActualLifetime == Lifetime.Singleton && constructors.IsEnabled(graph))
             {
-                return Names.RootFieldName + "." + _baseName;
+                _rootBaseName ??= Names.RootFieldName + "." + _baseName;
+                return _rootBaseName;
             }
 
             return _baseName;
@@ -63,9 +61,20 @@ record Var(
     /// </summary>
     public string CodeExpression
     {
-        get => _codeExpression ?? Name;
-        set => _codeExpression = value;
+        get => RawCodeExpression ?? Name;
+        set
+        {
+            if (string.Equals(RawCodeExpression, value, StringComparison.Ordinal))
+            {
+                return;
+            }
+
+            stateTracker.OnStateChanging(AbstractNode.BindingId);
+            RawCodeExpression = value;
+        }
     }
+
+    internal string? RawCodeExpression { get; private set; }
 
     /// <summary>
     /// Gets or sets the name of the local function that creates the variable.
@@ -86,12 +95,38 @@ record Var(
     /// <summary>
     /// Gets or sets a value indicating whether the variable has been created.
     /// </summary>
-    public bool IsCreated { get; set; } = IsCreatedDefault(Declaration.Node);
+    public bool IsCreated
+    {
+        get => _isCreated;
+        set
+        {
+            if (_isCreated == value)
+            {
+                return;
+            }
+
+            stateTracker.OnStateChanging(AbstractNode.BindingId);
+            _isCreated = value;
+        }
+    }
 
     /// <summary>
     /// Gets or sets a value indicating whether the local function was called in the current path.
     /// </summary>
-    public bool IsLocalFunctionCalled { get; set; }
+    public bool IsLocalFunctionCalled
+    {
+        get => _isLocalFunctionCalled;
+        set
+        {
+            if (_isLocalFunctionCalled == value)
+            {
+                return;
+            }
+
+            stateTracker.OnStateChanging(AbstractNode.BindingId);
+            _isLocalFunctionCalled = value;
+        }
+    }
 
     /// <summary>
     /// Resets the variable to its default state, including generated code.
@@ -101,10 +136,10 @@ record Var(
     public bool ResetToDefaults()
     {
         var changed = false;
-        var defaultCreated = IsCreatedDefault(Declaration.Node);
-        if (defaultCreated != IsCreated)
+        var defaultCreated = IsCreatedDefault(AbstractNode);
+        if (defaultCreated != _isCreated)
         {
-            IsCreated = defaultCreated;
+            _isCreated = defaultCreated;
             changed = true;
         }
 
@@ -120,15 +155,15 @@ record Var(
             changed = true;
         }
 
-        if (_codeExpression != null)
+        if (RawCodeExpression != null)
         {
-            _codeExpression = null;
+            RawCodeExpression = null;
             changed = true;
         }
 
-        if (IsLocalFunctionCalled)
+        if (_isLocalFunctionCalled)
         {
-            IsLocalFunctionCalled = false;
+            _isLocalFunctionCalled = false;
             changed = true;
         }
 
@@ -149,28 +184,39 @@ record Var(
     public bool ResetStateToDefaults(bool resetLocalFunctionCalled)
     {
         var changed = false;
-        var defaultCreated = IsCreatedDefault(Declaration.Node);
-        if (defaultCreated != IsCreated)
+        var defaultCreated = IsCreatedDefault(AbstractNode);
+        if (defaultCreated != _isCreated)
         {
-            IsCreated = defaultCreated;
+            _isCreated = defaultCreated;
             changed = true;
         }
 
         // ReSharper disable once InvertIf
-        if (_codeExpression != null)
+        if (RawCodeExpression != null)
         {
-            _codeExpression = null;
+            RawCodeExpression = null;
             changed = true;
         }
 
         // ReSharper disable once InvertIf
-        if (resetLocalFunctionCalled && IsLocalFunctionCalled)
+        if (resetLocalFunctionCalled && _isLocalFunctionCalled)
         {
-            IsLocalFunctionCalled = false;
+            _isLocalFunctionCalled = false;
             changed = true;
         }
 
         return changed;
+    }
+
+    internal void RestorePathState(bool isCreated, bool isLocalFunctionCalled, string? codeExpression, bool restoreLocalFunctionCalled)
+    {
+        _isCreated = isCreated;
+        if (restoreLocalFunctionCalled)
+        {
+            _isLocalFunctionCalled = isLocalFunctionCalled;
+        }
+
+        RawCodeExpression = codeExpression;
     }
 
     public override string ToString() => $"{InstanceType} {Name}";

@@ -8,7 +8,6 @@ interface IAccumulators
 
     IEnumerable<Accumulator> CreateAccumulators(
         DependencyGraph graph,
-        Root root,
         IEnumerable<(MdAccumulator accumulator, Dependency dependency)> accumulators,
         IVarsMap varsMap);
 

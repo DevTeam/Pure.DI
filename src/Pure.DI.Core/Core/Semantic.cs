@@ -2,6 +2,7 @@
 
 namespace Pure.DI.Core;
 
+using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis.Operations;
 
 sealed class Semantic(
@@ -12,14 +13,16 @@ sealed class Semantic(
     CancellationToken cancellationToken)
     : ISemantic
 {
+    private readonly ConditionalWeakTable<SemanticModel, TypeSymbolCache> _typeSymbolCaches = new();
+
     public bool IsAccessible(ISymbol symbol) =>
         symbol is { IsStatic: false, DeclaredAccessibility: Accessibility.Internal or Accessibility.Public };
 
     public T? TryGetTypeSymbol<T>(SemanticModel semanticModel, SyntaxNode node)
         where T : ITypeSymbol
     {
-        var typeInfo = semanticModel.GetTypeInfo(node, cancellationToken);
-        var typeSymbol = typeInfo.Type ?? typeInfo.ConvertedType;
+        var typeSymbol = GetTypeSymbolCore(semanticModel, node);
+
         if (typeSymbol is not T symbol)
         {
             return default;
@@ -326,7 +329,7 @@ sealed class Semantic(
         return false;
     }
 
-    private T? TryGetConstantValueFromSemanticModel<T>(SemanticModel semanticModel, SyntaxNode node)
+    private static T? TryGetConstantValueFromSemanticModel<T>(SemanticModel semanticModel, SyntaxNode node)
     {
         // ReSharper disable once InvertIf
         if (semanticModel.SyntaxTree == node.SyntaxTree)
@@ -378,5 +381,63 @@ sealed class Semantic(
     public bool IsValidNamespace(INamespaceSymbol? namespaceSymbol) =>
         namespaceSymbol is { IsImplicitlyDeclared: false };
 
-    internal record NodeKey(SyntaxTree Tree, string Code);
+    private ITypeSymbol? GetTypeSymbolCore(SemanticModel semanticModel, SyntaxNode node)
+    {
+        if (node.SyntaxTree != semanticModel.SyntaxTree)
+        {
+            return ResolveTypeSymbol(semanticModel, node);
+        }
+
+        var cache = _typeSymbolCaches.GetValue(semanticModel, static _ => new TypeSymbolCache());
+        lock (cache.SyncRoot)
+        {
+            if (cache.TypeSymbols.TryGetValue(node, out var entry))
+            {
+                return entry.Symbol;
+            }
+        }
+
+        var symbol = ResolveTypeSymbol(semanticModel, node);
+        var newEntry = new TypeSymbolCacheEntry(symbol);
+        lock (cache.SyncRoot)
+        {
+            if (cache.TypeSymbols.TryGetValue(node, out var entry))
+            {
+                return entry.Symbol;
+            }
+
+            cache.TypeSymbols.Add(node, newEntry);
+        }
+
+        return symbol;
+    }
+
+    private ITypeSymbol? ResolveTypeSymbol(SemanticModel semanticModel, SyntaxNode node)
+    {
+        var typeInfo = semanticModel.GetTypeInfo(node, cancellationToken);
+        var typeSymbol = typeInfo.Type ?? typeInfo.ConvertedType;
+        return typeSymbol?.WithNullableAnnotation(NullableAnnotation.NotAnnotated);
+    }
+
+    private sealed class TypeSymbolCache
+    {
+        public object SyncRoot { get; } = new();
+
+        public Dictionary<SyntaxNode, TypeSymbolCacheEntry> TypeSymbols { get; } =
+            new(SyntaxNodeReferenceComparer.Instance);
+    }
+
+    private readonly struct TypeSymbolCacheEntry(ITypeSymbol? symbol)
+    {
+        public ITypeSymbol? Symbol { get; } = symbol;
+    }
+
+    private sealed class SyntaxNodeReferenceComparer : IEqualityComparer<SyntaxNode>
+    {
+        public static SyntaxNodeReferenceComparer Instance { get; } = new();
+
+        public bool Equals(SyntaxNode? x, SyntaxNode? y) => ReferenceEquals(x, y);
+
+        public int GetHashCode(SyntaxNode obj) => RuntimeHelpers.GetHashCode(obj);
+    }
 }

@@ -49,7 +49,6 @@ class Accumulators(
 
     public IEnumerable<Accumulator> CreateAccumulators(
         DependencyGraph graph,
-        Root root,
         IEnumerable<(MdAccumulator accumulator, Dependency dependency)> accumulators,
         IVarsMap varsMap) =>
         accumulators.Select(i => new Accumulator(varsMap.GetInjection(graph, i.dependency.Injection, i.dependency.Source), i.accumulator.Type, i.accumulator.Lifetime));

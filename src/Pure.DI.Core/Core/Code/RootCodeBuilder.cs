@@ -84,7 +84,7 @@ sealed class RootCodeBuilder(
         var ctx = varCtx;
         if (isLazy)
         {
-            ctx = ctx with { Accumulators = ctx.Accumulators.AddRange(accumulators.CreateAccumulators(varCtx.RootContext.Graph, varCtx.RootContext.Root, acc, varsMap)), IsFactory = false };
+            ctx = ctx with { Accumulators = ctx.Accumulators.AddRange(accumulators.CreateAccumulators(varCtx.RootContext.Graph, acc, varsMap)), IsFactory = false };
             ctx.Overrides.Clear();
             accumulators.BuildAccumulators(ctx);
         }
