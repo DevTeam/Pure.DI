@@ -112,16 +112,16 @@ partial class Composition
         lock (_lock)
           if (_singletonIFileLogger53 is null)
           {
-            Func<Guid> transientFunc325 = new Func<Guid>(
+            Func<Guid> perBlockFunc329 = new Func<Guid>(
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             () =>
             {
-              Guid transientGuid326 = Guid.NewGuid();
-              return transientGuid326;
+              Guid transientGuid330 = Guid.NewGuid();
+              return transientGuid330;
             });
-            FileLogger localLogger5 = new FileLogger(transientFunc325);
-            DateTime transientDateTime324 = DateTime.Today;
-            DateTime localDate1 = transientDateTime324;
+            FileLogger localLogger5 = new FileLogger(perBlockFunc329);
+            DateTime transientDateTime328 = DateTime.Today;
+            DateTime localDate1 = transientDateTime328;
             localLogger5.Init($"app-{localDate1:yyyy-MM-dd}.log");
             _singletonIFileLogger53 = localLogger5;
           }

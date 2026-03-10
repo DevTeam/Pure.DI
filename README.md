@@ -1165,6 +1165,7 @@ DI.Setup("Composition")
 | [DisableAutoBindingImplementationTypeNameWildcard](#disableautobindingimplementationtypenamewildcard-hint)                           | Wildcard                                   |            | *         |
 | [DisableAutoBindingLifetimeRegularExpression](#disableautobindinglifetimeregularexpression-hint)                                     | Regular expression                         |            | .+        |
 | [DisableAutoBindingLifetimeWildcard](#disableautobindinglifetimewildcard-hint)                                                       | Wildcard                                   |            | *         |
+| [LightweightAnonymousRoot](#lightweightanonymousroot-hint)                                                                           | _On_ or _Off_                              |            | _On_      |
 
 The list of hints will be gradually expanded to meet the needs and desires for fine-tuning code generation. Please feel free to add your ideas.
 
@@ -1820,6 +1821,16 @@ DI.Setup(nameof(Composition))
     .Hint(Hint.SystemThreadingLock, "Off")
     .Bind().To<Service>()
     .Root<Service>("MyService");
+```
+
+### LightweightAnonymousRoot Hint
+
+Controls whether anonymous composition roots are generated in a lightweight manner. When _On_ (default), anonymous roots are optimized for minimal overhead. Set to _Off_ if you need full debugging capabilities for anonymous roots.
+
+```c#
+// LightweightAnonymousRoot = Off
+DI.Setup("Composition")
+    .Bind<IService>().To<Service>();
 ```
 
 </details>

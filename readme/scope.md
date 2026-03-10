@@ -186,13 +186,13 @@ partial class Composition: IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<RequestScope> transientFunc554 = new Func<RequestScope>(
+      Func<RequestScope> perBlockFunc572 = new Func<RequestScope>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
         return new RequestScope(this);
       });
-      return new App(transientFunc554);
+      return new App(perBlockFunc572);
     }
   }
 
@@ -249,8 +249,8 @@ classDiagram
 	Composition ..> CheckoutService : ICheckoutService RequestRoot
 	CheckoutService o-- "Scoped" RequestContext : IRequestContext
 	App o-- "PerBlock" FuncᐸRequestScopeᐳ : FuncᐸRequestScopeᐳ
-	RequestScope *--  Composition : Composition
 	FuncᐸRequestScopeᐳ *--  RequestScope : RequestScope
+	RequestScope *--  Composition : Composition
 	namespace Pure.DI.UsageTests.Lifetimes.ScopeScenario {
 		class App {
 				<<class>>

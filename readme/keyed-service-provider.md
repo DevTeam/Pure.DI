@@ -113,15 +113,32 @@ partial class Composition
 
   private PayPalGateway? _singletonPayPalGateway51;
 
-  private IPaymentGateway Root2
+  private LightweightRoot LightRoot
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      EnsurePayPalGatewayPayPalExists1();
-      return _singletonPayPalGateway51;
+      Func<IPaymentGateway> perBlockFunc378 = new Func<IPaymentGateway>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      void EnsurePayPalGatewayPayPalExists1()
+      () =>
+      {
+        EnsurePayPalGatewayPayPalExists();
+        return _singletonPayPalGateway51;
+      });
+      Func<IOrderService> perBlockFunc379 = new Func<IOrderService>(
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      () =>
+      {
+        EnsurePayPalGatewayPayPalExists();
+        return new OnlineOrderService(_singletonPayPalGateway51);
+      });
+      return new LightweightRoot()
+      {
+        IPaymentGateway = perBlockFunc378,
+        IOrderService = perBlockFunc379
+      };
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      void EnsurePayPalGatewayPayPalExists()
       {
         if (_singletonPayPalGateway51 is null)
           lock (_lock)
@@ -133,23 +150,21 @@ partial class Composition
     }
   }
 
+  private IPaymentGateway Root2
+  {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get
+    {
+      return LightRoot.IPaymentGateway();
+    }
+  }
+
   private IOrderService Root1
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      EnsurePayPalGatewayPayPalExists();
-      return new OnlineOrderService(_singletonPayPalGateway51);
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      void EnsurePayPalGatewayPayPalExists()
-      {
-        if (_singletonPayPalGateway51 is null)
-          lock (_lock)
-            if (_singletonPayPalGateway51 is null)
-            {
-              _singletonPayPalGateway51 = new PayPalGateway();
-            }
-      }
+      return LightRoot.IOrderService();
     }
   }
 
@@ -297,6 +312,13 @@ partial class Composition
       }
     }
   }
+
+  #pragma warning disable CS0649
+  private sealed class LightweightRoot: LightweightRoot
+  {
+    [OrdinalAttribute()] public Func<IPaymentGateway> IPaymentGateway;
+    [OrdinalAttribute()] public Func<IOrderService> IOrderService;
+  }
 }
 ```
 
@@ -313,12 +335,26 @@ Class diagram:
 classDiagram
 	PayPalGateway --|> IPaymentGateway : "PayPal" 
 	OnlineOrderService --|> IOrderService : "Online" 
+	Composition ..> LightweightRoot : LightweightRoot LightRoot69d
 	Composition ..> OnlineOrderService : IOrderService _
 	Composition ..> PayPalGateway : IPaymentGateway _
 	OnlineOrderService o-- "Singleton" PayPalGateway : "PayPal"  IPaymentGateway
+	LightweightRoot o-- "PerBlock" FuncᐸIPaymentGatewayᐳ : "PayPal"  FuncᐸIPaymentGatewayᐳ
+	LightweightRoot o-- "PerBlock" FuncᐸIOrderServiceᐳ : "Online"  FuncᐸIOrderServiceᐳ
+	FuncᐸIPaymentGatewayᐳ o-- "Singleton" PayPalGateway : "PayPal"  IPaymentGateway
+	FuncᐸIOrderServiceᐳ *--  OnlineOrderService : "Online"  IOrderService
+	namespace Pure.DI {
+		class LightweightRoot {
+				<<class>>
+			+LightweightRoot()
+			+FuncᐸIPaymentGatewayᐳ IPaymentGateway
+			+FuncᐸIOrderServiceᐳ IOrderService
+		}
+	}
 	namespace Pure.DI.UsageTests.BCL.KeyedServiceProviderScenario {
 		class Composition {
 		<<partial>>
+		-LightweightRoot LightRoot69d
 		-IPaymentGateway _
 		-IOrderService _
 		+ T ResolveᐸTᐳ()
@@ -339,6 +375,14 @@ classDiagram
 		class PayPalGateway {
 				<<class>>
 			+PayPalGateway()
+		}
+	}
+	namespace System {
+		class FuncᐸIOrderServiceᐳ {
+				<<delegate>>
+		}
+		class FuncᐸIPaymentGatewayᐳ {
+				<<delegate>>
 		}
 	}
 ```

@@ -87,12 +87,30 @@ partial class Composition
     }
   }
 
-  private ISensor Root2
+  private LightweightRoot LightRoot
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new TemperatureSensor(new Device());
+      Func<ISensor> perBlockFunc300 = new Func<ISensor>(
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      () =>
+      {
+        return new TemperatureSensor(new Device());
+      });
+      return new LightweightRoot()
+      {
+        ISensor1 = perBlockFunc300
+      };
+    }
+  }
+
+  private ISensor Root1
+  {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get
+    {
+      return LightRoot.ISensor1();
     }
   }
 
@@ -202,7 +220,7 @@ partial class Composition
   {
     public override ISensor Resolve(Composition composition)
     {
-      return composition.Root2;
+      return composition.Root1;
     }
 
     public override ISensor ResolveByTag(Composition composition, object tag)
@@ -213,12 +231,18 @@ partial class Composition
           return composition.HumiditySensor;
 
         case null:
-          return composition.Root2;
+          return composition.Root1;
 
         default:
           return base.ResolveByTag(composition, tag);
       }
     }
+  }
+
+  #pragma warning disable CS0649
+  private sealed class LightweightRoot: LightweightRoot
+  {
+    [OrdinalAttribute()] public Func<ISensor> ISensor1;
   }
 }
 ```
@@ -237,13 +261,24 @@ classDiagram
 	Device --|> IDevice
 	TemperatureSensor --|> ISensor
 	HumiditySensor --|> ISensor : "Humidity" 
+	Composition ..> LightweightRoot : LightweightRoot LightRoot69d
 	Composition ..> HumiditySensor : ISensor HumiditySensor
 	Composition ..> TemperatureSensor : ISensor _
 	TemperatureSensor *--  Device : IDevice
+	LightweightRoot o-- "PerBlock" FuncᐸISensorᐳ : FuncᐸISensorᐳ
+	FuncᐸISensorᐳ *--  TemperatureSensor : ISensor
+	namespace Pure.DI {
+		class LightweightRoot {
+				<<class>>
+			+LightweightRoot()
+			+FuncᐸISensorᐳ ISensor1
+		}
+	}
 	namespace Pure.DI.UsageTests.Basics.ResolveMethodsScenario {
 		class Composition {
 		<<partial>>
 		+ISensor HumiditySensor
+		-LightweightRoot LightRoot69d
 		-ISensor _
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
@@ -267,6 +302,11 @@ classDiagram
 		class TemperatureSensor {
 				<<class>>
 			+TemperatureSensor(IDevice device)
+		}
+	}
+	namespace System {
+		class FuncᐸISensorᐳ {
+				<<delegate>>
 		}
 	}
 ```

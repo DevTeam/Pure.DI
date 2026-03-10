@@ -113,14 +113,14 @@ partial class Composition
     {
       Queue transientQueue83 = new Queue("WorkItems");
       Queue transientQueue85 = new Queue(null);
-      Func<IQueue> transientFunc84 = new Func<IQueue>(
+      Func<IQueue> perBlockFunc84 = new Func<IQueue>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
         Queue transientQueue86 = new Queue(42);
         return transientQueue86;
       });
-      return new QueueService(transientQueue83, transientFunc84, transientQueue85);
+      return new QueueService(transientQueue83, perBlockFunc84, transientQueue85);
     }
   }
 }

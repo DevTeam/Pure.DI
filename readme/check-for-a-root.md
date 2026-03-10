@@ -116,12 +116,30 @@ partial class Composition
     }
   }
 
-  private IUserRepository Root2
+  private LightweightRoot LightRoot
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new SqlUserRepository();
+      Func<IUserRepository> perBlockFunc502 = new Func<IUserRepository>(
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      () =>
+      {
+        return new SqlUserRepository();
+      });
+      return new LightweightRoot()
+      {
+        IUserRepository = perBlockFunc502
+      };
+    }
+  }
+
+  private IUserRepository Root1
+  {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get
+    {
+      return LightRoot.IUserRepository();
     }
   }
 
@@ -204,7 +222,7 @@ partial class Composition
     OnNewRoot<IUserService, UserService>(valResolver_0000, "Root", null, Lifetime.Transient);
     Resolver<IUserService>.Value = valResolver_0000;
     var valResolver_0001 = new Resolver_0001();
-    OnNewRoot<IUserRepository, SqlUserRepository>(valResolver_0001, "Root2", "Primary", Lifetime.Transient);
+    OnNewRoot<IUserRepository, SqlUserRepository>(valResolver_0001, "Root1", "Primary", Lifetime.Transient);
     Resolver<IUserRepository>.Value = valResolver_0001;
     _buckets = Buckets<IResolver<Composition, object>>.Create(
       4,
@@ -266,12 +284,18 @@ partial class Composition
       switch (tag)
       {
         case "Primary":
-          return composition.Root2;
+          return composition.Root1;
 
         default:
           return base.ResolveByTag(composition, tag);
       }
     }
+  }
+
+  #pragma warning disable CS0649
+  private sealed class LightweightRoot: LightweightRoot
+  {
+    [OrdinalAttribute()] public Func<IUserRepository> IUserRepository;
   }
 }
 ```
@@ -289,12 +313,23 @@ Class diagram:
 classDiagram
 	SqlUserRepository --|> IUserRepository : "Primary" 
 	UserService --|> IUserService
+	Composition ..> LightweightRoot : LightweightRoot LightRoot69d
 	Composition ..> UserService : IUserService Root
 	Composition ..> SqlUserRepository : IUserRepository _
 	UserService *--  SqlUserRepository : "Primary"  IUserRepository
+	LightweightRoot o-- "PerBlock" FuncᐸIUserRepositoryᐳ : "Primary"  FuncᐸIUserRepositoryᐳ
+	FuncᐸIUserRepositoryᐳ *--  SqlUserRepository : "Primary"  IUserRepository
+	namespace Pure.DI {
+		class LightweightRoot {
+				<<class>>
+			+LightweightRoot()
+			+FuncᐸIUserRepositoryᐳ IUserRepository
+		}
+	}
 	namespace Pure.DI.UsageTests.Hints.CheckForRootScenario {
 		class Composition {
 		<<partial>>
+		-LightweightRoot LightRoot69d
 		+IUserService Root
 		-IUserRepository _
 		+ T ResolveᐸTᐳ()
@@ -316,6 +351,11 @@ classDiagram
 				<<class>>
 			+UserService()
 			+IUserRepository Repository
+		}
+	}
+	namespace System {
+		class FuncᐸIUserRepositoryᐳ {
+				<<delegate>>
 		}
 	}
 ```

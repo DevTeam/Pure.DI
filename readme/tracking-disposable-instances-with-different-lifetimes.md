@@ -156,11 +156,11 @@ partial class Composition: IDisposable
     get
     {
       var perBlockOwned158 = new Owned();
-      Func<Owned<IConnection>> transientFunc156 = new Func<Owned<IConnection>>(
+      Func<Owned<IConnection>> perBlockFunc156 = new Func<Owned<IConnection>>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        Owned<IConnection> transientOwned159;
+        Owned<IConnection> perBlockOwned159;
         // Creates the owner of an instance
         Owned transientOwned160;
         Owned localOwned9 = perBlockOwned158;
@@ -178,20 +178,20 @@ partial class Composition: IDisposable
         }
 
         IConnection localValue12 = transientConnection161;
-        transientOwned159 = new Owned<IConnection>(localValue12, localOwned8);
+        perBlockOwned159 = new Owned<IConnection>(localValue12, localOwned8);
         lock (_lock)
         {
-          perBlockOwned158.Add(transientOwned159);
+          perBlockOwned158.Add(perBlockOwned159);
         }
 
-        return transientOwned159;
+        return perBlockOwned159;
       });
       var perBlockOwned162 = new Owned();
-      Func<Owned<IConnection>> transientFunc157 = new Func<Owned<IConnection>>(
+      Func<Owned<IConnection>> perBlockFunc157 = new Func<Owned<IConnection>>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        Owned<IConnection> transientOwned163;
+        Owned<IConnection> perBlockOwned163;
         // Creates the owner of an instance
         Owned transientOwned164;
         Owned localOwned11 = perBlockOwned162;
@@ -211,15 +211,15 @@ partial class Composition: IDisposable
             }
 
         IConnection localValue14 = _singletonConnection52;
-        transientOwned163 = new Owned<IConnection>(localValue14, localOwned10);
+        perBlockOwned163 = new Owned<IConnection>(localValue14, localOwned10);
         lock (_lock)
         {
-          perBlockOwned162.Add(transientOwned163);
+          perBlockOwned162.Add(perBlockOwned163);
         }
 
-        return transientOwned163;
+        return perBlockOwned163;
       });
-      return new QueryHandler(transientFunc156, transientFunc157);
+      return new QueryHandler(perBlockFunc156, perBlockFunc157);
     }
   }
 

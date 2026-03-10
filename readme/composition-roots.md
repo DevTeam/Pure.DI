@@ -131,12 +131,30 @@ partial class Composition
     }
   }
 
-  private ILogger Root2
+  private LightweightRoot LightRoot
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new FileLogger();
+      Func<ILogger> perBlockFunc252 = new Func<ILogger>(
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      () =>
+      {
+        return new FileLogger();
+      });
+      return new LightweightRoot()
+      {
+        ILogger1 = perBlockFunc252
+      };
+    }
+  }
+
+  private ILogger Root1
+  {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get
+    {
+      return LightRoot.ILogger1();
     }
   }
 
@@ -272,7 +290,7 @@ partial class Composition
   {
     public override ILogger Resolve(Composition composition)
     {
-      return composition.Root2;
+      return composition.Root1;
     }
 
     public override ILogger ResolveByTag(Composition composition, object tag)
@@ -280,12 +298,18 @@ partial class Composition
       switch (tag)
       {
         case null:
-          return composition.Root2;
+          return composition.Root1;
 
         default:
           return base.ResolveByTag(composition, tag);
       }
     }
+  }
+
+  #pragma warning disable CS0649
+  private sealed class LightweightRoot: LightweightRoot
+  {
+    [OrdinalAttribute()] public Func<ILogger> ILogger1;
   }
 }
 ```
@@ -304,14 +328,25 @@ classDiagram
 	PdfInvoiceGenerator --|> IInvoiceGenerator
 	HtmlInvoiceGenerator --|> IInvoiceGenerator : "Online" 
 	FileLogger --|> ILogger
+	Composition ..> LightweightRoot : LightweightRoot LightRoot69d
 	Composition ..> HtmlInvoiceGenerator : IInvoiceGenerator OnlineInvoiceGenerator
 	Composition ..> FileLogger : ILogger _
 	Composition ..> PdfInvoiceGenerator : IInvoiceGenerator InvoiceGenerator
 	PdfInvoiceGenerator *--  FileLogger : ILogger
+	LightweightRoot o-- "PerBlock" FuncᐸILoggerᐳ : FuncᐸILoggerᐳ
+	FuncᐸILoggerᐳ *--  FileLogger : ILogger
+	namespace Pure.DI {
+		class LightweightRoot {
+				<<class>>
+			+LightweightRoot()
+			+FuncᐸILoggerᐳ ILogger1
+		}
+	}
 	namespace Pure.DI.UsageTests.Basics.CompositionRootsScenario {
 		class Composition {
 		<<partial>>
 		+IInvoiceGenerator InvoiceGenerator
+		-LightweightRoot LightRoot69d
 		+IInvoiceGenerator OnlineInvoiceGenerator
 		-ILogger _
 		+ T ResolveᐸTᐳ()
@@ -336,6 +371,11 @@ classDiagram
 		class PdfInvoiceGenerator {
 				<<class>>
 			+PdfInvoiceGenerator(ILogger logger)
+		}
+	}
+	namespace System {
+		class FuncᐸILoggerᐳ {
+				<<delegate>>
 		}
 	}
 ```

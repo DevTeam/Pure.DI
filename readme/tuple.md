@@ -77,8 +77,8 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Coordinates transientCoordinates408 = new Coordinates(10, 20);
-      return new Car((transientCoordinates408, new ElectricEngine()));
+      Coordinates transientCoordinates424 = new Coordinates(10, 20);
+      return new Car((transientCoordinates424, new ElectricEngine()));
     }
   }
 }

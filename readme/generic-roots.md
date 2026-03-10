@@ -80,10 +80,10 @@ partial class Composition
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public NetworkExporter<T2> GetMyNetworkExporter_T<T2>()
   {
-    NetworkExporter<T2> transientNetworkExporter478;
+    NetworkExporter<T2> transientNetworkExporter494;
     IFormatter<T2> localFormatter = new JsonFormatter<T2>();
-    transientNetworkExporter478 = new NetworkExporter<T2>(localFormatter);
-    return transientNetworkExporter478;
+    transientNetworkExporter494 = new NetworkExporter<T2>(localFormatter);
+    return transientNetworkExporter494;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]

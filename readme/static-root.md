@@ -64,7 +64,20 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new Configuration(new FileSystem());
+      #if NET9_0_OR_GREATER
+      var perResolveLock = new Lock();
+      #else
+      var perResolveLock = new Object();
+      #endif
+      var perResolveFileSystem336 = default(FileSystem);
+      if (perResolveFileSystem336 is null)
+        lock (perResolveLock)
+          if (perResolveFileSystem336 is null)
+          {
+            perResolveFileSystem336 = new FileSystem();
+          }
+
+      return new Configuration(perResolveFileSystem336);
     }
   }
 }

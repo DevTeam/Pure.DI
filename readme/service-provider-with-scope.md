@@ -132,8 +132,8 @@ partial class Composition: IDisposable
   private object[] _disposables;
   private int _disposeIndex;
 
-  private Session? _scopedSession52;
   private Configuration? _singletonConfiguration51;
+  private Session? _scopedSession52;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -154,41 +154,30 @@ partial class Composition: IDisposable
     _disposables = new object[1];
   }
 
-  private IConfiguration Root2
+  private LightweightRoot LightRoot
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      EnsureConfigurationExists1();
-      return _root._singletonConfiguration51;
+      Func<IConfiguration> perBlockFunc404 = new Func<IConfiguration>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      void EnsureConfigurationExists1()
+      () =>
       {
-        if (_root._singletonConfiguration51 is null)
-          lock (_lock)
-            if (_root._singletonConfiguration51 is null)
-            {
-              _root._singletonConfiguration51 = new Configuration();
-            }
-      }
-    }
-  }
-
-  private ISession Root1
-  {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    get
-    {
-      if (_scopedSession52 is null)
-        lock (_lock)
-          if (_scopedSession52 is null)
-          {
-            EnsureConfigurationExists();
-            _scopedSession52 = new Session(_root._singletonConfiguration51);
-            _disposables[_disposeIndex++] = _scopedSession52;
-          }
-
-      return _scopedSession52;
+        EnsureConfigurationExists();
+        return _root._singletonConfiguration51;
+      });
+      Func<ISession> perBlockFunc405 = new Func<ISession>(
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      () =>
+      {
+        EnsureSessionExists();
+        return _scopedSession52;
+      });
+      return new LightweightRoot()
+      {
+        IConfiguration = perBlockFunc404,
+        ISession = perBlockFunc405
+      };
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureConfigurationExists()
       {
@@ -199,6 +188,37 @@ partial class Composition: IDisposable
               _root._singletonConfiguration51 = new Configuration();
             }
       }
+
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      void EnsureSessionExists()
+      {
+        if (_scopedSession52 is null)
+          lock (_lock)
+            if (_scopedSession52 is null)
+            {
+              EnsureConfigurationExists();
+              _scopedSession52 = new Session(_root._singletonConfiguration51);
+              _disposables[_disposeIndex++] = _scopedSession52;
+            }
+      }
+    }
+  }
+
+  private IConfiguration Root2
+  {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get
+    {
+      return LightRoot.IConfiguration();
+    }
+  }
+
+  private ISession Root1
+  {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get
+    {
+      return LightRoot.ISession();
     }
   }
 
@@ -280,8 +300,8 @@ partial class Composition: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _scopedSession52 = null;
       _singletonConfiguration51 = null;
+      _scopedSession52 = null;
     }
 
     while (disposeIndex-- > 0)
@@ -380,6 +400,13 @@ partial class Composition: IDisposable
       }
     }
   }
+
+  #pragma warning disable CS0649
+  private sealed class LightweightRoot: LightweightRoot
+  {
+    [OrdinalAttribute()] public Func<IConfiguration> IConfiguration;
+    [OrdinalAttribute()] public Func<ISession> ISession;
+  }
 }
 ```
 
@@ -397,12 +424,26 @@ classDiagram
 	Composition --|> IDisposable
 	Configuration --|> IConfiguration
 	Session --|> ISession
+	Composition ..> LightweightRoot : LightweightRoot LightRoot69d
 	Composition ..> Session : ISession _
 	Composition ..> Configuration : IConfiguration _
 	Session o-- "Singleton" Configuration : IConfiguration
+	LightweightRoot o-- "PerBlock" FuncᐸIConfigurationᐳ : FuncᐸIConfigurationᐳ
+	LightweightRoot o-- "PerBlock" FuncᐸISessionᐳ : FuncᐸISessionᐳ
+	FuncᐸIConfigurationᐳ o-- "Singleton" Configuration : IConfiguration
+	FuncᐸISessionᐳ o-- "Scoped" Session : ISession
+	namespace Pure.DI {
+		class LightweightRoot {
+				<<class>>
+			+LightweightRoot()
+			+FuncᐸIConfigurationᐳ IConfiguration
+			+FuncᐸISessionᐳ ISession
+		}
+	}
 	namespace Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario {
 		class Composition {
 		<<partial>>
+		-LightweightRoot LightRoot69d
 		-IConfiguration _
 		-ISession _
 		+ T ResolveᐸTᐳ()
@@ -426,6 +467,12 @@ classDiagram
 		}
 	}
 	namespace System {
+		class FuncᐸIConfigurationᐳ {
+				<<delegate>>
+		}
+		class FuncᐸISessionᐳ {
+				<<delegate>>
+		}
 		class IDisposable {
 			<<abstract>>
 		}

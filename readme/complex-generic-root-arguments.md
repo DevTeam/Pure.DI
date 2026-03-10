@@ -98,9 +98,9 @@ partial class Composition
   public ISource<T1> GetSource<T1>(SourceConfig<T1> config)
   {
     if (config is null) throw new ArgumentNullException(nameof(config));
-    var transientSource416 = new Source<T1>();
-    transientSource416.Initialize(config);
-    return transientSource416;
+    var transientSource432 = new Source<T1>();
+    transientSource432.Initialize(config);
+    return transientSource432;
   }
 }
 ```

@@ -83,9 +83,9 @@ partial class Composition
   public IPresenter<T2> GetPresenter<T2>(T2 model)
   {
     if (model is null) throw new ArgumentNullException(nameof(model));
-    var transientPresenter472 = new Presenter<T2>();
-    transientPresenter472.Present(model);
-    return transientPresenter472;
+    var transientPresenter488 = new Presenter<T2>();
+    transientPresenter488.Present(model);
+    return transientPresenter488;
   }
 }
 ```

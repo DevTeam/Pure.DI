@@ -150,7 +150,7 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<int, int, IWidget> transientFunc281 =
+      Func<int, int, IWidget> transientFunc283 =
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       (localWidgetId, localLayerIndex) =>
       {
@@ -161,8 +161,8 @@ partial class Composition
         int overriddenInt32 = localWidgetId;
         int overriddenInt324 = localLayerIndex;
         string overriddenString2 = $"Widget {localWidgetId} on layer {localLayerIndex}";
-        Drawing.Color transientColor282 = Color.Red;
-        Drawing.Color localColor = transientColor282;
+        Drawing.Color transientColor284 = Color.Red;
+        Drawing.Color localColor = transientColor284;
         // Overrides the 'color' argument with the resolved value
         // Creates the instance using the overridden values
         Drawing.Color overriddenColor5 = localColor;
@@ -175,7 +175,7 @@ partial class Composition
 
         return new Widget(overriddenString2, _singletonClock52, overriddenInt32, overriddenInt324, overriddenColor5);
       };
-      return new Dashboard(transientFunc281);
+      return new Dashboard(transientFunc283);
     }
   }
 }

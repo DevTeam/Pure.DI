@@ -91,15 +91,32 @@ partial class Composition
 
   private TemperatureSensor? _singletonTemperatureSensor51;
 
-  private ISensor Root2
+  private LightweightRoot LightRoot
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      EnsureTemperatureSensorLivingRoomExists1();
-      return _singletonTemperatureSensor51;
+      Func<ISensor> perBlockFunc394 = new Func<ISensor>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      void EnsureTemperatureSensorLivingRoomExists1()
+      () =>
+      {
+        EnsureTemperatureSensorLivingRoomExists();
+        return _singletonTemperatureSensor51;
+      });
+      Func<IThermostat> perBlockFunc395 = new Func<IThermostat>(
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      () =>
+      {
+        EnsureTemperatureSensorLivingRoomExists();
+        return new Thermostat(_singletonTemperatureSensor51);
+      });
+      return new LightweightRoot()
+      {
+        ISensor = perBlockFunc394,
+        IThermostat = perBlockFunc395
+      };
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      void EnsureTemperatureSensorLivingRoomExists()
       {
         if (_singletonTemperatureSensor51 is null)
           lock (_lock)
@@ -111,23 +128,21 @@ partial class Composition
     }
   }
 
+  private ISensor Root2
+  {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get
+    {
+      return LightRoot.ISensor();
+    }
+  }
+
   private IThermostat Root1
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      EnsureTemperatureSensorLivingRoomExists();
-      return new Thermostat(_singletonTemperatureSensor51);
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      void EnsureTemperatureSensorLivingRoomExists()
-      {
-        if (_singletonTemperatureSensor51 is null)
-          lock (_lock)
-            if (_singletonTemperatureSensor51 is null)
-            {
-              _singletonTemperatureSensor51 = new TemperatureSensor();
-            }
-      }
+      return LightRoot.IThermostat();
     }
   }
 
@@ -277,6 +292,13 @@ partial class Composition
       }
     }
   }
+
+  #pragma warning disable CS0649
+  private sealed class LightweightRoot: LightweightRoot
+  {
+    [OrdinalAttribute()] public Func<ISensor> ISensor;
+    [OrdinalAttribute()] public Func<IThermostat> IThermostat;
+  }
 }
 ```
 
@@ -293,12 +315,26 @@ Class diagram:
 classDiagram
 	TemperatureSensor --|> ISensor : "LivingRoom" 
 	Thermostat --|> IThermostat
+	Composition ..> LightweightRoot : LightweightRoot LightRoot69d
 	Composition ..> Thermostat : IThermostat _
 	Composition ..> TemperatureSensor : ISensor _
 	Thermostat o-- "Singleton" TemperatureSensor : "LivingRoom"  ISensor
+	LightweightRoot o-- "PerBlock" FuncᐸISensorᐳ : "LivingRoom"  FuncᐸISensorᐳ
+	LightweightRoot o-- "PerBlock" FuncᐸIThermostatᐳ : FuncᐸIThermostatᐳ
+	FuncᐸISensorᐳ o-- "Singleton" TemperatureSensor : "LivingRoom"  ISensor
+	FuncᐸIThermostatᐳ *--  Thermostat : IThermostat
+	namespace Pure.DI {
+		class LightweightRoot {
+				<<class>>
+			+LightweightRoot()
+			+FuncᐸISensorᐳ ISensor
+			+FuncᐸIThermostatᐳ IThermostat
+		}
+	}
 	namespace Pure.DI.UsageTests.BCL.ServiceCollectionScenario {
 		class Composition {
 		<<partial>>
+		-LightweightRoot LightRoot69d
 		-ISensor _
 		-IThermostat _
 		+ T ResolveᐸTᐳ()
@@ -319,6 +355,14 @@ classDiagram
 		class Thermostat {
 				<<class>>
 			+Thermostat(ISensor sensor)
+		}
+	}
+	namespace System {
+		class FuncᐸISensorᐳ {
+				<<delegate>>
+		}
+		class FuncᐸIThermostatᐳ {
+				<<delegate>>
 		}
 	}
 ```

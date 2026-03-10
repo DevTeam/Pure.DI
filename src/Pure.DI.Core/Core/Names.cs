@@ -63,7 +63,7 @@ static class Names
     // Members
     public const string ResolveMethodName = nameof(IResolver<,>.Resolve);
     public const string ResolveByTagMethodName = nameof(IResolver<,>.ResolveByTag);
-    public static readonly string LightweightRootName = "Roots" + Salt;
+    public static readonly string LightweightRootName = "LightRoot" + Salt;
 
     // Partial methods
     public const string OnNewInstanceMethodName = "OnNewInstance";

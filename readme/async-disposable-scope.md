@@ -173,13 +173,13 @@ partial class Composition: IDisposable, IAsyncDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<Session> transientFunc524 = new Func<Session>(
+      Func<Session> perBlockFunc542 = new Func<Session>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
         return new Session(this);
       });
-      return new Program(transientFunc524);
+      return new Program(perBlockFunc542);
     }
   }
 
@@ -274,8 +274,8 @@ classDiagram
 	Composition ..> Service : IService SessionRoot
 	Service o-- "Scoped" Dependency : IDependency
 	Program o-- "PerBlock" FuncᐸSessionᐳ : FuncᐸSessionᐳ
-	Session *--  Composition : Composition
 	FuncᐸSessionᐳ *--  Session : Session
+	Session *--  Composition : Composition
 	namespace Pure.DI.UsageTests.Lifetimes.AsyncDisposableScopeScenario {
 		class Composition {
 		<<partial>>

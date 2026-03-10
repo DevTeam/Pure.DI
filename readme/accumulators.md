@@ -105,6 +105,7 @@ partial class Composition
     get
     {
       var perBlockTelemetryRegistry1 = new TelemetryRegistry();
+      var perBlockSqlDataSource5 = new SqlDataSource();
       if (_singletonNetworkDataSource53 is null)
         lock (_lock)
           if (_singletonNetworkDataSource53 is null)
@@ -122,7 +123,7 @@ partial class Composition
         perBlockTelemetryRegistry1.Add(transientSqlDataSource3);
       }
 
-      var transientDashboard2 = new Dashboard(transientSqlDataSource3, _singletonNetworkDataSource53, new SqlDataSource());
+      var transientDashboard2 = new Dashboard(transientSqlDataSource3, _singletonNetworkDataSource53, perBlockSqlDataSource5);
       lock (_lock)
       {
         perBlockTelemetryRegistry1.Add(transientDashboard2);

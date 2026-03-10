@@ -98,15 +98,32 @@ partial class Composition
 
   private ConsoleLogger? _singletonConsoleLogger51;
 
-  private ILogger Root2
+  private LightweightRoot LightRoot
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      EnsureConsoleLoggerExists1();
-      return _singletonConsoleLogger51;
+      Func<ILogger> perBlockFunc399 = new Func<ILogger>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      void EnsureConsoleLoggerExists1()
+      () =>
+      {
+        EnsureConsoleLoggerExists();
+        return _singletonConsoleLogger51;
+      });
+      Func<IOrderService> perBlockFunc400 = new Func<IOrderService>(
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      () =>
+      {
+        EnsureConsoleLoggerExists();
+        return new OrderService(_singletonConsoleLogger51);
+      });
+      return new LightweightRoot()
+      {
+        ILogger = perBlockFunc399,
+        IOrderService1 = perBlockFunc400
+      };
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
+      void EnsureConsoleLoggerExists()
       {
         if (_singletonConsoleLogger51 is null)
           lock (_lock)
@@ -118,23 +135,21 @@ partial class Composition
     }
   }
 
+  private ILogger Root2
+  {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get
+    {
+      return LightRoot.ILogger();
+    }
+  }
+
   private IOrderService Root1
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      EnsureConsoleLoggerExists();
-      return new OrderService(_singletonConsoleLogger51);
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      void EnsureConsoleLoggerExists()
-      {
-        if (_singletonConsoleLogger51 is null)
-          lock (_lock)
-            if (_singletonConsoleLogger51 is null)
-            {
-              _singletonConsoleLogger51 = new ConsoleLogger();
-            }
-      }
+      return LightRoot.IOrderService1();
     }
   }
 
@@ -282,6 +297,13 @@ partial class Composition
       }
     }
   }
+
+  #pragma warning disable CS0649
+  private sealed class LightweightRoot: LightweightRoot
+  {
+    [OrdinalAttribute()] public Func<ILogger> ILogger;
+    [OrdinalAttribute()] public Func<IOrderService> IOrderService1;
+  }
 }
 ```
 
@@ -298,12 +320,26 @@ Class diagram:
 classDiagram
 	ConsoleLogger --|> ILogger
 	OrderService --|> IOrderService
+	Composition ..> LightweightRoot : LightweightRoot LightRoot69d
 	Composition ..> OrderService : IOrderService _
 	Composition ..> ConsoleLogger : ILogger _
 	OrderService o-- "Singleton" ConsoleLogger : ILogger
+	LightweightRoot o-- "PerBlock" FuncᐸILoggerᐳ : FuncᐸILoggerᐳ
+	LightweightRoot o-- "PerBlock" FuncᐸIOrderServiceᐳ : FuncᐸIOrderServiceᐳ
+	FuncᐸILoggerᐳ o-- "Singleton" ConsoleLogger : ILogger
+	FuncᐸIOrderServiceᐳ *--  OrderService : IOrderService
+	namespace Pure.DI {
+		class LightweightRoot {
+				<<class>>
+			+LightweightRoot()
+			+FuncᐸILoggerᐳ ILogger
+			+FuncᐸIOrderServiceᐳ IOrderService1
+		}
+	}
 	namespace Pure.DI.UsageTests.BCL.ServiceProviderScenario {
 		class Composition {
 		<<partial>>
+		-LightweightRoot LightRoot69d
 		-ILogger _
 		-IOrderService _
 		+ T ResolveᐸTᐳ()
@@ -324,6 +360,14 @@ classDiagram
 		class OrderService {
 				<<class>>
 			+OrderService(ILogger logger)
+		}
+	}
+	namespace System {
+		class FuncᐸILoggerᐳ {
+				<<delegate>>
+		}
+		class FuncᐸIOrderServiceᐳ {
+				<<delegate>>
 		}
 	}
 ```
