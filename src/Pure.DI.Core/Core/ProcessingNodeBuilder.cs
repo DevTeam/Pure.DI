@@ -5,15 +5,14 @@ class ProcessingNodeBuilder(
     Func<IInjectionsWalker> injectionsWalkerFactory)
     : IFastBuilder<ProcessingNodeContext, IProcessingNode>
 {
-    public IProcessingNode Build(in ProcessingNodeContext ctx) =>
-        ctx.Cache.Get(new ProcessingNodeKey(ctx.Node.Variation, ctx.Node, ctx.ContextTag) { Contracts =  ctx.Contracts }, Build);
-
-    private IProcessingNode Build(ProcessingNodeKey key)
+    public IProcessingNode Build(in ProcessingNodeContext ctx)
     {
-        var contracts = key.Contracts ?? contractsBuilder.Build(new ContractsBuildContext(key.Node.Binding, key.ContextTag, key.ContextTag));
+        var node = ctx.Node;
+        var tag = ctx.ContextTag;
+        var contracts = ctx.Contracts ?? contractsBuilder.Build(new ContractsBuildContext(node.Binding, tag, tag));
         var injectionsWalker = injectionsWalkerFactory();
-        injectionsWalker.VisitDependencyNode(Unit.Shared, key.Node);
+        injectionsWalker.VisitDependencyNode(Unit.Shared, node);
         var injections = injectionsWalker.GetResult();
-        return new ProcessingNode(key.Node, contracts, injections);
+        return new ProcessingNode(node, contracts, injections);
     }
 }

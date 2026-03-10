@@ -59,7 +59,6 @@ public sealed partial class Generator
             .Transient(_ => Compiled | CultureInvariant | Singleline | IgnoreCase)
             .Transient((RegexOptions options) => new Func<string, Regex>(p => new Regex(p, options)))
             .Transient<ApiInvocationProcessor, DependencyGraphBuilder, TypeConstructor, BindingBuilder, SetupContextRewriter, SetupContextMembersCollector>()
-            .Transient<LocalCache<TT1, TT2>>(LocalCache)
 
             // Walkers
             .SpecialType<CSharpSyntaxRewriter>()

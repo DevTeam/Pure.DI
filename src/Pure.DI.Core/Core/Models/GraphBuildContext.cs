@@ -3,8 +3,7 @@
 record GraphBuildContext(
     MdSetup Setup,
     in ImmutableArray<IProcessingNode> Nodes,
-    in ImmutableDictionary<ISymbol, ImmutableArray<MdAccumulator>> Accumulators,
-    ICache<ProcessingNodeKey, IProcessingNode> NodesCache)
+    in ImmutableDictionary<ISymbol, ImmutableArray<MdAccumulator>> Accumulators)
 {
     public IGraph<DependencyNode, Dependency>? Graph { get; set; }
 }

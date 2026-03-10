@@ -5314,4 +5314,127 @@ public class OverrideTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["True", "True"], result);
     }
+
+    [Fact]
+    public async Task ShouldSupportFuncWithAutoBindingArgument()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using Pure.DI;
+                           using static Pure.DI.Lifetime;
+
+                           namespace Sample
+                           {
+                               internal class NodeName
+                               {
+                                   public string Title { get; }
+                                   public string Tip { get; }
+
+                                   public NodeName(string title, string tip)
+                                   {
+                                       Title = title;
+                                       Tip = tip;
+                                   }
+                               }
+
+                               interface IStorage { }
+
+                               class Storage : IStorage { }
+
+                               interface ICommandBuilder { }
+
+                               class CommandBuilder : ICommandBuilder { }
+
+                               interface INodeViewModel { }
+
+                               class DirectoryNodeViewModel : INodeViewModel
+                               {
+                                   public DirectoryNodeViewModel(
+                                       ICommandBuilder commandBuilder,
+                                       IStorage storage,
+                                       NodeName name,
+                                       List<INodeViewModel> children)
+                                   {
+                                   }
+                               }
+
+                               class FileNodeViewModel : INodeViewModel
+                               {
+                                   public FileNodeViewModel(
+                                       ICommandBuilder commandBuilder,
+                                       IStorage storage,
+                                       NodeName name)
+                                   {
+                                   }
+                               }
+
+                               interface INodeFactory
+                               {
+                                   INodeViewModel CreateDirectoryNode(ICommandBuilder builder, IStorage storage, NodeName name, List<INodeViewModel> children);
+                                   INodeViewModel CreateFileNode(ICommandBuilder builder, IStorage storage, NodeName name);
+                               }
+
+                               class NodeFactory : INodeFactory
+                               {
+                                   private readonly Func<ICommandBuilder, IStorage, NodeName, List<INodeViewModel>, INodeViewModel> _directoryNodeFactory;
+                                   private readonly Func<ICommandBuilder, IStorage, NodeName, INodeViewModel> _fileNodeFactory;
+
+                                   public NodeFactory(
+                                       IStorage storage,
+                                       ICommandBuilder commandBuilder,
+                                       [Tag("Directory")] Func<ICommandBuilder, IStorage, NodeName, List<INodeViewModel>, INodeViewModel> directoryNodeFactory,
+                                       [Tag("File")] Func<ICommandBuilder, IStorage, NodeName, INodeViewModel> fileNodeFactory)
+                                   {
+                                       _directoryNodeFactory = directoryNodeFactory;
+                                       _fileNodeFactory = fileNodeFactory;
+                                   }
+
+                                   public INodeViewModel CreateDirectoryNode(ICommandBuilder builder, IStorage storage, NodeName name, List<INodeViewModel> children)
+                                   {
+                                       return _directoryNodeFactory(builder, storage, name, children);
+                                   }
+
+                                   public INodeViewModel CreateFileNode(ICommandBuilder builder, IStorage storage, NodeName name)
+                                   {
+                                       return _fileNodeFactory(builder, storage, name);
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Singleton<Storage, CommandBuilder, NodeFactory>()
+                                           .Transient<DirectoryNodeViewModel>("Directory")
+                                           .Transient<FileNodeViewModel>("File")
+                                           .Root<INodeFactory>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var factory = composition.Root;
+                                       var builder = new CommandBuilder();
+                                       var storage = new Storage();
+                                       var name = new NodeName("Test", "TestPath");
+                                       var children = new List<INodeViewModel>();
+
+                                       // This should fail because NodeName cannot be auto-resolved
+                                       factory.CreateDirectoryNode(builder, storage, name, children);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
 }

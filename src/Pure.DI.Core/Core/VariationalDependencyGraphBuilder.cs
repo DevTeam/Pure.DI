@@ -20,7 +20,6 @@ sealed class VariationalDependencyGraphBuilder(
     IFastBuilder<ProcessingNodeContext, IProcessingNode> processingNodeBuilder,
     IRegistryManager<int> bindingsRegistryManager,
     ILocationProvider locationProvider,
-    [Tag(Tag.LocalCache)] Func<ICache<ProcessingNodeKey, IProcessingNode>> nodesCacheFactory,
     IDependencyNodePrioritizer dependencyNodePrioritizer,
     CancellationToken cancellationToken)
     : IBuilder<MdSetup, DependencyGraph?>
@@ -32,7 +31,6 @@ sealed class VariationalDependencyGraphBuilder(
         var allNodes = new List<IProcessingNode>();
         var injections = new Dictionary<Injection, DependencyNode>();
         var allOverriddenInjections = new HashSet<Injection>();
-        var nodesCache = nodesCacheFactory();
         foreach (var node in rawNodes)
         {
             var contracts = contractsBuilder.Build(new ContractsBuildContext(node.Binding, MdTag.ContextTag, MdTag.AnyTag));
@@ -80,7 +78,7 @@ sealed class VariationalDependencyGraphBuilder(
 
             if (isRoot || contracts.Count > 0)
             {
-                allNodes.Add(processingNodeBuilder.Build(new ProcessingNodeContext(nodesCache, node, MdTag.ContextTag, contracts)));
+                allNodes.Add(processingNodeBuilder.Build(new ProcessingNodeContext(node, MdTag.ContextTag, contracts)));
             }
         }
 
@@ -89,14 +87,16 @@ sealed class VariationalDependencyGraphBuilder(
         var maxIterations = globalProperties.MaxIterations;
         var maxAttempts = 0x2000;
         DependencyGraph? dependencyGraph = null;
+
         var accumulators = setup.Accumulators
             .GroupBy(acc => acc.AccumulatorType, SymbolEqualityComparer.Default)
             .ToImmutableDictionary(i => i.Key!, i => i.ToImmutableArray(), SymbolEqualityComparer.Default);
+
         var buildCtx = new GraphBuildContext(
             setup,
             ImmutableArray<IProcessingNode>.Empty,
-            accumulators,
-            nodesCache);
+            accumulators);
+
         while (nodeVariator.TryGetNext(setsOfOptions, out var nodes))
         {
             if (maxAttempts-- <= 0)
@@ -167,7 +167,7 @@ sealed class VariationalDependencyGraphBuilder(
 
             IProcessingNode CreateProcessingNode(DependencyNode dependencyNode)
             {
-                var processingNode = processingNodeBuilder.Build(new ProcessingNodeContext(nodesCache, dependencyNode, MdTag.ContextTag, contractsBuilder.Build(new ContractsBuildContext(dependencyNode.Binding, MdTag.ContextTag, MdTag.AnyTag))));
+                var processingNode = processingNodeBuilder.Build(new ProcessingNodeContext(dependencyNode, MdTag.ContextTag, contractsBuilder.Build(new ContractsBuildContext(dependencyNode.Binding, MdTag.ContextTag, MdTag.AnyTag))));
                 allNodes.Add(processingNode);
                 return processingNode;
             }
@@ -175,6 +175,7 @@ sealed class VariationalDependencyGraphBuilder(
 
         return dependencyGraph;
     }
+
     private void RegisterNode(MdSetup setup, DependencyNode node)
     {
         var binding = node.Binding;
