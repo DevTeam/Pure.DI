@@ -4,7 +4,7 @@ namespace Pure.DI.Core;
 
 sealed class SetupsBuilder(
     Func<IMetadataWalker> metadataSyntaxWalkerFactory,
-    ICache<ImmutableArray<byte>, bool> setupCache,
+    ICache<int, bool> setupCache,
     Func<IBindingBuilder> bindingBuilderFactory,
     IArguments arguments,
     Func<ITypeConstructor> typeConstructorFactory,
@@ -38,7 +38,14 @@ sealed class SetupsBuilder(
     public IEnumerable<MdSetup> Build(SyntaxUpdate update)
     {
         var checkSum = update.Node.SyntaxTree.GetText().GetChecksum();
-        if (!setupCache.Get(checkSum, _ => true))
+        var checkSumKey = 0;
+        // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
+        foreach (var checkSumItem in checkSum)
+        {
+            checkSumKey = checkSumKey * 397 ^ checkSumItem;
+        }
+
+        if (!setupCache.Get(checkSumKey, _ => true))
         {
             return [];
         }
@@ -46,7 +53,7 @@ sealed class SetupsBuilder(
         metadataSyntaxWalkerFactory().Visit(this, update);
         if (_setups.Count == 0)
         {
-            setupCache.Set(checkSum, false);
+            setupCache.Set(checkSumKey, false);
         }
 
         return _setups;

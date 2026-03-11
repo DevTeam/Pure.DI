@@ -5,12 +5,14 @@ namespace Pure.DI.Core.Code;
 using static Lifetime;
 using SpecialType=Microsoft.CodeAnalysis.SpecialType;
 
-sealed class NodeTools(ITypes types, ICache<(int, SemanticModel), bool> isLazy) : INodeTools
+sealed class NodeTools(
+    ITypes types,
+    ICache<NodeTools.LazyKey, bool> isLazy) : INodeTools
 {
     public bool IsLazy(DependencyNode node, DependencyGraph graph) =>
-        isLazy.Get((node.BindingId, graph.Source.SemanticModel), _ =>
-            (IsDelegate(node) || IsEnumerable(node) || IsAsyncEnumerable(node))
-            && (node.Factory is not {} factory || IsLazyFactory(factory, graph.Source.SemanticModel)));
+        isLazy.Get(new LazyKey(node, graph.Source.SemanticModel), key =>
+            (IsDelegate(key.Node) || IsEnumerable(key.Node) || IsAsyncEnumerable(key.Node))
+            && (key.Node.Factory is not {} factory || IsLazyFactory(factory, key.SemanticModel)));
 
     public bool IsBlock(IDependencyNode node) =>
         node.ActualLifetime is Singleton or Scoped or PerResolve;
@@ -77,5 +79,24 @@ sealed class NodeTools(ITypes types, ICache<(int, SemanticModel), bool> isLazy) 
         }
 
         return false;
+    }
+
+    internal readonly struct LazyKey(DependencyNode node, SemanticModel semanticModel) : IEquatable<LazyKey>
+    {
+        public readonly DependencyNode Node = node;
+        private readonly int _bindingId = node.BindingId;
+        public readonly SemanticModel SemanticModel = semanticModel;
+
+        public bool Equals(LazyKey other) => _bindingId == other._bindingId && SemanticModel.Equals(other.SemanticModel);
+
+        public override bool Equals(object? obj) => obj is LazyKey other && Equals(other);
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return _bindingId * 397 ^ SemanticModel.GetHashCode();
+            }
+        }
     }
 }

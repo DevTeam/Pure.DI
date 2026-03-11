@@ -17,7 +17,7 @@ sealed class DependencyGraphBuilder(
     IBindingsFactory bindingsFactory,
     Func<ITypeConstructor> typeConstructorFactory,
     IFilter filter,
-    ICache<INamedTypeSymbol, MdConstructKind> constructKinds,
+    ICache<DependencyGraphBuilder.ConstructKindKey, MdConstructKind> constructKinds,
     ISymbolNames symbolNames,
     IFastBuilder<ProcessingNodeContext, IProcessingNode> processingNodeBuilder,
     [Tag(Overrider)] IGraphRewriter graphOverrider,
@@ -507,7 +507,7 @@ sealed class DependencyGraphBuilder(
     private MdConstructKind GetConstructKind(INamedTypeSymbol geneticType)
     {
         var unboundGenericType = geneticType.ConstructUnboundGenericType();
-        return constructKinds.Get(unboundGenericType, type => symbolNames.GetGlobalName(type) switch
+        return constructKinds.Get(new ConstructKindKey(unboundGenericType), key => symbolNames.GetGlobalName(key.TypeSymbol) switch
         {
             Names.SpanTypeName => MdConstructKind.Span,
             Names.ReadOnlySpanTypeName => MdConstructKind.Span,
@@ -565,4 +565,15 @@ sealed class DependencyGraphBuilder(
 
     private static object? GetContextTag(Injection injection, DependencyNode node) =>
         node.Factory is { Source.HasContextTag: true } ? injection.Tag : null;
+
+    internal readonly struct ConstructKindKey(INamedTypeSymbol typeSymbol) : IEquatable<ConstructKindKey>
+    {
+        public readonly INamedTypeSymbol TypeSymbol = typeSymbol;
+
+        public bool Equals(ConstructKindKey other) => SymbolEqualityComparer.Default.Equals(TypeSymbol, other.TypeSymbol);
+
+        public override bool Equals(object? obj) => obj is ConstructKindKey other && Equals(other);
+
+        public override int GetHashCode() => SymbolEqualityComparer.Default.GetHashCode(TypeSymbol);
+    }
 }
