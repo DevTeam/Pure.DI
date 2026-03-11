@@ -9,16 +9,15 @@ using Microsoft.CodeAnalysis;
 [SuppressMessage("MicrosoftCodeAnalysisCorrectness", "RS1036:Specify analyzer banned API enforcement setting")]
 public class SourceGenerator : IIncrementalGenerator
 {
-    private static readonly Generator Generator = new();
-
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         // ReSharper disable once InvocationIsSkipped
         // Run Rider as administrator
         DebugHelper.DebugIfNeeded();
+        var generator = new Generator();
 
         context.RegisterPostInitializationOutput(initializationContext => {
-            foreach (var apiSource in Generator.Api)
+            foreach (var apiSource in generator.Api)
             {
                 initializationContext.AddSource(apiSource.HintName, apiSource.SourceText);
             }
@@ -41,7 +40,7 @@ public class SourceGenerator : IIncrementalGenerator
         {
             var ((configAndParse, _), updates) = options;
             var (config, parseOptions) = configAndParse;
-            Generator.Generate(
+            generator.Generate(
                 parseOptions,
                 config,
                 sourceProductionContext,

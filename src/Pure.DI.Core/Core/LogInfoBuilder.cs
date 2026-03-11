@@ -23,11 +23,10 @@ sealed class LogInfoBuilder : IFastBuilder<LogEntry, LogInfo>
             var message = new StringBuilder(logEntry.Message);
             if (logEntry.Exception is {} exception)
             {
-                message.Append(", Message: \"");
+                message.Append(" ");
                 message.Append(exception.Message);
-                message.Append("\", Stack Trace: \"");
+                message.Append("Stack Trace: ");
                 message.Append(exception.StackTrace.Replace(Environment.NewLine, " "));
-                message.Append('"');
             }
 
             var category = LogMetadata.GetCategory(logEntry.Id);

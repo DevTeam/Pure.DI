@@ -9,8 +9,6 @@
 
 namespace Pure.DI.Core;
 
-using System.Collections.Concurrent;
-
 sealed class MetadataWalker(
     IApiInvocationProcessor invocationProcessor,
     IMetadata metadata,
@@ -28,10 +26,10 @@ sealed class MetadataWalker(
     {
         _semanticModel = update.SemanticModel;
         Visit(update.Node);
-        var visitors = new List<InvocationVisitor>();
+        var invocations = new List<InvocationExpressionSyntax>();
         while (_invocations.TryPop(out var invocation))
         {
-            visitors.Add(new InvocationVisitor(update.SemanticModel, invocation, metadataVisitor, cancellationToken));
+            invocations.Add(invocation);
             _isMetadata = true;
             try
             {
@@ -43,26 +41,15 @@ sealed class MetadataWalker(
             }
         }
 
-        if (visitors.Count == 0)
+        if (invocations.Count == 0)
         {
             return;
         }
 
-        visitors.Reverse();
-        var errors = new ConcurrentBag<Exception>();
-#if DEBUG
-        visitors.ForEach(i => ProcessInvocation(i, errors));
-#else
-        Parallel.ForEach(visitors, new ParallelOptions { CancellationToken = cancellationToken }, i => ProcessInvocation(i, errors));
-#endif
-        if (!errors.IsEmpty)
+        invocations.Reverse();
+        foreach (var invocation in invocations)
         {
-            throw errors.First();
-        }
-
-        foreach (var visitor in visitors)
-        {
-            visitor.Apply();
+            invocationProcessor.ProcessInvocation(metadataVisitor, _semanticModel, invocation, _namespace);
         }
 
         var usings = new List<string>();
@@ -96,23 +83,6 @@ sealed class MetadataWalker(
         }
 
         metadataVisitor.VisitFinish();
-    }
-
-    private void ProcessInvocation(in InvocationVisitor visitor, ConcurrentBag<Exception> errors)
-    {
-        if (!errors.IsEmpty)
-        {
-            return;
-        }
-
-        try
-        {
-            invocationProcessor.ProcessInvocation(visitor, visitor.SemanticModel, visitor.Invocation, _namespace);
-        }
-        catch (Exception exception)
-        {
-            errors.Add(exception);
-        }
     }
 
     // ReSharper disable once CognitiveComplexity
