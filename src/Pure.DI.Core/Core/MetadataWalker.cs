@@ -89,7 +89,7 @@ sealed class MetadataWalker(
     public override void VisitInvocationExpression(InvocationExpressionSyntax invocation)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        if (_isMetadata || metadata.IsMetadata(invocation, _semanticModel, cancellationToken))
+        if (_isMetadata || metadata.IsMetadata(invocation, _semanticModel!, cancellationToken))
         {
             _invocations.Push(invocation);
         }

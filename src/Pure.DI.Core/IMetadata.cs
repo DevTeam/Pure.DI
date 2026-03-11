@@ -2,5 +2,5 @@
 
 public interface IMetadata
 {
-    bool IsMetadata(SyntaxNode node, SemanticModel? semanticModel, CancellationToken cancellationToken);
+    bool IsMetadata(SyntaxNode node, SemanticModel semanticModel, CancellationToken cancellationToken);
 }

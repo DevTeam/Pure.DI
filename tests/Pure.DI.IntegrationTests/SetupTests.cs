@@ -224,6 +224,60 @@ public class SetupTests
     }
 
     [Fact]
+    public async Task ShouldFilterInvalidSetup()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency { }
+
+                               class Dependency : IDependency { }
+
+                               class Service
+                               {
+                                   public Service(IDependency dependency)
+                                   {
+                                   }
+                               }
+
+                               static class SetupComposition
+                               {
+                                   static void Setup(int i, string name) {}
+                                   
+                                   private static void InvalidSetup()
+                                   {
+                                       Setup(123, "Composition");
+                                   }
+                                   
+                                   private static void ValidSetup()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
+
+    [Fact]
     public async Task ShouldGenerateSpecifiedRootType()
     {
         // Given
@@ -4114,6 +4168,114 @@ public class SetupTests
                                {
                                        var composition = new Scope();
                                        var clockManager = composition.ClockManager;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
+
+    [Fact]
+    public async Task ShouldHandleNameofWithDependsOnEnumParameter()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+                           #pragma warning disable CS8618
+                           #pragma warning disable CS0649
+
+                           namespace Sample
+                           {
+                               public class ClockConfig : IClockConfig
+                               {
+                                   public string? Value { get; set; }
+                               }
+
+                               public interface IClockConfig
+                               {
+                                   string? Value { get; set; }
+                               }
+
+                               public class ClockService
+                               {
+                                   public ClockService(IClockConfig config)
+                                   {
+                                   }
+                               }
+
+                               public class ClocksComposition
+                               {
+                                   private ClockConfig? clockConfig = null;
+
+                                   void Setup() => DI.Setup(kind: CompositionKind.Internal)
+                                       .Bind<IClockConfig>().To(_ => clockConfig!)
+                                       .Singleton<ClockService>();
+                               }
+
+                               public partial class Scope
+                               {
+                                   void Setup() => DI.Setup()
+                                       .DependsOn(nameof(ClocksComposition), SetupContextKind.Members)
+                                       .Root<ClockService>(nameof(ClockManager));
+                               }
+
+                               public partial class ClockManager
+                               {
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Scope();
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
+
+    [Fact]
+    public async Task ShouldHandleNameofExpressionWithEnumParameter()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService { }
+                               class Service : IService { }
+
+                               internal class Composition1
+                               {
+                                   void Setup() => DI.Setup(kind: CompositionKind.Internal)
+                                       .Bind<IService>().To<Service>();
+                               }
+
+                               internal partial class Composition2
+                               {
+                                   void Setup() => DI.Setup()
+                                       .DependsOn(nameof(Composition1), SetupContextKind.Members)
+                                       .Root<IService>("Root");
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition2();
+                                       var service = composition.Root;
                                    }
                                }
                            }

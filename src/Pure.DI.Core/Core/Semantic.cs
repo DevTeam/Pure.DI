@@ -2,6 +2,7 @@
 
 namespace Pure.DI.Core;
 
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis.Operations;
 
@@ -100,8 +101,8 @@ sealed class Semantic(
                      || literalExpression.IsKind(SyntaxKind.NullLiteralExpression):
                 return default;
 
-            case LiteralExpressionSyntax literalExpression:
-                return (T?)literalExpression.Token.Value;
+            case LiteralExpressionSyntax { Token.Value: T value }:
+                return value;
 
             // Simple member access expressions for enums (no semantic model needed)
             case MemberAccessExpressionSyntax memberAccess when memberAccess.IsKind(SyntaxKind.SimpleMemberAccessExpression):
