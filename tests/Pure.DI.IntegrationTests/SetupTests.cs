@@ -4060,4 +4060,66 @@ public class SetupTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Done"], result);
     }
+
+    [Fact]
+    public async Task ShouldHandleDependsOnWithEnum()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+                           #pragma warning disable CS8618
+                           #pragma warning disable CS0649
+
+                           namespace Sample
+                           {
+                               public class ClockConfig: IClockConfig
+                               {
+                                   public string? Value { get; set; }
+                               }
+
+                               public interface IClockConfig
+                               {
+                                   string? Value { get; }
+                               }
+
+                               public class ClockService
+                               {
+                                   public ClockService(IClockConfig config)
+                                   {
+                                   }
+                               }
+
+                               public class ClocksComposition
+                               {
+                                   private ClockConfig? clockConfig = null;
+
+                                   void Setup() => DI.Setup(kind: CompositionKind.Internal)
+                                       .Bind<IClockConfig>().To(_ => clockConfig!)
+                                       .Singleton<ClockService>();
+                               }
+
+                               public partial class Scope
+                               {
+                                   void Setup() => DI.Setup()
+                                       .DependsOn(nameof(ClocksComposition), SetupContextKind.Members)
+                                       .Root<ClockService>("ClockManager");
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                               {
+                                       var composition = new Scope();
+                                       var clockManager = composition.ClockManager;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
 }

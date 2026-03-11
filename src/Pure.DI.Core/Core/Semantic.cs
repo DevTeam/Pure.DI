@@ -112,7 +112,7 @@ sealed class Semantic(
                     var className = classIdentifier.Identifier.Text;
 
                     // Parse enums from syntax
-                    if (typeof(T).IsEnum && TryParseEnumFromMemberAccess<T>(className, valueStr, out var enumValue))
+                    if ((typeof(T).IsEnum || typeof(T) == typeof(object)) && TryParseEnumFromMemberAccess<T>(className, valueStr, out var enumValue))
                     {
                         return enumValue;
                     }
@@ -151,17 +151,7 @@ sealed class Semantic(
             }
         }
 
-        var val = TryGetConstantValueFromSemanticModel<T>(semanticModel, node);
-        if (val is not null)
-        {
-            return val;
-        }
-
-        throw new CompileErrorException(
-            string.Format(Strings.Error_Template_MustBeApiCall, node, typeof(T)),
-            ImmutableArray.Create(locationProvider.GetLocation(node)),
-            LogId.ErrorMustBeApiCall,
-            nameof(Strings.Error_Template_MustBeApiCall));
+        return TryGetConstantValueFromSemanticModel<T>(semanticModel, node);
     }
 
     private T? TryProcessTagInvocation<T>(SemanticModel semanticModel, InvocationExpressionSyntax invocation, SmartTagKind smartTagKind)

@@ -363,54 +363,51 @@ sealed class ApiInvocationProcessor(
                         break;
 
                     case nameof(IConfiguration.DependsOn):
-                        if (semanticModel.GetSymbolInfo(invocation).Symbol is IMethodSymbol { Parameters: [{ IsParams: false }, _, _ ] })
+                        // DependsOn(string setupName, SetupContextKind kind, string name = "")
+                        var dependsOnArgs = arguments.GetArgs(invocation.ArgumentList, "setupName", "kind", "name");
+                        if (dependsOnArgs is [{ Expression: {} setupNameExpression }, _, _]
+                           && semantic.GetConstantValue<string>(semanticModel, setupNameExpression, SmartTagKind.Name) is {} setupName)
                         {
-                            var dependsOnArgs = arguments.GetArgs(invocation.ArgumentList, "setupName", "kind", "name");
-                            if (dependsOnArgs[0] is { Expression: {} setupNameExpression }
-                                && dependsOnArgs[1] is { Expression: {} contextKindExpression })
-                            {
-                                var setupName = semantic.GetRequiredConstantValue<string>(semanticModel, setupNameExpression, SmartTagKind.Name);
-                                var contextArgKind = semantic.GetRequiredConstantValue<SetupContextKind>(semanticModel, contextKindExpression);
-                                var contextArgExpression = dependsOnArgs[2]?.Expression;
-                                var contextArgName = contextArgExpression is not null
-                                    ? semantic.GetRequiredConstantValue<string>(semanticModel, contextArgExpression, SmartTagKind.Name)
-                                    : "";
-                                if (string.IsNullOrWhiteSpace(contextArgName))
-                                {
-                                    if (contextArgKind == SetupContextKind.Members)
-                                    {
-                                        contextArgName = $"{Names.DefaultInstanceValueName}{Names.TempInstanceValueNameSuffix}";
-                                    }
-                                    else
-                                    {
-                                        throw new CompileErrorException(
-                                            Strings.Error_SetupContextNameIsRequired,
-                                            ImmutableArray.Create(locationProvider.GetLocation(invocation)),
-                                            LogId.ErrorSetupContextNameIsRequired,
-                                            nameof(Strings.Error_SetupContextNameIsRequired));
-                                    }
-                                }
+                            SetupContextKind? contextArgKind = dependsOnArgs[1] is { Expression: {} contextKindExpression }
+                                ? semantic.GetRequiredConstantValue<SetupContextKind>(semanticModel, contextKindExpression)
+                                : null;
+                            var contextArgExpression = dependsOnArgs[2]?.Expression;
+                            var contextArgName = contextArgExpression is not null
+                                ? semantic.GetRequiredConstantValue<string>(semanticModel, contextArgExpression, SmartTagKind.Name)
+                                : "";
 
-                                metadataVisitor.VisitDependsOn(
-                                    new MdDependsOn(
-                                        semanticModel,
-                                        invocation,
-                                        ImmutableArray.Create(new MdDependsOnItem(
-                                            CreateCompositionName(setupName, @namespace, invocation.ArgumentList),
-                                            contextArgName,
-                                            contextArgExpression,
-                                            contextArgKind)),
-                                        true));
+                            if (contextArgKind.HasValue && string.IsNullOrWhiteSpace(contextArgName))
+                            {
+                                if (contextArgKind == SetupContextKind.Members)
+                                {
+                                    contextArgName = $"{Names.DefaultInstanceValueName}{Names.TempInstanceValueNameSuffix}";
+                                }
+                                else
+                                {
+                                    throw new CompileErrorException(
+                                        Strings.Error_SetupContextNameIsRequired,
+                                        ImmutableArray.Create(locationProvider.GetLocation(invocation)),
+                                        LogId.ErrorSetupContextNameIsRequired,
+                                        nameof(Strings.Error_SetupContextNameIsRequired));
+                                }
                             }
+
+                            var items = ImmutableArray.Create(
+                                new MdDependsOnItem(
+                                    CreateCompositionName(setupName, @namespace, invocation.ArgumentList),
+                                    contextArgName,
+                                    contextArgExpression,
+                                    contextArgKind ?? SetupContextKind.Argument));
+                            metadataVisitor.VisitDependsOn(new MdDependsOn(semanticModel, invocation, items, true));
                         }
-                        else if (BuildConstantArgs<string>(semanticModel, invocation.ArgumentList.Arguments) is [..] compositionTypeNames)
+                        else
+                        // DependsOn(params string[] setupNames)
                         {
-                            metadataVisitor.VisitDependsOn(
-                                new MdDependsOn(
-                                    semanticModel,
-                                    invocation,
-                                    compositionTypeNames.Select(i => new MdDependsOnItem(CreateCompositionName(i, @namespace, invocation.ArgumentList))).ToImmutableArray(),
-                                    true));
+                            if (BuildConstantArgs<string>(semanticModel, invocation.ArgumentList.Arguments) is [..] compositionTypeNames)
+                            {
+                                var names = compositionTypeNames.Select(compositionName => new MdDependsOnItem(CreateCompositionName(compositionName, @namespace, invocation.ArgumentList))).ToImmutableArray();
+                                metadataVisitor.VisitDependsOn(new MdDependsOn(semanticModel, invocation, names, true));
+                            }
                         }
 
                         break;
