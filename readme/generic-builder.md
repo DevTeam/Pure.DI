@@ -99,14 +99,14 @@ partial class Composition
 #endif
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public ViewModel<T4, T5> BuildUp<T4, T5>(ViewModel<T4, T5> buildingInstance)
-    where T4: struct
+  public ViewModel<T3, T4> BuildUp<T3, T4>(ViewModel<T3, T4> buildingInstance)
+    where T3: struct
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    ViewModel<T4, T5> transientViewModel460;
-    ViewModel<T4, T5> localBuildingInstance8 = buildingInstance;
-    T4 transientTTS463 = (T4)(object)Guid.NewGuid();
-    localBuildingInstance8.Repository = new Repository<T5>();
+    ViewModel<T3, T4> transientViewModel460;
+    ViewModel<T3, T4> localBuildingInstance8 = buildingInstance;
+    T3 transientTTS463 = (T3)(object)Guid.NewGuid();
+    localBuildingInstance8.Repository = new Repository<T4>();
     localBuildingInstance8.SetId(transientTTS463);
     transientViewModel460 = localBuildingInstance8;
     return transientViewModel460;
@@ -125,26 +125,26 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	RepositoryᐸT5ᐳ --|> IRepositoryᐸT5ᐳ
-	Composition ..> ViewModelᐸT4ˏT5ᐳ : ViewModelᐸT4ˏT5ᐳ BuildUpᐸT4ˏT5ᐳ(Pure.DI.UsageTests.Generics.GenericBuilderScenario.ViewModel<T4, T5> buildingInstance)
-	ViewModelᐸT4ˏT5ᐳ *--  RepositoryᐸT5ᐳ : IRepositoryᐸT5ᐳ
-	ViewModelᐸT4ˏT5ᐳ *--  T4 : "Id"  T4
+	RepositoryᐸT4ᐳ --|> IRepositoryᐸT4ᐳ
+	Composition ..> ViewModelᐸT3ˏT4ᐳ : ViewModelᐸT3ˏT4ᐳ BuildUpᐸT3ˏT4ᐳ(Pure.DI.UsageTests.Generics.GenericBuilderScenario.ViewModel<T3, T4> buildingInstance)
+	ViewModelᐸT3ˏT4ᐳ *--  RepositoryᐸT4ᐳ : IRepositoryᐸT4ᐳ
+	ViewModelᐸT3ˏT4ᐳ *--  T3 : "Id"  T3
 	namespace Pure.DI.UsageTests.Generics.GenericBuilderScenario {
 		class Composition {
 		<<partial>>
-		+ViewModelᐸT4ˏT5ᐳ BuildUpᐸT4ˏT5ᐳ(Pure.DI.UsageTests.Generics.GenericBuilderScenario.ViewModel<T4, T5> buildingInstance)
+		+ViewModelᐸT3ˏT4ᐳ BuildUpᐸT3ˏT4ᐳ(Pure.DI.UsageTests.Generics.GenericBuilderScenario.ViewModel<T3, T4> buildingInstance)
 		}
-		class IRepositoryᐸT5ᐳ {
+		class IRepositoryᐸT4ᐳ {
 			<<interface>>
 		}
-		class RepositoryᐸT5ᐳ {
+		class RepositoryᐸT4ᐳ {
 				<<class>>
 			+Repository()
 		}
-		class ViewModelᐸT4ˏT5ᐳ {
+		class ViewModelᐸT3ˏT4ᐳ {
 				<<record>>
-			+IRepositoryᐸT5ᐳ Repository
-			+SetId(T4 id) : Void
+			+IRepositoryᐸT4ᐳ Repository
+			+SetId(T3 id) : Void
 		}
 	}
 ```

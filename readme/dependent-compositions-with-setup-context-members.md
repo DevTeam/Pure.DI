@@ -54,7 +54,7 @@ internal partial class BaseComposition
 
     public DatabaseConnectionSettings ConnectionSettings { get; set; } = new("", 0, "");
 
-    int GetDefaultTimeout() => 5000;
+    private int GetDefaultTimeout() => 5000;
 
     private void Setup()
     {

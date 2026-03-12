@@ -1020,8 +1020,8 @@ DI.Setup(nameof(Composition))
     // and performs further initialization logic
     // defined in the lambda function to set up the log file name
     .Singleton<FileLogger, DateTime, IFileLogger>((
-        FileLogger logger,
-        [Tag("today")] DateTime date) => {
+        logger,
+        [Tag("today")] date) => {
         logger.Init($"app-{date:yyyy-MM-dd}.log");
         return logger;
     })

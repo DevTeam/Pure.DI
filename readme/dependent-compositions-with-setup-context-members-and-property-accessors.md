@@ -124,10 +124,10 @@ Important points:
 - Simple property accessors (field-backed) can be used without partial methods.
 
 Example demonstrates:
-  1. BaseComposition provides connection string and max connections properties
-  2. ConnectionString has simple field-backed accessor (no logic)
-  3. MaxConnections has custom getter logic via partial method
-  4. Dependent Composition implements custom accessor logic for MaxConnections
+ 1. BaseComposition provides connection string and max connections properties
+ 2. ConnectionString has simple field-backed accessor (no logic)
+ 3. MaxConnections has custom getter logic via partial method
+ 4. Dependent Composition implements custom accessor logic for MaxConnections
 
 Useful when:
 - Properties include custom logic and are referenced by bindings in a dependent setup.

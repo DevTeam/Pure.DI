@@ -93,21 +93,21 @@ The following partial class will be generated:
 partial class Composition
 {
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public IDataProcessor<T3, bool> GetSpecializedProcessor<T3>()
-    where T3: IDisposable
+  public IDataProcessor<T2, bool> GetSpecializedProcessor<T2>()
+    where T2: IDisposable
   {
-    SpecializedDataProcessor<T3> transientSpecializedDataProcessor477;
-    IStreamSource<T3> localSource = new StreamSource<T3>();
-    transientSpecializedDataProcessor477 = new SpecializedDataProcessor<T3>(localSource);
+    SpecializedDataProcessor<T2> transientSpecializedDataProcessor477;
+    IStreamSource<T2> localSource = new StreamSource<T2>();
+    transientSpecializedDataProcessor477 = new SpecializedDataProcessor<T2>(localSource);
     return transientSpecializedDataProcessor477;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public IDataProcessor<T3, T4> GetProcessor<T3, T4>()
-    where T3: IDisposable
-    where T4: struct
+  public IDataProcessor<T2, T3> GetProcessor<T2, T3>()
+    where T2: IDisposable
+    where T3: struct
   {
-    return new DataProcessor<T3, T4>(new StreamSource<T3>());
+    return new DataProcessor<T2, T3>(new StreamSource<T2>());
   }
 }
 ```
@@ -123,36 +123,36 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	SpecializedDataProcessorᐸT3ᐳ --|> IDataProcessorᐸT3ˏBooleanᐳ : "Specialized" 
-	DataProcessorᐸT3ˏT4ᐳ --|> IDataProcessorᐸT3ˏT4ᐳ
-	StreamSourceᐸT3ᐳ --|> IStreamSourceᐸT3ᐳ
-	Composition ..> SpecializedDataProcessorᐸT3ᐳ : IDataProcessorᐸT3ˏBooleanᐳ GetSpecializedProcessorᐸT3ᐳ()
-	Composition ..> DataProcessorᐸT3ˏT4ᐳ : IDataProcessorᐸT3ˏT4ᐳ GetProcessorᐸT3ˏT4ᐳ()
-	SpecializedDataProcessorᐸT3ᐳ *--  StreamSourceᐸT3ᐳ : IStreamSourceᐸT3ᐳ
-	DataProcessorᐸT3ˏT4ᐳ *--  StreamSourceᐸT3ᐳ : IStreamSourceᐸT3ᐳ
+	SpecializedDataProcessorᐸT2ᐳ --|> IDataProcessorᐸT2ˏBooleanᐳ : "Specialized" 
+	DataProcessorᐸT2ˏT3ᐳ --|> IDataProcessorᐸT2ˏT3ᐳ
+	StreamSourceᐸT2ᐳ --|> IStreamSourceᐸT2ᐳ
+	Composition ..> SpecializedDataProcessorᐸT2ᐳ : IDataProcessorᐸT2ˏBooleanᐳ GetSpecializedProcessorᐸT2ᐳ()
+	Composition ..> DataProcessorᐸT2ˏT3ᐳ : IDataProcessorᐸT2ˏT3ᐳ GetProcessorᐸT2ˏT3ᐳ()
+	SpecializedDataProcessorᐸT2ᐳ *--  StreamSourceᐸT2ᐳ : IStreamSourceᐸT2ᐳ
+	DataProcessorᐸT2ˏT3ᐳ *--  StreamSourceᐸT2ᐳ : IStreamSourceᐸT2ᐳ
 	namespace Pure.DI.UsageTests.Generics.GenericCompositionRootsWithConstraintsScenario {
 		class Composition {
 		<<partial>>
-		+IDataProcessorᐸT3ˏT4ᐳ GetProcessorᐸT3ˏT4ᐳ()
-		+IDataProcessorᐸT3ˏBooleanᐳ GetSpecializedProcessorᐸT3ᐳ()
+		+IDataProcessorᐸT2ˏT3ᐳ GetProcessorᐸT2ˏT3ᐳ()
+		+IDataProcessorᐸT2ˏBooleanᐳ GetSpecializedProcessorᐸT2ᐳ()
 		}
-		class DataProcessorᐸT3ˏT4ᐳ {
+		class DataProcessorᐸT2ˏT3ᐳ {
 				<<class>>
-			+DataProcessor(IStreamSourceᐸT3ᐳ source)
+			+DataProcessor(IStreamSourceᐸT2ᐳ source)
 		}
-		class IDataProcessorᐸT3ˏBooleanᐳ {
+		class IDataProcessorᐸT2ˏBooleanᐳ {
 			<<interface>>
 		}
-		class IDataProcessorᐸT3ˏT4ᐳ {
+		class IDataProcessorᐸT2ˏT3ᐳ {
 			<<interface>>
 		}
-		class IStreamSourceᐸT3ᐳ {
+		class IStreamSourceᐸT2ᐳ {
 			<<interface>>
 		}
-		class SpecializedDataProcessorᐸT3ᐳ {
+		class SpecializedDataProcessorᐸT2ᐳ {
 				<<class>>
 		}
-		class StreamSourceᐸT3ᐳ {
+		class StreamSourceᐸT2ᐳ {
 				<<class>>
 			+StreamSource()
 		}

@@ -10,7 +10,7 @@ using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(DeepComposition))
-    .Bind().To<int>(_ => 7)
+    .Bind().To(_ => 7)
     .Bind().To<Dependency>()
     .Bind().To<Service>(ctx =>
     {
@@ -21,7 +21,7 @@ DI.Setup(nameof(DeepComposition))
     .Root<Service>("Service");
 
 DI.Setup(nameof(ShallowComposition))
-    .Bind().To<int>(_ => 7)
+    .Bind().To(_ => 7)
     .Bind().To<Dependency>()
     .Bind().To<Service>(ctx =>
     {

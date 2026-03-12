@@ -94,11 +94,11 @@ partial class Composition
     get
     {
       Func<int, ISensor<string>> perBlockFunc485;
-      Func<int, ISensor<string>> localFactory8 = new Func<int, ISensor<string>>((int localArg18) =>
+      Func<int, ISensor<string>> localFactory8 = new Func<int, ISensor<string>>((int localArg1) =>
       {
         lock (_lock)
         {
-          int overriddenInt32 = localArg18;
+          int overriddenInt32 = localArg1;
           return new Sensor<string>(overriddenInt32);
         }
       });

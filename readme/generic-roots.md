@@ -78,18 +78,18 @@ The following partial class will be generated:
 partial class Composition
 {
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public NetworkExporter<T2> GetMyNetworkExporter_T<T2>()
+  public NetworkExporter<T1> GetMyNetworkExporter_T<T1>()
   {
-    NetworkExporter<T2> transientNetworkExporter494;
-    IFormatter<T2> localFormatter = new JsonFormatter<T2>();
-    transientNetworkExporter494 = new NetworkExporter<T2>(localFormatter);
+    NetworkExporter<T1> transientNetworkExporter494;
+    IFormatter<T1> localFormatter = new JsonFormatter<T1>();
+    transientNetworkExporter494 = new NetworkExporter<T1>(localFormatter);
     return transientNetworkExporter494;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public FileExporter<T2> GetMyFileExporter_T<T2>()
+  public FileExporter<T1> GetMyFileExporter_T<T1>()
   {
-    return new FileExporter<T2>(new JsonFormatter<T2>());
+    return new FileExporter<T1>(new JsonFormatter<T1>());
   }
 }
 ```
@@ -105,33 +105,33 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	FileExporterᐸT2ᐳ --|> IExporterᐸT2ᐳ
-	JsonFormatterᐸT2ᐳ --|> IFormatterᐸT2ᐳ
-	Composition ..> NetworkExporterᐸT2ᐳ : NetworkExporterᐸT2ᐳ GetMyNetworkExporter_TᐸT2ᐳ()
-	Composition ..> FileExporterᐸT2ᐳ : FileExporterᐸT2ᐳ GetMyFileExporter_TᐸT2ᐳ()
-	NetworkExporterᐸT2ᐳ *--  JsonFormatterᐸT2ᐳ : IFormatterᐸT2ᐳ
-	FileExporterᐸT2ᐳ *--  JsonFormatterᐸT2ᐳ : IFormatterᐸT2ᐳ
+	FileExporterᐸT1ᐳ --|> IExporterᐸT1ᐳ
+	JsonFormatterᐸT1ᐳ --|> IFormatterᐸT1ᐳ
+	Composition ..> NetworkExporterᐸT1ᐳ : NetworkExporterᐸT1ᐳ GetMyNetworkExporter_TᐸT1ᐳ()
+	Composition ..> FileExporterᐸT1ᐳ : FileExporterᐸT1ᐳ GetMyFileExporter_TᐸT1ᐳ()
+	NetworkExporterᐸT1ᐳ *--  JsonFormatterᐸT1ᐳ : IFormatterᐸT1ᐳ
+	FileExporterᐸT1ᐳ *--  JsonFormatterᐸT1ᐳ : IFormatterᐸT1ᐳ
 	namespace Pure.DI.UsageTests.Generics.GenericsRootsScenario {
 		class Composition {
 		<<partial>>
-		+FileExporterᐸT2ᐳ GetMyFileExporter_TᐸT2ᐳ()
-		+NetworkExporterᐸT2ᐳ GetMyNetworkExporter_TᐸT2ᐳ()
+		+FileExporterᐸT1ᐳ GetMyFileExporter_TᐸT1ᐳ()
+		+NetworkExporterᐸT1ᐳ GetMyNetworkExporter_TᐸT1ᐳ()
 		}
-		class FileExporterᐸT2ᐳ {
+		class FileExporterᐸT1ᐳ {
 				<<class>>
-			+FileExporter(IFormatterᐸT2ᐳ formatter)
+			+FileExporter(IFormatterᐸT1ᐳ formatter)
 		}
-		class IExporterᐸT2ᐳ {
+		class IExporterᐸT1ᐳ {
 			<<interface>>
 		}
-		class IFormatterᐸT2ᐳ {
+		class IFormatterᐸT1ᐳ {
 			<<interface>>
 		}
-		class JsonFormatterᐸT2ᐳ {
+		class JsonFormatterᐸT1ᐳ {
 				<<class>>
 			+JsonFormatter()
 		}
-		class NetworkExporterᐸT2ᐳ {
+		class NetworkExporterᐸT1ᐳ {
 				<<class>>
 		}
 	}

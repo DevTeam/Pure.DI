@@ -84,18 +84,18 @@ The following partial class will be generated:
 partial class Composition
 {
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public ICommandHandler<T2> GetUpdateCommandHandler<T2>()
+  public ICommandHandler<T1> GetUpdateCommandHandler<T1>()
   {
-    UpdateCommandHandler<T2> transientUpdateCommandHandler490;
-    IRepository<T2> localRepository = new Repository<T2>();
-    transientUpdateCommandHandler490 = new UpdateCommandHandler<T2>(localRepository);
+    UpdateCommandHandler<T1> transientUpdateCommandHandler490;
+    IRepository<T1> localRepository = new Repository<T1>();
+    transientUpdateCommandHandler490 = new UpdateCommandHandler<T1>(localRepository);
     return transientUpdateCommandHandler490;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public ICommandHandler<T2> GetCreateCommandHandler<T2>()
+  public ICommandHandler<T1> GetCreateCommandHandler<T1>()
   {
-    return new CreateCommandHandler<T2>(new Repository<T2>());
+    return new CreateCommandHandler<T1>(new Repository<T1>());
   }
 }
 ```
@@ -111,34 +111,34 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	UpdateCommandHandlerᐸT2ᐳ --|> ICommandHandlerᐸT2ᐳ : "Update" 
-	CreateCommandHandlerᐸT2ᐳ --|> ICommandHandlerᐸT2ᐳ
-	RepositoryᐸT2ᐳ --|> IRepositoryᐸT2ᐳ
-	Composition ..> UpdateCommandHandlerᐸT2ᐳ : ICommandHandlerᐸT2ᐳ GetUpdateCommandHandlerᐸT2ᐳ()
-	Composition ..> CreateCommandHandlerᐸT2ᐳ : ICommandHandlerᐸT2ᐳ GetCreateCommandHandlerᐸT2ᐳ()
-	UpdateCommandHandlerᐸT2ᐳ *--  RepositoryᐸT2ᐳ : IRepositoryᐸT2ᐳ
-	CreateCommandHandlerᐸT2ᐳ *--  RepositoryᐸT2ᐳ : IRepositoryᐸT2ᐳ
+	UpdateCommandHandlerᐸT1ᐳ --|> ICommandHandlerᐸT1ᐳ : "Update" 
+	CreateCommandHandlerᐸT1ᐳ --|> ICommandHandlerᐸT1ᐳ
+	RepositoryᐸT1ᐳ --|> IRepositoryᐸT1ᐳ
+	Composition ..> UpdateCommandHandlerᐸT1ᐳ : ICommandHandlerᐸT1ᐳ GetUpdateCommandHandlerᐸT1ᐳ()
+	Composition ..> CreateCommandHandlerᐸT1ᐳ : ICommandHandlerᐸT1ᐳ GetCreateCommandHandlerᐸT1ᐳ()
+	UpdateCommandHandlerᐸT1ᐳ *--  RepositoryᐸT1ᐳ : IRepositoryᐸT1ᐳ
+	CreateCommandHandlerᐸT1ᐳ *--  RepositoryᐸT1ᐳ : IRepositoryᐸT1ᐳ
 	namespace Pure.DI.UsageTests.Generics.GenericsCompositionRootsScenario {
 		class Composition {
 		<<partial>>
-		+ICommandHandlerᐸT2ᐳ GetCreateCommandHandlerᐸT2ᐳ()
-		+ICommandHandlerᐸT2ᐳ GetUpdateCommandHandlerᐸT2ᐳ()
+		+ICommandHandlerᐸT1ᐳ GetCreateCommandHandlerᐸT1ᐳ()
+		+ICommandHandlerᐸT1ᐳ GetUpdateCommandHandlerᐸT1ᐳ()
 		}
-		class CreateCommandHandlerᐸT2ᐳ {
+		class CreateCommandHandlerᐸT1ᐳ {
 				<<class>>
-			+CreateCommandHandler(IRepositoryᐸT2ᐳ repository)
+			+CreateCommandHandler(IRepositoryᐸT1ᐳ repository)
 		}
-		class ICommandHandlerᐸT2ᐳ {
+		class ICommandHandlerᐸT1ᐳ {
 			<<interface>>
 		}
-		class IRepositoryᐸT2ᐳ {
+		class IRepositoryᐸT1ᐳ {
 			<<interface>>
 		}
-		class RepositoryᐸT2ᐳ {
+		class RepositoryᐸT1ᐳ {
 				<<class>>
 			+Repository()
 		}
-		class UpdateCommandHandlerᐸT2ᐳ {
+		class UpdateCommandHandlerᐸT1ᐳ {
 				<<class>>
 		}
 	}

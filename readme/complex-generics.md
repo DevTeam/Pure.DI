@@ -109,8 +109,8 @@ partial class Composition
   private bool _singletonStructConsumer59Created;
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public Program<T2> GetRoot<T2>(T2 name)
-    where T2: notnull
+  public Program<T1> GetRoot<T1>(T1 name)
+    where T1: notnull
   {
     if (name is null) throw new ArgumentNullException(nameof(name));
     if (!_singletonStructConsumer59Created)
@@ -122,7 +122,7 @@ partial class Composition
           _singletonStructConsumer59Created = true;
         }
 
-    return new Program<T2>(new Workflow<T2, int, List<T2>, Dictionary<T2, int>>(new Consumer<T2>(name), _singletonStructConsumer59));
+    return new Program<T1>(new Workflow<T1, int, List<T1>, Dictionary<T1, int>>(new Consumer<T1>(name), _singletonStructConsumer59));
   }
 }
 ```
@@ -138,43 +138,43 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	WorkflowᐸT2ˏInt32ˏListᐸT2ᐳˏDictionaryᐸT2ˏInt32ᐳᐳ --|> IWorkflowᐸT2ˏInt32ˏListᐸT2ᐳˏDictionaryᐸT2ˏInt32ᐳᐳ
-	ConsumerᐸT2ᐳ --|> IConsumerᐸT2ᐳ
+	WorkflowᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ --|> IWorkflowᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ
+	ConsumerᐸT1ᐳ --|> IConsumerᐸT1ᐳ
 	StructConsumerᐸInt32ᐳ --|> IConsumerᐸInt32ᐳ : "struct" 
-	Composition ..> ProgramᐸT2ᐳ : ProgramᐸT2ᐳ GetRootᐸT2ᐳ(T2 name)
-	ProgramᐸT2ᐳ *--  WorkflowᐸT2ˏInt32ˏListᐸT2ᐳˏDictionaryᐸT2ˏInt32ᐳᐳ : IWorkflowᐸT2ˏInt32ˏListᐸT2ᐳˏDictionaryᐸT2ˏInt32ᐳᐳ
-	WorkflowᐸT2ˏInt32ˏListᐸT2ᐳˏDictionaryᐸT2ˏInt32ᐳᐳ *--  ConsumerᐸT2ᐳ : IConsumerᐸT2ᐳ
-	WorkflowᐸT2ˏInt32ˏListᐸT2ᐳˏDictionaryᐸT2ˏInt32ᐳᐳ o-- "Singleton" StructConsumerᐸInt32ᐳ : "struct"  IConsumerᐸInt32ᐳ
-	ConsumerᐸT2ᐳ o-- T2 : Argument "name"
+	Composition ..> ProgramᐸT1ᐳ : ProgramᐸT1ᐳ GetRootᐸT1ᐳ(T1 name)
+	ProgramᐸT1ᐳ *--  WorkflowᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ : IWorkflowᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ
+	WorkflowᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ *--  ConsumerᐸT1ᐳ : IConsumerᐸT1ᐳ
+	WorkflowᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ o-- "Singleton" StructConsumerᐸInt32ᐳ : "struct"  IConsumerᐸInt32ᐳ
+	ConsumerᐸT1ᐳ o-- T1 : Argument "name"
 	namespace Pure.DI.UsageTests.Generics.ComplexGenericsScenario {
 		class Composition {
 		<<partial>>
-		+ProgramᐸT2ᐳ GetRootᐸT2ᐳ(T2 name)
+		+ProgramᐸT1ᐳ GetRootᐸT1ᐳ(T1 name)
 		}
-		class ConsumerᐸT2ᐳ {
+		class ConsumerᐸT1ᐳ {
 				<<class>>
-			+Consumer(T2 name)
+			+Consumer(T1 name)
 		}
 		class IConsumerᐸInt32ᐳ {
 			<<interface>>
 		}
-		class IConsumerᐸT2ᐳ {
+		class IConsumerᐸT1ᐳ {
 			<<interface>>
 		}
-		class IWorkflowᐸT2ˏInt32ˏListᐸT2ᐳˏDictionaryᐸT2ˏInt32ᐳᐳ {
+		class IWorkflowᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ {
 			<<interface>>
 		}
-		class ProgramᐸT2ᐳ {
+		class ProgramᐸT1ᐳ {
 				<<class>>
-			+Program(IWorkflowᐸT2ˏInt32ˏListᐸT2ᐳˏDictionaryᐸT2ˏInt32ᐳᐳ workflow)
+			+Program(IWorkflowᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ workflow)
 		}
 		class StructConsumerᐸInt32ᐳ {
 				<<struct>>
 			+StructConsumer()
 		}
-		class WorkflowᐸT2ˏInt32ˏListᐸT2ᐳˏDictionaryᐸT2ˏInt32ᐳᐳ {
+		class WorkflowᐸT1ˏInt32ˏListᐸT1ᐳˏDictionaryᐸT1ˏInt32ᐳᐳ {
 				<<class>>
-			+Workflow(IConsumerᐸT2ᐳ taskConsumer, IConsumerᐸInt32ᐳ priorityConsumer)
+			+Workflow(IConsumerᐸT1ᐳ taskConsumer, IConsumerᐸInt32ᐳ priorityConsumer)
 		}
 	}
 ```
