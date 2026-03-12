@@ -92,7 +92,7 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<ISensor> perBlockFunc300 = new Func<ISensor>(
+      Func<ISensor> perBlockFunc314 = new Func<ISensor>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
@@ -100,7 +100,7 @@ partial class Composition
       });
       return new LightweightRoot()
       {
-        ISensor1 = perBlockFunc300
+        ISensor1 = perBlockFunc314
       };
     }
   }

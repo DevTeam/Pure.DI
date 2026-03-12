@@ -130,10 +130,10 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Serilog.ILogger transientILogger626;
+      Serilog.ILogger transientILogger640;
       Serilog.ILogger localLogger7 = _argLogger;
-      transientILogger626 = localLogger7.ForContext(typeof(Composition));
-      return transientILogger626;
+      transientILogger640 = localLogger7.ForContext(typeof(Composition));
+      return transientILogger640;
     }
   }
 
@@ -142,14 +142,14 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var transientDependency624 = new Dependency();
-      OnNewInstance<Dependency>(ref transientDependency624, null, Lifetime.Transient);
-      Serilog.ILogger transientILogger623;
+      var transientDependency638 = new Dependency();
+      OnNewInstance<Dependency>(ref transientDependency638, null, Lifetime.Transient);
+      Serilog.ILogger transientILogger637;
       Serilog.ILogger localLogger6 = _argLogger;
-      transientILogger623 = localLogger6.ForContext(typeof(Service));
-      var transientService622 = new Service(transientILogger623, OnDependencyInjection<IDependency>(transientDependency624, null, Lifetime.Transient));
-      OnNewInstance<Service>(ref transientService622, null, Lifetime.Transient);
-      return OnDependencyInjection<IService>(transientService622, null, Lifetime.Transient);
+      transientILogger637 = localLogger6.ForContext(typeof(Service));
+      var transientService636 = new Service(transientILogger637, OnDependencyInjection<IDependency>(transientDependency638, null, Lifetime.Transient));
+      OnNewInstance<Service>(ref transientService636, null, Lifetime.Transient);
+      return OnDependencyInjection<IService>(transientService636, null, Lifetime.Transient);
     }
   }
 

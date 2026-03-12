@@ -84,9 +84,9 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var transientWeatherStation105 = new WeatherStation();
-      transientWeatherStation105.Calibrate(new HumiditySensor());
-      return transientWeatherStation105;
+      var transientWeatherStation119 = new WeatherStation();
+      transientWeatherStation119.Calibrate(new HumiditySensor());
+      return transientWeatherStation119;
     }
   }
 }

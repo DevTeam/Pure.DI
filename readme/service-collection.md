@@ -96,14 +96,14 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<ISensor> perBlockFunc394 = new Func<ISensor>(
+      Func<ISensor> perBlockFunc408 = new Func<ISensor>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
         EnsureTemperatureSensorLivingRoomExists();
         return _singletonTemperatureSensor51;
       });
-      Func<IThermostat> perBlockFunc395 = new Func<IThermostat>(
+      Func<IThermostat> perBlockFunc409 = new Func<IThermostat>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
@@ -112,8 +112,8 @@ partial class Composition
       });
       return new LightweightRoot()
       {
-        ISensor = perBlockFunc394,
-        IThermostat = perBlockFunc395
+        ISensor = perBlockFunc408,
+        IThermostat = perBlockFunc409
       };
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureTemperatureSensorLivingRoomExists()

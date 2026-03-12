@@ -136,7 +136,7 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<ILogger> perBlockFunc252 = new Func<ILogger>(
+      Func<ILogger> perBlockFunc266 = new Func<ILogger>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
@@ -144,7 +144,7 @@ partial class Composition
       });
       return new LightweightRoot()
       {
-        ILogger1 = perBlockFunc252
+        ILogger2 = perBlockFunc266
       };
     }
   }
@@ -154,7 +154,7 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return LightRoot.ILogger1();
+      return LightRoot.ILogger2();
     }
   }
 
@@ -309,7 +309,7 @@ partial class Composition
   #pragma warning disable CS0649
   private sealed class LightweightRoot: LightweightRoot
   {
-    [OrdinalAttribute()] public Func<ILogger> ILogger1;
+    [OrdinalAttribute()] public Func<ILogger> ILogger2;
   }
 }
 ```
@@ -339,7 +339,7 @@ classDiagram
 		class LightweightRoot {
 				<<class>>
 			+LightweightRoot()
-			+FuncᐸILoggerᐳ ILogger1
+			+FuncᐸILoggerᐳ ILogger2
 		}
 	}
 	namespace Pure.DI.UsageTests.Basics.CompositionRootsScenario {

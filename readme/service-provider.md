@@ -103,14 +103,14 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<ILogger> perBlockFunc399 = new Func<ILogger>(
+      Func<ILogger> perBlockFunc413 = new Func<ILogger>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
         EnsureConsoleLoggerExists();
         return _singletonConsoleLogger51;
       });
-      Func<IOrderService> perBlockFunc400 = new Func<IOrderService>(
+      Func<IOrderService> perBlockFunc414 = new Func<IOrderService>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
@@ -119,8 +119,8 @@ partial class Composition
       });
       return new LightweightRoot()
       {
-        ILogger = perBlockFunc399,
-        IOrderService1 = perBlockFunc400
+        ILogger1 = perBlockFunc413,
+        IOrderService1 = perBlockFunc414
       };
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureConsoleLoggerExists()
@@ -140,7 +140,7 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return LightRoot.ILogger();
+      return LightRoot.ILogger1();
     }
   }
 
@@ -301,7 +301,7 @@ partial class Composition
   #pragma warning disable CS0649
   private sealed class LightweightRoot: LightweightRoot
   {
-    [OrdinalAttribute()] public Func<ILogger> ILogger;
+    [OrdinalAttribute()] public Func<ILogger> ILogger1;
     [OrdinalAttribute()] public Func<IOrderService> IOrderService1;
   }
 }
@@ -332,7 +332,7 @@ classDiagram
 		class LightweightRoot {
 				<<class>>
 			+LightweightRoot()
-			+FuncᐸILoggerᐳ ILogger
+			+FuncᐸILoggerᐳ ILogger1
 			+FuncᐸIOrderServiceᐳ IOrderService1
 		}
 	}

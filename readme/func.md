@@ -109,7 +109,7 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<ITicket> perBlockFunc365 = new Func<ITicket>(
+      Func<ITicket> perBlockFunc379 = new Func<ITicket>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
@@ -122,7 +122,7 @@ partial class Composition
 
         return new Ticket(_singletonTicketIdGenerator51);
       });
-      return new QueueTerminal(perBlockFunc365);
+      return new QueueTerminal(perBlockFunc379);
     }
   }
 }

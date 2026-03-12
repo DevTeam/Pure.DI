@@ -86,10 +86,10 @@ partial class Composition
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public ICommandHandler<T1> GetUpdateCommandHandler<T1>()
   {
-    UpdateCommandHandler<T1> transientUpdateCommandHandler490;
+    UpdateCommandHandler<T1> transientUpdateCommandHandler504;
     IRepository<T1> localRepository = new Repository<T1>();
-    transientUpdateCommandHandler490 = new UpdateCommandHandler<T1>(localRepository);
-    return transientUpdateCommandHandler490;
+    transientUpdateCommandHandler504 = new UpdateCommandHandler<T1>(localRepository);
+    return transientUpdateCommandHandler504;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -121,7 +121,7 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<IUserRepository> perBlockFunc502 = new Func<IUserRepository>(
+      Func<IUserRepository> perBlockFunc516 = new Func<IUserRepository>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
@@ -129,7 +129,7 @@ partial class Composition
       });
       return new LightweightRoot()
       {
-        IUserRepository = perBlockFunc502
+        IUserRepository = perBlockFunc516
       };
     }
   }

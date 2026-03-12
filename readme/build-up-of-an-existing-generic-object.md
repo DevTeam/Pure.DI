@@ -106,16 +106,16 @@ partial class Composition
   public IFacade<Guid> GetFacade(string userName)
   {
     if (userName is null) throw new ArgumentNullException(nameof(userName));
-    UserContext<Guid> transientUserContext474;
+    UserContext<Guid> transientUserContext488;
     // The "BuildUp" method injects dependencies into an existing object.
     // This is useful when the object is created externally (e.g., by a UI framework
     // or an ORM) or requires specific initialization before injection.
     UserContext<Guid> localContext = new UserContext<Guid>();
-    Guid transientGuid476 = Guid.NewGuid();
+    Guid transientGuid490 = Guid.NewGuid();
     localContext.UserName = userName;
-    localContext.SetId(transientGuid476);
-    transientUserContext474 = localContext;
-    return new Facade<Guid>(transientUserContext474);
+    localContext.SetId(transientGuid490);
+    transientUserContext488 = localContext;
+    return new Facade<Guid>(transientUserContext488);
   }
 }
 ```

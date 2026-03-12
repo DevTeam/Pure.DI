@@ -410,6 +410,7 @@ dotnet run
 - [Inheritance of compositions](readme/inheritance-of-compositions.md)
 - [Accumulators](readme/accumulators.md)
 - [Global compositions](readme/global-compositions.md)
+- [Light roots](readme/light-roots.md)
 - [Partial class](readme/partial-class.md)
 - [A few partial classes](readme/a-few-partial-classes.md)
 - [Thread-safe overrides](readme/thread-safe-overrides.md)
@@ -2007,7 +2008,7 @@ AI needs to understand the situation it’s in (context). This means knowing det
 | --------------- | ---- | ------ |
 | [AGENTS_SMALL.md](AGENTS_SMALL.md) | 52KB | 13K |
 | [AGENTS_MEDIUM.md](AGENTS_MEDIUM.md) | 100KB | 25K |
-| [AGENTS.md](AGENTS.md) | 363KB | 92K |
+| [AGENTS.md](AGENTS.md) | 365KB | 93K |
 
 For different IDEs, you can use the _AGENTS.md_ file as is by simply copying it to the root directory. For use with _JetBrains Rider_ and _Junie_, please refer to [these instructions](https://www.jetbrains.com/help/junie/customize-guidelines.html). For example, you can copy any _AGENTS.md_ file into your project (using _Pure.DI_) as _.junie/guidelines.md._
 ## How to contribute to Pure.DI

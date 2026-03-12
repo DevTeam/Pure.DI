@@ -159,14 +159,14 @@ partial class Composition: IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<IConfiguration> perBlockFunc404 = new Func<IConfiguration>(
+      Func<IConfiguration> perBlockFunc418 = new Func<IConfiguration>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
         EnsureConfigurationExists();
         return _root._singletonConfiguration51;
       });
-      Func<ISession> perBlockFunc405 = new Func<ISession>(
+      Func<ISession> perBlockFunc419 = new Func<ISession>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
@@ -175,8 +175,8 @@ partial class Composition: IDisposable
       });
       return new LightweightRoot()
       {
-        IConfiguration = perBlockFunc404,
-        ISession = perBlockFunc405
+        IConfiguration = perBlockFunc418,
+        ISession = perBlockFunc419
       };
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureConfigurationExists()
