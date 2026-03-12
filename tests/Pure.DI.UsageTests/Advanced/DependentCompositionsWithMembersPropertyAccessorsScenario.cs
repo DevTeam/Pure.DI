@@ -16,10 +16,10 @@ $f=- Accessor logic is not copied; the user provides partial implementations.
 $f=- Simple property accessors (field-backed) can be used without partial methods.
 $f=
 $f=Example demonstrates:
-$f=  1. BaseComposition provides connection string and max connections properties
-$f=  2. ConnectionString has simple field-backed accessor (no logic)
-$f=  3. MaxConnections has custom getter logic via partial method
-$f=  4. Dependent Composition implements custom accessor logic for MaxConnections
+$f= 1. BaseComposition provides connection string and max connections properties
+$f= 2. ConnectionString has simple field-backed accessor (no logic)
+$f= 3. MaxConnections has custom getter logic via partial method
+$f= 4. Dependent Composition implements custom accessor logic for MaxConnections
 $f=
 $f=Useful when:
 $f=- Properties include custom logic and are referenced by bindings in a dependent setup.
@@ -32,8 +32,13 @@ $f=
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable RedundantAssignment
 // ReSharper disable ArrangeTypeModifiers
-
 // ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable UnusedMember.Local
+// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable UnusedMember.Global
+// ReSharper disable ConvertToAutoProperty
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Advanced.DependentCompositionsWithMembersPropertyAccessorsScenario;
 

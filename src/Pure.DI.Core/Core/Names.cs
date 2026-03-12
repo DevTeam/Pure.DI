@@ -91,7 +91,7 @@ static class Names
 
     // Class names
     public static readonly string ResolverClassName = $"Resolver{Salt}";
-    public static readonly string LightweightRootBaseClassName = $"{GeneratorName}.{nameof(LightweightRoot)}";
+    public const string LightweightRootBaseClassName = $"{GeneratorName}.{nameof(LightweightRoot)}";
     public static readonly string LightweightRootClassName = $"{nameof(LightweightRoot)}{Salt}";
 
     // Fields

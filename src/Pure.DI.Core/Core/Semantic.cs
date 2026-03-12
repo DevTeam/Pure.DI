@@ -2,7 +2,6 @@
 
 namespace Pure.DI.Core;
 
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis.Operations;
 

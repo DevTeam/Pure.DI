@@ -24,6 +24,8 @@ $f=- The host (like Unity) creates the composition instance.
 // ReSharper disable ArrangeTypeModifiers
 
 // ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable UnusedMember.Local
+// ReSharper disable PropertyCanBeMadeInitOnly.Global
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Advanced.DependentCompositionsWithRootArgumentScenario;
 

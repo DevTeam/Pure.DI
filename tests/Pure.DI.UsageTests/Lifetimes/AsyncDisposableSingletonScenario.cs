@@ -11,7 +11,7 @@ $r=Shouldly
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
 // ReSharper disable ArrangeTypeModifiers
-
+// ReSharper disable UnusedParameter.Global
 namespace Pure.DI.UsageTests.Lifetimes.AsyncDisposableSingletonScenario;
 
 using Shouldly;

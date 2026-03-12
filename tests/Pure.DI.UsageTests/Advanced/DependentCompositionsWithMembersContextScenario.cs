@@ -34,8 +34,15 @@ $f=
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable RedundantAssignment
 // ReSharper disable ArrangeTypeModifiers
-
 // ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable MemberCanBeMadeStatic.Local
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
+// ReSharper disable FieldCanBeMadeReadOnly.Global
+// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable UnusedMember.Local
+// ReSharper disable PropertyCanBeMadeInitOnly.Global
+// ReSharper disable ConvertToConstant.Global
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Advanced.DependentCompositionsWithMembersContextScenario;
 
@@ -115,7 +122,7 @@ internal partial class BaseComposition
 
     public DatabaseConnectionSettings ConnectionSettings { get; set; } = new("", 0, "");
 
-    int GetDefaultTimeout() => 5000;
+    private int GetDefaultTimeout() => 5000;
 
     private void Setup()
     {

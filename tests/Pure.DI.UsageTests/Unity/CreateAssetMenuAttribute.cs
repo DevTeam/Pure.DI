@@ -1,4 +1,5 @@
-﻿namespace Pure.DI.UsageTests.Unity;
+﻿// ReSharper disable UnusedAutoPropertyAccessor.Global
+namespace Pure.DI.UsageTests.Unity;
 
 public class CreateAssetMenuAttribute: Attribute
 {

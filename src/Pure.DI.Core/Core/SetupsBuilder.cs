@@ -801,7 +801,7 @@ sealed class SetupsBuilder(
     }
 
     [SuppressMessage("ReSharper", "InvertIf")]
-    private static MdRoot ConfigureRoot(MdRoot root, Hints hints)
+    private static MdRoot ConfigureRoot(MdRoot root, IHints hints)
     {
         if (hints.IsLightweightAnonymousRoot)
         {

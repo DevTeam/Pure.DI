@@ -1,4 +1,5 @@
-﻿namespace Pure.DI.UsageTests.Unity;
+﻿// ReSharper disable ClassNeverInstantiated.Global
+namespace Pure.DI.UsageTests.Unity;
 
 public class Object
 {

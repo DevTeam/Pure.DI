@@ -41,7 +41,7 @@ public class Scenario
     {
 // {    
         DI.Setup(nameof(DeepComposition))
-            .Bind().To<int>(_ => 7)
+            .Bind().To(_ => 7)
             .Bind().To<Dependency>()
             .Bind().To<Service>(ctx =>
             {
@@ -52,7 +52,7 @@ public class Scenario
             .Root<Service>("Service");
 
         DI.Setup(nameof(ShallowComposition))
-            .Bind().To<int>(_ => 7)
+            .Bind().To(_ => 7)
             .Bind().To<Dependency>()
             .Bind().To<Service>(ctx =>
             {

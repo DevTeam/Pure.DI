@@ -38,10 +38,10 @@ sealed class Types(
 
     internal readonly struct SpecialTypeKey(SpecialType specialType, Compilation compilation) : IEquatable<SpecialTypeKey>
     {
-        public readonly SpecialType SpecialType = specialType;
+        private readonly SpecialType _specialType = specialType;
         public readonly Compilation Compilation = compilation;
 
-        public bool Equals(SpecialTypeKey other) => SpecialType == other.SpecialType && Compilation.Equals(other.Compilation);
+        public bool Equals(SpecialTypeKey other) => _specialType == other._specialType && Compilation.Equals(other.Compilation);
 
         public override bool Equals(object? obj) => obj is SpecialTypeKey other && Equals(other);
 
@@ -49,7 +49,7 @@ sealed class Types(
         {
             unchecked
             {
-                return (int)SpecialType * 397 ^ Compilation.GetHashCode();
+                return (int)_specialType * 397 ^ Compilation.GetHashCode();
             }
         }
     }

@@ -124,6 +124,8 @@
 // ReSharper disable InconsistentNaming
 // ReSharper disable EmptyConstructor
 // ReSharper disable UnusedMember.Local
+// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable UnusedType.Global
 #pragma warning disable CS9113 // Parameter is unread.
 
 namespace HugeComposition;

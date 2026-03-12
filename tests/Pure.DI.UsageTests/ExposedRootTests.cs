@@ -1,4 +1,8 @@
 ﻿// ReSharper disable once CheckNamespace
+// ReSharper disable UnusedVariable
+// ReSharper disable UnusedMember.Global
+// ReSharper disable UnusedMember.Local
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 namespace Pure.DI.UsageTests.IntegrationTests.ExposedRootTests;
 
 using Pure.DI;

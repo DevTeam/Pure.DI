@@ -15,6 +15,7 @@ $r=Shouldly
 // ReSharper disable UnusedMember.Global
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedParameter.Global
+// ReSharper disable UnusedVariable
 namespace Pure.DI.UsageTests.Basics.SimplifiedLifetimeFactoryScenario;
 
 using Shouldly;
@@ -39,8 +40,8 @@ public class Scenario
             // and performs further initialization logic
             // defined in the lambda function to set up the log file name
             .Singleton<FileLogger, DateTime, IFileLogger>((
-                FileLogger logger,
-                [Tag("today")] DateTime date) => {
+                logger,
+                [Tag("today")] date) => {
                 logger.Init($"app-{date:yyyy-MM-dd}.log");
                 return logger;
             })

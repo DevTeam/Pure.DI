@@ -1,7 +1,5 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
-using Core;
-
 /// <summary>
 /// Tests related to the support for various lifetimes (Transient, Singleton, Scoped, etc.).
 /// </summary>

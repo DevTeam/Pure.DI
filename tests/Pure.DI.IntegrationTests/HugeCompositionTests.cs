@@ -20,7 +20,7 @@ public class HugeCompositionTests
 	private static string GetEmbeddedResourceContent()
 	{
 		var assembly = typeof(HugeCompositionTests).Assembly;
-		var resourceName = "Pure.DI.IntegrationTests.HugeComposition.cs";
+		const string resourceName = "Pure.DI.IntegrationTests.HugeComposition.cs";
 
 		using var stream = assembly.GetManifestResourceStream(resourceName);
 		if (stream == null)

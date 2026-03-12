@@ -100,6 +100,7 @@ public static class TestExtensions
         var sourceList = sourceTexts.ToList();
         if (sourceList.Count == 0)
         {
+            // ReSharper disable once LocalizableElement
             throw new ArgumentException("At least one source is required.", nameof(sourceTexts));
         }
 

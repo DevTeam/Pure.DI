@@ -1,7 +1,5 @@
 namespace Pure.DI.IntegrationTests;
 
-using Core;
-
 /// <summary>
 /// Tests related to explicit default value handling.
 /// </summary>

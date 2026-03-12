@@ -25,6 +25,7 @@ $f=- You handle multi-tenant requests and need system services to run under a sy
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedParameter.Local
+// ReSharper disable UnusedMember.Local
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.UseCases.RequestOverridesScenario;
 

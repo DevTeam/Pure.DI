@@ -15,7 +15,7 @@ public class VariatorTests
         {
             new("1_a", "1_b"),
             new("2_a", "2_b", "2_c"),
-            new("3_a"),
+            new("3_a")
         };
 
         // Then - sequential variation generation
@@ -192,7 +192,7 @@ public class VariatorTests
 
         // When & Then - Verify initial state and several transitions
         var iterationCount = 0;
-        var maxIterations = 360;
+        const int maxIterations = 360;
 
         while (variator.TryGetNext(sets, out var variants))
         {
@@ -301,7 +301,7 @@ public class VariatorTests
 
         // When & Then
         var iterationCount = 0;
-        var maxIterations = 64;
+        const int maxIterations = 64;
         var sumCounts = new Dictionary<int, int>();
 
         while (variator.TryGetNext(sets, out var variants))

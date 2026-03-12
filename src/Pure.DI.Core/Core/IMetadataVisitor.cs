@@ -1,5 +1,5 @@
 // ReSharper disable UnusedMemberInSuper.Global
-
+// ReSharper disable UnusedParameter.Global
 namespace Pure.DI.Core;
 
 interface IMetadataVisitor
