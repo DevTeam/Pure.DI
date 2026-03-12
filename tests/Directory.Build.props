@@ -6,6 +6,7 @@
         <TargetFramework>$(BaseTargetFramework)</TargetFramework>
         <SignAssembly>true</SignAssembly>
         <AssemblyOriginatorKeyFile>..\..\DevTeam.snk</AssemblyOriginatorKeyFile>
+        <NoWarn>$(NoWarn);NU1903</NoWarn>
     </PropertyGroup>
 
 </Project>
