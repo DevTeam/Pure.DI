@@ -14,7 +14,7 @@ sealed class DependenciesToLinesWalker(int indent, ILocationProvider locationPro
     {
         using (_lb.Indent())
         {
-            _lb.Append($"{root.Source.RootType}({root.Source.Tag?.Value ?? ""}) {root.Source.Name}");
+            _lb.Append($"{root.Source.RootType}({root.Source.Tag?.Value ?? ""}){(string.IsNullOrWhiteSpace(root.Source.Name) ? "" : " " + root.Source.Name.Trim())}");
             base.VisitRoot(ctx, in root);
         }
     }

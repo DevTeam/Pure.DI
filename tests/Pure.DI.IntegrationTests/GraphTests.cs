@@ -52,12 +52,12 @@ public class GraphTests
         graphText.AppendLine();
         for (var i = 0; i < count - 1; i++)
         {
-            graphText.AppendLine($"Dependency{i}(Sample.IDependency{i + 1} dep<--Sample.IDependency{i + 1}))");
-            graphText.AppendLine($"  +[Dependency{i}(Sample.IDependency{i + 1} dep<--Sample.IDependency{i + 1}))]<--[Sample.IDependency{i + 1}]--[Dependency{i + 1}(Sample.IDependency{i + 2} dep<--Sample.IDependency{i + 2}))]");
+            graphText.AppendLine($"Dependency{i}(Sample.IDependency{i + 1} dep<--Sample.IDependency{i + 1})");
+            graphText.AppendLine($"  +[Dependency{i}(Sample.IDependency{i + 1} dep<--Sample.IDependency{i + 1})]<--[Sample.IDependency{i + 1}]--[Dependency{i + 1}(Sample.IDependency{i + 2} dep<--Sample.IDependency{i + 2})]");
         }
 
-        graphText.AppendLine($"Dependency{count - 1}(Sample.IDependency{count} dep<--Sample.IDependency{count}))");
-        graphText.AppendLine($"  +[Dependency{count - 1}(Sample.IDependency{count} dep<--Sample.IDependency{count}))]<--[Sample.IDependency{count}]--[Dependency{count}()]");
+        graphText.AppendLine($"Dependency{count - 1}(Sample.IDependency{count} dep<--Sample.IDependency{count})");
+        graphText.AppendLine($"  +[Dependency{count - 1}(Sample.IDependency{count} dep<--Sample.IDependency{count})]<--[Sample.IDependency{count}]--[Dependency{count}()]");
         graphText.Append($"Dependency{count}()");
 
         var setupCode = """
@@ -104,9 +104,9 @@ public class GraphTests
             graphs.Length.ShouldBe(1, result);
             graphs[0].ConvertToString().ShouldBe(("""
                                                   Sample.IService() Root
-                                                    +[Sample.IService() Root]<--[Sample.IService]--[Service(Sample.IDependency0 dependency<--Sample.IDependency0))]
-                                                  Service(Sample.IDependency0 dependency<--Sample.IDependency0))
-                                                    +[Service(Sample.IDependency0 dependency<--Sample.IDependency0))]<--[Sample.IDependency0]--[Dependency0(Sample.IDependency1 dep<--Sample.IDependency1))]
+                                                    +[Sample.IService() Root]<--[Sample.IService]--[Service(Sample.IDependency0 dependency<--Sample.IDependency0)]
+                                                  Service(Sample.IDependency0 dependency<--Sample.IDependency0)
+                                                    +[Service(Sample.IDependency0 dependency<--Sample.IDependency0)]<--[Sample.IDependency0]--[Dependency0(Sample.IDependency1 dep<--Sample.IDependency1)]
                                                   """ + graphText).Replace("\r", ""));
         }
     }
@@ -159,10 +159,10 @@ public class GraphTests
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
-                                             Sample.IService() 
-                                               +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.Dependency dependency<--Sample.Dependency))]
-                                             Service(Sample.Dependency dependency<--Sample.Dependency))
-                                               +[Service(Sample.Dependency dependency<--Sample.Dependency))]<--[Sample.Dependency]--[Dependency()]
+                                             Sample.IService()
+                                               +[Sample.IService()]<--[Sample.IService]--[Service(Sample.Dependency dependency<--Sample.Dependency)]
+                                             Service(Sample.Dependency dependency<--Sample.Dependency)
+                                               +[Service(Sample.Dependency dependency<--Sample.Dependency)]<--[Sample.Dependency]--[Dependency()]
                                              Dependency()
                                              """.Replace("\r", ""));
     }
@@ -212,10 +212,10 @@ public class GraphTests
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
-                                             Sample.IService() 
-                                               +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.Dependency<string> dependency<--Sample.Dependency<string>))]
-                                             Service(Sample.Dependency<string> dependency<--Sample.Dependency<string>))
-                                               +[Service(Sample.Dependency<string> dependency<--Sample.Dependency<string>))]<--[Sample.Dependency<string>]--[Dependency<string>()]
+                                             Sample.IService()
+                                               +[Sample.IService()]<--[Sample.IService]--[Service(Sample.Dependency<string> dependency<--Sample.Dependency<string>)]
+                                             Service(Sample.Dependency<string> dependency<--Sample.Dependency<string>)
+                                               +[Service(Sample.Dependency<string> dependency<--Sample.Dependency<string>)]<--[Sample.Dependency<string>]--[Dependency<string>()]
                                              Dependency<string>()
                                              """.Replace("\r", ""));
     }
@@ -270,11 +270,11 @@ public class GraphTests
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
-                                             Sample.IService() 
-                                               +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
+                                             Sample.IService()
+                                               +[Sample.IService()]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency)]
                                              Sample.IDependency dep
-                                             Service(Sample.IDependency dependency<--Sample.IDependency))
-                                               +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Sample.IDependency dep]
+                                             Service(Sample.IDependency dependency<--Sample.IDependency)
+                                               +[Service(Sample.IDependency dependency<--Sample.IDependency)]<--[Sample.IDependency]--[Sample.IDependency dep]
                                              """.Replace("\r", ""));
     }
 
@@ -334,11 +334,11 @@ public class GraphTests
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
-                                             Sample.IService() 
-                                               +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))]
+                                             Sample.IService()
+                                               +[Sample.IService()]<--[Sample.IService]--[Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>)]
                                              "Abc"
-                                             Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))
-                                               +[Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))]<--[Sample.IDependency<int>]--[{
+                                             Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>)
+                                               +[Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>)]<--[Sample.IDependency<int>]--[{
                                                              ctx.Inject<int[]>(out int[] array); 
                                                              ctx.Inject<string>("MyStr", out var str);
                                                              return new Dependency<int>(array, str);
@@ -421,12 +421,12 @@ public class GraphTests
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
-                                             Sample.IService() 
-                                               +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>> dependency<--Sample.IDependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>>))]
-                                             Service(Sample.IDependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>> dependency<--Sample.IDependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>>))
-                                               +[Service(Sample.IDependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>> dependency<--Sample.IDependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>>))]<--[Sample.IDependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>>]--[Dependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>>(Sample.Dependency2 dep<--Sample.Dependency2))]
-                                             Dependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>>(Sample.Dependency2 dep<--Sample.Dependency2))
-                                               +[Dependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>>(Sample.Dependency2 dep<--Sample.Dependency2))]<--[Sample.Dependency2]--[Dependency2()]
+                                             Sample.IService()
+                                               +[Sample.IService()]<--[Sample.IService]--[Service(Sample.IDependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>> dependency<--Sample.IDependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>>)]
+                                             Service(Sample.IDependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>> dependency<--Sample.IDependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>>)
+                                               +[Service(Sample.IDependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>> dependency<--Sample.IDependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>>)]<--[Sample.IDependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>>]--[Dependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>>(Sample.Dependency2 dep<--Sample.Dependency2)]
+                                             Dependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>>(Sample.Dependency2 dep<--Sample.Dependency2)
+                                               +[Dependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>>(Sample.Dependency2 dep<--Sample.Dependency2)]<--[Sample.Dependency2]--[Dependency2()]
                                              Dependency2()
                                              """.Replace("\r", ""));
     }
@@ -481,11 +481,11 @@ public class GraphTests
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
-                                             Sample.IService() 
-                                               +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
+                                             Sample.IService()
+                                               +[Sample.IService()]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency)]
                                              new Dependency()
-                                             Service(Sample.IDependency dependency<--Sample.IDependency))
-                                               +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[new Dependency()]
+                                             Service(Sample.IDependency dependency<--Sample.IDependency)
+                                               +[Service(Sample.IDependency dependency<--Sample.IDependency)]<--[Sample.IDependency]--[new Dependency()]
                                              """.Replace("\r", ""));
     }
 
@@ -539,10 +539,10 @@ public class GraphTests
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
-                                             Sample.IService() 
-                                               +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))]
-                                             Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))
-                                               +[Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))]<--[Sample.IDependency<int>]--[new Dependency<int>(new int[1])]
+                                             Sample.IService()
+                                               +[Sample.IService()]<--[Sample.IService]--[Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>)]
+                                             Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>)
+                                               +[Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>)]<--[Sample.IDependency<int>]--[new Dependency<int>(new int[1])]
                                              new Dependency<int>(new int[1])
                                              """.Replace("\r", ""));
     }
@@ -597,10 +597,10 @@ public class GraphTests
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
-                                             Sample.IService() 
-                                               +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))]
-                                             Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))
-                                               +[Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))]<--[Sample.IDependency<int>]--[Dependency<int>()]
+                                             Sample.IService()
+                                               +[Sample.IService()]<--[Sample.IService]--[Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>)]
+                                             Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>)
+                                               +[Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>)]<--[Sample.IDependency<int>]--[Dependency<int>()]
                                              Dependency<int>()
                                              """.Replace("\r", ""));
     }
@@ -654,11 +654,11 @@ public class GraphTests
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
-                                             Sample.IService() 
-                                               +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
+                                             Sample.IService()
+                                               +[Sample.IService()]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency)]
                                              Dependency()
-                                             Service(Sample.IDependency dependency<--Sample.IDependency))
-                                               +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency()]
+                                             Service(Sample.IDependency dependency<--Sample.IDependency)
+                                               +[Service(Sample.IDependency dependency<--Sample.IDependency)]<--[Sample.IDependency]--[Dependency()]
                                              """.Replace("\r", ""));
     }
 
@@ -770,11 +770,11 @@ public class GraphTests
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
-                                             Sample.IService() 
-                                               +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
+                                             Sample.IService()
+                                               +[Sample.IService()]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency)]
                                              Dependency()
-                                             Service(Sample.IDependency dependency<--Sample.IDependency))
-                                               +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency()]
+                                             Service(Sample.IDependency dependency<--Sample.IDependency)
+                                               +[Service(Sample.IDependency dependency<--Sample.IDependency)]<--[Sample.IDependency]--[Dependency()]
                                              """.Replace("\r", ""));
     }
 
@@ -830,11 +830,11 @@ public class GraphTests
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
-                                             Sample.IService() 
-                                               +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
+                                             Sample.IService()
+                                               +[Sample.IService()]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency)]
                                              Dependency()
-                                             Service(Sample.IDependency dependency<--Sample.IDependency))
-                                               +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency()]
+                                             Service(Sample.IDependency dependency<--Sample.IDependency)
+                                               +[Service(Sample.IDependency dependency<--Sample.IDependency)]<--[Sample.IDependency]--[Dependency()]
                                              """.Replace("\r", ""));
     }
 
@@ -893,13 +893,13 @@ public class GraphTests
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
-                                             Sample.IService() 
-                                               +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.Dependency dependency<--Sample.Dependency))]
+                                             Sample.IService()
+                                               +[Sample.IService()]<--[Sample.IService]--[Service(Sample.Dependency dependency<--Sample.Dependency)]
                                              Dependency2()
-                                             Service(Sample.Dependency dependency<--Sample.Dependency))
-                                               +[Service(Sample.Dependency dependency<--Sample.Dependency))]<--[Sample.Dependency]--[Dependency(Sample.IDependency2 dep<--Sample.IDependency2))]
-                                             Dependency(Sample.IDependency2 dep<--Sample.IDependency2))
-                                               +[Dependency(Sample.IDependency2 dep<--Sample.IDependency2))]<--[Sample.IDependency2]--[Dependency2()]
+                                             Service(Sample.Dependency dependency<--Sample.Dependency)
+                                               +[Service(Sample.Dependency dependency<--Sample.Dependency)]<--[Sample.Dependency]--[Dependency(Sample.IDependency2 dep<--Sample.IDependency2)]
+                                             Dependency(Sample.IDependency2 dep<--Sample.IDependency2)
+                                               +[Dependency(Sample.IDependency2 dep<--Sample.IDependency2)]<--[Sample.IDependency2]--[Dependency2()]
                                              """.Replace("\r", ""));
     }
 
@@ -955,11 +955,11 @@ public class GraphTests
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
-                                             Sample.IService() 
-                                               +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
+                                             Sample.IService()
+                                               +[Sample.IService()]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency)]
                                              Dependency()
-                                             Service(Sample.IDependency dependency<--Sample.IDependency))
-                                               +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency()]
+                                             Service(Sample.IDependency dependency<--Sample.IDependency)
+                                               +[Service(Sample.IDependency dependency<--Sample.IDependency)]<--[Sample.IDependency]--[Dependency()]
                                              """.Replace("\r", ""));
     }
 
@@ -1016,11 +1016,11 @@ public class GraphTests
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
-                                             Sample.IService() 
-                                               +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
+                                             Sample.IService()
+                                               +[Sample.IService()]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency)]
                                              Dependency()
-                                             Service(Sample.IDependency dependency<--Sample.IDependency))
-                                               +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency()]
+                                             Service(Sample.IDependency dependency<--Sample.IDependency)
+                                               +[Service(Sample.IDependency dependency<--Sample.IDependency)]<--[Sample.IDependency]--[Dependency()]
                                              """.Replace("\r", ""));
     }
 
@@ -1079,13 +1079,13 @@ public class GraphTests
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(2, result);
         graphs[1].ConvertToString().ShouldBe("""
-                                             Sample.IService() 
-                                               +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
-                                             Sample.IDependency() 
-                                               +[Sample.IDependency() ]<--[Sample.IDependency]--[Dependency()]
+                                             Sample.IService()
+                                               +[Sample.IService()]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency)]
+                                             Sample.IDependency()
+                                               +[Sample.IDependency()]<--[Sample.IDependency]--[Dependency()]
                                              Dependency()
-                                             Service(Sample.IDependency dependency<--Sample.IDependency))
-                                               +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency()]
+                                             Service(Sample.IDependency dependency<--Sample.IDependency)
+                                               +[Service(Sample.IDependency dependency<--Sample.IDependency)]<--[Sample.IDependency]--[Dependency()]
                                              """.Replace("\r", ""));
     }
 
@@ -1147,12 +1147,12 @@ public class GraphTests
         graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
                                              Sample.IService() Service
-                                               +[Sample.IService() Service]<--[Sample.IService]--[Service(System.Collections.Generic.IEnumerable<Sample.IDependency> deps<--System.Collections.Generic.IEnumerable<Sample.IDependency>))]
+                                               +[Sample.IService() Service]<--[Sample.IService]--[Service(System.Collections.Generic.IEnumerable<Sample.IDependency> deps<--System.Collections.Generic.IEnumerable<Sample.IDependency>)]
                                              Dependency()
                                              Dependency()
                                              Dependency()
-                                             Service(System.Collections.Generic.IEnumerable<Sample.IDependency> deps<--System.Collections.Generic.IEnumerable<Sample.IDependency>))
-                                               +[Service(System.Collections.Generic.IEnumerable<Sample.IDependency> deps<--System.Collections.Generic.IEnumerable<Sample.IDependency>))]<--[System.Collections.Generic.IEnumerable<Sample.IDependency>]--[System.Collections.Generic.IEnumerable<Sample.IDependency> enumerable of Sample.IDependency(1), Sample.IDependency(2), Sample.IDependency(3)]
+                                             Service(System.Collections.Generic.IEnumerable<Sample.IDependency> deps<--System.Collections.Generic.IEnumerable<Sample.IDependency>)
+                                               +[Service(System.Collections.Generic.IEnumerable<Sample.IDependency> deps<--System.Collections.Generic.IEnumerable<Sample.IDependency>)]<--[System.Collections.Generic.IEnumerable<Sample.IDependency>]--[System.Collections.Generic.IEnumerable<Sample.IDependency> enumerable of Sample.IDependency(1), Sample.IDependency(2), Sample.IDependency(3)]
                                              System.Collections.Generic.IEnumerable<Sample.IDependency> enumerable of Sample.IDependency(1), Sample.IDependency(2), Sample.IDependency(3)
                                                +[System.Collections.Generic.IEnumerable<Sample.IDependency> enumerable of Sample.IDependency(1), Sample.IDependency(2), Sample.IDependency(3)]<--[Sample.IDependency(1)]--[Dependency()]
                                                +[System.Collections.Generic.IEnumerable<Sample.IDependency> enumerable of Sample.IDependency(1), Sample.IDependency(2), Sample.IDependency(3)]<--[Sample.IDependency(2)]--[Dependency()]
@@ -1287,10 +1287,10 @@ public class GraphTests
         graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
                                              Sample.IService() MyService
-                                               +[Sample.IService() MyService]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
+                                               +[Sample.IService() MyService]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency)]
                                              Dependency()
-                                             Service(Sample.IDependency dependency<--Sample.IDependency))
-                                               +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency()]
+                                             Service(Sample.IDependency dependency<--Sample.IDependency)
+                                               +[Service(Sample.IDependency dependency<--Sample.IDependency)]<--[Sample.IDependency]--[Dependency()]
                                              """.Replace("\r", ""));
     }
 
@@ -1349,11 +1349,11 @@ public class GraphTests
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
-                                             Sample.IService() 
-                                               +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
+                                             Sample.IService()
+                                               +[Sample.IService()]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency)]
                                              Dependency()
-                                             Service(Sample.IDependency dependency<--Sample.IDependency))
-                                               +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency()]
+                                             Service(Sample.IDependency dependency<--Sample.IDependency)
+                                               +[Service(Sample.IDependency dependency<--Sample.IDependency)]<--[Sample.IDependency]--[Dependency()]
                                              """.Replace("\r", ""));
     }
 
@@ -1436,15 +1436,16 @@ public class GraphTests
         result.Success.ShouldBeTrue(result);
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(1, result);
+        graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
                                              Sample.IService() Service
-                                               +[Sample.IService() Service]<--[Sample.IService]--[Service(Sample.IDependency dep<--Sample.IDependency), int id<--int(99)), string name<--string))]
-                                             Dependency(int id<--int))
-                                               +[Dependency(int id<--int))]<--[int]--[int depId]
-                                             Service(Sample.IDependency dep<--Sample.IDependency), int id<--int(99)), string name<--string))
-                                               +[Service(Sample.IDependency dep<--Sample.IDependency), int id<--int(99)), string name<--string))]<--[int(99)]--[int id]
-                                               +[Service(Sample.IDependency dep<--Sample.IDependency), int id<--int(99)), string name<--string))]<--[Sample.IDependency]--[Dependency(int id<--int))]
-                                               +[Service(Sample.IDependency dep<--Sample.IDependency), int id<--int(99)), string name<--string))]<--[string]--[string serviceName]
+                                               +[Sample.IService() Service]<--[Sample.IService]--[Service(Sample.IDependency dep<--Sample.IDependency, int id<--int(99), string name<--string)]
+                                             Dependency(int id<--int)
+                                               +[Dependency(int id<--int)]<--[int]--[int depId]
+                                             Service(Sample.IDependency dep<--Sample.IDependency, int id<--int(99), string name<--string)
+                                               +[Service(Sample.IDependency dep<--Sample.IDependency, int id<--int(99), string name<--string)]<--[int(99)]--[int id]
+                                               +[Service(Sample.IDependency dep<--Sample.IDependency, int id<--int(99), string name<--string)]<--[Sample.IDependency]--[Dependency(int id<--int)]
+                                               +[Service(Sample.IDependency dep<--Sample.IDependency, int id<--int(99), string name<--string)]<--[string]--[string serviceName]
                                              string serviceName
                                              int id
                                              int depId
@@ -1514,18 +1515,18 @@ public class GraphTests
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(2, result);
         graphs[0].ConvertToString().ShouldBe("""
-                                             Sample.IService1() 
-                                               +[Sample.IService1() ]<--[Sample.IService1]--[Service1(Sample.IDependency1 dependency<--Sample.IDependency1))]
+                                             Sample.IService1()
+                                               +[Sample.IService1()]<--[Sample.IService1]--[Service1(Sample.IDependency1 dependency<--Sample.IDependency1)]
                                              Dependency1()
-                                             Service1(Sample.IDependency1 dependency<--Sample.IDependency1))
-                                               +[Service1(Sample.IDependency1 dependency<--Sample.IDependency1))]<--[Sample.IDependency1]--[Dependency1()]
+                                             Service1(Sample.IDependency1 dependency<--Sample.IDependency1)
+                                               +[Service1(Sample.IDependency1 dependency<--Sample.IDependency1)]<--[Sample.IDependency1]--[Dependency1()]
                                              """.Replace("\r", ""));
         graphs[1].ConvertToString().ShouldBe("""
-                                             Sample.IService2() 
-                                               +[Sample.IService2() ]<--[Sample.IService2]--[Service2(Sample.IDependency2 dependency<--Sample.IDependency2))]
+                                             Sample.IService2()
+                                               +[Sample.IService2()]<--[Sample.IService2]--[Service2(Sample.IDependency2 dependency<--Sample.IDependency2)]
                                              Dependency2()
-                                             Service2(Sample.IDependency2 dependency<--Sample.IDependency2))
-                                               +[Service2(Sample.IDependency2 dependency<--Sample.IDependency2))]<--[Sample.IDependency2]--[Dependency2()]
+                                             Service2(Sample.IDependency2 dependency<--Sample.IDependency2)
+                                               +[Service2(Sample.IDependency2 dependency<--Sample.IDependency2)]<--[Sample.IDependency2]--[Dependency2()]
                                              """.Replace("\r", ""));
     }
 
