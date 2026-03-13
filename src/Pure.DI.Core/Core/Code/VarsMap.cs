@@ -119,6 +119,11 @@ class VarsMap(
                 continue;
             }
 
+            if (!ShouldIsolatePerBlockVar(perBlockVar))
+            {
+                continue;
+            }
+
 #if DEBUG
             lines.AppendLine($"// {perBlockVar.Declaration.Name}: remove ({nameof(LocalFunction)})");
 #endif
@@ -176,12 +181,46 @@ class VarsMap(
     public IDisposable Block(Var var, Lines lines)
     {
         var scope = EnterScope(var.AbstractNode.BindingId);
+
+        // Per-block variables should be isolated between blocks.
+        List<KeyValuePair<int, Var>>? removed = null;
+        foreach (var bindingId in _perBlockBindingIds)
+        {
+            if (!_map.TryGetValue(bindingId, out var perBlockVar))
+            {
+                continue;
+            }
+
+            if (!ShouldIsolatePerBlockVar(perBlockVar))
+            {
+                continue;
+            }
+
+#if DEBUG
+            lines.AppendLine($"// {perBlockVar.Declaration.Name}: remove ({nameof(Block)})");
+#endif
+            (removed ??= new List<KeyValuePair<int, Var>>(_perBlockBindingIds.Count)).Add(new KeyValuePair<int, Var>(bindingId, perBlockVar));
+            _map.Remove(bindingId);
+        }
+
         return Disposables.Create(() => {
             _suppressedTrackingCount++;
             try
             {
                 RemoveNewNonPersistentVars(var, scope, lines, nameof(Block));
                 RestoreState(scope, lines, nameof(Block), false);
+                if (removed is null)
+                {
+                    return;
+                }
+
+                foreach (var item in removed)
+                {
+#if DEBUG
+                    lines.AppendLine($"// {item.Value.Declaration.Name}: rollback ({nameof(Block)})");
+#endif
+                    _map[item.Key] = item.Value;
+                }
             }
             finally
             {
@@ -210,6 +249,9 @@ class VarsMap(
     private static bool IsNestedScopePersistentNode(IDependencyNode node) =>
         node.ActualLifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve
         || node.Arg is not null;
+
+    private static bool ShouldIsolatePerBlockVar(Var perBlockVar) =>
+        perBlockVar.AbstractNode.Construct is not { Source.Kind: MdConstructKind.Accumulator };
 
     private static bool ShouldKeepCurrentNodeInNestedScope(IDependencyNode node) =>
         node.ActualLifetime is Lifetime.PerBlock

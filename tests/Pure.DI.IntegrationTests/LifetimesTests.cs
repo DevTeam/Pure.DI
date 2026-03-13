@@ -658,6 +658,98 @@ public class LifetimesTests
     }
 
     [Fact]
+    public async Task ShouldReproduceMissingPerBlockOwnedInVirtualRoot()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IAppViewModel {}
+                               interface IClockViewModel {}
+                               interface IClockModel {}
+                               interface ITicks : IDisposable {}
+                               interface ILog<T>
+                               {
+                                   void Info(string message);
+                               }
+
+                               sealed class ClockModel: IClockModel {}
+
+                               sealed class DebugLog<T>: ILog<T>
+                               {
+                                   public DebugLog(IClockModel clockModel) {}
+
+                                   public void Info(string message) {}
+                               }
+
+                               sealed class Ticks: ITicks
+                               {
+                                   public void Dispose() {}
+                               }
+
+                               sealed class ClockViewModel: IAppViewModel, IClockViewModel, IDisposable
+                               {
+                                   public ClockViewModel(ILog<ClockViewModel> log, IClockModel clockModel, ITicks ticks)
+                                   {
+                                   }
+
+                                   public void Dispose() {}
+                               }
+
+                               sealed class DesignTimeAppViewModel: IAppViewModel {}
+                               sealed class DesignTimeClockViewModel: IClockViewModel {}
+
+                               sealed class MainWindow {}
+
+                               readonly record struct Root(
+                                   IOwned Owned,
+                                   Func<MainWindow> CreateMainWindow,
+                                   IAppViewModel App,
+                                   IClockViewModel Clock);
+
+                               partial class Composition
+                               {
+                                   void Setup() => DI.Setup()
+                                       .Root<Root>(nameof(Root), kind: RootKinds.Virtual)
+                                       .Bind().As(Lifetime.Singleton).To<Root>()
+                                       .Bind().As(Lifetime.Singleton).To<ClockViewModel>()
+                                       .Bind().To<ClockModel>()
+                                       .Bind().As(Lifetime.Singleton).To<Ticks>()
+                                       .Bind().To<DebugLog<TT>>();
+                               }
+
+                               partial class DesignTimeComposition: Composition
+                               {
+                                   [System.Diagnostics.Conditional("DI")]
+                                   private void Setup() => DI.Setup()
+                                       .Hint(Hint.Resolve, "Off")
+                                       .Root<Root>(nameof(Root), kind: RootKinds.Override)
+                                       .Bind().To<DesignTimeAppViewModel>()
+                                       .Bind().To<DesignTimeClockViewModel>();
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root = composition.Root;
+                                       root.Owned.Dispose();
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
+
+    [Fact]
     public async Task ShouldSupportPerBlockWhenFunc()
     {
         // Given
@@ -4262,5 +4354,1905 @@ public class LifetimesTests
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Dep Ctor"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportPerBlockWithMultipleFuncDifferentTypes()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency1 {}
+                               class Dependency1: IDependency1 {}
+
+                               interface IDependency2 {}
+                               class Dependency2: IDependency2 {}
+
+                               interface IDependency3 {}
+                               class Dependency3: IDependency3 {}
+
+                               interface IService
+                               {
+                                   IDependency1 Dep1 { get; }
+                                   IDependency2 Dep2 { get; }
+                                   IDependency3 Dep3 { get; }
+                               }
+
+                               class Service: IService
+                               {
+                                   public Service(
+                                       Func<IDependency1> dep1,
+                                       Func<IDependency2> dep2,
+                                       Func<IDependency3> dep3)
+                                   {
+                                       Dep1 = dep1();
+                                       Dep2 = dep2();
+                                       Dep3 = dep3();
+                                   }
+
+                                   public IDependency1 Dep1 { get; }
+                                   public IDependency2 Dep2 { get; }
+                                   public IDependency3 Dep3 { get; }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       // FormatCode=On
+                                       DI.Setup("Composition")
+                                          .Bind<Func<TT>>()
+                                               .As(Lifetime.PerBlock)
+                                               .To(ctx => new Func<TT>(() =>
+                                               {
+                                                   ctx.Inject<TT>(ctx.Tag, out var value);
+                                                   return value;
+                                               }))
+                                           .Bind<IDependency1>().To<Dependency1>()
+                                           .Bind<IDependency2>().To<Dependency2>()
+                                           .Bind<IDependency3>().To<Dependency3>()
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportPerBlockWithMultipleNestedFuncScopes()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency1 {}
+                               class Dependency1: IDependency1 {}
+
+                               interface IDependency2 {}
+                               class Dependency2: IDependency2 {}
+
+                               interface IService
+                               {
+                                   IDependency1 Dep1 { get; }
+                                   IDependency2 Dep2 { get; }
+                               }
+
+                               class Service: IService
+                               {
+                                   public Service(
+                                       Func<IDependency1> dep1Factory,
+                                       Func<IDependency2> dep2Factory)
+                                   {
+                                       Dep1 = dep1Factory();
+                                       Dep2 = dep2Factory();
+                                       var dep1Again = dep1Factory();
+                                       var dep2Again = dep2Factory();
+                                   }
+
+                                   public IDependency1 Dep1 { get; }
+                                   public IDependency2 Dep2 { get; }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       // FormatCode=On
+                                       DI.Setup("Composition")
+                                          .Bind<Func<TT>>()
+                                               .As(Lifetime.PerBlock)
+                                               .To(ctx => new Func<TT>(() =>
+                                               {
+                                                   ctx.Inject<TT>(ctx.Tag, out var value);
+                                                   return value;
+                                               }))
+                                           .Bind<IDependency1>().To<Dependency1>()
+                                           .Bind<IDependency2>().To<Dependency2>()
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportPerBlockWithNestedFuncCreatingObjectsWithFunc()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDep1 {}
+                               class Dep1: IDep1 {}
+
+                               interface IDep2 {}
+                               class Dep2: IDep2 {}
+
+                               interface IDep3 {}
+                               class Dep3: IDep3 {}
+
+                               interface ISvc1 {}
+                               class Svc1: ISvc1 {}
+
+                               interface ISvc2 {}
+                               class Svc2: ISvc2 {}
+
+                               interface ISvc3 {}
+                               class Svc3: ISvc3 {}
+
+                               class MidService
+                               {
+                                   public MidService(
+                                       Func<IDep1> dep1Factory,
+                                       Func<IDep2> dep2Factory,
+                                       Func<ISvc1> svc1Factory)
+                                   {
+                                       var d1 = dep1Factory();
+                                       var d2 = dep2Factory();
+                                       var s1 = svc1Factory();
+                                   }
+                               }
+
+                               class HighService
+                               {
+                                   public HighService(
+                                       Func<IDep3> dep3Factory,
+                                       Func<MidService> midFactory,
+                                       Func<ISvc2> svc2Factory,
+                                       Func<ISvc3> svc3Factory)
+                                   {
+                                       var d3 = dep3Factory();
+                                       var mid1 = midFactory();
+                                       var mid2 = midFactory();
+                                       var s2 = svc2Factory();
+                                       var s3 = svc3Factory();
+                                   }
+                               }
+
+                               class RootService
+                               {
+                                   public RootService(Func<HighService> highFactory)
+                                   {
+                                       var h1 = highFactory();
+                                       var h2 = highFactory();
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       // FormatCode=On
+                                       DI.Setup("Composition")
+                                          .Bind<Func<TT>>()
+                                               .As(Lifetime.PerBlock)
+                                               .To(ctx => new Func<TT>(() =>
+                                               {
+                                                   ctx.Inject<TT>(ctx.Tag, out var value);
+                                                   return value;
+                                               }))
+                                           .Bind<IDep1>().To<Dep1>()
+                                           .Bind<IDep2>().To<Dep2>()
+                                           .Bind<IDep3>().To<Dep3>()
+                                           .Bind<ISvc1>().To<Svc1>()
+                                           .Bind<ISvc2>().To<Svc2>()
+                                           .Bind<ISvc3>().To<Svc3>()
+                                           .Bind<MidService>().To<MidService>()
+                                           .Bind<HighService>().To<HighService>()
+                                           .Bind<RootService>().To<RootService>()
+                                           .Root<RootService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportPerBlockWithFactoryInjectingMultipleTypesWithSameFunc()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency: IDependency {}
+
+                               interface IService1 {}
+                               class Service1: IService1
+                               {
+                                   public Service1(Func<IDependency> depFactory)
+                                   {
+                                       Dep = depFactory();
+                                   }
+
+                                   public IDependency Dep { get; }
+                               }
+
+                               interface IService2 {}
+                               class Service2: IService2
+                               {
+                                   public Service2(Func<IDependency> depFactory)
+                                   {
+                                       Dep = depFactory();
+                                   }
+
+                                   public IDependency Dep { get; }
+                               }
+
+                               interface IService3 {}
+                               class Service3: IService3
+                               {
+                                   public Service3(Func<IDependency> depFactory)
+                                   {
+                                       Dep = depFactory();
+                                   }
+
+                                   public IDependency Dep { get; }
+                               }
+
+                               class CompositeService
+                               {
+                                   public CompositeService(IService1 service1, IService2 service2, IService3 service3)
+                                   {
+                                       Service1 = service1;
+                                       Service2 = service2;
+                                       Service3 = service3;
+                                   }
+
+                                   public IService1 Service1 { get; }
+                                   public IService2 Service2 { get; }
+                                   public IService3 Service3 { get; }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       // FormatCode=On
+                                       DI.Setup("Composition")
+                                          .Bind<Func<TT>>()
+                                               .As(Lifetime.PerBlock)
+                                               .To(ctx => new Func<TT>(() =>
+                                               {
+                                                   ctx.Inject<TT>(ctx.Tag, out var value);
+                                                   return value;
+                                               }))
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Bind<IService1>().To<Service1>()
+                                           .Bind<IService2>().To<Service2>()
+                                           .Bind<IService3>().To<Service3>()
+                                           .Bind<CompositeService>()
+                                               .To(ctx =>
+                                               {
+                                                   ctx.Inject<IService1>(out var svc1);
+                                                   ctx.Inject<IService2>(out var svc2);
+                                                   ctx.Inject<IService3>(out var svc3);
+                                                   return new CompositeService(svc1, svc2, svc3);
+                                               })
+                                           .Root<CompositeService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportPerBlockWithNestedFactoryCreatingSameFuncMultipleTimes()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency: IDependency {}
+
+                               class Service1
+                               {
+                                   public Service1(Func<IDependency> depFactory)
+                                   {
+                                       Dep1 = depFactory();
+                                       Dep2 = depFactory();
+                                   }
+
+                                   public IDependency Dep1 { get; }
+                                   public IDependency Dep2 { get; }
+                               }
+
+                               class Service2
+                               {
+                                   public Service2(Func<IDependency> depFactory)
+                                   {
+                                       Dep1 = depFactory();
+                                       Dep2 = depFactory();
+                                   }
+
+                                   public IDependency Dep1 { get; }
+                                   public IDependency Dep2 { get; }
+                               }
+
+                               class RootService
+                               {
+                                   public RootService(
+                                       Func<Service1> service1Factory,
+                                       Func<Service2> service2Factory)
+                                   {
+                                       var svc1a = service1Factory();
+                                       var svc1b = service1Factory();
+                                       var svc2a = service2Factory();
+                                       var svc2b = service2Factory();
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       // FormatCode=On
+                                       DI.Setup("Composition")
+                                          .Bind<Func<TT>>()
+                                               .As(Lifetime.PerBlock)
+                                               .To(ctx => new Func<TT>(() =>
+                                               {
+                                                   ctx.Inject<TT>(ctx.Tag, out var value);
+                                                   return value;
+                                               }))
+                                           .Bind<IDependency>().As(Lifetime.PerBlock).To<Dependency>()
+                                           .Bind<Service1>().To(ctx =>
+                                               {
+                                                   ctx.Inject<Func<IDependency>>(out var depFactory);
+                                                   return new Service1(depFactory);
+                                               })
+                                           .Bind<Service2>().To(ctx =>
+                                               {
+                                                   ctx.Inject<Func<IDependency>>(out var depFactory);
+                                                   return new Service2(depFactory);
+                                               })
+                                           .Bind<RootService>().To(ctx =>
+                                               {
+                                                   ctx.Inject<Func<Service1>>(out var svc1Factory);
+                                                   ctx.Inject<Func<Service2>>(out var svc2Factory);
+                                                   return new RootService(svc1Factory, svc2Factory);
+                                               })
+                                           .Root<RootService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportPerBlockWithComplexNestedFactoriesUsingSameFunc()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDepA {}
+                               class DepA: IDepA {}
+
+                               interface IDepB {}
+                               class DepB: IDepB {}
+
+                               interface IDepC {}
+                               class DepC: IDepC {}
+
+                               interface ISvcA {}
+                               class SvcA: ISvcA
+                               {
+                                   public SvcA(Func<IDepA> depAFactory, Func<IDepB> depBFactory)
+                                   {
+                                       DepA = depAFactory();
+                                       DepB = depBFactory();
+                                   }
+
+                                   public IDepA DepA { get; }
+                                   public IDepB DepB { get; }
+                               }
+
+                               interface ISvcB {}
+                               class SvcB: ISvcB
+                               {
+                                   public SvcB(Func<IDepB> depBFactory, Func<IDepC> depCFactory)
+                                   {
+                                       DepB = depBFactory();
+                                       DepC = depCFactory();
+                                   }
+
+                                   public IDepB DepB { get; }
+                                   public IDepC DepC { get; }
+                               }
+
+                               interface ISvcC {}
+                               class SvcC: ISvcC
+                               {
+                                   public SvcC(Func<IDepA> depAFactory, Func<IDepC> depCFactory)
+                                   {
+                                       DepA = depAFactory();
+                                       DepC = depCFactory();
+                                   }
+
+                                   public IDepA DepA { get; }
+                                   public IDepC DepC { get; }
+                               }
+
+                               class CompositeService
+                               {
+                                   public CompositeService(
+                                       Func<ISvcA> svcAFactory,
+                                       Func<ISvcB> svcBFactory,
+                                       Func<ISvcC> svcCFactory)
+                                   {
+                                       var sa1 = svcAFactory();
+                                       var sb1 = svcBFactory();
+                                       var sc1 = svcCFactory();
+                                       var sa2 = svcAFactory();
+                                       var sb2 = svcBFactory();
+                                       var sc2 = svcCFactory();
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       // FormatCode=On
+                                       DI.Setup("Composition")
+                                          .Bind<Func<TT>>()
+                                               .As(Lifetime.PerBlock)
+                                               .To(ctx => new Func<TT>(() =>
+                                               {
+                                                   ctx.Inject<TT>(ctx.Tag, out var value);
+                                                   return value;
+                                               }))
+                                           .Bind<IDepA>().As(Lifetime.PerBlock).To<DepA>()
+                                           .Bind<IDepB>().As(Lifetime.PerBlock).To<DepB>()
+                                           .Bind<IDepC>().As(Lifetime.PerBlock).To<DepC>()
+                                           .Bind<ISvcA>().To(ctx =>
+                                               {
+                                                   ctx.Inject<Func<IDepA>>(out var depAFact);
+                                                   ctx.Inject<Func<IDepB>>(out var depBFact);
+                                                   return new SvcA(depAFact, depBFact);
+                                               })
+                                           .Bind<ISvcB>().To(ctx =>
+                                               {
+                                                   ctx.Inject<Func<IDepB>>(out var depBFact);
+                                                   ctx.Inject<Func<IDepC>>(out var depCFact);
+                                                   return new SvcB(depBFact, depCFact);
+                                               })
+                                           .Bind<ISvcC>().To(ctx =>
+                                               {
+                                                   ctx.Inject<Func<IDepA>>(out var depAFact);
+                                                   ctx.Inject<Func<IDepC>>(out var depCFact);
+                                                   return new SvcC(depAFact, depCFact);
+                                               })
+                                           .Bind<CompositeService>().To(ctx =>
+                                               {
+                                                   ctx.Inject<Func<ISvcA>>(out var svcAFact);
+                                                   ctx.Inject<Func<ISvcB>>(out var svcBFact);
+                                                   ctx.Inject<Func<ISvcC>>(out var svcCFact);
+                                                   return new CompositeService(svcAFact, svcBFact, svcCFact);
+                                               })
+                                           .Root<CompositeService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportPerBlockWithDeeplyNestedFuncFactories()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency: IDependency {}
+
+                               class Level1
+                               {
+                                   public Level1(Func<IDependency> depFactory)
+                                   {
+                                       Dep = depFactory();
+                                   }
+
+                                   public IDependency Dep { get; }
+                               }
+
+                               class Level2
+                               {
+                                   public Level2(Func<Level1> level1Factory)
+                                   {
+                                       L1 = level1Factory();
+                                   }
+
+                                   public Level1 L1 { get; }
+                               }
+
+                               class Level3
+                               {
+                                   public Level3(Func<Level2> level2Factory)
+                                   {
+                                       L2 = level2Factory();
+                                   }
+
+                                   public Level2 L2 { get; }
+                               }
+
+                               class Root
+                               {
+                                   public Root(
+                                       Func<Level1> l1Factory,
+                                       Func<Level2> l2Factory,
+                                       Func<Level3> l3Factory)
+                                   {
+                                       var l1a = l1Factory();
+                                       var l1b = l1Factory();
+                                       var l2a = l2Factory();
+                                       var l2b = l2Factory();
+                                       var l3a = l3Factory();
+                                       var l3b = l3Factory();
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       // FormatCode=On
+                                       DI.Setup("Composition")
+                                          .Bind<Func<TT>>()
+                                               .As(Lifetime.PerBlock)
+                                               .To(ctx => new Func<TT>(() =>
+                                               {
+                                                   ctx.Inject<TT>(ctx.Tag, out var value);
+                                                   return value;
+                                               }))
+                                           .Bind<IDependency>().As(Lifetime.PerBlock).To<Dependency>()
+                                           .Bind<Level1>().To(ctx =>
+                                               {
+                                                   ctx.Inject<Func<IDependency>>(out var depFactory);
+                                                   return new Level1(depFactory);
+                                               })
+                                           .Bind<Level2>().To(ctx =>
+                                               {
+                                                   ctx.Inject<Func<Level1>>(out var l1Factory);
+                                                   return new Level2(l1Factory);
+                                               })
+                                           .Bind<Level3>().To(ctx =>
+                                               {
+                                                   ctx.Inject<Func<Level2>>(out var l2Factory);
+                                                   return new Level3(l2Factory);
+                                               })
+                                           .Bind<Root>().To(ctx =>
+                                               {
+                                                   ctx.Inject<Func<Level1>>(out var l1Factory);
+                                                   ctx.Inject<Func<Level2>>(out var l2Factory);
+                                                   ctx.Inject<Func<Level3>>(out var l3Factory);
+                                                   return new Root(l1Factory, l2Factory, l3Factory);
+                                               })
+                                           .Root<Root>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportPerBlockFuncWithDifferentLifetimesInChain()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDepTransient {}
+                               class DepTransient: IDepTransient {}
+
+                               interface IDepSingleton {}
+                               class DepSingleton: IDepSingleton {}
+
+                               interface IDepScoped {}
+                               class DepScoped: IDepScoped {}
+
+                               class Service
+                               {
+                                   public Service(
+                                       Func<IDepTransient> transientFactory,
+                                       Func<IDepSingleton> singletonFactory,
+                                       Func<IDepScoped> scopedFactory)
+                                   {
+                                       var t = transientFactory();
+                                       var s = singletonFactory();
+                                       var sc = scopedFactory();
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       // FormatCode=On
+                                       DI.Setup("Composition")
+                                          .Bind<Func<TT>>()
+                                               .As(Lifetime.PerBlock)
+                                               .To(ctx => new Func<TT>(() =>
+                                               {
+                                                   ctx.Inject<TT>(ctx.Tag, out var value);
+                                                   return value;
+                                               }))
+                                           .Bind<IDepTransient>().As(Lifetime.Transient).To<DepTransient>()
+                                           .Bind<IDepSingleton>().As(Lifetime.Singleton).To<DepSingleton>()
+                                           .Bind<IDepScoped>().As(Lifetime.Scoped).To<DepScoped>()
+                                           .Bind<Service>().To<Service>()
+                                           .Root<Service>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportPerBlockFuncWithEnumerable()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency: IDependency {}
+
+                               class Service
+                               {
+                                   public Service(
+                                       Func<IDependency> depFactory1,
+                                       Func<IDependency> depFactory2,
+                                       Func<IDependency> depFactory3)
+                                   {
+                                       var d1 = depFactory1();
+                                       var d2 = depFactory2();
+                                       var d3 = depFactory3();
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       // FormatCode=On
+                                       DI.Setup("Composition")
+                                          .Bind<Func<TT>>()
+                                               .As(Lifetime.PerBlock)
+                                               .To(ctx => new Func<TT>(() =>
+                                               {
+                                                   ctx.Inject<TT>(ctx.Tag, out var value);
+                                                   return value;
+                                               }))
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Bind<Service>().To<Service>()
+                                           .Root<Service>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportPerBlockFuncWithLazyAndDifferentLifetimes()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDep1 {}
+                               class Dep1: IDep1 {}
+
+                               interface IDep2 {}
+                               class Dep2: IDep2 {}
+
+                               interface IDep3 {}
+                               class Dep3: IDep3 {}
+
+                               class Service1
+                               {
+                                   public Service1(
+                                       Lazy<IDep1> lazyDep1,
+                                       Func<IDep2> dep2Factory,
+                                       Lazy<Func<IDep3>> lazyDep3Factory)
+                                   {
+                                       var d1 = lazyDep1.Value;
+                                       var d2 = dep2Factory();
+                                       var d3 = lazyDep3Factory.Value();
+                                   }
+                               }
+
+                               class Service2
+                               {
+                                   public Service2(Func<IDep1> dep1Factory, Lazy<IDep2> lazyDep2)
+                                   {
+                                       var d1 = dep1Factory();
+                                       var d2 = lazyDep2.Value;
+                                   }
+                               }
+
+                               class Root
+                               {
+                                   public Root(Service1 svc1, Service2 svc2)
+                                   {
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       // FormatCode=On
+                                       DI.Setup("Composition")
+                                          .Bind<Func<TT>>()
+                                               .As(Lifetime.PerBlock)
+                                               .To(ctx => new Func<TT>(() =>
+                                               {
+                                                   ctx.Inject<TT>(ctx.Tag, out var value);
+                                                   return value;
+                                               }))
+                                           .Bind<IDep1>().As(Lifetime.Singleton).To<Dep1>()
+                                           .Bind<IDep2>().As(Lifetime.Transient).To<Dep2>()
+                                           .Bind<IDep3>().As(Lifetime.Scoped).To<Dep3>()
+                                           .Bind<Service1>().To<Service1>()
+                                           .Bind<Service2>().To<Service2>()
+                                           .Bind<Root>().To<Root>()
+                                           .Root<Root>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportPerBlockFuncWithPerResolveDependencies()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDep1 {}
+                               class Dep1: IDep1 {}
+
+                               interface IDep2 {}
+                               class Dep2: IDep2 {}
+
+                               interface IDep3 {}
+                               class Dep3: IDep3 {}
+
+                               class Service
+                               {
+                                   public Service(
+                                       Func<IDep1> dep1Factory,
+                                       Func<IDep2> dep2Factory,
+                                       Func<IDep3> dep3Factory,
+                                       IDep1 directDep1,
+                                       IDep2 directDep2)
+                                   {
+                                       var d1 = dep1Factory();
+                                       var d2 = dep2Factory();
+                                       var d3 = dep3Factory();
+                                       var dd1 = directDep1;
+                                       var dd2 = directDep2;
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       // FormatCode=On
+                                       DI.Setup("Composition")
+                                          .Bind<Func<TT>>()
+                                               .As(Lifetime.PerBlock)
+                                               .To(ctx => new Func<TT>(() =>
+                                               {
+                                                   ctx.Inject<TT>(ctx.Tag, out var value);
+                                                   return value;
+                                               }))
+                                           .Bind<IDep1>().As(Lifetime.PerResolve).To<Dep1>()
+                                           .Bind<IDep2>().As(Lifetime.Singleton).To<Dep2>()
+                                           .Bind<IDep3>().As(Lifetime.Transient).To<Dep3>()
+                                           .Bind<Service>().To<Service>()
+                                           .Root<Service>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportPerBlockFuncWhenUsedInsideSingletonBlockAndRoot()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDep {}
+                               class Dep: IDep {}
+
+                               interface IDep2 {}
+                               class Dep2: IDep2 {}
+
+                               class SingletonService
+                               {
+                                   public SingletonService(Func<IDep> depFact, IDep2 dep2)
+                                   {
+                                       var d1 = depFact();
+                                       var d2 = depFact();
+                                       _ = dep2;
+                                   }
+                               }
+
+                               class Root
+                               {
+                                   public Root(Func<IDep> depFact, SingletonService singleton)
+                                   {
+                                       var d1 = depFact();
+                                       var d2 = depFact();
+                                       _ = singleton;
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Bind<IDep>().To<Dep>()
+                                           .Bind<IDep2>().To<Dep2>()
+                                           .Bind<SingletonService>().As(Lifetime.Singleton).To<SingletonService>()
+                                           .Bind<Root>().To<Root>()
+                                           .Root<Root>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       _ = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportPerBlockFuncWithMultipleRoots()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency: IDependency {}
+
+                               interface IService1 {}
+                               class Service1: IService1
+                               {
+                                   public Service1(Func<IDependency> depFactory)
+                                   {
+                                       Dep = depFactory();
+                                   }
+
+                                   public IDependency Dep { get; }
+                               }
+
+                               interface IService2 {}
+                               class Service2: IService2
+                               {
+                                   public Service2(Func<IDependency> depFactory)
+                                   {
+                                       Dep = depFactory();
+                                   }
+
+                                   public IDependency Dep { get; }
+                               }
+
+                               interface IService3 {}
+                               class Service3: IService3
+                               {
+                                   public Service3(Func<IDependency> depFactory)
+                                   {
+                                       Dep = depFactory();
+                                   }
+
+                                   public IDependency Dep { get; }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       // FormatCode=On
+                                       DI.Setup("Composition")
+                                          .Bind<Func<TT>>()
+                                               .As(Lifetime.PerBlock)
+                                               .To(ctx => new Func<TT>(() =>
+                                               {
+                                                   ctx.Inject<TT>(ctx.Tag, out var value);
+                                                   return value;
+                                               }))
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Bind<IService1>().To<Service1>()
+                                           .Bind<IService2>().To<Service2>()
+                                           .Bind<IService3>().To<Service3>()
+                                           .Root<IService1>("Service1")
+                                           .Root<IService2>("Service2")
+                                           .Root<IService3>("Service3");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service1 = composition.Service1;
+                                       var service2 = composition.Service2;
+                                       var service3 = composition.Service3;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportPerBlockFuncWithVeryComplexNestedFactories()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+                           using System.Collections.Generic;
+
+                           namespace Sample
+                           {
+                               interface IDep1 {}
+                               class Dep1: IDep1 {}
+
+                               interface IDep2 {}
+                               class Dep2: IDep2 {}
+
+                               interface IDep3 {}
+                               class Dep3: IDep3 {}
+
+                               interface IDep4 {}
+                               class Dep4: IDep4 {}
+
+                               interface IDep5 {}
+                               class Dep5: IDep5 {}
+
+                               class MidService1
+                               {
+                                   public MidService1(
+                                       Func<IDep1> d1Fact,
+                                       Func<IDep2> d2Fact,
+                                       Func<IDep3> d3Fact)
+                                   {
+                                       var a = d1Fact();
+                                       var b = d2Fact();
+                                       var c = d3Fact();
+                                       var d = d1Fact();
+                                       var e = d2Fact();
+                                       var f = d3Fact();
+                                   }
+                               }
+
+                               class MidService2
+                               {
+                                   public MidService2(
+                                       Func<IDep3> d3Fact,
+                                       Func<IDep4> d4Fact,
+                                       Func<IDep5> d5Fact)
+                                   {
+                                       var a = d3Fact();
+                                       var b = d4Fact();
+                                       var c = d5Fact();
+                                       var d = d3Fact();
+                                       var e = d4Fact();
+                                       var f = d5Fact();
+                                   }
+                               }
+
+                               class MidService3
+                               {
+                                   public MidService3(
+                                       Func<IDep1> d1Fact,
+                                       Func<IDep4> d4Fact,
+                                       Func<IDep5> d5Fact)
+                                   {
+                                       var a = d1Fact();
+                                       var b = d4Fact();
+                                       var c = d5Fact();
+                                       var d = d1Fact();
+                                       var e = d4Fact();
+                                       var f = d5Fact();
+                                   }
+                               }
+
+                               class HighService1
+                               {
+                                   public HighService1(
+                                       Func<MidService1> ms1Fact,
+                                       Func<MidService2> ms2Fact)
+                                   {
+                                       var x = ms1Fact();
+                                       var y = ms2Fact();
+                                       var z = ms1Fact();
+                                       var w = ms2Fact();
+                                   }
+                               }
+
+                               class HighService2
+                               {
+                                   public HighService2(
+                                       Func<MidService2> ms2Fact,
+                                       Func<MidService3> ms3Fact)
+                                   {
+                                       var x = ms2Fact();
+                                       var y = ms3Fact();
+                                       var z = ms2Fact();
+                                       var w = ms3Fact();
+                                   }
+                               }
+
+                               class RootService
+                               {
+                                   public RootService(
+                                       Func<HighService1> hs1Fact,
+                                       Func<HighService2> hs2Fact)
+                                   {
+                                       var a = hs1Fact();
+                                       var b = hs2Fact();
+                                       var c = hs1Fact();
+                                       var d = hs2Fact();
+                                       var e = hs1Fact();
+                                       var f = hs2Fact();
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       // FormatCode=On
+                                       DI.Setup("Composition")
+                                          .Bind<Func<TT>>()
+                                               .As(Lifetime.PerBlock)
+                                               .To(ctx => new Func<TT>(() =>
+                                               {
+                                                   ctx.Inject<TT>(ctx.Tag, out var value);
+                                                   return value;
+                                               }))
+                                           .Bind<IDep1>().To<Dep1>()
+                                           .Bind<IDep2>().To<Dep2>()
+                                           .Bind<IDep3>().To<Dep3>()
+                                           .Bind<IDep4>().To<Dep4>()
+                                           .Bind<IDep5>().To<Dep5>()
+                                           .Bind<MidService1>().To(ctx =>
+                                               {
+                                                   ctx.Inject<Func<IDep1>>(out var d1Fact);
+                                                   ctx.Inject<Func<IDep2>>(out var d2Fact);
+                                                   ctx.Inject<Func<IDep3>>(out var d3Fact);
+                                                   return new MidService1(d1Fact, d2Fact, d3Fact);
+                                               })
+                                           .Bind<MidService2>().To(ctx =>
+                                               {
+                                                   ctx.Inject<Func<IDep3>>(out var d3Fact);
+                                                   ctx.Inject<Func<IDep4>>(out var d4Fact);
+                                                   ctx.Inject<Func<IDep5>>(out var d5Fact);
+                                                   return new MidService2(d3Fact, d4Fact, d5Fact);
+                                               })
+                                           .Bind<MidService3>().To(ctx =>
+                                               {
+                                                   ctx.Inject<Func<IDep1>>(out var d1Fact);
+                                                   ctx.Inject<Func<IDep4>>(out var d4Fact);
+                                                   ctx.Inject<Func<IDep5>>(out var d5Fact);
+                                                   return new MidService3(d1Fact, d4Fact, d5Fact);
+                                               })
+                                           .Bind<HighService1>().To(ctx =>
+                                               {
+                                                   ctx.Inject<Func<MidService1>>(out var ms1Fact);
+                                                   ctx.Inject<Func<MidService2>>(out var ms2Fact);
+                                                   return new HighService1(ms1Fact, ms2Fact);
+                                               })
+                                           .Bind<HighService2>().To(ctx =>
+                                               {
+                                                   ctx.Inject<Func<MidService2>>(out var ms2Fact);
+                                                   ctx.Inject<Func<MidService3>>(out var ms3Fact);
+                                                   return new HighService2(ms2Fact, ms3Fact);
+                                               })
+                                           .Bind<RootService>().To(ctx =>
+                                               {
+                                                   ctx.Inject<Func<HighService1>>(out var hs1Fact);
+                                                   ctx.Inject<Func<HighService2>>(out var hs2Fact);
+                                                   return new RootService(hs1Fact, hs2Fact);
+                                               })
+                                           .Root<RootService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportPerBlockFuncWithDeeplyNestedLocalFunctions()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDep1 {}
+                               class Dep1: IDep1 {}
+
+                               interface IDep2 {}
+                               class Dep2: IDep2 {}
+
+                               interface IDep3 {}
+                               class Dep3: IDep3 {}
+
+                               interface IDep4 {}
+                               class Dep4: IDep4 {}
+
+                               interface IDep5 {}
+                               class Dep5: IDep5 {}
+
+                               interface IDep6 {}
+                               class Dep6: IDep6 {}
+
+                               interface IDep7 {}
+                               class Dep7: IDep7 {}
+
+                               interface IDep8 {}
+                               class Dep8: IDep8 {}
+
+                               class Level1Service
+                               {
+                                   public Level1Service(Func<IDep1> d1Fact, Func<IDep2> d2Fact)
+                                   {
+                                       var a = d1Fact();
+                                       var b = d2Fact();
+                                       var c = d1Fact();
+                                       var d = d2Fact();
+                                   }
+                               }
+
+                               class Level2Service
+                               {
+                                   public Level2Service(
+                                       Func<IDep3> d3Fact,
+                                       Func<IDep4> d4Fact,
+                                       Func<Level1Service> l1Fact)
+                                   {
+                                       var a = d3Fact();
+                                       var b = d4Fact();
+                                       var c = l1Fact();
+                                       var d = d3Fact();
+                                       var e = d4Fact();
+                                       var f = l1Fact();
+                                   }
+                               }
+
+                               class Level3Service
+                               {
+                                   public Level3Service(
+                                       Func<IDep5> d5Fact,
+                                       Func<IDep6> d6Fact,
+                                       Func<Level2Service> l2Fact)
+                                   {
+                                       var a = d5Fact();
+                                       var b = d6Fact();
+                                       var c = l2Fact();
+                                       var d = d5Fact();
+                                       var e = d6Fact();
+                                       var f = l2Fact();
+                                   }
+                               }
+
+                               class Level4Service
+                               {
+                                   public Level4Service(
+                                       Func<IDep7> d7Fact,
+                                       Func<IDep8> d8Fact,
+                                       Func<Level3Service> l3Fact)
+                                   {
+                                       var a = d7Fact();
+                                       var b = d8Fact();
+                                       var c = l3Fact();
+                                       var d = d7Fact();
+                                       var e = d8Fact();
+                                       var f = l3Fact();
+                                   }
+                               }
+
+                               class Level5Service
+                               {
+                                   public Level5Service(
+                                       Func<Level1Service> l1Fact,
+                                       Func<Level2Service> l2Fact,
+                                       Func<Level3Service> l3Fact,
+                                       Func<Level4Service> l4Fact)
+                                   {
+                                       var a = l1Fact();
+                                       var b = l2Fact();
+                                       var c = l3Fact();
+                                       var d = l4Fact();
+                                       var e = l1Fact();
+                                       var f = l2Fact();
+                                       var g = l3Fact();
+                                       var h = l4Fact();
+                                   }
+                               }
+
+                               class Level6Service
+                               {
+                                   public Level6Service(Func<Level5Service> l5Fact)
+                                   {
+                                       var a = l5Fact();
+                                       var b = l5Fact();
+                                       var c = l5Fact();
+                                       var d = l5Fact();
+                                       var e = l5Fact();
+                                       var f = l5Fact();
+                                   }
+                               }
+
+                               class RootService
+                               {
+                                   public RootService(
+                                       Func<Level1Service> l1Fact,
+                                       Func<Level2Service> l2Fact,
+                                       Func<Level3Service> l3Fact,
+                                       Func<Level4Service> l4Fact,
+                                       Func<Level5Service> l5Fact,
+                                       Func<Level6Service> l6Fact)
+                                   {
+                                       var a = l1Fact();
+                                       var b = l2Fact();
+                                       var c = l3Fact();
+                                       var d = l4Fact();
+                                       var e = l5Fact();
+                                       var f = l6Fact();
+                                       var g = l1Fact();
+                                       var h = l2Fact();
+                                       var i = l3Fact();
+                                       var j = l4Fact();
+                                       var k = l5Fact();
+                                       var l = l6Fact();
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       // FormatCode=On
+                                       DI.Setup("Composition")
+                                          .Bind<Func<TT>>()
+                                               .As(Lifetime.PerBlock)
+                                               .To(ctx => new Func<TT>(() =>
+                                               {
+                                                   ctx.Inject<TT>(ctx.Tag, out var value);
+                                                   return value;
+                                               }))
+                                           .Bind<IDep1>().To<Dep1>()
+                                           .Bind<IDep2>().To<Dep2>()
+                                           .Bind<IDep3>().To<Dep3>()
+                                           .Bind<IDep4>().To<Dep4>()
+                                           .Bind<IDep5>().To<Dep5>()
+                                           .Bind<IDep6>().To<Dep6>()
+                                           .Bind<IDep7>().To<Dep7>()
+                                           .Bind<IDep8>().To<Dep8>()
+                                           .Bind<Level1Service>().To(ctx =>
+                                               {
+                                                   ctx.Inject<Func<IDep1>>(out var d1Fact);
+                                                   ctx.Inject<Func<IDep2>>(out var d2Fact);
+                                                   return new Level1Service(d1Fact, d2Fact);
+                                               })
+                                           .Bind<Level2Service>().To(ctx =>
+                                               {
+                                                   ctx.Inject<Func<IDep3>>(out var d3Fact);
+                                                   ctx.Inject<Func<IDep4>>(out var d4Fact);
+                                                   ctx.Inject<Func<Level1Service>>(out var l1Fact);
+                                                   return new Level2Service(d3Fact, d4Fact, l1Fact);
+                                               })
+                                           .Bind<Level3Service>().To(ctx =>
+                                               {
+                                                   ctx.Inject<Func<IDep5>>(out var d5Fact);
+                                                   ctx.Inject<Func<IDep6>>(out var d6Fact);
+                                                   ctx.Inject<Func<Level2Service>>(out var l2Fact);
+                                                   return new Level3Service(d5Fact, d6Fact, l2Fact);
+                                               })
+                                           .Bind<Level4Service>().To(ctx =>
+                                               {
+                                                   ctx.Inject<Func<IDep7>>(out var d7Fact);
+                                                   ctx.Inject<Func<IDep8>>(out var d8Fact);
+                                                   ctx.Inject<Func<Level3Service>>(out var l3Fact);
+                                                   return new Level4Service(d7Fact, d8Fact, l3Fact);
+                                               })
+                                           .Bind<Level5Service>().To(ctx =>
+                                               {
+                                                   ctx.Inject<Func<Level1Service>>(out var l1Fact);
+                                                   ctx.Inject<Func<Level2Service>>(out var l2Fact);
+                                                   ctx.Inject<Func<Level3Service>>(out var l3Fact);
+                                                   ctx.Inject<Func<Level4Service>>(out var l4Fact);
+                                                   return new Level5Service(l1Fact, l2Fact, l3Fact, l4Fact);
+                                               })
+                                           .Bind<Level6Service>().To(ctx =>
+                                               {
+                                                   ctx.Inject<Func<Level5Service>>(out var l5Fact);
+                                                   return new Level6Service(l5Fact);
+                                               })
+                                           .Bind<RootService>().To(ctx =>
+                                               {
+                                                   ctx.Inject<Func<Level1Service>>(out var l1Fact);
+                                                   ctx.Inject<Func<Level2Service>>(out var l2Fact);
+                                                   ctx.Inject<Func<Level3Service>>(out var l3Fact);
+                                                   ctx.Inject<Func<Level4Service>>(out var l4Fact);
+                                                   ctx.Inject<Func<Level5Service>>(out var l5Fact);
+                                                   ctx.Inject<Func<Level6Service>>(out var l6Fact);
+                                                   return new RootService(l1Fact, l2Fact, l3Fact, l4Fact, l5Fact, l6Fact);
+                                               })
+                                           .Root<RootService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                               {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportPerBlockFuncWithManyFuncsInOneConstructor()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDep1 {}
+                               class Dep1: IDep1 {}
+
+                               interface IDep2 {}
+                               class Dep2: IDep2 {}
+
+                               interface IDep3 {}
+                               class Dep3: IDep3 {}
+
+                               interface IDep4 {}
+                               class Dep4: IDep4 {}
+
+                               interface IDep5 {}
+                               class Dep5: IDep5 {}
+
+                               interface IDep6 {}
+                               class Dep6: IDep6 {}
+
+                               interface IDep7 {}
+                               class Dep7: IDep7 {}
+
+                               interface IDep8 {}
+                               class Dep8: IDep8 {}
+
+                               interface IDep9 {}
+                               class Dep9: IDep9 {}
+
+                               interface IDep10 {}
+                               class Dep10: IDep10 {}
+
+                               class Service
+                               {
+                                   public Service(
+                                       Func<IDep1> d1Fact, Func<IDep2> d2Fact, Func<IDep3> d3Fact,
+                                       Func<IDep4> d4Fact, Func<IDep5> d5Fact, Func<IDep6> d6Fact,
+                                       Func<IDep7> d7Fact, Func<IDep8> d8Fact, Func<IDep9> d9Fact,
+                                       Func<IDep10> d10Fact)
+                                   {
+                                       var a1 = d1Fact();
+                                       var a2 = d2Fact();
+                                       var a3 = d3Fact();
+                                       var a4 = d4Fact();
+                                       var a5 = d5Fact();
+                                       var a6 = d6Fact();
+                                       var a7 = d7Fact();
+                                       var a8 = d8Fact();
+                                       var a9 = d9Fact();
+                                       var a10 = d10Fact();
+
+                                       var b1 = d1Fact();
+                                       var b2 = d2Fact();
+                                       var b3 = d3Fact();
+                                       var b4 = d4Fact();
+                                       var b5 = d5Fact();
+                                       var b6 = d6Fact();
+                                       var b7 = d7Fact();
+                                       var b8 = d8Fact();
+                                       var b9 = d9Fact();
+                                       var b10 = d10Fact();
+
+                                       var c1 = d1Fact();
+                                       var c2 = d2Fact();
+                                       var c3 = d3Fact();
+                                       var c4 = d4Fact();
+                                       var c5 = d5Fact();
+                                       var c6 = d6Fact();
+                                       var c7 = d7Fact();
+                                       var c8 = d8Fact();
+                                       var c9 = d9Fact();
+                                       var c10 = d10Fact();
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       // FormatCode=On
+                                       DI.Setup("Composition")
+                                          .Bind<Func<TT>>()
+                                               .As(Lifetime.PerBlock)
+                                               .To(ctx => new Func<TT>(() =>
+                                               {
+                                                   ctx.Inject<TT>(ctx.Tag, out var value);
+                                                   return value;
+                                               }))
+                                           .Bind<IDep1>().To<Dep1>()
+                                           .Bind<IDep2>().To<Dep2>()
+                                           .Bind<IDep3>().To<Dep3>()
+                                           .Bind<IDep4>().To<Dep4>()
+                                           .Bind<IDep5>().To<Dep5>()
+                                           .Bind<IDep6>().To<Dep6>()
+                                           .Bind<IDep7>().To<Dep7>()
+                                           .Bind<IDep8>().To<Dep8>()
+                                           .Bind<IDep9>().To<Dep9>()
+                                           .Bind<IDep10>().To<Dep10>()
+                                           .Bind<Service>().To<Service>()
+                                           .Root<Service>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportPerBlockFuncWithCrossReferencedFactories()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDep {}
+                               class Dep: IDep {}
+
+                               class ServiceA
+                               {
+                                   public ServiceA(Func<IDep> depFact)
+                                   {
+                                       var d1 = depFact();
+                                       var d2 = depFact();
+                                       var d3 = depFact();
+                                   }
+                               }
+
+                               class ServiceB
+                               {
+                                   public ServiceB(Func<IDep> depFact)
+                                   {
+                                       var d1 = depFact();
+                                       var d2 = depFact();
+                                       var d3 = depFact();
+                                   }
+                               }
+
+                               class ServiceC
+                               {
+                                   public ServiceC(
+                                       Func<ServiceA> aFact,
+                                       Func<ServiceB> bFact,
+                                       Func<IDep> depFact)
+                                   {
+                                       var a1 = aFact();
+                                       var b1 = bFact();
+                                       var c1 = depFact();
+                                       var a2 = aFact();
+                                       var b2 = bFact();
+                                       var c2 = depFact();
+                                   }
+                               }
+
+                               class ServiceD
+                               {
+                                   public ServiceD(
+                                       Func<ServiceA> aFact,
+                                       Func<ServiceB> bFact,
+                                       Func<ServiceC> cFact,
+                                       Func<IDep> depFact)
+                                   {
+                                       var a1 = aFact();
+                                       var b1 = bFact();
+                                       var c1 = cFact();
+                                       var d1 = depFact();
+                                       var a2 = aFact();
+                                       var b2 = bFact();
+                                       var c2 = cFact();
+                                       var d2 = depFact();
+                                   }
+                               }
+
+                               class ServiceE
+                               {
+                                   public ServiceE(
+                                       Func<ServiceA> aFact,
+                                       Func<ServiceB> bFact,
+                                       Func<ServiceC> cFact,
+                                       Func<ServiceD> dFact,
+                                       Func<IDep> depFact)
+                                   {
+                                       var a1 = aFact();
+                                       var b1 = bFact();
+                                       var c1 = cFact();
+                                       var d1 = dFact();
+                                       var e1 = depFact();
+                                       var a2 = aFact();
+                                       var b2 = bFact();
+                                       var c2 = cFact();
+                                       var d2 = dFact();
+                                       var e2 = depFact();
+                                       var a3 = aFact();
+                                       var b3 = bFact();
+                                       var c3 = cFact();
+                                       var d3 = dFact();
+                                       var e3 = depFact();
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       // FormatCode=On
+                                       DI.Setup("Composition")
+                                          .Bind<Func<TT>>()
+                                               .As(Lifetime.PerBlock)
+                                               .To(ctx => new Func<TT>(() =>
+                                               {
+                                                   ctx.Inject<TT>(ctx.Tag, out var value);
+                                                   return value;
+                                               }))
+                                           .Bind<IDep>().To<Dep>()
+                                           .Bind<ServiceA>().To(ctx =>
+                                               {
+                                                   ctx.Inject<Func<IDep>>(out var depFact);
+                                                   return new ServiceA(depFact);
+                                               })
+                                           .Bind<ServiceB>().To(ctx =>
+                                               {
+                                                   ctx.Inject<Func<IDep>>(out var depFact);
+                                                   return new ServiceB(depFact);
+                                               })
+                                           .Bind<ServiceC>().To(ctx =>
+                                               {
+                                                   ctx.Inject<Func<ServiceA>>(out var aFact);
+                                                   ctx.Inject<Func<ServiceB>>(out var bFact);
+                                                   ctx.Inject<Func<IDep>>(out var depFact);
+                                                   return new ServiceC(aFact, bFact, depFact);
+                                               })
+                                           .Bind<ServiceD>().To(ctx =>
+                                               {
+                                                   ctx.Inject<Func<ServiceA>>(out var aFact);
+                                                   ctx.Inject<Func<ServiceB>>(out var bFact);
+                                                   ctx.Inject<Func<ServiceC>>(out var cFact);
+                                                   ctx.Inject<Func<IDep>>(out var depFact);
+                                                   return new ServiceD(aFact, bFact, cFact, depFact);
+                                               })
+                                           .Bind<ServiceE>().To(ctx =>
+                                               {
+                                                   ctx.Inject<Func<ServiceA>>(out var aFact);
+                                                   ctx.Inject<Func<ServiceB>>(out var bFact);
+                                                   ctx.Inject<Func<ServiceC>>(out var cFact);
+                                                   ctx.Inject<Func<ServiceD>>(out var dFact);
+                                                   ctx.Inject<Func<IDep>>(out var depFact);
+                                                   return new ServiceE(aFact, bFact, cFact, dFact, depFact);
+                                               })
+                                           .Root<ServiceE>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
     }
 }
