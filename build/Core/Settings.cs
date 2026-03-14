@@ -31,7 +31,10 @@ class Settings
         _baseDotNetFrameworkMajorVersion =new Lazy<int>(GetBaseTargetFrameworkMajorVersion);
         NuGetKey = properties["NuGetKey"];
         Tests = !bool.TryParse(properties["tests"], out var tests) || tests;
+        ReleasesFromDate = properties["releasesFromDate"];
     }
+
+    public string? ReleasesFromDate { get; }
 
     public VersionRange VersionRange => _versionRange.Value;
 

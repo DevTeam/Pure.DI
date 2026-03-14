@@ -20,6 +20,7 @@ DI.Setup(nameof(Composition))
         PackTarget,
         CreateExamplesTarget,
         ReadmeTarget,
+        ReleasesTarget,
         TestExamplesTarget,
         BenchmarksTarget,
         DeployTarget,
