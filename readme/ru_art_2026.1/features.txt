@@ -1,0 +1,507 @@
+Новое в Pure.DI к концу 2024 года
+
+Pure.DI — это не фреймворк или библиотека, а генератор исходного кода C# для создания композиций объектов в парадигме чистого DI. Последняя статья о Pure.DI выходила в апреле 2024 года. С тех пор прошло больше чем пол года, за это время основные усилия были сосредоточены на исправлении ошибок, увеличении производительности генерации кода и на удобстве использования.
+
+Ниже будет приведено несколько примеров, демонстрирующих новые возможности. Чтобы выполнить кода примера у себя ...
+Текущая версия Pure.DI сейчас 2.1.47. Давайте пройдемся по новым возможностям.
+
+Поддержка IAsyncDisposable для привязок со временем жизни Singletons и Scoped, а также объектов Owned<T> с другим временeм жизни. Экземпляры типа Owned<T> помогают утилизировать объекты, которыми владеют. Подробнее про них можно узнать в примере с корнем композиции и в примере с делегатом
+
+Улучшения диаграмм классов. Например, добавлена группировка типов по их пространству имен, что делает диаграммы легче в восприятии
+
+Поддержка дополнительных BCL классов из коробки, например:
+
+System.Text.Encoding
+
+System.Text.Decoder
+
+System.Text.Encoder
+
+System.Collections.Generic.ReadOnlyCollection<T>
+
+System.Collections.ObjectModel.Collection<T>
+
+System.Collections.ObjectModel.ReadOnlySet<T>
+
+и др.
+
+В самом начале настройки Pure.DI — в вызовах метода DI.Setup(string compositionTypeName), теперь можно не указывать имя генерируемого класса. Если настройка происходит внутри класса, то имя генерируемого класса будет таким же как и имя класса, где он настраивается. Таким образом код
+
+class Dependency;
+
+class Service(Dependency dependency);
+
+partial class Composition
+{
+    void Setup() => DI.Setup(nameof(Composition))
+        .Root<Service>("MyService");
+}
+Объяснить с
+эквивалентен коду
+
+class Dependency;
+
+class Service(Dependency dependency);
+
+partial class Composition
+{
+    void Setup() => DI.Setup()
+        .Root<Service>("MyService");
+}
+Объяснить с
+В атрибутах настройки графа зависимостей для указания типа внедряемого объекта теперь можно использовать обобщенный параметр типа, как в этом примере со string и int
+
+class Person([Inject<string>("Name")] string name)
+{
+    [Inject<int>(ordinal: 1)] internal object Id = "";
+}
+Объяснить с
+Добавлен NuGet пакет Pure.DI.Abstractions. Он содержит абстракции для использования c Pure.DI. В базовом сценарии при добавлении зависимости на пакет Pure.DI в какой-либо проект для этого проекта будет автоматически сгенерирован весь необходимый API для работы с Pure.DI. Причем, все типы API будут уникальны для проекта, для которого были созданы. Пакет Pure.DI.Abstractions содержит минимальный набор абстракций, который позволяет использовать Pure.DI совместно несколькими проектами. Этот пример демонстрирует сценарий, где пакет Pure.DI.Abstractions будет полезен.
+
+Теги в Pure.DI нужны для того чтобы точно определить граф зависимостей, когда для одной абстракции есть больше чем одна реализация. При генерации кода это граф берется за основу для создания композиций объектов. Тег - здесь это атрибут с неким значением. Бывают сценарии, когда нет возможности разметить зависимости атрибутами с тегами. Например, в сторонних библиотеках бывает сложно добавить свой атрибут к аргументам конструкторов, методов, свойствам или полям. Для таких случаев были созданы специальные теги. Этими тегами можно разметить зависимости без необходимости изменения кода:
+
+Для аргументов конструктора
+
+Для аргументов метода
+
+Для свойств и полей
+
+Для любых видов внедрения
+
+Для внедрения с использованием символов подстановки, поддерживаются подстановочные символы '*' и '?'
+
+Если в настройке есть привязка, но она нигде не используется, компилятор теперь показывает предупреждение об этом с указанием места привязки. Это препятствует захламлению конфигураций «мертвыми» привязками и сразу же подсвечивает проблемы, когда зависимости перестали использоваться по ошибке
+
+При тонкой настройке графа зависимостей для обобщенных типов в Pure.DI хорошо помогают маркерные типы. API Pure.DI из коробки уже содержит базовый набор таких маркерных типов для большинства сценариев, в том числе, и для обобщенных типов с ограничениями. Но бывают случаи, когда нужно определить дополнительные маркерные типы. Например, для обобщенных типов с ограничениями, которых нет в наборе из коробки. Раньше определить свои маркерные типы можно было только одним способом — помет ив их атрибутом [GenericTypeArgument]. Это довольно просто и работает хорошо, но этот способ полагается на атрибут [GenericTypeArgument] из API Pure.DI. Его бывает не удобно использовать в своих собственных или сторонних библиотеках, у которых нет доступа к API Pure.DI. Поэтому были добавлены еще 2 способа:
+
+Можно зарегистрировать свои маркерные типы, вызвав метод GenericTypeArgument<T>() и больше не полагаться на API Pure.DI
+
+Другая альтернатива - это зарегистрировать свой атрибут для определения маркерных типов вызвав метод GenericTypeArgumentAttribute<TAttribute>() и так же не полагаться на API Pure.DI
+
+Pure.DI стал удобнее и в сценариях создания библиотек классов. Сейчас любой корень композиции можно пометить как Exposed. При использовании таких композиций в других композициях для всех Exposed корней будут автоматически добавлены привязки
+
+Обычных корней
+
+Отмеченных тегом
+
+Для композиций, переданных через аргументы
+
+Обобщенных типов
+
+Обобщенных типов с аргументами
+
+Отмеченных атрибутом Bind
+
+Pure.DI позволяет определять логику для ручного создания зависимостей. Такие конструкции называются фабриками. Они широко используются и очень полезны, например когда требуется определить свою логику создания объектов, выполнить их инициализацию, регистрацию и др. Важно, что логика фабрики будет «бесшовно» встроена в код создания корня композиции и не ухудшит производительность лишними вызовами методов. Вот как это может выглядеть:
+
+using Shouldly;
+using Pure.DI;
+
+DI.Setup(nameof(Composition))
+    .Bind().To(_ => DateTimeOffset.Now)
+    .RootArg<bool>("isFake", "FakeArgTag")
+    .Bind<IDependency>().To<IDependency>(ctx =>
+    {
+        ctx.Inject<bool>("FakeArgTag", out var isFake);
+        if (isFake)
+            return new FakeDependency();
+
+        ctx.Inject(out Dependency dependency);
+        dependency.Initialize();
+        return dependency;
+
+    })
+    .Bind<IService>().To<Service>()
+    .Root<IService>("GetMyService");
+
+var composition = new Composition();
+
+var service = composition.GetMyService(isFake: false);
+service.Dependency.ShouldBeOfType<Dependency>();
+service.Dependency.IsInitialized.ShouldBeTrue();
+
+var serviceWithFakeDependency = composition.GetMyService(isFake: true);
+serviceWithFakeDependency.Dependency.ShouldBeOfType<FakeDependency>();
+
+interface IDependency
+{
+    DateTimeOffset Time { get; }
+    bool IsInitialized { get; }
+}
+
+class Dependency(DateTimeOffset time) : IDependency
+{
+    public DateTimeOffset Time { get; } = time;
+    public bool IsInitialized { get; private set; }
+    public void Initialize() => IsInitialized = true;
+}
+
+class FakeDependency : IDependency
+{
+    public DateTimeOffset Time => DateTimeOffset.MinValue;
+    public bool IsInitialized => true;
+}
+
+interface IService
+{
+    IDependency Dependency { get; }
+}
+
+class Service(IDependency dependency) : IService
+{
+    public IDependency Dependency { get; } = dependency;
+}
+Объяснить с
+Пример выше внедряет зависимости, придерживаясь определенной логики. Практика показала, что часто требуется внедрить все необходимые зависимости сразу, а дополнительная логика фабрики нужна только, для инициализации объектов. Поэтому появились упрощённые фабрики. Пример их использования:
+
+using Shouldly;
+using Pure.DI;
+
+DI.Setup(nameof(Composition))
+    .Bind("now datetime").To(_ => DateTimeOffset.Now)
+    .Bind<IDependency>().To((
+        Dependency dependency,
+        [Tag("now datetime")] DateTimeOffset time) =>
+    {
+        dependency.Initialize(time);
+        return dependency;
+    })
+    .Bind().To<Service>()
+    .Root<IService>("MyService");
+
+var composition = new Composition();
+var service = composition.MyService;
+service.Dependency.IsInitialized.ShouldBeTrue();
+
+interface IDependency
+{
+    DateTimeOffset Time { get; }
+    bool IsInitialized { get; }
+}
+
+class Dependency : IDependency
+{
+    public DateTimeOffset Time { get; private set; }
+    public bool IsInitialized { get; private set; }
+
+    public void Initialize(DateTimeOffset time)
+    {
+        Time = time;
+        IsInitialized = true;
+    }
+}
+
+interface IService
+{
+    IDependency Dependency { get; }
+}
+
+class Service(IDependency dependency) : IService
+{
+    public IDependency Dependency { get; } = dependency;
+}
+Объяснить с
+Да, упрощенные фабрики не позволяют внедрять зависимости с учетом условий как обычные фабрики, но определяющий их код выглядит проще, так как теперь не требуются вызовы методовctx.Inject<T>(out T dependency), ведь все требуемые зависимости определяются заранее в параметрах лямбда функции. Сгенерированный для упрощенных фабрик код все так же эффективен как и код для обычных фабрик и выглядит примерно так для примера выше:
+
+partial class Composition
+{
+  public IService MyService
+  {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get
+    {
+      var dep = new Dependency();
+      var now = DateTimeOffset.Now;
+      dep.Initialize(now);
+      return new Service(dep);
+    }
+  }
+}
+Объяснить с
+Добавлена поддержка внедрения через методы, содержащие ref и out аргументы.
+
+Появилась возможность «достройки» объектов в фабриках. Например в некотором сценарии требуется создать объект самостоятельно, но позже «достроить» его генератором кода Pure.DI: выполнить внедрение через методы, свойства или поля. Пример:
+
+using Shouldly;
+using Pure.DI;
+
+DI.Setup(nameof(Composition))
+    .RootArg<string>("name")
+    .Bind().To(_ => Guid.NewGuid())
+    .Bind().To(ctx =>
+    {
+        var dependency = new Dependency();
+        ctx.BuildUp(dependency);
+        return dependency;
+    })
+    .Bind().To<Service>()
+    .Root<IService>("GetMyService");
+
+var composition = new Composition();
+var service = composition.GetMyService("Some name");
+service.Dependency.Name.ShouldBe("Some name");
+service.Dependency.Id.ShouldNotBe(Guid.Empty);
+
+interface IDependency
+{
+    string Name { get; }
+    Guid Id { get; }
+}
+
+class Dependency : IDependency
+{
+    [Ordinal(1)]
+    public string Name { get; set; } = "";
+
+    public Guid Id { get; private set; } = Guid.Empty;
+
+    [Ordinal(0)]
+    public void SetId(Guid id) => Id = id;
+}
+
+interface IService
+{
+    IDependency Dependency { get; }
+}
+
+record Service(IDependency Dependency) : IService;
+Объяснить с
+Сгенерированный для примера выше код выглядит примерно так:
+
+partial class Composition
+{
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public IService GetMyService(string name)
+  {
+    var id = Guid.NewGuid();
+    var dep= new Dependency();
+    dep.SetId(id);
+    dep.Name = name;
+    return new Service(dep);
+  }
+}
+Объяснить с
+Обратите внимание что порядок внедрения, так же как обычно, определяется значением атрибута[Ordinal(int)].
+
+Теперь можно определять корни композиции обобщенных типов с аргументом обобщенных типов, обратите внимание на аргумент с именем someArg:
+
+using Pure.DI;
+
+DI.Setup(nameof(Composition))
+    .RootArg<TT>("someArg")
+    .Bind<IService<TT>>().To<Service<TT>>()
+    .Root<IService<TT>>("GetMyService");
+
+var composition = new Composition();
+IService<int> service = composition.GetMyService<int>(someArg: 33);
+
+interface IService<out T>
+{
+    T? Dependency { get; }
+}
+
+class Service<T> : IService<T>
+{
+    [Ordinal(0)]
+    public void SetDependency(T dependency) =>
+        Dependency = dependency;
+
+    public T? Dependency { get; private set; }
+}
+Объяснить с
+Сгенерированный для примера выше код выглядит примерно так:
+
+partial class Composition
+{
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public IService<T> GetMyService<T>(T someArg)
+  {
+    var service = new Service<T>();
+    service.SetDependency(someArg);
+    return service;
+  }
+}
+Объяснить с
+В фабриках появилась возможность получить список типов потребителей — типов для которых создаётся текущий объект. Пример ниже показывает как это нововведение применяется для создания контекстного объекта ILogger библиотеки Serilog:
+
+using Shouldly;
+using Serilog.Core;
+using Serilog.Events;
+using Pure.DI;
+using Serilog.Core;
+
+Serilog.ILogger serilogLogger = new Serilog.LoggerConfiguration().CreateLogger();
+var composition = new Composition(logger: serilogLogger);
+var service = composition.Root;
+
+interface IDependency;
+
+class Dependency : IDependency
+{
+    public Dependency(Serilog.ILogger log)
+    {
+        log.Information("created");
+    }
+}
+
+interface IService
+{
+    IDependency Dependency { get; }
+}
+
+class Service : IService
+{
+    public Service(
+        Serilog.ILogger log,
+        IDependency dependency)
+    {
+        Dependency = dependency;
+        log.Information("created");
+    }
+
+    public IDependency Dependency { get; }
+}
+
+partial class Composition
+{
+    private void Setup() =>
+        DI.Setup(nameof(Composition))
+            .Arg<Serilog.ILogger>("logger", "from arg")
+            .Bind().To(ctx =>
+            {
+                ctx.Inject<Serilog.ILogger>("from arg", out var logger);
+                return logger.ForContext(ctx.ConsumerTypes[0]);
+            })
+            .Bind().To<Dependency>()
+            .Bind().To<Service>()
+            .Root<IService>(nameof(Root));
+}
+Объяснить с
+Очевидно, что для объектов со временем жизни Transient тип потребителя будет один, для остальных их может быть больше. Сгенерированный для примера выше код выглядит примерно так:
+
+partial class Composition
+{
+  private readonly Serilog.ILogger _argLogger;
+
+  public Composition(Serilog.ILogger logger)
+  {
+    _argLogger = logger ?? throw new ArgumentNullException(nameof(logger));
+  }
+
+  public IService Root
+  {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get
+    {
+      var dependencyLogger = _argLogger.ForContext(new Type[]{typeof(Dependency)}[0]);
+      var serviceLogger = _argLogger.ForContext(new Type[]{typeof(Service)}[0]);
+      return new Service(serviceLogger, new Dependency(dependencyLogger));
+    }
+  }
+}
+Объяснить с
+Добавлены «умные теги». Иногда для определения больших графов объектов, которые использую множество альтернативных реализаций одних и тех интерфейсов, или других абстрактных типов, требуется большое количество тегов. В качестве значений тегов можно брать любые константы: 0, 1 , 2, 'a', 'b' ... Они мало информативны и часто приводят к путанице, так как имеют огромное количество вариантов значений. Можно заменить их строками. Строки могут быть более информативны, но ошибиться в строке просто, следовательно есть риск «рассинхронизации» настройки Pure.DI и атрибутов с тегами, разбросанными по коду. Конечно же, если что то пойдет не так, то вероятнее приложение даже не соберется, так как генератор Pure.DI при проверке графа объектов найдет ошибку и остановит компиляцию с ошибкой. К сожалению, разработчик потратит свое время на понимание проблемы. Лучшая альтернатива константам и строкам это создание для тега своего типа перечисления на базеEnum. Этот тип обеспечит хороший контроль над набором тегов и сделает их поддержку проще. Сейчас появилась альтернатива — это «умные теги». Они берут на себя всю работу по поддержке набора тегов в актуальном состоянии и их автоматическое документирование. Как только Pure.DI, при его настройке, в определении тега встречает название неизвестной константы, он автоматически, на лету, добавляет её как константу типа string в классPure.DI.Tag. По всему коду в атрибутах тега можно использовать эту константу для указания значения тега. Как бонус, контекстный ассистент в среде разработки любезно предоставит список тегов для типа Pure.DI.Tag, а в комментарии тега будет информация для каких зависимостей используется этот тег.
+
+
+Вот пример использования «умных тегов» Abc и Xyz:
+
+using Shouldly;
+using Pure.DI;
+
+using static Pure.DI.Tag;
+using static Pure.DI.Lifetime;
+
+DI.Setup(nameof(Composition))
+    .Bind<IDependency>(Abc, default).To<AbcDependency>()
+    .Bind<IDependency>(Xyz).As(Singleton).To<XyzDependency>()
+    .Bind<IService>().To<Service>()
+    .Root<IDependency>("XyzRoot", Xyz)
+    .Root<IService>("Root");
+
+var composition = new Composition();
+var service = composition.Root;
+service.Dependency1.ShouldBeOfType<AbcDependency>();
+service.Dependency2.ShouldBeOfType<XyzDependency>();
+service.Dependency2.ShouldBe(composition.XyzRoot);
+service.Dependency3.ShouldBeOfType<AbcDependency>();
+
+interface IDependency;
+
+class AbcDependency : IDependency;
+
+class XyzDependency : IDependency;
+
+class Dependency : IDependency;
+
+interface IService
+{
+    IDependency Dependency1 { get; }
+    IDependency Dependency2 { get; }
+    IDependency Dependency3 { get; }
+}
+
+class Service(
+    [Tag(Abc)] IDependency dependency1,
+    [Tag(Xyz)] IDependency dependency2,
+    IDependency dependency3)
+    : IService
+{
+    public IDependency Dependency1 { get; } = dependency1;
+    public IDependency Dependency2 { get; } = dependency2;
+    public IDependency Dependency3 { get; } = dependency3;
+}
+Объяснить с
+В коде примера выше компилятор, как и ожидалось, не смог понять где ему взять значения для Abc и Xyz, но Pure.DI понял что это значения тегов и автоматически создал для них константы, принадлежавшие типу Pure.DI.Tag:
+
+namespace Pure.DI
+{
+  internal partial class Tag
+  {
+    public const string Abc = "Abc";
+    public const string Xyz = "Xyz";
+  }
+}
+Объяснить с
+Среда разработки против этого не возражает, а проект компилируется. Обратите внимание что в примере выше добавлена директива using static Pure.DI.Tag;. Она нужна для доступа к константам в Pure.DI.Tag без указания имени типа, иначе пришлось бы указывать имя типа перед каждым тегом. Да, и это прекрасно работает, но выглядит чуть менее лаконично. «В другую сторону» это магия умышленно не работает. Т. е. указав неизвестный тег в атрибуте для определения зависимости, компилятор просто выдаст ошибку. Сгенерированный код для примера выше выглядит примерно так:
+
+partial class Composition
+{
+  private readonly Lock _lock = new Lock();
+  private XyzDependency? _xyzDep;
+
+  public IDependency XyzRoot
+  {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get
+    {
+      if (_xyzDep is null)
+        using (_lock.EnterScope())
+          if (_xyzDep is null)
+            _xyzDep = new XyzDependency();
+
+      return _xyzDep;
+    }
+  }
+
+  public IService Root
+  {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get
+    {
+      if (_xyzDep is null)
+        using (_lock.EnterScope())
+          if (_xyzDep is null)
+            _xyzDep = new XyzDependency();
+
+      return new Service(
+        new AbcDependency(),
+        _xyzDep,
+        new AbcDependency());
+    }
+  }
+}
+Объяснить с
+Спасибо, что дочитали до конца! Буду рад вашим комментариям и идеям.
+
+Теги:.netc#dependency injectiondiinversion of controlsource generatorsioc
+Хабы:.NETC#
