@@ -7,5 +7,6 @@ interface ILifetimeProvider
         MdLifetime? lifetime,
         ITypeSymbol? type,
         IReadOnlyCollection<MdTag> tags,
-        IReadOnlyCollection<MdContract> contracts);
+        IReadOnlyCollection<MdContract> contracts,
+        bool useCommonDefault);
 }

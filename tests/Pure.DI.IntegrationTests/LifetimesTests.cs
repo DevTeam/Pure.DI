@@ -19,21 +19,21 @@ public class LifetimesTests
                                using System;
                                using Pure.DI;
                                using System.Collections.Generic;
-                           
+
                                namespace Sample
                                {
                                interface IService {};
-                           
+
                                class StagingService : IService
                                {
                                    public StagingService() => Console.WriteLine(GetType());
                                }
-                           
+
                                class RegistrationService : IService
                                {
                                    public RegistrationService() => Console.WriteLine(GetType());
                                }
-                           
+
                                class ServiceHost
                                {
                                    public ServiceHost(IEnumerable<IService> services)
@@ -47,7 +47,7 @@ public class LifetimesTests
                                        }
                                    }
                                }
-                           
+
                                static class Setup
                                {
                                    private static void SetupComposition()
@@ -58,7 +58,7 @@ public class LifetimesTests
                                            .Root<ServiceHost>("Host");
                                    }
                                }
-                           
+
                                public class Program
                                {
                                    public static void Main()
@@ -98,7 +98,7 @@ public class LifetimesTests
                                            .Root<IService>("Service");
                                    }
                                }
-                           
+
                                public class Program
                                {
                                    public static void Main()
@@ -139,7 +139,7 @@ public class LifetimesTests
                                            .Root<IService>("Service");
                                    }
                                }
-                           
+
                                public class Program
                                {
                                    public static void Main()
@@ -221,7 +221,7 @@ public class LifetimesTests
                                            .Root<IService>("Service", "xyz");
                                    }
                                }
-                           
+
                                public class Program
                                {
                                    public static void Main()
@@ -262,7 +262,7 @@ public class LifetimesTests
                                            .Root<IService>("Service", "asd");
                                    }
                                }
-                           
+
                                public class Program
                                {
                                    public static void Main()
@@ -304,7 +304,7 @@ public class LifetimesTests
                                            .Root<IService>("Service", "xyz");
                                    }
                                }
-                           
+
                                public class Program
                                {
                                    public static void Main()
@@ -346,7 +346,7 @@ public class LifetimesTests
                                            .Root<IService>("Service");
                                    }
                                }
-                           
+
                                public class Program
                                {
                                    public static void Main()
@@ -387,7 +387,7 @@ public class LifetimesTests
                                            .Root<IService>("Service");
                                    }
                                }
-                           
+
                                public class Program
                                {
                                    public static void Main()
@@ -429,7 +429,7 @@ public class LifetimesTests
                                            .Root<IService>("Service");
                                    }
                                }
-                           
+
                                public class Program
                                {
                                    public static void Main()
@@ -467,7 +467,7 @@ public class LifetimesTests
                                        DI.Setup("BaseComposition", CompositionKind.Internal)
                                            .DefaultLifetime(Lifetime.Singleton);
                                    }
-                           
+
                                    private static void SetupComposition()
                                    {
                                        DI.Setup("Composition").DependsOn("BaseComposition")
@@ -475,7 +475,7 @@ public class LifetimesTests
                                            .Root<IService>("Service");
                                    }
                                }
-                           
+
                                public class Program
                                {
                                    public static void Main()
@@ -505,30 +505,30 @@ public class LifetimesTests
                            namespace Sample
                            {
                                interface IDependency1 {}
-                           
+
                                class Dependency1: IDependency1 {}
-                           
+
                                interface IDependency2
                                {
                                    IDependency1 Dep1 { get; }
                                }
-                           
+
                                class Dependency2: IDependency2
                                {
                                    public Dependency2(IDependency1 dep1) => Dep1 = dep1;
-                           
+
                                    public IDependency1 Dep1 { get; }
                                }
-                           
+
                                interface IService
                                {
                                    IDependency1 Dep1 { get; }
-                           
+
                                    IDependency2 Dep2 { get; }
                                    
                                    IDependency1 Dep3 { get; }
                                }
-                           
+
                                class Service: IService
                                {
                                    public Service(IDependency1 dep1, IDependency2 dep2, IDependency1 dep3)
@@ -537,14 +537,14 @@ public class LifetimesTests
                                        Dep2 = dep2;
                                        Dep3 = dep3;
                                    }
-                           
+
                                    public IDependency1 Dep1 { get; }
-                           
+
                                    public IDependency2 Dep2 { get; }
                                    
                                    public IDependency1 Dep3 { get; }
                                }
-                           
+
                                static class Setup
                                {
                                    private static void SetupComposition()
@@ -556,7 +556,7 @@ public class LifetimesTests
                                            .Root<IService>("Service");
                                    }
                                }
-                           
+
                                public class Program
                                {
                                    public static void Main()
@@ -588,30 +588,30 @@ public class LifetimesTests
                            namespace Sample
                            {
                                interface IDependency1 {}
-                           
+
                                class Dependency1: IDependency1 {}
-                           
+
                                interface IDependency2
                                {
                                    IDependency1 Dep1 { get; }
                                }
-                           
+
                                class Dependency2: IDependency2
                                {
                                    public Dependency2(IDependency1 dep1) => Dep1 = dep1;
-                           
+
                                    public IDependency1 Dep1 { get; }
                                }
-                           
+
                                interface IService
                                {
                                    IDependency1 Dep1 { get; }
-                           
+
                                    IDependency2 Dep2 { get; }
                                    
                                    IDependency1 Dep3 { get; }
                                }
-                           
+
                                class Service: IService
                                {
                                    public Service(IDependency1 dep1, IDependency2 dep2, IDependency1 dep3)
@@ -620,14 +620,14 @@ public class LifetimesTests
                                        Dep2 = dep2;
                                        Dep3 = dep3;
                                    }
-                           
+
                                    public IDependency1 Dep1 { get; }
-                           
+
                                    public IDependency2 Dep2 { get; }
                                    
                                    public IDependency1 Dep3 { get; }
                                }
-                           
+
                                static class Setup
                                {
                                    private static void SetupComposition()
@@ -638,7 +638,7 @@ public class LifetimesTests
                                            .Root<IService>("Service");
                                    }
                                }
-                           
+
                                public class Program
                                {
                                    public static void Main()
@@ -762,14 +762,14 @@ public class LifetimesTests
                            namespace Sample
                            {
                                interface IDependency {}
-                           
+
                                class Dependency: IDependency {}
-                           
+
                                interface IService
                                {
                                    IDependency Dep { get; }
                                }
-                           
+
                                class Service: IService
                                {
                                    public Service(Func<IDependency> dep, Func<IDependency> dep2)
@@ -777,10 +777,10 @@ public class LifetimesTests
                                        Console.WriteLine(dep == dep2);
                                        Dep = dep();
                                    }
-                           
+
                                    public IDependency Dep { get; }
                                }
-                           
+
                                static class Setup
                                {
                                    private static void SetupComposition()
@@ -799,7 +799,7 @@ public class LifetimesTests
                                            .Root<IService>("Service");
                                    }
                                }
-                           
+
                                public class Program
                                {
                                    public static void Main()
@@ -829,30 +829,30 @@ public class LifetimesTests
                            namespace Sample
                            {
                                interface IDependency1 {}
-                           
+
                                class Dependency1: IDependency1 {}
-                           
+
                                interface IDependency2
                                {
                                    IDependency1 Dep1 { get; }
                                }
-                           
+
                                class Dependency2: IDependency2
                                {
                                    public Dependency2(IDependency1 dep1) => Dep1 = dep1;
-                           
+
                                    public IDependency1 Dep1 { get; }
                                }
-                           
+
                                interface IService
                                {
                                    IDependency1 Dep1 { get; }
-                           
+
                                    IDependency2 Dep2 { get; }
                                    
                                    IDependency1 Dep3 { get; }
                                }
-                           
+
                                class Service: IService
                                {
                                    public Service(IDependency1 dep1, IDependency2 dep2, IDependency1 dep3)
@@ -861,14 +861,14 @@ public class LifetimesTests
                                        Dep2 = dep2;
                                        Dep3 = dep3;
                                    }
-                           
+
                                    public IDependency1 Dep1 { get; }
-                           
+
                                    public IDependency2 Dep2 { get; }
                                    
                                    public IDependency1 Dep3 { get; }
                                }
-                           
+
                                static class Setup
                                {
                                    private static void SetupComposition()
@@ -880,7 +880,7 @@ public class LifetimesTests
                                            .Root<IService>("Service");
                                    }
                                }
-                           
+
                                public class Program
                                {
                                    public static void Main()
@@ -914,7 +914,7 @@ public class LifetimesTests
                            namespace Sample
                            {
                                interface IDependency1 {}
-                           
+
                                class Dependency1: IDependency1
                                {
                                    public Dependency1()
@@ -922,28 +922,28 @@ public class LifetimesTests
                                         Console.WriteLine("dep1");
                                    }
                                }
-                           
+
                                interface IDependency2
                                {
                                    IDependency1 Dep1 { get; }
                                }
-                           
+
                                class Dependency2: IDependency2
                                {
                                    public Dependency2(IDependency1 dep1) => Dep1 = dep1;
-                           
+
                                    public IDependency1 Dep1 { get; }
                                }
-                           
+
                                interface IService
                                {
                                    IDependency1 Dep1 { get; }
-                           
+
                                    IDependency2 Dep2 { get; }
                                    
                                    IDependency1 Dep3 { get; }
                                }
-                           
+
                                class Service: IService
                                {
                                    public Service(IDependency1 dep1, IDependency2 dep2, IDependency1 dep3)
@@ -952,14 +952,14 @@ public class LifetimesTests
                                        Dep2 = dep2;
                                        Dep3 = dep3;
                                    }
-                           
+
                                    public IDependency1 Dep1 { get; }
-                           
+
                                    public IDependency2 Dep2 { get; }
                                    
                                    public IDependency1 Dep3 { get; }
                                }
-                           
+
                                static class Setup
                                {
                                    private static void SetupComposition()
@@ -972,7 +972,7 @@ public class LifetimesTests
                                            .Root<IEnumerable<IService>>("Service");
                                    }
                                }
-                           
+
                                public class Program
                                {
                                    public static void Main()
@@ -1002,30 +1002,30 @@ public class LifetimesTests
                            namespace Sample
                            {
                                interface IDependency1 {}
-                           
+
                                class Dependency1: IDependency1 {}
-                           
+
                                interface IDependency2
                                {
                                    IDependency1 Dep1 { get; }
                                }
-                           
+
                                class Dependency2: IDependency2
                                {
                                    public Dependency2(IDependency1 dep1) => Dep1 = dep1;
-                           
+
                                    public IDependency1 Dep1 { get; }
                                }
-                           
+
                                interface IService
                                {
                                    IDependency1 Dep1 { get; }
-                           
+
                                    IDependency2 Dep2 { get; }
                                    
                                    IDependency1 Dep3 { get; }
                                }
-                           
+
                                class Service: IService 
                                {
                                    public Service(IDependency1 dep1, IDependency2 dep2, IDependency1 dep3)
@@ -1034,14 +1034,14 @@ public class LifetimesTests
                                        Dep2 = dep2;
                                        Dep3 = dep3;
                                    }
-                           
+
                                    public IDependency1 Dep1 { get; }
-                           
+
                                    public IDependency2 Dep2 { get; }
                                    
                                    public IDependency1 Dep3 { get; }
                                }
-                           
+
                                static class Setup
                                {
                                    private static void SetupComposition()
@@ -1053,7 +1053,7 @@ public class LifetimesTests
                                            .Root<IService>("Service");
                                    }
                                }
-                           
+
                                public class Program
                                {
                                    public static void Main()
@@ -1085,30 +1085,30 @@ public class LifetimesTests
                            namespace Sample
                            {
                                interface IDependency1 {}
-                           
+
                                class Dependency1: IDependency1 {}
-                           
+
                                interface IDependency2
                                {
                                    IDependency1 Dep1 { get; }
                                }
-                           
+
                                class Dependency2: IDependency2
                                {
                                    public Dependency2(IDependency1 dep1) => Dep1 = dep1;
-                           
+
                                    public IDependency1 Dep1 { get; }
                                }
-                           
+
                                interface IService
                                {
                                    IDependency1 Dep1 { get; }
-                           
+
                                    IDependency2 Dep2 { get; }
                                    
                                    IDependency1 Dep3 { get; }
                                }
-                           
+
                                class Service: IService 
                                {
                                    public Service(IDependency1 dep1, IDependency2 dep2, IDependency1 dep3)
@@ -1117,14 +1117,14 @@ public class LifetimesTests
                                        Dep2 = dep2;
                                        Dep3 = dep3;
                                    }
-                           
+
                                    public IDependency1 Dep1 { get; }
-                           
+
                                    public IDependency2 Dep2 { get; }
                                    
                                    public IDependency1 Dep3 { get; }
                                }
-                           
+
                                static class Setup
                                {
                                    private static void SetupComposition()
@@ -1136,7 +1136,7 @@ public class LifetimesTests
                                            .Root<IService>("Service");
                                    }
                                }
-                           
+
                                public class Program
                                {
                                    public static void Main()
@@ -1168,30 +1168,30 @@ public class LifetimesTests
                            namespace Sample
                            {
                                interface IDependency1 {}
-                           
+
                                class Dependency1: IDependency1 {}
-                           
+
                                interface IDependency2
                                {
                                    IDependency1 Dep1 { get; }
                                }
-                           
+
                                class Dependency2: IDependency2
                                {
                                    public Dependency2(IDependency1 dep1) => Dep1 = dep1;
-                           
+
                                    public IDependency1 Dep1 { get; }
                                }
-                           
+
                                interface IService
                                {
                                    IDependency1 Dep1 { get; }
-                           
+
                                    IDependency2 Dep2 { get; }
                                    
                                    IDependency1 Dep3 { get; }
                                }
-                           
+
                                class Service: IService 
                                {
                                    public Service(IDependency1 dep1, IDependency2 dep2, IDependency1 dep3)
@@ -1200,14 +1200,14 @@ public class LifetimesTests
                                        Dep2 = dep2;
                                        Dep3 = dep3;
                                    }
-                           
+
                                    public IDependency1 Dep1 { get; }
-                           
+
                                    public IDependency2 Dep2 { get; }
                                    
                                    public IDependency1 Dep3 { get; }
                                }
-                           
+
                                static class Setup
                                {
                                    private static void SetupComposition()
@@ -1219,7 +1219,7 @@ public class LifetimesTests
                                            .Root<IService>("Service", kind: RootKinds.Static);
                                    }
                                }
-                           
+
                                public class Program
                                {
                                    public static void Main()
@@ -1255,19 +1255,19 @@ public class LifetimesTests
                                class Abc {}
                                
                                interface IDependency {}
-                           
+
                                class Dependency: IDependency
                                {
                                    public Dependency(Abc abc) { }
                                }
-                           
+
                                interface IService
                                {
                                    IDependency Dep1 { get; }
-                           
+
                                    IDependency Dep2 { get; }
                                }
-                           
+
                                class Service: IService 
                                {
                                    public Service(IDependency dep1, IDependency dep2)
@@ -1275,12 +1275,12 @@ public class LifetimesTests
                                        Dep1 = dep1;
                                        Dep2 = dep2;
                                    }
-                           
+
                                    public IDependency Dep1 { get; }
-                           
+
                                    public IDependency Dep2 { get; }
                                }
-                           
+
                                static class Setup
                                {
                                    private static void SetupComposition()
@@ -1293,7 +1293,7 @@ public class LifetimesTests
                                            .Root<IService>("Service");
                                    }
                                }
-                           
+
                                public class Program
                                {
                                    public static void Main()
@@ -1330,19 +1330,19 @@ public class LifetimesTests
                                class Abc {}
                                
                                interface IDependency {}
-                           
+
                                class Dependency: IDependency
                                {
                                    public Dependency(Abc abc) { }
                                }
-                           
+
                                interface IService
                                {
                                    IDependency Dep1 { get; }
-                           
+
                                    IDependency Dep2 { get; }
                                }
-                           
+
                                class Service: IService 
                                {
                                    public Service(IDependency dep1, IDependency dep2)
@@ -1350,12 +1350,12 @@ public class LifetimesTests
                                        Dep1 = dep1;
                                        Dep2 = dep2;
                                    }
-                           
+
                                    public IDependency Dep1 { get; }
-                           
+
                                    public IDependency Dep2 { get; }
                                }
-                           
+
                                static class Setup
                                {
                                    private static void SetupComposition()
@@ -1383,7 +1383,7 @@ public class LifetimesTests
                                            .Root<IService>("Service");
                                    }
                                }
-                           
+
                                public class Program
                                {
                                    public static void Main()
@@ -1424,19 +1424,19 @@ public class LifetimesTests
                                class Abc {}
                                
                                interface IDependency {}
-                           
+
                                class Dependency: IDependency
                                {
                                    public Dependency(Abc abc) { }
                                }
-                           
+
                                interface IService
                                {
                                    IDependency Dep1 { get; }
-                           
+
                                    IDependency Dep2 { get; }
                                }
-                           
+
                                class Service: IService 
                                {
                                    public Service(IDependency dep1, IDependency dep2)
@@ -1444,12 +1444,12 @@ public class LifetimesTests
                                        Dep1 = dep1;
                                        Dep2 = dep2;
                                    }
-                           
+
                                    public IDependency Dep1 { get; }
-                           
+
                                    public IDependency Dep2 { get; }
                                }
-                           
+
                                static class Setup
                                {
                                    private static void SetupComposition()
@@ -1475,7 +1475,7 @@ public class LifetimesTests
                                            .Root<IService>("Service");
                                    }
                                }
-                           
+
                                public class Program
                                {
                                    public static void Main()
@@ -1511,30 +1511,30 @@ public class LifetimesTests
                            namespace Sample
                            {
                                interface IDependency1 {}
-                           
+
                                struct Dependency1: IDependency1 {}
-                           
+
                                interface IDependency2
                                {
                                    IDependency1 Dep1 { get; }
                                }
-                           
+
                                struct Dependency2: IDependency2
                                {
                                    public Dependency2(IDependency1 dep1) => Dep1 = dep1;
-                           
+
                                    public IDependency1 Dep1 { get; }
                                }
-                           
+
                                interface IService
                                {
                                    IDependency1 Dep1 { get; }
-                           
+
                                    IDependency2 Dep2 { get; }
                                    
                                    IDependency1 Dep3 { get; }
                                }
-                           
+
                                class Service: IService
                                {
                                    public Service(IDependency1 dep1, IDependency2 dep2, IDependency1 dep3)
@@ -1543,9 +1543,9 @@ public class LifetimesTests
                                        Dep2 = dep2;
                                        Dep3 = dep3;
                                    }
-                           
+
                                    public IDependency1 Dep1 { get; }
-                           
+
                                    public IDependency2 Dep2 { get; }
                                    
                                    public IDependency1 Dep3 { get; }
@@ -1558,7 +1558,7 @@ public class LifetimesTests
                                        Console.WriteLine($"{typeof(T)} '{tag}' {lifetime} created");
                                    }
                                }
-                           
+
                                static class Setup
                                {
                                    private static void SetupComposition()
@@ -1571,7 +1571,7 @@ public class LifetimesTests
                                            .Root<IService>("Service");
                                    }
                                }
-                           
+
                                public class Program
                                {
                                    public static void Main()
@@ -1603,16 +1603,16 @@ public class LifetimesTests
                                internal interface IDependency1<T> { }
                                
                                internal interface IDependency2<T> { }
-                           
+
                                internal class Dependency<T> : IDependency1<T>, IDependency2<T> { }
-                           
+
                                internal interface IService
                                {
                                    IDependency1<int> Dependency1 { get; }
                                            
                                    IDependency2<int> Dependency2 { get; }
                                }
-                           
+
                                internal class Service : IService
                                {
                                    public Service(IDependency1<int> dependency1, IDependency2<int> dependency2)
@@ -1620,12 +1620,12 @@ public class LifetimesTests
                                        Dependency1 = dependency1;
                                        Dependency2 = dependency2;
                                    }
-                           
+
                                    public IDependency1<int> Dependency1 { get; }
                                            
                                    public IDependency2<int> Dependency2 { get; }
                                }
-                           
+
                                static class Setup
                                {
                                    private static void SetupComposition()
@@ -1636,7 +1636,7 @@ public class LifetimesTests
                                            .Root<IService>("Root");
                                    }
                                }
-                           
+
                                public class Program
                                {
                                    public static void Main()
@@ -1667,31 +1667,31 @@ public class LifetimesTests
                            namespace Sample
                            {
                                interface IDependency {}
-                           
+
                                class Dependency: IDependency {}
-                           
+
                                interface ISin
                                {
                                    IDependency Dep { get; }
                                }
-                           
+
                                class Sin: ISin
                                {
                                    public Sin(IDependency dep)
                                    {
                                        Dep = dep;        
                                    }
-                           
+
                                    public IDependency Dep { get; }
                                }
-                           
+
                                interface IService
                                {        
                                    IDependency Dep { get; }
-                           
+
                                    ISin Sin { get; }
                                }
-                           
+
                                class Service: IService 
                                {
                                    private Func<IDependency> _dep;
@@ -1700,12 +1700,12 @@ public class LifetimesTests
                                        _dep = dep;
                                        Sin = sin;
                                    }
-                           
+
                                    public IDependency Dep => _dep();
-                           
+
                                    public ISin Sin { get; }
                                }
-                           
+
                                static class Setup
                                {
                                    private static void SetupComposition()
@@ -1718,7 +1718,7 @@ public class LifetimesTests
                                            .Root<IService>("Service");
                                    }
                                }
-                           
+
                                public class Program
                                {
                                    public static void Main()
@@ -1749,31 +1749,31 @@ public class LifetimesTests
                            namespace Sample
                            {
                                interface IDependency {}
-                           
+
                                class Dependency: IDependency {}
-                           
+
                                interface ISin
                                {
                                    IDependency Dep { get; }
                                }
-                           
+
                                class Sin: ISin
                                {
                                    public Sin(IDependency dep)
                                    {
                                        Dep = dep;        
                                    }
-                           
+
                                    public IDependency Dep { get; }
                                }
-                           
+
                                interface IService
                                {        
                                    IDependency Dep { get; }
-                           
+
                                    ISin Sin { get; }
                                }
-                           
+
                                class Service: IService 
                                {
                                    public Service(IDependency dep, ISin sin)
@@ -1781,12 +1781,12 @@ public class LifetimesTests
                                        Dep = dep;
                                        Sin = sin;
                                    }
-                           
+
                                    public IDependency Dep { get; }
-                           
+
                                    public ISin Sin { get; }
                                }
-                           
+
                                static class Setup
                                {
                                    private static void SetupComposition()
@@ -1798,7 +1798,7 @@ public class LifetimesTests
                                            .Root<IService>("Service");
                                    }
                                }
-                           
+
                                public class Program
                                {
                                    public static void Main()
@@ -1829,62 +1829,62 @@ public class LifetimesTests
                                using System;
                                using Pure.DI;
                                using static Pure.DI.Lifetime; 
-                           
+
                                namespace Sample
                                {
                                interface ISingletonDep
                                {
                                    bool IsDisposed { get; }
                                }
-                           
+
                                class SingletonDep
                                    : ISingletonDep, IDisposable
                                {
                                    public bool IsDisposed { get; private set; }
-                           
+
                                    public void Dispose() => IsDisposed = true;
                                }
-                           
+
                                interface IScopedDep
                                {
                                    ISingletonDep SingletonDep { get; }
-                           
+
                                    bool IsDisposed { get; }
                                }
-                           
+
                                class ScopedDep : IScopedDep, IDisposable
                                {
                                    private readonly ISingletonDep _singletonDep;
-                           
+
                                    public ScopedDep(ISingletonDep singletonDep)
                                    {
                                        _singletonDep = singletonDep;
                                    }
-                           
+
                                    public ISingletonDep SingletonDep => _singletonDep;
                                    
                                    public bool IsDisposed { get; private set; }
-                           
+
                                    public void Dispose() => IsDisposed = true;
                                }
-                           
+
                                interface IService
                                {
                                    IScopedDep ScopedDep { get; }
                                }
-                           
+
                                class Service : IService
                                {
                                    private readonly IScopedDep _scopedDep;
-                           
+
                                    public Service(IScopedDep scopedDep)
                                    {
                                        _scopedDep = scopedDep;
                                    }
-                           
+
                                    public IScopedDep ScopedDep => _scopedDep;
                                }
-                           
+
                                // Implements a session
                                class Session : Composition
                                {
@@ -1892,24 +1892,24 @@ public class LifetimesTests
                                    {
                                    }
                                }
-                           
+
                                class ProgramRoot
                                {
                                    private readonly ISingletonDep _singletonDep;
                                    private readonly Func<Session> _sessionFactory;
-                           
+
                                    public ProgramRoot(ISingletonDep singletonDep,
                                        Func<Session> sessionFactory)
                                    {
                                        _singletonDep = singletonDep;
                                        _sessionFactory = sessionFactory;
                                    }
-                           
+
                                    public ISingletonDep SingletonDep => _singletonDep;
                                    
                                    public Session CreateSession() => _sessionFactory();
                                }
-                           
+
                                partial class Composition
                                {
                                    void Setup() =>
@@ -1924,46 +1924,46 @@ public class LifetimesTests
                                            .Root<IService>("SessionRoot")
                                            .Root<ProgramRoot>("ProgramRoot");
                                }
-                           
+
                                public class Program
                                {
                                    public static void Main()
                                    {
                                        var composition = new Composition();
                                        var program = composition.ProgramRoot;
-                           
+
                                        // Creates session #1
                                        var session1 = program.CreateSession();
                                        var scopedDepInSession1 = session1.SessionRoot.ScopedDep;
                                        System.Console.WriteLine(scopedDepInSession1 == session1.SessionRoot.ScopedDep);
-                           
+
                                        // Checks that the singleton instances are identical
                                        System.Console.WriteLine(scopedDepInSession1.SingletonDep == program.SingletonDep);
-                           
+
                                        // Creates session #2
                                        var session2 = program.CreateSession();
                                        var scopedDepInSession2 = session2.SessionRoot.ScopedDep;
                                        System.Console.WriteLine(scopedDepInSession2 == session2.SessionRoot.ScopedDep);
-                           
+
                                        // Checks that the scoped instances are not identical in different sessions
                                        System.Console.WriteLine(scopedDepInSession1 != scopedDepInSession2);
-                           
+
                                        // Checks that the singleton instances are identical in different sessions
                                        System.Console.WriteLine(scopedDepInSession1.SingletonDep == scopedDepInSession2.SingletonDep);
-                           
+
                                        // Disposes of session #1
                                        session1.Dispose();
                                        // Checks that the scoped instance is finalized
                                        System.Console.WriteLine(scopedDepInSession1.IsDisposed);
-                           
+
                                        // Session #2 is still not finalized
                                        System.Console.WriteLine(session2.SessionRoot.ScopedDep.IsDisposed);
-                           
+
                                        // Disposes of session #2
                                        session2.Dispose();
                                        // Checks that the scoped instance is finalized
                                        System.Console.WriteLine(scopedDepInSession2.IsDisposed);
-                           
+
                                        // Disposes of composition
                                        composition.Dispose();
                                        System.Console.WriteLine(scopedDepInSession1.SingletonDep.IsDisposed);
@@ -1987,62 +1987,62 @@ public class LifetimesTests
                                using System;
                                using Pure.DI;
                                using static Pure.DI.Lifetime; 
-                           
+
                                namespace Sample
                                {
                                interface ISingletonDep
                                {
                                    bool IsDisposed { get; }
                                }
-                           
+
                                class SingletonDep
                                    : ISingletonDep, IDisposable
                                {
                                    public bool IsDisposed { get; private set; }
-                           
+
                                    public void Dispose() => IsDisposed = true;
                                }
-                           
+
                                interface IScopedDep
                                {
                                    ISingletonDep SingletonDep { get; }
-                           
+
                                    bool IsDisposed { get; }
                                }
-                           
+
                                class ScopedDep : IScopedDep, IDisposable
                                {
                                    private readonly ISingletonDep _singletonDep;
-                           
+
                                    public ScopedDep(ISingletonDep singletonDep)
                                    {
                                        _singletonDep = singletonDep;
                                    }
-                           
+
                                    public ISingletonDep SingletonDep => _singletonDep;
                                    
                                    public bool IsDisposed { get; private set; }
-                           
+
                                    public void Dispose() => IsDisposed = true;
                                }
-                           
+
                                interface IService
                                {
                                    IScopedDep ScopedDep { get; }
                                }
-                           
+
                                class Service : IService
                                {
                                    private readonly IScopedDep _scopedDep;
-                           
+
                                    public Service(IScopedDep scopedDep)
                                    {
                                        _scopedDep = scopedDep;
                                    }
-                           
+
                                    public IScopedDep ScopedDep => _scopedDep;
                                }
-                           
+
                                // Implements a session
                                class Session : Composition
                                {
@@ -2050,24 +2050,24 @@ public class LifetimesTests
                                    {
                                    }
                                }
-                           
+
                                class ProgramRoot
                                {
                                    private readonly ISingletonDep _singletonDep;
                                    private readonly Func<Session> _sessionFactory;
-                           
+
                                    public ProgramRoot(ISingletonDep singletonDep,
                                        Func<Session> sessionFactory)
                                    {
                                        _singletonDep = singletonDep;
                                        _sessionFactory = sessionFactory;
                                    }
-                           
+
                                    public ISingletonDep SingletonDep => _singletonDep;
                                    
                                    public Session CreateSession() => _sessionFactory();
                                }
-                           
+
                                partial class Composition
                                {
                                    void Setup() =>
@@ -2078,46 +2078,46 @@ public class LifetimesTests
                                            .Root<IService>("SessionRoot")
                                            .Root<ProgramRoot>("ProgramRoot");
                                }
-                           
+
                                public class Program
                                {
                                    public static void Main()
                                    {
                                        var composition = new Composition();
                                        var program = composition.ProgramRoot;
-                           
+
                                        // Creates session #1
                                        var session1 = program.CreateSession();
                                        var scopedDepInSession1 = session1.SessionRoot.ScopedDep;
                                        System.Console.WriteLine(scopedDepInSession1 == session1.SessionRoot.ScopedDep);
-                           
+
                                        // Checks that the singleton instances are identical
                                        System.Console.WriteLine(scopedDepInSession1.SingletonDep == program.SingletonDep);
-                           
+
                                        // Creates session #2
                                        var session2 = program.CreateSession();
                                        var scopedDepInSession2 = session2.SessionRoot.ScopedDep;
                                        System.Console.WriteLine(scopedDepInSession2 == session2.SessionRoot.ScopedDep);
-                           
+
                                        // Checks that the scoped instances are not identical in different sessions
                                        System.Console.WriteLine(scopedDepInSession1 != scopedDepInSession2);
-                           
+
                                        // Checks that the singleton instances are identical in different sessions
                                        System.Console.WriteLine(scopedDepInSession1.SingletonDep == scopedDepInSession2.SingletonDep);
-                           
+
                                        // Disposes of session #1
                                        session1.Dispose();
                                        // Checks that the scoped instance is finalized
                                        System.Console.WriteLine(scopedDepInSession1.IsDisposed);
-                           
+
                                        // Session #2 is still not finalized
                                        System.Console.WriteLine(session2.SessionRoot.ScopedDep.IsDisposed);
-                           
+
                                        // Disposes of session #2
                                        session2.Dispose();
                                        // Checks that the scoped instance is finalized
                                        System.Console.WriteLine(scopedDepInSession2.IsDisposed);
-                           
+
                                        // Disposes of composition
                                        composition.Dispose();
                                        System.Console.WriteLine(scopedDepInSession1.SingletonDep.IsDisposed);
@@ -2144,16 +2144,16 @@ public class LifetimesTests
                            namespace Sample
                            {
                                internal interface IDependency { }
-                           
+
                                internal class Dependency : IDependency { }
-                           
+
                                internal interface IService
                                {
                                    public IDependency Dependency1 { get; }
                                            
                                    public IDependency Dependency2 { get; }
                                }
-                           
+
                                internal class Service : IService
                                {
                                    public Service(Func<IDependency> dependency1, IDependency dependency2)
@@ -2161,12 +2161,12 @@ public class LifetimesTests
                                        Dependency1 = dependency1();
                                        Dependency2 = dependency2;
                                    }
-                           
+
                                    public IDependency Dependency1 { get; }
                                            
                                    public IDependency Dependency2 { get; }
                                }
-                           
+
                                static class Setup
                                {
                                    private static void SetupComposition()
@@ -2178,7 +2178,7 @@ public class LifetimesTests
                                            .Root<IService>("Root");
                                    }
                                }
-                           
+
                                public class Program
                                {
                                    public static void Main()
@@ -2221,7 +2221,7 @@ public class LifetimesTests
                                            .Root<IService>("Service");
                                    }
                                }
-                           
+
                                public class Program
                                {
                                    public static void Main()
@@ -2251,16 +2251,16 @@ public class LifetimesTests
                            namespace Sample
                            {
                                internal interface IDependency { }
-                           
+
                                internal class Dependency : IDependency { }
-                           
+
                                internal interface IService
                                {
                                    public IDependency Dependency1 { get; }
                                            
                                    public IDependency Dependency2 { get; }
                                }
-                           
+
                                internal class Service : IService
                                {
                                    public Service(Func<IDependency> dependency1, IDependency dependency2)
@@ -2268,12 +2268,12 @@ public class LifetimesTests
                                        Dependency1 = dependency1();
                                        Dependency2 = dependency2;
                                    }
-                           
+
                                    public IDependency Dependency1 { get; }
                                            
                                    public IDependency Dependency2 { get; }
                                }
-                           
+
                                static class Setup
                                {
                                    private static void SetupComposition()
@@ -2285,7 +2285,7 @@ public class LifetimesTests
                                            .Root<IService>("Root");
                                    }
                                }
-                           
+
                                public class Program
                                {
                                    public static void Main()
@@ -2318,20 +2318,20 @@ public class LifetimesTests
                            namespace Sample
                            {
                                internal interface IDependency { }
-                           
+
                                internal class Dependency : IDependency { }
                                
                                internal interface IDependency2 { }
-                           
+
                                internal class Dependency2 : IDependency2 { }
-                           
+
                                internal interface IService
                                {
                                    public IDependency Dependency1 { get; }
                                            
                                    public IDependency Dependency2 { get; }
                                }
-                           
+
                                internal class Service : IService
                                {
                                    public Service(Func<IDependency> dependency1, IDependency dependency12, IDependency2 dep2, Dependency2 dep22)
@@ -2339,12 +2339,12 @@ public class LifetimesTests
                                        Dependency1 = dependency1();
                                        Dependency2 = dependency12;
                                    }
-                           
+
                                    public IDependency Dependency1 { get; }
                                            
                                    public IDependency Dependency2 { get; }
                                }
-                           
+
                                static class Setup
                                {
                                    private static void SetupComposition()
@@ -2356,7 +2356,7 @@ public class LifetimesTests
                                            .Root<IService>("Root");
                                    }
                                }
-                           
+
                                public class Program
                                {
                                    public static void Main()
@@ -2389,28 +2389,28 @@ public class LifetimesTests
                            namespace Sample
                            {
                                interface IDependency1 {}
-                           
+
                                class Dependency1: IDependency1 {}
-                           
+
                                interface IDependency2
                                {
                                    IDependency1 Dep1 { get; }
                                }
-                           
+
                                class Dependency2: IDependency2
                                {
                                    public Dependency2(IDependency1 dep1) => Dep1 = dep1;
-                           
+
                                    public IDependency1 Dep1 { get; }
                                }
-                           
+
                                interface IDependency3
                                {
                                    IDependency1 Dep1 { get; }
-                           
+
                                    IDependency2 Dep2 { get; }
                                }
-                           
+
                                class Dependency3: IDependency3
                                {
                                    public Dependency3(IDependency1 dep1, IDependency2 dep2)
@@ -2418,21 +2418,21 @@ public class LifetimesTests
                                        Dep1 = dep1;
                                        Dep2 = dep2;
                                    }       
-                           
+
                                    public IDependency1 Dep1 { get; }
-                           
+
                                    public IDependency2 Dep2 { get; }
                                }
-                           
+
                                interface IService
                                {
                                    IDependency1 Dep1 { get; }
-                           
+
                                    IDependency2 Dep2 { get; }
-                           
+
                                    IDependency3 Dep3 { get; }
                                }
-                           
+
                                class Service: IService 
                                {
                                    public Service(IDependency1 dep1, IDependency2 dep2, IDependency3 dep3)
@@ -2441,14 +2441,14 @@ public class LifetimesTests
                                        Dep2 = dep2;
                                        Dep3 = dep3;
                                    }
-                           
+
                                    public IDependency1 Dep1 { get; }
-                           
+
                                    public IDependency2 Dep2 { get; }
-                           
+
                                    public IDependency3 Dep3 { get; }
                                }
-                           
+
                                static class Setup
                                {
                                    private static void SetupComposition()
@@ -2462,7 +2462,7 @@ public class LifetimesTests
                                            .Root<IService>("Service");
                                    }
                                }
-                           
+
                                public class Program
                                {
                                    public static void Main()
@@ -2500,16 +2500,16 @@ public class LifetimesTests
                                internal interface IDependency1<T> { }
                                
                                internal interface IDependency2<T> { }
-                           
+
                                internal class Dependency<T> : IDependency1<T>, IDependency2<T> { }
-                           
+
                                internal interface IService
                                {
                                    IDependency1<int> Dependency1 { get; }
                                            
                                    IDependency2<int> Dependency2 { get; }
                                }
-                           
+
                                internal class Service : IService
                                {
                                    public Service(IDependency1<int> dependency1, IDependency2<int> dependency2)
@@ -2517,12 +2517,12 @@ public class LifetimesTests
                                        Dependency1 = dependency1;
                                        Dependency2 = dependency2;
                                    }
-                           
+
                                    public IDependency1<int> Dependency1 { get; }
                                            
                                    public IDependency2<int> Dependency2 { get; }
                                }
-                           
+
                                static class Setup
                                {
                                    private static void SetupComposition()
@@ -2533,7 +2533,7 @@ public class LifetimesTests
                                            .Root<IService>("Root");
                                    }
                                }
-                           
+
                                public class Program
                                {
                                    public static void Main()
@@ -2563,21 +2563,21 @@ public class LifetimesTests
                                using System;
                                using System.Collections.Generic;
                                using Pure.DI;
-                           
+
                                namespace Sample
                                {
                                   interface IDep { }
-                           
+
                                    class Dep: IDep
                                    {
                                        public Dep(Func<int> val) { }
                                    }
-                           
+
                                    class Service
                                    {
                                        public Service(IEnumerable<IDep> deps) { }
                                    }
-                           
+
                                    static class Setup
                                    {
                                       private static void SetupComposition()
@@ -2591,7 +2591,7 @@ public class LifetimesTests
                                                .Root<Service>("Service");
                                       }
                                    }
-                           
+
                                    public class Program
                                    {
                                       public static void Main()
@@ -2630,7 +2630,7 @@ public class LifetimesTests
                                            .Root<IService>("Service");
                                    }
                                }
-                           
+
                                public class Program
                                {
                                    public static void Main()
@@ -2702,9 +2702,9 @@ public class LifetimesTests
                            namespace Sample
                            {
                                interface IDependency {}
-                           
+
                                class Dependency: IDependency {}
-                           
+
                                interface IService {}
                                
                                class Service: IService
@@ -3009,7 +3009,7 @@ public class LifetimesTests
                                            .Root<IService>("Service");
                                    }
                                }
-                           
+
                                public class Program
                                {
                                    public static void Main()
@@ -3039,7 +3039,7 @@ public class LifetimesTests
                            namespace Sample
                            {
                                interface IDependency {}
-                           
+
                                struct Dependency: IDependency 
                                {
                                    public Dependency()
@@ -3047,19 +3047,19 @@ public class LifetimesTests
                                        Console.WriteLine("Dependency Created");
                                    }
                                }
-                           
+
                                interface IService
                                {
                                    IDependency Dep { get; }
                                }
-                           
+
                                class Service: IService 
                                {
                                    public Service(IDependency dep) => Dep = dep;
-                           
+
                                    public IDependency Dep { get; }
                                }
-                           
+
                                static class Setup
                                {
                                    private static void SetupComposition()
@@ -3070,7 +3070,7 @@ public class LifetimesTests
                                            .Root<IService>("Service");
                                    }
                                }
-                           
+
                                public class Program
                                {
                                    public static void Main()
@@ -3114,7 +3114,7 @@ public class LifetimesTests
                                            .Root<IService>("Service");
                                    }
                                }
-                           
+
                                public class Program
                                {
                                    public static void Main()
@@ -3148,7 +3148,7 @@ public class LifetimesTests
 
                                class Level1 { public Level1(IDep d) {} }
                                class Level2 { public Level2(IDep d, Level1 l1) {} }
-                           
+
                                static class Setup
                                {
                                    private static void SetupComposition()
@@ -6254,5 +6254,305 @@ public class LifetimesTests
 
         // Then
         result.Success.ShouldBeTrue(result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportDefaultLifetimeWithTypeWhenAutoBinding()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Service {}
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .DefaultLifetime<Service>(Lifetime.Singleton)
+                                           .Root<Service>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Service == composition.Service);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldIgnoreDefaultLifetimeWithoutTypeWhenAutoBinding()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Service {}
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .DefaultLifetime(Lifetime.Singleton)
+                                           .Root<Service>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Service == composition.Service);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["False"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportDefaultLifetimeWithMultipleTypesWhenAutoBinding()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Service1 {}
+                               class Service2 {}
+                               class Service3 {}
+                               class Service4 {}
+                               class Service5 {}
+                               
+                               static class Setup
+                               {
+                                private static void SetupComposition()
+                                {
+                                 DI.Setup(nameof(Composition))
+                                  .DefaultLifetime<Service1>(Lifetime.Singleton)
+                                  .DefaultLifetime<Service2>(Lifetime.Singleton)
+                                  .DefaultLifetime<Service3>(Lifetime.Singleton)
+                                  .DefaultLifetime<Service4>(Lifetime.Singleton)
+                                  .DefaultLifetime<Service5>(Lifetime.Singleton)
+                                  .Root<Service1>("Service1")
+                                  .Root<Service2>("Service2")
+                                  .Root<Service3>("Service3")
+                                  .Root<Service4>("Service4")
+                                  .Root<Service5>("Service5");
+                                }
+                               }
+
+                               public class Program
+                               {
+                                public static void Main()
+                                {
+                                 var composition = new Composition();
+                                 Console.WriteLine(composition.Service1 == composition.Service1);
+                                 Console.WriteLine(composition.Service2 == composition.Service2);
+                                 Console.WriteLine(composition.Service3 == composition.Service3);
+                                 Console.WriteLine(composition.Service4 == composition.Service4);
+                                 Console.WriteLine(composition.Service5 == composition.Service5);
+                                }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True", "True", "True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportDefaultLifetimeWithDeepHierarchyWhenAutoBinding()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency : IDependency {}
+
+                               interface IServiceA
+                               {
+                                IDependency Dep { get; }
+                               }
+                               
+                               class ServiceA : IServiceA
+                               {
+                                public ServiceA(IDependency dep) => Dep = dep;
+                                public IDependency Dep { get; }
+                               }
+
+                               interface IServiceB
+                               {
+                                ServiceA ServiceA { get; }
+                                IDependency Dep { get; }
+                               }
+                               
+                               class ServiceB : IServiceB
+                               {
+                                public ServiceB(ServiceA serviceA, IDependency dep)
+                                {
+                                 ServiceA = serviceA;
+                                 Dep = dep;
+                                }
+                                public ServiceA ServiceA { get; }
+                                public IDependency Dep { get; }
+                               }
+
+                               interface IServiceC
+                               {
+                                ServiceB ServiceB { get; }
+                                IDependency Dep { get; }
+                               }
+                               
+                               class ServiceC : IServiceC
+                               {
+                                public ServiceC(ServiceB serviceB, IDependency dep)
+                                {
+                                 ServiceB = serviceB;
+                                 Dep = dep;
+                                }
+                                public ServiceB ServiceB { get; }
+                                public IDependency Dep { get; }
+                               }
+                               
+                               static class Setup
+                               {
+                                private static void SetupComposition()
+                                {
+                                 DI.Setup(nameof(Composition))
+                                  .Bind().To<Dependency>()
+                                  .DefaultLifetime<ServiceA>(Lifetime.Singleton)
+                                  .DefaultLifetime<ServiceB>(Lifetime.Singleton)
+                                  .DefaultLifetime<ServiceC>(Lifetime.Singleton)
+                                  .Root<ServiceC>("Root");
+                                }
+                               }
+
+                               public class Program
+                               {
+                                public static void Main()
+                                {
+                                 var composition = new Composition();
+                                 var root1 = composition.Root;
+                                 var root2 = composition.Root;
+                                 Console.WriteLine(root1 == root2);
+                                 Console.WriteLine(root1.ServiceB == root2.ServiceB);
+                                 Console.WriteLine(root1.ServiceB.ServiceA == root2.ServiceB.ServiceA);
+                                 Console.WriteLine(root1.Dep == root2.Dep);
+                                 Console.WriteLine(root1.ServiceB.Dep != root1.Dep);
+                                }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True", "True", "True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportDefaultLifetimeWithMixedLifetimesWhenAutoBinding()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class SingletonService {}
+
+                               class ScopedService {}
+
+                               class TransientService {}
+
+                               class RootService
+                               {
+                                public RootService(
+                                 SingletonService singleton,
+                                 ScopedService scoped,
+                                 TransientService transient)
+                                {
+                                 _singleton = singleton;
+                                 _scoped = scoped;
+                                 _transient = transient;
+                                }
+
+                                private readonly SingletonService _singleton;
+                                private readonly ScopedService _scoped;
+                                private readonly TransientService _transient;
+
+                                public SingletonService Singleton => _singleton;
+                                public ScopedService Scoped => _scoped;
+                                public TransientService Transient => _transient;
+                               }
+                               
+                               static class Setup
+                               {
+                                private static void SetupComposition()
+                                {
+                                 DI.Setup(nameof(Composition))
+                                  .DefaultLifetime<SingletonService>(Lifetime.Singleton)
+                                  .DefaultLifetime<ScopedService>(Lifetime.Scoped)
+                                  .DefaultLifetime(Lifetime.Singleton)
+                                  .Root<RootService>("Root");
+                                }
+                               }
+
+                               public class Program
+                               {
+                                public static void Main()
+                                {
+                                 var composition = new Composition();
+                                 var root1 = composition.Root;
+                                 var root2 = composition.Root;
+                                 Console.WriteLine(root1.Singleton == root2.Singleton);
+                                 Console.WriteLine(root1.Scoped == root2.Scoped);
+                                 Console.WriteLine(root1.Transient != root2.Transient);
+                                }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True", "True"], result);
     }
 }

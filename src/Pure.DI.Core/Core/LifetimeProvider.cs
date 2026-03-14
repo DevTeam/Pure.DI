@@ -1,13 +1,17 @@
 ﻿namespace Pure.DI.Core;
 
-class LifetimeProvider(ITypes types, IBaseSymbolsProvider baseSymbolsProvider) : ILifetimeProvider
+class LifetimeProvider(
+    ITypes types,
+    IBaseSymbolsProvider baseSymbolsProvider)
+    : ILifetimeProvider
 {
     public MdLifetime? GetActualLifetime(
         IReadOnlyCollection<MdDefaultLifetime> defaultLifetimes,
         MdLifetime? lifetime,
         ITypeSymbol? type,
         IReadOnlyCollection<MdTag> tags,
-        IReadOnlyCollection<MdContract> contracts)
+        IReadOnlyCollection<MdContract> contracts,
+        bool useCommonDefault)
     {
         if (lifetime is not null)
         {
@@ -28,6 +32,12 @@ class LifetimeProvider(ITypes types, IBaseSymbolsProvider baseSymbolsProvider) :
             {
                 return defaultLifetime.Lifetime;
             }
+        }
+
+        // ReSharper disable once ConvertIfStatementToReturnStatement
+        if (!useCommonDefault)
+        {
+            return lifetime;
         }
 
         return GetDefaultLifetime(defaultLifetimes);

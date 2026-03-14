@@ -132,7 +132,7 @@ class BindingsFactory(
             : ImmutableArray<MdTag>.Empty;
 
         var newContracts = ImmutableArray.Create(new MdContract(semanticModel, setup.Source, sourceType, ContractKind.Implicit, ImmutableArray<MdTag>.Empty));
-        var actualLifetime = lifetimeProvider.GetActualLifetime(setup.DefaultLifetimes, null, sourceType, ImmutableArray<MdTag>.Empty, newContracts);
+        var actualLifetime = lifetimeProvider.GetActualLifetime(setup.DefaultLifetimes, null, sourceType, ImmutableArray<MdTag>.Empty, newContracts, false);
 
         return new MdBinding(
             bindingId,

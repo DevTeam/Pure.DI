@@ -382,11 +382,6 @@ sealed class DependencyGraphBuilder(
 
                     if (!disableAutoBinding)
                     {
-                        /*if (!Debugger.IsAttached)
-                        {
-                            Debugger.Launch();
-                        }*/
-
                         var autoBinding = bindingsFactory.CreateAutoBinding(setup, targetNode, injection, typeConstructor, ++maxBindingId);
                         var autoNodes = dependencyNodePrioritizer.SortByPriority(nodesFactory.CreateNodes(setup, typeConstructor, autoBinding)).ToList();
                         foreach (var autoNode in autoNodes)

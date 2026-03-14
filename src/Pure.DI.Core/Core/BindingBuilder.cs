@@ -98,7 +98,7 @@ sealed class BindingBuilder(
             .Select(c => c with { Tags = c.Tags.Select(tag => BuildTag(tag, implementationType, id)).ToImmutableArray() })
             .ToImmutableArray();
 
-        var lifetime = lifetimeProvider.GetActualLifetime(_defaultLifetimes, _lifetime, implementationType, implementationTags, contractsWithTags);
+        var lifetime = lifetimeProvider.GetActualLifetime(_defaultLifetimes, _lifetime, implementationType, implementationTags, contractsWithTags, true);
 
         return new MdBinding(
             int.MaxValue - specialBindingIdGenerator.Generate(),
