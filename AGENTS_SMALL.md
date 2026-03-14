@@ -1063,7 +1063,8 @@ repository1.ProcessOrder("ORD-2025-54546");
 // Check that within one repository (one block), connections are shared for consistency
 repository1.PrimaryConnection.ShouldBe(repository1.SecondaryConnection);
 repository1.OtherConnection.ShouldBe(repository1.FallbackConnection);
-repository1.PrimaryConnection.ShouldBe(repository1.OtherConnection);
+
+repository1.PrimaryConnection.ShouldNotBe(repository1.OtherConnection);
 
 // Simulate the second user request or batch - should have a new PerBlock connection
 var repository2 = composition.Repository;

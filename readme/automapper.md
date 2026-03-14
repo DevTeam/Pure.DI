@@ -188,7 +188,6 @@ partial class Composition: IDisposable
   private object[] _disposables;
   private int _disposeIndex;
 
-  private Program? _singletonProgram58;
   private Microsoft.Extensions.Logging.ILogger? _singletonILogger55;
   private Func<Student, Person>? _singletonFunc59;
   private AutoMapper.Mapper? _singletonMapper56;
@@ -215,55 +214,50 @@ partial class Composition: IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_root._singletonProgram58 is null)
+      if (_root._singletonFunc59 is null)
         lock (_lock)
-          if (_root._singletonProgram58 is null)
+          if (_root._singletonFunc59 is null)
           {
-            if (_root._singletonFunc59 is null)
-              lock (_lock)
-                if (_root._singletonFunc59 is null)
-                {
-                  _root._singletonFunc59 = source =>
-                  {
-                    if (_root._singletonMapper56 is null)
-                    {
-                      EnsureLoggerFactoryExists();
-                      LoggerFactory localLoggerFactory = _root._singletonLoggerFactory54;
-                      // Create the mapping configuration
-                      var localConfiguration = new MapperConfiguration(cfg =>
-                      {
-                        cfg.CreateMap<Student, Person>();
-                      }, localLoggerFactory);
-                      localConfiguration.CompileMappings();
-                      // Create the mapper
-                      _root._singletonMapper56 = new Mapper(localConfiguration);
-                    }
-
-                    AutoMapper.IMapper localMapper = _root._singletonMapper56;
-                    // source -> target
-                    Person localTarget = localMapper.Map<Student, Person>(source);
-                    // Building-up a mapped value with dependencies
-                    if (_root._singletonPersonFormatter53 is null)
-                    {
-                      _root._singletonPersonFormatter53 = new PersonFormatter();
-                    }
-
-                    localTarget.Formatter = _root._singletonPersonFormatter53;
-                    return localTarget;
-                  };
-                }
-
-            if (_root._singletonILogger55 is null)
+            _root._singletonFunc59 = source =>
             {
-              EnsureLoggerFactoryExists();
-              LoggerFactory localLoggerFactory1 = _root._singletonLoggerFactory54;
-              _root._singletonILogger55 = localLoggerFactory1.CreateLogger("info");
-            }
+              if (_root._singletonMapper56 is null)
+              {
+                EnsureLoggerFactoryExists();
+                LoggerFactory localLoggerFactory = _root._singletonLoggerFactory54;
+                // Create the mapping configuration
+                var localConfiguration = new MapperConfiguration(cfg =>
+                {
+                  cfg.CreateMap<Student, Person>();
+                }, localLoggerFactory);
+                localConfiguration.CompileMappings();
+                // Create the mapper
+                _root._singletonMapper56 = new Mapper(localConfiguration);
+              }
 
-            _root._singletonProgram58 = new Program(_root._singletonILogger55, new StudentService(_root._singletonFunc59));
+              AutoMapper.IMapper localMapper = _root._singletonMapper56;
+              // source -> target
+              Person localTarget = localMapper.Map<Student, Person>(source);
+              // Building-up a mapped value with dependencies
+              if (_root._singletonPersonFormatter53 is null)
+              {
+                _root._singletonPersonFormatter53 = new PersonFormatter();
+              }
+
+              localTarget.Formatter = _root._singletonPersonFormatter53;
+              return localTarget;
+            };
           }
 
-      return _root._singletonProgram58;
+      if (_root._singletonILogger55 is null)
+        lock (_lock)
+          if (_root._singletonILogger55 is null)
+          {
+            EnsureLoggerFactoryExists();
+            LoggerFactory localLoggerFactory1 = _root._singletonLoggerFactory54;
+            _root._singletonILogger55 = localLoggerFactory1.CreateLogger("info");
+          }
+
+      return new Program(_root._singletonILogger55, new StudentService(_root._singletonFunc59));
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureLoggerFactoryExists()
       {
@@ -288,7 +282,6 @@ partial class Composition: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _singletonProgram58 = null;
       _singletonILogger55 = null;
       _singletonFunc59 = null;
       _singletonMapper56 = null;

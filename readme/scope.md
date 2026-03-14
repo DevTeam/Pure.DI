@@ -186,13 +186,13 @@ partial class Composition: IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<RequestScope> perBlockFunc586 = new Func<RequestScope>(
+      Func<RequestScope> perBlockFunc587 = new Func<RequestScope>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
         return new RequestScope(this);
       });
-      return new App(perBlockFunc586);
+      return new App(perBlockFunc587);
     }
   }
 
