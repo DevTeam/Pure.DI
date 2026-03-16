@@ -55,6 +55,7 @@ The build logic is a regular [.NET console application](/build). You can use [bu
 | perf | Performance tests |
 | pb | Publish the balazor web sssembly example |
 | r | Generate README.md |
+| rel | Get release information |
 | t | Create and deploy templates |
 | te | Test examples |
 | u | Upgrading the internal version of DI to the latest public version |

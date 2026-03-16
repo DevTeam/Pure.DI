@@ -278,6 +278,8 @@ dotnet run
 
 </details>
 
+[An introductory article that will help you understand the basic idea and get started with Pure.DI](/readme/en_art_basics/en_basics.md)
+
 ## Examples
 
 ### Basics
@@ -1989,16 +1991,26 @@ Examples of how to set up a composition
 - [MSBuild logger](https://github.com/JetBrains/teamcity-msbuild-logger/blob/master/TeamCity.MSBuild.Logger/Composition.cs)
 
 Articles
-- [RU New in Pure.DI by the end of 2024](https://habr.com/ru/articles/868744/)
-- [RU New in Pure.DI](https://habr.com/ru/articles/808297/)
-- [RU Pure.DI v2.1](https://habr.com/ru/articles/795809/)
-- [RU Pure.DI next step](https://habr.com/ru/articles/554236/)
-- [RU Pure.DI for .NET](https://habr.com/ru/articles/552858/)
+- [An introductory article that will help you understand the basic idea and get started with Pure.DI](/readme/en_art_basics/en_basics.md)
 
-RU DotNext video
+<details>
+<summary>Additional resources in Russian</summary>
+
+Articles
+- [An introductory article that will help you understand the basic idea and get started with Pure.DI](/readme/ru_art_basics/ru_basics.md)
+- [Pure.DI: new features](https://habr.com/ru/articles/1010646/)
+- [New in Pure.DI by the end of 2024](https://habr.com/ru/articles/868744/)
+- [New in Pure.DI](https://habr.com/ru/articles/808297/)
+- [Pure.DI v2.1](https://habr.com/ru/articles/795809/)
+- [Pure.DI next step](https://habr.com/ru/articles/554236/)
+- [Pure.DI for .NET](https://habr.com/ru/articles/552858/)
+
+DotNext video
 
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=nrp9SH-gLqg" target="_blank"><img src="http://img.youtube.com/vi/nrp9SH-gLqg/0.jpg"
 alt="DotNext Pure.DI" width="640" border="10"/></a>
+
+</details>
 
 ## AI Context
 
@@ -2068,6 +2080,7 @@ The build logic is a regular [.NET console application](/build). You can use [bu
 | perf | Performance tests |
 | pb | Publish the balazor web sssembly example |
 | r | Generate README.md |
+| rel | Get release information |
 | t | Create and deploy templates |
 | te | Test examples |
 | u | Upgrading the internal version of DI to the latest public version |

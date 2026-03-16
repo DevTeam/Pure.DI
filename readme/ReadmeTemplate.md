@@ -222,3 +222,5 @@ dotnet run
 ```
 
 </details>
+
+[An introductory article that will help you understand the basic idea and get started with Pure.DI](/readme/en_art_basics/en_basics.md)
