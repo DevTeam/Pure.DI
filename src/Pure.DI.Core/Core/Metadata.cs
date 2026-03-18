@@ -1,9 +1,12 @@
-﻿namespace Pure.DI.Core;
+using System.Runtime.CompilerServices;
+
+namespace Pure.DI.Core;
 
 sealed class Metadata(ISemantic semantic)
     : IMetadata
 {
     private const string IConfigurationTypeName = $"{Names.GeneratorName}.{nameof(IConfiguration)}";
+    private readonly ConditionalWeakTable<Compilation, ITypeSymbol?> _configTypeSymbols = new();
 
     public bool IsMetadata(SyntaxNode node, SemanticModel semanticModel, CancellationToken cancellationToken)
     {
@@ -12,22 +15,40 @@ sealed class Metadata(ISemantic semantic)
             return false;
         }
 
-        foreach (var curInvocation in invocation.DescendantNodesAndSelf().OfType<InvocationExpressionSyntax>().Reverse())
+        for (var curInvocation = invocation; curInvocation is not null;)
         {
             if (cancellationToken.IsCancellationRequested)
             {
                 return false;
             }
 
-            switch (curInvocation.Expression)
+            var expression = curInvocation.Expression;
+            switch (expression)
             {
                 case IdentifierNameSyntax { Identifier.Text: nameof(DI.Setup) }:
-                case MemberAccessExpressionSyntax memberAccess
-                    when memberAccess.Kind() == SyntaxKind.SimpleMemberAccessExpression
-                         && memberAccess.Name.Identifier.Text == nameof(DI.Setup):
+                case MemberAccessExpressionSyntax { Name.Identifier.Text: nameof(DI.Setup) }
+                    when expression.Kind() == SyntaxKind.SimpleMemberAccessExpression:
                     var returnType = semantic.TryGetTypeSymbol<ITypeSymbol>(semanticModel, node);
-                    return returnType?.ToString() == IConfigurationTypeName;
+                    if (returnType is null)
+                    {
+                        return false;
+                    }
+
+                    var configType = _configTypeSymbols.GetValue(
+                        semanticModel.Compilation,
+                        static compilation => compilation.GetTypeByMetadataName(IConfigurationTypeName));
+
+                    return configType is not null
+                           && SymbolEqualityComparer.Default.Equals(returnType, configType);
             }
+
+            if (expression is MemberAccessExpressionSyntax { Expression: InvocationExpressionSyntax innerInvocation })
+            {
+                curInvocation = innerInvocation;
+                continue;
+            }
+
+            break;
         }
 
         return false;
