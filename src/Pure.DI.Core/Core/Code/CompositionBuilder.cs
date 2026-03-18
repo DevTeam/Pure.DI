@@ -107,40 +107,77 @@ class CompositionBuilder(
             roots.Add(processedRoot);
         }
 
-        var singletons = varsMap.Declarations.Where(i => i.Node.ActualLifetime is Lifetime.Singleton or Lifetime.Scoped).ToImmutableArray();
+        var singletons = varsMap.Declarations
+            .Where(i => i.Node.ActualLifetime is Lifetime.Singleton or Lifetime.Scoped)
+            .ToImmutableArray();
         var publicRoots = roots
             .OrderByDescending(root => root.IsPublic)
             .ThenBy(root => root.Node.Binding.Id)
             .ThenBy(root => root.DisplayName)
             .ToImmutableArray();
 
-        var setupContextArgs = graph.Source.Bindings
-            .Select(binding => binding.Arg)
-            .Where(arg => arg is { IsSetupContext: true })
-            .Select(arg => arg.GetValueOrDefault())
-            .Where(arg => arg.SetupContextKind != SetupContextKind.RootArgument && arg.SetupContextKind != SetupContextKind.Members)
-            .Select(arg => new SetupContextArg(arg.Type, arg.ArgName, arg.SetupContextKind))
-            .GroupBy(arg => arg.Name)
-            .Select(group => group.First())
-            .ToImmutableArray();
+        var setupContextArgs = new List<SetupContextArg>();
+        var setupContextNames = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var binding in graph.Source.Bindings)
+        {
+            var arg = binding.Arg;
+            if (arg is not { IsSetupContext: true })
+            {
+                continue;
+            }
+
+            var setupArg = arg.GetValueOrDefault();
+            if (setupArg.SetupContextKind is SetupContextKind.RootArgument or SetupContextKind.Members)
+            {
+                continue;
+            }
+
+            if (setupContextNames.Add(setupArg.ArgName))
+            {
+                setupContextArgs.Add(new SetupContextArg(setupArg.Type, setupArg.ArgName, setupArg.SetupContextKind));
+            }
+        }
         var setupContextMembers = graph.Source.SetupContextMembers;
 
-        var totalDisposables = singletons.Where(i => nodeTools.IsDisposableAny(i.Node.Node)).ToList();
-        var disposables = singletons.Where(i => nodeTools.IsDisposable(i.Node.Node)).ToList();
-        var asyncDisposables = singletons.Where(i => nodeTools.IsAsyncDisposable(i.Node.Node)).ToList();
+        var totalDisposablesCount = 0;
+        var disposablesCount = 0;
+        var asyncDisposablesCount = 0;
+        var disposablesScopedCount = 0;
+        foreach (var singleton in singletons)
+        {
+            var node = singleton.Node.Node;
+            if (nodeTools.IsDisposableAny(node))
+            {
+                totalDisposablesCount++;
+                if (singleton.Node.ActualLifetime == Lifetime.Scoped)
+                {
+                    disposablesScopedCount++;
+                }
+            }
+
+            if (nodeTools.IsDisposable(node))
+            {
+                disposablesCount++;
+            }
+
+            if (nodeTools.IsAsyncDisposable(node))
+            {
+                asyncDisposablesCount++;
+            }
+        }
         var composition = new CompositionCode(
             graph,
             new Lines(),
             publicRoots,
-            totalDisposables.Count,
-            disposables.Count,
-            asyncDisposables.Count,
-            totalDisposables.Count(i => i.Node.ActualLifetime == Lifetime.Scoped),
+            totalDisposablesCount,
+            disposablesCount,
+            asyncDisposablesCount,
+            disposablesScopedCount,
             isThreadSafe,
             new Lines(),
             singletons,
             varDeclarationTools.Sort(classArgs).Distinct().ToImmutableArray(),
-            setupContextArgs,
+            setupContextArgs.ToImmutableArray(),
             setupContextMembers);
 
         var diagram = classDiagramBuilder.Build(composition);
