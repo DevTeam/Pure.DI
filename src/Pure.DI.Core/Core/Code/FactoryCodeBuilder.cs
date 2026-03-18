@@ -179,7 +179,7 @@ sealed class FactoryCodeBuilder(
             var.Declaration.IsDeclared = true;
         }
 
-        var textLines = new List<TextLine>();
+        var linePrefixes = new List<LinePrefix>();
         var hasOverridesLock = false;
         var isLazy = nodeTools.IsLazy(var.AbstractNode.Node, ctx.RootContext.Graph);
         if (hasOverrides && ctx.IsLockRequired && !isLazy)
@@ -208,7 +208,7 @@ sealed class FactoryCodeBuilder(
 
             foreach (var text in curBlock.Statements.Select(statement => statement.GetText()))
             {
-                textLines.AddRange(text.Lines);
+                AddLinePrefixes(text, linePrefixes);
             }
         }
         else
@@ -234,7 +234,7 @@ sealed class FactoryCodeBuilder(
             }
 
             var text = syntaxNode.WithoutTrivia().GetText();
-            textLines.AddRange(text.Lines);
+            AddLinePrefixes(text, linePrefixes);
         }
 
         var injectionArgs = new List<VarInjection>();
@@ -280,40 +280,6 @@ sealed class FactoryCodeBuilder(
         var resolversIdx = 0;
         var initsIdx = 0;
         var initializationArgsIdx = new StrongBox<int>(0);
-        var linePrefixes = new List<LinePrefix>();
-        foreach (var line in textLines.Select(textLine => textLine.ToString()))
-        {
-            var lineSpan = line.AsSpan();
-            var length = 0;
-            while (length < lineSpan.Length && char.IsWhiteSpace(lineSpan[length]))
-            {
-                length++;
-            }
-
-            var prefixLength = 0;
-            for (var i = 0; i < length; i++)
-            {
-                switch (lineSpan[i])
-                {
-                    case '\t':
-                        prefixLength += 4;
-                        break;
-
-                    default:
-                        prefixLength++;
-                        break;
-                }
-            }
-
-            var contentSpan = lineSpan[length..];
-            if (contentSpan.IsWhiteSpace())
-            {
-                continue;
-            }
-
-            linePrefixes.Add(new LinePrefix(line.AsMemory(length), prefixLength >> 1));
-        }
-
         if (fixFirstLinePrefix && linePrefixes.Count > 1)
         {
             linePrefixes[0] = linePrefixes[0] with { PrefixLength = linePrefixes[1].PrefixLength };
@@ -474,4 +440,41 @@ sealed class FactoryCodeBuilder(
     }
 
     private record struct LinePrefix(ReadOnlyMemory<char> Line, int PrefixLength);
+
+    private static void AddLinePrefixes(SourceText text, List<LinePrefix> linePrefixes)
+    {
+        foreach (var textLine in text.Lines)
+        {
+            var line = text.ToString(textLine.Span);
+            var lineSpan = line.AsSpan();
+            var length = 0;
+            while (length < lineSpan.Length && char.IsWhiteSpace(lineSpan[length]))
+            {
+                length++;
+            }
+
+            var prefixLength = 0;
+            for (var i = 0; i < length; i++)
+            {
+                switch (lineSpan[i])
+                {
+                    case '\t':
+                        prefixLength += 4;
+                        break;
+
+                    default:
+                        prefixLength++;
+                        break;
+                }
+            }
+
+            var contentSpan = lineSpan[length..];
+            if (contentSpan.IsWhiteSpace())
+            {
+                continue;
+            }
+
+            linePrefixes.Add(new LinePrefix(line.AsMemory(length), prefixLength >> 1));
+        }
+    }
 }
