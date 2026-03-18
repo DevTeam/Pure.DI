@@ -237,24 +237,35 @@ sealed class FactoryCodeBuilder(
             AddLinePrefixes(text, linePrefixes);
         }
 
-        var injectionArgs = new List<VarInjection>();
-        var initializationArgs = new List<VarInjection>();
+        List<VarInjection>? injectionArgs = null;
+        List<VarInjection>? initializationArgs = null;
         if (ctx.RootContext.Graph.Graph.TryGetInEdges(var.AbstractNode.Node, out var dependencies))
         {
+            if (varInjections is List<VarInjection> varList)
+            {
+                var desiredCapacity = varList.Count + dependencies.Count;
+                if (varList.Capacity < desiredCapacity)
+                {
+                    varList.Capacity = desiredCapacity;
+                }
+            }
+
             foreach (var dependency in dependencies)
             {
                 var dependencyVar = varsMap.GetInjection(ctx.RootContext.Graph, dependency.Injection, dependency.Source);
                 varInjections.Add(dependencyVar);
                 if (dependencyVar.Injection.Kind is InjectionKind.FactoryInjection)
                 {
-                    injectionArgs.Add(dependencyVar);
+                    (injectionArgs ??= new List<VarInjection>(dependencies.Count)).Add(dependencyVar);
                 }
                 else
                 {
-                    initializationArgs.Add(dependencyVar);
+                    (initializationArgs ??= new List<VarInjection>(dependencies.Count)).Add(dependencyVar);
                 }
             }
         }
+        injectionArgs ??= [];
+        initializationArgs ??= [];
             
         if (injections.Count != factory.Resolvers.Length
             || injections.Count != injectionArgs.Count)

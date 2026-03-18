@@ -45,7 +45,9 @@ class RootBuilder(
 
     private void AddPerResolveVars(Lines lines, IEnumerable<VarDeclaration> perResolveVars, MdSetup setup)
     {
-        foreach (var perResolve in perResolveVars.OrderBy(i => i.Node.BindingId))
+        var vars = perResolveVars as List<VarDeclaration> ?? perResolveVars.ToList();
+        vars.Sort(static (x, y) => x.Node.BindingId.CompareTo(y.Node.BindingId));
+        foreach (var perResolve in vars)
         {
             lines.AppendLine($"var {perResolve.Name} = default({typeResolver.Resolve(setup, perResolve.InstanceType)});");
             if (perResolve.InstanceType.IsValueType)
