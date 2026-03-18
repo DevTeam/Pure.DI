@@ -34,35 +34,60 @@ sealed class TagClassBuilder(
 
     public IEnumerable<TagCode> Build(TagContext tagContext)
     {
-        var tagToDependencies = (
-                from composition in tagContext.Compositions
-                from dependency in composition.Source.Graph.Edges
-                let tag = dependency.Injection.Tag as string
-                where tag is not null
-                group dependency by (tag: tag!, composition)
-                into groupsByTagAndComposition
-                group groupsByTagAndComposition by groupsByTagAndComposition.Key.tag)
-            .ToDictionary(
-                i => i.Key,
-                i => i.Select(j => (
-                    j.Key.composition,
-                    dependencies: j
-                        .Select(k => (
-                            tag: comments.Escape(k.Injection.Tag != null && k.Injection.Tag is not MdTagOnSites ? $"({k.Injection.Tag})" : ""),
-                            target: formatter.FormatRef(k.Target.Type),
-                            injectin: types.TypeEquals(k.Injection.Type, k.Source.Type) ? "" : formatter.FormatRef(k.Injection.Type),
-                            source: formatter.FormatRef(k.Source.Type),
-                            sourceLifetime: formatter.FormatRef(k.Source.Lifetime)))
-                        .Select(k => $"/// <item>{k.target} &lt;-- {k.injectin}{k.tag} -- {k.source} as {k.sourceLifetime}</item>")
-                        .Distinct()
-                        .OrderBy(k => k))));
+        var tagTags = smartTags.Get(SmartTagKind.Tag);
+        var nameTags = smartTags.Get(SmartTagKind.Name);
 
-        if (TryBuildTagCode(SmartTagKind.Tag, tagToDependencies, AddTagComments, out var tagCode))
+        if (tagTags.Count == 0 && nameTags.Count == 0)
         {
-            yield return (TagCode)tagCode;
+            yield break;
         }
 
-        if (TryBuildTagCode(SmartTagKind.Name, Unit.Shared, DoesNotAddComments, out var nameCode))
+        if (tagTags.Count > 0)
+        {
+            var tagToDependenciesMap = new Dictionary<string, Dictionary<CompositionCode, HashSet<string>>>(StringComparer.Ordinal);
+            foreach (var composition in tagContext.Compositions)
+            {
+                foreach (var dependency in composition.Source.Graph.Edges)
+                {
+                    if (dependency.Injection.Tag is not string tag)
+                    {
+                        continue;
+                    }
+
+                    if (!tagToDependenciesMap.TryGetValue(tag, out var byComposition))
+                    {
+                        byComposition = new Dictionary<CompositionCode, HashSet<string>>();
+                        tagToDependenciesMap.Add(tag, byComposition);
+                    }
+
+                    if (!byComposition.TryGetValue(composition, out var dependencies))
+                    {
+                        dependencies = new HashSet<string>(StringComparer.Ordinal);
+                        byComposition.Add(composition, dependencies);
+                    }
+
+                    var tagText = comments.Escape(dependency.Injection.Tag is not MdTagOnSites ? $"({dependency.Injection.Tag})" : "");
+                    var target = formatter.FormatRef(dependency.Target.Type);
+                    var injectin = types.TypeEquals(dependency.Injection.Type, dependency.Source.Type)
+                        ? ""
+                        : formatter.FormatRef(dependency.Injection.Type);
+                    var source = formatter.FormatRef(dependency.Source.Type);
+                    var sourceLifetime = formatter.FormatRef(dependency.Source.Lifetime);
+                    dependencies.Add($"/// <item>{target} &lt;-- {injectin}{tagText} -- {source} as {sourceLifetime}</item>");
+                }
+            }
+
+            var tagToDependencies = tagToDependenciesMap.ToDictionary(
+                i => i.Key,
+                i => i.Value.Select(j => (j.Key, dependencies: j.Value.OrderBy(k => k))));
+
+            if (TryBuildTagCode(SmartTagKind.Tag, tagTags, tagToDependencies, AddTagComments, out var tagCode))
+            {
+                yield return (TagCode)tagCode;
+            }
+        }
+
+        if (TryBuildTagCode(SmartTagKind.Name, nameTags, Unit.Shared, DoesNotAddComments, out var nameCode))
         {
             yield return (TagCode)nameCode;
         }
@@ -70,6 +95,7 @@ sealed class TagClassBuilder(
 
     private bool TryBuildTagCode<TContext>(
         SmartTagKind kind,
+        IReadOnlyCollection<SmartTag> tags,
         TContext context,
         Commenter<TContext> commenter,
         [NotNullWhen(true)] out TagCode? tagCode)
@@ -82,8 +108,8 @@ sealed class TagClassBuilder(
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        var tags = smartTags.Get(kind).Where(i => !info.Exclusions.Contains(i.Name)).ToList();
-        if (tags.Count == 0)
+        var filteredTags = tags.Where(i => !info.Exclusions.Contains(i.Name)).ToList();
+        if (filteredTags.Count == 0)
         {
             tagCode = null;
             return false;
@@ -99,7 +125,7 @@ sealed class TagClassBuilder(
             using (code.CreateBlock())
             {
                 var isFirst = true;
-                foreach (var tag in tags)
+                foreach (var tag in filteredTags)
                 {
                     if (isFirst)
                     {
