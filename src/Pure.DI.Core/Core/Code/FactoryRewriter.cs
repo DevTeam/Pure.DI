@@ -95,7 +95,7 @@ sealed class FactoryRewriter(
         {
             if (_nestedLambdaCounter == 1 && _nestedBlockCounter == 1)
             {
-                var statements = new List<StatementSyntax>();
+                var statements = new List<StatementSyntax>(block.Statements.Count);
                 foreach (var statement in block.Statements)
                 {
                     var curStatement = statement;
@@ -206,7 +206,8 @@ sealed class FactoryRewriter(
         }
         else
         {
-            var prefix = node.Ancestors().Any() ? node.Ancestors().First().GetLeadingTrivia() : new SyntaxTriviaList().Add(SyntaxFactory.LineFeed);
+            var firstAncestor = node.Ancestors().FirstOrDefault();
+            var prefix = firstAncestor is not null ? firstAncestor.GetLeadingTrivia() : new SyntaxTriviaList().Add(SyntaxFactory.LineFeed);
             newNode = SyntaxFactory.Block().AddStatements(
                     SyntaxFactory.ExpressionStatement(expressionSyntax)
                         .WithLeadingTrivia(new SyntaxTriviaList().Add(SyntaxFactory.LineFeed).AddRange(node.GetLeadingTrivia()))
@@ -220,14 +221,17 @@ sealed class FactoryRewriter(
 
     private static SyntaxTrivia GetPrefix(SyntaxNode node)
     {
-        var prefixes = node.GetLeadingTrivia()
-            .Reverse()
-            .Where(i => i.IsKind(SyntaxKind.WhitespaceTrivia))
-            .Take(1)
-            .ToList();
+        var leadingTrivia = node.GetLeadingTrivia();
+        for (var i = leadingTrivia.Count - 1; i >= 0; i--)
+        {
+            var trivia = leadingTrivia[i];
+            if (trivia.IsKind(SyntaxKind.WhitespaceTrivia))
+            {
+                return trivia;
+            }
+        }
 
-        var prefix = prefixes.Count > 0 ? prefixes.First() : SyntaxFactory.Tab;
-        return prefix;
+        return SyntaxFactory.Tab;
     }
 
     private bool TryInject(
