@@ -281,14 +281,7 @@ sealed class MetadataBuilder(
 
         var bindings = bindingsBuilder.ToImmutable();
 
-        var tagOn = bindings
-            .OrderBy(i => i.Id)
-            .SelectMany(i => i.Contracts)
-            .SelectMany(binding => binding.Tags.Select(i => i.Value).OfType<MdTagOnSites>())
-            .Where(i => i.InjectionSites.Length > 0)
-            .Distinct()
-            .Reverse()
-            .ToList();
+        var tagOn = BuildTagOn(bindings);
 
         var mergedSetupContextMembers = setupContextMembers
             .GroupBy(member => member.SetupName)
@@ -322,6 +315,63 @@ sealed class MetadataBuilder(
             tagOn,
             comments,
             defaultLifetimes.ToImmutableArray());
+
+        return;
+
+        static List<MdTagOnSites> BuildTagOn(ImmutableArray<MdBinding> bindings)
+        {
+            if (bindings.IsDefaultOrEmpty)
+            {
+                return [];
+            }
+
+            IReadOnlyList<MdBinding> orderedBindings = bindings;
+            if (!IsSortedById(bindings))
+            {
+                var copy = bindings.ToArray();
+                Array.Sort(copy, static (x, y) => x.Id.CompareTo(y.Id));
+                orderedBindings = copy;
+            }
+
+            var result = new List<MdTagOnSites>();
+            var seen = new HashSet<MdTagOnSites>();
+            for (var i = 0; i < orderedBindings.Count; i++)
+            {
+                var binding = orderedBindings[i];
+                foreach (var contract in binding.Contracts)
+                {
+                    foreach (var tag in contract.Tags)
+                    {
+                        if (tag.Value is MdTagOnSites tagOnSites
+                            && tagOnSites.InjectionSites.Length > 0
+                            && seen.Add(tagOnSites))
+                        {
+                            result.Add(tagOnSites);
+                        }
+                    }
+                }
+            }
+
+            result.Reverse();
+            return result;
+        }
+
+        static bool IsSortedById(ImmutableArray<MdBinding> bindings)
+        {
+            var last = int.MinValue;
+            foreach (var binding in bindings)
+            {
+                var id = binding.Id;
+                if (id < last)
+                {
+                    return false;
+                }
+
+                last = id;
+            }
+
+            return true;
+        }
     }
 
     private static ImmutableArray<MdResolver> AddRootArgumentResolver(
