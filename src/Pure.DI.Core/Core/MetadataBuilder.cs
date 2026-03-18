@@ -7,6 +7,7 @@
 // ReSharper disable HeapView.ClosureAllocation
 // ReSharper disable LoopCanBeConvertedToQuery
 
+// ReSharper disable ForCanBeConvertedToForeach
 namespace Pure.DI.Core;
 
 sealed class MetadataBuilder(
@@ -342,8 +343,7 @@ sealed class MetadataBuilder(
                 {
                     foreach (var tag in contract.Tags)
                     {
-                        if (tag.Value is MdTagOnSites tagOnSites
-                            && tagOnSites.InjectionSites.Length > 0
+                        if (tag.Value is MdTagOnSites { InjectionSites.Length: > 0 } tagOnSites
                             && seen.Add(tagOnSites))
                         {
                             result.Add(tagOnSites);

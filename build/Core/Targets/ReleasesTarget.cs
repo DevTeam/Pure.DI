@@ -11,6 +11,7 @@ class ReleasesTarget(
     : IInitializable, ITarget<int>
 {
     private const string GitHubRepoUrl = "https://api.github.com/repos/DevTeam/Pure.DI/releases";
+    private static readonly JsonSerializerOptions JsonSerializerOptions = new() { WriteIndented = true };
 
     public Task InitializeAsync(CancellationToken cancellationToken) => commands.RegisterAsync(
         this, "Get release information", "releases", "rel");
@@ -61,7 +62,7 @@ class ReleasesTarget(
             }
         }
 
-        if (!filteredReleases.Any())
+        if (filteredReleases.Count == 0)
         {
             Warning("No releases found matching the criteria.");
             return 0;
@@ -71,8 +72,7 @@ class ReleasesTarget(
         var releasesFile = Path.Combine(solutionDirectory, ".logs", "releases.json");
         Directory.CreateDirectory(Path.GetDirectoryName(releasesFile)!);
 
-        var options = new JsonSerializerOptions { WriteIndented = true };
-        var formattedJson = JsonSerializer.Serialize(filteredReleases, options);
+        var formattedJson = JsonSerializer.Serialize(filteredReleases, JsonSerializerOptions);
         await File.WriteAllTextAsync(releasesFile, formattedJson, cancellationToken);
         WriteLine($"Releases information saved to: {releasesFile}", Color.Success);
 
@@ -84,7 +84,7 @@ class ReleasesTarget(
             var htmlUrl = latestRelease.TryGetProperty("html_url", out var urlProp) ? urlProp.GetString() : "N/A";
             var publishedAt = latestRelease.TryGetProperty("published_at", out var dateProp) ? dateProp.GetString() : "N/A";
 
-            WriteLine($"\nLatest Release:", Color.Details);
+            WriteLine("\nLatest Release:", Color.Details);
             WriteLine($"  Version: {tagName}", Color.Details);
             WriteLine($"  Name: {name}", Color.Details);
             WriteLine($"  Published: {publishedAt}", Color.Details);

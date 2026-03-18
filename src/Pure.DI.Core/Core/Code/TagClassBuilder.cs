@@ -1,5 +1,6 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedVariable
+// ReSharper disable ConvertIfStatementToSwitchStatement
 namespace Pure.DI.Core.Code;
 
 using static LinesExtensions;

@@ -8,7 +8,7 @@ using System.Xml.Linq;
 using NuGet.Versioning;
 
 [SuppressMessage("Performance", "CA1822:Mark members as static")]
-class Settings
+partial class Settings
 {
     private readonly Lazy<XDocument> _buildPropsDoc;
     private readonly Lazy<VersionRange> _versionRange;
@@ -86,7 +86,7 @@ class Settings
         }
 
         // parse net10.0 using regular expression
-        var match = System.Text.RegularExpressions.Regex.Match(baseTargetFrameworkStr, @"^net(\d+)\.\d+$");
+        var match = ParseNetRegex().Match(baseTargetFrameworkStr);
         // ReSharper disable once InvertIf
         if (!match.Success || !int.TryParse(match.Groups[1].Value, out var majorVersion))
         {
@@ -122,4 +122,7 @@ class Settings
 
         return XDocument.Load(propsFile);
     }
+
+    [System.Text.RegularExpressions.GeneratedRegex(@"^net(\d+)\.\d+$")]
+    private static partial System.Text.RegularExpressions.Regex ParseNetRegex();
 }

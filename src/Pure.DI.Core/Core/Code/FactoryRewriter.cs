@@ -207,7 +207,7 @@ sealed class FactoryRewriter(
         else
         {
             var firstAncestor = node.Ancestors().FirstOrDefault();
-            var prefix = firstAncestor is not null ? firstAncestor.GetLeadingTrivia() : new SyntaxTriviaList().Add(SyntaxFactory.LineFeed);
+            var prefix = firstAncestor?.GetLeadingTrivia() ?? new SyntaxTriviaList().Add(SyntaxFactory.LineFeed);
             newNode = SyntaxFactory.Block().AddStatements(
                     SyntaxFactory.ExpressionStatement(expressionSyntax)
                         .WithLeadingTrivia(new SyntaxTriviaList().Add(SyntaxFactory.LineFeed).AddRange(node.GetLeadingTrivia()))

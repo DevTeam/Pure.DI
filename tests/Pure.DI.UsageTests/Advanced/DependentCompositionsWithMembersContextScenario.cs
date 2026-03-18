@@ -44,6 +44,7 @@ $f=
 // ReSharper disable PropertyCanBeMadeInitOnly.Global
 // ReSharper disable ConvertToConstant.Global
 #pragma warning disable CS9113 // Parameter is unread.
+#pragma warning disable CA1822
 namespace Pure.DI.UsageTests.Advanced.DependentCompositionsWithMembersContextScenario;
 
 using Pure.DI;

@@ -120,6 +120,7 @@ public class ClockService : IClockService, IDisposable
 
     public void Dispose()
     {
+        GC.SuppressFinalize(this);
         // Perform any necessary cleanup here
     }
 }

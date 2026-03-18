@@ -35,7 +35,7 @@ public interface IMyService
 // ReSharper disable once ClassNeverInstantiated.Global
 public partial class CompositionInOtherProject
 {
-    private void Setup() =>
+    private static void Setup() =>
         DI.Setup()
             .Bind().As(Lifetime.Singleton).To<MyDependency>()
             .Bind().To<MyService>()
@@ -44,7 +44,7 @@ public partial class CompositionInOtherProject
 
 public partial class Composition
 {
-    private void Setup() =>
+    private static void Setup() =>
         DI.Setup()
             .Bind().As(Lifetime.Singleton).To<CompositionInOtherProject>()
             .Root<Root>("Root");

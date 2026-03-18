@@ -454,6 +454,7 @@ sealed class FactoryCodeBuilder(
 
     private static void AddLinePrefixes(SourceText text, List<LinePrefix> linePrefixes)
     {
+        // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
         foreach (var textLine in text.Lines)
         {
             var line = text.ToString(textLine.Span);

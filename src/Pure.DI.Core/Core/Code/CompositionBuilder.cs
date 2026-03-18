@@ -118,6 +118,7 @@ class CompositionBuilder(
 
         var setupContextArgs = new List<SetupContextArg>();
         var setupContextNames = new HashSet<string>(StringComparer.Ordinal);
+        // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
         foreach (var binding in graph.Source.Bindings)
         {
             var arg = binding.Arg;

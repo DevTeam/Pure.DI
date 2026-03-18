@@ -1,5 +1,7 @@
 namespace Pure.DI.IntegrationTests;
 
+#pragma warning disable CA1861
+
 public class FactoryTypeRewriterIntegrationTests
 {
     [Fact]

@@ -30,6 +30,7 @@ namespace Pure.DI.UsageTests.Unity.UnityWithPrefabsScenario;
 
 using UnityEngine;
 using Xunit;
+using static GC;
 using Quaternion = UnityEngine.Quaternion;
 
 // {
@@ -146,6 +147,7 @@ public class ClockService : IClockService, IDisposable
 
     public void Dispose()
     {
+        SuppressFinalize(this);
         // Perform any necessary cleanup here
     }
 }
@@ -171,6 +173,7 @@ public class ClockManager : IDisposable
 
     public void Dispose()
     {
+        SuppressFinalize(this);
         // Perform any necessary cleanup here
     }
 }

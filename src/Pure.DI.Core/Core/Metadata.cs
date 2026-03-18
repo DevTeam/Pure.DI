@@ -15,7 +15,7 @@ sealed class Metadata(ISemantic semantic)
             return false;
         }
 
-        for (var curInvocation = invocation; curInvocation is not null;)
+        for (var curInvocation = invocation;;)
         {
             if (cancellationToken.IsCancellationRequested)
             {
