@@ -50,10 +50,11 @@ sealed class RootCodeBuilder(
         }
 
         var lines = new Lines();
+        var currentTag = ReferenceEquals(injection.Tag, MdTag.ContextTag) ? parentCtx.ContextTag : injection.Tag;
         var varCtx = parentCtx with
         {
             Lines = lines,
-            ContextTag = ReferenceEquals(injection.Tag, MdTag.ContextTag) ? parentCtx.ContextTag : injection.Tag
+            ContextTag = currentTag
         };
 
         var varsMap = varCtx.VarsMap;
@@ -116,7 +117,7 @@ sealed class RootCodeBuilder(
 
         if (isLocalFunction)
         {
-            var baseName = nameFormatter.Format("{type}{tag}", varCtx.VarInjection.Var.InstanceType, varCtx.VarInjection.Injection.Tag);
+            var baseName = nameFormatter.Format("{type}{tag}", varCtx.VarInjection.Var.InstanceType, currentTag);
             var localFunction = var.LocalFunction;
             if (compilations.GetLanguageVersion(varCtx.RootContext.Graph.Source.SemanticModel.Compilation) >= LanguageVersion.CSharp9)
             {
