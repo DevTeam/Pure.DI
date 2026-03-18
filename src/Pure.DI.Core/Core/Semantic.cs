@@ -2,6 +2,7 @@
 
 namespace Pure.DI.Core;
 
+using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis.Operations;
 
@@ -379,27 +380,13 @@ sealed class Semantic(
         }
 
         var cache = _typeSymbolCaches.GetValue(semanticModel, static _ => new TypeSymbolCache());
-        lock (cache.SyncRoot)
+        if (cache.TypeSymbols.TryGetValue(node, out var cachedEntry))
         {
-            if (cache.TypeSymbols.TryGetValue(node, out var entry))
-            {
-                return entry.Symbol;
-            }
+            return cachedEntry.Symbol;
         }
 
         var symbol = ResolveTypeSymbol(semanticModel, node);
-        var newEntry = new TypeSymbolCacheEntry(symbol);
-        lock (cache.SyncRoot)
-        {
-            if (cache.TypeSymbols.TryGetValue(node, out var entry))
-            {
-                return entry.Symbol;
-            }
-
-            cache.TypeSymbols.Add(node, newEntry);
-        }
-
-        return symbol;
+        return cache.TypeSymbols.GetOrAdd(node, _ => new TypeSymbolCacheEntry(symbol)).Symbol;
     }
 
     private ITypeSymbol? ResolveTypeSymbol(SemanticModel semanticModel, SyntaxNode node)
@@ -411,9 +398,7 @@ sealed class Semantic(
 
     private sealed class TypeSymbolCache
     {
-        public object SyncRoot { get; } = new();
-
-        public Dictionary<SyntaxNode, TypeSymbolCacheEntry> TypeSymbols { get; } =
+        public ConcurrentDictionary<SyntaxNode, TypeSymbolCacheEntry> TypeSymbols { get; } =
             new(SyntaxNodeReferenceComparer.Instance);
     }
 
