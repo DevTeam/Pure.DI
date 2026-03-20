@@ -1513,4 +1513,74 @@ public class BclInjectionTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Composition Root is running!"], result);
     }
+
+    [Fact]
+    public async Task ShouldSupportDictionaryInjection()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+
+                               class DependencyA : IDependency
+                               {
+                                   public DependencyA()
+                                   {
+                                       Console.WriteLine("DependencyA created");
+                                   }
+                               }
+
+                               class DependencyB : IDependency
+                               {
+                                   public DependencyB()
+                                   {
+                                       Console.WriteLine("DependencyB created");
+                                   }
+                               }
+
+                               class Service
+                               {
+                                   public Service(IDictionary<string, IDependency> dependencies)
+                                   {
+                                       Console.WriteLine("Service created with dependencies count: " + dependencies.Count.ToString());
+                                   }
+                               }
+
+                               internal partial class Composition
+                               {
+                                   void Setup() => DI.Setup(nameof(Composition))
+                                       .Bind(Tag.Unique).To((DependencyA dep) => new KeyValuePair<string, IDependency>("A", dep))
+                                       .Bind(Tag.Unique).To((DependencyB dep) => new KeyValuePair<string, IDependency>("B", dep))
+                                       .Root<Service>("MyService");
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       try
+                                       {
+                                           var composition = new Composition();
+                                           var myService = composition.MyService;
+                                       }
+                                       catch (Exception ex)
+                                       {
+                                           Console.WriteLine(ex.Message);
+                                       }
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["DependencyA created", "DependencyB created", "Service created with dependencies count: 2"], result);
+    }
 }

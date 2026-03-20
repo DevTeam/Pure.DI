@@ -430,6 +430,44 @@ namespace Pure.DI
                     })
 #endif
                 // Collections
+#if NETSTANDARD || NET || NETCOREAPP || NET45_OR_GREATER
+                .Bind<global::System.Collections.Generic.IReadOnlyDictionary<TT, TT1>>()
+#endif
+#if NETSTANDARD || NET || NETCOREAPP || NET20_OR_GREATER
+                .Bind<global::System.Collections.Generic.IDictionary<TT, TT1>>()
+                .Bind<global::System.Collections.Generic.Dictionary<TT, TT1>>()
+                    .To(ctx => {
+                    ctx.Inject(out global::System.Collections.Generic.KeyValuePair<TT, TT1>[] pairs);
+                    ctx.Inject(out global::System.Collections.Generic.IEqualityComparer<TT> comparer);
+                    var val = new global::System.Collections.Generic.Dictionary<TT, TT1>(ctx.DependencyCount, comparer);
+                    foreach (var pair in pairs)
+                    {
+                        val[pair.Key] = pair.Value;
+                    }
+
+                    return val;
+                })
+#endif
+#if NETSTANDARD1_0_OR_GREATER || NET || NETCOREAPP || NET40_OR_GREATER
+                .Bind<global::System.Collections.Concurrent.ConcurrentDictionary<TT, TT1>>()
+                    .To(ctx => {
+                        ctx.Inject(out global::System.Collections.Generic.KeyValuePair<TT, TT1>[] pairs);
+                        ctx.Inject(out global::System.Collections.Generic.IEqualityComparer<TT> comparer);
+                        var val = new global::System.Collections.Concurrent.ConcurrentDictionary<TT, TT1>(-1, ctx.DependencyCount, comparer);
+                        foreach (var pair in pairs)
+                        {
+                            val[pair.Key] = pair.Value;
+                        }
+
+                        return val;
+                    })
+#endif
+#if NETCOREAPP || NET
+                .Bind<global::System.Collections.Immutable.IImmutableDictionary<TT, TT1>>()
+                .Bind<global::System.Collections.Immutable.ImmutableDictionary<TT, TT1>>()
+                    .To((global::System.Collections.Generic.IEnumerable<global::System.Collections.Generic.KeyValuePair<TT, TT1>> pairs) =>
+                        global::System.Collections.Immutable.ImmutableDictionary.CreateRange(pairs))
+#endif
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
                 .Bind<global::System.Memory<TT>>()
                     .To((TT[] arr) => new global::System.Memory<TT>(arr))
@@ -469,11 +507,11 @@ namespace Pure.DI
 #endif
 #if NETSTANDARD || NET || NETCOREAPP || NET35_OR_GREATER
                 .Bind<global::System.Collections.Generic.HashSet<TT>>()
-                    .To((TT[] arr) =>new global::System.Collections.Generic.HashSet<TT>(arr))
+                    .To((TT[] arr, global::System.Collections.Generic.IEqualityComparer<TT> comparer) =>new global::System.Collections.Generic.HashSet<TT>(arr, comparer))
 #endif
 #if NETSTANDARD || NET || NETCOREAPP || NET45_OR_GREATER
                 .Bind<global::System.Collections.Generic.SortedSet<TT>>()
-                    .To((TT[] arr) => new global::System.Collections.Generic.SortedSet<TT>(arr))
+                    .To((TT[] arr, global::System.Collections.Generic.IComparer<TT> comparer) => new global::System.Collections.Generic.SortedSet<TT>(arr, comparer))
 #endif
 #if NET9_0_OR_GREATER
                 .Bind<global::System.Collections.ObjectModel.ReadOnlySet<TT>>()
@@ -492,9 +530,9 @@ namespace Pure.DI
                     .To((TT[] arr) => global::System.Runtime.CompilerServices.Unsafe.As<TT[], global::System.Collections.Immutable.ImmutableList<TT>>(ref arr))
                 .Bind<global::System.Collections.Immutable.IImmutableSet<TT>>()
                 .Bind<global::System.Collections.Immutable.ImmutableHashSet<TT>>()
-                    .To((TT[] arr) => global::System.Runtime.CompilerServices.Unsafe.As<TT[], global::System.Collections.Immutable.ImmutableHashSet<TT>>(ref arr))
+                    .To((TT[] arr, global::System.Collections.Generic.IEqualityComparer<TT> comparer) => global::System.Collections.Immutable.ImmutableHashSet.Create<TT>(comparer, arr))
                 .Bind<global::System.Collections.Immutable.ImmutableSortedSet<TT>>()
-                    .To((TT[] arr) => global::System.Runtime.CompilerServices.Unsafe.As<TT[], global::System.Collections.Immutable.ImmutableSortedSet<TT>>(ref arr))
+                    .To((TT[] arr, global::System.Collections.Generic.IComparer<TT> comparer) => global::System.Collections.Immutable.ImmutableSortedSet.Create<TT>(comparer, arr))
                 .Bind<global::System.Collections.Immutable.IImmutableQueue<TT>>()
                 .Bind<global::System.Collections.Immutable.ImmutableQueue<TT>>()
                     .To((TT[] arr) => global::System.Runtime.CompilerServices.Unsafe.As<TT[], global::System.Collections.Immutable.ImmutableQueue<TT>>(ref arr))
@@ -509,9 +547,9 @@ namespace Pure.DI
                     .To((TT[] arr) => global::System.Collections.Immutable.ImmutableList.Create<TT>(arr))
                 .Bind<global::System.Collections.Immutable.IImmutableSet<TT>>()
                 .Bind<global::System.Collections.Immutable.ImmutableHashSet<TT>>()
-                    .To((TT[] arr) => global::System.Collections.Immutable.ImmutableHashSet.Create<TT>(arr))
+                    .To((TT[] arr, global::System.Collections.Generic.IEqualityComparer<TT> comparer) => global::System.Collections.Immutable.ImmutableHashSet.Create<TT>(comparer, arr))
                 .Bind<global::System.Collections.Immutable.ImmutableSortedSet<TT>>()
-                    .To((TT[] arr) => global::System.Collections.Immutable.ImmutableSortedSet.Create<TT>(arr))
+                    .To((TT[] arr, global::System.Collections.Generic.IComparer<TT> comparer) => global::System.Collections.Immutable.ImmutableSortedSet.Create<TT>(comparer, arr))
                 .Bind<global::System.Collections.Immutable.IImmutableQueue<TT>>()
                 .Bind<global::System.Collections.Immutable.ImmutableQueue<TT>>()
                     .To((TT[] arr) => global::System.Collections.Immutable.ImmutableQueue.Create<TT>(arr))

@@ -393,6 +393,12 @@ sealed class FactoryRewriter(
                     }
 
                     return Visit(SyntaxFactory.ParseExpression(_ctx?.RootContext.Root.IsStatic == true ? Names.PerResolveLockFieldName : Names.LockFieldName));
+
+                case nameof(IContext.DependencyCount):
+                    var dependencyCount = _ctx!.RootContext.Graph.Graph.TryGetInEdges(_ctx.VarInjection.Var.AbstractNode.Node, out var edges)
+                        ? edges.Count
+                        : 0;
+                    return Visit(SyntaxFactory.ParseExpression($"{dependencyCount}"));
             }
         }
 
