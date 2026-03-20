@@ -174,6 +174,202 @@ namespace Pure.DI
                         });
                         return factory;
                     })
+                .Bind<global::System.Func<TT1, TT2, TT3, TT4, TT5, TT6, TT7, TT8, TT9, TT>>()
+                    .As(Lifetime.PerBlock)
+                    .To(ctx => {
+                            var factory = new global::System.Func<TT1, TT2, TT3, TT4, TT5, TT6, TT7, TT8, TT9, TT>((TT1 arg1, TT2 arg2, TT3 arg3, TT4 arg4, TT5 arg5, TT6 arg6, TT7 arg7, TT8 arg8, TT9 arg9) => {
+                                lock (ctx.Lock)
+                                {
+                                    ctx.Override<TT1>(arg1);
+                                    ctx.Override<TT2>(arg2);
+                                    ctx.Override<TT3>(arg3);
+                                    ctx.Override<TT4>(arg4);
+                                    ctx.Override<TT5>(arg5);
+                                    ctx.Override<TT6>(arg6);
+                                    ctx.Override<TT7>(arg7);
+                                    ctx.Override<TT8>(arg8);
+                                    ctx.Override<TT9>(arg9);
+                                    ctx.Inject<TT>(ctx.Tag, out var value);
+                                    return value;
+                                }
+                        });
+                        return factory;
+                    })
+                .Bind<global::System.Func<TT1, TT2, TT3, TT4, TT5, TT6, TT7, TT8, TT9, TT10, TT>>()
+                    .As(Lifetime.PerBlock)
+                    .To(ctx => {
+                            var factory = new global::System.Func<TT1, TT2, TT3, TT4, TT5, TT6, TT7, TT8, TT9, TT10, TT>((TT1 arg1, TT2 arg2, TT3 arg3, TT4 arg4, TT5 arg5, TT6 arg6, TT7 arg7, TT8 arg8, TT9 arg9, TT10 arg10) => {
+                                lock (ctx.Lock)
+                                {
+                                    ctx.Override<TT1>(arg1);
+                                    ctx.Override<TT2>(arg2);
+                                    ctx.Override<TT3>(arg3);
+                                    ctx.Override<TT4>(arg4);
+                                    ctx.Override<TT5>(arg5);
+                                    ctx.Override<TT6>(arg6);
+                                    ctx.Override<TT7>(arg7);
+                                    ctx.Override<TT8>(arg8);
+                                    ctx.Override<TT9>(arg9);
+                                    ctx.Override<TT10>(arg10);
+                                    ctx.Inject<TT>(ctx.Tag, out var value);
+                                    return value;
+                                }
+                        });
+                        return factory;
+                    })
+                .Bind<global::System.Func<TT1, TT2, TT3, TT4, TT5, TT6, TT7, TT8, TT9, TT10, TT11, TT>>()
+                    .As(Lifetime.PerBlock)
+                    .To(ctx => {
+                            var factory = new global::System.Func<TT1, TT2, TT3, TT4, TT5, TT6, TT7, TT8, TT9, TT10, TT11, TT>((TT1 arg1, TT2 arg2, TT3 arg3, TT4 arg4, TT5 arg5, TT6 arg6, TT7 arg7, TT8 arg8, TT9 arg9, TT10 arg10, TT11 arg11) => {
+                                lock (ctx.Lock)
+                                {
+                                    ctx.Override<TT1>(arg1);
+                                    ctx.Override<TT2>(arg2);
+                                    ctx.Override<TT3>(arg3);
+                                    ctx.Override<TT4>(arg4);
+                                    ctx.Override<TT5>(arg5);
+                                    ctx.Override<TT6>(arg6);
+                                    ctx.Override<TT7>(arg7);
+                                    ctx.Override<TT8>(arg8);
+                                    ctx.Override<TT9>(arg9);
+                                    ctx.Override<TT10>(arg10);
+                                    ctx.Override<TT11>(arg11);
+                                    ctx.Inject<TT>(ctx.Tag, out var value);
+                                    return value;
+                                }
+                        });
+                        return factory;
+                    })
+                .Bind<global::System.Func<TT1, TT2, TT3, TT4, TT5, TT6, TT7, TT8, TT9, TT10, TT11, TT12, TT>>()
+                    .As(Lifetime.PerBlock)
+                    .To(ctx => {
+                            var factory = new global::System.Func<TT1, TT2, TT3, TT4, TT5, TT6, TT7, TT8, TT9, TT10, TT11, TT12, TT>((TT1 arg1, TT2 arg2, TT3 arg3, TT4 arg4, TT5 arg5, TT6 arg6, TT7 arg7, TT8 arg8, TT9 arg9, TT10 arg10, TT11 arg11, TT12 arg12) => {
+                                lock (ctx.Lock)
+                                {
+                                    ctx.Override<TT1>(arg1);
+                                    ctx.Override<TT2>(arg2);
+                                    ctx.Override<TT3>(arg3);
+                                    ctx.Override<TT4>(arg4);
+                                    ctx.Override<TT5>(arg5);
+                                    ctx.Override<TT6>(arg6);
+                                    ctx.Override<TT7>(arg7);
+                                    ctx.Override<TT8>(arg8);
+                                    ctx.Override<TT9>(arg9);
+                                    ctx.Override<TT10>(arg10);
+                                    ctx.Override<TT11>(arg11);
+                                    ctx.Override<TT12>(arg12);
+                                    ctx.Inject<TT>(ctx.Tag, out var value);
+                                    return value;
+                                }
+                        });
+                        return factory;
+                    })
+                .Bind<global::System.Func<TT1, TT2, TT3, TT4, TT5, TT6, TT7, TT8, TT9, TT10, TT11, TT12, TT13, TT>>()
+                    .As(Lifetime.PerBlock)
+                    .To(ctx => {
+                            var factory = new global::System.Func<TT1, TT2, TT3, TT4, TT5, TT6, TT7, TT8, TT9, TT10, TT11, TT12, TT13, TT>((TT1 arg1, TT2 arg2, TT3 arg3, TT4 arg4, TT5 arg5, TT6 arg6, TT7 arg7, TT8 arg8, TT9 arg9, TT10 arg10, TT11 arg11, TT12 arg12, TT13 arg13) => {
+                                lock (ctx.Lock)
+                                {
+                                    ctx.Override<TT1>(arg1);
+                                    ctx.Override<TT2>(arg2);
+                                    ctx.Override<TT3>(arg3);
+                                    ctx.Override<TT4>(arg4);
+                                    ctx.Override<TT5>(arg5);
+                                    ctx.Override<TT6>(arg6);
+                                    ctx.Override<TT7>(arg7);
+                                    ctx.Override<TT8>(arg8);
+                                    ctx.Override<TT9>(arg9);
+                                    ctx.Override<TT10>(arg10);
+                                    ctx.Override<TT11>(arg11);
+                                    ctx.Override<TT12>(arg12);
+                                    ctx.Override<TT13>(arg13);
+                                    ctx.Inject<TT>(ctx.Tag, out var value);
+                                    return value;
+                                }
+                        });
+                        return factory;
+                    })
+                .Bind<global::System.Func<TT1, TT2, TT3, TT4, TT5, TT6, TT7, TT8, TT9, TT10, TT11, TT12, TT13, TT14, TT>>()
+                    .As(Lifetime.PerBlock)
+                    .To(ctx => {
+                            var factory = new global::System.Func<TT1, TT2, TT3, TT4, TT5, TT6, TT7, TT8, TT9, TT10, TT11, TT12, TT13, TT14, TT>((TT1 arg1, TT2 arg2, TT3 arg3, TT4 arg4, TT5 arg5, TT6 arg6, TT7 arg7, TT8 arg8, TT9 arg9, TT10 arg10, TT11 arg11, TT12 arg12, TT13 arg13, TT14 arg14) => {
+                                lock (ctx.Lock)
+                                {
+                                    ctx.Override<TT1>(arg1);
+                                    ctx.Override<TT2>(arg2);
+                                    ctx.Override<TT3>(arg3);
+                                    ctx.Override<TT4>(arg4);
+                                    ctx.Override<TT5>(arg5);
+                                    ctx.Override<TT6>(arg6);
+                                    ctx.Override<TT7>(arg7);
+                                    ctx.Override<TT8>(arg8);
+                                    ctx.Override<TT9>(arg9);
+                                    ctx.Override<TT10>(arg10);
+                                    ctx.Override<TT11>(arg11);
+                                    ctx.Override<TT12>(arg12);
+                                    ctx.Override<TT13>(arg13);
+                                    ctx.Override<TT14>(arg14);
+                                    ctx.Inject<TT>(ctx.Tag, out var value);
+                                    return value;
+                                }
+                        });
+                        return factory;
+                    })
+                .Bind<global::System.Func<TT1, TT2, TT3, TT4, TT5, TT6, TT7, TT8, TT9, TT10, TT11, TT12, TT13, TT14, TT15, TT>>()
+                    .As(Lifetime.PerBlock)
+                    .To(ctx => {
+                            var factory = new global::System.Func<TT1, TT2, TT3, TT4, TT5, TT6, TT7, TT8, TT9, TT10, TT11, TT12, TT13, TT14, TT15, TT>((TT1 arg1, TT2 arg2, TT3 arg3, TT4 arg4, TT5 arg5, TT6 arg6, TT7 arg7, TT8 arg8, TT9 arg9, TT10 arg10, TT11 arg11, TT12 arg12, TT13 arg13, TT14 arg14, TT15 arg15) => {
+                                lock (ctx.Lock)
+                                {
+                                    ctx.Override<TT1>(arg1);
+                                    ctx.Override<TT2>(arg2);
+                                    ctx.Override<TT3>(arg3);
+                                    ctx.Override<TT4>(arg4);
+                                    ctx.Override<TT5>(arg5);
+                                    ctx.Override<TT6>(arg6);
+                                    ctx.Override<TT7>(arg7);
+                                    ctx.Override<TT8>(arg8);
+                                    ctx.Override<TT9>(arg9);
+                                    ctx.Override<TT10>(arg10);
+                                    ctx.Override<TT11>(arg11);
+                                    ctx.Override<TT12>(arg12);
+                                    ctx.Override<TT13>(arg13);
+                                    ctx.Override<TT14>(arg14);
+                                    ctx.Override<TT15>(arg15);
+                                    ctx.Inject<TT>(ctx.Tag, out var value);
+                                    return value;
+                                }
+                        });
+                        return factory;
+                    })
+                .Bind<global::System.Func<TT1, TT2, TT3, TT4, TT5, TT6, TT7, TT8, TT9, TT10, TT11, TT12, TT13, TT14, TT15, TT16, TT>>()
+                    .As(Lifetime.PerBlock)
+                    .To(ctx => {
+                            var factory = new global::System.Func<TT1, TT2, TT3, TT4, TT5, TT6, TT7, TT8, TT9, TT10, TT11, TT12, TT13, TT14, TT15, TT16, TT>((TT1 arg1, TT2 arg2, TT3 arg3, TT4 arg4, TT5 arg5, TT6 arg6, TT7 arg7, TT8 arg8, TT9 arg9, TT10 arg10, TT11 arg11, TT12 arg12, TT13 arg13, TT14 arg14, TT15 arg15, TT16 arg16) => {
+                                lock (ctx.Lock)
+                                {
+                                    ctx.Override<TT1>(arg1);
+                                    ctx.Override<TT2>(arg2);
+                                    ctx.Override<TT3>(arg3);
+                                    ctx.Override<TT4>(arg4);
+                                    ctx.Override<TT5>(arg5);
+                                    ctx.Override<TT6>(arg6);
+                                    ctx.Override<TT7>(arg7);
+                                    ctx.Override<TT8>(arg8);
+                                    ctx.Override<TT9>(arg9);
+                                    ctx.Override<TT10>(arg10);
+                                    ctx.Override<TT11>(arg11);
+                                    ctx.Override<TT12>(arg12);
+                                    ctx.Override<TT13>(arg13);
+                                    ctx.Override<TT14>(arg14);
+                                    ctx.Override<TT15>(arg15);
+                                    ctx.Override<TT16>(arg16);
+                                    ctx.Inject<TT>(ctx.Tag, out var value);
+                                    return value;
+                                }
+                        });
+                        return factory;
+                    })
                 .Bind<global::System.Collections.Generic.IComparer<TT>>()
                 .Bind<global::System.Collections.Generic.Comparer<TT>>()
                     .To(_ => global::System.Collections.Generic.Comparer<TT>.Default)
