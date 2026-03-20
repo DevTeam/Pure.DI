@@ -1544,6 +1544,14 @@ public class BclInjectionTests
                                        Console.WriteLine("DependencyB created");
                                    }
                                }
+                               
+                               class DependencyC : IDependency
+                               {
+                                   public DependencyC()
+                                   {
+                                       Console.WriteLine("DependencyC created");
+                                   }
+                               }
 
                                class Service
                                {
@@ -1558,6 +1566,7 @@ public class BclInjectionTests
                                    void Setup() => DI.Setup(nameof(Composition))
                                        .Bind(Tag.Unique).To((DependencyA dep) => new KeyValuePair<string, IDependency>("A", dep))
                                        .Bind(Tag.Unique).To((DependencyB dep) => new KeyValuePair<string, IDependency>("B", dep))
+                                       .Bind(Tag.Unique).To((DependencyC dep) => new KeyValuePair<string, IDependency>("C", dep))
                                        .Root<Service>("MyService");
                                }
 
@@ -1581,6 +1590,6 @@ public class BclInjectionTests
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["DependencyA created", "DependencyB created", "Service created with dependencies count: 2"], result);
+        result.StdOut.ShouldBe(["DependencyA created", "DependencyB created", "DependencyC created", "Service created with dependencies count: 3"], result);
     }
 }

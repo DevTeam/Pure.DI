@@ -439,7 +439,7 @@ namespace Pure.DI
                     .To(ctx => {
                     ctx.Inject(out global::System.Collections.Generic.KeyValuePair<TT, TT1>[] pairs);
                     ctx.Inject(out global::System.Collections.Generic.IEqualityComparer<TT> comparer);
-                    var val = new global::System.Collections.Generic.Dictionary<TT, TT1>(ctx.DependencyCount, comparer);
+                    var val = new global::System.Collections.Generic.Dictionary<TT, TT1>(pairs.Length, comparer);
                     foreach (var pair in pairs)
                     {
                         val[pair.Key] = pair.Value;
@@ -453,7 +453,7 @@ namespace Pure.DI
                     .To(ctx => {
                         ctx.Inject(out global::System.Collections.Generic.KeyValuePair<TT, TT1>[] pairs);
                         ctx.Inject(out global::System.Collections.Generic.IEqualityComparer<TT> comparer);
-                        var val = new global::System.Collections.Concurrent.ConcurrentDictionary<TT, TT1>(-1, ctx.DependencyCount, comparer);
+                        var val = new global::System.Collections.Concurrent.ConcurrentDictionary<TT, TT1>(-1, pairs.Length, comparer);
                         foreach (var pair in pairs)
                         {
                             val[pair.Key] = pair.Value;
