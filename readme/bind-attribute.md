@@ -98,36 +98,36 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private DeviceFeatureProvider? _singletonDeviceFeatureProvider51;
+  private DeviceFeatureProvider? _singletonDeviceFeatureProvider62;
 
   public IPhotoService PhotoService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      IGps transientIGps223;
+      IGps transientIGps234;
       EnsureDeviceFeatureProviderExists();
-      DeviceFeatureProvider localInstance_1182D1277 = _singletonDeviceFeatureProvider51;
-      transientIGps223 = localInstance_1182D1277.Gps;
-      Func<ICamera> perBlockFunc224 = new Func<ICamera>(
+      DeviceFeatureProvider localInstance_1182D1277 = _singletonDeviceFeatureProvider62;
+      transientIGps234 = localInstance_1182D1277.Gps;
+      Func<ICamera> perBlockFunc235 = new Func<ICamera>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        ICamera transientICamera226;
+        ICamera transientICamera237;
         EnsureDeviceFeatureProviderExists();
-        DeviceFeatureProvider localInstance_1182D1278 = _singletonDeviceFeatureProvider51;
-        transientICamera226 = localInstance_1182D1278.Camera;
-        return transientICamera226;
+        DeviceFeatureProvider localInstance_1182D1278 = _singletonDeviceFeatureProvider62;
+        transientICamera237 = localInstance_1182D1278.Camera;
+        return transientICamera237;
       });
-      return new PhotoService(transientIGps223, perBlockFunc224);
+      return new PhotoService(transientIGps234, perBlockFunc235);
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureDeviceFeatureProviderExists()
       {
-        if (_singletonDeviceFeatureProvider51 is null)
+        if (_singletonDeviceFeatureProvider62 is null)
           lock (_lock)
-            if (_singletonDeviceFeatureProvider51 is null)
+            if (_singletonDeviceFeatureProvider62 is null)
             {
-              _singletonDeviceFeatureProvider51 = new DeviceFeatureProvider();
+              _singletonDeviceFeatureProvider62 = new DeviceFeatureProvider();
             }
       }
     }

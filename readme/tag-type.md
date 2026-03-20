@@ -99,7 +99,7 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private PayPalGateway? _singletonPayPalGateway52;
+  private PayPalGateway? _singletonPayPalGateway63;
 
   public IPaymentGateway PayPalRoot
   {
@@ -107,15 +107,15 @@ partial class Composition
     get
     {
       EnsurePayPalGatewayPureDIUsageTestsAdvancedTagTypeScenarioPayPalGatewayExists();
-      return _singletonPayPalGateway52;
+      return _singletonPayPalGateway63;
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsurePayPalGatewayPureDIUsageTestsAdvancedTagTypeScenarioPayPalGatewayExists()
       {
-        if (_singletonPayPalGateway52 is null)
+        if (_singletonPayPalGateway63 is null)
           lock (_lock)
-            if (_singletonPayPalGateway52 is null)
+            if (_singletonPayPalGateway63 is null)
             {
-              _singletonPayPalGateway52 = new PayPalGateway();
+              _singletonPayPalGateway63 = new PayPalGateway();
             }
       }
     }
@@ -127,15 +127,15 @@ partial class Composition
     get
     {
       EnsurePayPalGatewayPureDIUsageTestsAdvancedTagTypeScenarioPayPalGatewayExists1();
-      return new PaymentProcessor(new CreditCardGateway(), _singletonPayPalGateway52, new CreditCardGateway());
+      return new PaymentProcessor(new CreditCardGateway(), _singletonPayPalGateway63, new CreditCardGateway());
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsurePayPalGatewayPureDIUsageTestsAdvancedTagTypeScenarioPayPalGatewayExists1()
       {
-        if (_singletonPayPalGateway52 is null)
+        if (_singletonPayPalGateway63 is null)
           lock (_lock)
-            if (_singletonPayPalGateway52 is null)
+            if (_singletonPayPalGateway63 is null)
             {
-              _singletonPayPalGateway52 = new PayPalGateway();
+              _singletonPayPalGateway63 = new PayPalGateway();
             }
       }
     }

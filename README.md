@@ -334,6 +334,7 @@ dotnet run
 - [Enumerable](readme/enumerable.md)
 - [Enumerable generics](readme/enumerable-generics.md)
 - [Array](readme/array.md)
+- [Dictionary](readme/dictionary.md)
 - [Lazy](readme/lazy.md)
 - [Task](readme/task.md)
 - [ValueTask](readme/valuetask.md)
@@ -415,6 +416,9 @@ dotnet run
 - [Light roots](readme/light-roots.md)
 - [Partial class](readme/partial-class.md)
 - [A few partial classes](readme/a-few-partial-classes.md)
+- [IsLockRequired](readme/islockrequired.md)
+- [Root Name](readme/root-name.md)
+- [Root Type](readme/root-type.md)
 - [Thread-safe overrides](readme/thread-safe-overrides.md)
 - [Override depth](readme/override-depth.md)
 - [Consumer types](readme/consumer-types.md)
@@ -2020,7 +2024,7 @@ AI needs to understand the situation it’s in (context). This means knowing det
 | --------------- | ---- | ------ |
 | [AGENTS_SMALL.md](AGENTS_SMALL.md) | 52KB | 13K |
 | [AGENTS_MEDIUM.md](AGENTS_MEDIUM.md) | 100KB | 25K |
-| [AGENTS.md](AGENTS.md) | 365KB | 93K |
+| [AGENTS.md](AGENTS.md) | 373KB | 95K |
 
 For different IDEs, you can use the _AGENTS.md_ file as is by simply copying it to the root directory. For use with _JetBrains Rider_ and _Junie_, please refer to [these instructions](https://www.jetbrains.com/help/junie/customize-guidelines.html). For example, you can copy any _AGENTS.md_ file into your project (using _Pure.DI_) as _.junie/guidelines.md._
 ## How to contribute to Pure.DI

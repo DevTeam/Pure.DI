@@ -148,78 +148,78 @@ partial class Composition: IDisposable
   private object[] _disposables = new object[1];
   private int _disposeIndex;
 
-  private Connection? _singletonConnection52;
+  private Connection? _singletonConnection63;
 
   public QueryHandler QueryHandler
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var perBlockOwned172 = new Owned();
-      Func<Owned<IConnection>> perBlockFunc170 = new Func<Owned<IConnection>>(
+      var perBlockOwned183 = new Owned();
+      Func<Owned<IConnection>> perBlockFunc181 = new Func<Owned<IConnection>>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        Owned<IConnection> perBlockOwned173;
+        Owned<IConnection> perBlockOwned184;
         // Creates the owner of an instance
-        Owned transientOwned174;
-        Owned localOwned9 = perBlockOwned172;
-        transientOwned174 = localOwned9;
+        Owned transientOwned185;
+        Owned localOwned9 = perBlockOwned183;
+        transientOwned185 = localOwned9;
         lock (_lock)
         {
-          perBlockOwned172.Add(transientOwned174);
+          perBlockOwned183.Add(transientOwned185);
         }
 
-        IOwned localOwned8 = transientOwned174;
-        var transientConnection175 = new Connection();
+        IOwned localOwned8 = transientOwned185;
+        var transientConnection186 = new Connection();
         lock (_lock)
         {
-          perBlockOwned172.Add(transientConnection175);
+          perBlockOwned183.Add(transientConnection186);
         }
 
-        IConnection localValue16 = transientConnection175;
-        perBlockOwned173 = new Owned<IConnection>(localValue16, localOwned8);
+        IConnection localValue16 = transientConnection186;
+        perBlockOwned184 = new Owned<IConnection>(localValue16, localOwned8);
         lock (_lock)
         {
-          perBlockOwned172.Add(perBlockOwned173);
+          perBlockOwned183.Add(perBlockOwned184);
         }
 
-        return perBlockOwned173;
+        return perBlockOwned184;
       });
-      var perBlockOwned176 = new Owned();
-      Func<Owned<IConnection>> perBlockFunc171 = new Func<Owned<IConnection>>(
+      var perBlockOwned187 = new Owned();
+      Func<Owned<IConnection>> perBlockFunc182 = new Func<Owned<IConnection>>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        Owned<IConnection> perBlockOwned177;
+        Owned<IConnection> perBlockOwned188;
         // Creates the owner of an instance
-        Owned transientOwned178;
-        Owned localOwned11 = perBlockOwned176;
-        transientOwned178 = localOwned11;
+        Owned transientOwned189;
+        Owned localOwned11 = perBlockOwned187;
+        transientOwned189 = localOwned11;
         lock (_lock)
         {
-          perBlockOwned176.Add(transientOwned178);
+          perBlockOwned187.Add(transientOwned189);
         }
 
-        IOwned localOwned10 = transientOwned178;
-        if (_singletonConnection52 is null)
+        IOwned localOwned10 = transientOwned189;
+        if (_singletonConnection63 is null)
           lock (_lock)
-            if (_singletonConnection52 is null)
+            if (_singletonConnection63 is null)
             {
-              _singletonConnection52 = new Connection();
-              _disposables[_disposeIndex++] = _singletonConnection52;
+              _singletonConnection63 = new Connection();
+              _disposables[_disposeIndex++] = _singletonConnection63;
             }
 
-        IConnection localValue18 = _singletonConnection52;
-        perBlockOwned177 = new Owned<IConnection>(localValue18, localOwned10);
+        IConnection localValue18 = _singletonConnection63;
+        perBlockOwned188 = new Owned<IConnection>(localValue18, localOwned10);
         lock (_lock)
         {
-          perBlockOwned176.Add(perBlockOwned177);
+          perBlockOwned187.Add(perBlockOwned188);
         }
 
-        return perBlockOwned177;
+        return perBlockOwned188;
       });
-      return new QueryHandler(perBlockFunc170, perBlockFunc171);
+      return new QueryHandler(perBlockFunc181, perBlockFunc182);
     }
   }
 
@@ -233,7 +233,7 @@ partial class Composition: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _singletonConnection52 = null;
+      _singletonConnection63 = null;
     }
 
     while (disposeIndex-- > 0)

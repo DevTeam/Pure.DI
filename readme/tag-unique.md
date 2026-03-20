@@ -77,13 +77,13 @@ partial class Composition
     get
     {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      IEnumerable<INotificationChannel<string>> EnumerationOf_perBlockIEnumerable126()
+      IEnumerable<INotificationChannel<string>> EnumerationOf_perBlockIEnumerable137()
       {
         yield return new EmailChannel<string>();
         yield return new SmsChannel<string>();
       }
 
-      return new NotificationService<string>(EnumerationOf_perBlockIEnumerable126());
+      return new NotificationService<string>(EnumerationOf_perBlockIEnumerable137());
     }
   }
 }
@@ -101,12 +101,12 @@ Class diagram:
 ---
 classDiagram
 	NotificationServiceᐸStringᐳ --|> INotificationServiceᐸStringᐳ
-	EmailChannelᐸStringᐳ --|> INotificationChannelᐸStringᐳ : "Unique tag #39" 
-	SmsChannelᐸStringᐳ --|> INotificationChannelᐸStringᐳ : "Unique tag #40" 
+	EmailChannelᐸStringᐳ --|> INotificationChannelᐸStringᐳ : "Unique tag #45" 
+	SmsChannelᐸStringᐳ --|> INotificationChannelᐸStringᐳ : "Unique tag #46" 
 	Composition ..> NotificationServiceᐸStringᐳ : INotificationServiceᐸStringᐳ NotificationService
 	NotificationServiceᐸStringᐳ o-- "PerBlock" IEnumerableᐸINotificationChannelᐸStringᐳᐳ : IEnumerableᐸINotificationChannelᐸStringᐳᐳ
-	IEnumerableᐸINotificationChannelᐸStringᐳᐳ *--  EmailChannelᐸStringᐳ : "Unique tag #39"  INotificationChannelᐸStringᐳ
-	IEnumerableᐸINotificationChannelᐸStringᐳᐳ *--  SmsChannelᐸStringᐳ : "Unique tag #40"  INotificationChannelᐸStringᐳ
+	IEnumerableᐸINotificationChannelᐸStringᐳᐳ *--  EmailChannelᐸStringᐳ : "Unique tag #45"  INotificationChannelᐸStringᐳ
+	IEnumerableᐸINotificationChannelᐸStringᐳᐳ *--  SmsChannelᐸStringᐳ : "Unique tag #46"  INotificationChannelᐸStringᐳ
 	namespace Pure.DI.UsageTests.Advanced.TagUniqueScenario {
 		class Composition {
 		<<partial>>

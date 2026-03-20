@@ -84,13 +84,13 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<IDbConnection> perBlockFunc389 = new Func<IDbConnection>(
+      Func<IDbConnection> perBlockFunc410 = new Func<IDbConnection>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
         return new NpgsqlConnection();
       });
-      return new ConnectionPool(perBlockFunc389);
+      return new ConnectionPool(perBlockFunc410);
     }
   }
 }

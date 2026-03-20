@@ -112,35 +112,35 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private (IRoutePlanningSession s3, IRoutePlanningSession s4) _singletonValueTuple54;
-  private bool _singletonValueTuple54Created;
+  private (IRoutePlanningSession s3, IRoutePlanningSession s4) _singletonValueTuple65;
+  private bool _singletonValueTuple65Created;
 
   public TrainTripPlanner Planner
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var perResolveRoutePlanningSession584 = default(RoutePlanningSession);
-      if (!_singletonValueTuple54Created)
+      var perResolveRoutePlanningSession605 = default(RoutePlanningSession);
+      if (!_singletonValueTuple65Created)
         lock (_lock)
-          if (!_singletonValueTuple54Created)
+          if (!_singletonValueTuple65Created)
           {
             EnsureRoutePlanningSessionExists();
-            _singletonValueTuple54 = (perResolveRoutePlanningSession584, perResolveRoutePlanningSession584);
+            _singletonValueTuple65 = (perResolveRoutePlanningSession605, perResolveRoutePlanningSession605);
             Thread.MemoryBarrier();
-            _singletonValueTuple54Created = true;
+            _singletonValueTuple65Created = true;
           }
 
       EnsureRoutePlanningSessionExists();
-      return new TrainTripPlanner(perResolveRoutePlanningSession584, perResolveRoutePlanningSession584, _singletonValueTuple54);
+      return new TrainTripPlanner(perResolveRoutePlanningSession605, perResolveRoutePlanningSession605, _singletonValueTuple65);
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureRoutePlanningSessionExists()
       {
-        if (perResolveRoutePlanningSession584 is null)
+        if (perResolveRoutePlanningSession605 is null)
           lock (_lock)
-            if (perResolveRoutePlanningSession584 is null)
+            if (perResolveRoutePlanningSession605 is null)
             {
-              perResolveRoutePlanningSession584 = new RoutePlanningSession();
+              perResolveRoutePlanningSession605 = new RoutePlanningSession();
             }
       }
     }

@@ -99,10 +99,10 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      long transientInt6489 = GenerateId();
-      long transientInt6490 = GenerateId();
-      string transientString86 = $"{storeName}_{GenerateId()}";
-      return new OrderService(transientString86, new Order(transientInt6489), new Order(transientInt6490));
+      long transientInt6492 = GenerateId();
+      long transientInt6493 = GenerateId();
+      string transientString89 = $"{storeName}_{GenerateId()}";
+      return new OrderService(transientString89, new Order(transientInt6492), new Order(transientInt6493));
     }
   }
 }

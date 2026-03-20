@@ -118,7 +118,7 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private SmsSender? _singletonSmsSender52;
+  private SmsSender? _singletonSmsSender63;
 
   public IMessageSender SmsSenderRoot
   {
@@ -126,15 +126,15 @@ partial class Composition
     get
     {
       EnsureSmsSenderSmsExists1();
-      return _singletonSmsSender52;
+      return _singletonSmsSender63;
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureSmsSenderSmsExists1()
       {
-        if (_singletonSmsSender52 is null)
+        if (_singletonSmsSender63 is null)
           lock (_lock)
-            if (_singletonSmsSender52 is null)
+            if (_singletonSmsSender63 is null)
             {
-              _singletonSmsSender52 = new SmsSender();
+              _singletonSmsSender63 = new SmsSender();
             }
       }
     }
@@ -146,15 +146,15 @@ partial class Composition
     get
     {
       EnsureSmsSenderSmsExists();
-      return new MessagingService(new EmailSender(), _singletonSmsSender52, new EmailSender());
+      return new MessagingService(new EmailSender(), _singletonSmsSender63, new EmailSender());
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureSmsSenderSmsExists()
       {
-        if (_singletonSmsSender52 is null)
+        if (_singletonSmsSender63 is null)
           lock (_lock)
-            if (_singletonSmsSender52 is null)
+            if (_singletonSmsSender63 is null)
             {
-              _singletonSmsSender52 = new SmsSender();
+              _singletonSmsSender63 = new SmsSender();
             }
       }
     }

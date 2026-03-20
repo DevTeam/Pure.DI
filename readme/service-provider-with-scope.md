@@ -132,8 +132,8 @@ partial class Composition: IDisposable
   private object[] _disposables;
   private int _disposeIndex;
 
-  private Configuration? _singletonConfiguration51;
-  private Session? _scopedSession52;
+  private Configuration? _singletonConfiguration62;
+  private Session? _scopedSession63;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -159,46 +159,46 @@ partial class Composition: IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<IConfiguration> perBlockFunc418 = new Func<IConfiguration>(
+      Func<IConfiguration> perBlockFunc439 = new Func<IConfiguration>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
         EnsureConfigurationExists();
-        return _root._singletonConfiguration51;
+        return _root._singletonConfiguration62;
       });
-      Func<ISession> perBlockFunc419 = new Func<ISession>(
+      Func<ISession> perBlockFunc440 = new Func<ISession>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
         EnsureSessionExists();
-        return _scopedSession52;
+        return _scopedSession63;
       });
       return new LightweightRoot()
       {
-        IConfiguration = perBlockFunc418,
-        ISession = perBlockFunc419
+        IConfiguration = perBlockFunc439,
+        ISession = perBlockFunc440
       };
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureConfigurationExists()
       {
-        if (_root._singletonConfiguration51 is null)
+        if (_root._singletonConfiguration62 is null)
           lock (_lock)
-            if (_root._singletonConfiguration51 is null)
+            if (_root._singletonConfiguration62 is null)
             {
-              _root._singletonConfiguration51 = new Configuration();
+              _root._singletonConfiguration62 = new Configuration();
             }
       }
 
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureSessionExists()
       {
-        if (_scopedSession52 is null)
+        if (_scopedSession63 is null)
           lock (_lock)
-            if (_scopedSession52 is null)
+            if (_scopedSession63 is null)
             {
               EnsureConfigurationExists();
-              _scopedSession52 = new Session(_root._singletonConfiguration51);
-              _disposables[_disposeIndex++] = _scopedSession52;
+              _scopedSession63 = new Session(_root._singletonConfiguration62);
+              _disposables[_disposeIndex++] = _scopedSession63;
             }
       }
     }
@@ -300,8 +300,8 @@ partial class Composition: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _singletonConfiguration51 = null;
-      _scopedSession52 = null;
+      _singletonConfiguration62 = null;
+      _scopedSession63 = null;
     }
 
     while (disposeIndex-- > 0)
@@ -424,7 +424,7 @@ classDiagram
 	Composition --|> IDisposable
 	Configuration --|> IConfiguration
 	Session --|> ISession
-	Composition ..> LightweightRoot : LightweightRoot LightRoot76d
+	Composition ..> LightweightRoot : LightweightRoot LightRoot79d
 	Composition ..> Session : ISession _
 	Composition ..> Configuration : IConfiguration _
 	Session o-- "Singleton" Configuration : IConfiguration
@@ -443,7 +443,7 @@ classDiagram
 	namespace Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario {
 		class Composition {
 		<<partial>>
-		-LightweightRoot LightRoot76d
+		-LightweightRoot LightRoot79d
 		-IConfiguration _
 		-ISession _
 		+ T ResolveᐸTᐳ()

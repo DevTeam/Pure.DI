@@ -94,27 +94,27 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private GlobalCache? _singletonGlobalCache51;
+  private GlobalCache? _singletonGlobalCache62;
 
   public IOrderProcessor OrderProcessor
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_singletonGlobalCache51 is null)
+      if (_singletonGlobalCache62 is null)
         lock (_lock)
-          if (_singletonGlobalCache51 is null)
+          if (_singletonGlobalCache62 is null)
           {
-            GlobalCache _singletonGlobalCache51Temp;
-            _singletonGlobalCache51Temp = new GlobalCache();
-            OnNewInstance<GlobalCache>(ref _singletonGlobalCache51Temp, null, Lifetime.Singleton);
+            GlobalCache _singletonGlobalCache62Temp;
+            _singletonGlobalCache62Temp = new GlobalCache();
+            OnNewInstance<GlobalCache>(ref _singletonGlobalCache62Temp, null, Lifetime.Singleton);
             Thread.MemoryBarrier();
-            _singletonGlobalCache51 = _singletonGlobalCache51Temp;
+            _singletonGlobalCache62 = _singletonGlobalCache62Temp;
           }
 
-      var perBlockOrderProcessor532 = new OrderProcessor(_singletonGlobalCache51);
-      OnNewInstance<OrderProcessor>(ref perBlockOrderProcessor532, null, Lifetime.PerBlock);
-      return perBlockOrderProcessor532;
+      var perBlockOrderProcessor553 = new OrderProcessor(_singletonGlobalCache62);
+      OnNewInstance<OrderProcessor>(ref perBlockOrderProcessor553, null, Lifetime.PerBlock);
+      return perBlockOrderProcessor553;
     }
   }
 

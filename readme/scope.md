@@ -143,7 +143,7 @@ partial class Composition: IDisposable
   private object[] _disposables;
   private int _disposeIndex;
 
-  private RequestContext? _scopedRequestContext51;
+  private RequestContext? _scopedRequestContext62;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -169,15 +169,15 @@ partial class Composition: IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_scopedRequestContext51 is null)
+      if (_scopedRequestContext62 is null)
         lock (_lock)
-          if (_scopedRequestContext51 is null)
+          if (_scopedRequestContext62 is null)
           {
-            _scopedRequestContext51 = new RequestContext();
-            _disposables[_disposeIndex++] = _scopedRequestContext51;
+            _scopedRequestContext62 = new RequestContext();
+            _disposables[_disposeIndex++] = _scopedRequestContext62;
           }
 
-      return new CheckoutService(_scopedRequestContext51);
+      return new CheckoutService(_scopedRequestContext62);
     }
   }
 
@@ -186,13 +186,13 @@ partial class Composition: IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<RequestScope> perBlockFunc587 = new Func<RequestScope>(
+      Func<RequestScope> perBlockFunc608 = new Func<RequestScope>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
         return new RequestScope(this);
       });
-      return new App(perBlockFunc587);
+      return new App(perBlockFunc608);
     }
   }
 
@@ -206,7 +206,7 @@ partial class Composition: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _scopedRequestContext51 = null;
+      _scopedRequestContext62 = null;
     }
 
     while (disposeIndex-- > 0)

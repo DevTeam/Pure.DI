@@ -130,7 +130,7 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private PlaybackQueue? _scopedPlaybackQueue51;
+  private PlaybackQueue? _scopedPlaybackQueue62;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -154,18 +154,18 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<IListeningSession> perBlockFunc564 = new Func<IListeningSession>(
+      Func<IListeningSession> perBlockFunc585 = new Func<IListeningSession>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        IListeningSession transientIListeningSession565;
+        IListeningSession transientIListeningSession586;
         Composition localParentScope = this;
         // Create a child scope so scoped services (PlaybackQueue) are unique per session.
         var localScope = new Composition(localParentScope);
-        transientIListeningSession565 = localScope.Session;
-        return transientIListeningSession565;
+        transientIListeningSession586 = localScope.Session;
+        return transientIListeningSession586;
       });
-      return new MusicApp(perBlockFunc564);
+      return new MusicApp(perBlockFunc585);
     }
   }
 
@@ -174,14 +174,14 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_scopedPlaybackQueue51 is null)
+      if (_scopedPlaybackQueue62 is null)
         lock (_lock)
-          if (_scopedPlaybackQueue51 is null)
+          if (_scopedPlaybackQueue62 is null)
           {
-            _scopedPlaybackQueue51 = new PlaybackQueue();
+            _scopedPlaybackQueue62 = new PlaybackQueue();
           }
 
-      return new ListeningSession(_scopedPlaybackQueue51);
+      return new ListeningSession(_scopedPlaybackQueue62);
     }
   }
 }

@@ -135,25 +135,25 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<IConfiguration> perBlockFunc62 = new Func<IConfiguration>(
+      Func<IConfiguration> perBlockFunc65 = new Func<IConfiguration>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
         return new AppConfiguration();
       });
-      Func<ILogger> perBlockFunc63 = new Func<ILogger>(
+      Func<ILogger> perBlockFunc66 = new Func<ILogger>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
         return new ConsoleLogger();
       });
-      Func<ICache> perBlockFunc64 = new Func<ICache>(
+      Func<ICache> perBlockFunc67 = new Func<ICache>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
         return new MemoryCache();
       });
-      Func<IMetrics> perBlockFunc65 = new Func<IMetrics>(
+      Func<IMetrics> perBlockFunc68 = new Func<IMetrics>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
@@ -161,10 +161,10 @@ partial class Composition
       });
       return new LightweightRoot()
       {
-        Config = perBlockFunc62,
-        ILogger = perBlockFunc63,
-        ICache = perBlockFunc64,
-        IMetrics = perBlockFunc65
+        Config = perBlockFunc65,
+        ILogger = perBlockFunc66,
+        ICache = perBlockFunc67,
+        IMetrics = perBlockFunc68
       };
     }
   }
@@ -437,7 +437,7 @@ classDiagram
 	PrometheusMetrics --|> IMetrics
 	AppConfiguration --|> IConfiguration
 	ApplicationService --|> IApplicationService
-	Composition ..> LightweightRoot : LightweightRoot LightRoot76d
+	Composition ..> LightweightRoot : LightweightRoot LightRoot79d
 	Composition ..> PrometheusMetrics : IMetrics _
 	Composition ..> MemoryCache : ICache _
 	Composition ..> ConsoleLogger : ILogger _
@@ -478,7 +478,7 @@ classDiagram
 		<<partial>>
 		+IApplicationService ApplicationService
 		+IConfiguration Config
-		-LightweightRoot LightRoot76d
+		-LightweightRoot LightRoot79d
 		-ILogger _
 		-ICache _
 		-IMetrics _

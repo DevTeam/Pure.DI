@@ -118,22 +118,22 @@ partial class Composition: IDisposable, IAsyncDisposable
   private object[] _disposables = new object[1];
   private int _disposeIndex;
 
-  private AuditLogWriter? _singletonAuditLogWriter51;
+  private AuditLogWriter? _singletonAuditLogWriter62;
 
   public ICheckoutService CheckoutService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_singletonAuditLogWriter51 is null)
+      if (_singletonAuditLogWriter62 is null)
         lock (_lock)
-          if (_singletonAuditLogWriter51 is null)
+          if (_singletonAuditLogWriter62 is null)
           {
-            _singletonAuditLogWriter51 = new AuditLogWriter();
-            _disposables[_disposeIndex++] = _singletonAuditLogWriter51;
+            _singletonAuditLogWriter62 = new AuditLogWriter();
+            _disposables[_disposeIndex++] = _singletonAuditLogWriter62;
           }
 
-      return new CheckoutService(_singletonAuditLogWriter51);
+      return new CheckoutService(_singletonAuditLogWriter62);
     }
   }
 
@@ -147,7 +147,7 @@ partial class Composition: IDisposable, IAsyncDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _singletonAuditLogWriter51 = null;
+      _singletonAuditLogWriter62 = null;
     }
 
     while (disposeIndex-- > 0)
@@ -183,7 +183,7 @@ partial class Composition: IDisposable, IAsyncDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _singletonAuditLogWriter51 = null;
+      _singletonAuditLogWriter62 = null;
     }
 
     while (disposeIndex-- > 0)

@@ -101,32 +101,32 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private IFileLogger? _singletonIFileLogger53;
+  private IFileLogger? _singletonIFileLogger64;
 
   public IOrderProcessingService OrderService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_singletonIFileLogger53 is null)
+      if (_singletonIFileLogger64 is null)
         lock (_lock)
-          if (_singletonIFileLogger53 is null)
+          if (_singletonIFileLogger64 is null)
           {
-            Func<Guid> perBlockFunc343 = new Func<Guid>(
+            Func<Guid> perBlockFunc354 = new Func<Guid>(
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             () =>
             {
-              Guid transientGuid344 = Guid.NewGuid();
-              return transientGuid344;
+              Guid transientGuid355 = Guid.NewGuid();
+              return transientGuid355;
             });
-            FileLogger localLogger5 = new FileLogger(perBlockFunc343);
-            DateTime transientDateTime342 = DateTime.Today;
-            DateTime localDate1 = transientDateTime342;
+            FileLogger localLogger5 = new FileLogger(perBlockFunc354);
+            DateTime transientDateTime353 = DateTime.Today;
+            DateTime localDate1 = transientDateTime353;
             localLogger5.Init($"app-{localDate1:yyyy-MM-dd}.log");
-            _singletonIFileLogger53 = localLogger5;
+            _singletonIFileLogger64 = localLogger5;
           }
 
-      return new OrderProcessingService(_singletonIFileLogger53);
+      return new OrderProcessingService(_singletonIFileLogger64);
     }
   }
 }

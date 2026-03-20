@@ -93,24 +93,24 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private CommentsFactory? _singletonCommentsFactory51;
+  private CommentsFactory? _singletonCommentsFactory62;
 
   public IArticleService ArticleService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      IComments<Article> transientIComments220;
-      if (_singletonCommentsFactory51 is null)
+      IComments<Article> transientIComments231;
+      if (_singletonCommentsFactory62 is null)
         lock (_lock)
-          if (_singletonCommentsFactory51 is null)
+          if (_singletonCommentsFactory62 is null)
           {
-            _singletonCommentsFactory51 = new CommentsFactory();
+            _singletonCommentsFactory62 = new CommentsFactory();
           }
 
-      CommentsFactory localInstance_1182D1276 = _singletonCommentsFactory51;
-      transientIComments220 = localInstance_1182D1276.Create<Article>();
-      return new ArticleService(transientIComments220);
+      CommentsFactory localInstance_1182D1276 = _singletonCommentsFactory62;
+      transientIComments231 = localInstance_1182D1276.Create<Article>();
+      return new ArticleService(transientIComments231);
     }
   }
 }

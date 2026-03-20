@@ -75,18 +75,18 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Lazy<IGraphicsEngine> transientLazy397;
+      Lazy<IGraphicsEngine> transientLazy418;
       // Injects an instance factory
-      Func<IGraphicsEngine> perBlockFunc398 = new Func<IGraphicsEngine>(
+      Func<IGraphicsEngine> perBlockFunc419 = new Func<IGraphicsEngine>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
         return new GraphicsEngine();
       });
-      Func<IGraphicsEngine> localFactory3 = perBlockFunc398;
+      Func<IGraphicsEngine> localFactory3 = perBlockFunc419;
       // Creates an instance that supports lazy initialization
-      transientLazy397 = new Lazy<IGraphicsEngine>(localFactory3, true);
-      return new Window(transientLazy397);
+      transientLazy418 = new Lazy<IGraphicsEngine>(localFactory3, true);
+      return new Window(transientLazy418);
     }
   }
 }

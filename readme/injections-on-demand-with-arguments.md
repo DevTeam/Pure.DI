@@ -99,7 +99,7 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<int, ISensor> perBlockFunc288;
+      Func<int, ISensor> perBlockFunc299;
       Func<int, ISensor> localFactory1 = new Func<int, ISensor>((int localArg1) =>
       {
         lock (_lock)
@@ -108,8 +108,8 @@ partial class Composition
           return new Sensor(overriddenInt32);
         }
       });
-      perBlockFunc288 = localFactory1;
-      return new SmartHome(perBlockFunc288);
+      perBlockFunc299 = localFactory1;
+      return new SmartHome(perBlockFunc299);
     }
   }
 }

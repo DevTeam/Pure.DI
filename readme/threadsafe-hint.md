@@ -62,25 +62,25 @@ The following partial class will be generated:
 partial class Composition
 {
 
-  private ReportGenerator? _singletonReportGenerator52;
+  private ReportGenerator? _singletonReportGenerator63;
 
   public IReportGenerator Generator
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_singletonReportGenerator52 is null)
+      if (_singletonReportGenerator63 is null)
       {
-        Func<IDatabaseConnection> perBlockFunc541 = new Func<IDatabaseConnection>(
+        Func<IDatabaseConnection> perBlockFunc562 = new Func<IDatabaseConnection>(
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         () =>
         {
           return new SqlDatabaseConnection();
         });
-        _singletonReportGenerator52 = new ReportGenerator(perBlockFunc541);
+        _singletonReportGenerator63 = new ReportGenerator(perBlockFunc562);
       }
 
-      return _singletonReportGenerator52;
+      return _singletonReportGenerator63;
     }
   }
 }

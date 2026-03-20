@@ -121,7 +121,7 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<IUserRepository> perBlockFunc516 = new Func<IUserRepository>(
+      Func<IUserRepository> perBlockFunc537 = new Func<IUserRepository>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
@@ -129,7 +129,7 @@ partial class Composition
       });
       return new LightweightRoot()
       {
-        IUserRepository = perBlockFunc516
+        IUserRepository = perBlockFunc537
       };
     }
   }
@@ -313,7 +313,7 @@ Class diagram:
 classDiagram
 	SqlUserRepository --|> IUserRepository : "Primary" 
 	UserService --|> IUserService
-	Composition ..> LightweightRoot : LightweightRoot LightRoot76d
+	Composition ..> LightweightRoot : LightweightRoot LightRoot79d
 	Composition ..> UserService : IUserService Root
 	Composition ..> SqlUserRepository : IUserRepository _
 	UserService *--  SqlUserRepository : "Primary"  IUserRepository
@@ -329,7 +329,7 @@ classDiagram
 	namespace Pure.DI.UsageTests.Hints.CheckForRootScenario {
 		class Composition {
 		<<partial>>
-		-LightweightRoot LightRoot76d
+		-LightweightRoot LightRoot79d
 		+IUserService Root
 		-IUserRepository _
 		+ T ResolveᐸTᐳ()

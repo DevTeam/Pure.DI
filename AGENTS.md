@@ -3358,6 +3358,72 @@ In addition to arrays, other collection types are also supported, such as:
 - System.Collections.Immutable.IImmutableStack<T>
 And of course this list can easily be supplemented on its own.
 
+## Dictionary
+
+Demonstrates dictionary injection using IReadOnlyDictionary<TKey, TValue>, allowing key-value pair collection injection.
+
+```c#
+using Shouldly;
+using Pure.DI;
+
+DI.Setup(nameof(Composition))
+    .Bind(Tag.Unique).To((EmailChannel chanel) => new KeyValuePair<Channel, INotificationChannel>(Channel.Email, chanel))
+    .Bind(Tag.Unique).To((SmsChannel chanel) => new KeyValuePair<Channel, INotificationChannel>(Channel.Sms, chanel))
+    .Bind(Tag.Unique).To((PushChannel chanel) => new KeyValuePair<Channel, INotificationChannel>(Channel.Push, chanel))
+    .Bind<INotificationService>().To<NotificationService>()
+
+    // Composition root
+    .Root<INotificationService>("NotificationService");
+
+var composition = new Composition();
+var notificationService = composition.NotificationService;
+
+// Verify that all notification channels are injected into the dictionary
+notificationService.Channels.Count.ShouldBe(3);
+notificationService.Channels[Channel.Email].ShouldBeOfType<EmailChannel>();
+notificationService.Channels[Channel.Sms].ShouldBeOfType<SmsChannel>();
+notificationService.Channels[Channel.Push].ShouldBeOfType<PushChannel>();
+
+interface INotificationChannel
+{
+    void Send(string message);
+}
+
+class EmailChannel : INotificationChannel
+{
+    public void Send(string message) => Console.WriteLine($"Email: {message}");
+}
+
+class SmsChannel : INotificationChannel
+{
+    public void Send(string message) => Console.WriteLine($"SMS: {message}");
+}
+
+class PushChannel : INotificationChannel
+{
+    public void Send(string message) => Console.WriteLine($"Push: {message}");
+}
+
+enum Channel { Email, Sms, Push }
+
+interface INotificationService
+{
+    IReadOnlyDictionary<Channel, INotificationChannel> Channels { get; }
+}
+
+class NotificationService(IReadOnlyDictionary<Channel, INotificationChannel> channels) : INotificationService
+{
+    public IReadOnlyDictionary<Channel, INotificationChannel> Channels { get; } = channels;
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+>[!NOTE]
+>Dictionary injection is useful when you need to access dependencies by keys, such as named or tagged implementations like notification channels.
+
 ## Lazy
 
 Demonstrates lazy injection using Lazy<T>, delaying instance creation until the Value property is accessed.
@@ -8243,6 +8309,199 @@ To run the above code, the following NuGet packages must be added:
 >[!NOTE]
 >Splitting composition setup across multiple partial classes can improve organization for large compositions but may reduce readability if overused.
 
+## IsLockRequired
+
+`IsLockRequired` indicates whether a lock is required for thread-safe operations in the current context. This property is useful when you need to conditionally synchronize based on thread safety requirements.
+
+```c#
+using Shouldly;
+using Pure.DI;
+
+var composition = new Composition();
+
+var service = composition.Service;
+service.Locked.ShouldBeTrue();
+
+var singletonService = composition.SingletonService;
+singletonService.Locked.ShouldBeFalse();
+
+interface IService
+{
+    bool Locked { get; }
+}
+
+class Service(bool lockRequired) : IService
+{
+    public bool Locked => lockRequired;
+}
+
+partial class Composition
+{
+    private void Setup() =>
+
+        DI.Setup(nameof(Composition))
+            .Hint(Hint.ThreadSafe, "On")
+            .Bind().To(ctx =>
+            {
+                // In a thread-safe context, IsLockRequired is true
+                // Use it to conditionally lock the context
+                if (ctx.IsLockRequired)
+                {
+                    lock (ctx.Lock)
+                    {
+                        return new Service(ctx.IsLockRequired);
+                    }
+                }
+
+                return new Service(ctx.IsLockRequired);
+            })
+            .Bind(Tag.Single).As(Lifetime.Singleton).To((IService service) => service)
+            .Root<IService>(nameof(Service))
+            .Root<IService>(nameof(SingletonService), Tag.Single);
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+
+## Root Name
+
+```c#
+using Shouldly;
+using Pure.DI;
+
+var composition = new Composition();
+var orderService = composition.OrderService;
+orderService.Logger.Log("Processing order").ShouldContain("OrderService");
+
+var paymentService = composition.PaymentService;
+paymentService.Logger.Log("Processing payment").ShouldContain("PaymentService");
+
+interface ILogger
+{
+    string Log(string message);
+}
+
+interface IOrderService
+{
+    ILogger Logger { get; }
+}
+
+interface IPaymentService
+{
+    ILogger Logger { get; }
+}
+
+class Logger(string rootName) : ILogger
+{
+    public string Log(string message) => $"[{rootName}] {message}";
+}
+
+class OrderService(ILogger logger) : IOrderService
+{
+    public ILogger Logger => logger;
+}
+
+class PaymentService(ILogger logger) : IPaymentService
+{
+    public ILogger Logger => logger;
+}
+
+partial class Composition
+{
+    private void Setup() =>
+
+        DI.Setup(nameof(Composition))
+            .Bind().To(ctx => new Logger(ctx.RootName))
+            .Bind().To<OrderService>()
+            .Root<IOrderService>("OrderService")
+            .Bind().To<PaymentService>()
+            .Root<IPaymentService>("PaymentService");
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+
+## Root Type
+
+```c#
+using Shouldly;
+using Pure.DI;
+
+var composition = new Composition();
+var orderService = composition.OrderService;
+orderService.Cache.Set("order_123", "Order Data");
+orderService.Cache.Get("order_123").ShouldBe("Order Data");
+orderService.Cache.KeyPrefix.ShouldBe("IOrderService");
+
+var inventoryService = composition.InventoryService;
+inventoryService.Cache.Set("item_456", "Item Data");
+inventoryService.Cache.Get("item_456").ShouldBe("Item Data");
+inventoryService.Cache.KeyPrefix.ShouldBe("IInventoryService");
+
+interface ICache
+{
+    string KeyPrefix { get; }
+
+    void Set(string key, string value);
+
+    string Get(string key);
+}
+
+interface IOrderService
+{
+    ICache Cache { get; }
+}
+
+interface IInventoryService
+{
+    ICache Cache { get; }
+}
+
+class Cache(Type rootType) : ICache
+{
+    private readonly Dictionary<string, string> _data = new();
+
+    public string KeyPrefix => rootType.Name;
+
+    public void Set(string key, string value) => _data[key] = value;
+
+    public string Get(string key) => _data.TryGetValue(key, out var value) ? value : string.Empty;
+}
+
+class OrderService(ICache cache) : IOrderService
+{
+    public ICache Cache => cache;
+}
+
+class InventoryService(ICache cache) : IInventoryService
+{
+    public ICache Cache => cache;
+}
+
+partial class Composition
+{
+    private void Setup() =>
+
+        DI.Setup(nameof(Composition))
+            .Bind().To(ctx => new Cache(ctx.RootType))
+            .Bind().To<OrderService>()
+            .Root<IOrderService>("OrderService")
+            .Bind().To<InventoryService>()
+            .Root<IInventoryService>("InventoryService");
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+
 ## Thread-safe overrides
 
 Demonstrates how to create thread-safe overrides in compositions, ensuring that override operations work correctly in multi-threaded scenarios.
@@ -9778,6 +10037,7 @@ public class ClockService : IClockService, IDisposable
 
     public void Dispose()
     {
+        GC.SuppressFinalize(this);
         // Perform any necessary cleanup here
     }
 }
@@ -9894,6 +10154,7 @@ public class ClockService : IClockService, IDisposable
 
     public void Dispose()
     {
+        SuppressFinalize(this);
         // Perform any necessary cleanup here
     }
 }
@@ -9919,6 +10180,7 @@ public class ClockManager : IDisposable
 
     public void Dispose()
     {
+        SuppressFinalize(this);
         // Perform any necessary cleanup here
     }
 }

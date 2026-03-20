@@ -87,6 +87,7 @@ public class ClockService : IClockService, IDisposable
 
     public void Dispose()
     {
+        SuppressFinalize(this);
         // Perform any necessary cleanup here
     }
 }
@@ -112,6 +113,7 @@ public class ClockManager : IDisposable
 
     public void Dispose()
     {
+        SuppressFinalize(this);
         // Perform any necessary cleanup here
     }
 }
@@ -181,28 +183,28 @@ partial class Scope: IDisposable
   private object[] _disposables = new object[1];
   private int _disposeIndex;
 
-  private ClockService? _singletonClockService52;
+  private ClockService? _singletonClockService63;
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Clock BuildUp(Clock buildingInstance)
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    Clock transientClock609;
+    Clock transientClock630;
     Clock localBuildingInstance16 = buildingInstance;
     EnsureClockServiceExists1();
-    localBuildingInstance16.ClockService = _singletonClockService52;
-    transientClock609 = localBuildingInstance16;
-    return transientClock609;
+    localBuildingInstance16.ClockService = _singletonClockService63;
+    transientClock630 = localBuildingInstance16;
+    return transientClock630;
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void EnsureClockServiceExists1()
     {
-      if (_singletonClockService52 is null)
+      if (_singletonClockService63 is null)
         lock (_lock)
-          if (_singletonClockService52 is null)
+          if (_singletonClockService63 is null)
           {
-            ClockConfig transientClockConfig611 = clockConfig;
-            _singletonClockService52 = new ClockService(transientClockConfig611);
-            _disposables[_disposeIndex++] = _singletonClockService52;
+            ClockConfig transientClockConfig632 = clockConfig;
+            _singletonClockService63 = new ClockService(transientClockConfig632);
+            _disposables[_disposeIndex++] = _singletonClockService63;
           }
     }
   }
@@ -211,22 +213,22 @@ partial class Scope: IDisposable
   public ClockDigital BuildUp(ClockDigital buildingInstance)
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    ClockDigital transientClockDigital605;
+    ClockDigital transientClockDigital626;
     ClockDigital localBuildingInstance15 = buildingInstance;
     EnsureClockServiceExists();
-    localBuildingInstance15.ClockService = _singletonClockService52;
-    transientClockDigital605 = localBuildingInstance15;
-    return transientClockDigital605;
+    localBuildingInstance15.ClockService = _singletonClockService63;
+    transientClockDigital626 = localBuildingInstance15;
+    return transientClockDigital626;
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     void EnsureClockServiceExists()
     {
-      if (_singletonClockService52 is null)
+      if (_singletonClockService63 is null)
         lock (_lock)
-          if (_singletonClockService52 is null)
+          if (_singletonClockService63 is null)
           {
-            ClockConfig transientClockConfig608 = clockConfig;
-            _singletonClockService52 = new ClockService(transientClockConfig608);
-            _disposables[_disposeIndex++] = _singletonClockService52;
+            ClockConfig transientClockConfig629 = clockConfig;
+            _singletonClockService63 = new ClockService(transientClockConfig629);
+            _disposables[_disposeIndex++] = _singletonClockService63;
           }
     }
   }
@@ -254,8 +256,8 @@ partial class Scope: IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      ClockConfig transientClockConfig614 = clockConfig;
-      return new ClockManager(this, transientClockConfig614);
+      ClockConfig transientClockConfig635 = clockConfig;
+      return new ClockManager(this, transientClockConfig635);
     }
   }
 
@@ -337,7 +339,7 @@ partial class Scope: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _singletonClockService52 = null;
+      _singletonClockService63 = null;
     }
 
     while (disposeIndex-- > 0)

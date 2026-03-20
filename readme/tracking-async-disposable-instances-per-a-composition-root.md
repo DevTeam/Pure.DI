@@ -114,32 +114,32 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var perBlockOwned145 = new Owned();
-      Owned<IQuery> perBlockOwned144;
+      var perBlockOwned156 = new Owned();
+      Owned<IQuery> perBlockOwned155;
       // Creates the owner of an instance
-      Owned transientOwned146;
-      Owned localOwned3 = perBlockOwned145;
-      transientOwned146 = localOwned3;
+      Owned transientOwned157;
+      Owned localOwned3 = perBlockOwned156;
+      transientOwned157 = localOwned3;
       lock (_lock)
       {
-        perBlockOwned145.Add(transientOwned146);
+        perBlockOwned156.Add(transientOwned157);
       }
 
-      IOwned localOwned2 = transientOwned146;
-      var transientDbConnection148 = new DbConnection();
+      IOwned localOwned2 = transientOwned157;
+      var transientDbConnection159 = new DbConnection();
       lock (_lock)
       {
-        perBlockOwned145.Add(transientDbConnection148);
+        perBlockOwned156.Add(transientDbConnection159);
       }
 
-      IQuery localValue7 = new Query(transientDbConnection148);
-      perBlockOwned144 = new Owned<IQuery>(localValue7, localOwned2);
+      IQuery localValue7 = new Query(transientDbConnection159);
+      perBlockOwned155 = new Owned<IQuery>(localValue7, localOwned2);
       lock (_lock)
       {
-        perBlockOwned145.Add(perBlockOwned144);
+        perBlockOwned156.Add(perBlockOwned155);
       }
 
-      return perBlockOwned144;
+      return perBlockOwned155;
     }
   }
 }

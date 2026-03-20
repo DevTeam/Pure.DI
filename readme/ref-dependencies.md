@@ -78,12 +78,12 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      int[] transient309 = [10, 20, 30];
-      int[] transient309_ref = transient309;
-      var transientService307 = new Service();
-      Data transientData308_ref = new Data(ref transient309_ref);
-      transientService307.Initialize(ref transientData308_ref);
-      return transientService307;
+      int[] transient320 = [10, 20, 30];
+      int[] transient320_ref = transient320;
+      var transientService318 = new Service();
+      Data transientData319_ref = new Data(ref transient320_ref);
+      transientService318.Initialize(ref transientData319_ref);
+      return transientService318;
     }
   }
 

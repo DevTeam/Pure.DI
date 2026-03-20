@@ -102,27 +102,27 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private TicketIdGenerator? _singletonTicketIdGenerator51;
+  private TicketIdGenerator? _singletonTicketIdGenerator62;
 
   public IQueueTerminal Terminal
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<ITicket> perBlockFunc379 = new Func<ITicket>(
+      Func<ITicket> perBlockFunc400 = new Func<ITicket>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        if (_singletonTicketIdGenerator51 is null)
+        if (_singletonTicketIdGenerator62 is null)
           lock (_lock)
-            if (_singletonTicketIdGenerator51 is null)
+            if (_singletonTicketIdGenerator62 is null)
             {
-              _singletonTicketIdGenerator51 = new TicketIdGenerator();
+              _singletonTicketIdGenerator62 = new TicketIdGenerator();
             }
 
-        return new Ticket(_singletonTicketIdGenerator51);
+        return new Ticket(_singletonTicketIdGenerator62);
       });
-      return new QueueTerminal(perBlockFunc379);
+      return new QueueTerminal(perBlockFunc400);
     }
   }
 }

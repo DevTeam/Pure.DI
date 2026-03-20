@@ -156,62 +156,62 @@ partial class Composition: IDisposable
   private object[] _disposables = new object[1];
   private int _disposeIndex;
 
-  private DbConnection? _singletonDbConnection52;
+  private DbConnection? _singletonDbConnection63;
 
   public DataService DataService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var perBlockOwn163 = new Abstractions.Own();
-      Func<Abstractions.Own<IDbConnection>> perBlockFunc161 = new Func<Abstractions.Own<IDbConnection>>(
+      var perBlockOwn174 = new Abstractions.Own();
+      Func<Abstractions.Own<IDbConnection>> perBlockFunc172 = new Func<Abstractions.Own<IDbConnection>>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        Abstractions.Own<IDbConnection> perBlockOwn164;
+        Abstractions.Own<IDbConnection> perBlockOwn175;
         // Creates the owner of an instance
-        Abstractions.Own localOwn = perBlockOwn163;
-        var transientDbConnection165 = new DbConnection();
+        Abstractions.Own localOwn = perBlockOwn174;
+        var transientDbConnection176 = new DbConnection();
         lock (_lock)
         {
-          perBlockOwn163.Add(transientDbConnection165);
+          perBlockOwn174.Add(transientDbConnection176);
         }
 
-        IDbConnection localValue12 = transientDbConnection165;
-        perBlockOwn164 = new Abstractions.Own<IDbConnection>(localValue12, localOwn);
+        IDbConnection localValue12 = transientDbConnection176;
+        perBlockOwn175 = new Abstractions.Own<IDbConnection>(localValue12, localOwn);
         lock (_lock)
         {
-          perBlockOwn163.Add(perBlockOwn164);
+          perBlockOwn174.Add(perBlockOwn175);
         }
 
-        return perBlockOwn164;
+        return perBlockOwn175;
       });
-      var perBlockOwn166 = new Abstractions.Own();
-      Func<Abstractions.Own<IDbConnection>> perBlockFunc162 = new Func<Abstractions.Own<IDbConnection>>(
+      var perBlockOwn177 = new Abstractions.Own();
+      Func<Abstractions.Own<IDbConnection>> perBlockFunc173 = new Func<Abstractions.Own<IDbConnection>>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        Abstractions.Own<IDbConnection> perBlockOwn167;
+        Abstractions.Own<IDbConnection> perBlockOwn178;
         // Creates the owner of an instance
-        Abstractions.Own localOwn1 = perBlockOwn166;
-        if (_singletonDbConnection52 is null)
+        Abstractions.Own localOwn1 = perBlockOwn177;
+        if (_singletonDbConnection63 is null)
           lock (_lock)
-            if (_singletonDbConnection52 is null)
+            if (_singletonDbConnection63 is null)
             {
-              _singletonDbConnection52 = new DbConnection();
-              _disposables[_disposeIndex++] = _singletonDbConnection52;
+              _singletonDbConnection63 = new DbConnection();
+              _disposables[_disposeIndex++] = _singletonDbConnection63;
             }
 
-        IDbConnection localValue14 = _singletonDbConnection52;
-        perBlockOwn167 = new Abstractions.Own<IDbConnection>(localValue14, localOwn1);
+        IDbConnection localValue14 = _singletonDbConnection63;
+        perBlockOwn178 = new Abstractions.Own<IDbConnection>(localValue14, localOwn1);
         lock (_lock)
         {
-          perBlockOwn166.Add(perBlockOwn167);
+          perBlockOwn177.Add(perBlockOwn178);
         }
 
-        return perBlockOwn167;
+        return perBlockOwn178;
       });
-      return new DataService(perBlockFunc161, perBlockFunc162);
+      return new DataService(perBlockFunc172, perBlockFunc173);
     }
   }
 
@@ -225,7 +225,7 @@ partial class Composition: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _singletonDbConnection52 = null;
+      _singletonDbConnection63 = null;
     }
 
     while (disposeIndex-- > 0)

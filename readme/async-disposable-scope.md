@@ -130,7 +130,7 @@ partial class Composition: IDisposable, IAsyncDisposable
   private object[] _disposables;
   private int _disposeIndex;
 
-  private Dependency? _scopedDependency51;
+  private Dependency? _scopedDependency62;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -156,15 +156,15 @@ partial class Composition: IDisposable, IAsyncDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_scopedDependency51 is null)
+      if (_scopedDependency62 is null)
         lock (_lock)
-          if (_scopedDependency51 is null)
+          if (_scopedDependency62 is null)
           {
-            _scopedDependency51 = new Dependency();
-            _disposables[_disposeIndex++] = _scopedDependency51;
+            _scopedDependency62 = new Dependency();
+            _disposables[_disposeIndex++] = _scopedDependency62;
           }
 
-      return new Service(_scopedDependency51);
+      return new Service(_scopedDependency62);
     }
   }
 
@@ -173,13 +173,13 @@ partial class Composition: IDisposable, IAsyncDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<Session> perBlockFunc556 = new Func<Session>(
+      Func<Session> perBlockFunc577 = new Func<Session>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
         return new Session(this);
       });
-      return new Program(perBlockFunc556);
+      return new Program(perBlockFunc577);
     }
   }
 
@@ -193,7 +193,7 @@ partial class Composition: IDisposable, IAsyncDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _scopedDependency51 = null;
+      _scopedDependency62 = null;
     }
 
     while (disposeIndex-- > 0)
@@ -229,7 +229,7 @@ partial class Composition: IDisposable, IAsyncDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _scopedDependency51 = null;
+      _scopedDependency62 = null;
     }
 
     while (disposeIndex-- > 0)

@@ -89,40 +89,40 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private TemperatureSensor? _singletonTemperatureSensor51;
+  private TemperatureSensor? _singletonTemperatureSensor62;
 
   private LightweightRoot LightRoot
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<ISensor> perBlockFunc408 = new Func<ISensor>(
+      Func<ISensor> perBlockFunc429 = new Func<ISensor>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
         EnsureTemperatureSensorLivingRoomExists();
-        return _singletonTemperatureSensor51;
+        return _singletonTemperatureSensor62;
       });
-      Func<IThermostat> perBlockFunc409 = new Func<IThermostat>(
+      Func<IThermostat> perBlockFunc430 = new Func<IThermostat>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
         EnsureTemperatureSensorLivingRoomExists();
-        return new Thermostat(_singletonTemperatureSensor51);
+        return new Thermostat(_singletonTemperatureSensor62);
       });
       return new LightweightRoot()
       {
-        ISensor = perBlockFunc408,
-        IThermostat = perBlockFunc409
+        ISensor = perBlockFunc429,
+        IThermostat = perBlockFunc430
       };
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureTemperatureSensorLivingRoomExists()
       {
-        if (_singletonTemperatureSensor51 is null)
+        if (_singletonTemperatureSensor62 is null)
           lock (_lock)
-            if (_singletonTemperatureSensor51 is null)
+            if (_singletonTemperatureSensor62 is null)
             {
-              _singletonTemperatureSensor51 = new TemperatureSensor();
+              _singletonTemperatureSensor62 = new TemperatureSensor();
             }
       }
     }
@@ -315,7 +315,7 @@ Class diagram:
 classDiagram
 	TemperatureSensor --|> ISensor : "LivingRoom" 
 	Thermostat --|> IThermostat
-	Composition ..> LightweightRoot : LightweightRoot LightRoot76d
+	Composition ..> LightweightRoot : LightweightRoot LightRoot79d
 	Composition ..> Thermostat : IThermostat _
 	Composition ..> TemperatureSensor : ISensor _
 	Thermostat o-- "Singleton" TemperatureSensor : "LivingRoom"  ISensor
@@ -334,7 +334,7 @@ classDiagram
 	namespace Pure.DI.UsageTests.BCL.ServiceCollectionScenario {
 		class Composition {
 		<<partial>>
-		-LightweightRoot LightRoot76d
+		-LightweightRoot LightRoot79d
 		-ISensor _
 		-IThermostat _
 		+ T ResolveᐸTᐳ()

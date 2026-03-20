@@ -64,6 +64,7 @@ public class ClockService : IClockService, IDisposable
 
     public void Dispose()
     {
+        GC.SuppressFinalize(this);
         // Perform any necessary cleanup here
     }
 }
@@ -128,26 +129,26 @@ partial class Scope: IDisposable
   private object[] _disposables = new object[1];
   private int _disposeIndex;
 
-  private ClockService? _singletonClockService52;
+  private ClockService? _singletonClockService63;
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Clock BuildUp(Clock buildingInstance)
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    Clock transientClock599;
+    Clock transientClock620;
     Clock localBuildingInstance13 = buildingInstance;
-    if (_singletonClockService52 is null)
+    if (_singletonClockService63 is null)
       lock (_lock)
-        if (_singletonClockService52 is null)
+        if (_singletonClockService63 is null)
         {
-          ClockConfig transientClockConfig602 = clockConfig;
-          _singletonClockService52 = new ClockService(transientClockConfig602);
-          _disposables[_disposeIndex++] = _singletonClockService52;
+          ClockConfig transientClockConfig623 = clockConfig;
+          _singletonClockService63 = new ClockService(transientClockConfig623);
+          _disposables[_disposeIndex++] = _singletonClockService63;
         }
 
-    localBuildingInstance13.ClockService = _singletonClockService52;
-    transientClock599 = localBuildingInstance13;
-    return transientClock599;
+    localBuildingInstance13.ClockService = _singletonClockService63;
+    transientClock620 = localBuildingInstance13;
+    return transientClock620;
   }
 
   #pragma warning disable CS0162
@@ -200,7 +201,7 @@ partial class Scope: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _singletonClockService52 = null;
+      _singletonClockService63 = null;
     }
 
     while (disposeIndex-- > 0)

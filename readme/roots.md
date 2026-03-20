@@ -68,7 +68,7 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private Preferences? _singletonPreferences51;
+  private Preferences? _singletonPreferences62;
 
   public SettingsWindow SettingsWindow
   {
@@ -76,15 +76,15 @@ partial class Composition
     get
     {
       EnsurePreferencesExists();
-      return new SettingsWindow(_singletonPreferences51);
+      return new SettingsWindow(_singletonPreferences62);
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsurePreferencesExists()
       {
-        if (_singletonPreferences51 is null)
+        if (_singletonPreferences62 is null)
           lock (_lock)
-            if (_singletonPreferences51 is null)
+            if (_singletonPreferences62 is null)
             {
-              _singletonPreferences51 = new Preferences();
+              _singletonPreferences62 = new Preferences();
             }
       }
     }
@@ -96,15 +96,15 @@ partial class Composition
     get
     {
       EnsurePreferencesExists1();
-      return new MainWindow(_singletonPreferences51);
+      return new MainWindow(_singletonPreferences62);
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsurePreferencesExists1()
       {
-        if (_singletonPreferences51 is null)
+        if (_singletonPreferences62 is null)
           lock (_lock)
-            if (_singletonPreferences51 is null)
+            if (_singletonPreferences62 is null)
             {
-              _singletonPreferences51 = new Preferences();
+              _singletonPreferences62 = new Preferences();
             }
       }
     }

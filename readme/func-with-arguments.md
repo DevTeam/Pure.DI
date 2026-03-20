@@ -112,32 +112,32 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private Clock? _singletonClock51;
+  private Clock? _singletonClock62;
 
   public ITeam Team
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<int, string, IPerson> perBlockFunc383;
+      Func<int, string, IPerson> perBlockFunc404;
       Func<int, string, IPerson> localFactory2 = new Func<int, string, IPerson>((int localArg11, string localArg2) =>
       {
         lock (_lock)
         {
           int overriddenInt32 = localArg11;
           string overriddenString2 = localArg2;
-          if (_singletonClock51 is null)
+          if (_singletonClock62 is null)
             lock (_lock)
-              if (_singletonClock51 is null)
+              if (_singletonClock62 is null)
               {
-                _singletonClock51 = new Clock();
+                _singletonClock62 = new Clock();
               }
 
-          return new Person(overriddenString2, _singletonClock51, overriddenInt32);
+          return new Person(overriddenString2, _singletonClock62, overriddenInt32);
         }
       });
-      perBlockFunc383 = localFactory2;
-      return new Team(perBlockFunc383);
+      perBlockFunc404 = localFactory2;
+      return new Team(perBlockFunc404);
     }
   }
 }

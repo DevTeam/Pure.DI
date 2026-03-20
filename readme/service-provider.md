@@ -96,40 +96,40 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private ConsoleLogger? _singletonConsoleLogger51;
+  private ConsoleLogger? _singletonConsoleLogger62;
 
   private LightweightRoot LightRoot
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<ILogger> perBlockFunc413 = new Func<ILogger>(
+      Func<ILogger> perBlockFunc434 = new Func<ILogger>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
         EnsureConsoleLoggerExists();
-        return _singletonConsoleLogger51;
+        return _singletonConsoleLogger62;
       });
-      Func<IOrderService> perBlockFunc414 = new Func<IOrderService>(
+      Func<IOrderService> perBlockFunc435 = new Func<IOrderService>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
         EnsureConsoleLoggerExists();
-        return new OrderService(_singletonConsoleLogger51);
+        return new OrderService(_singletonConsoleLogger62);
       });
       return new LightweightRoot()
       {
-        ILogger1 = perBlockFunc413,
-        IOrderService1 = perBlockFunc414
+        ILogger1 = perBlockFunc434,
+        IOrderService1 = perBlockFunc435
       };
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureConsoleLoggerExists()
       {
-        if (_singletonConsoleLogger51 is null)
+        if (_singletonConsoleLogger62 is null)
           lock (_lock)
-            if (_singletonConsoleLogger51 is null)
+            if (_singletonConsoleLogger62 is null)
             {
-              _singletonConsoleLogger51 = new ConsoleLogger();
+              _singletonConsoleLogger62 = new ConsoleLogger();
             }
       }
     }
@@ -320,7 +320,7 @@ Class diagram:
 classDiagram
 	ConsoleLogger --|> ILogger
 	OrderService --|> IOrderService
-	Composition ..> LightweightRoot : LightweightRoot LightRoot76d
+	Composition ..> LightweightRoot : LightweightRoot LightRoot79d
 	Composition ..> OrderService : IOrderService _
 	Composition ..> ConsoleLogger : ILogger _
 	OrderService o-- "Singleton" ConsoleLogger : ILogger
@@ -339,7 +339,7 @@ classDiagram
 	namespace Pure.DI.UsageTests.BCL.ServiceProviderScenario {
 		class Composition {
 		<<partial>>
-		-LightweightRoot LightRoot76d
+		-LightweightRoot LightRoot79d
 		-ILogger _
 		-IOrderService _
 		+ T ResolveᐸTᐳ()
