@@ -5601,6 +5601,40 @@ namespace Pure.DI
         bool IsLockRequired { get; }
 
         /// <summary>
+        /// Gets the type of the composition root being resolved. Cannot be used outside the binding setup.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;()
+        ///     .To(ctx =&gt;
+        ///     {
+        ///         Console.WriteLine($"Resolving root: {ctx.RootType.Name}");
+        ///         ctx.Inject&lt;IDependency&gt;(out var dependency);
+        ///         return new Service(dependency);
+        ///     })
+        /// </code>
+        /// </example>
+        /// </summary>
+        Type RootType { get; }
+
+        /// <summary>
+        /// Gets the name of the composition root being resolved. Cannot be used outside the binding setup.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;()
+        ///     .To(ctx =&gt;
+        ///     {
+        ///         Console.WriteLine($"Resolving root: {ctx.RootName}");
+        ///         ctx.Inject&lt;IDependency&gt;(out var dependency);
+        ///         return new Service(dependency);
+        ///     })
+        /// </code>
+        /// </example>
+        /// </summary>
+        string RootName { get; }
+
+        /// <summary>
         /// Injects an instance of type <c>T</c> into the current factory. Cannot be used outside the binding setup.
         /// <example>
         /// <code>

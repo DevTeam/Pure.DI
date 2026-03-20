@@ -6,7 +6,7 @@ namespace Pure.DI.Core.Code;
 sealed class FactoryRewriter(
     IArguments arguments,
     ICompilations compilations,
-    ISymbolNames symbolNames,
+    ITypeResolver typeResolver,
     FactoryRewriterContext ctx)
     : CSharpSyntaxRewriter, IFactoryRewriter
 {
@@ -379,11 +379,11 @@ sealed class FactoryRewriter(
                     return SyntaxFactory.ParseExpression($"{ctx.VarInjection.Injection.Tag.ValueToString()}");
 
                 case nameof(IContext.ConsumerTypes):
-                    var consumers = GetConsumers().ToList();
+                    var consumers = GetConsumers(_ctx!.RootContext.Graph.Source).ToList();
                     return SyntaxFactory.ParseExpression($"new {Names.SystemNamespace}Type[{consumers.Count}]{{{string.Join(", ", consumers)}}}");
 
                 case nameof(IContext.ConsumerType):
-                    var consumer = GetConsumers().First();
+                    var consumer = GetConsumers(_ctx!.RootContext.Graph.Source).First();
                     return SyntaxFactory.ParseExpression(consumer);
 
                 case nameof(IContext.Lock):
@@ -407,6 +407,12 @@ sealed class FactoryRewriter(
                     return _ctx?.IsLockRequired == true
                         ? SyntaxFactory.LiteralExpression(SyntaxKind.TrueLiteralExpression,  SyntaxFactory.Token(SyntaxKind.TrueKeyword))
                         : SyntaxFactory.LiteralExpression(SyntaxKind.FalseLiteralExpression, SyntaxFactory.Token(SyntaxKind.FalseKeyword));
+
+                case nameof(IContext.RootType):
+                    return SyntaxFactory.ParseExpression($"typeof({typeResolver.Resolve(_ctx!.RootContext.Graph.Source, _ctx!.RootContext.Root.Injection.Type)})");
+
+                case nameof(IContext.RootName):
+                    return SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(_ctx!.RootContext.Root.DisplayName));
             }
         }
 
@@ -417,11 +423,11 @@ sealed class FactoryRewriter(
 
     internal record Initializer(string VariableName);
 
-    private IEnumerable<string> GetConsumers()
+    private IEnumerable<string> GetConsumers(MdSetup setup)
     {
         foreach (var parent in _ctx?.Parents.Reverse() ?? [])
         {
-            yield return $"typeof({symbolNames.GetGlobalName(parent.Var.InstanceType)})";
+            yield return $"typeof({typeResolver.Resolve(setup, parent.Var.InstanceType)})";
         }
 
         yield return $"typeof({_ctx!.RootContext.Graph.Source.Name.FullName})";
