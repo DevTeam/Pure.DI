@@ -376,15 +376,15 @@ sealed class FactoryRewriter(
             switch (node.Name.Identifier.Text)
             {
                 case nameof(IContext.Tag):
-                    return Visit(SyntaxFactory.ParseExpression($"{ctx.VarInjection.Injection.Tag.ValueToString()}"));
+                    return SyntaxFactory.ParseExpression($"{ctx.VarInjection.Injection.Tag.ValueToString()}");
 
                 case nameof(IContext.ConsumerTypes):
                     var consumers = GetConsumers().ToList();
-                    return Visit(SyntaxFactory.ParseExpression($"new {Names.SystemNamespace}Type[{consumers.Count}]{{{string.Join(", ", consumers)}}}"));
+                    return SyntaxFactory.ParseExpression($"new {Names.SystemNamespace}Type[{consumers.Count}]{{{string.Join(", ", consumers)}}}");
 
                 case nameof(IContext.ConsumerType):
                     var consumer = GetConsumers().First();
-                    return Visit(SyntaxFactory.ParseExpression(consumer));
+                    return SyntaxFactory.ParseExpression(consumer);
 
                 case nameof(IContext.Lock):
                     if (_ctx is {} codeCtx)
@@ -392,13 +392,16 @@ sealed class FactoryRewriter(
                         codeCtx.RootContext.LockIsInUse = true;
                     }
 
-                    return Visit(SyntaxFactory.ParseExpression(_ctx?.RootContext.Root.IsStatic == true ? Names.PerResolveLockFieldName : Names.LockFieldName));
+                    var lockFieldName = _ctx?.RootContext.Root.IsStatic == true
+                        ? Names.PerResolveLockFieldName
+                        : Names.LockFieldName;
+                    return SyntaxFactory.IdentifierName(lockFieldName);
 
                 case nameof(IContext.DependencyCount):
                     var dependencyCount = _ctx!.RootContext.Graph.Graph.TryGetInEdges(_ctx.VarInjection.Var.AbstractNode.Node, out var edges)
                         ? edges.Count
                         : 0;
-                    return Visit(SyntaxFactory.ParseExpression($"{dependencyCount}"));
+                    return SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(dependencyCount));
             }
         }
 
