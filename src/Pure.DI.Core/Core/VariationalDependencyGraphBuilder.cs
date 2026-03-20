@@ -84,8 +84,7 @@ sealed class VariationalDependencyGraphBuilder(
 
         allNodes.Reverse();
         var setsOfOptions = new LinkedList<Options>(CreateOptions(allNodes));
-        var maxIterations = globalProperties.MaxIterations;
-        var maxAttempts = 0x2000;
+        var maxIterations = globalProperties.MaxVariations;
         DependencyGraph? dependencyGraph = null;
 
         var accumulators = setup.Accumulators
@@ -99,22 +98,13 @@ sealed class VariationalDependencyGraphBuilder(
 
         while (nodeVariator.TryGetNext(setsOfOptions, out var nodes))
         {
-            if (maxAttempts-- <= 0)
-            {
-                throw new CompileErrorException(
-                    Strings.Error_CannotBuildDependencyGraph,
-                    ImmutableArray.Create(locationProvider.GetLocation(setup.Source)),
-                    LogId.ErrorCannotBuildDependencyGraph,
-                    nameof(Strings.Error_CannotBuildDependencyGraph));
-            }
-
             if (maxIterations-- <= 0)
             {
                 logger.CompileError(
                     LogMessage.Format(
                         nameof(Strings.Error_Template_MaximumNumberOfIterations),
                         Strings.Error_Template_MaximumNumberOfIterations,
-                        globalProperties.MaxIterations),
+                        globalProperties.MaxVariations),
                     ImmutableArray.Create(locationProvider.GetLocation(setup.Source)),
                     LogId.ErrorMaximumNumberOfIterations);
 

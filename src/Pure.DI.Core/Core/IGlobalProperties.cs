@@ -4,7 +4,11 @@ using System.Globalization;
 
 interface IGlobalProperties
 {
-    int MaxIterations { get; }
+    int MaxVariations { get; }
+
+    int MaxDependencies { get; }
+
+    int MaxMermaid { get; }
 
     CultureInfo? Culture { get; }
 

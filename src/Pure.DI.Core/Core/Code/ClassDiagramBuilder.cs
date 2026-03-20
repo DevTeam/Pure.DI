@@ -13,6 +13,7 @@ sealed class ClassDiagramBuilder(
     IRootAccessModifierResolver rootAccessModifierResolver,
     ITypes types,
     ILocationProvider locationProvider,
+    IGlobalProperties globalProperties,
     CancellationToken cancellationToken)
     : IBuilder<CompositionCode, Lines>
 {
@@ -20,6 +21,12 @@ sealed class ClassDiagramBuilder(
 
     public Lines Build(CompositionCode composition)
     {
+        var graph = composition.Source.Graph;
+        if (graph.Edges.Count > globalProperties.MaxMermaid)
+        {
+            return new Lines();
+        }
+
         var setup = composition.Source.Source;
         var nullable = composition.Compilation.Options.NullableContextOptions == NullableContextOptions.Disable ? "" : "?";
         var lines = new Lines();
@@ -82,7 +89,6 @@ sealed class ClassDiagramBuilder(
             }
 
             var typeSymbols = new HashSet<ITypeSymbol>(SymbolEqualityComparer.Default);
-            var graph = composition.Source.Graph;
             foreach (var node in graph.Vertices.GroupBy(i => i.Type, SymbolEqualityComparer.Default).Select(i => i.First()).OrderBy(i => i.Binding.Id))
             {
                 cancellationToken.ThrowIfCancellationRequested();

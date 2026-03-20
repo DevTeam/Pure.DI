@@ -25,6 +25,7 @@ sealed class DependencyGraphBuilder(
     ILocationProvider locationProvider,
     ITypeResolver typeResolver,
     IDependencyNodePrioritizer dependencyNodePrioritizer,
+    IGlobalProperties globalProperties,
     CancellationToken cancellationToken)
     : IBuilder<GraphBuildContext, IEnumerable<DependencyNode>>
 {
@@ -77,7 +78,7 @@ sealed class DependencyGraphBuilder(
         {
             var node = queue.Dequeue();
             cancellationToken.ThrowIfCancellationRequested();
-            if (counter++ > Const.MaxIterationsCount)
+            if (counter++ > globalProperties.MaxDependencies)
             {
                 throw new CompileErrorException(
                     string.Format(Strings.Error_Template_TooLargeComposition, counter),
