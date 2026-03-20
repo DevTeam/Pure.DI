@@ -402,6 +402,11 @@ sealed class FactoryRewriter(
                         ? edges.Count
                         : 0;
                     return SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(dependencyCount));
+
+                case nameof(IContext.IsLockRequired):
+                    return _ctx?.IsLockRequired == true
+                        ? SyntaxFactory.LiteralExpression(SyntaxKind.TrueLiteralExpression,  SyntaxFactory.Token(SyntaxKind.TrueKeyword))
+                        : SyntaxFactory.LiteralExpression(SyntaxKind.FalseLiteralExpression, SyntaxFactory.Token(SyntaxKind.FalseKeyword));
             }
         }
 

@@ -5572,6 +5572,35 @@ namespace Pure.DI
         int DependencyCount { get; }
 
         /// <summary>
+        /// Gets whether a lock is required in the current context.
+        /// This property indicates whether synchronization is needed for thread-safe access during composition.
+        /// Cannot be used outside the binding setup.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;()
+        ///     .To(ctx =&gt;
+        ///     {
+        ///         if (ctx.IsLockRequired)
+        ///         {
+        ///             lock (ctx.Lock)
+        ///             {
+        ///                 ctx.Inject&lt;IDependency&gt;(out var dependency);
+        ///                 return new Service(dependency);
+        ///             }
+        ///         }
+        ///         else
+        ///         {
+        ///             ctx.Inject&lt;IDependency&gt;(out var dependency);
+        ///             return new Service(dependency);
+        ///         }
+        ///     })
+        /// </code>
+        /// </example>
+        /// </summary>
+        bool IsLockRequired { get; }
+
+        /// <summary>
         /// Injects an instance of type <c>T</c> into the current factory. Cannot be used outside the binding setup.
         /// <example>
         /// <code>

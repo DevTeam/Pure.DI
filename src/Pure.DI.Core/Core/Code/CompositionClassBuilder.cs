@@ -25,6 +25,8 @@ sealed class CompositionClassBuilder(
             code.AppendLine("#nullable enable annotations");
         }
 
+        code.AppendLine("#pragma warning disable CS0162");
+
         code.AppendLine();
         composition = usingDeclarations.Build(composition);
 
@@ -78,6 +80,7 @@ sealed class CompositionClassBuilder(
             code.AppendLine(BlockFinish);
         }
 
+        code.AppendLine("#pragma warning restore CS0162");
         return composition;
     }
 }
