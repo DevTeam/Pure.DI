@@ -4,7 +4,8 @@ namespace Pure.DI.Core;
 
 sealed class DependsOnInstanceMemberValidator(
     ILogger logger,
-    ILocationProvider locationProvider)
+    ILocationProvider locationProvider,
+    ICache<MdSetup, HashSet<string>> instanceMemberNamesCache)
     : IValidator<MdSetup>
 {
     public bool Validate(MdSetup setup)
@@ -26,7 +27,7 @@ sealed class DependsOnInstanceMemberValidator(
                 continue;
             }
 
-            if (binding.Factory is not { } factory)
+            if (binding.Factory is not {} factory)
             {
                 continue;
             }
@@ -37,7 +38,8 @@ sealed class DependsOnInstanceMemberValidator(
                 continue;
             }
 
-            var walker = new InstanceMemberAccessWalker(factory.SemanticModel, setupType);
+            var instanceMemberNames = instanceMemberNamesCache.Get(binding.SourceSetup, CollectInstanceMemberNames);
+            var walker = new InstanceMemberAccessWalker(factory.SemanticModel, setupType, instanceMemberNames);
             walker.Visit(factory.Factory);
 
             foreach (var access in walker.Accesses)
@@ -56,20 +58,63 @@ sealed class DependsOnInstanceMemberValidator(
         return true;
     }
 
+    private static HashSet<string> CollectInstanceMemberNames(MdSetup setup)
+    {
+        var names = new HashSet<string>();
+
+        // Use semantic model to collect all non-static member names from the containing type
+        // This works for partial classes because semantic model includes all partial parts
+        var setupType = GetContainingType(setup);
+        if (setupType is null)
+        {
+            return names;
+        }
+
+        // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+        foreach (var member in setupType.GetMembers())
+        {
+            if (member.IsStatic)
+            {
+                continue;
+            }
+
+            switch (member)
+            {
+                case IFieldSymbol field:
+                    names.Add(field.Name);
+                    break;
+
+                case IPropertySymbol property:
+                    names.Add(property.Name);
+                    break;
+
+                case IEventSymbol @event:
+                    names.Add(@event.Name);
+                    break;
+
+                case IMethodSymbol { MethodKind: MethodKind.Ordinary } method:
+                    names.Add(method.Name);
+                    break;
+            }
+        }
+
+        return names;
+    }
+
     private static INamedTypeSymbol? GetContainingType(MdSetup setup) =>
         setup.Source.Ancestors()
             .OfType<BaseTypeDeclarationSyntax>()
-            .FirstOrDefault() is { } typeDeclaration
+            .FirstOrDefault() is {} typeDeclaration
             ? setup.SemanticModel.GetDeclaredSymbol(typeDeclaration)
             : null;
 
     private sealed class InstanceMemberAccessWalker(
         SemanticModel semanticModel,
-        INamedTypeSymbol setupType)
+        INamedTypeSymbol setupType,
+        HashSet<string> instanceMemberNames)
         : CSharpSyntaxWalker
     {
         private readonly HashSet<TextSpan> _spans = [];
-
         public List<MemberAccess> Accesses { get; } = [];
 
         public override void VisitThisExpression(ThisExpressionSyntax node)
@@ -90,6 +135,14 @@ sealed class DependsOnInstanceMemberValidator(
                 return;
             }
 
+            // Fast path: check if the identifier name matches any instance member using syntax only
+            if (!instanceMemberNames.Contains(node.Identifier.ValueText))
+            {
+                base.VisitIdentifierName(node);
+                return;
+            }
+
+            // Only use semantic model for identifiers that could potentially be instance members
             var symbol = semanticModel.GetSymbolInfo(node).Symbol;
             switch (symbol)
             {
