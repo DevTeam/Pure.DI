@@ -48,7 +48,7 @@ sealed class DependsOnInstanceMemberValidator(
                     LogMessage.Format(
                         nameof(Strings.Warning_Template_InstanceMemberInDependsOnSetup),
                         Strings.Warning_Template_InstanceMemberInDependsOnSetup,
-                        access.MemberName,
+                        access.Member?.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat) ?? "this",
                         binding.SourceSetup.Name),
                     ImmutableArray.Create(locationProvider.GetLocation(access.Node)),
                     LogId.WarningInstanceMemberInDependsOnSetup);
@@ -124,7 +124,7 @@ sealed class DependsOnInstanceMemberValidator(
                 return;
             }
 
-            Add(node, "this");
+            Add(node, null);
         }
 
         public override void VisitIdentifierName(IdentifierNameSyntax node)
@@ -147,34 +147,34 @@ sealed class DependsOnInstanceMemberValidator(
             switch (symbol)
             {
                 case IFieldSymbol field when IsInstanceMember(field, setupType):
-                    Add(node, field.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat));
+                    Add(node, field);
                     break;
 
                 case IPropertySymbol property when IsInstanceMember(property, setupType):
-                    Add(node, property.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat));
+                    Add(node, property);
                     break;
 
                 case IEventSymbol @event when IsInstanceMember(@event, setupType):
-                    Add(node, @event.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat));
+                    Add(node, @event);
                     break;
 
                 case IMethodSymbol { MethodKind: MethodKind.Ordinary } method
                     when IsInstanceMember(method, setupType):
-                    Add(node, method.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat));
+                    Add(node, method);
                     break;
             }
 
             base.VisitIdentifierName(node);
         }
 
-        private void Add(SyntaxNode node, string memberName)
+        private void Add(SyntaxNode node, ISymbol? member)
         {
             if (!_spans.Add(node.Span))
             {
                 return;
             }
 
-            Accesses.Add(new MemberAccess(node, memberName));
+            Accesses.Add(new MemberAccess(node, member));
         }
 
         private static bool IsInstanceMember(ISymbol symbol, INamedTypeSymbol setupType) =>
@@ -182,5 +182,5 @@ sealed class DependsOnInstanceMemberValidator(
             && SymbolEqualityComparer.Default.Equals(symbol.ContainingType, setupType);
     }
 
-    private sealed record MemberAccess(SyntaxNode Node, string MemberName);
+    private sealed record MemberAccess(SyntaxNode Node, ISymbol? Member);
 }

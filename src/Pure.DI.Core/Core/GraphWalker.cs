@@ -21,13 +21,8 @@ sealed class GraphWalker<TContext, T>(INodeTools nodeTools)
         }
 
         nodeInfos.Push(new NodeInfo(root, visitingInfo, ImmutableArray<int>.Empty));
-        while (nodeInfos.TryPop(out var nodeInfo))
+        while (nodeInfos.TryPop(out var nodeInfo) && !cancellationToken.IsCancellationRequested)
         {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                break;
-            }
-
             if (!graph.TryGetInEdges(nodeInfo.Node, out var dependencies))
             {
                 continue;
@@ -47,11 +42,6 @@ sealed class GraphWalker<TContext, T>(INodeTools nodeTools)
                     return visitingInfo;
                 }
 
-                if (cancellationToken.IsCancellationRequested)
-                {
-                    break;
-                }
-
                 var isLazy = nodeTools.IsLazy(dependency.Source, dependencyGraph);
                 var depIndices = isLazy ? nodeInfo.DepIndices.Add(depIndex++) : ImmutableArray.Create(depIndex++);
                 var processedKey = new ProcessedKey(dependency.Target, dependency.Source, depIndices);
@@ -67,52 +57,26 @@ sealed class GraphWalker<TContext, T>(INodeTools nodeTools)
 
     private readonly record struct NodeInfo(DependencyNode Node, T Info, in ImmutableArray<int> DepIndices);
 
-    private class ProcessedKey
+    private readonly record struct ProcessedKey(DependencyNode Target, DependencyNode Source, in ImmutableArray<int> DepIndices)
     {
-        private readonly DependencyNode _target;
-        private readonly DependencyNode _source;
-        private readonly ImmutableArray<int> _depIndices;
-        private readonly int _hashCode;
-
-        public ProcessedKey(DependencyNode target, DependencyNode source, in ImmutableArray<int> depIndices)
+        public override int GetHashCode()
         {
-            _target = target;
-            _source = source;
-            _depIndices = depIndices;
             unchecked
             {
-                var hashCode = _target.GetHashCode();
-                hashCode = hashCode * 397 ^ _source.GetHashCode();
-                // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
-                foreach (var depIndex in _depIndices)
+                var hashCode = Target.GetHashCode();
+                hashCode = hashCode * 397 ^ Source.GetHashCode();
+                foreach (var depIndex in DepIndices)
                 {
                     hashCode = hashCode * 397 ^ depIndex;
                 }
 
-                _hashCode = hashCode;
+                return hashCode;
             }
         }
 
-        // ReSharper disable once MemberCanBePrivate.Local
-        protected bool Equals(ProcessedKey other)
-        {
-            if(!_target.Equals(other._target) || !_source.Equals(other._source))
-            {
-                return false;
-            }
-
-            var length = Math.Min(_depIndices.Length, other._depIndices.Length);
-            // ReSharper disable once LoopCanBeConvertedToQuery
-            return _depIndices.AsSpan()[..length].SequenceEqual(other._depIndices.AsSpan()[..length]);
-        }
-
-        public override bool Equals(object? obj)
-        {
-            if (obj is null) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            return obj.GetType() == GetType() && Equals((ProcessedKey)obj);
-        }
-
-        public override int GetHashCode() => _hashCode;
+        public bool Equals(ProcessedKey other) =>
+            Target.Equals(other.Target) &&
+            Source.Equals(other.Source) &&
+            DepIndices.SequenceEqual(other.DepIndices);
     }
 }
