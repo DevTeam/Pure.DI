@@ -24,7 +24,7 @@ sealed class ConstructDependencyNodeBuilder(ILocationProvider locationProvider)
                     continue;
                 }
 
-                var tag = contract.Tags.Select(i => i.Value).FirstOrDefault();
+                var tag = contract.Tags.FirstOrDefault().Value;
                 injections.Add(
                     new Injection(
                         InjectionKind.Contract,

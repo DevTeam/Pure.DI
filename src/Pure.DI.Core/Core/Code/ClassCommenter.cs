@@ -128,7 +128,7 @@ sealed class ClassCommenter(
                         : [$"Provides a composition root of type {formatter.FormatRef(root.Node.Type)}."];
             }
 
-            var root = orderedRoots.FirstOrDefault(i => i.IsPublic);
+            var root = orderedRoots.Find(i => i.IsPublic);
             if (root is not null)
             {
                 code.AppendLine("/// <example>");

@@ -203,7 +203,7 @@ sealed class DependencyGraphBuilder(
                                 ++maxBindingId);
 
                             var genericNodes = nodesFactory.CreateNodes(setup, typeConstructor, genericBinding).ToList();
-                            var genericNode = genericNodes.FirstOrDefault(i => i.Variation == sourceNode.Variation);
+                            var genericNode = genericNodes.Find(i => i.Variation == sourceNode.Variation);
                             if (genericNode is not null)
                             {
                                 UpdateMap(newInjection, genericNode);
@@ -395,8 +395,9 @@ sealed class DependencyGraphBuilder(
                             yield break;
                         }
 
-                        if (autoNodes.FirstOrDefault() is {} newNode)
+                        if (autoNodes.Count > 0)
                         {
+                            var newNode = autoNodes[0];
                             var contextTag = GetContextTag(injection, newNode);
                             var newInjection = injection with { Tag = contextTag ?? injection.Tag };
                             var newProcessingNode = CreateNewProcessingNode(newInjection.Tag, newNode);
