@@ -13,7 +13,7 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="IndexRange" Version="1.1.0" />
+        <PackageReference Include="IndexRange" Version="1.1.1" />
         <Compile Update="Components\Api.g.cs">
             <LastGenOutput>GenericTypeArguments.g.cs</LastGenOutput>
             <Generator>TextTemplatingFileGenerator</Generator>
