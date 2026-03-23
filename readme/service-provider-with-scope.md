@@ -424,7 +424,7 @@ classDiagram
 	Composition --|> IDisposable
 	Configuration --|> IConfiguration
 	Session --|> ISession
-	Composition ..> LightweightRoot : LightweightRoot LightRoot79d
+	Composition ..> LightweightRoot : LightweightRoot LightRoot82d
 	Composition ..> Session : ISession _
 	Composition ..> Configuration : IConfiguration _
 	Session o-- "Singleton" Configuration : IConfiguration
@@ -443,7 +443,7 @@ classDiagram
 	namespace Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario {
 		class Composition {
 		<<partial>>
-		-LightweightRoot LightRoot79d
+		-LightweightRoot LightRoot82d
 		-IConfiguration _
 		-ISession _
 		+ T ResolveᐸTᐳ()

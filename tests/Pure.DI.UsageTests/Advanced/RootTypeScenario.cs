@@ -2,7 +2,7 @@
 $v=true
 $p=11
 $d=Root Type
-=h=`RootType` provides the type of the composition root being resolved. This property is useful for implementing root-specific behavior like different caching strategies per root type.
+$h=`RootType` provides the type of the composition root being resolved. This property is useful for implementing root-specific behavior like different caching strategies per root type.
 $r=Shouldly
 */
 

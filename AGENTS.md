@@ -8368,6 +8368,8 @@ To run the above code, the following NuGet packages must be added:
 
 ## Root Name
 
+`RootName` provides the name of the composition root being resolved. This property is useful for logging, diagnostics, or implementing root-specific behavior.
+
 ```c#
 using Shouldly;
 using Pure.DI;
@@ -8428,6 +8430,8 @@ To run the above code, the following NuGet packages must be added:
 
 
 ## Root Type
+
+`RootType` provides the type of the composition root being resolved. This property is useful for implementing root-specific behavior like different caching strategies per root type.
 
 ```c#
 using Shouldly;

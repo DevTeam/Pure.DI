@@ -1,5 +1,7 @@
 #### Root Name
 
+`RootName` provides the name of the composition root being resolved. This property is useful for logging, diagnostics, or implementing root-specific behavior.
+
 
 ```c#
 using Shouldly;
