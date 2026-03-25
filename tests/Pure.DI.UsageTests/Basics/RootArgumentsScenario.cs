@@ -3,6 +3,7 @@ $v=true
 $p=5
 $d=Root arguments
 $h=Use root arguments when you need to pass state into a specific root. Define them with `RootArg<T>(string argName)` (optionally with tags) and use them like any other dependency. A root that uses at least one root argument becomes a method, and only arguments used in that root's object graph appear in the method signature. Use unique argument names to avoid collisions.
+$h=Root arguments are useful when runtime values belong to one entry point, not to the whole composition.
 $h=>[!NOTE]
 $h=>Actually, root arguments work like normal bindings. The difference is that they bind to the values of the arguments. These values will be injected wherever they are required.
 $h=

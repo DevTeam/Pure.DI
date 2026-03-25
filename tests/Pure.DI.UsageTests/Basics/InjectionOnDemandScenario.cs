@@ -3,6 +3,7 @@ $v=true
 $p=3
 $d=Injection on demand
 $h=This example creates dependencies on demand using a factory delegate. The service (`GameLevel`) needs multiple instances of `IEnemy`, so it receives a `Func<IEnemy>` that can create new instances when needed.
+$h=This approach is useful when instances are created lazily or repeatedly during business execution.
 $f=Key elements:
 $f=- `Enemy` is bound to the `IEnemy` interface, and `GameLevel` is bound to `IGameLevel`.
 $f=- The `GameLevel` constructor accepts `Func<IEnemy>`, enabling deferred creation of entities.

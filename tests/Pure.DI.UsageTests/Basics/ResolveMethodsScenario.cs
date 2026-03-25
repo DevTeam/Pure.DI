@@ -2,7 +2,8 @@
 $v=true
 $p=1
 $d=Resolve methods
-$h=This example shows how to resolve composition roots via `Resolve` methods, using the composition as a _Service Locator_. The `Resolve` methods are generated automatically.
+$h=This example shows how to resolve dependencies via generated `Resolve` methods, i.e. through the _Service Locator_ style.
+$h=Use this style mainly for integration scenarios; explicit roots are usually cleaner and safer.
 $f=_Resolve_ methods are similar to calling composition roots, which are properties (or methods). Roots are efficient and do not throw, so they are preferred. In contrast, _Resolve_ methods have drawbacks:
 $f=- They provide access to an unlimited set of dependencies (_Service Locator_).
 $f=- Their use can potentially lead to runtime exceptions. For example, when the corresponding root has not been defined.

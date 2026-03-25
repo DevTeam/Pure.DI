@@ -2,7 +2,8 @@
 $v=true
 $p=2
 $d=Factory
-$h=Demonstrates how to use factories for manual creation and initialization. While the generator usually infers dependencies from constructors, factories provide custom creation or setup logic when needed.
+$h=Demonstrates how to use factories for manual creation and initialization when constructor injection alone is not enough.
+$h=Use factory bindings for custom setup, external APIs, or controlled object state during creation.
 $f=There are scenarios where manual control over the creation process is required, such as
 $f=- When additional initialization logic is needed
 $f=- When complex construction steps are required

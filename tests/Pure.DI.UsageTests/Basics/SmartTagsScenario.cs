@@ -3,6 +3,7 @@ $v=true
 $p=7
 $d=Smart tags
 $h=Large object graphs often need many tags. String tags are error-prone and easy to mistype. Prefer `Enum` values as tags, and _Pure.DI_ helps make this safe.
+$h=Smart tags improve refactoring safety by moving tag usage into compiler-checked symbols.
 $h=
 $h=When the compiler cannot determine a tag value, _Pure.DI_ generates a constant inside `Pure.DI.Tag`. For the example below, the generated constants would look like this:
 $h=

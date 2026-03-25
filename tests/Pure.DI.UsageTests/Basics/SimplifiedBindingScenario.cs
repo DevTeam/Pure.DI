@@ -2,7 +2,8 @@
 $v=true
 $p=1
 $d=Simplified binding
-$h=You can call `Bind()` without type parameters. It binds the implementation type itself, and if it is not abstract, all directly implemented abstract types except special ones.
+$h=You can call `Bind()` without type parameters to infer contracts from the implementation type.
+$h=This reduces boilerplate while preserving compile-time graph validation.
 $f=In practice, most abstraction types can be inferred. The parameterless `Bind()` binds:
 $f=
 $f=- the implementation type itself

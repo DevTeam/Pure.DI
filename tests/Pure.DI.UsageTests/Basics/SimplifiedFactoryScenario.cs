@@ -3,7 +3,9 @@ $v=true
 $p=2
 $d=Simplified factory
 $h=This example shows a simplified manual factory. Each lambda parameter represents an injected dependency, and starting with C# 10 you can add `Tag(...)` to specify a tagged dependency.
-$f=The example creates a service that depends on a logger initialized with a date-based file name. The `Tag` attribute enables named dependencies for more complex setups.
+$f=The example creates a service that depends on a logger initialized with a date-based file name.
+$f=This style keeps the setup concise while still allowing explicit initialization logic.
+$f=The `Tag` attribute enables named dependencies for more complex setups.
 $r=Shouldly
 */
 

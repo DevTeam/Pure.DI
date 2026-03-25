@@ -3,6 +3,7 @@ $v=true
 $p=3
 $d=Injections on demand with arguments
 $h=This example uses a parameterized factory so dependencies can be created with runtime arguments. The service creates sensors with specific IDs at instantiation time.
+$h=It is a type-safe way to combine DI-managed creation with runtime data.
 $f=Delayed dependency instantiation:
 $f=- Injection of dependencies requiring runtime parameters
 $f=- Creation of distinct instances with different configurations

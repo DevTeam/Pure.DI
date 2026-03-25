@@ -3,6 +3,7 @@ $v=true
 $p=6
 $d=Tags
 $h=Tags let you control dependency selection when multiple implementations exist:
+$h=This is practical for scenarios like public/internal API clients, multiple payment providers, or environment-specific integrations.
 $f=The example shows how to:
 $f=- Define multiple bindings for the same interface
 $f=- Use tags to differentiate between implementations

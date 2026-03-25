@@ -2,11 +2,11 @@
 $v=true
 $p=1
 $d=Composition roots
-$h=This example shows several ways to create a composition root.
+$h=This example shows several ways to define composition roots as explicit entry points into the graph.
 $h=>[!TIP]
 $h=>There is no hard limit on roots, but prefer a small number. Ideally, an application has a single composition root.
 $h=
-$h=In classic DI containers, the composition is resolved dynamically via calls like `T Resolve<T>()` or `object GetService(Type type)`. The root is simply the requested type, and you can have as many as you like. In Pure.DI, each root generates a property or method at compile time, so roots are explicit and defined via `Root(string rootName)`.
+$h=In classic DI containers, the composition is resolved dynamically via calls like `T Resolve<T>()` or `object GetService(Type type)`. In Pure.DI, each root generates a property or method at compile time, so roots are explicit and discoverable.
 $f=The name of the composition root is arbitrarily chosen depending on its purpose but should be restricted by the property naming conventions in C# since it is the same name as a property in the composition class. In reality, the `Root` property has the form:
 $f=```c#
 $f=public IService Root
