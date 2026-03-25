@@ -1,6 +1,7 @@
 #### Root Type
 
 `RootType` provides the type of the composition root being resolved. This property is useful for implementing root-specific behavior like different caching strategies per root type.
+Use this when infrastructure dependencies must vary by root contract type.
 
 
 ```c#
@@ -97,6 +98,9 @@ dotnet run
 ```
 
 </details>
+
+Limitations: root-type-specific rules can become hidden policy; keep this logic centralized and observable.
+See also: [Composition roots](composition-roots.md), [Root Name](root-name.md).
 
 The following partial class will be generated:
 

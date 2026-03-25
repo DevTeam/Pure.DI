@@ -101,7 +101,7 @@ dotnet run
 </details>
 
 The `OnNewInstanceImplementationTypeNameWildcard` hint helps you define a set of implementation types that require instance creation control. You can use it to specify a wildcard to filter bindings by implementation name.
-For more hints, see [this](README.md#setup-hints) page.
+For more hints, see [this](../README.md#setup-hints) page.
 
 The following partial class will be generated:
 

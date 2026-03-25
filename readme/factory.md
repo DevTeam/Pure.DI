@@ -1,6 +1,7 @@
 #### Factory
 
-Demonstrates how to use factories for manual creation and initialization. While the generator usually infers dependencies from constructors, factories provide custom creation or setup logic when needed.
+Demonstrates how to use factories for manual creation and initialization when constructor injection alone is not enough.
+Use factory bindings for custom setup, external APIs, or controlled object state during creation.
 
 
 ```c#
@@ -82,6 +83,11 @@ There are scenarios where manual control over the creation process is required, 
 
 >[!IMPORTANT]
 >The method `Inject()` cannot be used outside of the binding setup.
+Limitations: factory bindings introduce custom construction logic that must be maintained and tested.
+Common pitfalls:
+- Moving business decisions into DI factory code.
+- Overusing `Inject()` where normal constructor binding is enough.
+See also: [Simplified factory](simplified-factory.md), [Injection on demand](injection-on-demand.md).
 
 The following partial class will be generated:
 

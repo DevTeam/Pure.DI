@@ -1,6 +1,7 @@
 #### Simplified binding
 
-You can call `Bind()` without type parameters. It binds the implementation type itself, and if it is not abstract, all directly implemented abstract types except special ones.
+You can call `Bind()` without type parameters to infer contracts from the implementation type.
+This reduces boilerplate while preserving compile-time graph validation.
 
 
 ```c#
@@ -120,6 +121,11 @@ For class `OrderManager`, `Bind().To<OrderManager>()` is equivalent to `Bind<IOr
 | ❌ | `IEnumerable<string>` | special type                                      |
 | ❌ | `ManagerBase`         | non-abstract                                      |
 | ❌ | `IManager`            | is not directly implemented by class OrderManager |
+Limitations: inferred bindings include only directly implemented abstractions and exclude special types.
+Common pitfalls:
+- Expecting inherited interfaces to be included automatically.
+- Forgetting that special framework types are intentionally excluded.
+See also: [Simplified lifetime-specific bindings](simplified-lifetime-specific-bindings.md), [Special types](simplified-lifetime-specific-bindings.md).
 
 The following partial class will be generated:
 

@@ -1,6 +1,7 @@
 #### Tags
 
 Tags let you control dependency selection when multiple implementations exist:
+This is practical for scenarios like public/internal API clients, multiple payment providers, or environment-specific integrations.
 
 
 ```c#
@@ -89,6 +90,11 @@ The example shows how to:
 - Inject tagged dependencies into constructors
 
 The tag can be a constant, a type, a [smart tag](smart-tags.md), or a value of an `Enum` type. The _default_ and _null_ tags are also supported.
+Limitations: extensive tag usage can become hard to navigate if naming conventions are inconsistent.
+Common pitfalls:
+- Using many ad-hoc string tags without central conventions.
+- Forgetting to define a `default` tag path for untagged consumers.
+See also: [Smart tags](smart-tags.md), [Composition roots](composition-roots.md).
 
 The following partial class will be generated:
 

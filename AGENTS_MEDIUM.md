@@ -4,7 +4,8 @@ This Markdown-formatted document contains information about working with Pure.DI
 
 ## Auto-bindings
 
-Non-abstract types can be injected without any additional bindings.
+Pure.DI can create non-abstract types without explicit bindings, which makes quick prototypes and small demos concise.
+The generator still validates the graph at compile time and produces regular C# object creation code.
 
 ```c#
 using Pure.DI;
@@ -27,14 +28,23 @@ class OrderService(Database database);
 To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
 
+Auto-bindings are convenient for utilities and sample code where dependency choices are obvious.
+In larger applications they can hide architectural intent, because consumers start depending on concrete classes.
+If you need interchangeable implementations and explicit lifetime control, prefer bindings of abstractions to implementations.
 >[!WARNING]
 >This approach is not recommended if you follow the dependency inversion principle or need precise lifetime control.
 
 Prefer injecting abstractions (for example, interfaces) and map them to implementations as in most [other examples](injections-of-abstractions.md).
+Limitations: auto-bindings scale poorly when several implementations, decorators, or strict lifetime rules are required.
+Common pitfalls:
+- Relying on concrete classes in domain code instead of abstractions.
+- Losing explicit control over lifetime choices during refactoring.
+See also: [Injections of abstractions](injections-of-abstractions.md), [Simplified binding](simplified-binding.md).
 
 ## Injections of abstractions
 
-This example shows the recommended approach: depend on abstractions and bind them to implementations.
+This is the recommended model for production code: depend on abstractions and bind them to implementations in composition.
+It keeps business code independent from infrastructure details and makes replacements predictable.
 
 ```c#
 using Pure.DI;
@@ -93,14 +103,19 @@ The binding chain maps abstractions to concrete types so the generator can build
 >[!TIP]
 >If a binding is missing, injection still works when the consumer requests a concrete type (not an abstraction).
 
+Limitations: explicit bindings add configuration lines, but the trade-off is clearer architecture and safer evolution.
+Common pitfalls:
+- Mixing abstraction-first and concrete-only styles in one module without clear boundaries.
+- Forgetting to bind alternate implementations for tagged use cases.
+See also: [Auto-bindings](auto-bindings.md), [Tags](tags.md).
 
 ## Composition roots
 
-This example shows several ways to create a composition root.
+This example shows several ways to define composition roots as explicit entry points into the graph.
 >[!TIP]
 >There is no hard limit on roots, but prefer a small number. Ideally, an application has a single composition root.
 
-In classic DI containers, the composition is resolved dynamically via calls like `T Resolve<T>()` or `object GetService(Type type)`. The root is simply the requested type, and you can have as many as you like. In Pure.DI, each root generates a property or method at compile time, so roots are explicit and defined via `Root(string rootName)`.
+In classic DI containers, the composition is resolved dynamically via calls like `T Resolve<T>()` or `object GetService(Type type)`. In Pure.DI, each root generates a property or method at compile time, so roots are explicit and discoverable.
 
 ```c#
 using Pure.DI;
@@ -180,10 +195,16 @@ DI.Setup("Composition")
   ...
 ```
 This can be done if these methods are not needed, in case only certain composition roots are used. It's not significant then, but it will help save resources during compilation.
+Limitations: too many public roots increase composition API surface and make architecture boundaries harder to track.
+Common pitfalls:
+- Exposing internal services as roots instead of keeping them private.
+- Depending on `Resolve` everywhere instead of explicit root members.
+See also: [Resolve methods](resolve-methods.md), [Root arguments](root-arguments.md).
 
 ## Resolve methods
 
-This example shows how to resolve composition roots via `Resolve` methods, using the composition as a _Service Locator_. The `Resolve` methods are generated automatically.
+This example shows how to resolve dependencies via generated `Resolve` methods, i.e. through the _Service Locator_ style.
+Use this style mainly for integration scenarios; explicit roots are usually cleaner and safer.
 
 ```c#
 using Pure.DI;
@@ -232,10 +253,16 @@ _Resolve_ methods are similar to calling composition roots, which are properties
 - They provide access to an unlimited set of dependencies (_Service Locator_).
 - Their use can potentially lead to runtime exceptions. For example, when the corresponding root has not been defined.
 - They are awkward for some UI binding scenarios (e.g., MAUI/WPF/Avalonia).
+Limitations: `Resolve` is dynamic access to the graph, so it weakens compile-time clarity compared to explicit roots.
+Common pitfalls:
+- Using `Resolve` as the default access pattern across the codebase.
+- Assuming runtime resolve calls are always safe when no matching root exists.
+See also: [Composition roots](composition-roots.md), [Resolve hint](resolve-hint.md).
 
 ## Simplified binding
 
-You can call `Bind()` without type parameters. It binds the implementation type itself, and if it is not abstract, all directly implemented abstract types except special ones.
+You can call `Bind()` without type parameters to infer contracts from the implementation type.
+This reduces boilerplate while preserving compile-time graph validation.
 
 ```c#
 using System.Collections;
@@ -332,10 +359,16 @@ For class `OrderManager`, `Bind().To<OrderManager>()` is equivalent to `Bind<IOr
 | ❌ | `IEnumerable<string>` | special type                                      |
 | ❌ | `ManagerBase`         | non-abstract                                      |
 | ❌ | `IManager`            | is not directly implemented by class OrderManager |
+Limitations: inferred bindings include only directly implemented abstractions and exclude special types.
+Common pitfalls:
+- Expecting inherited interfaces to be included automatically.
+- Forgetting that special framework types are intentionally excluded.
+See also: [Simplified lifetime-specific bindings](simplified-lifetime-specific-bindings.md), [Special types](simplified-lifetime-specific-bindings.md).
 
 ## Factory
 
-Demonstrates how to use factories for manual creation and initialization. While the generator usually infers dependencies from constructors, factories provide custom creation or setup logic when needed.
+Demonstrates how to use factories for manual creation and initialization when constructor injection alone is not enough.
+Use factory bindings for custom setup, external APIs, or controlled object state during creation.
 
 ```c#
 using Shouldly;
@@ -393,6 +426,11 @@ There are scenarios where manual control over the creation process is required, 
 
 >[!IMPORTANT]
 >The method `Inject()` cannot be used outside of the binding setup.
+Limitations: factory bindings introduce custom construction logic that must be maintained and tested.
+Common pitfalls:
+- Moving business decisions into DI factory code.
+- Overusing `Inject()` where normal constructor binding is enough.
+See also: [Simplified factory](simplified-factory.md), [Injection on demand](injection-on-demand.md).
 
 ## Simplified factory
 
@@ -456,11 +494,19 @@ To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
-The example creates a service that depends on a logger initialized with a date-based file name. The `Tag` attribute enables named dependencies for more complex setups.
+The example creates a service that depends on a logger initialized with a date-based file name.
+This style keeps the setup concise while still allowing explicit initialization logic.
+The `Tag` attribute enables named dependencies for more complex setups.
+Limitations: compact lambda factories stay readable only while initialization logic remains small.
+Common pitfalls:
+- Putting heavy imperative setup code into short lambda factories.
+- Forgetting explicit tags when several same-type dependencies exist.
+See also: [Factory](factory.md), [Tags](tags.md).
 
 ## Injection on demand
 
 This example creates dependencies on demand using a factory delegate. The service (`GameLevel`) needs multiple instances of `IEnemy`, so it receives a `Func<IEnemy>` that can create new instances when needed.
+This approach is useful when instances are created lazily or repeatedly during business execution.
 
 ```c#
 using Shouldly;
@@ -512,10 +558,16 @@ Key elements:
 - The `GameLevel` calls the factory twice, resulting in two distinct `Enemy` instances stored in its `Enemies` collection.
 
 This approach lets factories control lifetime and instantiation timing. Pure.DI resolves a new `IEnemy` each time the factory is invoked.
+Limitations: factory delegate calls can create many objects, so lifetime choices still matter for performance and state.
+Common pitfalls:
+- Assuming `Func<T>` always returns new instances regardless of configured lifetime.
+- Hiding expensive work behind repeated on-demand calls.
+See also: [Injections on demand with arguments](injections-on-demand-with-arguments.md), [Func<T>](func.md).
 
 ## Injections on demand with arguments
 
 This example uses a parameterized factory so dependencies can be created with runtime arguments. The service creates sensors with specific IDs at instantiation time.
+It is a type-safe way to combine DI-managed creation with runtime data.
 
 ```c#
 using Shouldly;
@@ -573,10 +625,16 @@ Delayed dependency instantiation:
 - Injection of dependencies requiring runtime parameters
 - Creation of distinct instances with different configurations
 - Type-safe resolution of dependencies with constructor arguments
+Limitations: runtime arguments improve flexibility but can increase coupling between call sites and construction signatures.
+Common pitfalls:
+- Passing infrastructure concerns as runtime arguments instead of normal dependencies.
+- Duplicating argument validation logic across consumers.
+See also: [Injection on demand](injection-on-demand.md), [Root arguments](root-arguments.md).
 
 ## Composition arguments
 
 Use composition arguments when you need to pass state into the composition. Define them with `Arg<T>(string argName)` (optionally with tags) and use them like any other dependency. Only arguments that are used in the object graph become constructor parameters.
+This is a clean way to inject external runtime state without global static variables.
 >[!NOTE]
 >Actually, composition arguments work like normal bindings. The difference is that they bind to the values of the arguments. These values will be injected wherever they are required.
 
@@ -653,10 +711,16 @@ To run the above code, the following NuGet packages must be added:
 
 >[!NOTE]
 >Composition arguments provide a way to inject runtime values into the composition, making your DI configuration more flexible.
+Limitations: too many composition arguments can bloat composition constructors and blur configuration boundaries.
+Common pitfalls:
+- Using untagged primitive arguments where several values of the same type exist.
+- Treating composition arguments as mutable runtime state holders.
+See also: [Root arguments](root-arguments.md), [Tags](tags.md).
 
 ## Root arguments
 
 Use root arguments when you need to pass state into a specific root. Define them with `RootArg<T>(string argName)` (optionally with tags) and use them like any other dependency. A root that uses at least one root argument becomes a method, and only arguments used in that root's object graph appear in the method signature. Use unique argument names to avoid collisions.
+Root arguments are useful when runtime values belong to one entry point, not to the whole composition.
 >[!NOTE]
 >Actually, root arguments work like normal bindings. The difference is that they bind to the values of the arguments. These values will be injected wherever they are required.
 
@@ -733,10 +797,16 @@ To run the above code, the following NuGet packages must be added:
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 When using root arguments, compilation warnings are emitted if `Resolve` methods are generated because these methods cannot create such roots. Disable `Resolve` via `Hint(Hint.Resolve, "Off")`, or ignore the warnings and accept the risks.
+Limitations: roots with root arguments become methods and are incompatible with generated `Resolve` methods.
+Common pitfalls:
+- Reusing ambiguous argument names for different concepts.
+- Forgetting to disable or avoid `Resolve` usage in these setups.
+See also: [Composition arguments](composition-arguments.md), [Resolve hint](resolve-hint.md).
 
 ## Tags
 
 Tags let you control dependency selection when multiple implementations exist:
+This is practical for scenarios like public/internal API clients, multiple payment providers, or environment-specific integrations.
 
 ```c#
 using Shouldly;
@@ -801,10 +871,16 @@ The example shows how to:
 - Inject tagged dependencies into constructors
 
 The tag can be a constant, a type, a [smart tag](smart-tags.md), or a value of an `Enum` type. The _default_ and _null_ tags are also supported.
+Limitations: extensive tag usage can become hard to navigate if naming conventions are inconsistent.
+Common pitfalls:
+- Using many ad-hoc string tags without central conventions.
+- Forgetting to define a `default` tag path for untagged consumers.
+See also: [Smart tags](smart-tags.md), [Composition roots](composition-roots.md).
 
 ## Smart tags
 
 Large object graphs often need many tags. String tags are error-prone and easy to mistype. Prefer `Enum` values as tags, and _Pure.DI_ helps make this safe.
+Smart tags improve refactoring safety by moving tag usage into compiler-checked symbols.
 
 When the compiler cannot determine a tag value, _Pure.DI_ generates a constant inside `Pure.DI.Tag`. For the example below, the generated constants would look like this:
 
@@ -886,10 +962,16 @@ To run the above code, the following NuGet packages must be added:
 
 >[!NOTE]
 >Smart tags provide compile-time safety for tag values, reducing runtime errors and improving code maintainability.
+Limitations: smart tags reduce typo risk, but tag policy still needs clear naming and ownership conventions.
+Common pitfalls:
+- Mixing string literals and smart tags in the same area without a migration plan.
+- Treating generated tag constants as domain concepts instead of DI composition details.
+See also: [Tags](tags.md), [Generics](generics.md).
 
 ## Simplified lifetime-specific bindings
 
 You can use the `Transient<>()`, `Singleton<>()`, `PerResolve<>()`, etc. methods. In this case binding will be performed for the implementation type itself, and if the implementation is not an abstract type or structure, for all abstract but NOT special types that are directly implemented.
+This keeps lifetime configuration concise while preserving explicit lifetime semantics.
 
 ```c#
 using System.Collections;
@@ -997,13 +1079,18 @@ For class `OrderManager`, the `PerBlock<OrderManager>()` binding will be equival
 
 |    |                       |                                                   |
 |----|-----------------------|---------------------------------------------------|
-| ✅ | `OrderManager`        | implementation type itself                        |
-| ✅ | `IOrderRepository`    | directly implements                               |
-| ✅ | `IOrderNotification`  | directly implements                               |
-| ❌ | `IDisposable`         | special type                                      |
-| ❌ | `IEnumerable<string>` | special type                                      |
-| ❌ | `ManagerBase`         | non-abstract                                      |
-| ❌ | `IManager`            | is not directly implemented by class OrderManager |
+| yes | `OrderManager`        | implementation type itself                        |
+| yes | `IOrderRepository`    | directly implements                               |
+| yes | `IOrderNotification`  | directly implements                               |
+| no  | `IDisposable`         | special type                                      |
+| no  | `IEnumerable<string>` | special type                                      |
+| no  | `ManagerBase`         | non-abstract                                      |
+| no  | `IManager`            | is not directly implemented by class OrderManager |
+Limitations: lifetime-specific shortcuts still rely on inferred contracts, so review inferred bindings carefully.
+Common pitfalls:
+- Applying singleton shortcuts to stateful services without thread-safety guarantees.
+- Assuming shortcut APIs bypass special-type exclusion rules.
+See also: [Transient](transient.md), [Simplified binding](simplified-binding.md).
 
 ## Simplified lifetime-specific factory
 

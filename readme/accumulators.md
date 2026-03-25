@@ -1,6 +1,7 @@
 #### Accumulators
 
 Accumulators allow you to accumulate instances of certain types and lifetimes.
+Use this when you need an aggregated view of created dependencies (for diagnostics, telemetry, or registries).
 
 
 ```c#
@@ -85,6 +86,9 @@ dotnet run
 ```
 
 </details>
+
+Limitations: accumulation order depends on object creation order in the graph, so do not treat it as a stable business ordering.
+See also: [Enumerable](enumerable.md), [Lifetimes](transient.md).
 
 The following partial class will be generated:
 

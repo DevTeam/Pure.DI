@@ -1,6 +1,7 @@
 #### Resolve methods
 
-This example shows how to resolve composition roots via `Resolve` methods, using the composition as a _Service Locator_. The `Resolve` methods are generated automatically.
+This example shows how to resolve dependencies via generated `Resolve` methods, i.e. through the _Service Locator_ style.
+Use this style mainly for integration scenarios; explicit roots are usually cleaner and safer.
 
 
 ```c#
@@ -72,6 +73,11 @@ _Resolve_ methods are similar to calling composition roots, which are properties
 - They provide access to an unlimited set of dependencies (_Service Locator_).
 - Their use can potentially lead to runtime exceptions. For example, when the corresponding root has not been defined.
 - They are awkward for some UI binding scenarios (e.g., MAUI/WPF/Avalonia).
+Limitations: `Resolve` is dynamic access to the graph, so it weakens compile-time clarity compared to explicit roots.
+Common pitfalls:
+- Using `Resolve` as the default access pattern across the codebase.
+- Assuming runtime resolve calls are always safe when no matching root exists.
+See also: [Composition roots](composition-roots.md), [Resolve hint](resolve-hint.md).
 
 The following partial class will be generated:
 
@@ -261,7 +267,7 @@ classDiagram
 	Device --|> IDevice
 	TemperatureSensor --|> ISensor
 	HumiditySensor --|> ISensor : "Humidity" 
-	Composition ..> LightweightRoot : LightweightRoot LightRoot82d
+	Composition ..> LightweightRoot : LightweightRoot LightRoot84d
 	Composition ..> HumiditySensor : ISensor HumiditySensor
 	Composition ..> TemperatureSensor : ISensor _
 	TemperatureSensor *--  Device : IDevice
@@ -278,7 +284,7 @@ classDiagram
 		class Composition {
 		<<partial>>
 		+ISensor HumiditySensor
-		-LightweightRoot LightRoot82d
+		-LightweightRoot LightRoot84d
 		-ISensor _
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)

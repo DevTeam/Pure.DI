@@ -1,6 +1,7 @@
 #### Injections of abstractions
 
-This example shows the recommended approach: depend on abstractions and bind them to implementations.
+This is the recommended model for production code: depend on abstractions and bind them to implementations in composition.
+It keeps business code independent from infrastructure details and makes replacements predictable.
 
 
 ```c#
@@ -82,6 +83,11 @@ The binding chain maps abstractions to concrete types so the generator can build
 >[!TIP]
 >If a binding is missing, injection still works when the consumer requests a concrete type (not an abstraction).
 
+Limitations: explicit bindings add configuration lines, but the trade-off is clearer architecture and safer evolution.
+Common pitfalls:
+- Mixing abstraction-first and concrete-only styles in one module without clear boundaries.
+- Forgetting to bind alternate implementations for tagged use cases.
+See also: [Auto-bindings](auto-bindings.md), [Tags](tags.md).
 
 The following partial class will be generated:
 

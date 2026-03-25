@@ -1,6 +1,7 @@
 #### Simplified lifetime-specific bindings
 
 You can use the `Transient<>()`, `Singleton<>()`, `PerResolve<>()`, etc. methods. In this case binding will be performed for the implementation type itself, and if the implementation is not an abstract type or structure, for all abstract but NOT special types that are directly implemented.
+This keeps lifetime configuration concise while preserving explicit lifetime semantics.
 
 
 ```c#
@@ -131,13 +132,18 @@ For class `OrderManager`, the `PerBlock<OrderManager>()` binding will be equival
 
 |    |                       |                                                   |
 |----|-----------------------|---------------------------------------------------|
-| ✅ | `OrderManager`        | implementation type itself                        |
-| ✅ | `IOrderRepository`    | directly implements                               |
-| ✅ | `IOrderNotification`  | directly implements                               |
-| ❌ | `IDisposable`         | special type                                      |
-| ❌ | `IEnumerable<string>` | special type                                      |
-| ❌ | `ManagerBase`         | non-abstract                                      |
-| ❌ | `IManager`            | is not directly implemented by class OrderManager |
+| yes | `OrderManager`        | implementation type itself                        |
+| yes | `IOrderRepository`    | directly implements                               |
+| yes | `IOrderNotification`  | directly implements                               |
+| no  | `IDisposable`         | special type                                      |
+| no  | `IEnumerable<string>` | special type                                      |
+| no  | `ManagerBase`         | non-abstract                                      |
+| no  | `IManager`            | is not directly implemented by class OrderManager |
+Limitations: lifetime-specific shortcuts still rely on inferred contracts, so review inferred bindings carefully.
+Common pitfalls:
+- Applying singleton shortcuts to stateful services without thread-safety guarantees.
+- Assuming shortcut APIs bypass special-type exclusion rules.
+See also: [Transient](transient.md), [Simplified binding](simplified-binding.md).
 
 The following partial class will be generated:
 

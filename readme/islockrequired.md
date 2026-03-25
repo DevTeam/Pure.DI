@@ -1,6 +1,7 @@
 #### IsLockRequired
 
 `IsLockRequired` indicates whether a lock is required for thread-safe operations in the current context. This property is useful when you need to conditionally synchronize based on thread safety requirements.
+Use this when custom factory logic must respect thread-safety semantics of generated code.
 
 
 ```c#
@@ -77,6 +78,9 @@ dotnet run
 ```
 
 </details>
+
+Limitations: avoid adding business logic inside lock-aware factories; use it only for synchronization concerns.
+See also: [ThreadSafe hint](threadsafe-hint.md), [Factory](factory.md).
 
 The following partial class will be generated:
 

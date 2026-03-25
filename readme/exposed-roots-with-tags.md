@@ -11,6 +11,7 @@ public partial class CompositionWithTagsInOtherProject
             .Root<IMyService>("MyService", "Some tag", RootKinds.Exposed);
 }
 ```
+Use this when a library exposes ready-made composition roots that must be reused in another composition.
 
 
 ```c#
@@ -57,6 +58,9 @@ dotnet run
 ```
 
 </details>
+
+Limitations: exposed roots create an integration contract between assemblies; tag names and root contracts should be versioned carefully.
+See also: [Tags](tags.md), [Exposed roots](exposed-roots.md).
 
 The following partial class will be generated:
 

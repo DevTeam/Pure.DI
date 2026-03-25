@@ -1,6 +1,7 @@
 #### Injections on demand with arguments
 
 This example uses a parameterized factory so dependencies can be created with runtime arguments. The service creates sensors with specific IDs at instantiation time.
+It is a type-safe way to combine DI-managed creation with runtime data.
 
 
 ```c#
@@ -82,6 +83,11 @@ Delayed dependency instantiation:
 - Injection of dependencies requiring runtime parameters
 - Creation of distinct instances with different configurations
 - Type-safe resolution of dependencies with constructor arguments
+Limitations: runtime arguments improve flexibility but can increase coupling between call sites and construction signatures.
+Common pitfalls:
+- Passing infrastructure concerns as runtime arguments instead of normal dependencies.
+- Duplicating argument validation logic across consumers.
+See also: [Injection on demand](injection-on-demand.md), [Root arguments](root-arguments.md).
 
 The following partial class will be generated:
 

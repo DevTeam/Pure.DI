@@ -97,7 +97,7 @@ dotnet run
 
 </details>
 
-For more hints, see [this](README.md#setup-hints) page.
+For more hints, see [this](../README.md#setup-hints) page.
 
 The following partial class will be generated:
 
@@ -313,7 +313,7 @@ Class diagram:
 classDiagram
 	SqlUserRepository --|> IUserRepository : "Primary" 
 	UserService --|> IUserService
-	Composition ..> LightweightRoot : LightweightRoot LightRoot82d
+	Composition ..> LightweightRoot : LightweightRoot LightRoot84d
 	Composition ..> UserService : IUserService Root
 	Composition ..> SqlUserRepository : IUserRepository _
 	UserService *--  SqlUserRepository : "Primary"  IUserRepository
@@ -329,7 +329,7 @@ classDiagram
 	namespace Pure.DI.UsageTests.Hints.CheckForRootScenario {
 		class Composition {
 		<<partial>>
-		-LightweightRoot LightRoot82d
+		-LightweightRoot LightRoot84d
 		+IUserService Root
 		-IUserRepository _
 		+ T ResolveᐸTᐳ()

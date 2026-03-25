@@ -84,7 +84,14 @@ dotnet run
 
 </details>
 
-The example creates a service that depends on a logger initialized with a date-based file name. The `Tag` attribute enables named dependencies for more complex setups.
+The example creates a service that depends on a logger initialized with a date-based file name.
+This style keeps the setup concise while still allowing explicit initialization logic.
+The `Tag` attribute enables named dependencies for more complex setups.
+Limitations: compact lambda factories stay readable only while initialization logic remains small.
+Common pitfalls:
+- Putting heavy imperative setup code into short lambda factories.
+- Forgetting explicit tags when several same-type dependencies exist.
+See also: [Factory](factory.md), [Tags](tags.md).
 
 The following partial class will be generated:
 

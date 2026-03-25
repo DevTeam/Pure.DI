@@ -1,6 +1,7 @@
 #### Root Name
 
 `RootName` provides the name of the composition root being resolved. This property is useful for logging, diagnostics, or implementing root-specific behavior.
+Use this when infrastructure behavior should include root-level context (for example, logging prefixes).
 
 
 ```c#
@@ -83,6 +84,9 @@ dotnet run
 ```
 
 </details>
+
+Limitations: root-name-dependent behavior couples logic to API naming; avoid it in domain services.
+See also: [Composition roots](composition-roots.md), [Root Type](root-type.md).
 
 The following partial class will be generated:
 

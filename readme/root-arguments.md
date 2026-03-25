@@ -1,6 +1,7 @@
 #### Root arguments
 
 Use root arguments when you need to pass state into a specific root. Define them with `RootArg<T>(string argName)` (optionally with tags) and use them like any other dependency. A root that uses at least one root argument becomes a method, and only arguments used in that root's object graph appear in the method signature. Use unique argument names to avoid collisions.
+Root arguments are useful when runtime values belong to one entry point, not to the whole composition.
 >[!NOTE]
 >Actually, root arguments work like normal bindings. The difference is that they bind to the values of the arguments. These values will be injected wherever they are required.
 
@@ -101,6 +102,11 @@ dotnet run
 </details>
 
 When using root arguments, compilation warnings are emitted if `Resolve` methods are generated because these methods cannot create such roots. Disable `Resolve` via `Hint(Hint.Resolve, "Off")`, or ignore the warnings and accept the risks.
+Limitations: roots with root arguments become methods and are incompatible with generated `Resolve` methods.
+Common pitfalls:
+- Reusing ambiguous argument names for different concepts.
+- Forgetting to disable or avoid `Resolve` usage in these setups.
+See also: [Composition arguments](composition-arguments.md), [Resolve hint](resolve-hint.md).
 
 The following partial class will be generated:
 

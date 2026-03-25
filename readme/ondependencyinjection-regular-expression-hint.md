@@ -90,7 +90,7 @@ dotnet run
 </details>
 
 The `OnDependencyInjectionContractTypeNameRegularExpression` hint helps identify the set of types that require injection control. You can use it to specify a regular expression to filter the full name of a type.
-For more hints, see [this](README.md#setup-hints) page.
+For more hints, see [this](../README.md#setup-hints) page.
 
 The following partial class will be generated:
 

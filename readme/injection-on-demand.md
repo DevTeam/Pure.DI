@@ -1,6 +1,7 @@
 #### Injection on demand
 
 This example creates dependencies on demand using a factory delegate. The service (`GameLevel`) needs multiple instances of `IEnemy`, so it receives a `Func<IEnemy>` that can create new instances when needed.
+This approach is useful when instances are created lazily or repeatedly during business execution.
 
 
 ```c#
@@ -76,6 +77,11 @@ Key elements:
 - The `GameLevel` calls the factory twice, resulting in two distinct `Enemy` instances stored in its `Enemies` collection.
 
 This approach lets factories control lifetime and instantiation timing. Pure.DI resolves a new `IEnemy` each time the factory is invoked.
+Limitations: factory delegate calls can create many objects, so lifetime choices still matter for performance and state.
+Common pitfalls:
+- Assuming `Func<T>` always returns new instances regardless of configured lifetime.
+- Hiding expensive work behind repeated on-demand calls.
+See also: [Injections on demand with arguments](injections-on-demand-with-arguments.md), [Func<T>](func.md).
 
 The following partial class will be generated:
 

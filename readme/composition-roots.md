@@ -1,10 +1,10 @@
 #### Composition roots
 
-This example shows several ways to create a composition root.
+This example shows several ways to define composition roots as explicit entry points into the graph.
 >[!TIP]
 >There is no hard limit on roots, but prefer a small number. Ideally, an application has a single composition root.
 
-In classic DI containers, the composition is resolved dynamically via calls like `T Resolve<T>()` or `object GetService(Type type)`. The root is simply the requested type, and you can have as many as you like. In Pure.DI, each root generates a property or method at compile time, so roots are explicit and defined via `Root(string rootName)`.
+In classic DI containers, the composition is resolved dynamically via calls like `T Resolve<T>()` or `object GetService(Type type)`. In Pure.DI, each root generates a property or method at compile time, so roots are explicit and discoverable.
 
 
 ```c#
@@ -107,6 +107,11 @@ DI.Setup("Composition")
   ...
 ```
 This can be done if these methods are not needed, in case only certain composition roots are used. It's not significant then, but it will help save resources during compilation.
+Limitations: too many public roots increase composition API surface and make architecture boundaries harder to track.
+Common pitfalls:
+- Exposing internal services as roots instead of keeping them private.
+- Depending on `Resolve` everywhere instead of explicit root members.
+See also: [Resolve methods](resolve-methods.md), [Root arguments](root-arguments.md).
 
 The following partial class will be generated:
 
@@ -328,7 +333,7 @@ classDiagram
 	PdfInvoiceGenerator --|> IInvoiceGenerator
 	HtmlInvoiceGenerator --|> IInvoiceGenerator : "Online" 
 	FileLogger --|> ILogger
-	Composition ..> LightweightRoot : LightweightRoot LightRoot82d
+	Composition ..> LightweightRoot : LightweightRoot LightRoot84d
 	Composition ..> HtmlInvoiceGenerator : IInvoiceGenerator OnlineInvoiceGenerator
 	Composition ..> FileLogger : ILogger _
 	Composition ..> PdfInvoiceGenerator : IInvoiceGenerator InvoiceGenerator
@@ -346,7 +351,7 @@ classDiagram
 		class Composition {
 		<<partial>>
 		+IInvoiceGenerator InvoiceGenerator
-		-LightweightRoot LightRoot82d
+		-LightweightRoot LightRoot84d
 		+IInvoiceGenerator OnlineInvoiceGenerator
 		-ILogger _
 		+ T ResolveᐸTᐳ()

@@ -4,6 +4,7 @@ The `Setup` method has an additional argument `kind`, which defines the type of 
 - `CompositionKind.Public` - will create a normal composition class, this is the default setting and can be omitted, it can also use the `DependsOn` method to use it as a dependency in other compositions
 - `CompositionKind.Internal` - the composition class will not be created, but that composition can be used to create other compositions by calling the `DependsOn` method with its name
 - `CompositionKind.Global` - the composition class will also not be created, but that composition will automatically be used to create other compositions
+Use dependent compositions to split large object graphs into reusable setup layers.
 
 
 ```c#
@@ -72,6 +73,9 @@ dotnet run
 ```
 
 </details>
+
+Limitations: too many setup layers can make graph ownership unclear; keep boundaries explicit and naming consistent.
+See also: [Composition roots](composition-roots.md), [Global compositions](global-compositions.md).
 
 The following partial class will be generated:
 
