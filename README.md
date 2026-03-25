@@ -2115,9 +2115,9 @@ Thanks!
 
 ## Benchmarks
 
-BenchmarkDotNet v0.14.0, Windows 10 (10.0.19045.4894/22H2/2022Update)
-AMD Ryzen 9 5900X, 1 CPU, 24 logical and 12 physical cores
-.NET SDK 9.0.100
+BenchmarkDotNet v0.15.8, Windows 10 (10.0.19045.6456/22H2/2022Update)
+AMD Ryzen 9 5900X 4.20GHz, 1 CPU, 24 logical and 12 physical cores
+.NET SDK 10.0.102
 
 <details>
 <summary>Transient</summary>
