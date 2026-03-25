@@ -1,4 +1,4 @@
-﻿/*
+/*
 $v=true
 $p=0
 $d=Injections of abstractions
@@ -8,6 +8,11 @@ $f=The binding chain maps abstractions to concrete types so the generator can bu
 $f=>[!TIP]
 $f=>If a binding is missing, injection still works when the consumer requests a concrete type (not an abstraction).
 $f=
+$f=Limitations: explicit bindings add configuration lines, but the trade-off is clearer architecture and safer evolution.
+$f=Common pitfalls:
+$f=- Mixing abstraction-first and concrete-only styles in one module without clear boundaries.
+$f=- Forgetting to bind alternate implementations for tagged use cases.
+$f=See also: [Auto-bindings](auto-bindings.md), [Tags](tags.md).
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

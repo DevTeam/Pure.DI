@@ -1,4 +1,4 @@
-﻿/*
+/*
 $v=true
 $p=1
 $d=Resolve methods
@@ -8,6 +8,11 @@ $f=_Resolve_ methods are similar to calling composition roots, which are propert
 $f=- They provide access to an unlimited set of dependencies (_Service Locator_).
 $f=- Their use can potentially lead to runtime exceptions. For example, when the corresponding root has not been defined.
 $f=- They are awkward for some UI binding scenarios (e.g., MAUI/WPF/Avalonia).
+$f=Limitations: `Resolve` is dynamic access to the graph, so it weakens compile-time clarity compared to explicit roots.
+$f=Common pitfalls:
+$f=- Using `Resolve` as the default access pattern across the codebase.
+$f=- Assuming runtime resolve calls are always safe when no matching root exists.
+$f=See also: [Composition roots](composition-roots.md), [Resolve hint](resolve-hint.md).
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

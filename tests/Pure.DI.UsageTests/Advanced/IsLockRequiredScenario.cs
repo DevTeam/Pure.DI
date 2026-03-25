@@ -3,6 +3,9 @@ $v=true
 $p=11
 $d=IsLockRequired
 $h=`IsLockRequired` indicates whether a lock is required for thread-safe operations in the current context. This property is useful when you need to conditionally synchronize based on thread safety requirements.
+$h=Use this when custom factory logic must respect thread-safety semantics of generated code.
+$f=Limitations: avoid adding business logic inside lock-aware factories; use it only for synchronization concerns.
+$f=See also: [ThreadSafe hint](threadsafe-hint.md), [Factory](factory.md).
 $r=Shouldly
 */
 

@@ -1,10 +1,10 @@
-﻿/*
+/*
 $v=true
 $p=1
 $d=ThreadSafe hint
 $h=Hints are used to fine-tune code generation. The `ThreadSafe` hint determines whether object composition will be created in a thread-safe manner. This hint is `On` by default. It is good practice not to use threads when creating an object graph, in which case this hint can be turned off, which will lead to a slight increase in performance.
 $h=In addition, setup hints can be comments before the `Setup` method in the form `hint = value`, for example: `// ThreadSafe = Off`.
-$f=For more hints, see [this](README.md#setup-hints) page.
+$f=For more hints, see [this](../README.md#setup-hints) page.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

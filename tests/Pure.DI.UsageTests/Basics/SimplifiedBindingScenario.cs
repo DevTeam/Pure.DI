@@ -1,4 +1,4 @@
-﻿/*
+/*
 $v=true
 $p=1
 $d=Simplified binding
@@ -42,6 +42,11 @@ $f=| ❌ | `IDisposable`         | special type                                 
 $f=| ❌ | `IEnumerable<string>` | special type                                      |
 $f=| ❌ | `ManagerBase`         | non-abstract                                      |
 $f=| ❌ | `IManager`            | is not directly implemented by class OrderManager |
+$f=Limitations: inferred bindings include only directly implemented abstractions and exclude special types.
+$f=Common pitfalls:
+$f=- Expecting inherited interfaces to be included automatically.
+$f=- Forgetting that special framework types are intentionally excluded.
+$f=See also: [Simplified lifetime-specific bindings](simplified-lifetime-specific-bindings.md), [Special types](simplified-lifetime-specific-bindings.md).
 */
 
 // ReSharper disable CheckNamespace

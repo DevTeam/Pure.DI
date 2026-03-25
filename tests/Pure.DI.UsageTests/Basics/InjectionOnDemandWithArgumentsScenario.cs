@@ -1,4 +1,4 @@
-﻿/*
+/*
 $v=true
 $p=3
 $d=Injections on demand with arguments
@@ -9,6 +9,11 @@ $f=- Injection of dependencies requiring runtime parameters
 $f=- Creation of distinct instances with different configurations
 $f=- Type-safe resolution of dependencies with constructor arguments
 $r=Shouldly
+$f=Limitations: runtime arguments improve flexibility but can increase coupling between call sites and construction signatures.
+$f=Common pitfalls:
+$f=- Passing infrastructure concerns as runtime arguments instead of normal dependencies.
+$f=- Duplicating argument validation logic across consumers.
+$f=See also: [Injection on demand](injection-on-demand.md), [Root arguments](root-arguments.md).
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

@@ -3,6 +3,9 @@ $v=true
 $p=4
 $d=Tag Unique
 $h=`Tag.Unique` is useful to register a binding with a unique tag. It will not be available through the composition root or `Resolve` methods directly, but can be injected in compositions as some kind of enumeration.
+$h=Use this to aggregate multiple implementations without exposing each one as a direct root.
+$f=Limitations: unique-tag bindings are intentionally hidden from direct resolve; document this to avoid confusion in integration code.
+$f=See also: [Tags](tags.md), [Enumerable](enumerable.md).
 $r=Shouldly
 */
 

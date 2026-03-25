@@ -5,7 +5,7 @@ $d=OnNewInstance regular expression hint
 $h=Hints are used to fine-tune code generation. The `OnNewInstance` hint determines whether to generate partial `OnNewInstance` method.
 $h=In addition, setup hints can be comments before the `Setup` method in the form `hint = value`, for example: `// OnNewInstance = On`.
 $f=The `OnNewInstanceLifetimeRegularExpression` hint helps you define a set of lifetimes that require instance creation control. You can use it to specify a regular expression to filter bindings by lifetime name.
-$f=For more hints, see [this](README.md#setup-hints) page.
+$f=For more hints, see [this](../README.md#setup-hints) page.
 $r=Shouldly
 */
 

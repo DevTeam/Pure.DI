@@ -4,7 +4,7 @@ $p=0
 $d=Resolve hint
 $h=Hints are used to fine-tune code generation. The `Resolve` hint determines whether to generate `Resolve` methods. By default, a set of four `Resolve` methods are generated. Set this hint to `Off` to disable the generation of resolve methods. This will reduce class composition generation time, and no anonymous composition roots will be generated in this case. When the `Resolve` hint is disabled, only the regular root properties are available, so be sure to define them explicitly with the `Root<T>(...)` method.
 $h=In addition, setup hints can be comments before the `Setup` method in the form `hint = value`, for example: `// Resolve = Off`.
-$f=For more hints, see [this](README.md#setup-hints) page.
+$f=For more hints, see [this](../README.md#setup-hints) page.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

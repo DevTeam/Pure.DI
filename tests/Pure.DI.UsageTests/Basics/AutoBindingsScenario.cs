@@ -1,4 +1,4 @@
-﻿/*
+/*
 $v=true
 $p=0
 $d=Auto-bindings
@@ -11,6 +11,11 @@ $f=>[!WARNING]
 $f=>This approach is not recommended if you follow the dependency inversion principle or need precise lifetime control.
 $f=
 $f=Prefer injecting abstractions (for example, interfaces) and map them to implementations as in most [other examples](injections-of-abstractions.md).
+$f=Limitations: auto-bindings scale poorly when several implementations, decorators, or strict lifetime rules are required.
+$f=Common pitfalls:
+$f=- Relying on concrete classes in domain code instead of abstractions.
+$f=- Losing explicit control over lifetime choices during refactoring.
+$f=See also: [Injections of abstractions](injections-of-abstractions.md), [Simplified binding](simplified-binding.md).
 */
 
 // ReSharper disable CheckNamespace

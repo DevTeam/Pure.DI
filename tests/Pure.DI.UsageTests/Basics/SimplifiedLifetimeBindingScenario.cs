@@ -35,13 +35,18 @@ $f=For class `OrderManager`, the `PerBlock<OrderManager>()` binding will be equi
 $f=
 $f=|    |                       |                                                   |
 $f=|----|-----------------------|---------------------------------------------------|
-$f=| ✅ | `OrderManager`        | implementation type itself                        |
-$f=| ✅ | `IOrderRepository`    | directly implements                               |
-$f=| ✅ | `IOrderNotification`  | directly implements                               |
-$f=| ❌ | `IDisposable`         | special type                                      |
-$f=| ❌ | `IEnumerable<string>` | special type                                      |
-$f=| ❌ | `ManagerBase`         | non-abstract                                      |
-$f=| ❌ | `IManager`            | is not directly implemented by class OrderManager |
+$f=| yes | `OrderManager`        | implementation type itself                        |
+$f=| yes | `IOrderRepository`    | directly implements                               |
+$f=| yes | `IOrderNotification`  | directly implements                               |
+$f=| no  | `IDisposable`         | special type                                      |
+$f=| no  | `IEnumerable<string>` | special type                                      |
+$f=| no  | `ManagerBase`         | non-abstract                                      |
+$f=| no  | `IManager`            | is not directly implemented by class OrderManager |
+$f=Limitations: lifetime-specific shortcuts still rely on inferred contracts, so review inferred bindings carefully.
+$f=Common pitfalls:
+$f=- Applying singleton shortcuts to stateful services without thread-safety guarantees.
+$f=- Assuming shortcut APIs bypass special-type exclusion rules.
+$f=See also: [Transient](transient.md), [Simplified binding](simplified-binding.md).
 */
 
 // ReSharper disable CheckNamespace

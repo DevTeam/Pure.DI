@@ -6,6 +6,9 @@ $h=The `Setup` method has an additional argument `kind`, which defines the type 
 $h=- `CompositionKind.Public` - will create a normal composition class, this is the default setting and can be omitted, it can also use the `DependsOn` method to use it as a dependency in other compositions
 $h=- `CompositionKind.Internal` - the composition class will not be created, but that composition can be used to create other compositions by calling the `DependsOn` method with its name
 $h=- `CompositionKind.Global` - the composition class will also not be created, but that composition will automatically be used to create other compositions
+$h=Use dependent compositions to split large object graphs into reusable setup layers.
+$f=Limitations: too many setup layers can make graph ownership unclear; keep boundaries explicit and naming consistent.
+$f=See also: [Composition roots](composition-roots.md), [Global compositions](global-compositions.md).
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

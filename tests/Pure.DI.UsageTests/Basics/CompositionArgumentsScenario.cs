@@ -1,4 +1,4 @@
-﻿/*
+/*
 $v=true
 $p=5
 $d=Composition arguments
@@ -10,6 +10,11 @@ $h=
 $f=>[!NOTE]
 $f=>Composition arguments provide a way to inject runtime values into the composition, making your DI configuration more flexible.
 $r=Shouldly
+$f=Limitations: too many composition arguments can bloat composition constructors and blur configuration boundaries.
+$f=Common pitfalls:
+$f=- Using untagged primitive arguments where several values of the same type exist.
+$f=- Treating composition arguments as mutable runtime state holders.
+$f=See also: [Root arguments](root-arguments.md), [Tags](tags.md).
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

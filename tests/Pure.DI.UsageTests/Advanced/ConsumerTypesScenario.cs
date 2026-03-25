@@ -3,6 +3,9 @@ $v=true
 $p=19
 $d=Consumer types
 $h=`ConsumerTypes` is used to get the list of consumer types of a given dependency. It contains an array of types and guarantees that it will contain at least one element. The use of `ConsumerTypes` is demonstrated on the example of [Serilog library](https://serilog.net/):
+$h=Use this when one dependency must adapt behavior based on the concrete consuming type.
+$f=Limitations: consumer-aware configuration increases coupling to composition details; use it for infrastructure concerns (logging, tracing), not core domain behavior.
+$f=See also: [Interception](interception.md), [Factory](factory.md).
 $r=Shouldly;Serilog.Core;Serilog.Events
 */
 

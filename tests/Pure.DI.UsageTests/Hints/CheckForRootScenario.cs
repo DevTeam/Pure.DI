@@ -1,9 +1,9 @@
-﻿/*
+/*
 $v=true
 $p=7
 $d=Check for a root
 $h=Sometimes you need to check if you can get the root of a composition using the `Resolve` method before calling it, this example will show you how to do it:
-$f=For more hints, see [this](README.md#setup-hints) page.
+$f=For more hints, see [this](../README.md#setup-hints) page.
 $r=Shouldly
 */
 

@@ -12,6 +12,11 @@ $f=
 $f=>[!IMPORTANT]
 $f=>The method `Inject()` cannot be used outside of the binding setup.
 $r=Shouldly
+$f=Limitations: factory bindings introduce custom construction logic that must be maintained and tested.
+$f=Common pitfalls:
+$f=- Moving business decisions into DI factory code.
+$f=- Overusing `Inject()` where normal constructor binding is enough.
+$f=See also: [Simplified factory](simplified-factory.md), [Injection on demand](injection-on-demand.md).
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

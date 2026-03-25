@@ -1,4 +1,4 @@
-﻿/*
+/*
 $v=true
 $p=2
 $d=Simplified factory
@@ -7,6 +7,11 @@ $f=The example creates a service that depends on a logger initialized with a dat
 $f=This style keeps the setup concise while still allowing explicit initialization logic.
 $f=The `Tag` attribute enables named dependencies for more complex setups.
 $r=Shouldly
+$f=Limitations: compact lambda factories stay readable only while initialization logic remains small.
+$f=Common pitfalls:
+$f=- Putting heavy imperative setup code into short lambda factories.
+$f=- Forgetting explicit tags when several same-type dependencies exist.
+$f=See also: [Factory](factory.md), [Tags](tags.md).
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

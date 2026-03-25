@@ -1,4 +1,4 @@
-﻿/*
+/*
 $v=true
 $p=3
 $d=Injection on demand
@@ -11,6 +11,11 @@ $f=- The `GameLevel` calls the factory twice, resulting in two distinct `Enemy` 
 $f=
 $f=This approach lets factories control lifetime and instantiation timing. Pure.DI resolves a new `IEnemy` each time the factory is invoked.
 $r=Shouldly
+$f=Limitations: factory delegate calls can create many objects, so lifetime choices still matter for performance and state.
+$f=Common pitfalls:
+$f=- Assuming `Func<T>` always returns new instances regardless of configured lifetime.
+$f=- Hiding expensive work behind repeated on-demand calls.
+$f=See also: [Injections on demand with arguments](injections-on-demand-with-arguments.md), [Func<T>](func.md).
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

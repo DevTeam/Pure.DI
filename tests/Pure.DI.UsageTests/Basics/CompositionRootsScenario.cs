@@ -1,4 +1,4 @@
-﻿/*
+/*
 $v=true
 $p=1
 $d=Composition roots
@@ -25,6 +25,11 @@ $f=  .Bind<IDependency>().To<Dependency>()
 $f=  ...
 $f=```
 $f=This can be done if these methods are not needed, in case only certain composition roots are used. It's not significant then, but it will help save resources during compilation.
+$f=Limitations: too many public roots increase composition API surface and make architecture boundaries harder to track.
+$f=Common pitfalls:
+$f=- Exposing internal services as roots instead of keeping them private.
+$f=- Depending on `Resolve` everywhere instead of explicit root members.
+$f=See also: [Resolve methods](resolve-methods.md), [Root arguments](root-arguments.md).
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

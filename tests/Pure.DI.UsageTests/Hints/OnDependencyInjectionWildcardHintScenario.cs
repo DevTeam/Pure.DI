@@ -5,7 +5,7 @@ $d=OnDependencyInjection wildcard hint
 $h=Hints are used to fine-tune code generation. The `OnDependencyInjection` hint determines whether to generate partial `OnDependencyInjection` method to control of dependency injection.
 $h=In addition, setup hints can be comments before the `Setup` method in the form `hint = value`, for example: `// OnDependencyInjection = On`.
 $f=The `OnDependencyInjectionContractTypeNameWildcard` hint helps identify the set of types that require injection control. You can use it to specify a wildcard to filter the full name of a type.
-$f=For more hints, see [this](README.md#setup-hints) page.
+$f=For more hints, see [this](../README.md#setup-hints) page.
 $r=Shouldly
 */
 

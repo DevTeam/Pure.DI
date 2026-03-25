@@ -13,6 +13,9 @@ $h=            .Bind("Some tag").To<MyService>()
 $h=            .Root<IMyService>("MyService", "Some tag", RootKinds.Exposed);
 $h=}
 $h=```
+$h=Use this when a library exposes ready-made composition roots that must be reused in another composition.
+$f=Limitations: exposed roots create an integration contract between assemblies; tag names and root contracts should be versioned carefully.
+$f=See also: [Tags](tags.md), [Exposed roots](exposed-roots.md).
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

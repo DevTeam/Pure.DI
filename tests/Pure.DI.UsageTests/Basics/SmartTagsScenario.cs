@@ -1,4 +1,4 @@
-﻿/*
+/*
 $v=true
 $p=7
 $d=Smart tags
@@ -25,6 +25,11 @@ $h=The example below also uses the `using static Pure.DI.Tag;` directive to acce
 $f=>[!NOTE]
 $f=>Smart tags provide compile-time safety for tag values, reducing runtime errors and improving code maintainability.
 $r=Shouldly
+$f=Limitations: smart tags reduce typo risk, but tag policy still needs clear naming and ownership conventions.
+$f=Common pitfalls:
+$f=- Mixing string literals and smart tags in the same area without a migration plan.
+$f=- Treating generated tag constants as domain concepts instead of DI composition details.
+$f=See also: [Tags](tags.md), [Generics](generics.md).
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

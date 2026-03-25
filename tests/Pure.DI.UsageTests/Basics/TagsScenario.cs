@@ -1,4 +1,4 @@
-﻿/*
+/*
 $v=true
 $p=6
 $d=Tags
@@ -12,6 +12,11 @@ $f=- Inject tagged dependencies into constructors
 $f=
 $f=The tag can be a constant, a type, a [smart tag](smart-tags.md), or a value of an `Enum` type. The _default_ and _null_ tags are also supported.
 $r=Shouldly
+$f=Limitations: extensive tag usage can become hard to navigate if naming conventions are inconsistent.
+$f=Common pitfalls:
+$f=- Using many ad-hoc string tags without central conventions.
+$f=- Forgetting to define a `default` tag path for untagged consumers.
+$f=See also: [Smart tags](smart-tags.md), [Composition roots](composition-roots.md).
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

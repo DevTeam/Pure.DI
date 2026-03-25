@@ -1,4 +1,4 @@
-﻿/*
+/*
 $v=true
 $p=5
 $d=Root arguments
@@ -9,6 +9,11 @@ $h=>Actually, root arguments work like normal bindings. The difference is that t
 $h=
 $f=When using root arguments, compilation warnings are emitted if `Resolve` methods are generated because these methods cannot create such roots. Disable `Resolve` via `Hint(Hint.Resolve, "Off")`, or ignore the warnings and accept the risks.
 $r=Shouldly
+$f=Limitations: roots with root arguments become methods and are incompatible with generated `Resolve` methods.
+$f=Common pitfalls:
+$f=- Reusing ambiguous argument names for different concepts.
+$f=- Forgetting to disable or avoid `Resolve` usage in these setups.
+$f=See also: [Composition arguments](composition-arguments.md), [Resolve hint](resolve-hint.md).
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
