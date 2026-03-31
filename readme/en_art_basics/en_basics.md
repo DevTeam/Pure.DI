@@ -251,7 +251,7 @@ interface IDeliveryService
 
 sealed class CourierDelivery : IDeliveryService
 {
-	public void Ship() => Console.WriteLine("Едет курьер");
+	public void Ship() => Console.WriteLine("Courier is on the way");
 }
 
 interface IOrderService
@@ -814,9 +814,9 @@ sealed class LoggingOrderService(
 {
 	public void PlaceOrder(string id)
 	{
-		log.Info($"Начинаем оформление {id}");
+		log.Info($"Starting processing {id}");
 		inner.PlaceOrder(id);
-		log.Info($"Завершили оформление {id}");
+		log.Info($"Completed processing {id}");
 	}
 }
 ```
@@ -884,3 +884,4 @@ Pure.DI makes DI predictable and transparent:
 - the application remains as fast and predictable as possible.
 
 If the idea of "Pure DI" is close to you, not "runtime DI container", Pure.DI is worth trying on at least one service or module — usually after that, it's hard to return to the "black DI box".
+rd to return to the "black DI box".
