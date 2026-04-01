@@ -1465,4 +1465,105 @@ public class SetupContextTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["55"], result);
     }
+
+    [Fact]
+    public async Task ShouldCopySetupContextMembersWhenCreatingScope()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace UnityEngine
+                           {
+                               // Lightweight test double to avoid Unity dependency
+                               public class MonoBehaviour {}
+                           }
+
+                           namespace Sample
+                           {
+                               internal partial class BaseComposition
+                               {
+                                   // Host/runtime value that should flow to child scopes
+                                   internal int SettingsValue { get; set; }
+
+                                   private void Setup()
+                                   {
+                                       DI.Setup(nameof(BaseComposition), CompositionKind.Internal)
+                                           .Bind<int>().To(_ => SettingsValue);
+                                   }
+                               }
+
+                               interface IService : IDisposable
+                               {
+                                   int Value { get; }
+
+                                   bool IsDisposed { get; }
+                               }
+
+                               sealed class Service : IService
+                               {
+                                   public Service(int value)
+                                   {
+                                       Value = value;
+                                   }
+
+                                   public int Value { get; }
+
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               internal partial class Composition : UnityEngine.MonoBehaviour
+                               {
+                                   private void Setup()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .DependsOn(nameof(BaseComposition), SetupContextKind.Members)
+                                           .Bind<IService>().As(Lifetime.Scoped).To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+
+                                   public Composition CreateScope() => new(this);
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition
+                                       {
+                                           SettingsValue = 41
+                                       };
+
+                                       var scope1 = composition.CreateScope();
+                                       var service11 = scope1.Service;
+                                       var service12 = scope1.Service;
+                                       Console.WriteLine(service11.Value);
+                                       Console.WriteLine(service11 == service12);
+
+                                       var scope2 = composition.CreateScope();
+                                       var service2 = scope2.Service;
+                                       Console.WriteLine(service2.Value);
+                                       Console.WriteLine(service11 == service2);
+
+                                       scope1.Dispose();
+                                       Console.WriteLine(service11.IsDisposed);
+
+                                       scope2.Dispose();
+                                       Console.WriteLine(service2.IsDisposed);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion: LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(0, result);
+        result.StdOut.ShouldBe(["41", "True", "41", "False", "True", "True"], result);
+    }
 }
