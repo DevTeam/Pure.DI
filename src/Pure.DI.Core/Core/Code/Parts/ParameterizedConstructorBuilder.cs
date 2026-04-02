@@ -49,6 +49,7 @@ sealed class ParameterizedConstructorBuilder(
                 var leftName = arg.Name == arg.Node.Arg?.Source.ArgName
                     ? $"this.{arg.Name}"
                     : arg.Name;
+
                 code.AppendLine($"{leftName} = {arg.Node.Arg?.Source.ArgName}{nullCheck};");
             }
 
@@ -86,5 +87,4 @@ sealed class ParameterizedConstructorBuilder(
         membersCounter++;
         return composition with { MembersCount = membersCounter };
     }
-
 }

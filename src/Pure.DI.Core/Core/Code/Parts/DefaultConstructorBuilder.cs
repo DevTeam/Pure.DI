@@ -12,7 +12,7 @@ sealed class DefaultConstructorBuilder(
 
     public CompositionCode Build(CompositionCode composition)
     {
-        if (!constructors.IsEnabled(composition, ConstructorKind.Default))
+        if (!constructors.IsEnabled(composition, ConstructorKind.Default) || !string.IsNullOrWhiteSpace(composition.Source.Source.Hints.ScopeFactoryName))
         {
             return composition;
         }

@@ -28,6 +28,7 @@ static class Names
 
     public const string DefaultApiMethodModifiers = "public";
     public const string ParentScopeArgName = "parentScope";
+    public const string NewScopeVarName = "newScope";
     public const string ResolverPropertyName = "Value";
     public const string DefaultBuilderName = "BuildUp";
     public const string BuildingInstance = "buildingInstance";
@@ -102,6 +103,7 @@ static class Names
     public static readonly string LockFieldName = "_lock" + Salt;
     public static readonly string PerResolveLockFieldName = "perResolveLock" + Salt;
     public static readonly string RootFieldName = "_root" + Salt;
+    public static readonly string RootVarName = "root" + Salt;
     public static readonly string CannotResolveFieldName = "CannotResolveMessage" + Salt;
     public static readonly string OfTypeFieldName = "OfTypeMessage" + Salt;
 }

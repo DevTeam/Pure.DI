@@ -17,12 +17,13 @@ sealed class FieldsBuilder(
         var membersCounter = composition.MembersCount;
         var compilation = composition.Compilation;
         var nullable = compilation.Options.NullableContextOptions == NullableContextOptions.Disable ? "" : "?";
-
         var isAnyConstructorEnabled = constructors.IsEnabled(composition.Source);
+        var hasScopeFactory = isAnyConstructorEnabled && constructors.IsEnabled(composition, ConstructorKind.Scope) && !string.IsNullOrWhiteSpace(composition.Source.Source.Hints.ScopeFactoryName);
+        var skipFieldsInit = isAnyConstructorEnabled && !hasScopeFactory;
         if (isAnyConstructorEnabled && composition.Singletons.Length > 0)
         {
             // _parent filed
-            code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] private readonly {composition.Source.Source.Name.ClassName} {Names.RootFieldName};");
+            code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] private {composition.Source.Source.Name.ClassName} {Names.RootFieldName};");
             membersCounter++;
         }
 
@@ -30,9 +31,9 @@ sealed class FieldsBuilder(
         {
             // _lock field
             code.AppendLine(new Line(int.MinValue, "#if NET9_0_OR_GREATER"));
-            code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] private readonly {Names.LockTypeName} {Names.LockFieldName}{(isAnyConstructorEnabled ? "" : $" = new {Names.LockTypeName}()")};");
+            code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] private {Names.LockTypeName} {Names.LockFieldName}{(skipFieldsInit ? "" : $" = new {Names.LockTypeName}()")};");
             code.AppendLine(new Line(int.MinValue, "#else"));
-            code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] private readonly {Names.ObjectTypeName} {Names.LockFieldName}{(isAnyConstructorEnabled ? "" : $" = new {Names.ObjectTypeName}()")};");
+            code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] private {Names.ObjectTypeName} {Names.LockFieldName}{(skipFieldsInit ? "" : $" = new {Names.ObjectTypeName}()")};");
             code.AppendLine(new Line(int.MinValue, "#endif"));
             membersCounter++;
         }
@@ -40,7 +41,7 @@ sealed class FieldsBuilder(
         if (composition.TotalDisposablesCount > 0)
         {
             // _disposables field
-            code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] private object[] {Names.DisposablesFieldName}{(isAnyConstructorEnabled ? "" : $" = new object[{composition.TotalDisposablesCount.ToString()}]")};");
+            code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] private object[] {Names.DisposablesFieldName}{(skipFieldsInit ? "" : $" = new object[{composition.TotalDisposablesCount.ToString()}]")};");
             membersCounter++;
 
             // _disposeIndex field

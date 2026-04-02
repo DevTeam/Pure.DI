@@ -43,12 +43,10 @@ record Var(
             // Cache the base name (without prefix) since it never changes
             _baseName ??= Declaration.NameProvider.GetVariableName(AbstractNode, Declaration.PerLifetimeId);
 
-            // For Singleton, we need to check constructors.IsEnabled(graph) every time
-            // because it can change dynamically
             // ReSharper disable once InvertIf
-            if (AbstractNode.ActualLifetime == Lifetime.Singleton && constructors.IsEnabled(graph))
+            if (AbstractNode.ActualLifetime is Lifetime.Singleton && constructors.IsEnabled(graph))
             {
-                _rootBaseName ??= Names.RootFieldName + "." + _baseName;
+                _rootBaseName ??= Names.RootVarName + "." + _baseName;
                 return _rootBaseName;
             }
 

@@ -1566,4 +1566,248 @@ public class SetupContextTests
         result.Warnings.Count.ShouldBe(0, result);
         result.StdOut.ShouldBe(["41", "True", "41", "False", "True", "True"], result);
     }
+
+    [Fact]
+    public async Task ShouldSupportScopeWhenScopeFactory()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace UnityEngine
+                           {
+                               // Lightweight test double to avoid Unity dependency
+                               public class MonoBehaviour {}
+                           }
+
+                           namespace Sample
+                           {
+                               interface IService : IDisposable
+                               {
+                                   bool IsDisposed { get; }
+                               }
+
+                               sealed class Service : IService
+                               {
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               internal partial class Composition : UnityEngine.MonoBehaviour
+                               {
+                                   private void Setup()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Hint(Hint.ScopeFactoryName, "CreateScope")
+                                           .Bind<IService>().As(Lifetime.Scoped).To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+
+                                       var root1 = composition.Service;
+                                       var root2 = composition.Service;
+                                       Console.WriteLine(root1 == root2);
+
+                                       IService scope11;
+                                       IService scope21;
+                                       using (var scope1 = composition.CreateScope())
+                                       {
+                                           scope11 = scope1.Service;
+                                           var scope12 = scope1.Resolve<IService>();
+                                           Console.WriteLine(root1 == scope11);
+                                           Console.WriteLine(scope11 == scope12);
+
+                                           using (var scope2 = scope1.CreateScope())
+                                           {
+                                               scope21 = scope2.Service;
+                                               Console.WriteLine(scope11 == scope21);
+                                               var scope22 = scope2.Resolve<IService>();
+                                               Console.WriteLine(scope21 == scope22);
+                                           }
+
+                                           Console.WriteLine(scope21.IsDisposed);
+                                           var scope13 = scope1.Service;
+                                           Console.WriteLine(scope11 == scope13);
+                                       }
+
+                                       Console.WriteLine(scope11.IsDisposed);
+                                       var root3 = composition.Service;
+                                       Console.WriteLine(root1 == root3);
+
+                                       composition.Dispose();
+                                       Console.WriteLine(root1.IsDisposed);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion: LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(0, result);
+        result.StdOut.ShouldBe(["True", "False", "True", "False", "True", "True", "True", "True", "True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportScopeHandleAsyncDispose()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Threading.Tasks;
+                           using Pure.DI;
+
+                           namespace UnityEngine
+                           {
+                               // Lightweight test double to avoid Unity dependency
+                               public class MonoBehaviour {}
+                           }
+
+                           namespace Sample
+                           {
+                               interface IService : IAsyncDisposable
+                               {
+                                   bool IsDisposed { get; }
+                               }
+
+                               sealed class Service : IService
+                               {
+                                   public bool IsDisposed { get; private set; }
+
+                                   public ValueTask DisposeAsync()
+                                   {
+                                       IsDisposed = true;
+                                       return default;
+                                   }
+                               }
+
+                               internal partial class Composition : UnityEngine.MonoBehaviour
+                               {
+                                   private void Setup()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Hint(Hint.ScopeFactoryName, "CreateScope")
+                                           .Bind<IService>().As(Lifetime.Scoped).To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static async Task Main()
+                                   {
+                                       IService service;
+                                       var composition = new Composition();
+
+                                       await using (var scope = composition.CreateScope())
+                                       {
+                                           service = scope.Service;
+                                           Console.WriteLine(service.IsDisposed);
+                                       }
+
+                                       Console.WriteLine(service.IsDisposed);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion: LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(0, result);
+        result.StdOut.ShouldBe(["False", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldDisposeScopeHandleThreadSafely()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Linq;
+                           using System.Threading;
+                           using System.Threading.Tasks;
+                           using Pure.DI;
+
+                           namespace UnityEngine
+                           {
+                               // Lightweight test double to avoid Unity dependency
+                               public class MonoBehaviour {}
+                           }
+
+                           namespace Sample
+                           {
+                               interface IService : IDisposable
+                               {
+                               }
+
+                               sealed class Service : IService
+                               {
+                                   public static int DisposeCount;
+
+                                   public void Dispose()
+                                   {
+                                       Thread.Sleep(10);
+                                       Interlocked.Increment(ref DisposeCount);
+                                   }
+                               }
+
+                               internal partial class Composition : UnityEngine.MonoBehaviour
+                               {
+                                   private void Setup()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Hint(Hint.ScopeFactoryName, "CreateNewScope")
+                                           .Bind<IService>().As(Lifetime.Scoped).To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       Service.DisposeCount = 0;
+                                       var composition = new Composition();
+                                       var scope = composition.CreateNewScope();
+
+                                       _ = scope.Service;
+
+                                       using var gate = new ManualResetEventSlim(false);
+                                       var tasks = Enumerable.Range(0, 16)
+                                           .Select(_ => Task.Run(() =>
+                                           {
+                                               gate.Wait();
+                                               scope.Dispose();
+                                           }))
+                                           .ToArray();
+
+                                       gate.Set();
+                                       Task.WaitAll(tasks);
+                                       Console.WriteLine(Service.DisposeCount);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion: LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(0, result);
+        result.StdOut.ShouldBe(["1"], result);
+    }
 }

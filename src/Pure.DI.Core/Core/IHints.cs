@@ -55,4 +55,6 @@ interface IHints : IReadOnlyDictionary<Hint, LinkedList<string>>
     bool DisableAutoBinding { get; }
 
     bool IsLightweightAnonymousRoot { get; }
+
+    string ScopeFactoryName { get; }
 }

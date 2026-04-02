@@ -10,8 +10,11 @@ class CompositionBuilder(
     IBuilder<CompositionCode, Lines> classDiagramBuilder,
     IOverridesRegistry overridesRegistry,
     IRegistry<int> bindingsRegistry,
-    IGraphWalker<RootArgsContext, ImmutableArray<Dependency>> graphWalker,
+    IGraphWalker<RootArgsContext, ImmutableArray<Dependency>> graphArgsWalker,
     IGraphVisitor<RootArgsContext, ImmutableArray<Dependency>> rootArgsVisitor,
+    IGraphWalker<RootStatisticsContext, DependencyNode> graphStatisticsWalker,
+    IGraphVisitor<RootStatisticsContext, DependencyNode> rootStatisticsVisitor,
+    IConstructors constructors,
     CancellationToken cancellationToken)
     : IBuilder<DependencyGraph, CompositionCode>
 {
@@ -22,6 +25,7 @@ class CompositionBuilder(
         var classArgs = new List<VarDeclaration>();
         // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
         var isThreadSafe = false;
+        var isAnyConstructorEnabled = constructors.IsEnabled(graph);
         foreach (var root in graph.Roots)
         {
             if (cancellationToken.IsCancellationRequested)
@@ -42,12 +46,22 @@ class CompositionBuilder(
             if (root.Source.Kind.HasFlag(RootKinds.Light) && typeDescription.TypeArgs.Count == 0)
             {
                 var rootArgsContext = new RootArgsContext(varsMap, new List<VarDeclaration>());
-                graphWalker.Walk(rootArgsContext, graph, root.Node, rootArgsVisitor, cancellationToken);
+                graphArgsWalker.Walk(rootArgsContext, graph, root.Node, rootArgsVisitor, cancellationToken);
                 args = rootArgsContext.Args;
             }
             else
             {
                 var ctx = new RootContext(graph, root, varsMap, lines);
+                if (isAnyConstructorEnabled)
+                {
+                    var statisticsContext = new RootStatisticsContext();
+                    graphStatisticsWalker.Walk(statisticsContext, graph, root.Node, rootStatisticsVisitor, cancellationToken);
+                    if (statisticsContext.GetNodeCountByLifetime(Lifetime.Singleton) > 0 )
+                    {
+                        lines.Append($"var {Names.RootVarName} = {Names.RootFieldName} ?? this;");
+                    }
+                }
+
                 var rootVarInjection = rootBuilder().Build(ctx);
                 var isThreadSafeRoot = ctx.LockIsInUse || graph.Source.Hints.IsThreadSafeEnabled && varsMap.IsThreadSafe;
                 if (root.IsStatic)

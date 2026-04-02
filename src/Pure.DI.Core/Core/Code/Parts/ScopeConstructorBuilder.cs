@@ -1,5 +1,6 @@
 // ReSharper disable ClassNeverInstantiated.Global
 
+// ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 namespace Pure.DI.Core.Code.Parts;
 
 using Microsoft.CodeAnalysis.CSharp;
@@ -35,62 +36,102 @@ sealed class ScopeConstructorBuilder(
                                   || setupContextMembersToCopy.Count > 0
                                   || isLockRequired
                                   || composition.TotalDisposablesCount > 0;
+        var scopeFactoryName = hints.ScopeFactoryName;
+        var isFactoryMethod = requiresParentScope && !string.IsNullOrWhiteSpace(scopeFactoryName);
         var isCommentsEnabled = hints.IsCommentsEnabled;
-        if (isCommentsEnabled)
+        string source, destination;
+        if (isFactoryMethod)
         {
-            code.AppendLine("/// <summary>");
-            code.AppendLine($"/// This constructor creates a new instance of <see cref=\"{composition.Source.Source.Name.ClassName}\"/> scope based on <paramref name=\"{Names.ParentScopeArgName}\"/>. This allows the <see cref=\"Lifetime.Scoped\"/> life time to be applied.");
-            code.AppendLine("/// </summary>");
-            code.AppendLine($"/// <param name=\"{Names.ParentScopeArgName}\">Scope parent.</param>");
+            if (isCommentsEnabled)
+            {
+                code.AppendLine("/// <summary>");
+                code.AppendLine($"/// This method creates a new instance of <see cref=\"{composition.Source.Source.Name.ClassName}\"/> scope based on the current one. This allows the <see cref=\"Lifetime.Scoped\"/> life time to be applied.");
+                code.AppendLine("/// </summary>");
+            }
+
+            source = "this.";
+            destination = $"{Names.NewScopeVarName}.";
+            code.AppendLine($"internal {composition.Source.Source.Name.ClassName} {scopeFactoryName}()");
+        }
+        else
+        {
+            if (isCommentsEnabled)
+            {
+                code.AppendLine("/// <summary>");
+                code.AppendLine($"/// This constructor creates a new instance of <see cref=\"{composition.Source.Source.Name.ClassName}\"/> scope based on <paramref name=\"{Names.ParentScopeArgName}\"/>. This allows the <see cref=\"Lifetime.Scoped\"/> life time to be applied.");
+                code.AppendLine("/// </summary>");
+                code.AppendLine($"/// <param name=\"{Names.ParentScopeArgName}\">Scope parent.</param>");
+            }
+
+            source = $"{Names.ParentScopeArgName}.";
+            destination = "";
+            var ctorName = isFactoryMethod ? scopeFactoryName : codeNameProvider.GetConstructorName(composition.Source.Source.Name.ClassName);
+            code.AppendLine($"internal {ctorName}({composition.Source.Source.Name.ClassName} {Names.ParentScopeArgName})");
         }
 
-        var ctorName = codeNameProvider.GetConstructorName(composition.Source.Source.Name.ClassName);
-        code.AppendLine($"internal {ctorName}({composition.Source.Source.Name.ClassName} {Names.ParentScopeArgName})");
         using (code.CreateBlock())
         {
-            var parentScopeRef = Names.ParentScopeArgName;
-            if (requiresParentScope)
+            if (isFactoryMethod)
             {
-                const string parentScopeLocalName = "parentScopeChecked";
-                code.AppendLine($"var {parentScopeLocalName} = {Names.ParentScopeArgName} ?? throw new {Names.SystemNamespace}ArgumentNullException(nameof({Names.ParentScopeArgName}));");
-                parentScopeRef = parentScopeLocalName;
+                var args = string.Join(", ", classArgs.Select(arg => $"{source}{arg.Name}"));
+                code.AppendLine($"var {Names.NewScopeVarName} = new {composition.Source.Source.Name.ClassName}({args});");
+
+                if (composition.Singletons.Length > 0)
+                {
+                    code.AppendLine($"{destination}{Names.RootFieldName} = this;");
+                }
+            }
+            else
+            {
+                if (requiresParentScope)
+                {
+                    code.AppendLine($"if ({Names.ObjectTypeName}.ReferenceEquals({Names.ParentScopeArgName}, null)) throw new {Names.SystemNamespace}ArgumentNullException(nameof({Names.ParentScopeArgName}));");
+                }
+
+                if (composition.Singletons.Length > 0)
+                {
+                    code.AppendLine($"{destination}{Names.RootFieldName} = {source}{Names.RootFieldName};");
+                }
             }
 
-            if (composition.Singletons.Length > 0)
+            if (!isFactoryMethod)
             {
-                code.AppendLine($"{Names.RootFieldName} = {parentScopeRef}.{Names.RootFieldName};");
-            }
-
-            foreach (var fieldArg in classArgs)
-            {
-                code.AppendLine($"{fieldArg.Name} = {parentScopeRef}.{fieldArg.Name};");
+                foreach (var fieldArg in classArgs)
+                {
+                    code.AppendLine($"{destination}{fieldArg.Name} = {source}{fieldArg.Name};");
+                }
             }
 
             foreach (var contextArg in setupContextArgsToCopy)
             {
-                code.AppendLine($"{contextArg.Name} = {parentScopeRef}.{contextArg.Name};");
+                code.AppendLine($"{destination}{contextArg.Name} = {source}{contextArg.Name};");
             }
 
             foreach (var memberName in setupContextMembersToCopy)
             {
-                code.AppendLine($"{memberName} = {parentScopeRef}.{memberName};");
+                code.AppendLine($"{destination}{memberName} = {source}{memberName};");
             }
 
             if (isLockRequired)
             {
-                code.AppendLine($"{Names.LockFieldName} = {parentScopeRef}.{Names.LockFieldName};");
+                code.AppendLine($"{destination}{Names.LockFieldName} = {source}{Names.LockFieldName};");
             }
 
             if (composition.DisposablesScopedCount > 0)
             {
-                code.AppendLine($"{Names.DisposablesFieldName} = new object[{composition.DisposablesScopedCount.ToString()}];");
+                code.AppendLine($"{destination}{Names.DisposablesFieldName} = new object[{composition.DisposablesScopedCount.ToString()}];");
             }
             else
             {
                 if (composition.TotalDisposablesCount > 0)
                 {
-                    code.AppendLine($"{Names.DisposablesFieldName} = {parentScopeRef}.{Names.DisposablesFieldName};");
+                    code.AppendLine($"{destination}{Names.DisposablesFieldName} = {source}{Names.DisposablesFieldName};");
                 }
+            }
+
+            if (isFactoryMethod)
+            {
+                code.AppendLine($"return {Names.NewScopeVarName};");
             }
         }
 
@@ -139,13 +180,8 @@ sealed class ScopeConstructorBuilder(
             return false;
         }
 
-        if (accessorList.Accessors.Any(accessor =>
-                accessor.Kind() is SyntaxKind.SetAccessorDeclaration or SyntaxKind.InitAccessorDeclaration))
-        {
-            return true;
-        }
-
-        // Get-only auto-properties can be assigned in constructors.
-        return accessorList.Accessors.All(accessor => accessor.Body is null && accessor.ExpressionBody is null);
+        return accessorList.Accessors.Any(accessor =>
+               accessor.Kind() is SyntaxKind.SetAccessorDeclaration or SyntaxKind.InitAccessorDeclaration)
+               || accessorList.Accessors.All(accessor => accessor.Body is null && accessor.ExpressionBody is null);
     }
 }

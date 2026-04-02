@@ -729,6 +729,7 @@ DI.Setup("Composition")
 | [DisableAutoBindingLifetimeRegularExpression](#disableautobindinglifetimeregularexpression-hint)                                     | Regular expression                         |            | .+        |
 | [DisableAutoBindingLifetimeWildcard](#disableautobindinglifetimewildcard-hint)                                                       | Wildcard                                   |            | *         |
 | [LightweightAnonymousRoot](#lightweightanonymousroot-hint)                                                                           | _On_ or _Off_                              |            | _On_      |
+| [ScopeFactoryName](#scopefactoryname-hint)                                                                                           | Method name                                |            |           |
 
 The list of hints will be gradually expanded to meet the needs and desires for fine-tuning code generation. Please feel free to add your ideas.
 
@@ -1394,6 +1395,17 @@ Controls whether anonymous composition roots are generated in a lightweight mann
 // LightweightAnonymousRoot = Off
 DI.Setup("Composition")
     .Bind<IService>().To<Service>();
+```
+
+### ScopeFactoryName Hint
+
+Sets the scope factory name to be used for creating scopes.
+
+```c#
+// ScopeFactoryName = CreateScope
+DI.Setup("Composition")
+    .Hint(Hint.ScopeFactoryName, "CreateScope")
+    .Bind<IDependency>().As(Lifetime.Scoped).To<Dependency>();
 ```
 
 </details>
