@@ -1,7 +1,7 @@
 // ReSharper disable CheckNamespace
 namespace Pure.DI.UsageTests;
 
-public class ScenarioMetadataTests
+public partial class ScenarioMetadataTests
 {
     [Fact]
     public void ShouldContainRequiredDocumentationMetadata()
@@ -47,12 +47,13 @@ public class ScenarioMetadataTests
                 errors.Add($"Suspicious encoding artifacts in {file}");
             }
 
+            // ReSharper disable once LoopCanBeConvertedToQuery
             foreach (var mdLink in GetMarkdownLinks(metadata))
             {
                 if (mdLink.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
                     mdLink.StartsWith("https://", StringComparison.OrdinalIgnoreCase) ||
                     mdLink.StartsWith("mailto:", StringComparison.OrdinalIgnoreCase) ||
-                    mdLink.StartsWith("#", StringComparison.Ordinal))
+                    mdLink.StartsWith('#'))
                 {
                     continue;
                 }
@@ -86,7 +87,7 @@ public class ScenarioMetadataTests
         }
 
         metadata = block
-            .Where(i => i.StartsWith("$", StringComparison.Ordinal))
+            .Where(i => i.StartsWith('$'))
             .ToArray();
 
         return true;
@@ -110,7 +111,7 @@ public class ScenarioMetadataTests
 
     private static IEnumerable<string> GetMarkdownLinks(IEnumerable<string> lines)
     {
-        var regex = new System.Text.RegularExpressions.Regex(@"\[[^\]]+\]\(([^)]+)\)");
+        var regex = MarkdownLinkRegex();
         foreach (var line in lines)
         {
             var matches = regex.Matches(line);
@@ -120,4 +121,7 @@ public class ScenarioMetadataTests
             }
         }
     }
+
+    [System.Text.RegularExpressions.GeneratedRegex(@"\[[^\]]+\]\(([^)]+)\)")]
+    private static partial System.Text.RegularExpressions.Regex MarkdownLinkRegex();
 }

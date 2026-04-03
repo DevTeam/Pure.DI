@@ -16,6 +16,7 @@ $r=Shouldly
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable UnusedMember.Global
 // ReSharper disable NotAccessedPositionalProperty.Global
+// ReSharper disable UnusedMember.Local
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Advanced.RootNameScenario;
 

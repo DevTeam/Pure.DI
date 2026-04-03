@@ -65,6 +65,7 @@ sealed class GraphWalker<TContext, T>(INodeTools nodeTools)
             {
                 var hashCode = Target.GetHashCode();
                 hashCode = hashCode * 397 ^ Source.GetHashCode();
+                // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
                 foreach (var depIndex in DepIndices)
                 {
                     hashCode = hashCode * 397 ^ depIndex;
