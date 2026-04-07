@@ -1659,6 +1659,538 @@ public class SetupContextTests
     }
 
     [Fact]
+    public async Task ShouldSupportSingletonInRootScopeWhenScopeFactory()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace UnityEngine
+                           {
+                               // Lightweight test double to avoid Unity dependency
+                               public class MonoBehaviour {}
+                           }
+
+                           namespace Sample
+                           {
+                               interface ISingleton : IDisposable
+                               {
+                                   bool IsDisposed { get; }
+                               }
+
+                               sealed class Singleton : ISingleton
+                               {
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               interface IScoped : IDisposable
+                               {
+                                   bool IsDisposed { get; }
+                               }
+
+                               sealed class Scoped : IScoped
+                               {
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               interface IService
+                               {
+                                   ISingleton Singleton { get; }
+
+                                   IScoped Scoped { get; }
+                               }
+
+                               sealed class Service : IService
+                               {
+                                   public Service(ISingleton singleton, IScoped scoped)
+                                   {
+                                       Singleton = singleton;
+                                       Scoped = scoped;
+                                   }
+
+                                   public ISingleton Singleton { get; }
+
+                                   public IScoped Scoped { get; }
+                               }
+
+                               internal partial class Composition : UnityEngine.MonoBehaviour
+                               {
+                                   private void Setup()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Hint(Hint.ScopeFactoryName, "CreateScope")
+                                           .Bind<ISingleton>().As(Lifetime.Singleton).To<Singleton>()
+                                           .Bind<IScoped>().As(Lifetime.Scoped).To<Scoped>()
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service1 = composition.Service;
+                                       var service2 = composition.Service;
+                                       Console.WriteLine(service1.Singleton == service2.Singleton);
+                                       Console.WriteLine(service1.Scoped == service2.Scoped);
+                                       Console.WriteLine(service1.Singleton.IsDisposed);
+                                       Console.WriteLine(service1.Scoped.IsDisposed);
+                                       composition.Dispose();
+                                       Console.WriteLine(service1.Singleton.IsDisposed);
+                                       Console.WriteLine(service1.Scoped.IsDisposed);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion: LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(0, result);
+        result.StdOut.ShouldBe(["True", "True", "False", "False", "True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportScopeFactoryWithMixedLifetimes()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace UnityEngine
+                           {
+                               // Lightweight test double to avoid Unity dependency
+                               public class MonoBehaviour {}
+                           }
+
+                           namespace Sample
+                           {
+                               interface ITransientDependency {}
+
+                               sealed class TransientDependency : ITransientDependency {}
+
+                               interface IScopedDependency : IDisposable
+                               {
+                                   bool IsDisposed { get; }
+                               }
+
+                               sealed class ScopedDependency : IScopedDependency
+                               {
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               interface ISingletonDependency : IDisposable
+                               {
+                                   bool IsDisposed { get; }
+                               }
+
+                               sealed class SingletonDependency : ISingletonDependency
+                               {
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               interface IService
+                               {
+                                   ITransientDependency Transient { get; }
+
+                                   IScopedDependency Scoped { get; }
+
+                                   ISingletonDependency Singleton { get; }
+                               }
+
+                               sealed class Service : IService
+                               {
+                                   public Service(
+                                       ITransientDependency transient,
+                                       IScopedDependency scoped,
+                                       ISingletonDependency singleton)
+                                   {
+                                       Transient = transient;
+                                       Scoped = scoped;
+                                       Singleton = singleton;
+                                   }
+
+                                   public ITransientDependency Transient { get; }
+
+                                   public IScopedDependency Scoped { get; }
+
+                                   public ISingletonDependency Singleton { get; }
+                               }
+
+                               internal partial class Composition : UnityEngine.MonoBehaviour
+                               {
+                                   private void Setup()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Hint(Hint.ScopeFactoryName, "CreateScope")
+                                           .Bind<ITransientDependency>().As(Lifetime.Transient).To<TransientDependency>()
+                                           .Bind<IScopedDependency>().As(Lifetime.Scoped).To<ScopedDependency>()
+                                           .Bind<ISingletonDependency>().As(Lifetime.Singleton).To<SingletonDependency>()
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+
+                                       IScopedDependency scope1Scoped;
+                                       IScopedDependency scope2Scoped;
+                                       ISingletonDependency singletonFromScope;
+                                       using (var scope1 = composition.CreateScope())
+                                       {
+                                           var scope11 = scope1.Service;
+                                           var scope12 = scope1.Service;
+                                           scope1Scoped = scope11.Scoped;
+                                           singletonFromScope = scope11.Singleton;
+                                           Console.WriteLine(scope11 == scope12);
+                                           Console.WriteLine(scope11.Transient == scope12.Transient);
+                                           Console.WriteLine(scope11.Scoped == scope12.Scoped);
+                                           Console.WriteLine(scope11.Singleton == scope12.Singleton);
+
+                                           using (var scope2 = composition.CreateScope())
+                                           {
+                                               var scopedRoot = scope2.Service;
+                                               scope2Scoped = scopedRoot.Scoped;
+                                               Console.WriteLine(scope11.Scoped == scopedRoot.Scoped);
+                                               Console.WriteLine(scope11.Singleton == scopedRoot.Singleton);
+                                           }
+
+                                           Console.WriteLine(scope2Scoped.IsDisposed);
+                                           Console.WriteLine(singletonFromScope.IsDisposed);
+                                           Console.WriteLine(scope1Scoped.IsDisposed);
+                                        }
+
+                                       Console.WriteLine(scope1Scoped.IsDisposed);
+                                       Console.WriteLine(singletonFromScope.IsDisposed);
+                                       composition.Dispose();
+                                       Console.WriteLine(singletonFromScope.IsDisposed);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion: LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(0, result);
+        result.StdOut.ShouldBe(
+            [
+                "False",
+                "False",
+                "True",
+                "True",
+                "False",
+                "True",
+                "True",
+                "False",
+                "False",
+                "True",
+                "False",
+                "True"
+            ],
+            result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportScopeFactoryWithCompositionArg()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace UnityEngine
+                           {
+                               // Lightweight test double to avoid Unity dependency
+                               public class MonoBehaviour {}
+                           }
+
+                           namespace Sample
+                           {
+                               interface IRequestContext
+                               {
+                                   string Tenant { get; }
+                               }
+
+                               sealed class RequestContext : IRequestContext
+                               {
+                                   public RequestContext(string tenant)
+                                   {
+                                       Tenant = tenant;
+                                   }
+
+                                   public string Tenant { get; }
+                               }
+
+                               internal partial class Composition : UnityEngine.MonoBehaviour
+                               {
+                                   private void Setup()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Hint(Hint.ScopeFactoryName, "CreateScope")
+                                           .Arg<string>("tenant")
+                                           .Bind<IRequestContext>().As(Lifetime.Scoped).To<RequestContext>()
+                                           .Root<IRequestContext>("Context");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition(tenant: "EU");
+                                       var rootContext = composition.Context;
+                                       Console.WriteLine(rootContext.Tenant);
+
+                                       IRequestContext scope1Context;
+                                       var scope1 = composition.CreateScope();
+                                       {
+                                           var scope11 = scope1.Context;
+                                           var scope12 = scope1.Context;
+                                           scope1Context = scope11;
+                                           Console.WriteLine(scope11.Tenant);
+                                           Console.WriteLine(scope11 == scope12);
+                                           Console.WriteLine(rootContext == scope11);
+
+                                           var scope2 = scope1.CreateScope();
+                                           {
+                                               var scope2Context = scope2.Context;
+                                               Console.WriteLine(scope2Context.Tenant);
+                                               Console.WriteLine(scope11 == scope2Context);
+                                           }
+                                       }
+
+                                       var composition2 = new Composition(tenant: "US");
+                                       var scope3 = composition2.CreateScope();
+                                       {
+                                           Console.WriteLine(scope3.Context.Tenant);
+                                           Console.WriteLine(scope1Context.Tenant == scope3.Context.Tenant);
+                                       }
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion: LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(0, result);
+        result.StdOut.ShouldBe(["EU", "EU", "True", "False", "EU", "False", "US", "False"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportScopeFactoryWithRootArg()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace UnityEngine
+                           {
+                               // Lightweight test double to avoid Unity dependency
+                               public class MonoBehaviour {}
+                           }
+
+                           namespace Sample
+                           {
+                               interface IScopeState {}
+
+                               sealed class ScopeState : IScopeState {}
+
+                               interface IRequest
+                               {
+                                   int RequestId { get; }
+
+                                   IScopeState ScopeState { get; }
+                               }
+
+                               sealed class Request : IRequest
+                               {
+                                   public Request(int requestId, IScopeState scopeState)
+                                   {
+                                       RequestId = requestId;
+                                       ScopeState = scopeState;
+                                   }
+
+                                   public int RequestId { get; }
+
+                                   public IScopeState ScopeState { get; }
+                               }
+
+                               internal partial class Composition : UnityEngine.MonoBehaviour
+                               {
+                                   private void Setup()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Hint(Hint.Resolve, "Off")
+                                           .Hint(Hint.ScopeFactoryName, "CreateScope")
+                                           .Bind<IScopeState>().As(Lifetime.Scoped).To<ScopeState>()
+                                           .Bind<IRequest>().To<Request>()
+                                           .RootArg<int>("requestId")
+                                           .Root<IRequest>("CreateRequest");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var rootRequest = composition.CreateRequest(requestId: 1);
+                                       Console.WriteLine(rootRequest.RequestId);
+
+                                       IRequest requestFromScope1;
+                                       var scope1 = composition.CreateScope();
+                                       {
+                                           var scope11 = scope1.CreateRequest(requestId: 10);
+                                           var scope12 = scope1.CreateRequest(requestId: 20);
+                                           requestFromScope1 = scope11;
+                                           Console.WriteLine(scope11.RequestId);
+                                           Console.WriteLine(scope12.RequestId);
+                                           Console.WriteLine(scope11.ScopeState == scope12.ScopeState);
+                                           Console.WriteLine(rootRequest.ScopeState == scope11.ScopeState);
+
+                                           var scope2 = scope1.CreateScope();
+                                           {
+                                               var scope21 = scope2.CreateRequest(requestId: 30);
+                                               Console.WriteLine(scope21.RequestId);
+                                               Console.WriteLine(scope11.ScopeState == scope21.ScopeState);
+                                           }
+                                       }
+
+                                       var scope3 = composition.CreateScope();
+                                       {
+                                           var scope31 = scope3.CreateRequest(requestId: 40);
+                                           Console.WriteLine(scope31.RequestId);
+                                           Console.WriteLine(requestFromScope1.ScopeState == scope31.ScopeState);
+                                       }
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion: LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(0, result);
+        result.StdOut.ShouldBe(["1", "10", "20", "True", "False", "30", "False", "40", "False"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportScopeFactoryWithLightweightRoot()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace UnityEngine
+                           {
+                               // Lightweight test double to avoid Unity dependency
+                               public class MonoBehaviour {}
+                           }
+
+                           namespace Sample
+                           {
+                               interface IScopedDependency : IDisposable
+                               {
+                                   bool IsDisposed { get; }
+                               }
+
+                               sealed class ScopedDependency : IScopedDependency
+                               {
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               sealed class Service
+                               {
+                                   public Service(IScopedDependency dependency)
+                                   {
+                                       Dependency = dependency;
+                                   }
+
+                                   public IScopedDependency Dependency { get; }
+                               }
+
+                               internal partial class Composition : UnityEngine.MonoBehaviour
+                               {
+                                   private void Setup()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Hint(Hint.ScopeFactoryName, "CreateScope")
+                                           .Bind<IScopedDependency>().As(Lifetime.Scoped).To<ScopedDependency>()
+                                           .Bind<Service>().To<Service>()
+                                           .Root<Service>("Service", kind: RootKinds.Light);
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root1 = composition.Service;
+                                       var root2 = composition.Service;
+                                       Console.WriteLine(root1 == root2);
+                                       Console.WriteLine(root1.Dependency == root2.Dependency);
+
+                                       IScopedDependency dependencyFromScope;
+                                       using (var scope = composition.CreateScope())
+                                       {
+                                           var scope1 = scope.Service;
+                                           var scope2 = scope.Service;
+                                           dependencyFromScope = scope1.Dependency;
+                                           Console.WriteLine(scope1 == scope2);
+                                           Console.WriteLine(scope1.Dependency == scope2.Dependency);
+                                           Console.WriteLine(root1.Dependency == scope1.Dependency);
+                                       }
+
+                                       Console.WriteLine(dependencyFromScope.IsDisposed);
+                                       Console.WriteLine(root1.Dependency.IsDisposed);
+                                       composition.Dispose();
+                                       Console.WriteLine(root1.Dependency.IsDisposed);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion: LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(0, result);
+        result.StdOut.ShouldBe(["False", "True", "False", "True", "False", "True", "False", "True"], result);
+    }
+
+    [Fact]
     public async Task ShouldSupportScopeHandleAsyncDispose()
     {
         // Given
