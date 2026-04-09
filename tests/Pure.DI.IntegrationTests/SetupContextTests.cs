@@ -2102,6 +2102,1080 @@ public class SetupContextTests
     }
 
     [Fact]
+    public async Task ShouldSupportSiblingScopesWithSingletonAndScopedWhenScopeFactory()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace UnityEngine
+                           {
+                               // Lightweight test double to avoid Unity dependency
+                               public class MonoBehaviour {}
+                           }
+
+                           namespace Sample
+                           {
+                               interface ISingletonDependency : IDisposable
+                               {
+                                   bool IsDisposed { get; }
+                               }
+
+                               sealed class SingletonDependency : ISingletonDependency
+                               {
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               interface IScopedDependency : IDisposable
+                               {
+                                   bool IsDisposed { get; }
+                               }
+
+                               sealed class ScopedDependency : IScopedDependency
+                               {
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               interface IService
+                               {
+                                   ISingletonDependency Singleton { get; }
+
+                                   IScopedDependency Scoped { get; }
+                               }
+
+                               sealed class Service : IService
+                               {
+                                   public Service(ISingletonDependency singleton, IScopedDependency scoped)
+                                   {
+                                       Singleton = singleton;
+                                       Scoped = scoped;
+                                   }
+
+                                   public ISingletonDependency Singleton { get; }
+
+                                   public IScopedDependency Scoped { get; }
+                               }
+
+                               internal partial class Composition : UnityEngine.MonoBehaviour
+                               {
+                                   private void Setup()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Hint(Hint.ScopeFactoryName, "CreateScope")
+                                           .Bind<ISingletonDependency>().As(Lifetime.Singleton).To<SingletonDependency>()
+                                           .Bind<IScopedDependency>().As(Lifetime.Scoped).To<ScopedDependency>()
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root1 = composition.Service;
+                                       var root2 = composition.Service;
+                                       Console.WriteLine(root1.Singleton == root2.Singleton);
+                                       Console.WriteLine(root1.Scoped == root2.Scoped);
+
+                                       IScopedDependency scope1Scoped;
+                                       IScopedDependency scope2Scoped;
+                                       ISingletonDependency singletonFromScope2;
+                                       using (var scope1 = composition.CreateScope())
+                                       {
+                                           var scope11 = scope1.Service;
+                                           var scope12 = scope1.Service;
+                                           scope1Scoped = scope11.Scoped;
+                                           Console.WriteLine(root1.Singleton == scope11.Singleton);
+                                           Console.WriteLine(root1.Scoped == scope11.Scoped);
+                                           Console.WriteLine(scope11.Scoped == scope12.Scoped);
+                                           Console.WriteLine(scope1Scoped.IsDisposed);
+                                       }
+
+                                       Console.WriteLine(scope1Scoped.IsDisposed);
+                                       Console.WriteLine(root1.Singleton.IsDisposed);
+                                       Console.WriteLine(root1.Scoped.IsDisposed);
+
+                                       using (var scope2 = composition.CreateScope())
+                                       {
+                                           var scope21 = scope2.Service;
+                                           singletonFromScope2 = scope21.Singleton;
+                                           scope2Scoped = scope21.Scoped;
+                                           Console.WriteLine(root1.Singleton == scope21.Singleton);
+                                           Console.WriteLine(root1.Scoped == scope21.Scoped);
+                                           Console.WriteLine(scope2Scoped.IsDisposed);
+                                       }
+
+                                       Console.WriteLine(scope2Scoped.IsDisposed);
+                                       Console.WriteLine(singletonFromScope2.IsDisposed);
+
+                                       composition.Dispose();
+                                       Console.WriteLine(root1.Singleton.IsDisposed);
+                                       Console.WriteLine(root1.Scoped.IsDisposed);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion: LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(0, result);
+        result.StdOut.ShouldBe(
+            [
+                "True",
+                "True",
+                "True",
+                "False",
+                "True",
+                "False",
+                "True",
+                "False",
+                "False",
+                "True",
+                "False",
+                "False",
+                "True",
+                "False",
+                "True",
+                "True"
+            ],
+            result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSetupContextRootArgumentWhenScopeFactory()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace UnityEngine
+                           {
+                               // Lightweight test double to avoid Unity dependency
+                               public class MonoBehaviour {}
+                           }
+
+                           namespace Sample
+                           {
+                               internal partial class BaseComposition
+                               {
+                                   internal int Value { get; set; }
+
+                                   private void Setup()
+                                   {
+                                       DI.Setup(nameof(BaseComposition), CompositionKind.Internal)
+                                           .Bind<int>().To(_ => Value);
+                                   }
+                               }
+
+                               interface IService
+                               {
+                                   int Value { get; }
+
+                                   IScopeMarker Marker { get; }
+                               }
+
+                               interface IScopeMarker {}
+
+                               sealed class ScopeMarker : IScopeMarker {}
+
+                               sealed class Service : IService
+                               {
+                                   public Service(int value, IScopeMarker marker)
+                                   {
+                                       Value = value;
+                                       Marker = marker;
+                                   }
+
+                                   public int Value { get; }
+
+                                   public IScopeMarker Marker { get; }
+                               }
+
+                               internal partial class Composition : UnityEngine.MonoBehaviour
+                               {
+                                    private void Setup()
+                                    {
+                                        DI.Setup(nameof(Composition))
+                                            .Hint(Hint.Resolve, "Off")
+                                            .Hint(Hint.ScopeFactoryName, "CreateScope")
+                                            .DependsOn(nameof(BaseComposition), SetupContextKind.RootArgument, "baseContext")
+                                            .Bind<IScopeMarker>().As(Lifetime.Scoped).To<ScopeMarker>()
+                                            .Bind<IService>().To<Service>()
+                                            .Root<IService>("BuildService");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var baseContext1 = new BaseComposition
+                                       {
+                                           Value = 40
+                                       };
+                                       var baseContext2 = new BaseComposition
+                                       {
+                                           Value = 41
+                                       };
+                                       var composition = new Composition();
+                                       var scope1 = composition.CreateScope();
+                                       var service11 = scope1.BuildService(baseContext: baseContext1);
+                                       var service12 = scope1.BuildService(baseContext: baseContext2);
+                                       Console.WriteLine(service11.Value);
+                                       Console.WriteLine(service12.Value);
+                                       Console.WriteLine(service11.Marker == service12.Marker);
+
+                                       var scope2 = scope1.CreateScope();
+                                       var service2 = scope2.BuildService(baseContext: baseContext2);
+                                       Console.WriteLine(service2.Value);
+                                       Console.WriteLine(service12.Marker == service2.Marker);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion: LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(0, result);
+        result.StdOut.ShouldBe(["40", "41", "True", "41", "False"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportCustomScopeFactoryNameWithResolveOffAndRootArgs()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace UnityEngine
+                           {
+                               // Lightweight test double to avoid Unity dependency
+                               public class MonoBehaviour {}
+                           }
+
+                           namespace Sample
+                           {
+                               interface IScopedState {}
+
+                               sealed class ScopedState : IScopedState {}
+
+                               interface IRequest
+                               {
+                                   int Id { get; }
+
+                                   IScopedState State { get; }
+                               }
+
+                               sealed class Request : IRequest
+                               {
+                                   public Request(int id, IScopedState state)
+                                   {
+                                       Id = id;
+                                       State = state;
+                                   }
+
+                                   public int Id { get; }
+
+                                   public IScopedState State { get; }
+                               }
+
+                               internal partial class Composition : UnityEngine.MonoBehaviour
+                               {
+                                   private void Setup()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Hint(Hint.Resolve, "Off")
+                                           .Hint(Hint.ScopeFactoryName, "OpenScope")
+                                           .Bind<IScopedState>().As(Lifetime.Scoped).To<ScopedState>()
+                                           .Bind<IRequest>().To<Request>()
+                                           .RootArg<int>("id")
+                                           .Root<IRequest>("BuildRequest");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root1 = composition.BuildRequest(id: 1);
+                                       var root2 = composition.BuildRequest(id: 2);
+                                       Console.WriteLine(root1.Id);
+                                       Console.WriteLine(root2.Id);
+                                       Console.WriteLine(root1.State == root2.State);
+
+                                       var scope = composition.OpenScope();
+                                       var scope1 = scope.BuildRequest(id: 3);
+                                       var scope2 = scope.BuildRequest(id: 4);
+                                       Console.WriteLine(scope1.Id);
+                                       Console.WriteLine(scope2.Id);
+                                       Console.WriteLine(scope1.State == scope2.State);
+                                       Console.WriteLine(root1.State == scope1.State);
+
+                                       var nested = scope.OpenScope();
+                                       var nestedRequest = nested.BuildRequest(id: 5);
+                                       Console.WriteLine(nestedRequest.Id);
+                                       Console.WriteLine(scope1.State == nestedRequest.State);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion: LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(0, result);
+        result.StdOut.ShouldBe(["1", "2", "True", "3", "4", "True", "False", "5", "False"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportScopeFactoryWithTaggedScopedRoots()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService {}
+
+                               sealed class DefaultService : IService {}
+
+                               sealed class SpecialService : IService {}
+
+                               partial class Composition
+                               {
+                                   void Setup() => DI.Setup(nameof(Composition))
+                                       .Hint(Hint.ScopeFactoryName, "CreateScope")
+                                       .Bind<IService>().As(Lifetime.Scoped).To<DefaultService>()
+                                       .Bind<IService>("special").As(Lifetime.Scoped).To<SpecialService>()
+                                       .Root<IService>("DefaultService")
+                                       .Root<IService>("SpecialService", "special");
+                               }
+
+                               class Program
+                               {
+                                   static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var rootDefault1 = composition.DefaultService;
+                                       var rootDefault2 = composition.DefaultService;
+                                       var rootSpecial1 = composition.SpecialService;
+                                       var rootSpecial2 = composition.SpecialService;
+                                       Console.WriteLine(rootDefault1 == rootDefault2);
+                                       Console.WriteLine(rootSpecial1 == rootSpecial2);
+                                       Console.WriteLine(rootDefault1 == rootSpecial1);
+
+                                       var scope = composition.CreateScope();
+                                       var scopeDefault1 = scope.DefaultService;
+                                       var scopeDefault2 = scope.DefaultService;
+                                       var scopeSpecial1 = scope.SpecialService;
+                                       Console.WriteLine(scopeDefault1 == scopeDefault2);
+                                       Console.WriteLine(scopeSpecial1 == (IService)scope.Resolve(typeof(IService), "special"));
+                                       Console.WriteLine(rootDefault1 == scopeDefault1);
+                                       Console.WriteLine(rootSpecial1 == scopeSpecial1);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion: LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(0, result);
+        result.StdOut.ShouldBe(["True", "True", "False", "True", "True", "False", "False"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportScopeFactoryResolveByTypeAndTagInScope()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService {}
+
+                               sealed class Service : IService {}
+
+                               sealed class TaggedService : IService {}
+
+                               partial class Composition
+                               {
+                                   void Setup() => DI.Setup(nameof(Composition))
+                                       .Hint(Hint.ScopeFactoryName, "CreateScope")
+                                       .Bind<IService>().As(Lifetime.Scoped).To<Service>()
+                                       .Bind<IService>("tag").As(Lifetime.Scoped).To<TaggedService>()
+                                       .Root<IService>("Service")
+                                       .Root<IService>("Tagged", "tag");
+                               }
+
+                               class Program
+                               {
+                                   static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var scope = composition.CreateScope();
+
+                                       var byGeneric = scope.Resolve<IService>();
+                                       var byType = (IService)scope.Resolve(typeof(IService));
+                                       var byTypeTag = (IService)scope.Resolve(typeof(IService), "tag");
+                                       var byGenericTag = scope.Resolve<IService>("tag");
+
+                                       Console.WriteLine(byGeneric == scope.Service);
+                                       Console.WriteLine(byType == scope.Service);
+                                       Console.WriteLine(byGenericTag == scope.Tagged);
+                                       Console.WriteLine(byTypeTag == scope.Tagged);
+                                       Console.WriteLine(byGeneric == byTypeTag);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion: LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(0, result);
+        result.StdOut.ShouldBe(["True", "True", "True", "True", "False"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportScopeFactoryWithFuncOfScoped()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+
+                               sealed class Dependency : IDependency {}
+
+                               interface IService
+                               {
+                                   IDependency A { get; }
+
+                                   IDependency B { get; }
+
+                                   IScopeMarker Marker { get; }
+                               }
+
+                               interface IScopeMarker {}
+
+                               sealed class ScopeMarker : IScopeMarker {}
+
+                               sealed class Service : IService
+                               {
+                                   public Service(Func<IDependency> factory, IScopeMarker marker)
+                                   {
+                                       A = factory();
+                                       B = factory();
+                                       Marker = marker;
+                                   }
+
+                                   public IDependency A { get; }
+
+                                   public IDependency B { get; }
+
+                                   public IScopeMarker Marker { get; }
+                               }
+
+                               partial class Composition
+                               {
+                                   void Setup() => DI.Setup(nameof(Composition))
+                                       .Hint(Hint.ScopeFactoryName, "CreateScope")
+                                       .Bind<IDependency>().As(Lifetime.Scoped).To<Dependency>()
+                                       .Bind<IScopeMarker>().As(Lifetime.Scoped).To<ScopeMarker>()
+                                       .Bind<IService>().To<Service>()
+                                       .Root<IService>("Service");
+                               }
+
+                               class Program
+                               {
+                                   static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root1 = composition.Service;
+                                       var root2 = composition.Service;
+                                       Console.WriteLine(root1.A == root1.B);
+                                       Console.WriteLine(root1.A == root2.A);
+
+                                       var scope = composition.CreateScope();
+                                       var scoped1 = scope.Service;
+                                       var scoped2 = scope.Service;
+                                       Console.WriteLine(scoped1.A == scoped1.B);
+                                       Console.WriteLine(scoped1.A == scoped2.A);
+                                       Console.WriteLine(root1.A == scoped1.A);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion: LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(0, result);
+        result.StdOut.ShouldBe(["True", "True", "True", "True", "False"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportScopeFactoryWithFuncOfTransient()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+
+                               sealed class Dependency : IDependency {}
+
+                               interface IService
+                               {
+                                   IDependency A { get; }
+
+                                   IDependency B { get; }
+
+                                   IScopeMarker Marker { get; }
+                               }
+
+                               interface IScopeMarker {}
+
+                               sealed class ScopeMarker : IScopeMarker {}
+
+                               sealed class Service : IService
+                               {
+                                   public Service(Func<IDependency> factory, IScopeMarker marker)
+                                   {
+                                       A = factory();
+                                       B = factory();
+                                       Marker = marker;
+                                   }
+
+                                   public IDependency A { get; }
+
+                                   public IDependency B { get; }
+
+                                   public IScopeMarker Marker { get; }
+                               }
+
+                               partial class Composition
+                               {
+                                   void Setup() => DI.Setup(nameof(Composition))
+                                       .Hint(Hint.ScopeFactoryName, "CreateScope")
+                                       .Bind<IDependency>().As(Lifetime.Transient).To<Dependency>()
+                                       .Bind<IScopeMarker>().As(Lifetime.Scoped).To<ScopeMarker>()
+                                       .Bind<IService>().To<Service>()
+                                       .Root<IService>("Service");
+                               }
+
+                               class Program
+                               {
+                                   static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root = composition.Service;
+                                       Console.WriteLine(root.A == root.B);
+
+                                       var scope = composition.CreateScope();
+                                       var scoped1 = scope.Service;
+                                       var scoped2 = scope.Service;
+                                       Console.WriteLine(scoped1.A == scoped1.B);
+                                       Console.WriteLine(scoped1.A == scoped2.A);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion: LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(0, result);
+        result.StdOut.ShouldBe(["False", "False", "False"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportScopeFactoryWithPerResolveLifetime()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+
+                               sealed class Dependency : IDependency {}
+
+                               interface IService
+                               {
+                                   IDependency A { get; }
+
+                                   IDependency B { get; }
+
+                                   IScopeMarker Marker { get; }
+                               }
+
+                               interface IScopeMarker {}
+
+                               sealed class ScopeMarker : IScopeMarker {}
+
+                               sealed class Service : IService
+                               {
+                                   public Service(IDependency a, IDependency b, IScopeMarker marker)
+                                   {
+                                       A = a;
+                                       B = b;
+                                       Marker = marker;
+                                   }
+
+                                   public IDependency A { get; }
+
+                                   public IDependency B { get; }
+
+                                   public IScopeMarker Marker { get; }
+                               }
+
+                               partial class Composition
+                               {
+                                   void Setup() => DI.Setup(nameof(Composition))
+                                       .Hint(Hint.ScopeFactoryName, "CreateScope")
+                                       .Bind<IDependency>().As(Lifetime.PerResolve).To<Dependency>()
+                                       .Bind<IScopeMarker>().As(Lifetime.Scoped).To<ScopeMarker>()
+                                       .Bind<IService>().To<Service>()
+                                       .Root<IService>("Service");
+                               }
+
+                               class Program
+                               {
+                                   static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root1 = composition.Service;
+                                       var root2 = composition.Service;
+                                       Console.WriteLine(root1.A == root1.B);
+                                       Console.WriteLine(root1.A == root2.A);
+
+                                       var scope = composition.CreateScope();
+                                       var scoped1 = scope.Service;
+                                       var scoped2 = scope.Service;
+                                       Console.WriteLine(scoped1.A == scoped1.B);
+                                       Console.WriteLine(scoped1.A == scoped2.A);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion: LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(0, result);
+        result.StdOut.ShouldBe(["True", "False", "True", "False"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportScopeFactoryWithPerBlockLifetime()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+
+                               sealed class Dependency : IDependency {}
+
+                               interface IService
+                               {
+                                   IDependency A { get; }
+
+                                   IDependency B { get; }
+
+                                   IScopeMarker Marker { get; }
+                               }
+
+                               interface IScopeMarker {}
+
+                               sealed class ScopeMarker : IScopeMarker {}
+
+                               sealed class Service : IService
+                               {
+                                   public Service(IDependency a, IDependency b, IScopeMarker marker)
+                                   {
+                                       A = a;
+                                       B = b;
+                                       Marker = marker;
+                                   }
+
+                                   public IDependency A { get; }
+
+                                   public IDependency B { get; }
+
+                                   public IScopeMarker Marker { get; }
+                               }
+
+                               partial class Composition
+                               {
+                                   void Setup() => DI.Setup(nameof(Composition))
+                                       .Hint(Hint.ScopeFactoryName, "CreateScope")
+                                       .Bind<IDependency>().As(Lifetime.PerBlock).To<Dependency>()
+                                       .Bind<IScopeMarker>().As(Lifetime.Scoped).To<ScopeMarker>()
+                                       .Bind<IService>().To<Service>()
+                                       .Root<IService>("Service");
+                               }
+
+                               class Program
+                               {
+                                   static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root1 = composition.Service;
+                                       var root2 = composition.Service;
+                                       Console.WriteLine(root1.A == root1.B);
+                                       Console.WriteLine(root1.A == root2.A);
+
+                                       var scope = composition.CreateScope();
+                                       var scoped1 = scope.Service;
+                                       var scoped2 = scope.Service;
+                                       Console.WriteLine(scoped1.A == scoped1.B);
+                                       Console.WriteLine(scoped1.A == scoped2.A);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion: LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(0, result);
+        result.StdOut.ShouldBe(["True", "False", "True", "False"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportScopeFactoryWithLightweightRootAndRootArg()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IScopeMarker {}
+
+                               sealed class ScopeMarker : IScopeMarker {}
+
+                               interface IService
+                               {
+                                   string Name { get; }
+
+                                   IScopeMarker Marker { get; }
+                               }
+
+                               sealed class Service : IService
+                               {
+                                   public Service(string name, IScopeMarker marker)
+                                   {
+                                       Name = name;
+                                       Marker = marker;
+                                   }
+
+                                   public string Name { get; }
+
+                                   public IScopeMarker Marker { get; }
+                               }
+
+                               partial class Composition
+                               {
+                                   void Setup() => DI.Setup(nameof(Composition))
+                                       .Hint(Hint.Resolve, "Off")
+                                       .Hint(Hint.ScopeFactoryName, "CreateScope")
+                                       .RootArg<string>("name")
+                                       .Bind<IScopeMarker>().As(Lifetime.Scoped).To<ScopeMarker>()
+                                       .Bind<IService>().To<Service>()
+                                       .Root<IService>("GetService", kind: RootKinds.Light);
+                               }
+
+                               class Program
+                               {
+                                   static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root1 = composition.GetService(name: "A");
+                                       var root2 = composition.GetService(name: "B");
+                                       Console.WriteLine(root1.Name);
+                                       Console.WriteLine(root2.Name);
+                                       Console.WriteLine(root1.Marker == root2.Marker);
+
+                                       var scope = composition.CreateScope();
+                                       var scope1 = scope.GetService(name: "C");
+                                       var scope2 = scope.GetService(name: "D");
+                                       Console.WriteLine(scope1.Name);
+                                       Console.WriteLine(scope2.Name);
+                                       Console.WriteLine(scope1.Marker == scope2.Marker);
+                                       Console.WriteLine(root1.Marker == scope1.Marker);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion: LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(0, result);
+        result.StdOut.ShouldBe(["A", "B", "True", "C", "D", "True", "False"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportScopeFactoryWithCustomNameAndTaggedCompositionArgs()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService
+                               {
+                                   string Tenant { get; }
+
+                                   int Version { get; }
+                               }
+
+                               sealed class Service : IService
+                               {
+                                   public Service(string tenant, [Tag("v")] int version)
+                                   {
+                                       Tenant = tenant;
+                                       Version = version;
+                                   }
+
+                                   public string Tenant { get; }
+
+                                   public int Version { get; }
+                               }
+
+                               partial class Composition
+                               {
+                                   void Setup() => DI.Setup(nameof(Composition))
+                                       .Hint(Hint.ScopeFactoryName, "NewScope")
+                                       .Arg<string>("tenant")
+                                       .Arg<int>("version", "v")
+                                       .Bind<IService>().As(Lifetime.Scoped).To<Service>()
+                                       .Root<IService>("Service");
+                               }
+
+                               class Program
+                               {
+                                   static void Main()
+                                   {
+                                       var composition = new Composition(tenant: "EU", version: 3);
+                                       Console.WriteLine(composition.Service.Tenant);
+                                       Console.WriteLine(composition.Service.Version);
+
+                                       var scope = composition.NewScope();
+                                       Console.WriteLine(scope.Service.Tenant);
+                                       Console.WriteLine(scope.Service.Version);
+
+                                       var composition2 = new Composition(tenant: "US", version: 8);
+                                       var scope2 = composition2.NewScope();
+                                       Console.WriteLine(scope2.Service.Tenant);
+                                       Console.WriteLine(scope2.Service.Version);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion: LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(0, result);
+        result.StdOut.ShouldBe(["EU", "3", "EU", "3", "US", "8"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportScopeFactoryWithTaggedRootArguments()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IState {}
+
+                               sealed class State : IState {}
+
+                               interface IRequest
+                               {
+                                   int Id { get; }
+
+                                   string Name { get; }
+
+                                   IState State { get; }
+                               }
+
+                               sealed class Request : IRequest
+                               {
+                                   public Request(int id, [Tag("n")] string name, IState state)
+                                   {
+                                       Id = id;
+                                       Name = name;
+                                       State = state;
+                                   }
+
+                                   public int Id { get; }
+
+                                   public string Name { get; }
+
+                                   public IState State { get; }
+                               }
+
+                               partial class Composition
+                               {
+                                   void Setup() => DI.Setup(nameof(Composition))
+                                       .Hint(Hint.Resolve, "Off")
+                                       .Hint(Hint.ScopeFactoryName, "CreateScope")
+                                       .RootArg<int>("id")
+                                       .RootArg<string>("name", "n")
+                                       .Bind<IState>().As(Lifetime.Scoped).To<State>()
+                                       .Bind<IRequest>().To<Request>()
+                                       .Root<IRequest>("Build");
+                               }
+
+                               class Program
+                               {
+                                   static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root1 = composition.Build(id: 1, name: "A");
+                                       var root2 = composition.Build(id: 2, name: "B");
+                                       Console.WriteLine($"{root1.Id}:{root1.Name}");
+                                       Console.WriteLine($"{root2.Id}:{root2.Name}");
+                                       Console.WriteLine(root1.State == root2.State);
+
+                                       var scope = composition.CreateScope();
+                                       var scope1 = scope.Build(id: 3, name: "C");
+                                       var scope2 = scope.Build(id: 4, name: "D");
+                                       Console.WriteLine($"{scope1.Id}:{scope1.Name}");
+                                       Console.WriteLine($"{scope2.Id}:{scope2.Name}");
+                                       Console.WriteLine(scope1.State == scope2.State);
+                                       Console.WriteLine(root1.State == scope1.State);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion: LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(0, result);
+        result.StdOut.ShouldBe(["1:A", "2:B", "True", "3:C", "4:D", "True", "False"], result);
+    }
+
+    [Fact]
+    public async Task ShouldShowWarningForRootArgWhenScopeFactoryAndResolveMethodsOn()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService
+                               {
+                                   string Name { get; }
+                               }
+
+                               sealed class Service : IService
+                               {
+                                   public Service(string name)
+                                   {
+                                       Name = name;
+                                   }
+
+                                   public string Name { get; }
+                               }
+
+                               partial class Composition
+                               {
+                                   void Setup() => DI.Setup(nameof(Composition))
+                                       .Hint(Hint.ScopeFactoryName, "CreateScope")
+                                       .RootArg<string>("name")
+                                       .Bind<IService>().To<Service>()
+                                       .Root<IService>("Build");
+                               }
+
+                               class Program
+                               {
+                                   static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Build(name: "Test").Name);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion: LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(1, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningRootArgInResolveMethod && i.Locations.FirstOrDefault().GetSource() == "Root<IService>(\"Build\")").ShouldBe(1, result);
+        result.StdOut.ShouldBe(["Test"], result);
+    }
+
+    [Fact]
     public async Task ShouldSupportScopeFactoryWithLightweightRoot()
     {
         // Given
