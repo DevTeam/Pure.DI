@@ -1,10 +1,10 @@
-/*
+﻿/*
 $v=true
 $p=4
 $d=Scope
-$h=The `Scoped` lifetime ensures that there will be a single instance of the dependency for each scope.
+$h=Demonstrates scoped lifetime with `Hint(Hint.ScopeFactory, "on")` where scopes are represented by generated `Scope` objects created via `CreateScope()`.
 $f=>[!NOTE]
-$f=>`Scoped` lifetime is essential for request-based or session-based scenarios where instances should be shared within a scope but isolated between scopes.
+$f=>This approach is useful when you need runtime scope creation without deriving a child composition type.
 $r=Shouldly
 */
 
@@ -33,38 +33,36 @@ public class Scenario
     public void Run()
     {
 // {
-        var composition = new Composition();
-        var app = composition.AppRoot;
+        var composition = new Composition(desc: "Checkout");
+        IRequestContext ctx1;
+        IRequestContext ctx2;
 
-        // Real-world analogy:
-        // each HTTP request (or message consumer handling) creates its own scope.
-        // Scoped services live exactly as long as the request is being processed.
+        // Scope #1
+        using (var scope1 = composition.NewScope)
+        {
+            var checkout11 = scope1.Checkout;
+            var checkout12 = scope1.Checkout;
+            ctx1 = checkout11.Context;
 
-        // Request #1
-        var request1 = app.CreateRequestScope();
-        var checkout1 = request1.RequestRoot;
+            // Same request => same scoped instance
+            ctx1.ShouldBe(checkout12.Context);
+            ctx1.IsDisposed.ShouldBeFalse();
+        }
 
-        var ctx11 = checkout1.Context;
-        var ctx12 = checkout1.Context;
-
-        // Same request => same scoped instance
-        ctx11.ShouldBe(ctx12);
+        // End of request #1 => scoped instance is disposed
+        ctx1.IsDisposed.ShouldBeTrue();
 
         // Request #2
-        var request2 = app.CreateRequestScope();
-        var checkout2 = request2.RequestRoot;
-
-        var ctx2 = checkout2.Context;
+        using (var scope1 = composition.NewScope)
+        {
+            var checkout2 = scope1.Checkout;
+            ctx2 = checkout2.Context;
+        }
 
         // Different request => different scoped instance
-        ctx11.ShouldNotBe(ctx2);
+        ctx1.ShouldNotBe(ctx2);
 
-        // End of Request #1 => scoped instance is disposed
-        request1.Dispose();
-        ctx11.IsDisposed.ShouldBeTrue();
-
-        // End of Request #2 => scoped instance is disposed
-        request2.Dispose();
+        // End of request #2 => scoped instance is disposed
         ctx2.IsDisposed.ShouldBeTrue();
 // }
         composition.SaveClassDiagram();
@@ -72,6 +70,16 @@ public class Scenario
 }
 
 // {
+interface IIdGenerator
+{
+    Guid Generate();
+}
+
+class IdGenerator : IIdGenerator
+{
+    public Guid Generate() => Guid.NewGuid();
+}
+
 interface IRequestContext
 {
     Guid CorrelationId { get; }
@@ -80,9 +88,10 @@ interface IRequestContext
 }
 
 // Typically: DbContext / UnitOfWork / RequestTelemetry / Activity, etc.
-sealed class RequestContext : IRequestContext, IDisposable
+sealed class RequestContext(IIdGenerator idGenerator)
+    : IRequestContext, IDisposable
 {
-    public Guid CorrelationId { get; } = Guid.NewGuid();
+    public Guid CorrelationId { get; } = idGenerator.Generate();
 
     public bool IsDisposed { get; private set; }
 
@@ -96,18 +105,22 @@ interface ICheckoutService
 
 // "Controller/service" that participates in request processing.
 // It depends on a scoped context (per-request resource).
-sealed class CheckoutService(IRequestContext context) : ICheckoutService
+sealed class CheckoutService(
+    string description,
+    IRequestContext context)
+    : ICheckoutService
 {
     public IRequestContext Context => context;
 }
 
-// Implements a request scope (per-request composition)
-sealed class RequestScope(Composition parent) : Composition(parent);
-
-partial class App(Func<RequestScope> requestScopeFactory)
+// Represents a scope
+class Scope(Composition composition): IDisposable
 {
-    // In a web app this would roughly map to: "create scope for request"
-    public RequestScope CreateRequestScope() => requestScopeFactory();
+    private readonly Composition _scope = composition.CreateScope();
+
+    public ICheckoutService Checkout => _scope.RequestRoot;
+
+    public void Dispose() => _scope.Dispose();
 }
 
 partial class Composition
@@ -118,16 +131,18 @@ partial class Composition
         // Resolve = Off
 // {
         DI.Setup()
+            .Hint(Hint.ScopeFactoryName, "CreateScope")
+            .Arg<string>("desc")
             // Per-request lifetime
             .Bind().As(Scoped).To<RequestContext>()
+
+            .Bind().As(Singleton).To<IdGenerator>()
 
             // Regular service that consumes scoped context
             .Bind().To<CheckoutService>()
 
             // "Request root" (what your controller/handler resolves)
             .Root<ICheckoutService>("RequestRoot")
-
-            // "Application root" (what creates request scopes)
-            .Root<App>("AppRoot");
+            .Root<Scope>("NewScope");
 }
 // }

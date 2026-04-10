@@ -33,7 +33,7 @@ public class Scenario
     public void Run()
     {
 // {
-        var composition = new Composition(desc: "Checkout");
+        var composition = new Composition();
         IRequestContext ctx1;
         IRequestContext ctx2;
 
@@ -61,6 +61,7 @@ public class Scenario
 
         // Different request => different scoped instance
         ctx1.ShouldNotBe(ctx2);
+
         // End of request #2 => scoped instance is disposed
         ctx2.IsDisposed.ShouldBeTrue();
 // }
@@ -104,7 +105,8 @@ interface ICheckoutService
 
 // "Controller/service" that participates in request processing.
 // It depends on a scoped context (per-request resource).
-sealed class CheckoutService(string description, IRequestContext context) : ICheckoutService
+sealed class CheckoutService(IRequestContext context)
+    : ICheckoutService
 {
     public IRequestContext Context => context;
 }
@@ -118,7 +120,6 @@ partial class Composition
 // {
         DI.Setup()
             .Hint(Hint.ScopeFactoryName, "CreateScope")
-            .Arg<string>("desc")
             // Per-request lifetime
             .Bind().As(Scoped).To<RequestContext>()
 
