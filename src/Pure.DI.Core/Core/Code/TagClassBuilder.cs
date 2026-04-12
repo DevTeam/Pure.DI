@@ -163,7 +163,7 @@ sealed class TagClassBuilder(
             foreach (var (composition, dependencies) in dependenciesByComposition)
             {
                 code.AppendLine("/// <br/>");
-                code.AppendLine($"/// class {formatter.FormatRef(composition.Source.Source.Name.FullName)}");
+                code.AppendLine($"/// class {formatter.FormatRef(composition.Name.FullName)}");
                 code.AppendLine("/// <list type=\"number\">");
                 foreach (var dependency in dependencies)
                 {

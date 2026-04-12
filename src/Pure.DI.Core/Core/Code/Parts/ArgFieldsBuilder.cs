@@ -19,7 +19,7 @@ sealed class ArgFieldsBuilder(ITypeResolver typeResolver)
         var membersCounter = composition.MembersCount;
         foreach (var arg in classArgs)
         {
-            code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] private readonly {typeResolver.Resolve(composition.Source.Source, arg.InstanceType)} {arg.Name};");
+            code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] private readonly {typeResolver.Resolve(composition.Setup, arg.InstanceType)} {arg.Name};");
             membersCounter++;
         }
 
@@ -35,7 +35,7 @@ sealed class ArgFieldsBuilder(ITypeResolver typeResolver)
             switch (arg.Kind)
             {
                 case SetupContextKind.Argument:
-                    var typeName = typeResolver.Resolve(composition.Source.Source, arg.Type);
+                    var typeName = typeResolver.Resolve(composition.Setup, arg.Type);
                     code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] private readonly {typeName} {arg.Name};");
                     membersCounter++;
                     break;

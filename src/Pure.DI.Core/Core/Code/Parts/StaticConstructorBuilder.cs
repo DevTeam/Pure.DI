@@ -14,29 +14,30 @@ sealed class StaticConstructorBuilder(
 
     public CompositionCode Build(CompositionCode composition)
     {
-        if (!composition.Source.Source.Hints.IsResolveEnabled)
+        var hints = composition.Hints;
+        if (!hints.IsResolveEnabled)
         {
             return composition;
         }
 
         var code = composition.Code;
         var membersCounter = 0;
-        var hasOnNewRoot = composition.Source.Source.Hints.IsOnNewRootEnabled;
+        var hasOnNewRoot = hints.IsOnNewRootEnabled;
         // ReSharper disable once InvertIf
-        if (hasOnNewRoot && composition.Source.Source.Hints.IsOnNewRootPartial)
+        if (hasOnNewRoot && hints.IsOnNewRootPartial)
         {
-            code.AppendLine($"private static partial void {Names.OnNewRootMethodName}<TContract, T>({Names.IResolverTypeName}<{composition.Source.Source.Name.ClassName}, TContract> resolver, string name, object? tag, {Names.ApiNamespace}{nameof(Lifetime)} lifetime);");
+            code.AppendLine($"private static partial void {Names.OnNewRootMethodName}<TContract, T>({Names.IResolverTypeName}<{composition.Name.ClassName}, TContract> resolver, string name, object? tag, {Names.ApiNamespace}{nameof(Lifetime)} lifetime);");
             code.AppendLine();
             membersCounter++;
         }
 
-        var resolvers = resolversBuilder.Build(new RootsContext(composition.Source.Source, composition.PublicRoots)).ToList();
+        var resolvers = resolversBuilder.Build(new RootsContext(composition.Setup, composition.PublicRoots)).ToList();
         if (resolvers.Count == 0)
         {
             return composition;
         }
 
-        var ctorName = codeNameProvider.GetConstructorName(composition.Source.Source.Name.ClassName);
+        var ctorName = codeNameProvider.GetConstructorName(composition.Name.ClassName);
         code.AppendLine($"static {ctorName}()");
         using (code.CreateBlock())
         {
@@ -48,15 +49,15 @@ sealed class StaticConstructorBuilder(
                 {
                     foreach (var root in resolver.Roots)
                     {
-                        code.AppendLine($"{Names.OnNewRootMethodName}<{typeResolver.Resolve(composition.Source.Source, root.Injection.Type)}, {typeResolver.Resolve(composition.Source.Source, root.Node.Type)}>(val{className}, \"{root.DisplayName}\", {root.Injection.Tag.ValueToString()}, {root.Node.Lifetime.ValueToString()});");
+                        code.AppendLine($"{Names.OnNewRootMethodName}<{typeResolver.Resolve(composition.Setup, root.Injection.Type)}, {typeResolver.Resolve(composition.Source.Source, root.Node.Type)}>(val{className}, \"{root.DisplayName}\", {root.Injection.Tag.ValueToString()}, {root.Node.Lifetime.ValueToString()});");
                     }
                 }
 
-                code.AppendLine($"{Names.ResolverClassName}<{typeResolver.Resolve(composition.Source.Source, resolver.Type)}>.{Names.ResolverPropertyName} = val{className};");
+                code.AppendLine($"{Names.ResolverClassName}<{typeResolver.Resolve(composition.Setup, resolver.Type)}>.{Names.ResolverPropertyName} = val{className};");
             }
 
             var divisor = Buckets<object>.GetDivisor((uint)resolvers.Count);
-            var pairs = $"{Names.IResolverTypeName}<{composition.Source.Source.Name.ClassName}, object>";
+            var pairs = $"{Names.IResolverTypeName}<{composition.Name.ClassName}, object>";
             var bucketsTypeName = $"{Names.ApiNamespace}Buckets<{pairs}>";
             var pairTypeName = $"{Names.ApiNamespace}Pair<{pairs}>";
             code.AppendLine($"{Names.BucketsFieldName} = {bucketsTypeName}.{nameof(Buckets<>.Create)}(");
@@ -72,7 +73,7 @@ sealed class StaticConstructorBuilder(
                     foreach (var resolver in resolvers)
                     {
                         var className = resolver.ClassName;
-                        var resolverType = typeResolver.Resolve(composition.Source.Source, resolver.Type);
+                        var resolverType = typeResolver.Resolve(composition.Setup, resolver.Type);
                         code.AppendLine($"{(isFirst ? " " : ",")}new {pairTypeName}(typeof({resolverType}), val{className})");
                         isFirst = false;
                     }

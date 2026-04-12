@@ -7,7 +7,7 @@ sealed class RootMethodsCommenter(
 {
     public void AddComments(CompositionCode composition, Root root)
     {
-        if (!composition.Source.Source.Hints.IsCommentsEnabled)
+        if (!composition.Hints.IsCommentsEnabled)
         {
             return;
         }
@@ -49,7 +49,7 @@ sealed class RootMethodsCommenter(
                 .Where(i => i.Node.Arg?.Source.Kind == ArgKind.Composition)
                 .Select(arg => arg.Name)
                 .Concat(composition.SetupContextArgs.Where(arg => arg.Kind == SetupContextKind.Argument).Select(arg => arg.Name));
-            code.AppendLine($"/// {(composition.TotalDisposablesCount == 0 ? "" : "using ")}var composition = new {composition.Source.Source.Name.ClassName}({string.Join(", ", args)});");
+            code.AppendLine($"/// {(composition.TotalDisposablesCount == 0 ? "" : "using ")}var composition = new {composition.Name.ClassName}({string.Join(", ", args)});");
             code.AppendLine($"/// var instance = composition.{formatter.Format(root)};");
             code.AppendLine("/// </code>");
             code.AppendLine("/// </example>");

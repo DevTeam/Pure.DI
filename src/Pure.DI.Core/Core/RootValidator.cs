@@ -9,7 +9,7 @@ sealed class RootValidator(
 {
     public bool Validate(CompositionCode composition)
     {
-        var hints = composition.Source.Source.Hints;
+        var hints = composition.Hints;
         if (!hints.IsResolveEnabled)
         {
             return true;

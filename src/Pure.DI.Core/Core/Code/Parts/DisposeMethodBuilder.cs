@@ -22,7 +22,7 @@ sealed class DisposeMethodBuilder(
 
         var hasDisposable = composition.DisposablesCount > 0;
         var hasAsyncDisposable = composition.AsyncDisposableCount > 0;
-        var hints = composition.Source.Source.Hints;
+        var hints = composition.Hints;
         var isCommentsEnabled = hints.IsCommentsEnabled;
         if (isCommentsEnabled)
         {
@@ -31,7 +31,7 @@ sealed class DisposeMethodBuilder(
             code.AppendLine("/// </summary>");
         }
 
-        code.AppendLine($"{composition.Source.Source.Hints.DisposeMethodModifiers} void Dispose()");
+        code.AppendLine($"{composition.Hints.DisposeMethodModifiers} void Dispose()");
         using (code.CreateBlock())
         {
             AddSyncPart(composition, code, false);
@@ -83,7 +83,7 @@ sealed class DisposeMethodBuilder(
                 code.AppendLine("/// </summary>");
             }
 
-            code.AppendLine($"{composition.Source.Source.Hints.DisposeAsyncMethodModifiers} async {Names.ValueTaskTypeName} DisposeAsync()");
+            code.AppendLine($"{composition.Hints.DisposeAsyncMethodModifiers} async {Names.ValueTaskTypeName} DisposeAsync()");
             using (code.CreateBlock())
             {
                 AddSyncPart(composition, code, true);
@@ -202,7 +202,7 @@ sealed class DisposeMethodBuilder(
         {
             if (singletonField.InstanceType.IsValueType)
             {
-                code.AppendLine($"{singletonField.Name} = default({typeResolver.Resolve(composition.Source.Source, singletonField.InstanceType)});");
+                code.AppendLine($"{singletonField.Name} = default({typeResolver.Resolve(composition.Setup, singletonField.InstanceType)});");
                 code.AppendLine($"{singletonField.Name}{Names.CreatedValueNameSuffix} = false;");
             }
             else

@@ -25,7 +25,7 @@ sealed class RootMethodsBuilder(
         }
 
         var code = composition.Code;
-        var generatePrivateRoots = composition.Source.Source.Hints.IsResolveEnabled;
+        var generatePrivateRoots = composition.Hints.IsResolveEnabled;
         var membersCounter = composition.MembersCount;
         code.AppendLine("#region Roots");
         var isFirst = true;
@@ -78,7 +78,7 @@ sealed class RootMethodsBuilder(
             }
             else
             {
-                if (root.IsMethod && marker.IsMarkerBased(composition.Source.Source, root.Injection.Type))
+                if (root.IsMethod && marker.IsMarkerBased(composition.Setup, root.Injection.Type))
                 {
                     code.AppendLine($"[{Names.BindAttributeName}(typeof({root.Injection.Type}))]");
                 }
@@ -122,7 +122,7 @@ sealed class RootMethodsBuilder(
             {
                 foreach (var arg in root.RootArgs.Where(i => i.InstanceType.IsReferenceType))
                 {
-                    code.AppendLine($"if ({buildTools.NullCheck(composition.Source.Source.SemanticModel.Compilation, arg.Name)}) throw new {Names.SystemNamespace}ArgumentNullException(nameof({arg.Name}));");
+                    code.AppendLine($"if ({buildTools.NullCheck(composition.Compilation, arg.Name)}) throw new {Names.SystemNamespace}ArgumentNullException(nameof({arg.Name}));");
                 }
             }
             else
@@ -142,7 +142,7 @@ sealed class RootMethodsBuilder(
                     {
                         foreach (var builderRoot in root.Source.BuilderRoots)
                         {
-                            var rootType = typeResolver.Resolve(composition.Source.Source, builderRoot.RootType);
+                            var rootType = typeResolver.Resolve(composition.Setup, builderRoot.RootType);
                             var instanceName = uniqueNameProvider.GetUniqueName($"{nameFormatter.Format("{type}", builderRoot.RootType, builderRoot.Tag?.Value)}");
                             code.AppendLine($"case {rootType} {instanceName}:");
                             using (code.Indent())
@@ -166,7 +166,7 @@ sealed class RootMethodsBuilder(
                     if (root.Kind.HasFlag(RootKinds.Light))
                     {
                         lines = new Lines();
-                        var compositionTypeName = composition.Source.Source.Name.ClassName;
+                        var compositionTypeName = composition.Name.ClassName;
                         var compositionInstance = root.IsStatic ? $"new {compositionTypeName}()." : string.Empty;
                         // ReSharper disable once ConvertIfStatementToConditionalTernaryExpression
                         if (root.RootArgs.IsEmpty)
@@ -183,7 +183,7 @@ sealed class RootMethodsBuilder(
                         lines = root.Lines;
                     }
 
-                    if (composition.Source.Source.Hints.IsFormatCodeEnabled)
+                    if (composition.Hints.IsFormatCodeEnabled)
                     {
                         var codeText = string.Join(Environment.NewLine, lines);
                         var syntaxTree = CSharpSyntaxTree.ParseText(codeText, cancellationToken: cancellationToken);

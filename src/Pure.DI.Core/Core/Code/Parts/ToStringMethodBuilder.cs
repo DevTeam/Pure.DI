@@ -9,14 +9,14 @@ sealed class ToStringMethodBuilder
 
     public CompositionCode Build(CompositionCode composition)
     {
-        if (composition.Diagram.Count == 0 || !composition.Source.Source.Hints.IsToStringEnabled)
+        var hints = composition.Hints;
+        if (composition.Diagram.Count == 0 || !hints.IsToStringEnabled)
         {
             return composition;
         }
 
         var code = composition.Code;
         var membersCounter = composition.MembersCount;
-        var hints = composition.Source.Source.Hints;
         var isCommentsEnabled = hints.IsCommentsEnabled;
         if (isCommentsEnabled)
         {

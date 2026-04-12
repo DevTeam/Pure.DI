@@ -18,17 +18,17 @@ sealed class DefaultConstructorBuilder(
 
         var code = composition.Code;
         var membersCounter = composition.MembersCount;
-        var hints = composition.Source.Source.Hints;
+        var hints = composition.Hints;
         var isCommentsEnabled = hints.IsCommentsEnabled;
         if (isCommentsEnabled)
         {
             code.AppendLine("/// <summary>");
-            code.AppendLine($"/// This constructor creates a new instance of <see cref=\"{composition.Source.Source.Name.ClassName}\"/>. Typically used to create a root scope in scenarios where <see cref=\"Lifetime.Scoped\"/> lifetime might be used.");
+            code.AppendLine($"/// This constructor creates a new instance of <see cref=\"{composition.Name.ClassName}\"/>. Typically used to create a root scope in scenarios where <see cref=\"Lifetime.Scoped\"/> lifetime might be used.");
             code.AppendLine("/// </summary>");
         }
 
         code.AppendLine($"[{Names.OrdinalAttributeName}(256)]");
-        var ctorName = codeNameProvider.GetConstructorName(composition.Source.Source.Name.ClassName);
+        var ctorName = codeNameProvider.GetConstructorName(composition.Name.ClassName);
         code.AppendLine($"public {ctorName}()");
         using (code.CreateBlock())
         {

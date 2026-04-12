@@ -12,13 +12,13 @@ sealed class ClassCommenter(
 {
     public void AddComments(CompositionCode composition, Unit unit)
     {
-        var hints = composition.Source.Source.Hints;
+        var hints = composition.Hints;
         if (!hints.IsCommentsEnabled)
         {
             return;
         }
 
-        var classComments = composition.Source.Source.Comments;
+        var classComments = composition.Setup.Comments;
         var code = composition.Code;
         if (classComments.Count <= 0 && composition.PublicRoots.Length <= 0)
         {
@@ -72,7 +72,7 @@ sealed class ClassCommenter(
                     {
                         term.Append(formatter.FormatRef(root.Injection.Type));
                         term.Append(' ');
-                        term.Append(formatter.FormatRef(composition.Source.Source, root));
+                        term.Append(formatter.FormatRef(composition.Setup, root));
                     }
                     else
                     {
@@ -86,7 +86,7 @@ sealed class ClassCommenter(
                         return [term.ToString()];
                     }
 
-                    var resolvers = resolversBuilder.Build(new RootsContext(composition.Source.Source, ImmutableArray.Create(root)));
+                    var resolvers = resolversBuilder.Build(new RootsContext(composition.Setup, ImmutableArray.Create(root)));
                     if (!resolvers.Any())
                     {
                         return [term.ToString()];
@@ -132,13 +132,13 @@ sealed class ClassCommenter(
             if (root is not null)
             {
                 code.AppendLine("/// <example>");
-                code.AppendLine($"/// This example shows how to get an instance of type {formatter.FormatRef(root.Node.Type)} using the composition root {formatter.FormatRef(composition.Source.Source, root)}:");
+                code.AppendLine($"/// This example shows how to get an instance of type {formatter.FormatRef(root.Node.Type)} using the composition root {formatter.FormatRef(composition.Setup, root)}:");
                 code.AppendLine("/// <code>");
                 var args = composition.ClassArgs
                     .Where(i => i.Node.Arg?.Source.Kind == ArgKind.Composition)
                     .Select(arg => arg.Name)
                     .Concat(composition.SetupContextArgs.Where(arg => arg.Kind == SetupContextKind.Argument).Select(arg => arg.Name));
-                code.AppendLine($"/// {(composition.TotalDisposablesCount == 0 ? "" : "using ")}var composition = new {composition.Source.Source.Name.ClassName}({string.Join(", ", args)});");
+                code.AppendLine($"/// {(composition.TotalDisposablesCount == 0 ? "" : "using ")}var composition = new {composition.Name.ClassName}({string.Join(", ", args)});");
                 code.AppendLine($"/// var instance = composition.{formatter.Format(root)};");
                 code.AppendLine("/// </code>");
                 code.AppendLine("/// See also:");

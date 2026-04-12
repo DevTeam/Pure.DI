@@ -31,7 +31,7 @@ sealed class CompositionClassBuilder(
         composition = usingDeclarations.Build(composition);
 
         var nsIndent = Disposables.Empty;
-        var name = composition.Source.Source.Name;
+        var name = composition.Name;
         if (!string.IsNullOrWhiteSpace(name.Namespace))
         {
             code.AppendLine($"namespace {name.Namespace}");

@@ -22,5 +22,11 @@ record CompositionCode(
     bool IsLockRequired,
     int MembersCount = 0)
 {
-    public Compilation Compilation => Source.Source.SemanticModel.Compilation;
+    public MdSetup Setup => Source.Source;
+
+    public CompositionName Name => Setup.Name;
+
+    public Compilation Compilation => Setup.SemanticModel.Compilation;
+
+    public IHints Hints => Setup.Hints;
 }

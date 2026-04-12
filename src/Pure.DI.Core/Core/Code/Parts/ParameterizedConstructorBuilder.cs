@@ -30,10 +30,10 @@ sealed class ParameterizedConstructorBuilder(
 
         code.AppendLine($"[{Names.OrdinalAttributeName}(128)]");
         var classArgs = composition.ClassArgs.GetArgsOfKind(ArgKind.Composition).ToList();
-        var ctorName = codeNameProvider.GetConstructorName(composition.Source.Source.Name.ClassName);
+        var ctorName = codeNameProvider.GetConstructorName(composition.Name.ClassName);
         var ctorArgs = classArgs
-            .Select(arg => $"{typeResolver.Resolve(composition.Source.Source, arg.InstanceType)} {arg.Node.Arg?.Source.ArgName}")
-            .Concat(setupContextArgs.Select(arg => $"{typeResolver.Resolve(composition.Source.Source, arg.Type)} {arg.Name}"));
+            .Select(arg => $"{typeResolver.Resolve(composition.Setup, arg.InstanceType)} {arg.Node.Arg?.Source.ArgName}")
+            .Concat(setupContextArgs.Select(arg => $"{typeResolver.Resolve(composition.Setup, arg.Type)} {arg.Name}"));
         code.AppendLine($"public {ctorName}({string.Join(", ", ctorArgs)})");
         using (code.CreateBlock())
         {

@@ -19,7 +19,7 @@ sealed class ScopeConstructorBuilder(
 
         var code = composition.Code;
         var membersCounter = composition.MembersCount;
-        var hints = composition.Source.Source.Hints;
+        var hints = composition.Hints;
         var setupContextMembersToCopy = composition.SetupContextMembersToCopy;
         var classArgs = composition.ClassArgs.GetArgsOfKind(ArgKind.Composition).ToList();
         var setupContextArgsToCopy = composition.SetupContextArgsToCopy;
@@ -34,28 +34,28 @@ sealed class ScopeConstructorBuilder(
             if (isCommentsEnabled)
             {
                 code.AppendLine("/// <summary>");
-                code.AppendLine($"/// This method creates a new instance of <see cref=\"{composition.Source.Source.Name.ClassName}\"/> scope based on the current one. This allows the <see cref=\"Lifetime.Scoped\"/> life time to be applied.");
+                code.AppendLine($"/// This method creates a new instance of <see cref=\"{composition.Name.ClassName}\"/> scope based on the current one. This allows the <see cref=\"Lifetime.Scoped\"/> life time to be applied.");
                 code.AppendLine("/// </summary>");
             }
 
             source = "this.";
             destination = $"{Names.NewScopeVarName}.";
-            code.AppendLine($"internal {composition.Source.Source.Name.ClassName} {scopeFactoryName}()");
+            code.AppendLine($"internal {composition.Name.ClassName} {scopeFactoryName}()");
         }
         else
         {
             if (isCommentsEnabled)
             {
                 code.AppendLine("/// <summary>");
-                code.AppendLine($"/// This constructor creates a new instance of <see cref=\"{composition.Source.Source.Name.ClassName}\"/> scope based on <paramref name=\"{Names.ParentScopeArgName}\"/>. This allows the <see cref=\"Lifetime.Scoped\"/> life time to be applied.");
+                code.AppendLine($"/// This constructor creates a new instance of <see cref=\"{composition.Name.ClassName}\"/> scope based on <paramref name=\"{Names.ParentScopeArgName}\"/>. This allows the <see cref=\"Lifetime.Scoped\"/> life time to be applied.");
                 code.AppendLine("/// </summary>");
                 code.AppendLine($"/// <param name=\"{Names.ParentScopeArgName}\">Scope parent.</param>");
             }
 
             source = $"{Names.ParentScopeArgName}.";
             destination = "";
-            var ctorName = codeNameProvider.GetConstructorName(composition.Source.Source.Name.ClassName);
-            code.AppendLine($"internal {ctorName}({composition.Source.Source.Name.ClassName} {Names.ParentScopeArgName})");
+            var ctorName = codeNameProvider.GetConstructorName(composition.Name.ClassName);
+            code.AppendLine($"internal {ctorName}({composition.Name.ClassName} {Names.ParentScopeArgName})");
         }
 
         using (code.CreateBlock())
@@ -63,7 +63,7 @@ sealed class ScopeConstructorBuilder(
             if (isFactoryMethod)
             {
                 var args = string.Join(", ", classArgs.Select(arg => $"{source}{arg.Name}"));
-                code.AppendLine($"var {Names.NewScopeVarName} = new {composition.Source.Source.Name.ClassName}({args});");
+                code.AppendLine($"var {Names.NewScopeVarName} = new {composition.Name.ClassName}({args});");
 
                 if (composition.Singletons.Length > 0)
                 {

@@ -14,7 +14,7 @@ sealed class ResolverClassesBuilder(
 
     public CompositionCode Build(CompositionCode composition)
     {
-        if (!composition.Source.Source.Hints.IsResolveEnabled)
+        if (!composition.Hints.IsResolveEnabled)
         {
             return composition;
         }
@@ -28,20 +28,20 @@ sealed class ResolverClassesBuilder(
         membersCount++;
         code.AppendLine();
 
-        var resolverTypeParam = codeNameProvider.GetUniqueTypeParameterName(composition.Source.Source.Name.ClassName);
-        code.AppendLine($"private class {Names.ResolverClassName}<{resolverTypeParam}>: {Names.IResolverTypeName}<{composition.Source.Source.Name.ClassName}, {resolverTypeParam}>");
+        var resolverTypeParam = codeNameProvider.GetUniqueTypeParameterName(composition.Name.ClassName);
+        code.AppendLine($"private class {Names.ResolverClassName}<{resolverTypeParam}>: {Names.IResolverTypeName}<{composition.Name.ClassName}, {resolverTypeParam}>");
         using (code.CreateBlock())
         {
-            code.AppendLine($"public static {Names.IResolverTypeName}<{composition.Source.Source.Name.ClassName}, {resolverTypeParam}> {Names.ResolverPropertyName} = new {Names.ResolverClassName}<{resolverTypeParam}>();");
+            code.AppendLine($"public static {Names.IResolverTypeName}<{composition.Name.ClassName}, {resolverTypeParam}> {Names.ResolverPropertyName} = new {Names.ResolverClassName}<{resolverTypeParam}>();");
             code.AppendLine();
-            code.AppendLine($"public virtual {resolverTypeParam} {Names.ResolveMethodName}({composition.Source.Source.Name.ClassName} composite)");
+            code.AppendLine($"public virtual {resolverTypeParam} {Names.ResolveMethodName}({composition.Name.ClassName} composite)");
             using (code.CreateBlock())
             {
                 code.AppendLine($"throw new {Names.CannotResolveExceptionTypeName}($\"{{{Names.CannotResolveFieldName}}}{{{Names.OfTypeFieldName}}}{{typeof({resolverTypeParam})}}.\", typeof({resolverTypeParam}), null);");
             }
 
             code.AppendLine();
-            code.AppendLine($"public virtual {resolverTypeParam} {Names.ResolveByTagMethodName}({composition.Source.Source.Name.ClassName} composite, object tag)");
+            code.AppendLine($"public virtual {resolverTypeParam} {Names.ResolveByTagMethodName}({composition.Name.ClassName} composite, object tag)");
             using (code.CreateBlock())
             {
                 code.AppendLine($"throw new {Names.CannotResolveExceptionTypeName}($\"{{{Names.CannotResolveFieldName}}}\\\"{{tag}}\\\" {{{Names.OfTypeFieldName}}}{{typeof({resolverTypeParam})}}.\", typeof({resolverTypeParam}), tag);");
@@ -50,16 +50,16 @@ sealed class ResolverClassesBuilder(
 
         membersCount++;
 
-        foreach (var resolver in resolversBuilder.Build(new RootsContext(composition.Source.Source, composition.PublicRoots)))
+        foreach (var resolver in resolversBuilder.Build(new RootsContext(composition.Setup, composition.PublicRoots)))
         {
             var resolverClassName = resolver.ClassName;
-            var resolverType = typeResolver.Resolve(composition.Source.Source, resolver.Type);
+            var resolverType = typeResolver.Resolve(composition.Setup, resolver.Type);
             var baseTypeName = $"{Names.ResolverClassName}<{resolverType}>";
             var baseTypes = new List<string> { baseTypeName };
             var objectTypeName = "";
             if (resolver.Type.IsValueType)
             {
-                objectTypeName = $"{Names.IResolverTypeName}<{composition.Source.Source.Name.ClassName}, object>";
+                objectTypeName = $"{Names.IResolverTypeName}<{composition.Name.ClassName}, object>";
                 baseTypes.Add(objectTypeName);
             }
 
@@ -71,14 +71,14 @@ sealed class ResolverClassesBuilder(
 
                 if (!string.IsNullOrWhiteSpace(objectTypeName))
                 {
-                    code.AppendLine($"object {objectTypeName}.{Names.ResolveMethodName}({composition.Source.Source.Name.ClassName} composition)");
+                    code.AppendLine($"object {objectTypeName}.{Names.ResolveMethodName}({composition.Name.ClassName} composition)");
                     using (code.CreateBlock())
                     {
                         code.AppendLine($"return {Names.ResolveMethodName}(composition);");
                     }
 
                     code.AppendLine();
-                    code.AppendLine($"object {objectTypeName}.{Names.ResolveByTagMethodName}({composition.Source.Source.Name.ClassName} composition, object tag)");
+                    code.AppendLine($"object {objectTypeName}.{Names.ResolveByTagMethodName}({composition.Name.ClassName} composition, object tag)");
                     using (code.CreateBlock())
                     {
                         code.AppendLine($"return {Names.ResolveByTagMethodName}(composition, tag);");
@@ -96,13 +96,13 @@ sealed class ResolverClassesBuilder(
     private static void ImplementInterface(CompositionCode composition, ResolverInfo resolver, TypeDescription resolverType, Lines code)
     {
         var defaultRoot = resolver.Roots.SingleOrDefault(i => i.Injection.Tag is null);
-        code.AppendLine($"public override {resolverType} {Names.ResolveMethodName}({composition.Source.Source.Name.ClassName} composition)");
+        code.AppendLine($"public override {resolverType} {Names.ResolveMethodName}({composition.Name.ClassName} composition)");
         using (code.CreateBlock())
         {
             if (defaultRoot is not null)
             {
                 var isMethod = !defaultRoot.RootArgs.IsEmpty || (defaultRoot.Kind & RootKinds.Method) == RootKinds.Method;
-                code.AppendLine($"return {(defaultRoot.IsStatic ? composition.Source.Source.Name.ClassName : "composition")}.{defaultRoot.DisplayName}{(isMethod ? "()" : "")};");
+                code.AppendLine($"return {(defaultRoot.IsStatic ? composition.Name.ClassName : "composition")}.{defaultRoot.DisplayName}{(isMethod ? "()" : "")};");
             }
             else
             {
@@ -112,7 +112,7 @@ sealed class ResolverClassesBuilder(
 
         code.AppendLine();
 
-        code.AppendLine($"public override {resolverType} {Names.ResolveByTagMethodName}({composition.Source.Source.Name.ClassName} composition, object tag)");
+        code.AppendLine($"public override {resolverType} {Names.ResolveByTagMethodName}({composition.Name.ClassName} composition, object tag)");
         using (code.CreateBlock())
         {
             var taggedRoots = resolver.Roots;
@@ -173,7 +173,7 @@ sealed class ResolverClassesBuilder(
 
     private static string GetRoot(CompositionCode composition, Root root)
     {
-        var target = root.IsStatic ? composition.Source.Source.Name.ClassName : "composition";
+        var target = root.IsStatic ? composition.Name.ClassName : "composition";
         var isMethod = !root.RootArgs.IsEmpty || (root.Kind & RootKinds.Method) == RootKinds.Method;
         return $"{target}.{root.DisplayName}{(isMethod ? "()" : "")}";
     }

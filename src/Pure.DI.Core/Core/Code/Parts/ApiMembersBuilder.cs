@@ -21,13 +21,13 @@ sealed class ApiMembersBuilder(
     {
         var code = composition.Code;
         var membersCounter = composition.MembersCount;
-        var hints = composition.Source.Source.Hints;
+        var hints = composition.Hints;
         var isCommentsEnabled = hints.IsCommentsEnabled;
         var apiCode = new Lines();
         var nullable = composition.Compilation.Options.NullableContextOptions == NullableContextOptions.Disable ? "" : "?";
         if (hints.IsResolveEnabled)
         {
-            var resolveTypeParam = codeNameProvider.GetUniqueTypeParameterName(composition.Source.Source.Name.ClassName);
+            var resolveTypeParam = codeNameProvider.GetUniqueTypeParameterName(composition.Name.ClassName);
             if (isCommentsEnabled)
             {
                 apiCode.AppendLine(CommentSummaryStart);
@@ -69,7 +69,7 @@ sealed class ApiMembersBuilder(
             membersCounter++;
 
             apiCode.AppendLine();
-            var resolvers = resolversBuilder.Build(new RootsContext(composition.Source.Source, composition.PublicRoots)).ToList();
+            var resolvers = resolversBuilder.Build(new RootsContext(composition.Setup, composition.PublicRoots)).ToList();
             if (isCommentsEnabled)
             {
                 apiCode.AppendLine(CommentSummaryStart);
@@ -139,26 +139,26 @@ sealed class ApiMembersBuilder(
             }
         }
 
-        if (composition.Source.Source.Hints is { IsOnNewInstanceEnabled: true, IsOnNewInstancePartial: true })
+        if (composition.Hints is { IsOnNewInstanceEnabled: true, IsOnNewInstancePartial: true })
         {
             apiCode.AppendLine();
-            var typeParam = codeNameProvider.GetUniqueTypeParameterName(composition.Source.Source.Name.ClassName);
+            var typeParam = codeNameProvider.GetUniqueTypeParameterName(composition.Name.ClassName);
             apiCode.AppendLine($"partial void {Names.OnNewInstanceMethodName}<{typeParam}>(ref {typeParam} value, object{nullable} tag, {Names.ApiNamespace}{nameof(Lifetime)} lifetime);");
             membersCounter++;
         }
 
-        if (composition.Source.Source.Hints is { IsOnDependencyInjectionEnabled: true, IsOnDependencyInjectionPartial: true })
+        if (composition.Hints is { IsOnDependencyInjectionEnabled: true, IsOnDependencyInjectionPartial: true })
         {
             apiCode.AppendLine();
-            var typeParam = codeNameProvider.GetUniqueTypeParameterName(composition.Source.Source.Name.ClassName);
+            var typeParam = codeNameProvider.GetUniqueTypeParameterName(composition.Name.ClassName);
             apiCode.AppendLine($"private partial {typeParam} {Names.OnDependencyInjectionMethodName}<{typeParam}>(in {typeParam} value, object{nullable} tag, {Names.ApiNamespace}{nameof(Lifetime)} lifetime);");
             membersCounter++;
         }
 
-        if (composition.Source.Source.Hints is { IsOnCannotResolveEnabled: true, IsOnCannotResolvePartial: true })
+        if (composition.Hints is { IsOnCannotResolveEnabled: true, IsOnCannotResolvePartial: true })
         {
             apiCode.AppendLine();
-            var typeParam = codeNameProvider.GetUniqueTypeParameterName(composition.Source.Source.Name.ClassName);
+            var typeParam = codeNameProvider.GetUniqueTypeParameterName(composition.Name.ClassName);
             apiCode.AppendLine($"private partial {typeParam} {Names.OnCannotResolve}<{typeParam}>(object{nullable} tag, {Names.ApiNamespace}{nameof(Lifetime)} lifetime);");
             membersCounter++;
         }

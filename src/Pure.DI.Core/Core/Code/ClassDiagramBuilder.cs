@@ -27,7 +27,7 @@ sealed class ClassDiagramBuilder(
             return new Lines();
         }
 
-        var setup = composition.Source.Source;
+        var setup = composition.Setup;
         var nullable = composition.Compilation.Options.NullableContextOptions == NullableContextOptions.Disable ? "" : "?";
         var lines = new Lines();
         lines.AppendLine("---");
@@ -41,12 +41,13 @@ sealed class ClassDiagramBuilder(
         using (lines.Indent())
         {
             var classes = new List<Class>();
-            var hasResolveMethods = composition.Source.Source.Hints.IsResolveEnabled;
+            var hints = composition.Hints;
+            var hasResolveMethods = hints.IsResolveEnabled;
             var rootProperties = composition.PublicRoots.ToDictionary(i => i.Injection, i => i);
             var compositionLines = new Lines();
             if (hasResolveMethods || rootProperties.Count > 0)
             {
-                compositionLines.AppendLine($"class {composition.Source.Source.Name.ClassName} {BlockStart}");
+                compositionLines.AppendLine($"class {composition.Setup.Name.ClassName} {BlockStart}");
                 using (lines.Indent())
                 {
                     compositionLines.AppendLine("<<partial>>");
@@ -57,7 +58,6 @@ sealed class ClassDiagramBuilder(
 
                     if (hasResolveMethods)
                     {
-                        var hints = composition.Source.Source.Hints;
                         var genericParameterT = $"{DefaultFormatOptions.StartGenericArgsSymbol}T{DefaultFormatOptions.FinishGenericArgsSymbol}";
                         compositionLines.AppendLine($"{(hints.ResolveMethodModifiers == Names.DefaultApiMethodModifiers ? "+ " : "")}T {hints.ResolveMethodName}{genericParameterT}()");
                         compositionLines.AppendLine($"{(hints.ResolveByTagMethodModifiers == Names.DefaultApiMethodModifiers ? "+ " : "")}T {hints.ResolveByTagMethodName}{genericParameterT}(object{nullable} tag)");
@@ -70,22 +70,22 @@ sealed class ClassDiagramBuilder(
             }
             else
             {
-                compositionLines.AppendLine($"class {composition.Source.Source.Name.ClassName}");
+                compositionLines.AppendLine($"class {composition.Name.ClassName}");
             }
 
-            var compositionClass = new Class(composition.Source.Source.Name.Namespace, composition.Source.Source.Name.ClassName, "", null, compositionLines);
+            var compositionClass = new Class(composition.Name.Namespace, composition.Name.ClassName, "", null, compositionLines);
             classes.Add(compositionClass);
 
             if (composition.TotalDisposablesCount > 0)
             {
                 classes.Add(new Class(nameof(System), "IDisposable", "abstract", null, new Lines()));
-                lines.AppendLine($"{composition.Source.Source.Name.ClassName} --|> IDisposable");
+                lines.AppendLine($"{composition.Name.ClassName} --|> IDisposable");
             }
 
             if (composition.AsyncDisposableCount > 0)
             {
                 classes.Add(new Class(nameof(System), "IAsyncDisposable", "abstract", null, new Lines()));
-                lines.AppendLine($"{composition.Source.Source.Name.ClassName} --|> IAsyncDisposable");
+                lines.AppendLine($"{composition.Name.ClassName} --|> IAsyncDisposable");
             }
 
             var typeSymbols = new HashSet<ITypeSymbol>(SymbolEqualityComparer.Default);
@@ -135,7 +135,7 @@ sealed class ClassDiagramBuilder(
 
                 if (dependency.Target.Root is not null && rootProperties.TryGetValue(dependency.Injection, out var root))
                 {
-                    lines.AppendLine($"{composition.Source.Source.Name.ClassName} ..> {sourceType} : {FormatRoot(setup, root)}");
+                    lines.AppendLine($"{composition.Name.ClassName} ..> {sourceType} : {FormatRoot(setup, root)}");
                 }
                 else
                 {

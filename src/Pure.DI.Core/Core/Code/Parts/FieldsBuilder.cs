@@ -22,7 +22,7 @@ sealed class FieldsBuilder(
         if (isAnyConstructorEnabled && composition.Singletons.Length > 0)
         {
             // _parent filed
-            code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] private {composition.Source.Source.Name.ClassName} {Names.RootFieldName};");
+            code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] private {composition.Name.ClassName} {Names.RootFieldName};");
             membersCounter++;
         }
 
@@ -30,9 +30,9 @@ sealed class FieldsBuilder(
         {
             // _lock field
             code.AppendLine(new Line(int.MinValue, "#if NET9_0_OR_GREATER"));
-            code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] private {Names.LockTypeName} {Names.LockFieldName}{(skipFieldsInit ? "" : $" = new {Names.LockTypeName}()")};");
+            code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] private {(composition.IsFactoryMethod ? "" : "readonly ")}{Names.LockTypeName} {Names.LockFieldName}{(skipFieldsInit ? "" : $" = new {Names.LockTypeName}()")};");
             code.AppendLine(new Line(int.MinValue, "#else"));
-            code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] private {Names.ObjectTypeName} {Names.LockFieldName}{(skipFieldsInit ? "" : $" = new {Names.ObjectTypeName}()")};");
+        code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] private {(composition.IsFactoryMethod ? "" : "readonly ")}{Names.ObjectTypeName} {Names.LockFieldName}{(skipFieldsInit ? "" : $" = new {Names.ObjectTypeName}()")};");
             code.AppendLine(new Line(int.MinValue, "#endif"));
             membersCounter++;
         }
@@ -56,14 +56,14 @@ sealed class FieldsBuilder(
             {
                 if (singletonField.InstanceType.IsValueType)
                 {
-                    code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] private {typeResolver.Resolve(composition.Source.Source, singletonField.InstanceType)} {singletonField.Name};");
+                    code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] private {typeResolver.Resolve(composition.Setup, singletonField.InstanceType)} {singletonField.Name};");
                     membersCounter++;
 
                     code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] private bool {singletonField.Name}{Names.CreatedValueNameSuffix};");
                 }
                 else
                 {
-                    code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] private {typeResolver.Resolve(composition.Source.Source, singletonField.InstanceType)}{nullable} {singletonField.Name};");
+                    code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] private {typeResolver.Resolve(composition.Setup, singletonField.InstanceType)}{nullable} {singletonField.Name};");
                 }
 
                 membersCounter++;

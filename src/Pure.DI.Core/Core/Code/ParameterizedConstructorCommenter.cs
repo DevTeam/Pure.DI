@@ -6,14 +6,14 @@ sealed class ParameterizedConstructorCommenter(
 {
     public void AddComments(CompositionCode composition, Unit unit)
     {
-        if (!composition.Source.Source.Hints.IsCommentsEnabled)
+        if (!composition.Hints.IsCommentsEnabled)
         {
             return;
         }
 
         var code = composition.Code;
         code.AppendLine("/// <summary>");
-        code.AppendLine($"/// This parameterized constructor creates a new instance of <see cref=\"{composition.Source.Source.Name.ClassName}\"/> with arguments.");
+        code.AppendLine($"/// This parameterized constructor creates a new instance of <see cref=\"{composition.Name.ClassName}\"/> with arguments.");
         code.AppendLine("/// </summary>");
         foreach (var arg in composition.ClassArgs.GetArgsOfKind(ArgKind.Composition))
         {

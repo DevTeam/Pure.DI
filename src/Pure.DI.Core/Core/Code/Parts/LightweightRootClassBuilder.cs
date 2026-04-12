@@ -26,7 +26,7 @@ class LightweightRootClassBuilder(
             foreach (var root in roots)
             {
                 var mdRoot = root.Source;
-                var rootType = typeResolver.Resolve(composition.Source.Source, mdRoot.RootType);
+                var rootType = typeResolver.Resolve(composition.Setup, mdRoot.RootType);
                 code.AppendLine($"[{Names.OrdinalAttributeName}()] public {Names.FuncTypeName}<{rootType}> {root.Source.UniqueName};");
             }
         }

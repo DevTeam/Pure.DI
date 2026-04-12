@@ -51,7 +51,7 @@ class RootSignatureProvider(
 
         if (root.IsMethod)
         {
-            rootSignature.Append($"({string.Join(", ", root.RootArgs.Select(arg => $"{typeResolver.Resolve(composition.Source.Source, arg.InstanceType)} {arg.Name}"))})");
+            rootSignature.Append($"({string.Join(", ", root.RootArgs.Select(arg => $"{typeResolver.Resolve(composition.Setup, arg.InstanceType)} {arg.Name}"))})");
         }
 
         return rootSignature.ToString();
@@ -85,10 +85,10 @@ class RootSignatureProvider(
             }
 
             var constraints = new List<string>();
-            constraints.AddRange(curTypeParam.ConstraintTypes.Select(i => typeResolver.Resolve(composition.Source.Source, i).Name).OrderBy(i => i));
+            constraints.AddRange(curTypeParam.ConstraintTypes.Select(i => typeResolver.Resolve(composition.Setup, i).Name).OrderBy(i => i));
             foreach (var typeParameter in typeParameters)
             {
-                constraints.AddRange(typeParameter.ConstraintTypes.Select(i => typeResolver.Resolve(composition.Source.Source, i).Name).OrderBy(i => i));
+                constraints.AddRange(typeParameter.ConstraintTypes.Select(i => typeResolver.Resolve(composition.Setup, i).Name).OrderBy(i => i));
             }
 
             FillConstraints(curTypeParam, constraints);

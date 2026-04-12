@@ -8,22 +8,22 @@ sealed class UsingDeclarationsBuilder : IBuilder<CompositionCode, CompositionCod
     public CompositionCode Build(CompositionCode composition)
     {
         var code = composition.Code;
-        if (composition.Source.Source.UsingDirectives.Length == 0)
+        if (composition.Setup.UsingDirectives.Length == 0)
         {
             return composition;
         }
 
-        foreach (var usingDirective in composition.Source.Source.UsingDirectives.SelectMany(i => i.UsingDirectives).Distinct())
+        foreach (var usingDirective in composition.Setup.UsingDirectives.SelectMany(i => i.UsingDirectives).Distinct())
         {
             code.AppendLine($"using {usingDirective};");
         }
 
-        foreach (var staticUsingDirective in composition.Source.Source.UsingDirectives.SelectMany(i => i.StaticUsingDirectives).Distinct())
+        foreach (var staticUsingDirective in composition.Setup.UsingDirectives.SelectMany(i => i.StaticUsingDirectives).Distinct())
         {
             code.AppendLine($"using static {staticUsingDirective};");
         }
 
-        foreach (var alias in composition.Source.Source.UsingDirectives.SelectMany(i => i.Aliases))
+        foreach (var alias in composition.Setup.UsingDirectives.SelectMany(i => i.Aliases))
         {
             code.AppendLine($"using {alias.name}={alias.type};");
         }

@@ -9,12 +9,12 @@ sealed class ResolversFieldsBuilder(IBuilder<RootsContext, IEnumerable<ResolverI
 
     public CompositionCode Build(CompositionCode composition)
     {
-        if (!composition.Source.Source.Hints.IsResolveEnabled)
+        if (!composition.Hints.IsResolveEnabled)
         {
             return composition;
         }
 
-        var resolvers = resolversBuilder.Build(new RootsContext(composition.Source.Source, composition.PublicRoots)).ToList();
+        var resolvers = resolversBuilder.Build(new RootsContext(composition.Setup, composition.PublicRoots)).ToList();
         if (resolvers.Count == 0)
         {
             return composition;
@@ -22,7 +22,7 @@ sealed class ResolversFieldsBuilder(IBuilder<RootsContext, IEnumerable<ResolverI
 
         var code = composition.Code;
         code.AppendLine($"private readonly static uint {Names.BucketSizeFieldName};");
-        var pairs = $"{Names.IResolverTypeName}<{composition.Source.Source.Name.ClassName}, object>";
+        var pairs = $"{Names.IResolverTypeName}<{composition.Name.ClassName}, object>";
         var pairTypeName = $"{Names.ApiNamespace}Pair<{pairs}>";
         code.AppendLine($"private readonly static {pairTypeName}[] {Names.BucketsFieldName};");
 
