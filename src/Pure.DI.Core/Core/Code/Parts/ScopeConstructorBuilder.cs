@@ -3,11 +3,7 @@
 // ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 namespace Pure.DI.Core.Code.Parts;
 
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-
 sealed class ScopeConstructorBuilder(
-    ILocks locks,
     IConstructors constructors,
     ICodeNameProvider codeNameProvider)
     : IClassPartBuilder
@@ -24,20 +20,13 @@ sealed class ScopeConstructorBuilder(
         var code = composition.Code;
         var membersCounter = composition.MembersCount;
         var hints = composition.Source.Source.Hints;
-        var setupContextMembersToCopy = GetSetupContextMembersToCopy(composition);
+        var setupContextMembersToCopy = composition.SetupContextMembersToCopy;
         var classArgs = composition.ClassArgs.GetArgsOfKind(ArgKind.Composition).ToList();
-        var setupContextArgsToCopy = composition.SetupContextArgs
-            .Where(arg => arg.Kind != SetupContextKind.RootArgument)
-            .ToList();
-        var isLockRequired = composition.IsLockRequired(locks);
-        var requiresParentScope = composition.Singletons.Length > 0
-                                  || classArgs.Count > 0
-                                  || setupContextArgsToCopy.Count > 0
-                                  || setupContextMembersToCopy.Count > 0
-                                  || isLockRequired
-                                  || composition.TotalDisposablesCount > 0;
-        var scopeFactoryName = hints.ScopeFactoryName;
-        var isFactoryMethod = requiresParentScope && !string.IsNullOrWhiteSpace(scopeFactoryName);
+        var setupContextArgsToCopy = composition.SetupContextArgsToCopy;
+        var isLockRequired = composition.IsLockRequired;
+        var requiresParentScope = composition.RequiresParentScope;
+        var scopeFactoryName = composition.ScopeFactoryName;
+        var isFactoryMethod = composition.IsFactoryMethod;
         var isCommentsEnabled = hints.IsCommentsEnabled;
         string source, destination;
         if (isFactoryMethod)
@@ -65,7 +54,7 @@ sealed class ScopeConstructorBuilder(
 
             source = $"{Names.ParentScopeArgName}.";
             destination = "";
-            var ctorName = isFactoryMethod ? scopeFactoryName : codeNameProvider.GetConstructorName(composition.Source.Source.Name.ClassName);
+            var ctorName = codeNameProvider.GetConstructorName(composition.Source.Source.Name.ClassName);
             code.AppendLine($"internal {ctorName}({composition.Source.Source.Name.ClassName} {Names.ParentScopeArgName})");
         }
 
@@ -137,51 +126,5 @@ sealed class ScopeConstructorBuilder(
 
         membersCounter++;
         return composition with { MembersCount = membersCounter };
-    }
-
-    private static IReadOnlyCollection<string> GetSetupContextMembersToCopy(CompositionCode composition)
-    {
-        var memberNames = new HashSet<string>(StringComparer.Ordinal);
-        foreach (var setupContextMembers in composition.SetupContextMembers)
-        {
-            foreach (var member in setupContextMembers.Members)
-            {
-                switch (member)
-                {
-                    case FieldDeclarationSyntax { Declaration: { } declaration }:
-                        foreach (var variable in declaration.Variables)
-                        {
-                            if (!variable.Identifier.IsKind(SyntaxKind.None))
-                            {
-                                memberNames.Add(variable.Identifier.ValueText);
-                            }
-                        }
-
-                        break;
-
-                    case PropertyDeclarationSyntax property when IsPropertyAssignable(property):
-                        if (!property.Identifier.IsKind(SyntaxKind.None))
-                        {
-                            memberNames.Add(property.Identifier.ValueText);
-                        }
-
-                        break;
-                }
-            }
-        }
-
-        return memberNames;
-    }
-
-    private static bool IsPropertyAssignable(PropertyDeclarationSyntax property)
-    {
-        if (property.ExpressionBody is not null || property.AccessorList is not { } accessorList)
-        {
-            return false;
-        }
-
-        return accessorList.Accessors.Any(accessor =>
-               accessor.Kind() is SyntaxKind.SetAccessorDeclaration or SyntaxKind.InitAccessorDeclaration)
-               || accessorList.Accessors.All(accessor => accessor.Body is null && accessor.ExpressionBody is null);
     }
 }

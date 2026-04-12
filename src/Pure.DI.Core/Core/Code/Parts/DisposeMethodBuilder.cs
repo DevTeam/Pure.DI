@@ -186,7 +186,7 @@ sealed class DisposeMethodBuilder(
     {
         code.AppendLine("int disposeIndex;");
         code.AppendLine("object[] disposables;");
-        var isLockRequired = composition.IsLockRequired(locks);
+        var isLockRequired = composition.IsLockRequired;
         if (isLockRequired)
         {
             locks.AddLockStatements(false, code, isAsync);

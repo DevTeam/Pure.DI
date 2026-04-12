@@ -153,6 +153,10 @@ class CompositionBuilder(
             }
         }
         var setupContextMembers = graph.Source.SetupContextMembers;
+        var setupContextMembersToCopy = GetSetupContextMembersToCopy(setupContextMembers);
+        var setupContextArgsToCopy = setupContextArgs
+            .Where(arg => arg.Kind != SetupContextKind.RootArgument)
+            .ToImmutableArray();
 
         var totalDisposablesCount = 0;
         var disposablesCount = 0;
@@ -180,6 +184,17 @@ class CompositionBuilder(
                 asyncDisposablesCount++;
             }
         }
+
+        var classArgsToStore = varDeclarationTools.Sort(classArgs).Distinct().ToImmutableArray();
+        var isLockRequired = isThreadSafe || HasRootOverrides(graph);
+        var requiresParentScope = singletons.Length > 0
+                                  || classArgsToStore.Length > 0
+                                  || setupContextArgsToCopy.Length > 0
+                                  || setupContextMembersToCopy.Length > 0
+                                  || isLockRequired
+                                  || totalDisposablesCount > 0;
+        var scopeFactoryName = graph.Source.Hints.ScopeFactoryName;
+        var isFactoryMethod = requiresParentScope && !string.IsNullOrWhiteSpace(scopeFactoryName);
         var composition = new CompositionCode(
             graph,
             new Lines(),
@@ -191,11 +206,66 @@ class CompositionBuilder(
             isThreadSafe,
             new Lines(),
             singletons,
-            varDeclarationTools.Sort(classArgs).Distinct().ToImmutableArray(),
+            classArgsToStore,
             setupContextArgs.ToImmutableArray(),
-            setupContextMembers);
+            setupContextMembers,
+            setupContextArgsToCopy,
+            setupContextMembersToCopy,
+            scopeFactoryName,
+            isFactoryMethod,
+            requiresParentScope,
+            isLockRequired);
 
         var diagram = classDiagramBuilder.Build(composition);
         return composition with { Diagram = diagram };
+    }
+
+    private bool HasRootOverrides(DependencyGraph graph) =>
+        graph.Roots.Any(root => overridesRegistry.GetOverrides(root).Any());
+
+    private static ImmutableArray<string> GetSetupContextMembersToCopy(ImmutableArray<SetupContextMembers> setupContextMembers)
+    {
+        var memberNames = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var setupContext in setupContextMembers)
+        {
+            foreach (var member in setupContext.Members)
+            {
+                switch (member)
+                {
+                    case FieldDeclarationSyntax { Declaration: { } declaration }:
+                        foreach (var variable in declaration.Variables)
+                        {
+                            if (!variable.Identifier.IsKind(SyntaxKind.None))
+                            {
+                                memberNames.Add(variable.Identifier.ValueText);
+                            }
+                        }
+
+                        break;
+
+                    case PropertyDeclarationSyntax property when IsPropertyAssignable(property):
+                        if (!property.Identifier.IsKind(SyntaxKind.None))
+                        {
+                            memberNames.Add(property.Identifier.ValueText);
+                        }
+
+                        break;
+                }
+            }
+        }
+
+        return memberNames.ToImmutableArray();
+    }
+
+    private static bool IsPropertyAssignable(PropertyDeclarationSyntax property)
+    {
+        if (property.ExpressionBody is not null || property.AccessorList is not { } accessorList)
+        {
+            return false;
+        }
+
+        return accessorList.Accessors.Any(accessor =>
+               accessor.Kind() is SyntaxKind.SetAccessorDeclaration or SyntaxKind.InitAccessorDeclaration)
+               || accessorList.Accessors.All(accessor => accessor.Body is null && accessor.ExpressionBody is null);
     }
 }

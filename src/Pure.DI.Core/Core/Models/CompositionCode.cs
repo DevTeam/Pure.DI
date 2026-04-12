@@ -14,9 +14,13 @@ record CompositionCode(
     in ImmutableArray<VarDeclaration> ClassArgs,
     in ImmutableArray<SetupContextArg> SetupContextArgs,
     in ImmutableArray<SetupContextMembers> SetupContextMembers,
+    in ImmutableArray<SetupContextArg> SetupContextArgsToCopy,
+    in ImmutableArray<string> SetupContextMembersToCopy,
+    string ScopeFactoryName,
+    bool IsFactoryMethod,
+    bool RequiresParentScope,
+    bool IsLockRequired,
     int MembersCount = 0)
 {
     public Compilation Compilation => Source.Source.SemanticModel.Compilation;
-
-    public bool IsLockRequired(ILocks locks) => IsThreadSafe || locks.HasLockField(Source);
 }

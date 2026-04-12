@@ -5,7 +5,6 @@ namespace Pure.DI.Core.Code.Parts;
 
 sealed class FieldsBuilder(
     ITypeResolver typeResolver,
-    ILocks locks,
     IConstructors constructors)
     : IClassPartBuilder
 {
@@ -18,7 +17,7 @@ sealed class FieldsBuilder(
         var compilation = composition.Compilation;
         var nullable = compilation.Options.NullableContextOptions == NullableContextOptions.Disable ? "" : "?";
         var isAnyConstructorEnabled = constructors.IsEnabled(composition.Source);
-        var hasScopeFactory = isAnyConstructorEnabled && constructors.IsEnabled(composition, ConstructorKind.Scope) && !string.IsNullOrWhiteSpace(composition.Source.Source.Hints.ScopeFactoryName);
+        var hasScopeFactory = isAnyConstructorEnabled && constructors.IsEnabled(composition, ConstructorKind.Scope) && composition.IsFactoryMethod;
         var skipFieldsInit = isAnyConstructorEnabled && !hasScopeFactory;
         if (isAnyConstructorEnabled && composition.Singletons.Length > 0)
         {
@@ -27,7 +26,7 @@ sealed class FieldsBuilder(
             membersCounter++;
         }
 
-        if (composition.IsLockRequired(locks))
+        if (composition.IsLockRequired)
         {
             // _lock field
             code.AppendLine(new Line(int.MinValue, "#if NET9_0_OR_GREATER"));

@@ -5,7 +5,6 @@ namespace Pure.DI.Core.Code.Parts;
 sealed class ParameterizedConstructorBuilder(
     ITypeResolver typeResolver,
     [Tag(typeof(ParameterizedConstructorCommenter))] ICommenter<Unit> constructorCommenter,
-    ILocks locks,
     IConstructors constructors,
     ICodeNameProvider codeNameProvider)
     : IClassPartBuilder
@@ -69,7 +68,7 @@ sealed class ParameterizedConstructorBuilder(
                 code.AppendLine($"{Names.RootFieldName} = this;");
             }
 
-            if (composition.IsLockRequired(locks))
+            if (composition.IsLockRequired)
             {
                 code.AppendLine(new Line(int.MinValue, "#if NET9_0_OR_GREATER"));
                 code.AppendLine($"{Names.LockFieldName} = new {Names.LockTypeName}();");
