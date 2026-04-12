@@ -69,7 +69,7 @@ class SmartHomeSystem(
 
     public ISensor Zone2 { get; } = zone2;
 
-    public required ISensor OutdoorSensor { init; get; }
+    public required ISensor OutdoorSensor { get; init; }
 
     public ISensor ClimateSensor => climateControl.Sensor;
 }

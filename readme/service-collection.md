@@ -315,7 +315,7 @@ Class diagram:
 classDiagram
 	TemperatureSensor --|> ISensor : "LivingRoom" 
 	Thermostat --|> IThermostat
-	Composition ..> LightweightRoot : LightweightRoot LightRoot84d
+	Composition ..> LightweightRoot : LightweightRoot LightRoot102d
 	Composition ..> Thermostat : IThermostat _
 	Composition ..> TemperatureSensor : ISensor _
 	Thermostat o-- "Singleton" TemperatureSensor : "LivingRoom"  ISensor
@@ -334,7 +334,7 @@ classDiagram
 	namespace Pure.DI.UsageTests.BCL.ServiceCollectionScenario {
 		class Composition {
 		<<partial>>
-		-LightweightRoot LightRoot84d
+		-LightweightRoot LightRoot102d
 		-ISensor _
 		-IThermostat _
 		+ T ResolveᐸTᐳ()

@@ -135,20 +135,20 @@ partial class Scope: IDisposable
   public Clock BuildUp(Clock buildingInstance)
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    Clock transientClock620;
+    Clock transientClock629;
     Clock localBuildingInstance13 = buildingInstance;
     if (_singletonClockService63 is null)
       lock (_lock)
         if (_singletonClockService63 is null)
         {
-          ClockConfig transientClockConfig623 = clockConfig;
-          _singletonClockService63 = new ClockService(transientClockConfig623);
+          ClockConfig transientClockConfig632 = clockConfig;
+          _singletonClockService63 = new ClockService(transientClockConfig632);
           _disposables[_disposeIndex++] = _singletonClockService63;
         }
 
     localBuildingInstance13.ClockService = _singletonClockService63;
-    transientClock620 = localBuildingInstance13;
-    return transientClock620;
+    transientClock629 = localBuildingInstance13;
+    return transientClock629;
   }
 
   #pragma warning disable CS0162

@@ -2471,6 +2471,236 @@ To run the above code, the following NuGet packages must be added:
 
 ## Scope
 
+Demonstrates scoped lifetime with `Hint(Hint.ScopeFactory, "on")` where scopes are represented by generated `Scope` objects created via `CreateScope()`.
+
+```c#
+using Shouldly;
+using Pure.DI;
+using static Pure.DI.Lifetime;
+
+var composition = new Composition(desc: "Checkout");
+IRequestContext ctx1;
+IRequestContext ctx2;
+
+// Scope #1
+using (var scope1 = composition.NewScope)
+{
+    var checkout11 = scope1.Checkout;
+    var checkout12 = scope1.Checkout;
+    ctx1 = checkout11.Context;
+
+    // Same request => same scoped instance
+    ctx1.ShouldBe(checkout12.Context);
+    ctx1.IsDisposed.ShouldBeFalse();
+}
+
+// End of request #1 => scoped instance is disposed
+ctx1.IsDisposed.ShouldBeTrue();
+
+// Request #2
+using (var scope1 = composition.NewScope)
+{
+    var checkout2 = scope1.Checkout;
+    ctx2 = checkout2.Context;
+}
+
+// Different request => different scoped instance
+ctx1.ShouldNotBe(ctx2);
+
+// End of request #2 => scoped instance is disposed
+ctx2.IsDisposed.ShouldBeTrue();
+
+interface IIdGenerator
+{
+    Guid Generate();
+}
+
+class IdGenerator : IIdGenerator
+{
+    public Guid Generate() => Guid.NewGuid();
+}
+
+interface IRequestContext
+{
+    Guid CorrelationId { get; }
+
+    bool IsDisposed { get; }
+}
+
+// Typically: DbContext / UnitOfWork / RequestTelemetry / Activity, etc.
+sealed class RequestContext(IIdGenerator idGenerator)
+    : IRequestContext, IDisposable
+{
+    public Guid CorrelationId { get; } = idGenerator.Generate();
+
+    public bool IsDisposed { get; private set; }
+
+    public void Dispose() => IsDisposed = true;
+}
+
+interface ICheckoutService
+{
+    IRequestContext Context { get; }
+}
+
+// "Controller/service" that participates in request processing.
+// It depends on a scoped context (per-request resource).
+sealed class CheckoutService(
+    string description,
+    IRequestContext context)
+    : ICheckoutService
+{
+    public IRequestContext Context => context;
+}
+
+// Represents a scope
+class Scope(Composition composition): IDisposable
+{
+    private readonly Composition _scope = composition.CreateScope();
+
+    public ICheckoutService Checkout => _scope.RequestRoot;
+
+    public void Dispose() => _scope.Dispose();
+}
+
+partial class Composition
+{
+    static void Setup() =>
+
+        DI.Setup()
+            .Hint(Hint.ScopeFactoryName, "CreateScope")
+            .Arg<string>("desc")
+            // Per-request lifetime
+            .Bind().As(Scoped).To<RequestContext>()
+
+            .Bind().As(Singleton).To<IdGenerator>()
+
+            // Regular service that consumes scoped context
+            .Bind().To<CheckoutService>()
+
+            // "Request root" (what your controller/handler resolves)
+            .Root<ICheckoutService>("RequestRoot")
+            .Root<Scope>("NewScope");
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+>[!NOTE]
+>This approach is useful when you need runtime scope creation without deriving a child composition type.
+
+## Scope factory
+
+Demonstrates scoped lifetime with `Hint(Hint.ScopeFactory, "on")` where scopes are represented by generated `Scope` objects created via `CreateScope()`.
+
+```c#
+using Shouldly;
+using Pure.DI;
+using static Pure.DI.Lifetime;
+
+var composition = new Composition();
+IRequestContext ctx1;
+IRequestContext ctx2;
+
+// Request #1
+using (var request1 = composition.CreateScope())
+{
+    var checkout11 = request1.RequestRoot;
+    var checkout12 = request1.RequestRoot;
+    ctx1 = checkout11.Context;
+
+    // Same request => same scoped instance
+    ctx1.ShouldBe(checkout12.Context);
+    ctx1.IsDisposed.ShouldBeFalse();
+}
+
+// End of request #1 => scoped instance is disposed
+ctx1.IsDisposed.ShouldBeTrue();
+
+// Request #2
+using (var request2 = composition.CreateScope())
+{
+    var checkout2 = request2.RequestRoot;
+    ctx2 = checkout2.Context;
+}
+
+// Different request => different scoped instance
+ctx1.ShouldNotBe(ctx2);
+
+// End of request #2 => scoped instance is disposed
+ctx2.IsDisposed.ShouldBeTrue();
+
+interface IIdGenerator
+{
+    Guid Generate();
+}
+
+class IdGenerator : IIdGenerator
+{
+    public Guid Generate() => Guid.NewGuid();
+}
+
+interface IRequestContext
+{
+    Guid CorrelationId { get; }
+
+    bool IsDisposed { get; }
+}
+
+// Typically: DbContext / UnitOfWork / RequestTelemetry / Activity, etc.
+sealed class RequestContext(IIdGenerator idGenerator)
+    : IRequestContext, IDisposable
+{
+    public Guid CorrelationId { get; } = idGenerator.Generate();
+
+    public bool IsDisposed { get; private set; }
+
+    public void Dispose() => IsDisposed = true;
+}
+
+interface ICheckoutService
+{
+    IRequestContext Context { get; }
+}
+
+// "Controller/service" that participates in request processing.
+// It depends on a scoped context (per-request resource).
+sealed class CheckoutService(IRequestContext context)
+    : ICheckoutService
+{
+    public IRequestContext Context => context;
+}
+
+partial class Composition
+{
+    static void Setup() =>
+
+        DI.Setup()
+            .Hint(Hint.ScopeFactoryName, "CreateScope")
+            // Per-request lifetime
+            .Bind().As(Scoped).To<RequestContext>()
+
+            .Bind().As(Singleton).To<IdGenerator>()
+
+            // Regular service that consumes scoped context
+            .Bind().To<CheckoutService>()
+
+            // "Request root" (what your controller/handler resolves)
+            .Root<ICheckoutService>("RequestRoot");
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+>[!NOTE]
+>This approach is useful when you need runtime scope creation without deriving a child composition type.
+
+## Scoped
+
 The `Scoped` lifetime ensures that there will be a single instance of the dependency for each scope.
 
 ```c#
@@ -7330,7 +7560,7 @@ class UserService(
 
     public IUserRepository CloudRepository { get; } = cloudRepo;
 
-    public required IUserRepository BackupRepository { init; get; }
+    public required IUserRepository BackupRepository { get; init; }
 
     public IUserRepository FetcherRepository => fetcher.Repository;
 }
@@ -7441,7 +7671,7 @@ interface ICheckoutService
 
 class CheckoutService : ICheckoutService
 {
-    public required IPaymentGateway Gateway { init; get; }
+    public required IPaymentGateway Gateway { get; init; }
 }
 ```
 
@@ -7574,7 +7804,7 @@ class SmartHomeSystem(
 
     public ISensor Zone2 { get; } = zone2;
 
-    public required ISensor OutdoorSensor { init; get; }
+    public required ISensor OutdoorSensor { get; init; }
 
     public ISensor ClimateSensor => climateControl.Sensor;
 }

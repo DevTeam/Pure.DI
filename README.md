@@ -322,6 +322,8 @@ dotnet run
 - [PerResolve](readme/perresolve.md)
 - [PerBlock](readme/perblock.md)
 - [Scope](readme/scope.md)
+- [Scope factory](readme/scope-factory.md)
+- [Scoped](readme/scoped.md)
 - [Auto scoped](readme/auto-scoped.md)
 - [Default lifetime](readme/default-lifetime.md)
 - [Default lifetime for a type](readme/default-lifetime-for-a-type.md)
@@ -1173,6 +1175,7 @@ DI.Setup("Composition")
 | [DisableAutoBindingLifetimeRegularExpression](#disableautobindinglifetimeregularexpression-hint)                                     | Regular expression                         |            | .+        |
 | [DisableAutoBindingLifetimeWildcard](#disableautobindinglifetimewildcard-hint)                                                       | Wildcard                                   |            | *         |
 | [LightweightAnonymousRoot](#lightweightanonymousroot-hint)                                                                           | _On_ or _Off_                              |            | _On_      |
+| [ScopeFactoryName](#scopefactoryname-hint)                                                                                           | Method name                                |            |           |
 
 The list of hints will be gradually expanded to meet the needs and desires for fine-tuning code generation. Please feel free to add your ideas.
 
@@ -1840,6 +1843,17 @@ DI.Setup("Composition")
     .Bind<IService>().To<Service>();
 ```
 
+### ScopeFactoryName Hint
+
+Sets the scope factory name to be used for creating scopes.
+
+```c#
+// ScopeFactoryName = CreateScope
+DI.Setup("Composition")
+    .Hint(Hint.ScopeFactoryName, "CreateScope")
+    .Bind<IDependency>().As(Lifetime.Scoped).To<Dependency>();
+```
+
 </details>
 
 <details>
@@ -2022,9 +2036,9 @@ AI needs to understand the situation it’s in (context). This means knowing det
 
 | AI context file | Size | Tokens |
 | --------------- | ---- | ------ |
-| [AGENTS_SMALL.md](AGENTS_SMALL.md) | 57KB | 14K |
+| [AGENTS_SMALL.md](AGENTS_SMALL.md) | 63KB | 16K |
 | [AGENTS_MEDIUM.md](AGENTS_MEDIUM.md) | 106KB | 27K |
-| [AGENTS.md](AGENTS.md) | 381KB | 97K |
+| [AGENTS.md](AGENTS.md) | 387KB | 99K |
 
 For different IDEs, you can use the _AGENTS.md_ file as is by simply copying it to the root directory. For use with _JetBrains Rider_ and _Junie_, please refer to [these instructions](https://www.jetbrains.com/help/junie/customize-guidelines.html). For example, you can copy any _AGENTS.md_ file into your project (using _Pure.DI_) as _.junie/guidelines.md._
 ## How to contribute to Pure.DI
@@ -2115,9 +2129,9 @@ Thanks!
 
 ## Benchmarks
 
-BenchmarkDotNet v0.15.8, Windows 10 (10.0.19045.6456/22H2/2022Update)
-AMD Ryzen 9 5900X 4.20GHz, 1 CPU, 24 logical and 12 physical cores
-.NET SDK 10.0.102
+BenchmarkDotNet v0.14.0, Windows 10 (10.0.19045.4894/22H2/2022Update)
+AMD Ryzen 9 5900X, 1 CPU, 24 logical and 12 physical cores
+.NET SDK 9.0.100
 
 <details>
 <summary>Transient</summary>

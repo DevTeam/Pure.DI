@@ -77,7 +77,7 @@ The following partial class will be generated:
 ```c#
 partial class Singleton
 {
-  private readonly Singleton _root;
+  private Singleton _root;
 
   private Service1? _scopedService160;
   private Service4? _scopedService463;
@@ -90,7 +90,8 @@ partial class Singleton
 
   internal Singleton(Singleton parentScope)
   {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
+    if (Object.ReferenceEquals(parentScope, null)) throw new ArgumentNullException(nameof(parentScope));
+    _root = parentScope._root;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -123,7 +123,7 @@ The following partial class will be generated:
 ```c#
 partial class Composition: IDisposable
 {
-  private readonly Composition _root;
+  private Composition _root;
 #if NET9_0_OR_GREATER
   private readonly Lock _lock;
 #else
@@ -149,7 +149,8 @@ partial class Composition: IDisposable
 
   internal Composition(Composition parentScope)
   {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
+    if (Object.ReferenceEquals(parentScope, null)) throw new ArgumentNullException(nameof(parentScope));
+    _root = parentScope._root;
     _lock = parentScope._lock;
     _disposables = new object[1];
   }
@@ -159,12 +160,13 @@ partial class Composition: IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
+      var root = _root ?? this;
       Func<IConfiguration> perBlockFunc439 = new Func<IConfiguration>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
         EnsureConfigurationExists();
-        return _root._singletonConfiguration62;
+        return root._singletonConfiguration62;
       });
       Func<ISession> perBlockFunc440 = new Func<ISession>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -181,11 +183,11 @@ partial class Composition: IDisposable
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureConfigurationExists()
       {
-        if (_root._singletonConfiguration62 is null)
+        if (root._singletonConfiguration62 is null)
           lock (_lock)
-            if (_root._singletonConfiguration62 is null)
+            if (root._singletonConfiguration62 is null)
             {
-              _root._singletonConfiguration62 = new Configuration();
+              root._singletonConfiguration62 = new Configuration();
             }
       }
 
@@ -197,7 +199,7 @@ partial class Composition: IDisposable
             if (_scopedSession63 is null)
             {
               EnsureConfigurationExists();
-              _scopedSession63 = new Session(_root._singletonConfiguration62);
+              _scopedSession63 = new Session(root._singletonConfiguration62);
               _disposables[_disposeIndex++] = _scopedSession63;
             }
       }
@@ -424,7 +426,7 @@ classDiagram
 	Composition --|> IDisposable
 	Configuration --|> IConfiguration
 	Session --|> ISession
-	Composition ..> LightweightRoot : LightweightRoot LightRoot84d
+	Composition ..> LightweightRoot : LightweightRoot LightRoot102d
 	Composition ..> Session : ISession _
 	Composition ..> Configuration : IConfiguration _
 	Session o-- "Singleton" Configuration : IConfiguration
@@ -443,7 +445,7 @@ classDiagram
 	namespace Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario {
 		class Composition {
 		<<partial>>
-		-LightweightRoot LightRoot84d
+		-LightweightRoot LightRoot102d
 		-IConfiguration _
 		-ISession _
 		+ T ResolveᐸTᐳ()

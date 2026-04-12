@@ -38,7 +38,7 @@ interface ICheckoutService
 
 class CheckoutService : ICheckoutService
 {
-    public required IPaymentGateway Gateway { init; get; }
+    public required IPaymentGateway Gateway { get; init; }
 }
 ```
 

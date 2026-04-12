@@ -121,7 +121,7 @@ The following partial class will be generated:
 ```c#
 partial class Composition: IDisposable, IAsyncDisposable
 {
-  private readonly Composition _root;
+  private Composition _root;
 #if NET9_0_OR_GREATER
   private readonly Lock _lock;
 #else
@@ -146,7 +146,8 @@ partial class Composition: IDisposable, IAsyncDisposable
 
   internal Composition(Composition parentScope)
   {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
+    if (Object.ReferenceEquals(parentScope, null)) throw new ArgumentNullException(nameof(parentScope));
+    _root = parentScope._root;
     _lock = parentScope._lock;
     _disposables = new object[1];
   }

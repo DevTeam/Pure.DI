@@ -71,7 +71,7 @@ class UserService(
 
     public IUserRepository CloudRepository { get; } = cloudRepo;
 
-    public required IUserRepository BackupRepository { init; get; }
+    public required IUserRepository BackupRepository { get; init; }
 
     public IUserRepository FetcherRepository => fetcher.Repository;
 }
