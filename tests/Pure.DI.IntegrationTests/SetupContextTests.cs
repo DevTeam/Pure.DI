@@ -1602,7 +1602,7 @@ public class SetupContextTests
                                    private void Setup()
                                    {
                                        DI.Setup(nameof(Composition))
-                                           .Hint(Hint.ScopeFactoryName, "CreateScope")
+                                           .Hint(Hint.ScopeMethodName, "SetupScope")
                                            .Bind<IService>().As(Lifetime.Scoped).To<Service>()
                                            .Root<IService>("Service");
                                    }
@@ -1620,14 +1620,14 @@ public class SetupContextTests
 
                                        IService scope11;
                                        IService scope21;
-                                       using (var scope1 = composition.CreateScope())
+                                       using (var scope1 = Composition.SetupScope(composition, new Composition()))
                                        {
                                            scope11 = scope1.Service;
                                            var scope12 = scope1.Resolve<IService>();
                                            Console.WriteLine(root1 == scope11);
                                            Console.WriteLine(scope11 == scope12);
 
-                                           using (var scope2 = scope1.CreateScope())
+                                           using (var scope2 = Composition.SetupScope(scope1, new Composition()))
                                            {
                                                scope21 = scope2.Service;
                                                Console.WriteLine(scope11 == scope21);
@@ -1725,7 +1725,7 @@ public class SetupContextTests
                                    private void Setup()
                                    {
                                        DI.Setup(nameof(Composition))
-                                           .Hint(Hint.ScopeFactoryName, "CreateScope")
+                                           .Hint(Hint.ScopeMethodName, "CreateScope")
                                            .Bind<ISingleton>().As(Lifetime.Singleton).To<Singleton>()
                                            .Bind<IScoped>().As(Lifetime.Scoped).To<Scoped>()
                                            .Bind<IService>().To<Service>()
@@ -1838,7 +1838,7 @@ public class SetupContextTests
                                    private void Setup()
                                    {
                                        DI.Setup(nameof(Composition))
-                                           .Hint(Hint.ScopeFactoryName, "CreateScope")
+                                           .Hint(Hint.ScopeMethodName, "SetupScope")
                                            .Bind<ITransientDependency>().As(Lifetime.Transient).To<TransientDependency>()
                                            .Bind<IScopedDependency>().As(Lifetime.Scoped).To<ScopedDependency>()
                                            .Bind<ISingletonDependency>().As(Lifetime.Singleton).To<SingletonDependency>()
@@ -1856,7 +1856,7 @@ public class SetupContextTests
                                        IScopedDependency scope1Scoped;
                                        IScopedDependency scope2Scoped;
                                        ISingletonDependency singletonFromScope;
-                                       using (var scope1 = composition.CreateScope())
+                                       using (var scope1 = Composition.SetupScope(composition, new Composition()))
                                        {
                                            var scope11 = scope1.Service;
                                            var scope12 = scope1.Service;
@@ -1867,7 +1867,7 @@ public class SetupContextTests
                                            Console.WriteLine(scope11.Scoped == scope12.Scoped);
                                            Console.WriteLine(scope11.Singleton == scope12.Singleton);
 
-                                           using (var scope2 = composition.CreateScope())
+                                           using (var scope2 = Composition.SetupScope(composition, new Composition()))
                                            {
                                                var scopedRoot = scope2.Service;
                                                scope2Scoped = scopedRoot.Scoped;
@@ -1949,7 +1949,7 @@ public class SetupContextTests
                                    private void Setup()
                                    {
                                        DI.Setup(nameof(Composition))
-                                           .Hint(Hint.ScopeFactoryName, "CreateScope")
+                                           .Hint(Hint.ScopeMethodName, "SetupScope")
                                            .Arg<string>("tenant")
                                            .Bind<IRequestContext>().As(Lifetime.Scoped).To<RequestContext>()
                                            .Root<IRequestContext>("Context");
@@ -1965,7 +1965,7 @@ public class SetupContextTests
                                        Console.WriteLine(rootContext.Tenant);
 
                                        IRequestContext scope1Context;
-                                       var scope1 = composition.CreateScope();
+                                       var scope1 = Composition.SetupScope(composition, new Composition(tenant: "EU"));
                                        {
                                            var scope11 = scope1.Context;
                                            var scope12 = scope1.Context;
@@ -1974,7 +1974,7 @@ public class SetupContextTests
                                            Console.WriteLine(scope11 == scope12);
                                            Console.WriteLine(rootContext == scope11);
 
-                                           var scope2 = scope1.CreateScope();
+                                           var scope2 = Composition.SetupScope(scope1, new Composition(tenant: "EU"));
                                            {
                                                var scope2Context = scope2.Context;
                                                Console.WriteLine(scope2Context.Tenant);
@@ -1983,7 +1983,7 @@ public class SetupContextTests
                                        }
 
                                        var composition2 = new Composition(tenant: "US");
-                                       var scope3 = composition2.CreateScope();
+                                       var scope3 = Composition.SetupScope(composition2, new Composition(tenant: "US"));
                                        {
                                            Console.WriteLine(scope3.Context.Tenant);
                                            Console.WriteLine(scope1Context.Tenant == scope3.Context.Tenant);
@@ -2048,7 +2048,7 @@ public class SetupContextTests
                                    {
                                        DI.Setup(nameof(Composition))
                                            .Hint(Hint.Resolve, "Off")
-                                           .Hint(Hint.ScopeFactoryName, "CreateScope")
+                                           .Hint(Hint.ScopeMethodName, "SetupScope")
                                            .Bind<IScopeState>().As(Lifetime.Scoped).To<ScopeState>()
                                            .Bind<IRequest>().To<Request>()
                                            .RootArg<int>("requestId")
@@ -2065,7 +2065,7 @@ public class SetupContextTests
                                        Console.WriteLine(rootRequest.RequestId);
 
                                        IRequest requestFromScope1;
-                                       var scope1 = composition.CreateScope();
+                                       var scope1 = Composition.SetupScope(composition, new Composition());
                                        {
                                            var scope11 = scope1.CreateRequest(requestId: 10);
                                            var scope12 = scope1.CreateRequest(requestId: 20);
@@ -2075,7 +2075,7 @@ public class SetupContextTests
                                            Console.WriteLine(scope11.ScopeState == scope12.ScopeState);
                                            Console.WriteLine(rootRequest.ScopeState == scope11.ScopeState);
 
-                                           var scope2 = scope1.CreateScope();
+                                           var scope2 = Composition.SetupScope(scope1, new Composition());
                                            {
                                                var scope21 = scope2.CreateRequest(requestId: 30);
                                                Console.WriteLine(scope21.RequestId);
@@ -2083,7 +2083,7 @@ public class SetupContextTests
                                            }
                                        }
 
-                                       var scope3 = composition.CreateScope();
+                                       var scope3 = Composition.SetupScope(composition, new Composition());
                                        {
                                            var scope31 = scope3.CreateRequest(requestId: 40);
                                            Console.WriteLine(scope31.RequestId);
@@ -2168,7 +2168,7 @@ public class SetupContextTests
                                    private void Setup()
                                    {
                                        DI.Setup(nameof(Composition))
-                                           .Hint(Hint.ScopeFactoryName, "CreateScope")
+                                           .Hint(Hint.ScopeMethodName, "SetupScope")
                                            .Bind<ISingletonDependency>().As(Lifetime.Singleton).To<SingletonDependency>()
                                            .Bind<IScopedDependency>().As(Lifetime.Scoped).To<ScopedDependency>()
                                            .Bind<IService>().To<Service>()
@@ -2189,7 +2189,7 @@ public class SetupContextTests
                                        IScopedDependency scope1Scoped;
                                        IScopedDependency scope2Scoped;
                                        ISingletonDependency singletonFromScope2;
-                                       using (var scope1 = composition.CreateScope())
+                                       using (var scope1 = Composition.SetupScope(composition, new Composition()))
                                        {
                                            var scope11 = scope1.Service;
                                            var scope12 = scope1.Service;
@@ -2204,7 +2204,7 @@ public class SetupContextTests
                                        Console.WriteLine(root1.Singleton.IsDisposed);
                                        Console.WriteLine(root1.Scoped.IsDisposed);
 
-                                       using (var scope2 = composition.CreateScope())
+                                       using (var scope2 = Composition.SetupScope(composition, new Composition()))
                                        {
                                            var scope21 = scope2.Service;
                                            singletonFromScope2 = scope21.Singleton;
@@ -2310,7 +2310,7 @@ public class SetupContextTests
                                     {
                                         DI.Setup(nameof(Composition))
                                             .Hint(Hint.Resolve, "Off")
-                                            .Hint(Hint.ScopeFactoryName, "CreateScope")
+                                            .Hint(Hint.ScopeMethodName, "SetupScope")
                                             .DependsOn(nameof(BaseComposition), SetupContextKind.RootArgument, "baseContext")
                                             .Bind<IScopeMarker>().As(Lifetime.Scoped).To<ScopeMarker>()
                                             .Bind<IService>().To<Service>()
@@ -2331,14 +2331,14 @@ public class SetupContextTests
                                            Value = 41
                                        };
                                        var composition = new Composition();
-                                       var scope1 = composition.CreateScope();
+                                       var scope1 = Composition.SetupScope(composition, new Composition());
                                        var service11 = scope1.BuildService(baseContext: baseContext1);
                                        var service12 = scope1.BuildService(baseContext: baseContext2);
                                        Console.WriteLine(service11.Value);
                                        Console.WriteLine(service12.Value);
                                        Console.WriteLine(service11.Marker == service12.Marker);
 
-                                       var scope2 = scope1.CreateScope();
+                                       var scope2 = Composition.SetupScope(scope1, new Composition());
                                        var service2 = scope2.BuildService(baseContext: baseContext2);
                                        Console.WriteLine(service2.Value);
                                        Console.WriteLine(service12.Marker == service2.Marker);
@@ -2355,7 +2355,7 @@ public class SetupContextTests
     }
 
     [Fact]
-    public async Task ShouldSupportCustomScopeFactoryNameWithResolveOffAndRootArgs()
+    public async Task ShouldSupportCustomScopeMethodNameWithResolveOffAndRootArgs()
     {
         // Given
 
@@ -2402,7 +2402,7 @@ public class SetupContextTests
                                    {
                                        DI.Setup(nameof(Composition))
                                            .Hint(Hint.Resolve, "Off")
-                                           .Hint(Hint.ScopeFactoryName, "OpenScope")
+                                           .Hint(Hint.ScopeMethodName, "OpenScope")
                                            .Bind<IScopedState>().As(Lifetime.Scoped).To<ScopedState>()
                                            .Bind<IRequest>().To<Request>()
                                            .RootArg<int>("id")
@@ -2421,7 +2421,7 @@ public class SetupContextTests
                                        Console.WriteLine(root2.Id);
                                        Console.WriteLine(root1.State == root2.State);
 
-                                       var scope = composition.OpenScope();
+                                       var scope = Composition.OpenScope(composition, new Composition());
                                        var scope1 = scope.BuildRequest(id: 3);
                                        var scope2 = scope.BuildRequest(id: 4);
                                        Console.WriteLine(scope1.Id);
@@ -2429,7 +2429,7 @@ public class SetupContextTests
                                        Console.WriteLine(scope1.State == scope2.State);
                                        Console.WriteLine(root1.State == scope1.State);
 
-                                       var nested = scope.OpenScope();
+                                       var nested = Composition.OpenScope(scope, new Composition());
                                        var nestedRequest = nested.BuildRequest(id: 5);
                                        Console.WriteLine(nestedRequest.Id);
                                        Console.WriteLine(scope1.State == nestedRequest.State);
@@ -2466,7 +2466,7 @@ public class SetupContextTests
                                partial class Composition
                                {
                                    void Setup() => DI.Setup(nameof(Composition))
-                                       .Hint(Hint.ScopeFactoryName, "CreateScope")
+                                       .Hint(Hint.ScopeMethodName, "SetupScope")
                                        .Bind<IService>().As(Lifetime.Scoped).To<DefaultService>()
                                        .Bind<IService>("special").As(Lifetime.Scoped).To<SpecialService>()
                                        .Root<IService>("DefaultService")
@@ -2486,7 +2486,7 @@ public class SetupContextTests
                                        Console.WriteLine(rootSpecial1 == rootSpecial2);
                                        Console.WriteLine(rootDefault1 == rootSpecial1);
 
-                                       var scope = composition.CreateScope();
+                                       var scope = Composition.SetupScope(composition, new Composition());
                                        var scopeDefault1 = scope.DefaultService;
                                        var scopeDefault2 = scope.DefaultService;
                                        var scopeSpecial1 = scope.SpecialService;
@@ -2527,7 +2527,7 @@ public class SetupContextTests
                                partial class Composition
                                {
                                    void Setup() => DI.Setup(nameof(Composition))
-                                       .Hint(Hint.ScopeFactoryName, "CreateScope")
+                                       .Hint(Hint.ScopeMethodName, "SetupScope")
                                        .Bind<IService>().As(Lifetime.Scoped).To<Service>()
                                        .Bind<IService>("tag").As(Lifetime.Scoped).To<TaggedService>()
                                        .Root<IService>("Service")
@@ -2539,7 +2539,7 @@ public class SetupContextTests
                                    static void Main()
                                    {
                                        var composition = new Composition();
-                                       var scope = composition.CreateScope();
+                                       var scope = Composition.SetupScope(composition, new Composition());
 
                                        var byGeneric = scope.Resolve<IService>();
                                        var byType = (IService)scope.Resolve(typeof(IService));
@@ -2611,7 +2611,7 @@ public class SetupContextTests
                                partial class Composition
                                {
                                    void Setup() => DI.Setup(nameof(Composition))
-                                       .Hint(Hint.ScopeFactoryName, "CreateScope")
+                                       .Hint(Hint.ScopeMethodName, "SetupScope")
                                        .Bind<IDependency>().As(Lifetime.Scoped).To<Dependency>()
                                        .Bind<IScopeMarker>().As(Lifetime.Scoped).To<ScopeMarker>()
                                        .Bind<IService>().To<Service>()
@@ -2628,7 +2628,7 @@ public class SetupContextTests
                                        Console.WriteLine(root1.A == root1.B);
                                        Console.WriteLine(root1.A == root2.A);
 
-                                       var scope = composition.CreateScope();
+                                       var scope = Composition.SetupScope(composition, new Composition());
                                        var scoped1 = scope.Service;
                                        var scoped2 = scope.Service;
                                        Console.WriteLine(scoped1.A == scoped1.B);
@@ -2694,7 +2694,7 @@ public class SetupContextTests
                                partial class Composition
                                {
                                    void Setup() => DI.Setup(nameof(Composition))
-                                       .Hint(Hint.ScopeFactoryName, "CreateScope")
+                                       .Hint(Hint.ScopeMethodName, "SetupScope")
                                        .Bind<IDependency>().As(Lifetime.Transient).To<Dependency>()
                                        .Bind<IScopeMarker>().As(Lifetime.Scoped).To<ScopeMarker>()
                                        .Bind<IService>().To<Service>()
@@ -2709,7 +2709,7 @@ public class SetupContextTests
                                        var root = composition.Service;
                                        Console.WriteLine(root.A == root.B);
 
-                                       var scope = composition.CreateScope();
+                                       var scope = Composition.SetupScope(composition, new Composition());
                                        var scoped1 = scope.Service;
                                        var scoped2 = scope.Service;
                                        Console.WriteLine(scoped1.A == scoped1.B);
@@ -2774,7 +2774,7 @@ public class SetupContextTests
                                partial class Composition
                                {
                                    void Setup() => DI.Setup(nameof(Composition))
-                                       .Hint(Hint.ScopeFactoryName, "CreateScope")
+                                       .Hint(Hint.ScopeMethodName, "SetupScope")
                                        .Bind<IDependency>().As(Lifetime.PerResolve).To<Dependency>()
                                        .Bind<IScopeMarker>().As(Lifetime.Scoped).To<ScopeMarker>()
                                        .Bind<IService>().To<Service>()
@@ -2791,7 +2791,7 @@ public class SetupContextTests
                                        Console.WriteLine(root1.A == root1.B);
                                        Console.WriteLine(root1.A == root2.A);
 
-                                       var scope = composition.CreateScope();
+                                       var scope = Composition.SetupScope(composition, new Composition());
                                        var scoped1 = scope.Service;
                                        var scoped2 = scope.Service;
                                        Console.WriteLine(scoped1.A == scoped1.B);
@@ -2856,7 +2856,7 @@ public class SetupContextTests
                                partial class Composition
                                {
                                    void Setup() => DI.Setup(nameof(Composition))
-                                       .Hint(Hint.ScopeFactoryName, "CreateScope")
+                                       .Hint(Hint.ScopeMethodName, "SetupScope")
                                        .Bind<IDependency>().As(Lifetime.PerBlock).To<Dependency>()
                                        .Bind<IScopeMarker>().As(Lifetime.Scoped).To<ScopeMarker>()
                                        .Bind<IService>().To<Service>()
@@ -2873,7 +2873,7 @@ public class SetupContextTests
                                        Console.WriteLine(root1.A == root1.B);
                                        Console.WriteLine(root1.A == root2.A);
 
-                                       var scope = composition.CreateScope();
+                                       var scope = Composition.SetupScope(composition, new Composition());
                                        var scoped1 = scope.Service;
                                        var scoped2 = scope.Service;
                                        Console.WriteLine(scoped1.A == scoped1.B);
@@ -2930,7 +2930,7 @@ public class SetupContextTests
                                {
                                    void Setup() => DI.Setup(nameof(Composition))
                                        .Hint(Hint.Resolve, "Off")
-                                       .Hint(Hint.ScopeFactoryName, "CreateScope")
+                                       .Hint(Hint.ScopeMethodName, "SetupScope")
                                        .RootArg<string>("name")
                                        .Bind<IScopeMarker>().As(Lifetime.Scoped).To<ScopeMarker>()
                                        .Bind<IService>().To<Service>()
@@ -2948,7 +2948,7 @@ public class SetupContextTests
                                        Console.WriteLine(root2.Name);
                                        Console.WriteLine(root1.Marker == root2.Marker);
 
-                                       var scope = composition.CreateScope();
+                                       var scope = Composition.SetupScope(composition, new Composition());
                                        var scope1 = scope.GetService(name: "C");
                                        var scope2 = scope.GetService(name: "D");
                                        Console.WriteLine(scope1.Name);
@@ -3002,7 +3002,7 @@ public class SetupContextTests
                                partial class Composition
                                {
                                    void Setup() => DI.Setup(nameof(Composition))
-                                       .Hint(Hint.ScopeFactoryName, "NewScope")
+                                       .Hint(Hint.ScopeMethodName, "SetupScope")
                                        .Arg<string>("tenant")
                                        .Arg<int>("version", "v")
                                        .Bind<IService>().As(Lifetime.Scoped).To<Service>()
@@ -3017,12 +3017,12 @@ public class SetupContextTests
                                        Console.WriteLine(composition.Service.Tenant);
                                        Console.WriteLine(composition.Service.Version);
 
-                                       var scope = composition.NewScope();
+                                       var scope = Composition.SetupScope(composition, new Composition(tenant: "EU", version: 3));
                                        Console.WriteLine(scope.Service.Tenant);
                                        Console.WriteLine(scope.Service.Version);
 
                                        var composition2 = new Composition(tenant: "US", version: 8);
-                                       var scope2 = composition2.NewScope();
+                                       var scope2 = Composition.SetupScope(composition2, new Composition(tenant: "US", version: 8));
                                        Console.WriteLine(scope2.Service.Tenant);
                                        Console.WriteLine(scope2.Service.Version);
                                    }
@@ -3082,7 +3082,7 @@ public class SetupContextTests
                                {
                                    void Setup() => DI.Setup(nameof(Composition))
                                        .Hint(Hint.Resolve, "Off")
-                                       .Hint(Hint.ScopeFactoryName, "CreateScope")
+                                       .Hint(Hint.ScopeMethodName, "SetupScope")
                                        .RootArg<int>("id")
                                        .RootArg<string>("name", "n")
                                        .Bind<IState>().As(Lifetime.Scoped).To<State>()
@@ -3101,7 +3101,7 @@ public class SetupContextTests
                                        Console.WriteLine($"{root2.Id}:{root2.Name}");
                                        Console.WriteLine(root1.State == root2.State);
 
-                                       var scope = composition.CreateScope();
+                                       var scope = Composition.SetupScope(composition, new Composition());
                                        var scope1 = scope.Build(id: 3, name: "C");
                                        var scope2 = scope.Build(id: 4, name: "D");
                                        Console.WriteLine($"{scope1.Id}:{scope1.Name}");
@@ -3150,7 +3150,7 @@ public class SetupContextTests
                                partial class Composition
                                {
                                    void Setup() => DI.Setup(nameof(Composition))
-                                       .Hint(Hint.ScopeFactoryName, "CreateScope")
+                                       .Hint(Hint.ScopeMethodName, "CreateScope")
                                        .RootArg<string>("name")
                                        .Bind<IService>().To<Service>()
                                        .Root<IService>("Build");
@@ -3220,7 +3220,7 @@ public class SetupContextTests
                                    private void Setup()
                                    {
                                        DI.Setup(nameof(Composition))
-                                           .Hint(Hint.ScopeFactoryName, "CreateScope")
+                                           .Hint(Hint.ScopeMethodName, "SetupScope")
                                            .Bind<IScopedDependency>().As(Lifetime.Scoped).To<ScopedDependency>()
                                            .Bind<Service>().To<Service>()
                                            .Root<Service>("Service", kind: RootKinds.Light);
@@ -3238,7 +3238,7 @@ public class SetupContextTests
                                        Console.WriteLine(root1.Dependency == root2.Dependency);
 
                                        IScopedDependency dependencyFromScope;
-                                       using (var scope = composition.CreateScope())
+                                       using (var scope = Composition.SetupScope(composition, new Composition()))
                                        {
                                            var scope1 = scope.Service;
                                            var scope2 = scope.Service;
@@ -3304,7 +3304,7 @@ public class SetupContextTests
                                    private void Setup()
                                    {
                                        DI.Setup(nameof(Composition))
-                                           .Hint(Hint.ScopeFactoryName, "CreateScope")
+                                           .Hint(Hint.ScopeMethodName, "SetupScope")
                                            .Bind<IService>().As(Lifetime.Scoped).To<Service>()
                                            .Root<IService>("Service");
                                    }
@@ -3317,7 +3317,7 @@ public class SetupContextTests
                                        IService service;
                                        var composition = new Composition();
 
-                                       await using (var scope = composition.CreateScope())
+                                       await using (var scope = Composition.SetupScope(composition, new Composition()))
                                        {
                                            service = scope.Service;
                                            Console.WriteLine(service.IsDisposed);
@@ -3377,7 +3377,7 @@ public class SetupContextTests
                                    private void Setup()
                                    {
                                        DI.Setup(nameof(Composition))
-                                           .Hint(Hint.ScopeFactoryName, "CreateNewScope")
+                                           .Hint(Hint.ScopeMethodName, "SetupNewScope")
                                            .Bind<IService>().As(Lifetime.Scoped).To<Service>()
                                            .Root<IService>("Service");
                                    }
@@ -3389,7 +3389,7 @@ public class SetupContextTests
                                    {
                                        Service.DisposeCount = 0;
                                        var composition = new Composition();
-                                       var scope = composition.CreateNewScope();
+                                       var scope = Composition.SetupNewScope(composition, new Composition());
 
                                        _ = scope.Service;
 

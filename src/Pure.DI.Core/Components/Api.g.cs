@@ -1195,12 +1195,12 @@ namespace Pure.DI
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
-        ///     .Hint(Hint.ScopeFactoryName, "CreateScope")
+        ///     .Hint(Hint.ScopeMethodName, "CreateScope")
         ///     .Bind&lt;IDependency&gt;().As(Lifetime.Scoped).To&lt;Dependency&gt;();
         /// </code>
         /// </example>
         /// </summary>
-        ScopeFactoryName,
+        ScopeMethodName,
     }
 
     /// <summary>

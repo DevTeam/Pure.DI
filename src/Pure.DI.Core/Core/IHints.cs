@@ -56,5 +56,5 @@ interface IHints : IReadOnlyDictionary<Hint, LinkedList<string>>
 
     bool IsLightweightAnonymousRoot { get; }
 
-    string ScopeFactoryName { get; }
+    string ScopeMethodName { get; }
 }

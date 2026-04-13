@@ -17,8 +17,7 @@ sealed class FieldsBuilder(
         var compilation = composition.Compilation;
         var nullable = compilation.Options.NullableContextOptions == NullableContextOptions.Disable ? "" : "?";
         var isAnyConstructorEnabled = constructors.IsEnabled(composition.Source);
-        var hasScopeFactory = isAnyConstructorEnabled && constructors.IsEnabled(composition, ConstructorKind.Scope) && composition.IsFactoryMethod;
-        var skipFieldsInit = isAnyConstructorEnabled && !hasScopeFactory;
+        var skipFieldsInit = isAnyConstructorEnabled && !composition.IsScopeMethod;
         if (isAnyConstructorEnabled && composition.Singletons.Length > 0)
         {
             // _parent filed
@@ -30,9 +29,9 @@ sealed class FieldsBuilder(
         {
             // _lock field
             code.AppendLine(new Line(int.MinValue, "#if NET9_0_OR_GREATER"));
-            code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] private {(composition.IsFactoryMethod ? "" : "readonly ")}{Names.LockTypeName} {Names.LockFieldName}{(skipFieldsInit ? "" : $" = new {Names.LockTypeName}()")};");
+            code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] private {(composition.IsScopeMethod ? "" : "readonly ")}{Names.LockTypeName} {Names.LockFieldName}{(skipFieldsInit ? "" : $" = new {Names.LockTypeName}()")};");
             code.AppendLine(new Line(int.MinValue, "#else"));
-        code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] private {(composition.IsFactoryMethod ? "" : "readonly ")}{Names.ObjectTypeName} {Names.LockFieldName}{(skipFieldsInit ? "" : $" = new {Names.ObjectTypeName}()")};");
+        code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] private {(composition.IsScopeMethod ? "" : "readonly ")}{Names.ObjectTypeName} {Names.LockFieldName}{(skipFieldsInit ? "" : $" = new {Names.ObjectTypeName}()")};");
             code.AppendLine(new Line(int.MinValue, "#endif"));
             membersCounter++;
         }

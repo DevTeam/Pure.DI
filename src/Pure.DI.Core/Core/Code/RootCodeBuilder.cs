@@ -171,7 +171,7 @@ sealed class RootCodeBuilder(
             var parent = "";
             if (var.AbstractNode.ActualLifetime == Singleton && constructors.IsEnabled(ctx.RootContext.Graph))
             {
-                parent = string.IsNullOrWhiteSpace(ctx.RootContext.Graph.Source.Hints.ScopeFactoryName)
+                parent = string.IsNullOrWhiteSpace(ctx.RootContext.Graph.Source.Hints.ScopeMethodName)
                     ? $"{Names.RootFieldName}."
                     : $"{Names.RootVarName}.";
             }

@@ -2,9 +2,6 @@
 $v=true
 $p=4
 $d=Scope
-$h=Demonstrates scoped lifetime with `Hint(Hint.ScopeFactory, "on")` where scopes are represented by generated `Scope` objects created via `CreateScope()`.
-$f=>[!NOTE]
-$f=>This approach is useful when you need runtime scope creation without deriving a child composition type.
 $r=Shouldly
 */
 
@@ -33,7 +30,7 @@ public class Scenario
     public void Run()
     {
 // {
-        var composition = new Composition(desc: "Checkout");
+        var composition = new Composition();
         IRequestContext ctx1;
         IRequestContext ctx2;
 
@@ -105,9 +102,7 @@ interface ICheckoutService
 
 // "Controller/service" that participates in request processing.
 // It depends on a scoped context (per-request resource).
-sealed class CheckoutService(
-    string description,
-    IRequestContext context)
+sealed class CheckoutService(IRequestContext context)
     : ICheckoutService
 {
     public IRequestContext Context => context;
@@ -116,7 +111,7 @@ sealed class CheckoutService(
 // Represents a scope
 class Scope(Composition composition): IDisposable
 {
-    private readonly Composition _scope = composition.CreateScope();
+    private readonly Composition _scope = Composition.SetupScope(composition, new Composition());
 
     public ICheckoutService Checkout => _scope.RequestRoot;
 
@@ -131,8 +126,7 @@ partial class Composition
         // Resolve = Off
 // {
         DI.Setup()
-            .Hint(Hint.ScopeFactoryName, "CreateScope")
-            .Arg<string>("desc")
+            .Hint(Hint.ScopeMethodName, "SetupScope")
             // Per-request lifetime
             .Bind().As(Scoped).To<RequestContext>()
 

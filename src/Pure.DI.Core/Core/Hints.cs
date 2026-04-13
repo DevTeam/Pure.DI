@@ -85,7 +85,7 @@ sealed class Hints : ConcurrentDictionary<Hint, LinkedList<string>>, IHints
     public bool IsLightweightAnonymousRoot =>
         IsEnabled(Hint.LightweightAnonymousRoot, SettingState.On);
 
-    public string ScopeFactoryName => GetValueOrDefault(Hint.ScopeFactoryName, "");
+    public string ScopeMethodName => GetValueOrDefault(Hint.ScopeMethodName, "");
 
     private bool IsEnabled(Hint hint, SettingState defaultValue) =>
         GetEnumHint(hint, defaultValue) == SettingState.On;

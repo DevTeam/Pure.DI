@@ -28,7 +28,7 @@ static class Names
 
     public const string DefaultApiMethodModifiers = "public";
     public const string ParentScopeArgName = "parentScope";
-    public const string NewScopeVarName = "newScope";
+    public const string ChildScopeArgName = "childScope";
     public const string ResolverPropertyName = "Value";
     public const string DefaultBuilderName = "BuildUp";
     public const string BuildingInstance = "buildingInstance";

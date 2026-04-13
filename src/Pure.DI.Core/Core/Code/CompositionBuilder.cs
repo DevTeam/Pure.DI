@@ -193,8 +193,8 @@ class CompositionBuilder(
                                   || setupContextMembersToCopy.Length > 0
                                   || isLockRequired
                                   || totalDisposablesCount > 0;
-        var scopeFactoryName = graph.Source.Hints.ScopeFactoryName;
-        var isFactoryMethod = requiresParentScope && !string.IsNullOrWhiteSpace(scopeFactoryName);
+        var ScopeMethodName = graph.Source.Hints.ScopeMethodName;
+        var isScopeMethod = requiresParentScope && !string.IsNullOrWhiteSpace(ScopeMethodName);
         var composition = new CompositionCode(
             graph,
             new Lines(),
@@ -211,9 +211,8 @@ class CompositionBuilder(
             setupContextMembers,
             setupContextArgsToCopy,
             setupContextMembersToCopy,
-            scopeFactoryName,
-            isFactoryMethod,
-            requiresParentScope,
+            ScopeMethodName,
+            isScopeMethod,
             isLockRequired);
 
         var diagram = classDiagramBuilder.Build(composition);

@@ -16,9 +16,8 @@ record CompositionCode(
     in ImmutableArray<SetupContextMembers> SetupContextMembers,
     in ImmutableArray<SetupContextArg> SetupContextArgsToCopy,
     in ImmutableArray<string> SetupContextMembersToCopy,
-    string ScopeFactoryName,
-    bool IsFactoryMethod,
-    bool RequiresParentScope,
+    string ScopeMethodName,
+    bool IsScopeMethod,
     bool IsLockRequired,
     int MembersCount = 0)
 {

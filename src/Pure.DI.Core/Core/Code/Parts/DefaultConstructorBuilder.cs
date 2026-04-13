@@ -11,7 +11,7 @@ sealed class DefaultConstructorBuilder(
 
     public CompositionCode Build(CompositionCode composition)
     {
-        if (!constructors.IsEnabled(composition, ConstructorKind.Default) || composition.IsFactoryMethod)
+        if (!constructors.IsEnabled(composition, ConstructorKind.Default) || composition.IsScopeMethod)
         {
             return composition;
         }

@@ -24,23 +24,24 @@ sealed class ScopeConstructorBuilder(
         var classArgs = composition.ClassArgs.GetArgsOfKind(ArgKind.Composition).ToList();
         var setupContextArgsToCopy = composition.SetupContextArgsToCopy;
         var isLockRequired = composition.IsLockRequired;
-        var requiresParentScope = composition.RequiresParentScope;
-        var scopeFactoryName = composition.ScopeFactoryName;
-        var isFactoryMethod = composition.IsFactoryMethod;
+        var ScopeMethodName = composition.ScopeMethodName;
+        var isScopeMethod = composition.IsScopeMethod;
         var isCommentsEnabled = hints.IsCommentsEnabled;
         string source, destination;
-        if (isFactoryMethod)
+        if (isScopeMethod)
         {
             if (isCommentsEnabled)
             {
                 code.AppendLine("/// <summary>");
-                code.AppendLine($"/// This method creates a new instance of <see cref=\"{composition.Name.ClassName}\"/> scope based on the current one. This allows the <see cref=\"Lifetime.Scoped\"/> life time to be applied.");
+                code.AppendLine($"/// This method setups <paramref name=\"{Names.ChildScopeArgName}\"/> scope based on <paramref name=\"{Names.ParentScopeArgName}\"/>. This allows the <see cref=\"Lifetime.Scoped\"/> life time to be applied.");
                 code.AppendLine("/// </summary>");
+                code.AppendLine($"/// <param name=\"{Names.ParentScopeArgName}\">Scope parent.</param>");
+                code.AppendLine($"/// <param name=\"{Names.ChildScopeArgName}\">Scope child.</param>");
             }
 
-            source = "this.";
-            destination = $"{Names.NewScopeVarName}.";
-            code.AppendLine($"internal {composition.Name.ClassName} {scopeFactoryName}()");
+            source = $"{Names.ParentScopeArgName}.";
+            destination = $"{Names.ChildScopeArgName}.";
+            code.AppendLine($"internal static {composition.Name.ClassName} {ScopeMethodName}({composition.Name.ClassName} {Names.ParentScopeArgName}, {composition.Name.ClassName} {Names.ChildScopeArgName})");
         }
         else
         {
@@ -60,30 +61,24 @@ sealed class ScopeConstructorBuilder(
 
         using (code.CreateBlock())
         {
-            if (isFactoryMethod)
+            code.AppendLine($"if ({Names.ObjectTypeName}.ReferenceEquals({Names.ParentScopeArgName}, null)) throw new {Names.SystemNamespace}ArgumentNullException(nameof({Names.ParentScopeArgName}));");
+            if (isScopeMethod)
             {
-                var args = string.Join(", ", classArgs.Select(arg => $"{source}{arg.Name}"));
-                code.AppendLine($"var {Names.NewScopeVarName} = new {composition.Name.ClassName}({args});");
-
+                code.AppendLine($"if ({Names.ObjectTypeName}.ReferenceEquals({Names.ChildScopeArgName}, null)) throw new {Names.SystemNamespace}ArgumentNullException(nameof({Names.ChildScopeArgName}));");
                 if (composition.Singletons.Length > 0)
                 {
-                    code.AppendLine($"{destination}{Names.RootFieldName} = this;");
+                    code.AppendLine($"{destination}{Names.RootFieldName} = {Names.ParentScopeArgName};");
                 }
             }
             else
             {
-                if (requiresParentScope)
-                {
-                    code.AppendLine($"if ({Names.ObjectTypeName}.ReferenceEquals({Names.ParentScopeArgName}, null)) throw new {Names.SystemNamespace}ArgumentNullException(nameof({Names.ParentScopeArgName}));");
-                }
-
                 if (composition.Singletons.Length > 0)
                 {
                     code.AppendLine($"{destination}{Names.RootFieldName} = {source}{Names.RootFieldName};");
                 }
             }
 
-            if (!isFactoryMethod)
+            if (!isScopeMethod)
             {
                 foreach (var fieldArg in classArgs)
                 {
@@ -110,17 +105,10 @@ sealed class ScopeConstructorBuilder(
             {
                 code.AppendLine($"{destination}{Names.DisposablesFieldName} = new object[{composition.DisposablesScopedCount.ToString()}];");
             }
-            else
-            {
-                if (composition.TotalDisposablesCount > 0)
-                {
-                    code.AppendLine($"{destination}{Names.DisposablesFieldName} = {source}{Names.DisposablesFieldName};");
-                }
-            }
 
-            if (isFactoryMethod)
+            if (isScopeMethod)
             {
-                code.AppendLine($"return {Names.NewScopeVarName};");
+                code.AppendLine($"return {Names.ChildScopeArgName};");
             }
         }
 
