@@ -19,18 +19,10 @@ sealed class ScopeConstructorBuilder(
 
         var code = composition.Code;
         var membersCounter = composition.MembersCount;
-        var hints = composition.Hints;
-        var setupContextMembersToCopy = composition.SetupContextMembersToCopy;
-        var classArgs = composition.ClassArgs.GetArgsOfKind(ArgKind.Composition).ToList();
-        var setupContextArgsToCopy = composition.SetupContextArgsToCopy;
-        var isLockRequired = composition.IsLockRequired;
-        var ScopeMethodName = composition.ScopeMethodName;
-        var isScopeMethod = composition.IsScopeMethod;
-        var isCommentsEnabled = hints.IsCommentsEnabled;
         string source, destination;
-        if (isScopeMethod)
+        if (composition.IsScopeMethod)
         {
-            if (isCommentsEnabled)
+            if (composition.Hints.IsCommentsEnabled)
             {
                 code.AppendLine("/// <summary>");
                 code.AppendLine($"/// This method setups <paramref name=\"{Names.ChildScopeArgName}\"/> scope based on <paramref name=\"{Names.ParentScopeArgName}\"/>. This allows the <see cref=\"Lifetime.Scoped\"/> life time to be applied.");
@@ -41,11 +33,11 @@ sealed class ScopeConstructorBuilder(
 
             source = $"{Names.ParentScopeArgName}.";
             destination = $"{Names.ChildScopeArgName}.";
-            code.AppendLine($"internal static {composition.Name.ClassName} {ScopeMethodName}({composition.Name.ClassName} {Names.ParentScopeArgName}, {composition.Name.ClassName} {Names.ChildScopeArgName})");
+            code.AppendLine($"internal static {composition.Name.ClassName} {composition.ScopeMethodName}({composition.Name.ClassName} {Names.ParentScopeArgName}, {composition.Name.ClassName} {Names.ChildScopeArgName})");
         }
         else
         {
-            if (isCommentsEnabled)
+            if (composition.Hints.IsCommentsEnabled)
             {
                 code.AppendLine("/// <summary>");
                 code.AppendLine($"/// This constructor creates a new instance of <see cref=\"{composition.Name.ClassName}\"/> scope based on <paramref name=\"{Names.ParentScopeArgName}\"/>. This allows the <see cref=\"Lifetime.Scoped\"/> life time to be applied.");
@@ -62,7 +54,7 @@ sealed class ScopeConstructorBuilder(
         using (code.CreateBlock())
         {
             code.AppendLine($"if ({Names.ObjectTypeName}.ReferenceEquals({Names.ParentScopeArgName}, null)) throw new {Names.SystemNamespace}ArgumentNullException(nameof({Names.ParentScopeArgName}));");
-            if (isScopeMethod)
+            if (composition.IsScopeMethod)
             {
                 code.AppendLine($"if ({Names.ObjectTypeName}.ReferenceEquals({Names.ChildScopeArgName}, null)) throw new {Names.SystemNamespace}ArgumentNullException(nameof({Names.ChildScopeArgName}));");
                 if (composition.Singletons.Length > 0)
@@ -78,35 +70,35 @@ sealed class ScopeConstructorBuilder(
                 }
             }
 
-            if (!isScopeMethod)
+            if (!composition.IsScopeMethod)
             {
-                foreach (var fieldArg in classArgs)
+                foreach (var fieldArg in composition.ClassArgs.GetArgsOfKind(ArgKind.Composition))
                 {
                     code.AppendLine($"{destination}{fieldArg.Name} = {source}{fieldArg.Name};");
                 }
             }
 
-            foreach (var contextArg in setupContextArgsToCopy)
+            foreach (var contextArg in composition.SetupContextArgsToCopy)
             {
                 code.AppendLine($"{destination}{contextArg.Name} = {source}{contextArg.Name};");
             }
 
-            foreach (var memberName in setupContextMembersToCopy)
+            foreach (var memberName in composition.SetupContextMembersToCopy)
             {
                 code.AppendLine($"{destination}{memberName} = {source}{memberName};");
             }
 
-            if (isLockRequired)
+            if (composition.IsLockRequired)
             {
                 code.AppendLine($"{destination}{Names.LockFieldName} = {source}{Names.LockFieldName};");
             }
 
-            if (composition.DisposablesScopedCount > 0)
+            if (composition.DisposablesScopedCount > 0 && constructors.IsEnabled(composition.Source))
             {
                 code.AppendLine($"{destination}{Names.DisposablesFieldName} = new object[{composition.DisposablesScopedCount.ToString()}];");
             }
 
-            if (isScopeMethod)
+            if (composition.IsScopeMethod)
             {
                 code.AppendLine($"return {Names.ChildScopeArgName};");
             }
