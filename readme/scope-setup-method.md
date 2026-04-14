@@ -1,6 +1,4 @@
-#### Scope factory
-
-Demonstrates scoped lifetime with `Hint(Hint.ScopeFactory, "on")` where scopes are represented by generated `Scope` objects created via `CreateScope()`.
+#### Scope setup method
 
 
 ```c#
@@ -13,7 +11,7 @@ IRequestContext ctx1;
 IRequestContext ctx2;
 
 // Request #1
-using (var request1 = composition.CreateScope())
+using (var request1 = Composition.SetupScope(composition, new Composition()))
 {
     var checkout11 = request1.RequestRoot;
     var checkout12 = request1.RequestRoot;
@@ -28,7 +26,7 @@ using (var request1 = composition.CreateScope())
 ctx1.IsDisposed.ShouldBeTrue();
 
 // Request #2
-using (var request2 = composition.CreateScope())
+using (var request2 = Composition.SetupScope(composition, new Composition()))
 {
     var checkout2 = request2.RequestRoot;
     ctx2 = checkout2.Context;
@@ -86,7 +84,7 @@ partial class Composition
     static void Setup() =>
 
         DI.Setup()
-            .Hint(Hint.ScopeFactoryName, "CreateScope")
+            .Hint(Hint.ScopeMethodName, "SetupScope")
             // Per-request lifetime
             .Bind().As(Scoped).To<RequestContext>()
 
@@ -126,9 +124,6 @@ dotnet run
 ```
 
 </details>
-
->[!NOTE]
->This approach is useful when you need runtime scope creation without deriving a child composition type.
 
 
 

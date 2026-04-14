@@ -729,7 +729,7 @@ DI.Setup("Composition")
 | [DisableAutoBindingLifetimeRegularExpression](#disableautobindinglifetimeregularexpression-hint)                                     | Regular expression                         |            | .+        |
 | [DisableAutoBindingLifetimeWildcard](#disableautobindinglifetimewildcard-hint)                                                       | Wildcard                                   |            | *         |
 | [LightweightAnonymousRoot](#lightweightanonymousroot-hint)                                                                           | _On_ or _Off_                              |            | _On_      |
-| [ScopeMethodName](#ScopeMethodName-hint)                                                                                           | Method name                                |            |           |
+| [ScopeMethodName](#ScopeMethodName-hint)                                                                                             | Method name                                |            |           |
 
 The list of hints will be gradually expanded to meet the needs and desires for fine-tuning code generation. Please feel free to add your ideas.
 

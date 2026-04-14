@@ -322,7 +322,7 @@ dotnet run
 - [PerResolve](readme/perresolve.md)
 - [PerBlock](readme/perblock.md)
 - [Scope](readme/scope.md)
-- [Scope factory](readme/scope-factory.md)
+- [Scope setup method](readme/scope-setup-method.md)
 - [Scoped](readme/scoped.md)
 - [Auto scoped](readme/auto-scoped.md)
 - [Default lifetime](readme/default-lifetime.md)
@@ -1175,7 +1175,7 @@ DI.Setup("Composition")
 | [DisableAutoBindingLifetimeRegularExpression](#disableautobindinglifetimeregularexpression-hint)                                     | Regular expression                         |            | .+        |
 | [DisableAutoBindingLifetimeWildcard](#disableautobindinglifetimewildcard-hint)                                                       | Wildcard                                   |            | *         |
 | [LightweightAnonymousRoot](#lightweightanonymousroot-hint)                                                                           | _On_ or _Off_                              |            | _On_      |
-| [ScopeFactoryName](#scopefactoryname-hint)                                                                                           | Method name                                |            |           |
+| [ScopeMethodName](#ScopeMethodName-hint)                                                                                             | Method name                                |            |           |
 
 The list of hints will be gradually expanded to meet the needs and desires for fine-tuning code generation. Please feel free to add your ideas.
 
@@ -1843,14 +1843,14 @@ DI.Setup("Composition")
     .Bind<IService>().To<Service>();
 ```
 
-### ScopeFactoryName Hint
+### ScopeMethodName Hint
 
 Sets the scope factory name to be used for creating scopes.
 
 ```c#
-// ScopeFactoryName = CreateScope
+// ScopeMethodName = CreateScope
 DI.Setup("Composition")
-    .Hint(Hint.ScopeFactoryName, "CreateScope")
+    .Hint(Hint.ScopeMethodName, "CreateScope")
     .Bind<IDependency>().As(Lifetime.Scoped).To<Dependency>();
 ```
 
@@ -2036,7 +2036,7 @@ AI needs to understand the situation it’s in (context). This means knowing det
 
 | AI context file | Size | Tokens |
 | --------------- | ---- | ------ |
-| [AGENTS_SMALL.md](AGENTS_SMALL.md) | 63KB | 16K |
+| [AGENTS_SMALL.md](AGENTS_SMALL.md) | 62KB | 16K |
 | [AGENTS_MEDIUM.md](AGENTS_MEDIUM.md) | 106KB | 27K |
 | [AGENTS.md](AGENTS.md) | 387KB | 99K |
 
@@ -2129,9 +2129,9 @@ Thanks!
 
 ## Benchmarks
 
-BenchmarkDotNet v0.14.0, Windows 10 (10.0.19045.4894/22H2/2022Update)
-AMD Ryzen 9 5900X, 1 CPU, 24 logical and 12 physical cores
-.NET SDK 9.0.100
+BenchmarkDotNet v0.15.8, Windows 10 (10.0.19045.6456/22H2/2022Update)
+AMD Ryzen 9 5900X 4.20GHz, 1 CPU, 24 logical and 12 physical cores
+.NET SDK 10.0.102
 
 <details>
 <summary>Transient</summary>

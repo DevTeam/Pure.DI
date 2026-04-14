@@ -1185,14 +1185,12 @@ To run the above code, the following NuGet packages must be added:
 
 ## Scope
 
-Demonstrates scoped lifetime with `Hint(Hint.ScopeFactory, "on")` where scopes are represented by generated `Scope` objects created via `CreateScope()`.
-
 ```c#
 using Shouldly;
 using Pure.DI;
 using static Pure.DI.Lifetime;
 
-var composition = new Composition(desc: "Checkout");
+var composition = new Composition();
 IRequestContext ctx1;
 IRequestContext ctx2;
 
@@ -1259,9 +1257,7 @@ interface ICheckoutService
 
 // "Controller/service" that participates in request processing.
 // It depends on a scoped context (per-request resource).
-sealed class CheckoutService(
-    string description,
-    IRequestContext context)
+sealed class CheckoutService(IRequestContext context)
     : ICheckoutService
 {
     public IRequestContext Context => context;
@@ -1270,7 +1266,7 @@ sealed class CheckoutService(
 // Represents a scope
 class Scope(Composition composition): IDisposable
 {
-    private readonly Composition _scope = composition.CreateScope();
+    private readonly Composition _scope = Composition.SetupScope(composition, new Composition());
 
     public ICheckoutService Checkout => _scope.RequestRoot;
 
@@ -1282,8 +1278,7 @@ partial class Composition
     static void Setup() =>
 
         DI.Setup()
-            .Hint(Hint.ScopeFactoryName, "CreateScope")
-            .Arg<string>("desc")
+            .Hint(Hint.ScopeMethodName, "SetupScope")
             // Per-request lifetime
             .Bind().As(Scoped).To<RequestContext>()
 
@@ -1302,12 +1297,8 @@ To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
->[!NOTE]
->This approach is useful when you need runtime scope creation without deriving a child composition type.
 
-## Scope factory
-
-Demonstrates scoped lifetime with `Hint(Hint.ScopeFactory, "on")` where scopes are represented by generated `Scope` objects created via `CreateScope()`.
+## Scope setup method
 
 ```c#
 using Shouldly;
@@ -1319,7 +1310,7 @@ IRequestContext ctx1;
 IRequestContext ctx2;
 
 // Request #1
-using (var request1 = composition.CreateScope())
+using (var request1 = Composition.SetupScope(composition, new Composition()))
 {
     var checkout11 = request1.RequestRoot;
     var checkout12 = request1.RequestRoot;
@@ -1334,7 +1325,7 @@ using (var request1 = composition.CreateScope())
 ctx1.IsDisposed.ShouldBeTrue();
 
 // Request #2
-using (var request2 = composition.CreateScope())
+using (var request2 = Composition.SetupScope(composition, new Composition()))
 {
     var checkout2 = request2.RequestRoot;
     ctx2 = checkout2.Context;
@@ -1392,7 +1383,7 @@ partial class Composition
     static void Setup() =>
 
         DI.Setup()
-            .Hint(Hint.ScopeFactoryName, "CreateScope")
+            .Hint(Hint.ScopeMethodName, "SetupScope")
             // Per-request lifetime
             .Bind().As(Scoped).To<RequestContext>()
 
@@ -1410,8 +1401,6 @@ To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
->[!NOTE]
->This approach is useful when you need runtime scope creation without deriving a child composition type.
 
 ## Scoped
 

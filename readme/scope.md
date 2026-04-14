@@ -1,14 +1,12 @@
 #### Scope
 
-Demonstrates scoped lifetime with `Hint(Hint.ScopeFactory, "on")` where scopes are represented by generated `Scope` objects created via `CreateScope()`.
-
 
 ```c#
 using Shouldly;
 using Pure.DI;
 using static Pure.DI.Lifetime;
 
-var composition = new Composition(desc: "Checkout");
+var composition = new Composition();
 IRequestContext ctx1;
 IRequestContext ctx2;
 
@@ -75,9 +73,7 @@ interface ICheckoutService
 
 // "Controller/service" that participates in request processing.
 // It depends on a scoped context (per-request resource).
-sealed class CheckoutService(
-    string description,
-    IRequestContext context)
+sealed class CheckoutService(IRequestContext context)
     : ICheckoutService
 {
     public IRequestContext Context => context;
@@ -86,7 +82,7 @@ sealed class CheckoutService(
 // Represents a scope
 class Scope(Composition composition): IDisposable
 {
-    private readonly Composition _scope = composition.CreateScope();
+    private readonly Composition _scope = Composition.SetupScope(composition, new Composition());
 
     public ICheckoutService Checkout => _scope.RequestRoot;
 
@@ -98,8 +94,7 @@ partial class Composition
     static void Setup() =>
 
         DI.Setup()
-            .Hint(Hint.ScopeFactoryName, "CreateScope")
-            .Arg<string>("desc")
+            .Hint(Hint.ScopeMethodName, "SetupScope")
             // Per-request lifetime
             .Bind().As(Scoped).To<RequestContext>()
 
@@ -141,9 +136,6 @@ dotnet run
 
 </details>
 
->[!NOTE]
->This approach is useful when you need runtime scope creation without deriving a child composition type.
-
 The following partial class will be generated:
 
 ```c#
@@ -158,31 +150,17 @@ partial class Composition: IDisposable
   private object[] _disposables = new object[1];
   private int _disposeIndex;
 
-  private RequestContext? _scopedRequestContext63;
-  private IdGenerator? _singletonIdGenerator64;
+  private RequestContext? _scopedRequestContext62;
+  private IdGenerator? _singletonIdGenerator63;
 
-  private readonly string _argDesc;
-
-  [OrdinalAttribute(128)]
-  public Composition(string desc)
+  internal static Composition SetupScope(Composition parentScope, Composition childScope)
   {
-    _argDesc = desc ?? throw new ArgumentNullException(nameof(desc));
-    _root = this;
-#if NET9_0_OR_GREATER
-    _lock = new Lock();
-#else
-    _lock = new Object();
-#endif
-    _disposables = new object[1];
-  }
-
-  internal Composition CreateScope()
-  {
-    var newScope = new Composition(this._argDesc);
-    newScope._root = this;
-    newScope._lock = this._lock;
-    newScope._disposables = new object[1];
-    return newScope;
+    if (Object.ReferenceEquals(parentScope, null)) throw new ArgumentNullException(nameof(parentScope));
+    if (Object.ReferenceEquals(childScope, null)) throw new ArgumentNullException(nameof(childScope));
+    childScope._root = parentScope;
+    childScope._lock = parentScope._lock;
+    childScope._disposables = new object[1];
+    return childScope;
   }
 
   public ICheckoutService RequestRoot
@@ -191,20 +169,20 @@ partial class Composition: IDisposable
     get
     {
       var root = _root ?? this;
-      if (_scopedRequestContext63 is null)
+      if (_scopedRequestContext62 is null)
         lock (_lock)
-          if (_scopedRequestContext63 is null)
+          if (_scopedRequestContext62 is null)
           {
-            if (root._singletonIdGenerator64 is null)
+            if (root._singletonIdGenerator63 is null)
             {
-              root._singletonIdGenerator64 = new IdGenerator();
+              root._singletonIdGenerator63 = new IdGenerator();
             }
 
-            _scopedRequestContext63 = new RequestContext(root._singletonIdGenerator64);
-            _disposables[_disposeIndex++] = _scopedRequestContext63;
+            _scopedRequestContext62 = new RequestContext(root._singletonIdGenerator63);
+            _disposables[_disposeIndex++] = _scopedRequestContext62;
           }
 
-      return new CheckoutService(_argDesc, _scopedRequestContext63);
+      return new CheckoutService(_scopedRequestContext62);
     }
   }
 
@@ -227,8 +205,8 @@ partial class Composition: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _scopedRequestContext63 = null;
-      _singletonIdGenerator64 = null;
+      _scopedRequestContext62 = null;
+      _singletonIdGenerator63 = null;
     }
 
     while (disposeIndex-- > 0)
@@ -271,13 +249,12 @@ classDiagram
 	Composition ..> Scope : Scope NewScope
 	Composition ..> CheckoutService : ICheckoutService RequestRoot
 	RequestContext o-- "Singleton" IdGenerator : IIdGenerator
-	CheckoutService o-- String : Argument "desc"
 	CheckoutService o-- "Scoped" RequestContext : IRequestContext
 	Scope *--  Composition : Composition
 	namespace Pure.DI.UsageTests.Lifetimes.ScopeScenario {
 		class CheckoutService {
 				<<class>>
-			+CheckoutService(String description, IRequestContext context)
+			+CheckoutService(IRequestContext context)
 		}
 		class Composition {
 		<<partial>>
@@ -309,9 +286,6 @@ classDiagram
 	namespace System {
 		class IDisposable {
 			<<abstract>>
-		}
-		class String {
-				<<class>>
 		}
 	}
 ```

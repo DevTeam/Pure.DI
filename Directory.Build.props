@@ -21,7 +21,7 @@
         <Copyright>Copyright (C) $([System.DateTime]::Now.Year) Nikolay Pianikov</Copyright>
         <EnableWindowsTargeting>true</EnableWindowsTargeting>
         <ImmutypeAPI>False</ImmutypeAPI>
-        <NoWarn>NETSDK1215;NETSDK1057;NU3005;NU5128;NU1108;CS1591;CS8321;CA1050;NU1801</NoWarn>
+        <NoWarn>NETSDK1215;NETSDK1057;NU3005;NU5128;NU1108;CS1591;CS8321;CA1050;NU1801;NU1901;NU1903</NoWarn>
 
         <!--
         <AnalyzerRoslynVersion Condition="'$(AnalyzerRoslynVersion)'==''">4.3</AnalyzerRoslynVersion>
