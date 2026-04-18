@@ -134,6 +134,319 @@ public class SetupContextTests
     }
 
     [Fact]
+    public async Task ShouldSupportArgumentSetupContextWithScopeMethod()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               internal partial class BaseComposition
+                               {
+                                   internal int Value { get; set; }
+
+                                   private void Setup()
+                                   {
+                                       DI.Setup(nameof(BaseComposition), CompositionKind.Internal)
+                                           .Bind<int>().To(_ => Value);
+                                   }
+                               }
+
+                               internal partial class Composition
+                               {
+                                   private void Setup()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Hint(Hint.ScopeMethodName, "SetupScope")
+                                           .DependsOn(nameof(BaseComposition), SetupContextKind.Argument, "baseContext")
+                                           .Bind<IService>().As(Lifetime.Scoped).To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+
+                               interface IService
+                               {
+                                   int Value { get; }
+                               }
+
+                               sealed class Service : IService
+                               {
+                                   public Service(int value)
+                                   {
+                                       Value = value;
+                                   }
+
+                                   public int Value { get; }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var baseContext = new BaseComposition { Value = 41 };
+                                       var composition = new Composition(baseContext);
+                                       Console.WriteLine(composition.Service.Value);
+
+                                       var scope = Composition.SetupScope(composition, new Composition(baseContext));
+                                       Console.WriteLine(scope.Service.Value);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion: LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(0, result);
+        result.StdOut.ShouldBe(["41", "41"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportArgumentSetupContextWithNestedScopeMethod()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               internal partial class BaseComposition
+                               {
+                                   internal int Value { get; set; }
+
+                                   private void Setup()
+                                   {
+                                       DI.Setup(nameof(BaseComposition), CompositionKind.Internal)
+                                           .Bind<int>().To(_ => Value);
+                                   }
+                               }
+
+                               internal partial class Composition
+                               {
+                                   private void Setup()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Hint(Hint.ScopeMethodName, "SetupScope")
+                                           .DependsOn(nameof(BaseComposition), SetupContextKind.Argument, "baseContext")
+                                           .Bind<IService>().As(Lifetime.Scoped).To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+
+                               interface IService
+                               {
+                                   int Value { get; }
+                               }
+
+                               sealed class Service : IService
+                               {
+                                   public Service(int value)
+                                   {
+                                       Value = value;
+                                   }
+
+                                   public int Value { get; }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var baseContext = new BaseComposition { Value = 41 };
+                                       var composition = new Composition(baseContext);
+                                       var scope1 = Composition.SetupScope(composition, new Composition(baseContext));
+                                       Console.WriteLine(scope1.Service.Value);
+
+                                       var scope2 = Composition.SetupScope(scope1, new Composition(baseContext));
+                                       Console.WriteLine(scope2.Service.Value);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion: LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(0, result);
+        result.StdOut.ShouldBe(["41", "41"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportArgumentSetupContextWithScopeMethodAndCompositionArguments()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               internal partial class BaseComposition
+                               {
+                                   internal int Value { get; set; }
+
+                                   private void Setup()
+                                   {
+                                       DI.Setup(nameof(BaseComposition), CompositionKind.Internal)
+                                           .Bind<int>().To(_ => Value);
+                                   }
+                               }
+
+                               interface IService
+                               {
+                                   string Message { get; }
+                               }
+
+                               sealed class Service : IService
+                               {
+                                   public Service(int value, string tenant)
+                                   {
+                                       Message = $"{tenant}:{value}";
+                                   }
+
+                                   public string Message { get; }
+                               }
+
+                               internal partial class Composition
+                               {
+                                   private void Setup()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Hint(Hint.ScopeMethodName, "SetupScope")
+                                           .Arg<string>("tenant")
+                                           .DependsOn(nameof(BaseComposition), SetupContextKind.Argument, "baseContext")
+                                           .Bind<IService>().As(Lifetime.Scoped).To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var baseContext = new BaseComposition { Value = 41 };
+                                       var composition = new Composition(tenant: "EU", baseContext: baseContext);
+                                       Console.WriteLine(composition.Service.Message);
+
+                                       var scope = Composition.SetupScope(
+                                           composition,
+                                           new Composition(tenant: "EU", baseContext: baseContext));
+                                       Console.WriteLine(scope.Service.Message);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion: LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(0, result);
+        result.StdOut.ShouldBe(["EU:41", "EU:41"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportArgumentSetupContextWithScopeMethodAndSingleton()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               internal partial class BaseComposition
+                               {
+                                   internal int Value { get; set; }
+
+                                   private void Setup()
+                                   {
+                                       DI.Setup(nameof(BaseComposition), CompositionKind.Internal)
+                                           .Bind<int>().To(_ => Value);
+                                   }
+                               }
+
+                               interface ISingletonService
+                               {
+                                   int Value { get; }
+                               }
+
+                               sealed class SingletonService : ISingletonService
+                               {
+                                   public SingletonService(int value)
+                                   {
+                                       Value = value;
+                                   }
+
+                                   public int Value { get; }
+                               }
+
+                               interface IService
+                               {
+                                   ISingletonService Singleton { get; }
+                               }
+
+                               sealed class Service : IService
+                               {
+                                   public Service(ISingletonService singleton)
+                                   {
+                                       Singleton = singleton;
+                                   }
+
+                                   public ISingletonService Singleton { get; }
+                               }
+
+                               internal partial class Composition
+                               {
+                                   private void Setup()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Hint(Hint.ScopeMethodName, "SetupScope")
+                                           .DependsOn(nameof(BaseComposition), SetupContextKind.Argument, "baseContext")
+                                           .Bind<ISingletonService>().As(Lifetime.Singleton).To<SingletonService>()
+                                           .Bind<IService>().As(Lifetime.Scoped).To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var baseContext = new BaseComposition { Value = 41 };
+                                       var composition = new Composition(baseContext);
+                                       var rootSingleton = composition.Service.Singleton;
+                                       Console.WriteLine(rootSingleton.Value);
+
+                                       var scope = Composition.SetupScope(composition, new Composition(baseContext));
+                                       var scopeSingleton1 = scope.Service.Singleton;
+                                       var scopeSingleton2 = scope.Service.Singleton;
+                                       Console.WriteLine(scopeSingleton1.Value);
+                                       Console.WriteLine(rootSingleton == scopeSingleton1);
+                                       Console.WriteLine(scopeSingleton1 == scopeSingleton2);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion: LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(0, result);
+        result.StdOut.ShouldBe(["41", "41", "True", "True"], result);
+    }
+
+    [Fact]
     public async Task ShouldSupportRootArgumentWithSimpleFactory()
     {
         // Given

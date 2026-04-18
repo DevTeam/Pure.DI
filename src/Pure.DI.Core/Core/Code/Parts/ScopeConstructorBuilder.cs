@@ -80,6 +80,13 @@ sealed class ScopeConstructorBuilder(
 
             foreach (var contextArg in composition.SetupContextArgsToCopy)
             {
+                if (composition.IsScopeMethod && contextArg.Kind == SetupContextKind.Argument)
+                {
+                    // Scope methods receive an already constructed child scope.
+                    // Setup context arguments are stored in readonly fields and are initialized by that constructor.
+                    continue;
+                }
+
                 code.AppendLine($"{destination}{contextArg.Name} = {source}{contextArg.Name};");
             }
 
